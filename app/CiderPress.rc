@@ -1,0 +1,2428 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+// Generated Help ID header file
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "resource.hm"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+#include "Dlgs.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "#include ""Dlgs.h""\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "Graphics\\CiderPress.ico"
+IDI_FILE_BINARY2        ICON    DISCARDABLE     "Graphics\\binary2.ico"
+IDI_FILE_NUFX           ICON    DISCARDABLE     "Graphics\\nufx.ico"
+IDI_FILE_DISKIMAGE      ICON    DISCARDABLE     "Graphics\\diskimage.ico"
+IDI_FILE_VIEWER         ICON    DISCARDABLE     "Graphics\\FileViewer.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        POPUP "New"
+        BEGIN
+            MENUITEM "&Disk image...",              IDM_TOOLS_IMAGECREATOR
+            MENUITEM "ShrinkIt Archive...\tCtrl+N", IDM_FILE_NEW_ARCHIVE
+        END
+        MENUITEM "&Open...\tCtrl-O",            IDM_FILE_OPEN
+        MENUITEM "Open &volume...",             IDM_FILE_OPEN_VOLUME
+        MENUITEM "&Reopen",                     IDM_FILE_REOPEN
+        MENUITEM "&Save changes\tCtrl-S",       IDM_FILE_SAVE
+        MENUITEM "&Close\tCtrl-W",              IDM_FILE_CLOSE
+        MENUITEM SEPARATOR
+        MENUITEM "Archive &Info\tCtrl-I",       IDM_FILE_ARCHIVEINFO
+        MENUITEM "&Print...\tCtrl-P",           IDM_FILE_PRINT
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       IDM_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Copy\tCtrl-C",               IDM_EDIT_COPY
+        MENUITEM "&Paste\tCtrl-V",              IDM_EDIT_PASTE
+        MENUITEM "Paste Special",               IDM_EDIT_PASTE_SPECIAL
+        MENUITEM SEPARATOR
+        MENUITEM "&Find...\tCtrl-F",            IDM_EDIT_FIND
+        MENUITEM SEPARATOR
+        POPUP "&Sort"
+        BEGIN
+            MENUITEM "By original order",           IDM_SORT_ORIGINAL
+            MENUITEM "By pathname",                 IDM_SORT_PATHNAME
+            MENUITEM "By file type",                IDM_SORT_TYPE
+            MENUITEM "By auxtype",                  IDM_SORT_AUXTYPE
+            MENUITEM "By modification date",        IDM_SORT_MODDATE
+            MENUITEM "By format",                   IDM_SORT_FORMAT
+            MENUITEM "By size",                     IDM_SORT_SIZE
+            MENUITEM "By ratio",                    IDM_SORT_RATIO
+            MENUITEM "By packed size",              IDM_SORT_PACKED
+            MENUITEM "By access",                   IDM_SORT_ACCESS
+        END
+        MENUITEM "Select &all\tCtrl-A",         IDM_EDIT_SELECT_ALL
+        MENUITEM "&Invert selection",           IDM_EDIT_INVERT_SELECTION
+        MENUITEM "&Preferences...",             IDM_EDIT_PREFERENCES
+    END
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "&View...\tTab",               IDM_ACTIONS_VIEW
+        MENUITEM "&Extract...",                 IDM_ACTIONS_EXTRACT
+        MENUITEM "&Test...",                    IDM_ACTIONS_TEST
+        MENUITEM "&Rename...",                  IDM_ACTIONS_RENAME
+        MENUITEM "&Delete...\tDel",             IDM_ACTIONS_DELETE
+        MENUITEM "&Re-compress...",             IDM_ACTIONS_RECOMPRESS
+        MENUITEM SEPARATOR
+        MENUITEM "Add &files...",               IDM_ACTIONS_ADD_FILES
+        MENUITEM "Add &disk image...",          IDM_ACTIONS_ADD_DISKS
+        MENUITEM "Create &subdirectory...",     IDM_ACTIONS_CREATE_SUBDIR
+        MENUITEM SEPARATOR
+        MENUITEM "&Open as disk image",         IDM_ACTIONS_OPENASDISK
+        MENUITEM "Edit &comment...",            IDM_ACTIONS_EDIT_COMMENT
+        MENUITEM "Edit &attributes...",         IDM_ACTIONS_EDIT_PROPS
+        MENUITEM "Rename volume...",            IDM_ACTIONS_RENAME_VOLUME
+        MENUITEM SEPARATOR
+        MENUITEM "&Convert to disk image...",   IDM_ACTIONS_CONV_DISK
+        MENUITEM "&Convert to file archive...", IDM_ACTIONS_CONV_FILE
+        MENUITEM "Import file from WAV...",     IDM_ACTIONS_CONV_FROMWAV
+        MENUITEM "Import &BAS from text...",    IDM_ACTIONS_IMPORT_BAS
+    END
+    POPUP "Tools"
+    BEGIN
+        MENUITEM "&Disk sector viewer",         IDM_TOOLS_DISKEDIT
+        MENUITEM "Disk &image converter",       IDM_TOOLS_DISKCONV
+        MENUITEM "&Bulk disk image converter",  IDM_TOOLS_BULKDISKCONV
+        MENUITEM SEPARATOR
+        MENUITEM "&Volume copier (open volume)", 
+                                                IDM_TOOLS_VOLUMECOPIER_VOLUME
+
+        MENUITEM "Volume copier (open file)",   IDM_TOOLS_VOLUMECOPIER_FILE
+        MENUITEM "&Merge SST images",           IDM_TOOLS_SST_MERGE
+        MENUITEM SEPARATOR
+        MENUITEM "2MG properties editor",       IDM_TOOLS_TWOIMGPROPS
+        MENUITEM "EOL scanner",                 IDM_TOOLS_EOLSCANNER
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Contents...\tF1",            IDM_HELP_CONTENTS
+        MENUITEM "Visit faddenSoft &web site",  IDM_HELP_WEBSITE
+        MENUITEM SEPARATOR
+        MENUITEM "&About CiderPress",           IDM_HELP_ABOUT
+    END
+END
+
+IDR_RIGHTCLICKMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "RightClickMenu"
+    BEGIN
+        MENUITEM "View...",                     IDM_ACTIONS_VIEW
+        MENUITEM "Extract...",                  IDM_ACTIONS_EXTRACT
+        MENUITEM "Test...",                     IDM_ACTIONS_TEST
+        MENUITEM "Rename...",                   IDM_ACTIONS_RENAME
+        MENUITEM "Delete...",                   IDM_ACTIONS_DELETE
+        MENUITEM "Re-compress...",              IDM_ACTIONS_RECOMPRESS
+        MENUITEM SEPARATOR
+        MENUITEM "&Copy\tCtrl-C",               IDM_EDIT_COPY
+        MENUITEM "&Paste\tCtrl-V",              IDM_EDIT_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM "Add &files...",               IDM_ACTIONS_ADD_FILES
+        MENUITEM "Create &subdirectory...",     IDM_ACTIONS_CREATE_SUBDIR
+        MENUITEM SEPARATOR
+        MENUITEM "Open as disk image",          IDM_ACTIONS_OPENASDISK
+        MENUITEM "Edit comment...",             IDM_ACTIONS_EDIT_COMMENT
+        MENUITEM "Edit attributes...",          IDM_ACTIONS_EDIT_PROPS
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+BEGIN
+    "A",            IDM_EDIT_SELECT_ALL,    VIRTKEY, CONTROL, NOINVERT
+    "C",            IDM_EDIT_COPY,          VIRTKEY, CONTROL, NOINVERT
+    "F",            IDM_EDIT_FIND,          VIRTKEY, CONTROL, NOINVERT
+    "I",            IDM_FILE_ARCHIVEINFO,   VIRTKEY, CONTROL, NOINVERT
+    "N",            IDM_FILE_NEW_ARCHIVE,   VIRTKEY, CONTROL, NOINVERT
+    "O",            IDM_FILE_OPEN,          VIRTKEY, CONTROL, NOINVERT
+    "O",            IDM_FILE_OPEN_VOLUME,   VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
+    "P",            IDM_FILE_PRINT,         VIRTKEY, CONTROL, NOINVERT
+    "S",            IDM_FILE_SAVE,          VIRTKEY, CONTROL, NOINVERT
+    "V",            IDM_EDIT_PASTE,         VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      IDM_ACTIONS_DELETE,     VIRTKEY, NOINVERT
+    VK_F1,          IDHELP,                 VIRTKEY, NOINVERT
+    VK_F4,          IDM_FILE_CLOSE,         VIRTKEY, CONTROL, NOINVERT
+    VK_TAB,         IDM_ACTIONS_VIEW,       VIRTKEY, NOINVERT
+    "W",            IDM_FILE_CLOSE,         VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTDLG DIALOGEX 0, 0, 212, 154
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "About CiderPress"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,132,50,14
+    PUSHBUTTON      "Credits",IDC_ABOUT_CREDITS,63,132,50,14,0,0,
+                    HIDC_ABOUT_CREDITS
+    PUSHBUTTON      "Enter registration code",IDC_ABOUT_ENTER_REG,119,132,86,
+                    14
+    CONTROL         106,IDC_STATIC,"Static",SS_BITMAP,7,6,64,59
+    LTEXT           "CiderPress v%d.%d.%d%s%s",IDC_CIDERPRESS_VERS_TEXT,77,7,
+                    128,9
+    LTEXT           "Copyright © 2007 by FaddenSoft, LLC.\rAll Rights Reserved.",
+                    IDC_STATIC,77,20,128,19
+    ICON            IDR_MAINFRAME,IDC_STATIC,77,45,21,20
+    ICON            IDI_FILE_NUFX,IDC_STATIC,106,45,21,20
+    ICON            IDI_FILE_BINARY2,IDC_STATIC,136,45,21,20
+    ICON            IDI_FILE_DISKIMAGE,IDC_STATIC,166,45,21,20
+    GROUPBOX        "Libraries",IDC_STATIC,7,71,198,56
+    LTEXT           "Using NufxLib DLL v%d.%d.%d",IDC_NUFXLIB_VERS_TEXT,16,
+                    82,170,10
+    LTEXT           "Using DiskImg DLL v%d.%d.%d",IDC_DISKIMG_VERS_TEXT,16,
+                    92,172,8
+    LTEXT           "Using zlib DLL v%s",IDC_ZLIB_VERS_TEXT,16,103,172,8
+    LTEXT           "Using ASPI DLL v%s",IDC_ASPI_VERS_TEXT,16,114,173,8
+END
+
+IDD_PREF_GENERAL DIALOG DISCARDABLE  0, 0, 263, 180
+STYLE DS_CONTEXTHELP | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "General"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Columns",IDC_STATIC,4,7,80,144
+    CONTROL         "Pathname",IDC_COL_PATHNAME,"Button",BS_AUTOCHECKBOX | 
+                    WS_DISABLED | WS_TABSTOP,12,19,65,10
+    CONTROL         "Type",IDC_COL_TYPE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,31,66,10
+    CONTROL         "Aux Type",IDC_COL_AUXTYPE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,43,65,10
+    CONTROL         "Mod Date",IDC_COL_MODDATE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,55,66,10
+    CONTROL         "Format",IDC_COL_FORMAT,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,67,68,10
+    CONTROL         "Size",IDC_COL_SIZE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,79,66,10
+    CONTROL         "Ratio",IDC_COL_RATIO,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,91,67,10
+    CONTROL         "Packed",IDC_COL_PACKED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,103,66,10
+    CONTROL         "Access",IDC_COL_ACCESS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,115,67,10
+    PUSHBUTTON      "&Defaults",IDC_COL_DEFAULTS,12,131,63,13
+    GROUPBOX        "NuFX (ShrinkIt) archives",IDC_STATIC,96,7,162,51
+    CONTROL         "&Mimic ShrinkIt quirks",IDC_PREF_SHRINKIT_COMPAT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,104,19,142,10
+    CONTROL         "Handle ""&bad Mac"" archives",IDC_PREF_SHK_BAD_MAC,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,31,149,10
+    CONTROL         "Reduce error checking (not recommended)",
+                    IDC_PREF_REDUCE_SHK_ERROR_CHECKS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,104,43,151,10
+    GROUPBOX        "Filename munging",IDC_STATIC,96,60,162,39
+    CONTROL         "Display &DOS 3.3 filenames in lower case",
+                    IDC_PREF_COERCE_DOS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,104,72,144,8
+    CONTROL         "Show spaces as &underscores",IDC_PREF_SPACES_TO_UNDER,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,84,145,10
+    GROUPBOX        "System",IDC_STATIC,96,101,162,33
+    PUSHBUTTON      "File type &associations...",IDC_PREF_ASSOCIATIONS,104,
+                    113,92,14
+    GROUPBOX        "Miscellaneous",IDC_STATIC,96,136,162,38
+    CONTROL         "Strip pathnames when pasting files",
+                    IDC_PREF_PASTE_JUNKPATHS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,104,147,144,10
+    CONTROL         "Beep when actions complete successfully",
+                    IDC_PREF_SUCCESS_BEEP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,104,159,145,10
+END
+
+IDD_PREF_COMPRESSION DIALOGEX 0, 0, 212, 212
+STYLE DS_CONTEXTHELP | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Compression"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LTEXT           "Default compression method:",IDC_STATIC,4,6,184,10
+    CONTROL         "No compression",IDC_DEFC_UNCOMPRESSED,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,4,18,92,8
+    CONTROL         "Squeeze",IDC_DEFC_SQUEEZE,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,4,30,92,8
+    CONTROL         "Dynamic LZW/1",IDC_DEFC_LZW1,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,4,57,96,8
+    CONTROL         "Dynamic LZW/2 (recommended)",IDC_DEFC_LZW2,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,4,78,152,8
+    CONTROL         "12-bit LZC",IDC_DEFC_LZC12,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,4,99,92,8
+    CONTROL         "16-bit LZC",IDC_DEFC_LZC16,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,4,126,96,8
+    CONTROL         "Deflate",IDC_DEFC_DEFLATE,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,4,153,100,8
+    CONTROL         "Bzip2",IDC_DEFC_BZIP2,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,4,180,108,8
+    LTEXT           "Uses a combination of RLE and Huffman.\rNot compatible with ProDOS 8 ShrinkIt.",
+                    IDC_STATIC,16,39,192,18
+    LTEXT           "The compression method used by ProDOS 8 ShrinkIt.",
+                    IDC_STATIC,16,66,180,10,0,0,HIDC_STATIC
+    LTEXT           "The compression method used by GS/ShrinkIt.",IDC_STATIC,
+                    16,87,185,8,0,0,HIDC_STATIC
+    LTEXT           "Compression used by UNIX ""compress"" command.\rNot compatible with ProDOS 8 ShrinkIt.",
+                    IDC_STATIC,16,108,190,18
+    LTEXT           "Compression used by UNIX ""compress"" command.\rNot compatible with ProDOS 8 ShrinkIt.",
+                    IDC_STATIC,16,135,195,18
+    LTEXT           "Compression used by ZIP and gzip.\rNot compatible with any Apple II applications.",
+                    IDC_STATIC,16,162,196,18
+    LTEXT           "Compression used by bzip2.\rNot compatible with any Apple II applications.",
+                    IDC_STATIC,16,189,196,18
+END
+
+IDD_FILE_VIEWER DIALOGEX 0, 0, 486, 257
+STYLE DS_3DLOOK | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | 
+    WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "File Viewer"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "&Done",IDOK,432,224,50,14,WS_GROUP
+    CONTROL         "",IDC_FVIEW_EDITBOX,"RICHEDIT",ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | 
+                    WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,4,3,478,
+                    217,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_FVIEW_FORMATSEL,152,225,148,54,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Data fork",IDC_FVIEW_DATA,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,5,224,68,10
+    CONTROL         "Resource fork",IDC_FVIEW_RSRC,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,5,235,69,10
+    CONTROL         "Comment",IDC_FVIEW_CMMT,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,5,246,69,10
+    PUSHBUTTON      "&Next",IDC_FVIEW_NEXT,82,224,50,14,WS_GROUP
+    PUSHBUTTON      "&Prev",IDC_FVIEW_PREV,82,242,50,14
+    PUSHBUTTON      "Best",IDC_FVIEW_FMT_BEST,151,242,32,14,WS_GROUP
+    PUSHBUTTON      "&Hex",IDC_FVIEW_FMT_HEX,187,242,32,14
+    PUSHBUTTON      "&Raw",IDC_FVIEW_FMT_RAW,223,242,32,14
+    PUSHBUTTON      "&Find...",IDC_FVIEW_FIND,320,224,50,14
+    PUSHBUTTON      "Prin&t",IDC_FVIEW_PRINT,320,242,50,14
+    PUSHBUTTON      "F&ont",IDC_FVIEW_FONT,376,224,50,14
+    PUSHBUTTON      "Help",IDHELP,376,242,50,14
+END
+
+IDD_PREF_FVIEW DIALOG DISCARDABLE  0, 0, 216, 263
+STYLE DS_CONTEXTHELP | WS_CHILD | WS_CAPTION
+CAPTION "File Viewer"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Converters",IDC_STATIC,4,7,208,139
+    CONTROL         "High-ASCII &text",IDC_PVIEW_HITEXT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,19,88,10
+    CONTROL         "&CP/M text",IDC_PVIEW_CPMTEXT,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,30,92,10
+    CONTROL         "&Pascal text",IDC_PVIEW_PASCALTEXT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,41,87,10
+    CONTROL         "Pascal &code",IDC_PVIEW_PASCALCODE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,52,89,10
+    CONTROL         "&Applesoft BASIC",IDC_PVIEW_APPLESOFT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,63,88,10
+    CONTROL         "&Integer BASIC",IDC_PVIEW_INTEGER,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,74,88,10
+    CONTROL         "Assembly source",IDC_PVIEW_SCASSEM,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,85,94,10
+    CONTROL         "ProDOS folders",IDC_PVIEW_PRODOSFOLDER,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,96,88,10
+    CONTROL         "Disassemble code",IDC_PVIEW_DISASM,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,107,91,10
+    CONTROL         "Resource forks",IDC_PVIEW_RESOURCES,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,118,90,10
+    CONTROL         "GWP (Teach, AWGS)",IDC_PVIEW_GWP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,112,19,92,10
+    CONTROL         "8-bit word processor",IDC_PVIEW_TEXT8,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,112,30,94,10
+    CONTROL         "AppleWorks &WP",IDC_PVIEW_AWP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,112,41,88,10
+    CONTROL         "AppleWorks &DB",IDC_PVIEW_ADB,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,112,52,94,10
+    CONTROL         "AppleWorks &SS",IDC_PVIEW_ASP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,112,63,94,10
+    CONTROL         "&Hi-Res images",IDC_PVIEW_HIRES,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,112,74,90,10
+    CONTROL         "&Double Hi-Res images",IDC_PVIEW_DHR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,112,85,86,10
+    CONTROL         "&Super Hi-Res images",IDC_PVIEW_SHR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,112,96,89,10
+    CONTROL         "Print Shop graphics",IDC_PVIEW_PRINTSHOP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,112,107,77,10
+    CONTROL         "MacPaint images",IDC_PVIEW_MACPAINT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,112,118,93,10
+    CONTROL         "&Relax type-checking on graphics",IDC_PVIEW_RELAX_GFX,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,50,131,116,10
+    GROUPBOX        "Conversion options",IDC_STATIC,4,150,208,90
+    CONTROL         "&Scroll horizontally instead of wrapping words",
+                    IDC_PVIEW_NOWRAP_TEXT,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,162,192,10
+    CONTROL         "Highlight &hex dump columns (small files)",
+                    IDC_PVIEW_BOLD_HEXDUMP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,173,156,10
+    CONTROL         "Prefer syntax &highlighting on BASIC programs",
+                    IDC_PVIEW_BOLD_BASIC,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,184,187,10
+    CONTROL         "Disassemble BRK/COP as single-byte instructions",
+                    IDC_PVIEW_DISASM_ONEBYTEBRKCOP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,12,195,189,10
+    CONTROL         "Prefer &B&&W for hi-res images",IDC_PVIEW_HIRES_BW,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,206,148,10
+    LTEXT           "Preferred DHR mode:",IDC_STATIC,12,223,69,8
+    COMBOBOX        IDC_PVIEW_DHR_CONV_COMBO,84,220,118,48,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Viewer file size &limit:",IDC_STATIC,4,247,62,8
+    EDITTEXT        IDC_PVIEW_SIZE_EDIT,69,245,40,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "Spin2",IDC_PVIEW_SIZE_SPIN,"msctls_updown32",
+                    UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,112,247,11,14
+    LTEXT           "KBytes",IDC_STATIC,110,247,36,8
+END
+
+IDD_DISKEDIT DIALOGEX 0, 0, 458, 197
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Disk Edit"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_DISKEDIT_EDIT,"RICHEDIT",ES_MULTILINE | 
+                    ES_AUTOVSCROLL | WS_BORDER | WS_VSCROLL | WS_TABSTOP,4,
+                    12,384,164,WS_EX_CLIENTEDGE,HIDC_DISKEDIT_EDIT
+    PUSHBUTTON      "&Done",IDC_DISKEDIT_DONE,4,180,50,14,0,0,
+                    HIDC_DISKEDIT_DONE
+    PUSHBUTTON      "&Open File",IDC_DISKEDIT_OPENFILE,60,180,50,14,0,0,
+                    HIDC_DISKEDIT_OPENFILE
+    EDITTEXT        IDC_DISKEDIT_TRACK,397,20,49,14,ES_AUTOHSCROLL,0,
+                    HIDC_DISKEDIT_TRACK
+    CONTROL         "Spin1",IDC_DISKEDIT_TRACKSPIN,"msctls_updown32",
+                    UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_NOTHOUSANDS,434,27,
+                    11,14
+    EDITTEXT        IDC_DISKEDIT_SECTOR,397,49,49,14,ES_AUTOHSCROLL,0,
+                    HIDC_DISKEDIT_SECTOR
+    CONTROL         "Spin2",IDC_DISKEDIT_SECTORSPIN,"msctls_updown32",
+                    UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_NOTHOUSANDS,434,58,
+                    11,14
+    CONTROL         "&Hex",IDC_DISKEDIT_HEX,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,399,68,44,10,0,HIDC_DISKEDIT_HEX
+    PUSHBUTTON      "&Read",IDC_DISKEDIT_DOREAD,399,89,50,14,0,0,
+                    HIDC_DISKEDIT_DOREAD
+    PUSHBUTTON      "&Write",IDC_DISKEDIT_DOWRITE,399,105,50,14,0,0,
+                    HIDC_DISKEDIT_DOWRITE
+    PUSHBUTTON      "Read &Prev",IDC_DISKEDIT_PREV,399,132,50,14,0,0,
+                    HIDC_DISKEDIT_PREV
+    PUSHBUTTON      "Read &Next",IDC_DISKEDIT_NEXT,399,148,50,14,0,0,
+                    HIDC_DISKEDIT_NEXT
+    LTEXT           "Track:",IDC_STEXT_TRACK,396,12,58,8,0,0,
+                    HIDC_STEXT_TRACK
+    LTEXT           "Sector:",IDC_STEXT_SECTOR,396,41,52,8,0,0,
+                    HIDC_STEXT_SECTOR
+    PUSHBUTTON      "Sub &Volume",IDC_DISKEDIT_SUBVOLUME,116,180,50,14,0,0,
+                    HIDC_DISKEDIT_SUBVOLUME
+    PUSHBUTTON      "Help",IDHELP,172,180,50,14,0,0,HIDHELP
+    LTEXT           " 0",IDC_STATIC,32,4,8,8
+    LTEXT           " 1",IDC_STATIC,48,4,8,8
+    LTEXT           " 2",IDC_STATIC,64,4,8,8
+    LTEXT           " 3",IDC_STATIC,80,4,8,8
+    LTEXT           " 4",IDC_STATIC,96,4,8,8
+    LTEXT           " 5",IDC_STATIC,112,4,8,8
+    LTEXT           " 6",IDC_STATIC,128,4,8,8
+    LTEXT           " 7",IDC_STATIC,144,4,8,8
+    LTEXT           " 8",IDC_STATIC,160,4,8,8
+    LTEXT           " 9",IDC_STATIC,176,4,8,8
+    LTEXT           " a",IDC_STATIC,192,4,8,8
+    LTEXT           " b",IDC_STATIC,208,4,8,8
+    LTEXT           " c",IDC_STATIC,224,4,8,8
+    LTEXT           " d",IDC_STATIC,240,4,8,8
+    LTEXT           " e",IDC_STATIC,256,4,8,8
+    LTEXT           " f",IDC_STATIC,272,4,8,8
+    COMBOBOX        IDC_DISKEDIT_NIBBLE_PARMS,276,182,112,60,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DECONF DIALOG DISCARDABLE  0, 0, 188, 173
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | 
+    WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
+CAPTION "Disk Image Characteristics"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,8,152,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,68,152,50,14
+    PUSHBUTTON      "Help",IDC_DECONF_HELP,128,152,50,14
+    LTEXT           "File source:",IDC_STATIC,7,10,37,8
+    EDITTEXT        IDC_DECONF_SOURCE,68,8,112,14,ES_AUTOHSCROLL | 
+                    ES_READONLY
+    LTEXT           "File Format:",IDC_STATIC,7,50,54,8
+    COMBOBOX        IDC_DECONF_FILEFORMAT,68,47,112,30,CBS_DROPDOWNLIST | 
+                    WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Physical format:",IDC_STATIC,7,69,56,8
+    COMBOBOX        IDC_DECONF_PHYSICAL,68,66,112,30,CBS_DROPDOWNLIST | 
+                    WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Sector ordering:",IDC_STATIC,7,88,55,8
+    COMBOBOX        IDC_DECONF_SECTORORDER,68,85,112,53,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Filesystem format:",IDC_STATIC,7,107,56,8
+    COMBOBOX        IDC_DECONF_FSFORMAT,68,104,112,60,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "blocks",IDC_DECONF_VIEWASBLOCKS,"Button",
+                    BS_AUTORADIOBUTTON,18,135,41,10
+    CONTROL         "sectors",IDC_DECONF_VIEWASSECTORS,"Button",
+                    BS_AUTORADIOBUTTON,63,135,43,10
+    CONTROL         "track nibbles",IDC_DECONF_VIEWASNIBBLES,"Button",
+                    BS_AUTORADIOBUTTON,109,135,59,10
+    COMBOBOX        IDC_DECONF_OUTERFORMAT,68,28,112,49,CBS_DROPDOWNLIST | 
+                    WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Outer Format:",IDC_STATIC,7,30,56,8
+    LTEXT           "View data as...",IDC_DECONF_VIEWAS,7,123,48,8
+END
+
+IDD_SUBV DIALOG DISCARDABLE  0, 0, 153, 135
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Select Sub-Volume"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,21,114,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,81,114,50,14
+    LISTBOX         IDC_SUBV_LIST,7,19,139,87,LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Choose the sub-volume to open:",IDC_STATIC,7,7,103,8
+END
+
+IDD_DEFILE DIALOG DISCARDABLE  0, 0, 199, 97
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Open file on disk image..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Enter the name of the file to open:",IDC_STATIC,7,7,108,
+                    8
+    EDITTEXT        IDC_DEFILE_FILENAME,7,19,185,14,ES_AUTOHSCROLL
+    CONTROL         "Open &resource fork instead of data fork",
+                    IDC_DEFILE_RSRC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,
+                    39,185,10
+    DEFPUSHBUTTON   "OK",IDOK,45,76,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,103,76,50,14
+    LTEXT           "To open a file in a sub-volume, first open the sub-volume.",
+                    IDC_STATIC,7,59,180,8
+END
+
+IDD_PREF_FILES DIALOG DISCARDABLE  0, 0, 231, 89
+STYLE DS_CONTEXTHELP | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Files"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Folder for temporary files:",IDC_STATIC,7,13,131,8
+    EDITTEXT        IDC_PREF_TEMP_FOLDER,7,26,197,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDC_PREF_CHOOSE_TEMP_FOLDER,208,26,16,14,BS_BITMAP | 
+                    BS_CENTER | BS_VCENTER
+    LTEXT           "External file viewer extensions (separated with semicolons):",
+                    IDC_STATIC,7,55,217,11
+    EDITTEXT        IDC_PREF_EXTVIEWER_EXTS,7,68,197,14,ES_AUTOHSCROLL
+END
+
+IDD_CHOOSEDIR DIALOGEX 0, 0, 255, 253
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Choose folder"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Select",IDOK,43,232,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,103,232,50,14
+    PUSHBUTTON      "Help",IDHELP,162,232,50,14
+    LTEXT           "Select the folder to use:",IDC_STATIC,7,7,76,8
+    CONTROL         "Tree1",IDC_CHOOSEDIR_TREE,"SysTreeView32",
+                    TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | 
+                    TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,17,241,155,
+                    WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_CHOOSEDIR_PATH,7,174,221,14,ES_AUTOHSCROLL | 
+                    ES_READONLY
+    PUSHBUTTON      "IDB_NEW_FOLDER",IDC_CHOOSEDIR_NEW_FOLDER,232,174,16,14,
+                    BS_BITMAP | BS_CENTER | BS_VCENTER
+    LTEXT           "Or type the folder name and hit ""Expand Tree"":",
+                    IDC_STATIC,7,198,149,8
+    EDITTEXT        IDC_CHOOSEDIR_PATHEDIT,7,208,183,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Expand Tree",IDC_CHOOSEDIR_EXPAND_TREE,198,208,50,14
+END
+
+IDD_NEWFOLDER DIALOG DISCARDABLE  0, 0, 251, 69
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Create New Folder"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_NEWFOLDER_NAME,6,47,177,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,193,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,193,24,50,14
+    LTEXT           "Current folder:",IDC_STATIC,6,7,177,8
+    EDITTEXT        IDC_NEWFOLDER_CURDIR,6,16,177,14,ES_AUTOHSCROLL | 
+                    ES_READONLY
+    LTEXT           "New folder name (will be created in current folder):",
+                    IDC_STATIC,6,37,177,8
+END
+
+IDD_EXTRACT_FILES DIALOG DISCARDABLE  0, 0, 299, 242
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Extract Files"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Extract",IDOK,68,220,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,124,220,50,14
+    PUSHBUTTON      "Help",IDHELP,180,220,50,14
+    LTEXT           "Folder where files will be extracted:",IDC_STATIC,8,8,
+                    143,8
+    EDITTEXT        IDC_EXT_PATH,8,18,263,14,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "",IDC_EXT_CHOOSE_FOLDER,276,18,16,14,BS_BITMAP | 
+                    BS_CENTER | BS_VCENTER | WS_GROUP
+    GROUPBOX        "Files to extract",IDC_STATIC,8,40,140,35
+    CONTROL         ">Extract 65536 selected files<",IDC_EXT_SELECTED,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,50,124,10
+    CONTROL         "Extract &all files",IDC_EXT_ALL,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,16,61,124,10
+    GROUPBOX        "Parts to extract",IDC_STATIC,152,40,140,47,WS_GROUP
+    CONTROL         "&Data forks",IDC_EXT_DATAFORK,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,160,50,128,10
+    CONTROL         "&Resource forks",IDC_EXT_RSRCFORK,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,160,61,128,10
+    CONTROL         "Disk &images",IDC_EXT_DISKIMAGE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,72,128,10
+    GROUPBOX        "Format conversion",IDC_STATIC,8,77,140,37
+    CONTROL         "&Convert to non-Apple II formats",IDC_EXT_REFORMAT,
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,16,88,
+                    124,10
+    CONTROL         "Extract disks as .&2MG",IDC_EXT_DISK_2MG,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,99,124,10
+    GROUPBOX        "Filenames",IDC_STATIC,152,98,140,40
+    CONTROL         "Add file attribute &preservation",IDC_EXT_ADD_PRESERVE,
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,160,110,
+                    128,10
+    CONTROL         "Add type &extension",IDC_EXT_ADD_EXTEN,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,160,122,128,10
+    GROUPBOX        "Text conversion",IDC_STATIC,8,117,140,70,WS_GROUP
+    CONTROL         "&Don't convert text files",IDC_EXT_CONVEOLNONE,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,127,124,10
+    CONTROL         "Convert text files by file type",IDC_EXT_CONVEOLTYPE,
+                    "Button",BS_AUTORADIOBUTTON | WS_TABSTOP,16,138,126,10
+    CONTROL         "Auto-detect && &convert files with text",
+                    IDC_EXT_CONVEOLTEXT,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,16,149,126,10
+    CONTROL         "Convert &ALL files",IDC_EXT_CONVEOLALL,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,16,160,124,10
+    CONTROL         "Strip ""&high ASCII"" files",IDC_EXT_CONVHIGHASCII,
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,16,171,
+                    124,10
+    GROUPBOX        "Miscellaneous",IDC_STATIC,152,151,140,36,WS_GROUP
+    CONTROL         "&Strip folder names",IDC_EXT_STRIP_FOLDER,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,160,161,128,10
+    CONTROL         "&Overwrite existing files",IDC_EXT_OVERWRITE_EXIST,
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,160,172,
+                    128,10
+    PUSHBUTTON      "Configure to preserve Apple II formats",
+                    IDC_EXT_CONFIG_PRESERVE,8,196,140,16
+    PUSHBUTTON      "Configure for easy access in Windows",
+                    IDC_EXT_CONFIG_CONVERT,152,196,140,16
+END
+
+IDD_ACTION_PROGRESS DIALOG DISCARDABLE  0, 0, 276, 111
+STYLE DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_BORDER
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Progress1",IDC_PROG_PROGRESS,"msctls_progress32",
+                    WS_BORDER,7,65,262,14
+    PUSHBUTTON      "Cancel",IDCANCEL,112,90,50,14
+    LTEXT           "Now extracting:",IDC_PROG_VERB,7,7,113,8
+    LTEXT           ">source<",IDC_PROG_ARC_NAME,7,17,262,8
+    LTEXT           "To:",IDC_PROG_TOFROM,7,36,115,8
+    LTEXT           ">target<",IDC_PROG_FILE_NAME,7,47,262,8
+END
+
+IDD_CONFIRM_OVERWRITE DIALOG DISCARDABLE  0, 0, 292, 105
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Confirm Overwrite"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Yes",IDC_OVWR_YES,8,64,50,14
+    PUSHBUTTON      "Yes to All",IDC_OVWR_YESALL,64,64,50,14
+    PUSHBUTTON      "No",IDC_OVWR_NO,120,64,50,14
+    PUSHBUTTON      "No to All",IDC_OVWR_NOALL,176,64,50,14
+    PUSHBUTTON      "Rename",IDC_OVWR_RENAME,232,64,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,120,84,50,14
+    LTEXT           "Replace file:",IDC_STATIC,8,8,40,8
+    LTEXT           ">existing file name<",IDC_OVWR_EXIST_NAME,52,8,228,8
+    LTEXT           ">existing file info<",IDC_OVWR_EXIST_INFO,52,20,228,8
+    LTEXT           "With file:",IDC_STATIC,8,36,28,8
+    LTEXT           ">new file name<",IDC_OVWR_NEW_NAME,52,36,228,8
+    LTEXT           ">new file info<",IDC_OVWR_NEW_INFO,52,48,228,8
+END
+
+IDD_RENAME_OVERWRITE DIALOG DISCARDABLE  0, 0, 316, 124
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Rename File"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,103,103,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,162,103,50,14
+    LTEXT           "Original name:",IDC_STATIC,8,8,46,8
+    LTEXT           ">original name<",IDC_RENOVWR_SOURCE_NAME,8,20,301,8
+    EDITTEXT        IDC_RENOVWR_ORIG_NAME,8,48,302,14,ES_AUTOHSCROLL | 
+                    ES_READONLY
+    LTEXT           "Full pathname:",IDC_STATIC,8,36,47,8
+    LTEXT           "New pathname:",IDC_STATIC,8,68,51,8
+    EDITTEXT        IDC_RENOVWR_NEW_NAME,8,80,302,14,ES_AUTOHSCROLL
+END
+
+IDD_ADD_FILES DIALOGEX 0, 0, 292, 231
+STYLE DS_3DLOOK | DS_CONTROL | DS_CONTEXTHELP | WS_CHILD | WS_VISIBLE | 
+    WS_CLIPSIBLINGS
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LTEXT           "",1119,0,0,291,87,NOT WS_GROUP,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Accept",IDC_SELECT_ACCEPT,241,88,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,241,106,50,14
+    PUSHBUTTON      "Help",IDHELP,241,124,50,14
+    GROUPBOX        "File attribute preservation",IDC_ADDFILES_STATIC1,4,112,
+                    169,47
+    CONTROL         "&Ignore file attribute preservation tags",
+                    IDC_ADDFILES_NOPRESERVE,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,8,122,157,10
+    CONTROL         "&Use file attribute preservation tags",
+                    IDC_ADDFILES_PRESERVE,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,8,133,152,10
+    CONTROL         "Use tags and &guess type from extension",
+                    IDC_ADDFILES_PRESERVEPLUS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,8,144,150,10
+    GROUPBOX        "Text conversion",IDC_ADDFILES_STATIC4,4,168,169,56
+    CONTROL         "&Don't convert text files",IDC_ADDFILES_CONVEOLNONE,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,8,
+                    178,146,10
+    CONTROL         "Convert text files by file type",
+                    IDC_ADDFILES_CONVEOLTYPE,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,8,189,153,10
+    CONTROL         "Auto-detect && &convert files with text",
+                    IDC_ADDFILES_CONVEOLTEXT,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,8,200,148,10
+    CONTROL         "Convert &ALL files",IDC_ADDFILES_CONVEOLALL,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,8,211,141,10
+    GROUPBOX        "Miscellaneous",IDC_ADDFILES_STATIC2,176,145,115,47
+    CONTROL         "&Include subfolders",IDC_ADDFILES_INCLUDE_SUBFOLDERS,
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,180,155,
+                    88,10
+    CONTROL         "&Strip folder names",IDC_ADDFILES_STRIP_FOLDER,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,180,166,88,10
+    CONTROL         "&Overwrite existing files",IDC_ADDFILES_OVERWRITE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,177,85,10
+    LTEXT           "Storage prefix (optional):",IDC_ADDFILES_STATIC3,177,
+                    198,77,8
+    EDITTEXT        IDC_ADDFILES_PREFIX,176,210,102,14,ES_AUTOHSCROLL
+END
+
+IDD_USE_SELECTION DIALOG DISCARDABLE  0, 0, 139, 79
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Action Files"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Action",IDOK,16,58,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,73,58,50,14
+    GROUPBOX        "Files",IDC_STATIC,7,7,125,40
+    CONTROL         ">Action 65536 selected files<",IDC_USE_SELECTED,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,14,19,113,10
+    CONTROL         "Action &all files",IDC_USE_ALL,"Button",
+                    BS_AUTORADIOBUTTON,14,30,113,10
+END
+
+IDD_RENAME_ENTRY DIALOG DISCARDABLE  0, 0, 284, 118
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Rename"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,34,97,50,14
+    PUSHBUTTON      "Skip",IDC_RENAME_SKIP,89,97,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,97,50,14
+    PUSHBUTTON      "Help",IDHELP,199,97,50,14
+    LTEXT           "Current name:",IDC_STATIC,7,7,126,8
+    EDITTEXT        IDC_RENAME_OLD,7,18,270,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "New name:",IDC_STATIC,7,42,125,8
+    EDITTEXT        IDC_RENAME_NEW,7,52,270,14,ES_AUTOHSCROLL
+    LTEXT           "Path separator character:",IDC_STATIC,7,76,81,8
+    EDITTEXT        IDC_RENAME_PATHSEP,91,74,11,14,ES_AUTOHSCROLL | NOT 
+                    WS_TABSTOP
+END
+
+IDD_COMMENT_EDIT DIALOG DISCARDABLE  0, 0, 362, 151
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Comment"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_COMMENT_EDIT,7,7,290,138,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,305,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,305,25,50,14
+    PUSHBUTTON      "Help",IDHELP,305,43,50,14
+    PUSHBUTTON      "Delete",IDC_COMMENT_DELETE,305,71,50,14
+END
+
+IDD_RECOMPRESS_OPTS DIALOG DISCARDABLE  0, 0, 171, 149
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Recompress Files"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Action",IDOK,32,128,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,88,128,50,14
+    GROUPBOX        "Files",IDC_STATIC,7,7,157,40
+    CONTROL         ">Recompress 65536 selected files<",IDC_USE_SELECTED,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,
+                    19,130,10
+    CONTROL         "Action &all files",IDC_USE_ALL,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,30,113,10
+    COMBOBOX        IDC_RECOMP_COMP,7,65,157,55,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "New compression type:",IDC_STATIC,7,53,157,8
+    LTEXT           "IMPORTANT: for broad compatibility, use only Dynamic LZW/2 compression.  Other formats will not work with all software, and ""Deflate"" cannot be unpacked on an Apple II.",
+                    IDC_STATIC,7,87,157,35
+END
+
+IDD_PRINT_CANCEL DIALOG DISCARDABLE  0, 0, 116, 46
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Printing..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,33,25,50,14
+    LTEXT           "Sending file list to the printer.",IDC_STATIC,7,7,102,8
+END
+
+IDD_ASSOCIATIONS DIALOG DISCARDABLE  0, 0, 258, 281
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "CiderPress Associations"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,201,70,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,201,88,50,14
+    PUSHBUTTON      "Help",IDHELP,201,106,50,14
+    LTEXT           "Place a checkmark next to the file extensions that you want associated with CiderPress.  Opening files with these extensions will cause CiderPress to be launched automatically.",
+                    IDC_STATIC,7,7,244,27
+    LTEXT           "Press OK in this screen to accept the changes, and hit OK or Apply in the Preferences screen to apply them.",
+                    IDC_STATIC,7,36,244,21
+    LTEXT           "Current file associations:",IDC_STATIC,7,59,244,8
+    CONTROL         "List4",IDC_ASSOCIATION_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,7,70,185,204
+END
+
+IDD_REGISTRATION DIALOG DISCARDABLE  0, 0, 233, 191
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Registration Info"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,37,170,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,92,170,50,14
+    PUSHBUTTON      "Help",IDHELP,147,170,50,14
+    LTEXT           "Please enter your registration information.  Fill in all fields exactly as they appear on the registration letter.  Copying and pasting directly from the registration letter is the easiest way to do this.",
+                    IDC_STATIC,7,7,219,27
+    LTEXT           "Your name:",IDC_STATIC,7,70,122,8
+    EDITTEXT        IDC_REGENTER_USER,7,81,181,14,ES_AUTOHSCROLL
+    LTEXT           "Your company:",IDC_STATIC,7,102,119,8
+    EDITTEXT        IDC_REGENTER_COMPANY,7,113,181,14,ES_AUTOHSCROLL
+    LTEXT           "Registration key:",IDC_STATIC,7,134,128,8
+    EDITTEXT        IDC_REGENTER_REG,7,145,180,14,ES_AUTOHSCROLL
+    LTEXT           "When you have entered the data, make sure the checksum values match those in the registration letter.  If they don't, re-check what you have entered.  Punctuation and capitalization are important.",
+                    IDC_STATIC,7,37,219,25
+    LTEXT           "Checksum",IDC_STATIC,192,70,34,8
+    LTEXT           "CCCC",IDC_REGENTER_USERCRC,201,85,25,8
+    LTEXT           "CCCC",IDC_REGENTER_COMPCRC,201,117,25,8
+    LTEXT           "CCCC",IDC_REGENTER_REGCRC,201,149,25,8
+END
+
+IDD_DISKCONV DIALOG DISCARDABLE  0, 0, 174, 223
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Convert Disk Image"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,202,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,62,202,50,14
+    PUSHBUTTON      "Help",IDHELP,117,202,50,14
+    LTEXT           "Image size:",IDC_IMAGE_SIZE_TEXT,7,7,36,8
+    LTEXT           ">800K floppy<",IDC_IMAGE_TYPE,47,7,120,8
+    GROUPBOX        "Convert to:",IDC_STATIC,7,20,160,157
+    CONTROL         "Unadorned DOS-order (.DO)",IDC_DISKCONV_DOS,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,31,146,10
+    CONTROL         "With 2MG header (.2MG)",IDC_DISKCONV_DOS2MG,"Button",
+                    BS_AUTORADIOBUTTON,27,43,133,10
+    CONTROL         "Unadorned ProDOS-order (.PO)",IDC_DISKCONV_PRODOS,
+                    "Button",BS_AUTORADIOBUTTON,14,55,146,10
+    CONTROL         "With 2MG header (.2MG)",IDC_DISKCONV_PRODOS2MG,"Button",
+                    BS_AUTORADIOBUTTON,27,67,133,10
+    CONTROL         "Unadorned nibble (.NIB)",IDC_DISKCONV_NIB,"Button",
+                    BS_AUTORADIOBUTTON,14,79,146,10
+    CONTROL         "With 2MG header (.2MG)",IDC_DISKCONV_NIB2MG,"Button",
+                    BS_AUTORADIOBUTTON,27,91,133,10
+    CONTROL         "Unadorned 13-sector disk (.D13)",IDC_DISKCONV_D13,
+                    "Button",BS_AUTORADIOBUTTON,14,103,146,10
+    CONTROL         "DiskCopy 4.2 disk image (.DSK)",IDC_DISKCONV_DC42,
+                    "Button",BS_AUTORADIOBUTTON,14,115,146,10
+    CONTROL         "ShrinkIt disk archve (.SDK)",IDC_DISKCONV_SDK,"Button",
+                    BS_AUTORADIOBUTTON,14,127,146,10
+    CONTROL         "TrackStar image (.APP)",IDC_DISKCONV_TRACKSTAR,"Button",
+                    BS_AUTORADIOBUTTON,14,139,146,10
+    CONTROL         """Sim //e"" virtual hard drive (.HDV)",IDC_DISKCONV_HDV,
+                    "Button",BS_AUTORADIOBUTTON,14,151,146,10
+    CONTROL         "DDD Pro (.DDD)",IDC_DISKCONV_DDD,"Button",
+                    BS_AUTORADIOBUTTON,14,163,146,10
+    CONTROL         "Compress with gzip (.gz)",IDC_DISKCONV_GZIP,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,184,91,10
+END
+
+IDD_DONEOPEN DIALOG DISCARDABLE  0, 0, 119, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Success"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Done",IDCANCEL,7,34,50,14
+    PUSHBUTTON      "&Open Image",IDOK,62,34,50,14
+    LTEXT           "Would you like to open the disk image you just created?",
+                    IDC_STATIC,7,7,105,25
+END
+
+IDD_PROPS_EDIT DIALOGEX 0, 0, 239, 157
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Edit Attributes"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,38,135,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,94,135,50,14
+    PUSHBUTTON      "Help",IDHELP,150,135,50,14
+    RTEXT           "Pathname:",IDC_STATIC,7,9,65,8
+    EDITTEXT        IDC_PROPS_PATHNAME,79,7,153,14,ES_AUTOHSCROLL | 
+                    ES_READONLY
+    RTEXT           "Creation date:",IDC_STATIC,7,26,65,8
+    LTEXT           ">create date/time<",IDC_PROPS_CREATEWHEN,79,26,153,8
+    RTEXT           "Modification date:",IDC_STATIC,7,37,65,8
+    LTEXT           ">mod date/time<",IDC_PROPS_MODWHEN,79,37,153,8
+    RTEXT           "File type:",IDC_STATIC,7,53,65,8
+    COMBOBOX        IDC_PROPS_FILETYPE,79,50,52,105,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Aux type (hex):",IDC_STATIC,7,69,65,8
+    EDITTEXT        IDC_PROPS_AUXTYPE,79,67,52,14,ES_AUTOHSCROLL
+    RTEXT           "Type description:",IDC_STATIC,7,86,65,8
+    LTEXT           ">type description<",IDC_PROPS_TYPEDESCR,79,86,153,8
+    RTEXT           "Access:",IDC_STATIC,7,102,65,8
+    CONTROL         "Read",IDC_PROPS_ACCESS_R,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,79,102,33,10
+    CONTROL         "Backup",IDC_PROPS_ACCESS_B,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,123,102,41,10
+    CONTROL         "Invisible",IDC_PROPS_ACCESS_I,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,175,102,41,10
+    CONTROL         "Write",IDC_PROPS_ACCESS_W,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,79,115,33,10
+    CONTROL         "Rename",IDC_PROPS_ACCESS_N,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,124,115,43,10
+    CONTROL         "Delete",IDC_PROPS_ACCESS_D,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,176,115,37,10
+    EDITTEXT        IDC_PROPS_HFS_FILETYPE,192,49,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PROPS_HFS_AUXTYPE,192,67,40,14,ES_AUTOHSCROLL
+    CONTROL         "HFS type:",IDC_PROPS_HFS_MODE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,145,51,45,10
+    LTEXT           "Creator:",IDC_PROPS_HFS_LABEL,156,69,34,8,0,WS_EX_RIGHT
+END
+
+IDD_CONVFILE_OPTS DIALOG DISCARDABLE  0, 0, 171, 93
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Convert to file archive"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Action",IDOK,33,72,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,89,72,50,14
+    GROUPBOX        "Files",IDC_STATIC,7,7,157,40
+    CONTROL         ">Convert 65536 selected files<",IDC_USE_SELECTED,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,19,130,10
+    CONTROL         "Convert &all files",IDC_USE_ALL,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,30,113,10
+    CONTROL         "Preserve &empty folders",IDC_CONVFILE_PRESERVEDIR,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,55,157,10
+END
+
+IDD_CONVDISK_OPTS DIALOG DISCARDABLE  0, 0, 175, 225
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Convert to ProDOS disk"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Action",IDOK,34,203,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,90,203,50,14
+    GROUPBOX        "Files",IDC_STATIC,7,7,161,40
+    CONTROL         ">Convert 65536 selected files<",IDC_USE_SELECTED,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,19,130,10
+    CONTROL         "Convert &all files",IDC_USE_ALL,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,30,113,10
+    GROUPBOX        "New disk size",IDC_STATIC,7,52,161,103,WS_GROUP
+    CONTROL         "140KB (5.25"" floppy)",IDC_CONVDISK_140K,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,63,148,10
+    CONTROL         "800KB (3.5"" floppy)",IDC_CONVDISK_800K,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,74,148,10
+    CONTROL         "1.4MB (3.5"" PC floppy)",IDC_CONVDISK_1440K,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,85,88,10
+    CONTROL         "5MB",IDC_CONVDISK_5MB,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,14,96,148,10
+    CONTROL         "16MB",IDC_CONVDISK_16MB,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,14,107,148,10
+    CONTROL         "20MB (same as 20MB floptical)",IDC_CONVDISK_20MB,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,118,148,10
+    CONTROL         "32MB (largest ProDOS volume)",IDC_CONVDISK_32MB,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,129,148,10
+    CONTROL         "Specify size:",IDC_CONVDISK_SPECIFY,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,140,55,10
+    EDITTEXT        IDC_CONVDISK_SPECIFY_EDIT,72,139,43,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER | WS_GROUP
+    LTEXT           ">Space required: 1000KB<",IDC_CONVDISK_SPACEREQ,7,161,
+                    96,8
+    PUSHBUTTON      "Compute",IDC_CONVDISK_COMPUTE,118,158,50,14
+    LTEXT           "ProDOS volume name:",IDC_STATIC,7,182,73,8
+    EDITTEXT        IDC_CONVDISK_VOLNAME,87,180,81,14,ES_AUTOHSCROLL
+    LTEXT           "blocks",IDC_STATIC,118,140,22,8
+END
+
+IDD_BULKCONV DIALOG DISCARDABLE  0, 0, 237, 57
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Bulk Conversion Progress"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,93,36,50,14
+    LTEXT           "Now converting:",IDC_STATIC,7,7,223,8
+    LTEXT           ">pathname<",IDC_BULKCONV_PATHNAME,7,18,223,8
+END
+
+IDD_OPENVOLUMEDLG DIALOG DISCARDABLE  0, 0, 300, 166
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Select Volume"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,145,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,64,145,50,14
+    PUSHBUTTON      "Help",IDHELP,120,145,50,14
+    LTEXT           "Show:",IDC_STATIC,7,9,27,8
+    COMBOBOX        IDC_VOLUME_FILTER,34,7,151,45,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "List1",IDC_VOLUME_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | 
+                    WS_BORDER | WS_TABSTOP,7,25,286,100
+    CONTROL         "Open as read-only (writing to the volume will be disabled)",
+                    IDC_OPENVOL_READONLY,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,131,242,10
+END
+
+IDD_VOLUMECOPYPROG DIALOG DISCARDABLE  0, 0, 276, 111
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Volume Copy Progress"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,112,90,50,14
+    LTEXT           "Copy from:",IDC_STATIC,7,7,79,8
+    LTEXT           "To:",IDC_STATIC,7,36,79,8
+    LTEXT           ">path-or-vol<",IDC_VOLUMECOPYPROG_FROM,7,17,262,8
+    LTEXT           ">path-or-vol<",IDC_VOLUMECOPYPROG_TO,7,47,245,8
+    CONTROL         "Progress1",IDC_VOLUMECOPYPROG_PROGRESS,
+                    "msctls_progress32",PBS_SMOOTH | WS_BORDER,7,65,262,14
+END
+
+IDD_DISKEDIT_OPENWHICH DIALOG DISCARDABLE  0, 0, 134, 103
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Open disk image file",IDC_DEOW_FILE,7,7,120,14
+    PUSHBUTTON      "Open logical or physical volume",IDC_DEOW_VOLUME,7,32,
+                    120,14
+    PUSHBUTTON      "Open current archive",IDC_DEOW_CURRENT,7,57,120,14
+    PUSHBUTTON      "Cancel",IDCANCEL,42,82,50,14
+END
+
+IDD_VOLUMECOPYSEL DIALOG DISCARDABLE  0, 0, 386, 138
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Volume Copy"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Done",IDOK,316,117,63,14
+    LTEXT           "Choose volume or sub-volume to copy:",IDC_STATIC,7,7,
+                    293,8
+    CONTROL         "List2",IDC_VOLUMECOPYSEL_LIST,"SysListView32",
+                    LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,22,297,109
+    PUSHBUTTON      "Copy &to file",IDC_VOLUEMCOPYSEL_TOFILE,316,22,63,14
+    PUSHBUTTON      "Load &from file",IDC_VOLUEMCOPYSEL_FROMFILE,316,42,63,
+                    14
+    PUSHBUTTON      "Help",IDHELP,316,97,63,14
+END
+
+IDD_FORMATTING DIALOG DISCARDABLE  0, 0, 146, 38
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "Preparing disk image, please wait...",IDC_STATIC,7,15,
+                    132,8
+END
+
+IDD_CREATEIMAGE DIALOG DISCARDABLE  0, 0, 342, 222
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Create Disk Image"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,88,201,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,201,50,14
+    PUSHBUTTON      "Help",IDHELP,202,201,50,14
+    GROUPBOX        "Filesystem",IDC_STATIC,7,7,160,80
+    CONTROL         "DOS 3.2 (13-sector)",IDC_CREATEFS_DOS32,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,18,86,10
+    CONTROL         "DOS 3.3",IDC_CREATEFS_DOS33,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,14,29,86,10
+    CONTROL         "ProDOS",IDC_CREATEFS_PRODOS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,14,40,86,10
+    CONTROL         "Pascal",IDC_CREATEFS_PASCAL,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,14,51,86,10
+    CONTROL         "HFS",IDC_CREATEFS_HFS,"Button",BS_AUTORADIOBUTTON,14,62,
+                    86,10
+    CONTROL         "Blank",IDC_CREATEFS_BLANK,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,14,73,86,10
+    GROUPBOX        "New disk size",IDC_STATIC,7,93,160,104,WS_GROUP
+    CONTROL         "140KB (5.25"" floppy)",IDC_CONVDISK_140K,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,104,148,10
+    CONTROL         "800KB (3.5"" floppy)",IDC_CONVDISK_800K,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,115,148,10
+    CONTROL         "1.4MB (3.5"" PC floppy)",IDC_CONVDISK_1440K,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,126,88,10
+    CONTROL         "5MB",IDC_CONVDISK_5MB,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,14,137,148,10
+    CONTROL         "16MB",IDC_CONVDISK_16MB,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,14,148,148,10
+    CONTROL         "20MB (same as 20MB floptical)",IDC_CONVDISK_20MB,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,159,148,10
+    CONTROL         "32MB (largest ProDOS volume)",IDC_CONVDISK_32MB,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,170,148,10
+    CONTROL         "Specify size:",IDC_CONVDISK_SPECIFY,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,181,55,10
+    EDITTEXT        IDC_CONVDISK_SPECIFY_EDIT,72,180,43,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER | WS_GROUP
+    LTEXT           "blocks",IDC_STATIC,118,181,22,8
+    GROUPBOX        "DOS options",IDC_STATIC,175,7,160,46
+    CONTROL         "Allocate DOS tracks",IDC_CREATEFSDOS_ALLOCDOS,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,184,20,143,10
+    LTEXT           "Disk volume:",IDC_STATIC,184,33,46,8
+    EDITTEXT        IDC_CREATEFSDOS_VOLNUM,235,32,40,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    GROUPBOX        "ProDOS options",IDC_STATIC,175,56,160,45
+    LTEXT           "ProDOS volume name (15 chars):",IDC_STATIC,184,69,143,8
+    EDITTEXT        IDC_CREATEFSPRODOS_VOLNAME,184,80,115,14,ES_AUTOHSCROLL
+    GROUPBOX        "Pascal options",IDC_STATIC,175,104,160,45
+    LTEXT           "Pascal volume name (7 chars):",IDC_STATIC,184,116,145,8
+    EDITTEXT        IDC_CREATEFSPASCAL_VOLNAME,184,127,115,14,ES_UPPERCASE | 
+                    ES_AUTOHSCROLL
+    GROUPBOX        "HFS options",IDC_STATIC,175,152,160,45
+    EDITTEXT        IDC_CREATEFSHFS_VOLNAME,184,178,145,14,ES_AUTOHSCROLL
+    LTEXT           "HFS volume name (27 chars):",IDC_STATIC,184,166,145,8
+END
+
+IDD_CHOOSE_ADD_TARGET DIALOG DISCARDABLE  0, 0, 220, 279
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Select location"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,26,258,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,85,258,50,14
+    PUSHBUTTON      "Help",IDHELP,144,258,50,14
+    CONTROL         "Tree1",IDC_ADD_TARGET_TREE,"SysTreeView32",
+                    TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | 
+                    TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | 
+                    WS_TABSTOP,7,20,206,209
+    LTEXT           "Select location where files will be added:",IDC_STATIC,
+                    7,7,194,8
+    LTEXT           "Tip: you can skip this step on ProDOS disks by selecting a directory from the file list before using ""add files"".",
+                    IDC_STATIC,7,235,206,17
+END
+
+IDD_ARCHIVEINFO_NUFX DIALOGEX 0, 0, 320, 127
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "NuFX (ShrinkIt) Archive"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Done",IDOK,164,106,50,14
+    LTEXT           "Filename:",IDC_STATIC,7,18,68,8,0,WS_EX_RIGHT
+    LTEXT           "Format:",IDC_STATIC,7,29,68,8,0,WS_EX_RIGHT
+    LTEXT           "Master Version:",IDC_STATIC,7,51,68,8,0,WS_EX_RIGHT
+    LTEXT           "Junk Skipped:",IDC_STATIC,7,84,68,8,0,WS_EX_RIGHT
+    LTEXT           "Created:",IDC_STATIC,7,62,68,8,0,WS_EX_RIGHT
+    LTEXT           "Modified:",IDC_STATIC,7,73,68,8,0,WS_EX_RIGHT
+    LTEXT           "Records:",IDC_STATIC,7,40,68,8,0,WS_EX_RIGHT
+    GROUPBOX        "Archive Info",IDC_STATIC,6,7,307,92
+    LTEXT           "<filename>",IDC_AI_FILENAME,84,18,218,8
+    LTEXT           "<format>",IDC_AINUFX_FORMAT,84,29,218,8
+    LTEXT           "<records>",IDC_AINUFX_RECORDS,84,40,218,8
+    LTEXT           "<master-version>",IDC_AINUFX_MASTERVERSION,84,51,218,8
+    LTEXT           "<create-when>",IDC_AINUFX_CREATEWHEN,84,62,218,8
+    LTEXT           "<modify-when>",IDC_AINUFX_MODIFYWHEN,84,73,218,8
+    LTEXT           "<junk-skipped>",IDC_AINUFX_JUNKSKIPPED,84,84,218,8
+    PUSHBUTTON      "Help",IDHELP,105,106,50,14
+END
+
+IDD_ARCHIVEINFO_DISK DIALOGEX 0, 0, 320, 250
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Disk Image Info"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Done",IDOK,164,229,50,14
+    LTEXT           "Filename:",IDC_STATIC,7,18,68,8,0,WS_EX_RIGHT
+    GROUPBOX        "File Characteristics",IDC_STATIC,6,7,307,59
+    LTEXT           "Outer Format:",IDC_STATIC,7,29,68,8,0,WS_EX_RIGHT
+    LTEXT           "File Format:",IDC_STATIC,7,40,68,8,0,WS_EX_RIGHT
+    LTEXT           "Physical Format:",IDC_STATIC,7,51,68,8,0,WS_EX_RIGHT
+    LTEXT           "Sector Ordering:",IDC_STATIC,7,95,68,8,0,WS_EX_RIGHT
+    LTEXT           "Filesystem Format:",IDC_STATIC,7,106,68,8,0,WS_EX_RIGHT
+    LTEXT           "Sub-Volume:",IDC_STATIC,7,81,68,8,0,WS_EX_RIGHT
+    COMBOBOX        IDC_AIDISK_SUBVOLSEL,85,79,221,58,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Files+Directories:",IDC_STATIC,7,117,68,8,0,WS_EX_RIGHT
+    LTEXT           "Storage Capacity:",IDC_STATIC,7,128,68,8,0,WS_EX_RIGHT
+    LTEXT           "Free Space:",IDC_STATIC,7,139,68,8,0,WS_EX_RIGHT
+    LTEXT           "Damaged?",IDC_STATIC,7,161,68,8,0,WS_EX_RIGHT
+    LTEXT           "Notes:",IDC_STATIC,7,176,68,8,0,WS_EX_RIGHT
+    EDITTEXT        IDC_AIDISK_NOTES,85,175,221,39,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | 
+                    WS_VSCROLL | WS_HSCROLL
+    GROUPBOX        "Disk Characteristics",IDC_STATIC,6,68,307,153
+    LTEXT           "<filename>",IDC_AI_FILENAME,85,18,221,8
+    LTEXT           "<outer-format>",IDC_AIDISK_OUTERFORMAT,85,29,221,8
+    LTEXT           "<file-format>",IDC_AIDISK_FILEFORMAT,85,40,221,8
+    LTEXT           "<physical-format>",IDC_AIDISK_PHYSICALFORMAT,85,51,221,
+                    8
+    LTEXT           "<sector-order>",IDC_AIDISK_SECTORORDER,85,95,221,8
+    LTEXT           "<fs-format>",IDC_AIDISK_FSFORMAT,85,106,221,8
+    LTEXT           "<file-count>",IDC_AIDISK_FILECOUNT,85,117,221,8
+    LTEXT           "<capacity>",IDC_AIDISK_CAPACITY,85,128,221,8
+    LTEXT           "<free-space>",IDC_AIDISK_FREESPACE,85,139,221,8
+    LTEXT           "<damaged>",IDC_AIDISK_DAMAGED,85,161,221,8
+    LTEXT           "Writeable Format?",IDC_STATIC,7,150,68,8,0,WS_EX_RIGHT
+    LTEXT           "<writeable>",IDC_AIDISK_WRITEABLE,85,150,221,8
+    PUSHBUTTON      "Help",IDHELP,104,229,50,14
+END
+
+IDD_ARCHIVEINFO_BNY DIALOGEX 0, 0, 320, 74
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Binary II Archive"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Done",IDOK,164,53,50,14
+    LTEXT           "Filename:",IDC_STATIC,7,18,67,8,0,WS_EX_RIGHT
+    LTEXT           "Records:",IDC_STATIC,7,29,67,8,0,WS_EX_RIGHT
+    GROUPBOX        "Archive Info",IDC_STATIC,6,7,307,36
+    LTEXT           "<filename>",IDC_AI_FILENAME,84,18,218,8
+    LTEXT           "<records>",IDC_AIBNY_RECORDS,84,29,218,8
+    PUSHBUTTON      "Help",IDHELP,105,53,50,14
+END
+
+IDD_PREF_DISKIMAGE DIALOG DISCARDABLE  0, 0, 219, 105
+STYLE DS_CONTEXTHELP | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Disk Images"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "General",IDC_STATIC,7,7,205,48
+    CONTROL         "&Confirm disk image format",IDC_PDISK_CONFIRM_FORMAT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,18,185,10
+    CONTROL         "Default to read-only when opening volumes",
+                    IDC_PDISK_OPENVOL_RO,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,29,185,10
+    CONTROL         "Allow write access to physical disk 0 (not recommended)",
+                    IDC_PDISK_OPENVOL_PHYS0,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,40,192,10
+    GROUPBOX        "ProDOS",IDC_STATIC,7,61,205,38
+    CONTROL         "Allow &lower-case letters and spaces in filenames",
+                    IDC_PDISK_PRODOS_ALLOWLOWER,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,72,186,10
+    CONTROL         "Use ""sparse"" allocation for empty blocks",
+                    IDC_PDISK_PRODOS_USESPARSE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,83,186,10
+END
+
+IDD_CREATE_SUBDIR DIALOG DISCARDABLE  0, 0, 284, 98
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Create Subdirectory"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,87,77,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,77,50,14
+    LTEXT           "Parent directory:",IDC_STATIC,7,7,150,8
+    EDITTEXT        IDC_CREATESUBDIR_BASE,7,18,270,14,ES_AUTOHSCROLL | 
+                    ES_READONLY
+    LTEXT           "New subdirectory name:",IDC_STATIC,7,42,151,8
+    EDITTEXT        IDC_CREATESUBDIR_NEW,7,52,270,14,ES_AUTOHSCROLL
+END
+
+IDD_RENAME_VOLUME DIALOG DISCARDABLE  0, 0, 218, 172
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Rename volume"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,26,151,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,83,151,50,14
+    LTEXT           "Select volume to rename:",IDC_STATIC,7,7,175,8
+    CONTROL         "Tree1",IDC_RENAMEVOL_TREE,"SysTreeView32",
+                    TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | 
+                    TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | 
+                    WS_TABSTOP,7,19,204,87
+    LTEXT           "New name:",IDC_STATIC,7,116,167,8
+    EDITTEXT        IDC_RENAMEVOL_NEW,7,128,204,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Help",IDHELP,140,151,50,14
+END
+
+IDD_EOLSCAN DIALOG DISCARDABLE  0, 0, 173, 106
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "EOL Scanner"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,33,85,50,14
+    PUSHBUTTON      "Help",IDHELP,90,85,50,14
+    LTEXT           "Results (click ""Help"" for explanation):",IDC_STATIC,7,
+                    7,159,8
+    RTEXT           ">cr<",IDC_EOLSCAN_CR,7,45,61,8
+    LTEXT           "carriage returns (0x0d)",IDC_STATIC,72,45,94,8
+    RTEXT           ">lf<",IDC_EOLSCAN_LF,7,56,61,8
+    LTEXT           "line feeds (0x0a)",IDC_STATIC,72,56,94,8
+    RTEXT           ">crlf<",IDC_EOLSCAN_CRLF,7,67,61,8
+    LTEXT           "CRLFs (0x0d0a)",IDC_STATIC,72,67,94,8
+    RTEXT           ">chars<",IDC_EOLSCAN_CHARS,7,23,61,8
+    LTEXT           "characters",IDC_STATIC,72,23,94,8
+    RTEXT           ">high-ascii<",IDC_EOLSCAN_HIGHASCII,7,34,61,8
+    LTEXT           "high-ASCII characters",IDC_STATIC,72,34,94,8
+END
+
+IDD_TWOIMG_PROPS DIALOG DISCARDABLE  0, 0, 220, 198
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "2MG Disk Image Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Save",IDOK,56,176,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,113,176,50,14
+    GROUPBOX        "Header fields:",IDC_STATIC,7,7,206,56
+    RTEXT           "Creator:",IDC_STATIC,9,18,50,8
+    LTEXT           ">creator<",IDC_TWOIMG_CREATOR,65,18,139,8
+    RTEXT           "Version:",IDC_STATIC,9,29,50,8
+    LTEXT           ">version<",IDC_TWOIMG_VERSION,65,29,140,8
+    RTEXT           "Image format:",IDC_STATIC,9,40,50,8
+    LTEXT           ">format<",IDC_TWOIMG_FORMAT,65,40,140,8
+    RTEXT           "Blocks:",IDC_STATIC,9,51,50,8
+    LTEXT           ">blocks<",IDC_TWOIMG_BLOCKS,65,51,140,8
+    CONTROL         "Locked",IDC_TWOIMG_LOCKED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,68,120,10
+    CONTROL         "Specify disk volume number",IDC_TWOIMG_DOSVOLSET,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,79,118,10
+    LTEXT           "Volume number:",IDC_STATIC,7,92,52,8
+    EDITTEXT        IDC_TWOIMG_DOSVOLNUM,65,91,40,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Comment:",IDC_STATIC,7,110,52,8
+    EDITTEXT        IDC_TWOIMG_COMMENT,7,121,206,48,ES_MULTILINE | 
+                    ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+END
+
+IDD_LOADING DIALOG DISCARDABLE  0, 0, 146, 38
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "Loading data, please wait...",IDC_STATIC,7,15,132,8
+END
+
+IDD_IMPORTCASSETTE DIALOG DISCARDABLE  0, 0, 355, 157
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Import cassette WAV"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Import",IDC_IMPORT_CHUNK,81,136,50,14
+    PUSHBUTTON      "Done",IDCANCEL,136,136,50,14
+    PUSHBUTTON      "Help",IDHELP,191,136,50,14
+    LTEXT           "Input file:",IDC_STATIC,7,7,30,8
+    LTEXT           ">input-file<",IDC_CASSETTE_INPUT,43,7,305,8
+    LTEXT           "Algorithm:",IDC_STATIC,7,21,34,8
+    COMBOBOX        IDC_CASSETTE_ALG,43,19,173,63,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Select the chunk to import:",IDC_STATIC,7,40,180,8
+    CONTROL         "List2",IDC_CASSETTE_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | 
+                    WS_BORDER | WS_TABSTOP,7,51,341,75
+END
+
+IDD_CASSIMPTARGET DIALOG DISCARDABLE  0, 0, 186, 127
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Import..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,39,106,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,96,106,50,14
+    LTEXT           "Name of file to create?",IDC_STATIC,7,7,113,8
+    EDITTEXT        IDC_CASSIMPTARG_FILENAME,7,18,172,14,ES_AUTOHSCROLL
+    GROUPBOX        "Static",IDC_STATIC,7,36,172,60
+    CONTROL         "Applesoft BASIC",IDC_CASSIMPTARG_BAS,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,13,47,87,10
+    CONTROL         "Integer BASIC",IDC_CASSIMPTARG_INT,"Button",
+                    BS_AUTORADIOBUTTON,13,58,94,10
+    CONTROL         "Binary",IDC_CASSIMPTARG_BIN,"Button",BS_AUTORADIOBUTTON,
+                    13,69,77,10
+    LTEXT           "Start address (hex):",IDC_STATIC,25,80,63,8
+    EDITTEXT        IDC_CASSIMPTARG_BINADDR,93,78,31,14,ES_AUTOHSCROLL
+    LTEXT           ".XXXX",IDC_CASSIMPTARG_RANGE,126,80,29,8
+END
+
+IDD_ADD_CLASH DIALOG DISCARDABLE  0, 0, 307, 113
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Filename Clash"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "A file being added to the archive has the same name as another file being added.  This can happen when directory names or file attribute preservations strings are stripped from Windows filenames.",
+                    IDC_STATIC,7,7,293,29
+    LTEXT           "You can rename this file, skip adding it, or cancel the entire operation.",
+                    IDC_STATIC,7,39,290,8
+    LTEXT           "Windows name:",IDC_STATIC,7,57,58,8
+    LTEXT           ">windows name<",IDC_CLASH_WINNAME,70,57,230,8
+    LTEXT           "Storage name:",IDC_STATIC,7,72,58,8
+    LTEXT           ">storage name<",IDC_CLASH_STORAGENAME,70,72,230,8
+    PUSHBUTTON      "Rename",IDC_CLASH_RENAME,7,91,50,14
+    PUSHBUTTON      "Skip",IDC_CLASH_SKIP,61,91,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,116,91,50,14
+END
+
+IDD_ARCHIVEINFO_ACU DIALOGEX 0, 0, 320, 74
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "AppleLink ACU Archive"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Done",IDOK,164,53,50,14
+    LTEXT           "Filename:",IDC_STATIC,7,18,68,8,0,WS_EX_RIGHT
+    LTEXT           "Records:",IDC_STATIC,7,29,68,8,0,WS_EX_RIGHT
+    GROUPBOX        "Archive Info",IDC_STATIC,6,7,307,36
+    LTEXT           "<filename>",IDC_AI_FILENAME,84,18,218,8
+    LTEXT           "<records>",IDC_AIBNY_RECORDS,84,29,218,8
+    PUSHBUTTON      "Help",IDHELP,105,53,50,14
+END
+
+IDD_IMPORT_BAS DIALOG DISCARDABLE  0, 0, 247, 118
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Import BAS from text file"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Save",IDOK,44,97,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,98,97,50,14
+    LTEXT           "Results:",IDC_STATIC,7,7,40,8
+    EDITTEXT        IDC_IMPORT_BAS_RESULTS,7,19,233,42,ES_MULTILINE | 
+                    ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "Save as:",IDC_STATIC,7,74,34,8
+    EDITTEXT        IDC_IMPORT_BAS_SAVEAS,39,72,201,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Help",IDHELP,153,97,50,14
+END
+
+IDD_PASTE_SPECIAL DIALOG DISCARDABLE  0, 0, 186, 78
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Paste..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,40,57,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,95,57,50,14
+    LTEXT           "Choose how you would like to handle filenames:",
+                    IDC_PASTE_SPECIAL_COUNT,7,7,172,8
+    CONTROL         "Keep full pathnames",IDC_PASTE_SPECIAL_PATHS,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,18,22,161,10
+    CONTROL         "Strip paths, keep filename only",
+                    IDC_PASTE_SPECIAL_NOPATHS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,18,34,161,10
+END
+
+IDD_PROGRESS_COUNTER DIALOG DISCARDABLE  0, 0, 186, 57
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,67,36,50,14
+    CTEXT           ">descr<",IDC_PROGRESS_COUNTER_DESC,7,7,172,8
+    CTEXT           ">count<",IDC_PROGRESS_COUNTER_COUNT,7,19,172,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_FSLOGO              BITMAP  DISCARDABLE     "Graphics\\fslogo.bmp"
+IDR_TOOLBAR1            BITMAP  DISCARDABLE     "Graphics\\toolbar1.bmp"
+IDB_LIST_PICS           BITMAP  DISCARDABLE     "Graphics\\list-pics.bmp"
+IDB_HDRBAR              BITMAP  DISCARDABLE     "Graphics\\hdrbar.bmp"
+IDB_NEW_FOLDER          BITMAP  DISCARDABLE     "graphics\\NewFolder.bmp"
+IDB_CHOOSE_FOLDER       BITMAP  DISCARDABLE     "Graphics\\ChooseFolder.bmp"
+IDB_VOL_PICS            BITMAP  DISCARDABLE     "graphics\\vol_pics.bmp"
+IDB_TREE_PICS           BITMAP  DISCARDABLE     "graphics\\tree_pics.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_TOOLBAR1 TOOLBAR DISCARDABLE  24, 23
+BEGIN
+    BUTTON      IDM_FILE_OPEN
+    BUTTON      IDM_FILE_OPEN_VOLUME
+    BUTTON      IDM_FILE_NEW_ARCHIVE
+    BUTTON      IDM_TOOLS_IMAGECREATOR
+    BUTTON      IDM_FILE_PRINT
+    SEPARATOR
+    BUTTON      IDM_ACTIONS_ADD_FILES
+    BUTTON      IDM_ACTIONS_ADD_DISKS
+    BUTTON      IDM_ACTIONS_VIEW
+    BUTTON      IDM_ACTIONS_EXTRACT
+    BUTTON      IDM_ACTIONS_TEST
+    BUTTON      IDM_ACTIONS_RENAME
+    BUTTON      IDM_ACTIONS_DELETE
+    BUTTON      IDM_ACTIONS_RECOMPRESS
+    BUTTON      IDM_ACTIONS_EDIT_COMMENT
+    SEPARATOR
+    BUTTON      IDM_TOOLS_DISKEDIT
+    BUTTON      IDM_TOOLS_DISKCONV
+    BUTTON      IDM_TOOLS_VOLUMECOPIER_VOLUME
+    BUTTON      IDM_TOOLS_SST_MERGE
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,4,6,0
+ PRODUCTVERSION 2,4,6,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "The end is nigh.\0"
+            VALUE "CompanyName", "FaddenSoft, LLC\0"
+            VALUE "FileDescription", "CiderPress\0"
+            VALUE "FileVersion", "2, 4, 6, 0\0"
+            VALUE "InternalName", "CiderPress\0"
+            VALUE "LegalCopyright", "Copyright © 2007 FaddenSoft, LLC\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "CiderPress.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "CiderPress\0"
+            VALUE "ProductVersion", "2, 4, 6, 0\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTDLG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 205
+        VERTGUIDE, 7
+        VERTGUIDE, 16
+        VERTGUIDE, 77
+        BOTTOMMARGIN, 146
+        HORZGUIDE, 65
+    END
+
+    IDD_PREF_GENERAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 259
+        VERTGUIDE, 14
+        VERTGUIDE, 96
+        VERTGUIDE, 104
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+    END
+
+    IDD_PREF_COMPRESSION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 205
+        VERTGUIDE, 22
+        VERTGUIDE, 114
+        VERTGUIDE, 124
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 205
+    END
+
+    IDD_FILE_VIEWER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 485
+        VERTGUIDE, 8
+        VERTGUIDE, 482
+        TOPMARGIN, 7
+        HORZGUIDE, 7
+        HORZGUIDE, 155
+        HORZGUIDE, 238
+    END
+
+    IDD_PREF_FVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 212
+        VERTGUIDE, 12
+        VERTGUIDE, 50
+        VERTGUIDE, 112
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 261
+    END
+
+    IDD_DISKEDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 451
+        VERTGUIDE, 388
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
+
+    IDD_DECONF, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        VERTGUIDE, 68
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 166
+    END
+
+    IDD_SUBV, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 146
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 128
+    END
+
+    IDD_DEFILE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 192
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 90
+    END
+
+    IDD_PREF_FILES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 224
+        VERTGUIDE, 204
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 82
+    END
+
+    IDD_CHOOSEDIR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 248
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 246
+    END
+
+    IDD_NEWFOLDER, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 243
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 61
+    END
+
+    IDD_EXTRACT_FILES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 292
+        VERTGUIDE, 16
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 235
+    END
+
+    IDD_ACTION_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 269
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 104
+    END
+
+    IDD_CONFIRM_OVERWRITE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 285
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_RENAME_OVERWRITE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 117
+    END
+
+    "IDD_ADD_FILES", DIALOG
+    BEGIN
+        VERTGUIDE, 8
+        BOTTOMMARGIN, 224
+    END
+
+    IDD_USE_SELECTION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 132
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 72
+    END
+
+    IDD_RENAME_ENTRY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 277
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 111
+    END
+
+    IDD_COMMENT_EDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 355
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 144
+    END
+
+    IDD_RECOMPRESS_OPTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 142
+    END
+
+    IDD_PRINT_CANCEL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 109
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 39
+    END
+
+    IDD_ASSOCIATIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 251
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 274
+        HORZGUIDE, 70
+    END
+
+    IDD_REGISTRATION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 226
+        VERTGUIDE, 201
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 184
+    END
+
+    IDD_DISKCONV, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 167
+        VERTGUIDE, 14
+        VERTGUIDE, 27
+        VERTGUIDE, 160
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 216
+    END
+
+    IDD_DONEOPEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 112
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_PROPS_EDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 232
+        VERTGUIDE, 72
+        VERTGUIDE, 79
+        VERTGUIDE, 124
+        VERTGUIDE, 176
+        VERTGUIDE, 190
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 150
+        HORZGUIDE, 7
+        HORZGUIDE, 91
+        HORZGUIDE, 104
+    END
+
+    IDD_CONVFILE_OPTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        VERTGUIDE, 14
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 86
+    END
+
+    IDD_CONVDISK_OPTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 168
+        VERTGUIDE, 14
+        VERTGUIDE, 162
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+        HORZGUIDE, 170
+    END
+
+    IDD_BULKCONV, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 230
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 50
+    END
+
+    IDD_OPENVOLUMEDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        VERTGUIDE, 34
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 159
+    END
+
+    IDD_VOLUMECOPYPROG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 269
+        VERTGUIDE, 86
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 104
+    END
+
+    IDD_DISKEDIT_OPENWHICH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 127
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 96
+    END
+
+    IDD_VOLUMECOPYSEL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 379
+        VERTGUIDE, 288
+        VERTGUIDE, 300
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 131
+        HORZGUIDE, 22
+    END
+
+    IDD_FORMATTING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 139
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 31
+    END
+
+    IDD_CREATEIMAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 335
+        VERTGUIDE, 14
+        VERTGUIDE, 100
+        VERTGUIDE, 167
+        VERTGUIDE, 175
+        VERTGUIDE, 184
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 215
+    END
+
+    IDD_CHOOSE_ADD_TARGET, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 213
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 272
+    END
+
+    IDD_ARCHIVEINFO_NUFX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        VERTGUIDE, 75
+        VERTGUIDE, 84
+        VERTGUIDE, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 120
+    END
+
+    IDD_ARCHIVEINFO_DISK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        VERTGUIDE, 75
+        VERTGUIDE, 85
+        VERTGUIDE, 306
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 243
+    END
+
+    IDD_ARCHIVEINFO_BNY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        VERTGUIDE, 74
+        VERTGUIDE, 84
+        VERTGUIDE, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 67
+    END
+
+    IDD_PREF_DISKIMAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 212
+        VERTGUIDE, 15
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_CREATE_SUBDIR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 277
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 91
+    END
+
+    IDD_RENAME_VOLUME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 211
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 165
+    END
+
+    IDD_EOLSCAN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 166
+        VERTGUIDE, 68
+        VERTGUIDE, 72
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 99
+    END
+
+    IDD_TWOIMG_PROPS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 213
+        VERTGUIDE, 59
+        VERTGUIDE, 65
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 191
+    END
+
+    IDD_LOADING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 139
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 31
+    END
+
+    IDD_IMPORTCASSETTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 348
+        VERTGUIDE, 43
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 150
+    END
+
+    IDD_CASSIMPTARGET, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        VERTGUIDE, 13
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 120
+    END
+
+    IDD_ADD_CLASH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 300
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 106
+    END
+
+    IDD_ARCHIVEINFO_ACU, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        VERTGUIDE, 74
+        VERTGUIDE, 84
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 67
+    END
+
+    IDD_IMPORT_BAS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 240
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 111
+    END
+
+    IDD_PASTE_SPECIAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        VERTGUIDE, 18
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 71
+    END
+
+    IDD_PROGRESS_COUNTER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 50
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_PREF_FVIEW DLGINIT
+BEGIN
+    IDC_PVIEW_DHR_CONV_COMBO, 0x403, 14, 0
+0x6c42, 0x6361, 0x206b, 0x2026, 0x6857, 0x7469, 0x0065, 
+    IDC_PVIEW_DHR_CONV_COMBO, 0x403, 28, 0
+0x614c, 0x6374, 0x6568, 0x2064, 0x6f63, 0x6f6c, 0x2072, 0x7228, 0x6365, 
+0x6d6f, 0x656d, 0x646e, 0x6465, 0x0029, 
+    IDC_PVIEW_DHR_CONV_COMBO, 0x403, 11, 0
+0x6953, 0x706d, 0x656c, 0x3120, 0x3034, "\000" 
+    IDC_PVIEW_DHR_CONV_COMBO, 0x403, 15, 0
+0x6c53, 0x6469, 0x6e69, 0x2067, 0x6977, 0x646e, 0x776f, "\000" 
+    0
+END
+
+IDD_OPENVOLUMEDLG DLGINIT
+BEGIN
+    IDC_VOLUME_FILTER, 0x403, 26, 0
+0x6f42, 0x6874, 0x6c20, 0x676f, 0x6369, 0x6c61, 0x6120, 0x646e, 0x7020, 
+0x7968, 0x6973, 0x6163, 0x006c, 
+    IDC_VOLUME_FILTER, 0x403, 16, 0
+0x6f4c, 0x6967, 0x6163, 0x206c, 0x6f76, 0x756c, 0x656d, 0x0073, 
+    IDC_VOLUME_FILTER, 0x403, 15, 0
+0x6850, 0x7379, 0x6369, 0x6c61, 0x6420, 0x7369, 0x736b, "\000" 
+    0
+END
+
+IDD_IMPORTCASSETTE DLGINIT
+BEGIN
+    IDC_CASSETTE_ALG, 0x403, 14, 0
+0x655a, 0x6f72, 0x4320, 0x6f72, 0x7373, 0x6e69, 0x0067, 
+    IDC_CASSETTE_ALG, 0x403, 27, 0
+0x6550, 0x6b61, 0x742d, 0x2d6f, 0x6550, 0x6b61, 0x5720, 0x6469, 0x6874, 
+0x2820, 0x6853, 0x7261, 0x2970, "\000" 
+    IDC_CASSETTE_ALG, 0x403, 27, 0
+0x6550, 0x6b61, 0x742d, 0x2d6f, 0x6550, 0x6b61, 0x5720, 0x6469, 0x6874, 
+0x2820, 0x6f52, 0x6e75, 0x2964, "\000" 
+    IDC_CASSETTE_ALG, 0x403, 29, 0
+0x6550, 0x6b61, 0x742d, 0x2d6f, 0x6550, 0x6b61, 0x5720, 0x6469, 0x6874, 
+0x2820, 0x6853, 0x6c61, 0x6f6c, 0x2977, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_FILE_NEW_ARCHIVE    "Create a new NuFX (ShrinkIt) archive\nNew archive (Ctrl-N)"
+    IDM_FILE_OPEN           "Open an archive or disk image\nOpen (Ctrl-O)"
+    IDM_FILE_CLOSE          "Close current archive or disk image\nClose (Ctrl-W)"
+    IDM_FILE_PRINT          "Print the current list of files\nPrint (Ctrl-P)"
+    IDM_ACTIONS_ADD_FILES   "Add files to the current archive\nAdd files"
+    IDM_FILE_EXIT           "Exit CiderPress\nExit"
+    IDM_ACTIONS_ADD_DISKS   "Add files as disk images\nAdd disk image"
+    IDM_ACTIONS_EXTRACT     "Extract one or more files\nExtract"
+    IDM_ACTIONS_VIEW        "View the contents of the selected files\nView (Tab)"
+    IDM_ACTIONS_TEST        "Test the integrity of files\nTest"
+    IDM_ACTIONS_DELETE      "Delete files from the archive\nDelete (DEL)"
+    IDM_EDIT_SELECT_ALL     "Select all files in an archive"
+    IDM_ACTIONS_INVERT_SELECTION 
+                            "Select un-selected items, and un-select selected items"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_EDIT_PREFERENCES    "Set application preferences"
+    IDM_HELP_CONTENTS       "Table of contents for on-line help"
+    IDM_HELP_ORDERING       "How to register this product"
+    IDM_HELP_ABOUT          "About this product\nAbout"
+    IDM_ACTIONS_RECOMPRESS  "Re-compress one or more files\nRecompress"
+    IDM_SORT_PATHNAME       "Sort the list by pathname"
+    IDM_SORT_TYPE           "Sort list by file type"
+    IDM_SORT_AUXTYPE        "Sort by auxtype"
+    IDM_SORT_MODDATE        "Sort by modification date"
+    IDM_SORT_FORMAT         "Sort by compression format"
+    IDM_SORT_SIZE           "Sort by uncompressed size"
+    IDM_SORT_RATIO          "Sort by compression ratio"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_SORT_PACKED         "Sort by compressed size"
+    IDM_SORT_ACCESS         "Sort by access flags"
+    IDM_SORT_ORIGINAL       "Show the files in the order in which they appear in the archive"
+    IDM_CONVERT_TOBSC       "Convert a file to BinSCII format"
+    IDM_CONVERT_FROMBSC     "Convert BinSCII files"
+    ID_INDICATOR_COMPLETE   "100%"
+    IDM_TOOLS_DISKEDIT      "View disk images at the sector/block level\nDisk Sector Viewer"
+    IDM_HELP_WEBSITE        "Visit the CiderPress web site\nGo to web site"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_EDIT_INVERT_SELECTION "Invert selection"
+    IDM_ACTIONS_RENAME      "Rename a file\nRename"
+    IDM_ACTIONS_EDIT_COMMENT "Add, update, or delete a comment\nEdit comment"
+    IDM_TOOLS_DISKCONV      "Convert disk image formats\nDisk Image Converter"
+    IDM_TOOLS_SST_MERGE     "Combine two SST images into one NIB image\nMerge SST Images"
+    IDM_ACTIONS_OPENASDISK  "Open the selected file as a disk image in a new window\nOpen as disk image"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_READONLY            "(read only)"
+    IDS_FAILED              "Failed"
+    IDS_ERROR               "Error"
+    IDS_NOT_ALLOWED         "Not allowed"
+    IDS_WARNING             "Warning"
+    IDS_CANCELLED           "Cancelled"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_SELECTED_COUNT      "1 file selected"
+    IDS_SELECTED_COUNTS_FMT "%d files selected"
+    IDS_BLOCK               "Block:"
+    IDS_DEFILE_FIND_FAILED  "Unable to open %s: file not found."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_DEFILE_OPEN_FAILED  "Unable to open %s: %s."
+    IDS_DISKEDIT_NOREADTS   "Unable to read track %d sector %d."
+    IDS_DISKEDIT_NOREADBLOCK "Unable to read block %d."
+    IDS_DISKEDIT_FIRDFAILED "Unable to read from file: %s."
+    IDS_EXT_SELECTED_COUNT  "Extract 1 selected file"
+    IDS_EXT_SELECTED_COUNTS_FMT "Extract %d selected files"
+    IDS_INDIC_RSRC          " <rsrc>"
+    IDS_INDIC_DISK          " <disk image>"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_INDIC_COMMENT       " <comment>"
+    IDS_INDIC_DATA          "<data>"
+    IDS_NOW_ADDING          "Now adding:"
+    IDS_ADDING_AS           "As:"
+    IDS_DEL_SELECTED_COUNTS_FMT "Delete %d selected files"
+    IDS_DEL_SELECTED_COUNT  "Delete 1 selected file"
+    IDS_DEL_ALL_FILES       "Delete all files"
+    IDS_DEL_OK              "Delete"
+    IDS_DEL_TITLE           "Delete Files"
+    IDS_TEST_SELECTED_COUNTS_FMT "Test %d selected files"
+    IDS_TEST_SELECTED_COUNT "Test 1 selected file"
+    IDS_TEST_ALL_FILES      "Test all files"
+    IDS_TEST_OK             "Test"
+    IDS_TEST_TITLE          "Test Files"
+    IDS_NOW_TESTING         "Now testing:"
+    IDS_MB_APP_NAME         "CiderPress"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_NO_COMMENT_ADD      "This entry does not have a comment.  Did you want to add one?"
+    IDS_EDIT_COMMENT        "Edit Comment"
+    IDS_DEL_COMMENT_OK      "Okay to delete comment?"
+    IDS_RECOMP_SELECTED_COUNT "Recompress 1 selected file"
+    IDS_RECOMP_SELECTED_COUNTS_FMT "Recompress %d selected files"
+    IDS_RECOMP_ALL_FILES    "Recompress all files"
+    IDS_RECOMP_OK           "Go"
+    IDS_RECOMP_TITLE        "Recompress Files"
+    IDS_NOW_EXPANDING       "Now expanding:"
+    IDS_NOW_COMPRESSING     "Now compressing:"
+    IDS_PRINT_CL_JOB_TITLE  "CiderPress File Listing"
+    IDS_REG_EXPIRED         "The evaluation period has expired. To continue using CiderPress, you will need to register your copy."
+    IDS_REG_FAILURE         "Unable to access system registry. Reboot and try again."
+    IDS_REG_INVALID         "Your registration key appears to be invalid. Please re-enter your registration data."
+    IDS_REG_EVAL_REM        "Evaluation period ends in %d days."
+    IDS_REG_BAD_ENTRY       "The information you have entered does not appear to be correct.\r\n\r\nPlease make sure that all values are entered exactly as they appear in the confirmation message."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_OPEN_AS_NUFX        "The file could not be opened as a disk image. However, it appears to be a valid NuFX file archive. Open it?"
+    IDS_ABOUT_UNREGISTERED  "Unregistered - register today!"
+    IDS_CDESC_140K          "140K (5.25"" floppy)"
+    IDS_CDESC_800K          "800K (3.5"" floppy)"
+    IDS_CDESC_BLOCKS        "%ldK (block image)"
+    IDS_CDEC_140K_13        "13-sector disk (5.25"" floppy)"
+    IDS_BAD_SST_IMAGE       "This image doesn't quite look right. Make sure that:\n - The disk image was created by SST.\n - The image has the correct extension for its sector ordering.\n - You selected side 1 first and side 2 second.\n\nContinue anyway?"
+    IDS_NIBBLE_TO_SECTOR_WARNING 
+                            "Moving from a nibble format to a sector format can cause some data to be lost, especially on copy-protected disks.\n\nContinue anyway?"
+    IDS_CDEC_RAWNIB         "35 tracks (5.25"" floppy)"
+    IDS_DISKEDITMSG_EMPTY   "Empty file -- no storage allocated."
+    IDS_DISKEDITMSG_SPARSE  "Index %ld is sparse (zero-filled)."
+    IDS_DISKEDITMSG_BADSECTOR "Unable to read sector."
+    IDS_DISKEDITMSG_BADBLOCK "Unable to read block."
+    IDS_DISKEDITMSG_BADTRACK "Unable to read track."
+    IDS_CONVFILE_SELECTED_COUNT "Convert 1 selected file"
+    IDS_CONVFILE_SELECTED_COUNTS_FMT "Convert %d selected files"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_ACTIONS_EDIT_PROPS  "Edit file type and access permissions\nEdit file attributes"
+    IDM_ACTIONS_CONV_DISK   "Convert part or all of this archive to a ProDOS disk image\nConvert to disk image"
+    IDM_ACTIONS_CONV_FILE   "Extract one or more files and put them in a ShrinkIt file archive\nConvert to file archive"
+    IDM_TOOLS_BULKDISKCONV  "Convert several disk images to a different format\nBulk disk image converter"
+    IDM_FILE_OPEN_VOLUME    "Open a disk volume (e.g. CD-ROM, CFFA card, or 1.44MB ProDOS floppy)\nOpen volume (Ctrl-Shift-O)"
+    IDM_TOOLS_IMAGECREATOR  "Create empty disk image\nCreate disk image"
+    IDM_TOOLS_VOLUMECOPIER_FILE 
+                            "Copy a Windows volume (e.g. floppy disk) to or from a file\nVolume copier (open file)"
+    IDM_TOOLS_VOLUMECOPIER_VOLUME 
+                            "Copy a Windows volume (e.g. floppy disk) to or from a file\nVolume copier (open volume)"
+    IDM_FILE_ARCHIVEINFO    "Show detailed information on this archive or disk image\nArchive Info (Ctrl-I)"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_CONVFILE_ALL_FILES  "Convert all files"
+    IDS_CONVFILE_OK         "Go"
+    IDS_CONVFILE_TITLE      "Convert to file archive"
+    IDS_CONVDISK_SELECTED_COUNT "Convert 1 selected file"
+    IDS_CONVDISK_SELECTED_COUNTS_FMT "Convert %d selected files"
+    IDS_CONVDISK_ALL_FILES  "Convert all files"
+    IDS_CONVDISK_OK         "Go"
+    IDS_CONVDISK_TITLE      "Convert to disk archive"
+    IDS_CONVDISK_SPACEREQ   "Space required: %s"
+    IDS_CDESC_40TRACK       "40-track image (5.25"" floppy)"
+    IDS_TRACKSTAR_TO_OTHER_WARNING 
+                            "TrackStar images are stored as 40-track variable-length nibble images.  No other supported format is directly compatible, so images are converted as formatted 35-track 16-sector disks.  This probably won't work well for copy-protected disks.\n\nContinue anyway?"
+    IDS_DIFFERENT_NIBBLE_WARNING 
+                            "You are converting an image between formats that use different nibble track lengths.  A direct conversion isn't possible, so the image will be converted as a formatted 16-sector disk.  This will likely cause problems for copy-protected disks.\n\nContinue anyway?"
+    IDS_VOLUME_NO_REMOTE    "Network volumes are not supported."
+    IDS_VOLUME_NO_CDROM     "CD-ROM drives are not currently supported."
+    IDS_VOLUME_NO_RAMDISK   "RAM disks are not supported."
+    IDS_VOLUME_NO_GENERIC   "That type of drive is not supported."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_VOLUME_NO_CDRIVE    "For safety, access to C:\\ is not allowed."
+    IDS_VOLUME_SELECT_ONE   "Please select the volume to access."
+    IDS_OPERATION_CANCELLED "Operation cancelled."
+    IDS_NOT_READY           "Not ready"
+    IDS_ASPI_NOT_LOADED     "ASPI driver not loaded"
+    IDS_NOW_DELETING        "Now deleting:"
+    IDS_VALID_FILENAME_PRODOS 
+                            "Valid ProDOS filenames are 1-15 characters long, start with a letter, and use only letters numbers, spaces, and '.'.  If the ""allow lower case"" preference is disabled, lower case letters are converted to upper case, and space becomes '.'."
+    IDS_VALID_FILENAME_DOS  "Valid DOS file names are 1-30 characters long, and use upper case letters, numbers, spaces, and symbols other than ','.  Trailing spaces are not allowed."
+    IDS_VALID_FILENAME_PASCAL 
+                            "Valid Pascal file names are 1-15 characters long, and use upper case letters, numbers, and symbols other than '$=?,]#:'."
+    IDS_VALID_VOLNAME_PRODOS 
+                            "Valid ProDOS volume names are 1-15 characters long, begin with a letter, and have only letters, numbers, and '.'.  If the ""allow lower case"" preference is disabled, lower case letters will be converted to upper case.  Trailing spaces are not allowed."
+    IDS_VALID_VOLNAME_DOS   "DOS volume numbers must be between 1 and 254."
+    IDS_VALID_VOLNAME_PASCAL 
+                            "Valid Pascal volume names are 1-7 characters long and use upper case letters, numbers, and symbols other than '$=?,]#:'."
+    IDS_CLIPBOARD_REGFAILED "ERROR: unable to register clipboard format."
+    IDS_CLIPBOARD_OPENFAILED "ERROR: unable to open clipboard."
+    IDS_CLIPBOARD_NOITEMS   "Nothing copied to clipboard."
+    IDS_CLIPBOARD_ALLOCFAILED "Unable to allocate memory for clipboard data."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_ACTIONS_CREATE_SUBDIR 
+                            "Create a new subdirectory on a ProDOS disk\nCreate subdirectory"
+    IDM_ACTIONS_RENAME_VOLUME 
+                            "Change a disk's volume name or number\nRename volume"
+    IDM_TOOLS_EOLSCANNER    "Scans files for end-of-line markers\nEOL scanner"
+    IDM_FILE_FLUSH          "Save any unwritten data to disk\nSave changes"
+    IDM_FILE_SAVE           "Flush any pending changes to disk.\nSave (Ctrl-S)"
+    IDM_EDIT_COPY           "Copy the selected files to the clipboard\nCopy"
+    IDM_EDIT_PASTE          "Paste files from the clipboard"
+    IDM_TOOLS_TWOMGPROPS    "Edit the properties of a .2MG disk image.\n2MG image editor"
+    IDM_TOOLS_TWOIMGPROPS   "Edit header fields of a 2MG disk image\n2MG properties editor"
+    IDM_ACTIONS_CONV_TOWAV  "Convert a BASIC or BIN file to Apple II cassette format\nConvert to WAV"
+    IDM_ACTIONS_CONV_FROMWAV 
+                            "Convert a WAV file recording of an Apple II cassette into an Apple II file\nImport file from WAV"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_CLIPBOARD_NOTFOUND  "No CiderPress data found in the clipboard."
+    IDS_CLIPBOARD_READFAILURE "Failed while reading data from the clipboard."
+    IDS_CLIPBOARD_WRITEFAILURE "Failed while copying data to the clipboard."
+    IDS_CLIPBOARD_WIN9XMAX  "In Win98/ME the clipboard is limited to %ldMB of data.  Your request includes %.3fMB.  Please select less data."
+    IDS_PRINTER_NOT_USABLE  "Attempting to print to the requested printer failed."
+    IDS_NLIST_DATA_FAILED   "Unable to load NList.Data from '%s' or '%s'."
+    IDS_PROPS_DOS_TYPE_CHANGE 
+                            "Changing the type of a DOS 3.2/3.3 file to BIN, INT, or BAS can cause problems.  Consult the ""help"" file for details.  Do you wish to continue?"
+    IDS_FDI_TO_OTHER_WARNING 
+                            "FDI images are stored as variable-length nibble images.  No other supported format is directly compatible, so images are converted to formatted 35-track 16-sector disks.  This probably won't work well for copy-protected disks.\n\nContinue anyway?"
+    IDS_VALID_VOLNAME_HFS   "Valid HFS volume names are 1-27 characters long, and may not contain a colon (:)."
+    IDS_VALID_FILENAME_HFS  "Valid HFS filenames are 1-31 characters long, and do not contain colons (':')."
+    IDS_PASTE_SPECIAL_COUNT "%d files in clipboard"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_ACTIONS_IMPORT_BAS  "Import Applesoft BASIC program from text file"
+    IDM_FILE_REOPEN         "Re-open the existing archive or disk image\nReopen"
+    IDM_EDIT_FIND           "Search for an entry in the file list"
+    IDM_EDIT_PASTE_SPECIAL  "Choose how files on the clipboard will be pasted"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT_FIND            "Search for a "
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

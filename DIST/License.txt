@@ -1,0 +1,37 @@
+End-User License Agreement for CiderPress
+Copyright (C) 2007 FaddenSoft, LLC.  All Rights Reserved.
+
+AGREEMENT.  After reading this agreement carefully, if you ("Customer") do
+not agree to all of the terms of this agreement, you may not use
+CiderPress ("Software").  Your use of this Software indicates your
+acceptance of this license agreement and warranty.  All updates to the
+Software shall be considered part of the Software and subject to the terms
+of this Agreement.  Changes to this Agreement may accompany updates to the
+Software, in which case by installing such update Customer accepts the
+terms of the Agreement as changed.  The Agreement is not otherwise subject
+to addition, amendment, modification, or exception unless in writing
+signed by an officer of both Customer and FaddenSoft, LLC ("FaddenSoft").
+
+1. LICENSE.  This is free software, distributed under the terms of the
+BSD License.  See "LICENSE.txt" for details.
+
+2. LIMITED WARRANTY.  THE SOFTWARE IS PROVIDED AS IS AND FADDENSOFT
+DISCLAIMS ALL WARRANTIES RELATING TO THIS SOFTWARE, WHETHER EXPRESSED OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+3. LIMITATION ON DAMAGES.  NEITHER FADDENSOFT NOR ANYONE INVOLVED IN THE
+CREATION, PRODUCTION, OR DELIVERY OF THIS SOFTWARE SHALL BE LIABLE FOR ANY
+INDIRECT, CONSEQUENTIAL, OR INCIDENTAL DAMAGES ARISING OUT OF THE USE OR
+INABILITY TO USE SUCH SOFTWARE EVEN IF FADDENSOFT HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES OR CLAIMS.  IN NO EVENT SHALL FADDENSOFT'S
+LIABILITY FOR ANY DAMAGES EXCEED THE PRICE PAID FOR THE LICENSE TO USE THE
+SOFTWARE, REGARDLESS OF THE FORM OF CLAIM.  THE PERSON USING THE SOFTWARE
+BEARS ALL RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE.
+
+4. GOVERNING LAW AND GENERAL PROVISIONS.  This Agreement will be governed
+by the laws of the State of California, U.S.A.  If any part of this
+Agreement is found void and unenforceable, it will not affect the validity
+of the balance of the Agreement, which shall remain valid and enforceable
+according to its terms.  This Agreement shall automatically terminate upon
+failure by Customer to comply with its terms.

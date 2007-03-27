@@ -1,0 +1,19 @@
+// Microsoft Developer Studio generated Help ID include file.
+// Used by CiderPress.rc
+//
+#define HIDC_ABOUT_CREDITS              0x80690457    // IDD_ABOUTDLG
+#define HIDC_DISKEDIT_DONE              0x807f0435    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_DOREAD            0x807f0427    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_DOWRITE           0x807f0428    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_EDIT              0x807f042e    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_HEX               0x807f0436    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_NEXT              0x807f0430    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_OPENFILE          0x807f042d    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_PREV              0x807f042f    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_SECTOR            0x807f042b    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_SUBVOLUME         0x807f0439    // IDD_DISKEDIT
+#define HIDC_DISKEDIT_TRACK             0x807f0429    // IDD_DISKEDIT
+#define HIDC_STATIC                     0x8074ffff    // IDD_PREF_COMPRESSION
+#define HIDC_STEXT_SECTOR               0x807f0431    // IDD_DISKEDIT
+#define HIDC_STEXT_TRACK                0x807f0432    // IDD_DISKEDIT
+#define HIDHELP                         0x807f0009    // IDD_DISKEDIT

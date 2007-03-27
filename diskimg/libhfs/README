@@ -1,0 +1,5 @@
+HFS utility library, part of hfsutils v3.2.6 by Robert Leslie.
+
+Adapted for use with CiderPress by Andy McFadden.  The os_* functions
+have been replaced with a callback mechanism, and code that uses global
+variables has been (mostly) removed.

@@ -1,0 +1,207 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "afxres.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_MDC                 ICON    DISCARDABLE     "mdc.ICO"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_MDC MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Scan disk images...",        IDM_FILE_SCAN
+        MENUITEM "E&xit",                       IDM_FILE_EXIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Visit faddenSoft &web site",  IDM_HELP_WEBSITE
+        MENUITEM "&About ...",                  IDM_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_MDC ACCELERATORS MOVEABLE PURE 
+BEGIN
+    "?",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  22, 17, 133, 111
+STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 10, "MS Sans Serif"
+BEGIN
+    ICON            IDI_MDC,IDC_MYICON,7,7,20,20
+    LTEXT           "MDC version %d.%d.%d",IDC_ABOUT_VERS,33,7,93,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright © 2007 by FaddenSoft, LLC.\rAll Rights Reserved.",
+                    IDC_STATIC,7,31,119,19
+    DEFPUSHBUTTON   "OK",IDOK,41,90,50,14
+    LTEXT           "This utility scans Apple II disk images and creates formatted listings of the files in them.",
+                    IDC_STATIC,7,58,119,26
+    LTEXT           "Multi-Disk Catalog",IDC_STATIC,33,15,55,8
+END
+
+IDD_CHOOSE_FILES DIALOGEX 0, 0, 272, 131
+STYLE DS_3DLOOK | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LTEXT           "",1119,0,0,272,87,NOT WS_GROUP,WS_EX_STATICEDGE
+    PUSHBUTTON      "&Accept",IDC_SELECT_ACCEPT,220,88,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,220,107,50,14
+    LTEXT           "Select the disk images to scan.  If you select a folder, all files in that folder will be processed.",
+                    IDC_CHOOSEFILES_STATIC1,7,104,199,17
+END
+
+IDD_PROGRESS DIALOG DISCARDABLE  0, 0, 250, 66
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Progress..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,99,45,50,14
+    LTEXT           "Now scanning:",IDC_STATIC,7,7,96,8
+    LTEXT           ">filename<",IDC_PROGRESS_FILENAME,7,20,236,8
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""afxres.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""resource.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 126
+        VERTGUIDE, 33
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 104
+    END
+
+    "IDD_CHOOSE_FILES", DIALOG
+    BEGIN
+        VERTGUIDE, 7
+        BOTTOMMARGIN, 121
+    END
+
+    IDD_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 243
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 59
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_APP_TITLE           "MDC"
+    IDC_MDC                 "MDC"
+    IDS_MUST_REGISTER       "You must be a registered owner of CiderPress to use MDC.\r\n\r\nVisit http://www.faddensoft.com/."
+    IDS_FAILED              "Failed"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDM_FILE_SCAN           "Select disk images to scan"
+    IDM_HELP_WEBSITE        "Visit the CiderPress web site\nGo to web site"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

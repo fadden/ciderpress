@@ -1,0 +1,56 @@
+:Base CiderPress.hlp>main
+:Title CiderPress Help
+1 Introduction
+2 Welcome!=Topic1
+2 Features=Topic47
+2 Getting Help=Topic284
+2 How (and Why) to Register=Topic46
+2 Credits=Topic14
+1 Using CiderPress
+2 Available Commands=Topic48
+2 Commands
+3 Selecting Commands=Topic52
+3 Opening, Closing, and Creating Files=Topic51
+3 Opening a Volume=Topic241
+3 Archive Info=Topic258
+3 Working With the File List=Topic50
+3 Printing=Topic53
+3 Viewing Files=Topic54
+3 Adding Files and Disks=Topic55
+3 Creating Subdirectories=Topic263
+3 Extracting Files=Topic39
+3 Copying and Pasting=Topic273
+3 Testing Archives=Topic56
+3 Rename Entries=Topic42
+3 Delete Entries=Topic57
+3 Re-Compress Entries=Topic58
+3 Edit Comment=Topic43
+3 Edit File Attributes=Topic203
+3 Convert Disk Image to File Archive=Topic215
+3 Convert File Archive to Disk Image=Topic216
+3 Import from Cassette=Topic111
+3 Import BASIC Program=Topic112
+2 Tools
+3 Disk Sector Viewer=Topic3
+3 Disk Image Converter=Topic187
+3 Bulk Disk Image Converter=Topic233
+3 SST Image Merge=Topic201
+3 Windows Volume Copier=Topic245
+3 EOL Scanner=Topic272
+3 2MG Properties Editor=Topic277
+2 Preferences
+3 General Preferences=Topic19
+3 Disk Image Preferences=Topic259
+3 Compression Preferences=Topic29
+3 File Viewer Preferences=Topic23
+3 File Preferences=Topic28
+1 Appendix
+2 About Disk Images=Topic18
+2 Embedded DOS Volumes=Topic21
+2 File Format Converters=Topic22
+2 Disassembly Notes=Topic109
+2 File Extensions=Topic45
+2 File Attribute Preservation=Topic68
+2 Compression Algorithms=Topic69
+2 About Removable Media (CF, floppy, CD-ROM)=Topic244
+2 Administrator Privileges=Topic262

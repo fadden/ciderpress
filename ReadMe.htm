@@ -1,0 +1,313 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>CiderPress Source README</title>
+</head>
+
+<body>
+<h1>CiderPress Source README</h1>
+Release notes for v3.0.0<br>
+Last updated: 25-Mar-2007
+
+<h2>Contents:</h2>
+<ul>
+<li><a href="#intro">What's Ciderpress?</a>
+<li><a href="#build">Building the Sources</a>
+<li><a href="#notes">Source Notes</a>
+</ul>
+
+<hr>
+<h2><a name="intro">What's CiderPress?</a></h2>
+<p>CiderPress is a Windows utility for manipulating Apple II disk images
+and file archives.  It supports all major disk and archive formats used
+on the Apple II and by Apple II emulators.
+<p>CiderPress was sold by faddenSoft, LLC as a shareware product for about four
+years, starting in March 2003.
+
+
+<h3>Why Bother?</h3>
+
+<p>Back in 2002 I decided it was time to learn how to write an application for
+Microsoft Windows.  I had been a professional software engineer for many
+years -- including 2.5 years at Microsoft! -- but had never written a
+Windows program more complex than "Hello, world!".
+
+<p>I decided to write a Windows version of GS/ShrinkIt.  I had already written
+NufxLib, which handled all of the ShrinkIt stuff, so I could focus
+on writing the Windows user interface code.
+
+<p>Somewhere in the early stages of the project, it occurred to me that a
+disk image isn't substantially different from a file archive.  They're
+both just collections of files laid out in a well-defined manner.  The
+decision to handle disk images as well as ShrinkIt archives seemed like
+a simple improvement at the time.  The rest is history.
+
+<p>CiderPress has allowed me to explore a variety of interesting technologies.
+It has five different ways of reading a block from physical media, depending
+on your operating system and what sort of device you're reading from.  I
+was able to take what I learned from a digital signal processing textbook
+and apply it to a real-world problem (decoding Apple II cassette data).  It
+is also my first Shareware product, not to mention the initial product of
+my first small business venture (faddenSoft, LLC).
+
+<p>I could have written other things.  No doubt they would have made more money.
+CiderPress is something that I find very useful, however, in the pursuit of
+my Apple II hobby.
+
+<p>Above all, this has been a labor of love.  I have tried to get the details
+right, because in the end it's the little things that mean the difference
+between "good" and merely "good enough".</p>
+
+<h3>License</h3>
+
+<p>The source code to CiderPress is being made available under the BSD license:</p>
+
+<blockquote><code>
+Copyright (c) 2007, FaddenSoft, LLC<br>
+All rights reserved.
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+<ul>
+    <li> Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    <li> Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    <li> Neither the name of FaddenSoft, LLC nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+</ul>
+<p>THIS SOFTWARE IS PROVIDED BY FaddenSoft, LLC ``AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL FaddenSoft, LLC BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</code></blockquote>
+CiderPress requires three other libraries, all of which are included as either
+source or binaries:
+<ul>
+  <li>NufxLib, also available under the BSD license.
+  <li>Zlib, available under the Zlib license.
+  <li>libhfs, available under the GPL license.
+</ul>
+<p>The license allows you to do a great many things.  For example, you could
+take the source code to CiderPress, compile it, and sell it.  I'm not sure why
+anyone would buy it, but you're legally allowed to do so, as long as you retain
+the appropriate copyright notice.</p>
+<p>If you retain libhfs, any changes you make to any part of CiderPress must
+be made available, due to the "viral" nature of the GPL license.  If this is
+not acceptable, you can remove HFS disk image support from CiderPress (look for
+&quot;EXCISE_GPL_CODE&quot; in DiskImg.h).</p>
+
+
+<hr>
+<h2><a name="build">Building the Sources</a></h2>
+
+<p>How to build your own copy of CiderPress.
+
+<h3>Windows</h3>
+<p>The sources are distributed with the necessary project/solution files for
+Microsoft Visual Studio 6.0 and Microsoft Visual Studio 2003.&nbsp; All you
+really need is the C++ compiler.&nbsp; The free or student editions of the
+compilers will probably work.
+<p>I usually work on CiderPress in Visual C++ 6.0,
+and use that when building for distribution.&nbsp; I chose to stick with 6.0 for
+CiderPress because you need an additional MSVC DLL when you build with
+2003.&nbsp; Also, the newer tools cause the newer file selection dialogs to be
+used, and the custom dialog code gets all wonky.</p>
+
+
+<p>In 6.0, you need to select &quot;app&quot; as the build target (Build-&gt;Set
+active configuration), and hit F7.&nbsp; This will build everything except MDC,
+which you can then build by selecting &quot;mdc&quot; and hitting F7.&nbsp; You
+can also configure a batch build.&nbsp; In 2003 just select &quot;build
+solution&quot;.&nbsp; The necessary prebuilt libraries should be there for both
+&quot;debug&quot; and &quot;release&quot; builds.&nbsp; (You can tell how it has
+been built by looking at the version string in the About box.)</p>
+
+
+<p>When the build completes, the necessary DLLs are copied around so you can
+execute the binary by launching it within Visual Studio (hit F5).&nbsp; You will
+get a warning about not being able to find the NiftyList data file unless you
+copy that from &quot;DIST&quot; into the app source directory.</p>
+
+
+<p>The distribution comes with prebuilt versions of NufxLib2 and zlib in DLL
+form.&nbsp; If you like, you can download and compile your own.</p>
+
+
+<p>There are two things you can't create with the standard tools:</p>
+
+
+<ul>
+  <li>The help text was created with HelpMatic Pro.  The source file is in a
+proprietary format.  It should probably be converted to HTML Help.</li>
+  <li>The installation packages are created with DeployMaster.  The
+".deploy" file specifies how the package is built.  </li>
+</ul>
+<p>Compiled help files are included, so you can still generate a new version of
+CiderPress even if you can't update the help.&nbsp; You don't strictly need the installer either, though it is
+quite handy, and the uninstaller will clean up the registry entries CiderPress
+creates.</p>
+<h3>Linux</h3>
+<p>The &quot;linux&quot; directory has a few command-line utilities and a simple
+makefile.&nbsp; It will build the diskimg and HFS libraries, then the sample utilities:</p>
+
+
+<ul>
+  <li><code>getfile disk-image filename</code> -- extract a file from a disk
+    image.&nbsp; The file is written to stdout.</li>
+  <li><code>makedisk {dos|prodos|pascal} size image-filename.po file1 ...</code>
+    -- create a new disk image, with the specified size and format, and copy the
+    specified files onto it.</li>
+  <li><code>mdc file1 ...</code> -- this is equivalent to the MDC application
+    for Windows.&nbsp; It recursively scans all files and directories specified,
+    displaying the contents of any disk images it finds.</li>
+</ul>
+<p>This are mostly intended for testing and illustration of the interfaces, but
+they can be useful as well.&nbsp; Some other code is also provided:</p>
+<ul>
+  <li><code>iconv infile outfile</code> -- convert an image from one format to
+    another.&nbsp; This was used for testing.</li>
+  <li><code>packddd infile outfile</code> -- the DDD code was originally
+    developed under Linux.&nbsp; This code is here for historical reasons.</li>
+  <li><code>sstasm part1 part2</code> -- the SST re-assembly code was originally
+    developed under Linux.&nbsp; The code is here for historical reasons.</li>
+</ul>
+
+
+<p>The &quot;prebuilt&quot; directory has a pre-built copy of NufxLib, so you
+don't have to build your own.</p>
+<p>If you're planning to hack on this stuff, use &quot;make depend&quot; before
+&quot;make&quot; to fill in the dependencies.</p>
+
+
+<hr>
+<h2><a name="notes">Source Notes</a></h2>
+
+<p>Some notes on what you'll find in the various directories.
+
+<h3>Main Application</h3>
+
+<p>This is highly Windows-centric.&nbsp; My goal was to learn how to write a
+Windows application, so I made no pretense at portability.&nbsp; For better or
+worse, I avoided the Visual Studio &quot;wizards&quot; for the dialogs.
+
+<p>Much of the user interface text is in the resource file.&nbsp; Much is not,
+especially when it comes to error messages.&nbsp; This will need to be addressed
+if internationalization is attempted.
+
+<p>It may be possible to convert this for use
+with wxWidgets, which uses an MFC-like structure, and runs on Mac and Linux as
+well.  The greatest barrier to
+entry is probably the heavy reliance on the Rich Edit control.  Despite
+its bug-ridden history, the Rich Edit control allowed me to let Windows
+deal with a lot of text formatting and image display stuff.
+
+
+<h3>MDC Application</h3>
+
+<p>MDC (Multi-Disk Catalog) was written as a simple demonstration of the value of having the DiskImg
+code in a DLL instead of meshed with the main application.&nbsp; There's not
+much to it, and it hasn't changed substantially since it was first written.
+
+
+<h3>DiskImg Library</h3>
+
+<p>This library provides access to disk images.&nbsp; It automatically handles a
+wide variety of formats.
+
+<p>This library can be built under Linux or Windows.  One of my key motivations
+for making it work under Linux was the availability of "valgrind".  Similar
+tools for Windows usually very expensive or inferior (or both).
+
+<p>The basic classes, defined in DiskImg.h, are:
+<ul>
+  <li>DiskImg.&nbsp; This represents a single disk image, which may have
+    sub-images.&nbsp; Operations on a DiskImg are roughly equivalent to a device
+    driver: you can read and write blocks, detect image formats, and create new
+    images.</li>
+  <li>DiskFS.&nbsp; Paired with a DiskImg, this is roughly equivalent to a GS/OS
+    FST (FileSystem Translator).&nbsp; You can perform file operations like
+    rename and delete, format disks, see how much space is available, and search
+    for sub-volumes.</li>
+  <li>A2File.&nbsp; Represents a file on a DiskFS.&nbsp; This holds the file's
+    name, attributes, track/sector or block lists, and provides a call to open a
+    file.</li>
+  <li>A2FileDescr.&nbsp; Represents an open file.&nbsp; You can read or write
+    data.</li>
+</ul>
+<p>Sub-classes are defined in DiskImgDetail.h.&nbsp; Most applications won't
+need to access this header file.&nbsp; Each Apple II filesystem defines
+sub-classes of DiskFS, A2File, and A2FileDescr.</p>
+
+<p>In an ideal world, the code would mimic the GS/OS file operations.&nbsp; In
+practice, CiderPress didn't need the full range of capabilities, so the
+functions have some basic limitations:
+<ul>
+ <li>On ProDOS and HFS, you can only open one fork at a time.  This allowed me
+   to use simpler data structures.
+ <li>Files are expected to be written in one large chunk.  This reduced the
+   complexity of the task enormously, because there's so much less that can
+   go wrong.
+</ul>
+<p>Some things that can be improved:
+<ul>
+ <li>The overall structure of the filesystem handlers evolved over time.  There
+   is some amount of redundancy that could be factored out.
+ <li>The API, especially in DiskImg, could probably be simplified.
+</ul>
+
+
+<p>The library depends on NufxLib and zlib for access to compressed images.</p>
+
+
+<h3>Reformat Library</h3>
+<p>This is probably the most "fun" component of CiderPress.  It converts Apple II files
+to more easily accessible Windows equivalents.
+
+<p>Start in Reformat.h and ReformatBase.h.  There are two basic kinds of
+reformatter: text and graphics.  Everything else is a sub-class of one of the
+two basic types.
+
+<p>The general idea is to allow the reformatter to decide whether or not it is
+capable of reformatting a file.  To this end, the file type information and
+file contents are presented to the &quot;examine&quot; function of each reformatter in
+turn.  The level of confidence is specified in a range.  If it's better than
+"no", it is presented to the user as an option, ordered by the strength of its
+convictions.  If chosen, the &quot;process&quot; function is called to convert the data.
+
+<p>Bear in mind that reformatters may be disabled from the preferences menu.&nbsp;
+Also, when extracting files for easy access in Windows, the &quot;best&quot;
+reformatter is employed by the extraction code.<p>Most of the code should be portable, though some of it uses the MFC CString class.&nbsp;
+This could probably be altered to use STL strings or plain.
+
+
+
+<h3>Util Library</h3>
+
+<p>Miscellaneous utility functions.
+
+<p>For a good time, look at SelectFilesDialog.cpp.
+
+<p>To enable debug logging for one of the applications, define _DEBUG_LOG in
+MyDebug.h in this library.  You will see "_DEBUG_LOG" in the version string
+in the About box when this is defined.  The log is written to C:\cplog.txt.
+An existing log file will be appended to if the previous log was written to
+less than 8 hours ago.</p>
+
+<hr>
+<p>Enjoy!</p>
+<address>Andy McFadden</address>
+</body>
+
+</html>
