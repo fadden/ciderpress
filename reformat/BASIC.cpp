@@ -1,6 +1,6 @@
 /*
  * CiderPress
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
+ * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -521,5 +521,232 @@ done:
 	retval = 0;
 
 bail:
+	return retval;
+}
+
+/*
+ * ===========================================================================
+ *		Apple /// Business BASIC
+ * ===========================================================================
+ */
+
+/*
+ * Apple /// Business BASIC file format:
+ *
+ *	<16-bit file length>
+ *	<line> ...
+ *	<EOF marker ($0000)>
+ *
+ * Each line consists of:
+ *	<8-bit offset to next line>
+ *	<16-bit line number, usually 0-63999>
+ *	<tokens | characters> ...
+ *	<EOL marker ($00)>
+ *
+ * All values are little-endian.  Numbers are stored as characters.
+ */
+
+/*
+ * Decide whether or not we want to handle this file.
+ */
+void
+ReformatBusiness::Examine(ReformatHolder* pHolder)
+{
+	ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
+
+	if (pHolder->GetFileType() == kTypeBA3)
+		applies = ReformatHolder::kApplicYes;
+
+	pHolder->SetApplic(ReformatHolder::kReformatBusiness, applies,
+		ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+	pHolder->SetApplic(ReformatHolder::kReformatBusiness_Hilite, applies,
+		ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+
+	if (pHolder->GetOption(ReformatHolder::kOptHiliteBASIC) != 0)
+		pHolder->SetApplicPreferred(ReformatHolder::kReformatBusiness_Hilite);
+	else
+		pHolder->SetApplicPreferred(ReformatHolder::kReformatBusiness);
+}
+
+/*
+ * Values from 128 to 234 are tokens in Business BASIC.  Values from 235 to 255
+ * show up as error messages.  The goal here is to produce values that are
+ * human-readable and/or EXECable, so no attempt has been made to display
+ * the error values.
+ */
+static const char gBusinessTokens[128*10] = {
+	                                                        
+    "END\0      FOR\0      NEXT\0     INPUT\0    OUTPUT\0   DIM\0      READ\0     WRITE\0    "
+    "OPEN\0     CLOSE\0    *error*\0  TEXT\0     *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  WINDOW\0   INVOKE\0   PERFORM\0  *error*\0  *error*\0  "
+    "FRE\0      HPOS\0     VPOS\0     ERRLIN\0   ERR\0      KBD\0      EOF\0      TIME$\0    "
+    "DATE$\0    PREFIX$\0  EXFN.\0    EXFN%.\0   OUTREC\0   INDENT\0   *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  POP\0      HOME\0     *error*\0  "
+    "SUB$(\0    OFF\0      TRACE\0    NOTRACE\0  NORMAL\0   INVERSE\0  SCALE(\0   RESUME\0   "
+    "*error*\0  LET\0      GOTO\0     IF\0       RESTORE\0  SWAP\0     GOSUB\0    RETURN\0   "
+    "REM\0      STOP\0     ON\0       *error*\0  LOAD\0     SAVE\0     DELETE\0   RUN\0      "
+    "RENAME\0   LOCK\0     UNLOCK\0   CREATE\0   EXEC\0     CHAIN\0    *error*\0  *error*\0  "
+    "*error*\0  CATALOG\0  *error*\0  *error*\0  DATA\0     IMAGE\0    CAT\0      DEF\0      "
+    "*error*\0  PRINT\0    DEL\0      ELSE\0     CONT\0     LIST\0     CLEAR\0    GET\0      "
+    "NEW\0      TAB\0      TO\0       SPC(\0     USING\0    THEN\0     *error*\0  MOD\0      "
+    "STEP\0     AND\0      OR\0       EXTENSION\0DIV\0      *error*\0  FN\0       NOT\0      "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  tf7\0     "
+};
+
+static const char gExtendedBusinessTokens[128*10] = {
+    "TAB(\0     TO\0       SPC(\0     USING\0    THEN\0     *error*\0  MOD\0      STEP\0     "
+    "AND\0      OR\0       EXTENSION\0DIV\0      *error*\0  FN\0       NOT\0      *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  AS\0       SGN(\0     INT(\0     ABS(\0     "
+    "*error*\0  TYP(\0     REC(\0     *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  PDL(\0     BUTTON(\0  SQR(\0     "
+    "RND(\0     LOG(\0     EXP(\0     COS(\0     SIN(\0     TAN(\0     ATN(\0     *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  STR$(\0    HEX$(\0    CHR$(\0    LEN(\0     VAL(\0     "
+    "ASC(\0     TEN(\0     *error*\0  *error*\0  CONV(\0    CONV&(\0   CONV$(\0   CONV%(\0   "
+    "LEFT$(\0   RIGHT$(\0  MID$(\0    INSTR$(\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0 "
+};
+
+/*
+ * Reformat an Apple /// Business BASIC program into a text format that
+ * mimics the output of the "LIST" command.
+ */
+int
+ReformatBusiness::Process(const ReformatHolder* pHolder,
+	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+	ReformatOutput* pOutput)
+{
+	const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+	long srcLen = pHolder->GetSourceLen(part);
+	long length = srcLen;
+	int retval = -1;
+
+	if (srcLen > 65536)
+		fUseRTF = false;
+	if (fUseRTF) {
+		if (id != ReformatHolder::kReformatBusiness_Hilite)
+			fUseRTF = false;
+	}
+
+	RTFBegin(kRTFFlagColorTable);
+
+	/*
+	 * Make sure there's enough here to get started.  We want to return an
+	 * "okay" result because we want this treated like a reformatted empty
+	 * BASIC program rather than a non-Applesoft file.
+	 */
+	if (length < 2) {
+		WMSG0("  BAS truncated?\n");
+		//fExpBuf.CreateWorkBuf();
+		BufPrintf("\r\n");
+		goto done;
+	}
+
+	unsigned short fileLength;
+	fileLength = Read16(&srcPtr, &length);
+	WMSG1("  BA3 internal file length is: %d\n", fileLength);
+
+	while (length > 0) {
+		unsigned short increment;
+		unsigned short extendedToken;
+		unsigned short lineNum;
+		bool inQuote = false;
+		bool inRem = false;
+
+		increment = Read8(&srcPtr, &length);
+		WMSG1("  BA3 increment to next line is: %d\n", increment);
+		if (increment == 0) {
+			/* ProDOS sticks an extra byte on the end? */
+			if (length > 1) {
+				WMSG1("  BAS ended early; len is %d\n", length);
+			}
+			break;
+		}
+
+		/* print line number */
+		RTFSetColor(kLineNumColor);
+		lineNum = Read16(&srcPtr, &length);
+		WMSG1("  BA3 line number: %d\n", lineNum);
+		BufPrintf(" %u ", lineNum);
+
+		RTFSetColor(kDefaultColor);
+
+		/* print a line */
+		while (*srcPtr != 0 && length > 0) {
+			if (*srcPtr & 0x80) {
+				/* token */
+				//RTFBoldOn();
+				RTFSetColor(kKeywordColor);
+				if (((*srcPtr) & 0x7f) == 0x7f)
+				{
+					extendedToken = Read8(&srcPtr, &length);
+					BufPrintf(" %s ", &gExtendedBusinessTokens[((*srcPtr) & 0x7f) * 10]);
+				}
+				else
+					BufPrintf(" %s ", &gBusinessTokens[((*srcPtr) & 0x7f) * 10]);
+				//RTFBoldOff();
+				RTFSetColor(kDefaultColor);
+
+				if (*srcPtr == 0xc0) {
+					// REM -- do rest of line in green
+					RTFSetColor(kCommentColor);
+					inRem = true;
+				}
+			} else {
+				/* simple chracter */
+				if (fUseRTF) {
+					if (*srcPtr == '"' && !inRem) {
+						if (!inQuote) {
+							RTFSetColor(kStringColor);
+							RTFPrintChar(*srcPtr);
+						} else {
+							RTFPrintChar(*srcPtr);
+							RTFSetColor(kDefaultColor);
+						}
+						inQuote = !inQuote;
+					} else if (*srcPtr == ':' && !inRem && !inQuote) {
+						RTFSetColor(kColonColor);
+						RTFPrintChar(*srcPtr);
+						RTFSetColor(kDefaultColor);
+					} else {
+						RTFPrintChar(*srcPtr);
+					}
+				} else {
+					BufPrintf("%c", *srcPtr);
+				}
+			}
+
+			srcPtr++;
+			length--;
+		}
+
+		if (inQuote || inRem)
+			RTFSetColor(kDefaultColor);
+		inQuote = inRem = false;
+
+		srcPtr++;
+		length--;
+
+		if (!length) {
+			WMSG0("  BAS truncated in mid-line\n");
+			break;
+		}
+
+		RTFNewPara();
+	}
+
+done:
+	RTFEnd();
+
+	SetResultBuffer(pOutput);
+	retval = 0;
+
+//bail:
 	return retval;
 }

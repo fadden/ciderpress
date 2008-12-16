@@ -1,6 +1,6 @@
 /*
  * CiderPress
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
+ * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -849,6 +849,7 @@ MainWindow::OnEditPreferences(void)
 	ps.fFviewPage.fConvPascalCode = fPreferences.GetPrefBool(kPrConvPascalCode);
 	ps.fFviewPage.fConvApplesoft = fPreferences.GetPrefBool(kPrConvApplesoft);
 	ps.fFviewPage.fConvInteger = fPreferences.GetPrefBool(kPrConvInteger);
+	ps.fFviewPage.fConvBusiness = fPreferences.GetPrefBool(kPrConvBusiness);
 	ps.fFviewPage.fConvGWP = fPreferences.GetPrefBool(kPrConvGWP);
 	ps.fFviewPage.fConvText8 = fPreferences.GetPrefBool(kPrConvText8);
 	ps.fFviewPage.fConvAWP = fPreferences.GetPrefBool(kPrConvAWP);
@@ -974,6 +975,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
 	fPreferences.SetPrefBool(kPrConvPascalCode, pPS->fFviewPage.fConvPascalCode != 0);
 	fPreferences.SetPrefBool(kPrConvApplesoft, pPS->fFviewPage.fConvApplesoft != 0);
 	fPreferences.SetPrefBool(kPrConvInteger, pPS->fFviewPage.fConvInteger != 0);
+	fPreferences.SetPrefBool(kPrConvBusiness, pPS->fFviewPage.fConvBusiness != 0);
 	fPreferences.SetPrefBool(kPrConvGWP, pPS->fFviewPage.fConvGWP != 0);
 	fPreferences.SetPrefBool(kPrConvText8, pPS->fFviewPage.fConvText8 != 0);
 	fPreferences.SetPrefBool(kPrConvAWP, pPS->fFviewPage.fConvAWP != 0);
@@ -2610,6 +2612,10 @@ MainWindow::ConfigureReformatFromPreferences(ReformatHolder* pReformat)
 		pPreferences->GetPrefBool(kPrConvInteger));
 	pReformat->SetReformatAllowed(ReformatHolder::kReformatInteger_Hilite,
 		pPreferences->GetPrefBool(kPrConvInteger));
+	pReformat->SetReformatAllowed(ReformatHolder::kReformatBusiness,
+		pPreferences->GetPrefBool(kPrConvBusiness));
+	pReformat->SetReformatAllowed(ReformatHolder::kReformatBusiness_Hilite,
+		pPreferences->GetPrefBool(kPrConvBusiness));
 	pReformat->SetReformatAllowed(ReformatHolder::kReformatSCAssem,
 		pPreferences->GetPrefBool(kPrConvSCAssem));
 	pReformat->SetReformatAllowed(ReformatHolder::kReformatMerlin,

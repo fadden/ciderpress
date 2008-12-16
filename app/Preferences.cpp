@@ -1,6 +1,6 @@
 /*
  * CiderPress
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
+ * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -115,6 +115,7 @@ const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
 	{ kPrConvCPMText,					kBool,	kPrefsSect,		_T("conv-cpm-text") },
 	{ kPrConvApplesoft,					kBool,	kPrefsSect,		_T("conv-applesoft") },
 	{ kPrConvInteger,					kBool,	kPrefsSect,		_T("conv-integer") },
+	{ kPrConvBusiness,					kBool,	kPrefsSect,		_T("conv-business") },
 	{ kPrConvGWP,						kBool,	kPrefsSect,		_T("conv-gwp") },
 	{ kPrConvText8,						kBool,	kPrefsSect,		_T("conv-text8") },
 	{ kPrConvAWP,						kBool,	kPrefsSect,		_T("conv-awp") },
@@ -223,6 +224,7 @@ Preferences::Preferences(void)
 	SetPrefBool(kPrConvCPMText, true);
 	SetPrefBool(kPrConvApplesoft, true);
 	SetPrefBool(kPrConvInteger, true);
+	SetPrefBool(kPrConvBusiness, true);
 	SetPrefBool(kPrConvGWP, true);
 	SetPrefBool(kPrConvText8, true);
 	SetPrefBool(kPrConvAWP, true);

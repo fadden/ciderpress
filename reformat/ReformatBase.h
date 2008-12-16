@@ -1,6 +1,6 @@
 /*
  * CiderPress
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
+ * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -36,6 +36,7 @@ public:
 		kTypeTXT	= 0x04,
 		kTypeBIN	= 0x06,
 		kTypeFOT	= 0x08,
+		kTypeBA3	= 0x09,
 		kTypeDIR	= 0x0f,
 		kTypeADB	= 0x19,
 		kTypeAWP	= 0x1a,

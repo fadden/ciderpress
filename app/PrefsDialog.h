@@ -1,6 +1,6 @@
 /*
  * CiderPress
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
+ * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -152,6 +152,7 @@ public:
 	BOOL	fConvPascalCode;
 	BOOL	fConvApplesoft;
 	BOOL	fConvInteger;
+	BOOL	fConvBusiness;
 	BOOL	fConvGWP;
 	BOOL	fConvText8;
 	BOOL	fConvAWP;

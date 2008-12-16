@@ -1,6 +1,6 @@
 /*
  * CiderPress
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
+ * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -168,6 +168,7 @@ typedef enum {
 	kPrConvCPMText,					// bool
 	kPrConvApplesoft,				// bool
 	kPrConvInteger,					// bool
+	kPrConvBusiness,				// bool
 	kPrConvGWP,						// bool
 	kPrConvText8,					// bool
 	kPrConvAWP,						// bool

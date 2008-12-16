@@ -1,6 +1,6 @@
 /*
  * CiderPress
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
+ * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -50,6 +50,8 @@ ReformatHolder::GetReformatInstance(ReformatID id)
 	case kReformatApplesoft_Hilite:	pReformat = new ReformatApplesoft;			break;
 	case kReformatInteger:			pReformat = new ReformatInteger;			break;
 	case kReformatInteger_Hilite:	pReformat = new ReformatInteger;			break;
+	case kReformatBusiness:			pReformat = new ReformatBusiness;			break;
+	case kReformatBusiness_Hilite:	pReformat = new ReformatBusiness;			break;
 	case kReformatSCAssem:			pReformat = new ReformatSCAssem;			break;
 	case kReformatMerlin:			pReformat = new ReformatMerlin;				break;
 	case kReformatLISA2:			pReformat = new ReformatLISA2;				break;
@@ -140,6 +142,12 @@ ReformatHolder::GetReformatName(ReformatID id)
 		break;
 	case kReformatInteger_Hilite:
 		descr = "Integer BASIC w/Highlighting";
+		break;
+	case kReformatBusiness:
+		descr = "Apple /// Business BASIC";
+		break;
+	case kReformatBusiness_Hilite:
+		descr = "Apple /// Business BASIC w/Highlighting";
 		break;
 	case kReformatSCAssem:
 		descr = "S-C Assembler";

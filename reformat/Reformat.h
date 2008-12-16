@@ -1,6 +1,6 @@
 /*
  * CiderPress
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
+ * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -76,6 +76,8 @@ public:
 		kReformatApplesoft_Hilite,
 		kReformatInteger,
 		kReformatInteger_Hilite,
+		kReformatBusiness,
+		kReformatBusiness_Hilite,
 
 		kReformatSCAssem,
 		kReformatMerlin,
@@ -278,6 +280,7 @@ public:
 	friend class ReformatDisasm16;
 	friend class ReformatApplesoft;
 	friend class ReformatInteger;
+	friend class ReformatBusiness;
 	friend class ReformatCPMText;
 	friend class ReformatDirectory;
 	friend class ReformatDHR;
