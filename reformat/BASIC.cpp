@@ -577,7 +577,7 @@ ReformatBusiness::Examine(ReformatHolder* pHolder)
 static const char gBusinessTokens[128*10] = {
 	                                                        
     "END\0      FOR\0      NEXT\0     INPUT\0    OUTPUT\0   DIM\0      READ\0     WRITE\0    "
-    "OPEN\0     CLOSE\0    *error*\0  TEXT\0     *error*\0  *error*\0  *error*\0  *error*\0  "
+    "OPEN\0     CLOSE\0    *error*\0  TEXT\0     *error*\0  BYE\0      *error*\0  *error*\0  "
     "*error*\0  *error*\0  *error*\0  WINDOW\0   INVOKE\0   PERFORM\0  *error*\0  *error*\0  "
     "FRE\0      HPOS\0     VPOS\0     ERRLIN\0   ERR\0      KBD\0      EOF\0      TIME$\0    "
     "DATE$\0    PREFIX$\0  EXFN.\0    EXFN%.\0   OUTREC\0   INDENT\0   *error*\0  *error*\0  "
