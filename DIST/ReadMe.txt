@@ -7,5 +7,5 @@ CP/M, and RDOS filesystems.
 
 This program used to be shareware, but is now free.
 
-If you have any questions, please visit the faddenSoft CiderPress
-web site at http://www.faddensoft.com/ciderpress/.
+If you have any questions, please visit the CiderPress
+web site at http://ciderpress.sourceforge.net/.

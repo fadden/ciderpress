@@ -231,12 +231,12 @@ BEGIN
     CONTROL         106,IDC_STATIC,"Static",SS_BITMAP,7,6,64,59
     LTEXT           "CiderPress v%d.%d.%d%s%s",IDC_CIDERPRESS_VERS_TEXT,77,7,
                     128,9
-    LTEXT           "Copyright © 2007 by FaddenSoft, LLC.\rAll Rights Reserved.",
+    LTEXT           "Copyright © 2009 by FaddenSoft, LLC.\rAll Rights Reserved.",
                     IDC_STATIC,77,20,128,19
-    ICON            IDR_MAINFRAME,IDC_STATIC,77,45,21,20
-    ICON            IDI_FILE_NUFX,IDC_STATIC,106,45,21,20
-    ICON            IDI_FILE_BINARY2,IDC_STATIC,136,45,21,20
-    ICON            IDI_FILE_DISKIMAGE,IDC_STATIC,166,45,21,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,77,45,20,20
+    ICON            IDI_FILE_NUFX,IDC_STATIC,106,45,20,20
+    ICON            IDI_FILE_BINARY2,IDC_STATIC,136,45,20,20
+    ICON            IDI_FILE_DISKIMAGE,IDC_STATIC,166,45,20,20
     GROUPBOX        "Libraries",IDC_STATIC,7,71,198,56
     LTEXT           "Using NufxLib DLL v%d.%d.%d",IDC_NUFXLIB_VERS_TEXT,16,
                     82,170,10

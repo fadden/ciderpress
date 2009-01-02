@@ -3,11 +3,11 @@ DeployMaster Installation Script
 faddenSoft
 http://www.faddensoft.com/
 CiderPress
-http://www.faddensoft.com/ciderpress/
-3.0.0
-39166
+http://ciderpress.sourceforge.net/
+3.0.1
+39815
 C:\DATA\faddenSoft\fs.ico
-Copyright © 2007 faddenSoft, LLC.  All rights reserved.
+Copyright © 2009 faddenSoft, LLC.  All rights reserved.
 C:\Src\CiderPress\DIST\ReadMe.txt
 C:\Src\CiderPress\DIST\License.txt
 
@@ -267,5 +267,5 @@ FALSE
 0
 10
 
-Setup300.exe
+Setup301.exe
 FALSE
