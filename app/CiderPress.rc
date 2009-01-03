@@ -217,27 +217,27 @@ END
 // Dialog
 //
 
-IDD_ABOUTDLG DIALOGEX 0, 0, 212, 154
+IDD_ABOUTDLG DIALOGEX 0, 0, 237, 154
 STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "About CiderPress"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,7,132,50,14
-    PUSHBUTTON      "Credits",IDC_ABOUT_CREDITS,63,132,50,14,0,0,
+    PUSHBUTTON      "Credits",IDC_ABOUT_CREDITS,77,132,50,14,0,0,
                     HIDC_ABOUT_CREDITS
-    PUSHBUTTON      "Enter registration code",IDC_ABOUT_ENTER_REG,119,132,86,
+    PUSHBUTTON      "Enter registration code",IDC_ABOUT_ENTER_REG,144,132,86,
                     14
     CONTROL         106,IDC_STATIC,"Static",SS_BITMAP,7,6,64,59
     LTEXT           "CiderPress v%d.%d.%d%s%s",IDC_CIDERPRESS_VERS_TEXT,77,7,
-                    128,9
-    LTEXT           "Copyright © 2009 by FaddenSoft, LLC.\rAll Rights Reserved.",
-                    IDC_STATIC,77,20,128,19
-    ICON            IDR_MAINFRAME,IDC_STATIC,77,45,20,20
-    ICON            IDI_FILE_NUFX,IDC_STATIC,106,45,20,20
-    ICON            IDI_FILE_BINARY2,IDC_STATIC,136,45,20,20
-    ICON            IDI_FILE_DISKIMAGE,IDC_STATIC,166,45,20,20
-    GROUPBOX        "Libraries",IDC_STATIC,7,71,198,56
+                    153,9
+    LTEXT           "Copyright © 2009 by CiderPress project authors\rAll Rights Reserved.",
+                    IDC_STATIC,77,20,153,19
+    ICON            IDR_MAINFRAME,IDC_STATIC,77,45,21,20
+    ICON            IDI_FILE_NUFX,IDC_STATIC,106,45,21,20
+    ICON            IDI_FILE_BINARY2,IDC_STATIC,136,45,21,20
+    ICON            IDI_FILE_DISKIMAGE,IDC_STATIC,166,45,21,20
+    GROUPBOX        "Libraries",IDC_STATIC,7,71,223,56
     LTEXT           "Using NufxLib DLL v%d.%d.%d",IDC_NUFXLIB_VERS_TEXT,16,
                     82,170,10
     LTEXT           "Using DiskImg DLL v%d.%d.%d",IDC_DISKIMG_VERS_TEXT,16,
@@ -1577,16 +1577,16 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "Comments", "The end is nigh.\0"
-            VALUE "CompanyName", "FaddenSoft, LLC\0"
+            VALUE "CompanyName", "CiderPress Project\0"
             VALUE "FileDescription", "CiderPress\0"
-            VALUE "FileVersion", "2, 4, 6, 0\0"
+            VALUE "FileVersion", "3, 0, 1, 0\0"
             VALUE "InternalName", "CiderPress\0"
-            VALUE "LegalCopyright", "Copyright © 2007 FaddenSoft, LLC\0"
+            VALUE "LegalCopyright", "Copyright © 2009 CiderPress project authors\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "CiderPress.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "CiderPress\0"
-            VALUE "ProductVersion", "2, 4, 6, 0\0"
+            VALUE "ProductVersion", "3, 0, 1, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -1609,7 +1609,7 @@ GUIDELINES DESIGNINFO DISCARDABLE
 BEGIN
     IDD_ABOUTDLG, DIALOG
     BEGIN
-        RIGHTMARGIN, 205
+        RIGHTMARGIN, 230
         VERTGUIDE, 7
         VERTGUIDE, 16
         VERTGUIDE, 77

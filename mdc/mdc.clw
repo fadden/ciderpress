@@ -11,10 +11,10 @@ LastPage=0
 ClassCount=2
 
 ResourceCount=4
-Resource1=IDC_MDC
+Resource1=IDD_ABOUTBOX
 Class1=AboutDlg
 Resource2="IDD_CHOOSE_FILES"
-Resource3=IDD_ABOUTBOX
+Resource3=IDC_MDC
 Class2=ProgressDlg
 Resource4=IDD_PROGRESS
 

@@ -12,6 +12,8 @@
  *	- Rumor has it that "sparse" files are possible.  Not handled.
  *	- I'm currently treating the directory as fixed-length.  This may
  *	  not be correct.
+ *  - Not handling special entries (volume label, date stamps,
+ *    password control).
  *
  * As I have no practical experience with CP/M, this is the weakest of the
  * filesystem implementations.
@@ -31,6 +33,7 @@ const int kVolDirBlock = 24;			// track 3 sector 0
 const int kVolDirCount = 4;				// 4 prodos blocks
 const int kNoDataByte = 0xe5;
 const int kMaxUserNumber = 31;			// 0-15 on some systems, 0-31 on others
+const int kMaxSpecialUserNumber = 0x21;	// 0x20 and 0x21 have special meanings
 const int kMaxExtent = 31;				// extent counter, 0-31
 
 /*
@@ -59,19 +62,18 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 	for (i = 0; i < DiskFSCPM::kFullDirSize/DiskFSCPM::kDirectoryEntryLen; i++)
 	{
 		if (*dptr != kNoDataByte) {
-			/* usually userNumber == 0, but sometimes not; must be <= 31 */
-			if (*dptr > kMaxUserNumber) {
+			/*
+			 * Usually userNumber is 0, but sometimes not.  It's expected to
+			 * be < 0x20 for a normal file, may be 0x21 or 0x22 for special
+			 * entries (volume label, date stamps).
+			 */
+			if (*dptr > kMaxSpecialUserNumber) {
 				dierr = kDIErrFilesystemNotFound;
 				break;
 			}
 
 			/* extent counter, 0-31 */
 			if (dptr[12] > kMaxExtent) {
-				dierr = kDIErrFilesystemNotFound;
-				break;
-			}
-			/* value in S1 must be zero */
-			if (dptr[13] != 0) {
 				dierr = kDIErrFilesystemNotFound;
 				break;
 			}
@@ -214,6 +216,11 @@ DiskFSCPM::ReadCatalog(void)
 
 		if (fDirEntry[i].userNumber == kNoDataByte || fDirEntry[i].extent != 0)
 			continue;
+		if (fDirEntry[i].userNumber > kMaxUserNumber) {
+			/* skip over volume label, date stamps, etc */
+			WMSG1("Skipping entry with userNumber=0x%02x\n",
+				fDirEntry[i].userNumber);
+		}
 
 		pFile = new A2FileCPM(this, fDirEntry);
 		FormatName(pFile->fFileName, (char*)fDirEntry[i].fileName);
@@ -620,8 +627,13 @@ A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
 			/*
 			 * Read one CP/M block (two ProDOS blocks) and pull out the
 			 * set of data that the user wants.
+			 *
+			 * On some Microsoft Softcard disks, the first three tracks hold
+			 * file data rather than the system image.
 			 */
 			prodosBlock = DiskFSCPM::CPMToProDOSBlock(fBlockList[blkIndex]);
+			if (prodosBlock >= 280)
+				prodosBlock -= 280;
 
 			dierr = fpFile->GetDiskFS()->GetDiskImg()->ReadBlock(prodosBlock,
 						blkBuf);

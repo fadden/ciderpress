@@ -2217,7 +2217,7 @@ public:
 	};
 	// Contents of the raw 32-byte directory entry.
 	//
-	// From http://www.seasip.demon.co.uk/Cpm/format22.html
+	// From http://www.seasip.demon.co.uk/Cpm/format31.html
 	//
 	// UU F1 F2 F3 F4 F5 F6 F7 F8 T1 T2 T3 EX S1 S2 RC   .FILENAMETYP....
 	// AL AL AL AL AL AL AL AL AL AL AL AL AL AL AL AL   ................
@@ -2225,13 +2225,16 @@ public:
 	// If the high bit of T1 is set, the file is read-only.  If the high
 	// bit of T2 is set, the file is a "system" file.
 	//
+	// An entry with UU=0x20 indicates a CP/M 3.1 disk label entry.
+	// An entry with UU=0x21 indicates a time stamp entry (2.x or 3.x).
+	//
 	// Files larger than (1024 * 16) have multiple "extent" entries, i.e.
 	// entries with the same user number and file name.
 	typedef struct DirEntry {
 		unsigned char	userNumber;	// 0-15 or 0-31 (usually 0), e5=unused
 		unsigned char	fileName[kDirFileNameLen+1];
 		unsigned short	extent;		// extent (EX + S2 * 32)
-		unsigned char	S1;			// reserved, should be zero
+		unsigned char	S1;			// Last Record Byte Count (app-specific)
 		unsigned char	records;	// #of 128-byte records in this extent
 		unsigned char	blocks[kDirEntryBlockCount];
 		bool			readOnly;

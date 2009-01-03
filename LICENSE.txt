@@ -1,4 +1,4 @@
-Copyright (c) 2007, FaddenSoft, LLC
+Copyright (c) 2009, CiderPress project authors
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

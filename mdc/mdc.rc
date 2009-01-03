@@ -70,19 +70,19 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  22, 17, 133, 111
+IDD_ABOUTBOX DIALOG DISCARDABLE  22, 17, 156, 111
 STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 10, "MS Sans Serif"
 BEGIN
     ICON            IDI_MDC,IDC_MYICON,7,7,20,20
-    LTEXT           "MDC version %d.%d.%d",IDC_ABOUT_VERS,33,7,93,8,
+    LTEXT           "MDC version %d.%d.%d",IDC_ABOUT_VERS,33,7,116,8,
                     SS_NOPREFIX
-    LTEXT           "Copyright © 2007 by FaddenSoft, LLC.\rAll Rights Reserved.",
-                    IDC_STATIC,7,31,119,19
-    DEFPUSHBUTTON   "OK",IDOK,41,90,50,14
+    LTEXT           "Copyright © 2009 by CiderPress project authors.\rAll Rights Reserved.",
+                    IDC_STATIC,7,31,142,19
+    DEFPUSHBUTTON   "OK",IDOK,53,90,50,14
     LTEXT           "This utility scans Apple II disk images and creates formatted listings of the files in them.",
-                    IDC_STATIC,7,58,119,26
+                    IDC_STATIC,7,58,142,26
     LTEXT           "Multi-Disk Catalog",IDC_STATIC,33,15,55,8
 END
 
@@ -148,7 +148,7 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 126
+        RIGHTMARGIN, 149
         VERTGUIDE, 33
         TOPMARGIN, 7
         BOTTOMMARGIN, 104
