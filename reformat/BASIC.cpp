@@ -576,37 +576,37 @@ ReformatBusiness::Examine(ReformatHolder* pHolder)
  */
 static const char gBusinessTokens[128*10] = {
 	                                                        
-    "END\0      FOR\0      NEXT\0     INPUT\0    OUTPUT\0   DIM\0      READ\0     WRITE\0    "
-    "OPEN\0     CLOSE\0    *error*\0  TEXT\0     *error*\0  BYE\0      *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  WINDOW\0   INVOKE\0   PERFORM\0  *error*\0  *error*\0  "
-    "FRE\0      HPOS\0     VPOS\0     ERRLIN\0   ERR\0      KBD\0      EOF\0      TIME$\0    "
-    "DATE$\0    PREFIX$\0  EXFN.\0    EXFN%.\0   OUTREC\0   INDENT\0   *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  POP\0      HOME\0     *error*\0  "
-    "SUB$(\0    OFF\0      TRACE\0    NOTRACE\0  NORMAL\0   INVERSE\0  SCALE(\0   RESUME\0   "
-    "*error*\0  LET\0      GOTO\0     IF\0       RESTORE\0  SWAP\0     GOSUB\0    RETURN\0   "
-    "REM\0      STOP\0     ON\0       *error*\0  LOAD\0     SAVE\0     DELETE\0   RUN\0      "
-    "RENAME\0   LOCK\0     UNLOCK\0   CREATE\0   EXEC\0     CHAIN\0    *error*\0  *error*\0  "
-    "*error*\0  CATALOG\0  *error*\0  *error*\0  DATA\0     IMAGE\0    CAT\0      DEF\0      "
-    "*error*\0  PRINT\0    DEL\0      ELSE\0     CONT\0     LIST\0     CLEAR\0    GET\0      "
-    "NEW\0      TAB\0      TO\0       SPC(\0     USING\0    THEN\0     *error*\0  MOD\0      "
-    "STEP\0     AND\0      OR\0       EXTENSION\0DIV\0      *error*\0  FN\0       NOT\0      "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  tf7\0     "
+/* 0x80 */ "END\0      FOR\0      NEXT\0     INPUT\0    OUTPUT\0   DIM\0      READ\0     WRITE\0    "
+/* 0x88 */ "OPEN\0     CLOSE\0    *error*\0  TEXT\0     *error*\0  BYE\0      *error*\0  *error*\0  "
+/* 0x90 */ "*error*\0  *error*\0  *error*\0  WINDOW\0   INVOKE\0   PERFORM\0  *error*\0  *error*\0  "
+/* 0x98 */ "FRE\0      HPOS\0     VPOS\0     ERRLIN\0   ERR\0      KBD\0      EOF\0      TIME$\0    "
+/* 0xa0 */ "DATE$\0    PREFIX$\0  EXFN.\0    EXFN%.\0   OUTREC\0   INDENT\0   *error*\0  *error*\0  "
+/* 0xa8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  POP\0      HOME\0     *error*\0  "
+/* 0xb0 */ "SUB$(\0    OFF\0      TRACE\0    NOTRACE\0  NORMAL\0   INVERSE\0  SCALE(\0   RESUME\0   "
+/* 0xb8 */ "*error*\0  LET\0      GOTO\0     IF\0       RESTORE\0  SWAP\0     GOSUB\0    RETURN\0   "
+/* 0xc0 */ "REM\0      STOP\0     ON\0       *error*\0  LOAD\0     SAVE\0     DELETE\0   RUN\0      "
+/* 0xc8 */ "RENAME\0   LOCK\0     UNLOCK\0   CREATE\0   EXEC\0     CHAIN\0    *error*\0  *error*\0  "
+/* 0xd0 */ "*error*\0  CATALOG\0  *error*\0  *error*\0  DATA\0     IMAGE\0    CAT\0      DEF\0      "
+/* 0xd8 */ "*error*\0  PRINT\0    DEL\0      ELSE\0     CONT\0     LIST\0     CLEAR\0    GET\0      "
+/* 0xe0 */ "NEW\0      TAB\0      TO\0       SPC(\0     USING\0    THEN\0     *error*\0  MOD\0      "
+/* 0xe8 */ "STEP\0     AND\0      OR\0       EXTENSION\0DIV\0      *error*\0  FN\0       NOT\0      "
+/* 0xf0 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0xf8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  tf7\0     "
 };
 
 static const char gExtendedBusinessTokens[128*10] = {
-    "TAB(\0     TO\0       SPC(\0     USING\0    THEN\0     *error*\0  MOD\0      STEP\0     "
-    "AND\0      OR\0       EXTENSION\0DIV\0      *error*\0  FN\0       NOT\0      *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  AS\0       SGN(\0     INT(\0     ABS(\0     "
-    "*error*\0  TYP(\0     REC(\0     *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  PDL(\0     BUTTON(\0  SQR(\0     "
-    "RND(\0     LOG(\0     EXP(\0     COS(\0     SIN(\0     TAN(\0     ATN(\0     *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  STR$(\0    HEX$(\0    CHR$(\0    LEN(\0     VAL(\0     "
-    "ASC(\0     TEN(\0     *error*\0  *error*\0  CONV(\0    CONV&(\0   CONV$(\0   CONV%(\0   "
-    "LEFT$(\0   RIGHT$(\0  MID$(\0    INSTR$(\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0x80 */ "TAB(\0     TO\0       SPC(\0     USING\0    THEN\0     *error*\0  MOD\0      STEP\0     "
+/* 0x88 */ "AND\0      OR\0       EXTENSION\0DIV\0      *error*\0  FN\0       NOT\0      *error*\0  "
+/* 0x90 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0x98 */ "*error*\0  *error*\0  *error*\0  *error*\0  AS\0       SGN(\0     INT(\0     ABS(\0     "
+/* 0xa0 */ "*error*\0  TYP(\0     REC(\0     *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0xa8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  PDL(\0     BUTTON(\0  SQR(\0     "
+/* 0xb0 */ "RND(\0     LOG(\0     EXP(\0     COS(\0     SIN(\0     TAN(\0     ATN(\0     *error*\0  "
+/* 0xb8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0xc0 */ "*error*\0  *error*\0  *error*\0  STR$(\0    HEX$(\0    CHR$(\0    LEN(\0     VAL(\0     "
+/* 0xc8 */ "ASC(\0     TEN(\0     *error*\0  *error*\0  CONV(\0    CONV&(\0   CONV$(\0   CONV%(\0   "
+/* 0xd0 */ "LEFT$(\0   RIGHT$(\0  MID$(\0    INSTR$(\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0xd8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
     "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
     "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
     "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
@@ -626,6 +626,7 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
 	long srcLen = pHolder->GetSourceLen(part);
 	long length = srcLen;
 	int retval = -1;
+	int nestLevels = 0;
 
 	if (srcLen > 65536)
 		fUseRTF = false;
@@ -639,10 +640,10 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
 	/*
 	 * Make sure there's enough here to get started.  We want to return an
 	 * "okay" result because we want this treated like a reformatted empty
-	 * BASIC program rather than a non-Applesoft file.
+	 * BASIC program rather than a non-BASIC file.
 	 */
 	if (length < 2) {
-		WMSG0("  BAS truncated?\n");
+		WMSG0("  BA3 truncated?\n");
 		//fExpBuf.CreateWorkBuf();
 		BufPrintf("\r\n");
 		goto done;
@@ -658,13 +659,15 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
 		unsigned short lineNum;
 		bool inQuote = false;
 		bool inRem = false;
+		bool firstData = true;
+		bool literalYet = false;
 
 		increment = Read8(&srcPtr, &length);
 		WMSG1("  BA3 increment to next line is: %d\n", increment);
 		if (increment == 0) {
 			/* ProDOS sticks an extra byte on the end? */
 			if (length > 1) {
-				WMSG1("  BAS ended early; len is %d\n", length);
+				WMSG1("  BA3 ended early; len is %d\n", length);
 			}
 			break;
 		}
@@ -673,23 +676,90 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
 		RTFSetColor(kLineNumColor);
 		lineNum = Read16(&srcPtr, &length);
 		WMSG1("  BA3 line number: %d\n", lineNum);
-		BufPrintf(" %u ", lineNum);
+		BufPrintf(" %u   ", lineNum);
 
 		RTFSetColor(kDefaultColor);
+		if (nestLevels > 0) {
+			for (int i =0; i < nestLevels; i++)
+				BufPrintf("  ");
+		}
 
 		/* print a line */
 		while (*srcPtr != 0 && length > 0) {
 			if (*srcPtr & 0x80) {
 				/* token */
 				//RTFBoldOn();
+				literalYet = false;
 				RTFSetColor(kKeywordColor);
+				if (*srcPtr == 0x81) {
+					// Token is FOR - indent
+					nestLevels ++;
+				}
+				else if (*srcPtr == 0x82) {
+					// Token is NEXT - outdent
+					nestLevels --;
+				}
+				if (!firstData)
+					BufPrintf(" ");
 				if (((*srcPtr) & 0x7f) == 0x7f)
 				{
 					extendedToken = Read8(&srcPtr, &length);
-					BufPrintf(" %s ", &gExtendedBusinessTokens[((*srcPtr) & 0x7f) * 10]);
+					BufPrintf("%s", &gExtendedBusinessTokens[((*srcPtr) & 0x7f) * 10]);
+					// We need to have some tokens NOT add a space after them.
+					if ((*srcPtr == 0x80) ||	// TAB(
+						(*srcPtr == 0x82) ||	// SPC(
+						(*srcPtr == 0x9d) ||	// SGN(
+						(*srcPtr == 0x9e) ||	// INT(
+						(*srcPtr == 0x9f) ||	// ABS(
+						(*srcPtr == 0xa1) ||	// TYP(
+						(*srcPtr == 0xa2) ||	// REC(
+						(*srcPtr == 0xad) ||	// PDL(
+						(*srcPtr == 0xae) ||	// BUTTON(
+						(*srcPtr == 0xaf) ||	// SQR(
+						(*srcPtr == 0xb0) ||	// RND(
+						(*srcPtr == 0xb1) ||	// LOG(
+						(*srcPtr == 0xb2) ||	// EXP(
+						(*srcPtr == 0xb3) ||	// COS(
+						(*srcPtr == 0xb4) ||	// SIN(
+						(*srcPtr == 0xb5) ||	// TAN(
+						(*srcPtr == 0xb6) ||	// ATN(
+						(*srcPtr == 0xc3) ||	// STR$(
+						(*srcPtr == 0xc4) ||	// HEX$(
+						(*srcPtr == 0xc5) ||	// CHR$(
+						(*srcPtr == 0xc6) ||	// LEN(
+						(*srcPtr == 0xc7) ||	// VAL(
+						(*srcPtr == 0xc8) ||	// ASC(
+						(*srcPtr == 0xc9) ||	// TEN(
+						(*srcPtr == 0xcc) ||	// CONV(
+						(*srcPtr == 0xcd) ||	// CONV&(
+						(*srcPtr == 0xce) ||	// CONV$(
+						(*srcPtr == 0xcf) ||	// CONV%(
+						(*srcPtr == 0xd0) ||	// LEFT$(
+						(*srcPtr == 0xd1) ||	// RIGHT$(
+						(*srcPtr == 0xd2) ||	// MID$(
+						(*srcPtr == 0xd3))		// INSTR$(
+						firstData = true;
+					else
+						firstData = false;
 				}
-				else
-					BufPrintf(" %s ", &gBusinessTokens[((*srcPtr) & 0x7f) * 10]);
+				else {
+					BufPrintf("%s", &gBusinessTokens[((*srcPtr) & 0x7f) * 10]);
+					// We need to have some tokens NOT add a space after them.
+					if ((*srcPtr == 0x99) ||	// HPOS
+						(*srcPtr == 0x9a) ||	// VPOS
+						(*srcPtr == 0x9f) ||	// TIME$
+						(*srcPtr == 0xa0) ||	// DATE$
+						(*srcPtr == 0xa1) ||	// PREFIX$
+						(*srcPtr == 0xa2) ||	// EXFN.
+						(*srcPtr == 0xa3) ||	// EXFN%.
+						(*srcPtr == 0xb0) ||	// SUB$(.
+						(*srcPtr == 0xb6) ||	// SCALE(
+						(*srcPtr == 0xc0) ||	// REM
+						(*srcPtr == 0xe3))		// SPC(
+						firstData = true;
+					else
+						firstData = false;
+				}
 				//RTFBoldOff();
 				RTFSetColor(kDefaultColor);
 
@@ -700,6 +770,14 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
 				}
 			} else {
 				/* simple chracter */
+				if (*srcPtr == ':') // Reset line if we have a colon
+					firstData = true;
+				if (!firstData) {
+					if (!literalYet) {
+						BufPrintf(" ");
+						literalYet = true;
+					}
+				}
 				if (fUseRTF) {
 					if (*srcPtr == '"' && !inRem) {
 						if (!inQuote) {
@@ -734,7 +812,7 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
 		length--;
 
 		if (!length) {
-			WMSG0("  BAS truncated in mid-line\n");
+			WMSG0("  BA3 truncated in mid-line\n");
 			break;
 		}
 
