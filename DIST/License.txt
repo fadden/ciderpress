@@ -1,5 +1,6 @@
 End-User License Agreement for CiderPress
-Copyright (C) 2007 FaddenSoft, LLC.  All Rights Reserved.
+Copyright (c) 2009, CiderPress project authors
+All rights reserved.
 
 AGREEMENT.  After reading this agreement carefully, if you ("Customer") do
 not agree to all of the terms of this agreement, you may not use
