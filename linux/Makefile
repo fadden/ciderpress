@@ -78,4 +78,3 @@ depend:
 	makedepend -- $(CFLAGS) -- $(SRCS1) $(SRCS2) $(SRCS3) $(SRCS4) $(SRCS5) $(SRCS6)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-

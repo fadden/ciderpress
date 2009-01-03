@@ -862,7 +862,8 @@ main(int argc, char** argv)
 
     NuSetGlobalErrorMessageHandler(NufxErrorMsgHandler);
 
-    time_t start = time(NULL);
+    time_t start;
+    start = time(NULL);
     printf("Run started at %.24s\n\n", ctime(&start));
 
     while (--argc) {

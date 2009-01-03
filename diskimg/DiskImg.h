@@ -813,7 +813,7 @@ private:
     }
     DIError LoadNibbleTrack(long track, long* pTrackLen);
     DIError SaveNibbleTrack(void);
-    int DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer,
+    int FindNibbleSectorStart(const CircularBufferAccess& buffer,
         int track, int sector, const NibbleDescr* pNibbleDescr, int* pVol);
     void DecodeAddr(const CircularBufferAccess& buffer, int offset,
         short* pVol, short* pTrack, short* pSector, short* pChksum);
