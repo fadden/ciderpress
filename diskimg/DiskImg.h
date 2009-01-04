@@ -1,5 +1,6 @@
 /*
  * CiderPress
+ * Copyright (C) 2009 by CiderPress authors.  All Rights Reserved.
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
@@ -344,6 +345,7 @@ public:
         kFormatMacPart = 44,        // Macintosh-style partitioned disk
         kFormatMicroDrive = 45,     // ///SHH Systeme's MicroDrive format
         kFormatFocusDrive = 46,     // Parsons Engineering FocusDrive format
+        kFormatGutenberg = 47,     // Gutenberg word processor format
 
         // try to keep this in an unsigned char, e.g. for CP clipboard
     } FSFormat;
@@ -573,6 +575,7 @@ public:
     static bool UsesDOSFileStructure(FSFormat format) {
         return (format == kFormatDOS33 ||
                 format == kFormatDOS32 ||
+                format == kFormatGutenberg ||
                 format == kFormatUNIDOS ||
                 format == kFormatOzDOS ||
                 format == kFormatRDOS33 ||

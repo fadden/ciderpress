@@ -1,5 +1,6 @@
 /*
  * CiderPress
+ * Copyright (C) 2009 by CiderPress authors.  All Rights Reserved.
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
@@ -2803,6 +2804,258 @@ private:
 	A2File*			fpParent;
 #endif
 	A2FileDescr*	fpOpenFile;     // only one fork can be open at a time
+};
+
+
+/*
+ * ===========================================================================
+ *		Gutenberg
+ * ===========================================================================
+ */
+
+class A2FileGutenberg;
+
+/*
+ * Gutenberg disk.
+ */
+class DISKIMG_API DiskFSGutenberg : public DiskFS {
+public:
+	DiskFSGutenberg(void) : DiskFS() {
+		fVTOCLoaded = false;
+		fDiskIsGood = false;
+	}
+	virtual ~DiskFSGutenberg(void) {}
+
+    static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+		DiskImg::FSFormat* pFormat, FSLeniency leniency);
+
+	virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+		SetDiskImg(pImg);
+		return Initialize(initMode);
+	}
+
+	virtual const char* GetVolumeName(void) const { return fDiskVolumeName; }
+	virtual const char* GetVolumeID(void) const { return fDiskVolumeID; }
+	virtual const char* GetBareVolumeName(void) const {
+		return fDiskVolumeName;
+	}
+	virtual bool GetReadWriteSupported(void) const { return true; }
+	virtual bool GetFSDamaged(void) const { return !fDiskIsGood; }
+	virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
+		int* pUnitSize) const;
+
+	static bool IsValidFileName(const char* name);
+	static bool IsValidVolumeName(const char* name);
+
+	// utility function
+	static void LowerASCII(unsigned char* buf, long len);
+	static void ReplaceFssep(char* str, char replacement);
+
+	enum {
+		kMinTracks = 17,			// need to put the catalog track here
+		kMaxTracks = 50,
+		kMaxCatalogSectors = 64,	// two tracks on a 32-sector disk
+	};
+
+	/* a T/S pair */
+	typedef struct TrackSector {
+		char	track;
+		char	sector;
+	} TrackSector;
+
+	friend class A2FDGutenberg;	// for Write
+
+private:
+	DIError Initialize(InitMode initMode);
+	DIError ReadVTOC(void);
+	void UpdateVolumeNum(void);
+	void DumpVTOC(void);
+	void SetSectorUsage(long track, long sector,
+		VolumeUsage::ChunkPurpose purpose);
+	void FixVolumeUsageMap(void);
+	DIError ReadCatalog(void);
+	DIError ProcessCatalogSector(int catTrack, int catSect,
+		const unsigned char* sctBuf);
+	DIError GetFileLengths(void);
+	DIError ComputeLength(A2FileGutenberg* pFile, const TrackSector* tsList,
+		int tsCount);
+	DIError TrimLastSectorUp(A2FileGutenberg* pFile, TrackSector lastTS);
+	void MarkFileUsage(A2FileGutenberg* pFile, TrackSector* tsList, int tsCount,
+		TrackSector* indexList, int indexCount);
+	DIError MakeFileNameUnique(char* fileName);
+	DIError GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
+		unsigned char* sctBuf, A2FileGutenberg** ppPrevEntry);
+	void CreateDirEntry(unsigned char* sctBuf, int catEntry,
+		const char* fileName, TrackSector* pTSSect, unsigned char fileType,
+		int access);
+	void FreeTrackSectors(TrackSector* pList, int count);
+
+	bool CheckDiskIsGood(void);
+
+	DIError WriteDOSTracks(int sectPerTrack);
+
+	DIError ScanVolBitmap(void);
+	DIError LoadVolBitmap(void);
+	DIError SaveVolBitmap(void);
+	void FreeVolBitmap(void);
+	DIError AllocSector(TrackSector* pTS);
+	DIError CreateEmptyBlockMap(bool withDOS);
+	bool GetSectorUseEntry(long track, int sector) const;
+	void SetSectorUseEntry(long track, int sector, bool inUse);
+	inline unsigned long GetVTOCEntry(const unsigned char* pVTOC,
+		long track) const;
+
+ 	// Largest interesting volume is 400K (50 tracks, 32 sectors), but
+	// we may be looking at it in 16-sector mode, so max tracks is 100.
+	enum {
+		kMaxInterestingTracks = 100,
+		kSectorSize = 256,
+		kDefaultVolumeNum = 254,
+		kMaxExtensionLen = 4,	// used when normalizing; ".gif" is 4
+	};
+
+	/* some fields from the VTOC */
+	int		fFirstCatTrack;
+	int		fFirstCatSector;
+	int		fVTOCVolumeNumber;
+	int		fVTOCNumTracks;
+	int		fVTOCNumSectors;
+
+	/* private data */
+	char	fDiskVolumeName[10];		// 
+	char	fDiskVolumeID[11+12+1];		// sizeof "Gutenberg: " + 12 + null
+	unsigned char	fVTOC[kSectorSize];
+	bool	fVTOCLoaded;
+
+	/*
+	 * There are some things we need to be careful of when reading the
+	 * catalog track, like bad links and infinite loops.  By storing a list
+	 * of known good catalog sectors, we only have to handle that stuff once.
+	 * The catalog doesn't grow or shrink, so this never needs to be updated.
+	 */
+	TrackSector	fCatalogSectors[kMaxCatalogSectors];
+
+	bool	fDiskIsGood;
+};
+
+/*
+ * File descriptor for an open Gutenberg file.
+ */
+class DISKIMG_API A2FDGutenberg : public A2FileDescr {
+public:
+	A2FDGutenberg(A2File* pFile) : A2FileDescr(pFile) {
+		fOffset = 0;
+		fModified = false;
+	}
+	virtual ~A2FDGutenberg(void) {
+	}
+
+	friend class A2FileGutenberg;
+
+	virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
+	virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
+	virtual DIError Seek(di_off_t offset, DIWhence whence);
+	virtual di_off_t Tell(void);
+	virtual DIError Close(void);
+
+	virtual long GetSectorCount(void) const;
+	virtual long GetBlockCount(void) const;
+	virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
+	virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+
+private:
+	typedef DiskFSGutenberg::TrackSector TrackSector;
+
+	int				fTSCount;
+	di_off_t		fOffset;			// current position in file
+
+	di_off_t		fOpenEOF;			// how big the file currently is
+	long			fOpenSectorsUsed;	// how many sectors it occupies
+	bool			fModified;			// if modified, update stuff on Close
+
+	void DumpTSList(void) const;
+};
+
+/*
+ * Holds Gutenberg files.
+ *
+ */
+class DISKIMG_API A2FileGutenberg : public A2File {
+public:
+	A2FileGutenberg(DiskFS* pDiskFS);
+	virtual ~A2FileGutenberg(void);
+
+	// assorted constants
+	enum {
+		kMaxFileName = 12,
+	};
+	typedef enum {
+		kTypeText			= 0x00,		// 'T'
+	} FileType;
+
+	/*
+	 * Implementations of standard interfaces.
+	 */
+	virtual const char* GetFileName(void) const { return fFileName; }
+	virtual const char* GetPathName(void) const { return fFileName; }
+	virtual char GetFssep(void) const { return '\0'; }
+	virtual long GetFileType(void) const;
+	virtual long GetAuxType(void) const { return fAuxType; }
+	virtual long GetAccess(void) const { return DiskFS::kFileAccessUnlocked; }
+	virtual time_t GetCreateWhen(void) const { return 0; }
+	virtual time_t GetModWhen(void) const { return 0; }
+	virtual di_off_t GetDataLength(void) const { return fLength; }
+	virtual di_off_t GetDataSparseLength(void) const { return fSparseLength; }
+	virtual di_off_t GetRsrcLength(void) const { return -1; }
+	virtual di_off_t GetRsrcSparseLength(void) const { return -1; }
+
+	virtual DIError Open(A2FileDescr** ppOpenFile, bool readOnly,
+		bool rsrcFork = false);
+	virtual void CloseDescr(A2FileDescr* pOpenFile) {
+		assert(pOpenFile == fpOpenFile);
+		delete fpOpenFile;
+		fpOpenFile = NULL;
+	}
+	virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+
+	void Dump(void) const;
+
+	typedef DiskFSGutenberg::TrackSector TrackSector;
+
+	/*
+	 * Contents of directory entry.
+	 *
+	 * We don't hold deleted or unused entries, so fTSListTrack is always
+	 * valid.
+	 */
+	short		fTrack;		// (could use TrackSector here)
+	short		fSector;
+	unsigned short	fLengthInSectors;
+	bool		fLocked;
+	char		fFileName[kMaxFileName+1];	// "fixed" version
+	FileType	fFileType;
+
+	TrackSector	fCatTS;			// track/sector for our catalog entry
+	int			fCatEntryNum;	// entry number within cat sector
+
+	// these are computed or determined from the file contents
+	unsigned short	fAuxType;			// addr for bin, etc.
+	short			fDataOffset;		// for 'A'/'B'/'I' with embedded len
+	di_off_t		fLength;			// file length, in bytes
+	di_off_t		fSparseLength;		// file length, factoring sparse out
+
+	void FixFilename(void);
+
+	static FileType ConvertFileType(long prodosType, di_off_t fileLen);
+	static bool IsValidType(long prodosType);
+	static void MakeDOSName(char* buf, const char* name);
+	static void TrimTrailingSpaces(char* filename);
+
+private:
+	DIError ExtractTSPairs(const unsigned char* sctBuf, TrackSector* tsList,
+		int* pLastNonZero);
+
+	A2FDGutenberg*		fpOpenFile;
 };
 
 

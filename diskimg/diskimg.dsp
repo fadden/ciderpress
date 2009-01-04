@@ -162,6 +162,10 @@ SOURCE=.\Global.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Gutenberg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\HFS.cpp
 # End Source File
 # Begin Source File

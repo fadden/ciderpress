@@ -1,5 +1,6 @@
 /*
  * CiderPress
+ * Copyright (C) 2009 by CiderPress authors.  All Rights Reserved.
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
@@ -1404,6 +1405,10 @@ DiskImg::AnalyzeImageFS(void)
     {
 		assert(fFormat == kFormatMacHFS);
 		WMSG1(" DI found HFS, order=%d\n", fOrder);
+	} else if (DiskFSGutenberg::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
+    {
+		assert(fFormat == kFormatGutenberg);
+		WMSG1(" DI found Gutenberg, order=%d\n", fOrder);
 	} else {
 		fFormat = kFormatUnknown;
 		WMSG1(" DI no recognizeable filesystem found (fOrder=%d)\n",
@@ -1578,6 +1583,7 @@ DiskImg::CalcFSSectorOrder(void) const
 	case kFormatDOS32:
 	case kFormatUNIDOS:
 	case kFormatOzDOS:
+	case kFormatGutenberg:
 		return kSectorOrderDOS;
 
 	case kFormatGenericCPMOrd:
@@ -1633,6 +1639,7 @@ DiskImg::ShowAsBlocks(void) const
 	case kFormatRDOS33:
 	case kFormatUNIDOS:
 	case kFormatOzDOS:
+	case kFormatGutenberg:
 		return false;
 
 	case kFormatGenericProDOSOrd:
@@ -3157,6 +3164,9 @@ DiskImg::OpenAppropriateDiskFS(bool allowUnknown)
 	case DiskImg::kFormatRDOS32:
 	case DiskImg::kFormatRDOS3:
 		pDiskFS = new DiskFSRDOS();
+		break;
+	case DiskImg::kFormatGutenberg:
+		pDiskFS = new DiskFSGutenberg();
 		break;
 
 	default:

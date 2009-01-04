@@ -1,5 +1,6 @@
 /*
  * CiderPress
+ * Copyright (C) 2009 by CiderPress authors.  All Rights Reserved.
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
@@ -1158,6 +1159,7 @@ DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName)
 		case DiskImg::kFormatDOS33:
 		case DiskImg::kFormatDOS32:
 		case DiskImg::kFormatUNIDOS:
+		case DiskImg::kFormatGutenberg:
 			pNewEntry->SetFormatStr("DOS");
 			break;
 		case DiskImg::kFormatProDOS:
