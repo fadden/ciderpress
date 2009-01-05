@@ -171,6 +171,7 @@ typedef enum {
 	kPrConvBusiness,				// bool
 	kPrConvGWP,						// bool
 	kPrConvText8,					// bool
+	kPrConvGutenberg,				// bool
 	kPrConvAWP,						// bool
 	kPrConvADB,						// bool
 	kPrConvASP,						// bool

@@ -118,6 +118,7 @@ const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
 	{ kPrConvBusiness,					kBool,	kPrefsSect,		_T("conv-business") },
 	{ kPrConvGWP,						kBool,	kPrefsSect,		_T("conv-gwp") },
 	{ kPrConvText8,						kBool,	kPrefsSect,		_T("conv-text8") },
+	{ kPrConvGutenberg,					kBool,	kPrefsSect,		_T("conv-gutenberg") },
 	{ kPrConvAWP,						kBool,	kPrefsSect,		_T("conv-awp") },
 	{ kPrConvADB,						kBool,	kPrefsSect,		_T("conv-adb") },
 	{ kPrConvASP,						kBool,	kPrefsSect,		_T("conv-asp") },
@@ -227,6 +228,7 @@ Preferences::Preferences(void)
 	SetPrefBool(kPrConvBusiness, true);
 	SetPrefBool(kPrConvGWP, true);
 	SetPrefBool(kPrConvText8, true);
+	SetPrefBool(kPrConvGutenberg, true);
 	SetPrefBool(kPrConvAWP, true);
 	SetPrefBool(kPrConvADB, true);
 	SetPrefBool(kPrConvASP, true);

@@ -86,6 +86,7 @@ ReformatHolder::GetReformatInstance(ReformatID id)
 	case kReformatSHR_DG3200:		pReformat = new ReformatDG3200SHR;			break;
 	case kReformatPrintShop:		pReformat = new ReformatPrintShop;			break;
 	case kReformatMacPaint:			pReformat = new ReformatMacPaint;			break;
+	case kReformatGutenberg:		pReformat = new ReformatGutenberg;			break;
 	case kReformatUnknown:
 	case kReformatMAX:
 	default:						assert(false);								break;
@@ -190,6 +191,9 @@ ReformatHolder::GetReformatName(ReformatID id)
 		break;
 	case kReformatMagicWindow:
 		descr = "Magic Window";
+		break;
+	case kReformatGutenberg:
+		descr = "Gutenberg Word Processor";
 		break;
 	case kReformatAWP:
 		descr = "AppleWorks Word Processor";

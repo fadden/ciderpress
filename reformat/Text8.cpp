@@ -1,5 +1,6 @@
 /*
  * CiderPress
+ * Copyright (C) 2009 by CiderPress authors.  All Rights Reserved.
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
@@ -142,7 +143,7 @@ ReformatMagicWindow::IsFormatted(const ReformatHolder* pHolder)
 
 
 /*
- * Skip the header and text-convert the reset.
+ * Skip the header and text-convert the rest.
  */
 int
 ReformatMagicWindow::Process(const ReformatHolder* pHolder,
@@ -170,5 +171,55 @@ ReformatMagicWindow::Process(const ReformatHolder* pHolder,
 	retval = 0;
 
 bail:
+	return retval;
+}
+
+
+/*
+ * ===========================================================================
+ *		Gutenberg Word Processor
+ * ===========================================================================
+ */
+
+/*
+ * Decide whether or not we want to handle this file.
+ */
+void
+ReformatGutenberg::Examine(ReformatHolder* pHolder)
+{
+	if ((pHolder->GetFileType() == kTypeTXT)  && 
+		(pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatGutenberg)) {
+
+		pHolder->SetApplic(ReformatHolder::kReformatGutenberg,
+			ReformatHolder::kApplicYes,
+			ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+	}
+}
+
+
+/*
+ * Convert the text.
+ */
+int
+ReformatGutenberg::Process(const ReformatHolder* pHolder,
+	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+	ReformatOutput* pOutput)
+{
+	const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+	long srcLen = pHolder->GetSourceLen(part);
+	long length = srcLen;
+	int retval = -1;
+
+	fUseRTF = false;
+
+	RTFBegin();
+
+	ConvertEOL(srcPtr, srcLen, true, true);
+
+	RTFEnd();
+
+	SetResultBuffer(pOutput);
+	retval = 0;
+
 	return retval;
 }

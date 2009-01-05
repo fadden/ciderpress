@@ -1,5 +1,6 @@
 /*
  * CiderPress
+ * Copyright (C) 2009 by CiderPress authors.  All Rights Reserved.
  * Copyright (C) 2007, 2008 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
@@ -96,6 +97,7 @@ public:
 		kReformatGWP,
 
 		kReformatMagicWindow,
+		kReformatGutenberg,
 
 		kReformatAWP,
 		kReformatADB,
@@ -182,12 +184,14 @@ public:
 	 *
 	 * We want to know if it's DOS so we can relax some file-type checking,
 	 * and we want to know if it's CP/M so we can adjust the way we think
-	 * about text files.
+	 * about text files.  We want to know if it's Gutenberg because they only
+	 * have one type of file, and it's indistingusihable from any other text file!
 	 */
 	typedef enum SourceFormat {
 		kSourceFormatGeneric = 0,
 		kSourceFormatDOS,
 		kSourceFormatCPM,
+		kSourceFormatGutenberg,
 	} SourceFormat;
 
 
@@ -268,6 +272,7 @@ public:
 	friend class ReformatTeach;
 	friend class ReformatGWP;
 	friend class ReformatMagicWindow;
+	friend class ReformatGutenberg;
 	friend class ReformatAWP;
 	friend class ReformatADB;
 	friend class ReformatASP;

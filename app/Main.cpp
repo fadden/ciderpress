@@ -2644,6 +2644,8 @@ MainWindow::ConfigureReformatFromPreferences(ReformatHolder* pReformat)
 		pPreferences->GetPrefBool(kPrConvGWP));
 	pReformat->SetReformatAllowed(ReformatHolder::kReformatMagicWindow,
 		pPreferences->GetPrefBool(kPrConvText8));
+	pReformat->SetReformatAllowed(ReformatHolder::kReformatGutenberg,
+		pPreferences->GetPrefBool(kPrConvGutenberg));
 	pReformat->SetReformatAllowed(ReformatHolder::kReformatAWP,
 		pPreferences->GetPrefBool(kPrConvAWP));
 	pReformat->SetReformatAllowed(ReformatHolder::kReformatAWP,
@@ -2707,7 +2709,13 @@ MainWindow::ConfigureReformatFromPreferences(ReformatHolder* pReformat)
 /*static*/ ReformatHolder::SourceFormat
 MainWindow::ReformatterSourceFormat(DiskImg::FSFormat format)
 {
-	if (DiskImg::UsesDOSFileStructure(format))
+	/*
+	 * Gutenberg both UsesDOSFileStructure and is formatted with 
+	 * kFormatGutenberg, so check for the latter first.
+	 */
+	if (format == DiskImg::kFormatGutenberg)
+		return ReformatHolder::kSourceFormatGutenberg;
+	else if (DiskImg::UsesDOSFileStructure(format))
 		return ReformatHolder::kSourceFormatDOS;
 	else if (format == DiskImg::kFormatCPM)
 		return ReformatHolder::kSourceFormatCPM;

@@ -314,6 +314,8 @@ protected:
 
 	void ConvertEOL(const unsigned char* srcBuf, long srcLen,
 		bool stripHiBits);
+	void ConvertEOL(const unsigned char* srcBuf, long srcLen,
+		bool stripHiBits, bool stripNulls);
 	void BufHexDump(const unsigned char* srcBuf, long srcLen);
 	void SetResultBuffer(ReformatOutput* pOutput, bool multiFont = false);
 

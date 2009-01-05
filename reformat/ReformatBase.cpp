@@ -713,6 +713,23 @@ void
 ReformatText::ConvertEOL(const unsigned char* srcBuf, long srcLen,
 	bool stripHiBits)
 {
+	/* Compatibility - assume we're not stripping nulls */
+	ConvertEOL(srcBuf, srcLen, stripHiBits, false);
+}
+
+/*
+ * Convert the EOL markers in a buffer.  The output is written to the work
+ * buffer.  The input buffer may be CR, LF, or CRLF.
+ *
+ * If "stripHiBits" is set, the high bit of each character is cleared before
+ * the value is considered.
+ *
+ * If "stripNulls" is true, no null values will make it through.
+ */
+void
+ReformatText::ConvertEOL(const unsigned char* srcBuf, long srcLen,
+	bool stripHiBits, bool stripNulls)
+{
 	unsigned char ch;
 	int mask;
 
@@ -741,7 +758,9 @@ ReformatText::ConvertEOL(const unsigned char* srcBuf, long srcLen,
 		} else if (ch == '\n') {
 			BufPrintf("\r\n");
 		} else {
-			BufPrintf("%c", ch);
+			/* Strip out null bytes if requested */
+			if ((stripNulls && ch != 0x00) || !stripNulls)
+				BufPrintf("%c", ch);
 		}
 	}
 }
