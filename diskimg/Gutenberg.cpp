@@ -220,7 +220,7 @@ DiskFSGutenberg::ReadCatalog(void)
 		dierr = fpImg->ReadTrackSector(catTrack, catSect, sctBuf);
 		if (dierr != kDIErrNone)
 			goto bail;
-		sprintf(fDiskVolumeName, (const char *)&sctBuf[6], kMaxVolNameLen);
+		memcpy(fDiskVolumeName, &sctBuf[6], kMaxVolNameLen);	// Copy out the volume name; it should be the same on all catalog sectors.
 		fDiskVolumeName[kMaxVolNameLen] = 0x00;
 		DiskFSGutenberg::LowerASCII((unsigned char*)fDiskVolumeName, kMaxVolNameLen);
 		A2FileGutenberg::TrimTrailingSpaces(fDiskVolumeName);
