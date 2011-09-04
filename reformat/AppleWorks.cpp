@@ -107,7 +107,15 @@ ReformatAWP::Process(const ReformatHolder* pHolder,
 	 * Read the line records.
 	 */
 	while (1) {
+		if (length < 0) {
+			WMSG0(" AWP truncated file\n");
+			goto bail;
+		}
 		lineRecData = Read8(&srcPtr, &length);
+		if (length < 0) {
+			WMSG0(" AWP truncated file\n");
+			goto bail;
+		}
 		lineRecCode = Read8(&srcPtr, &length);
 
 		if (length < 0) {
@@ -171,7 +179,10 @@ ReformatAWP::ProcessLineRecord(uchar lineRecData, uchar lineRecCode,
 		/* ignore the horizontal offset for now */
 		RTFNewPara();
 	} else if (lineRecCode == kLineRecordText) {
-		err = HandleTextRecord(lineRecData, pSrcPtr, pLength);
+		if (pLength > 0)
+			err = HandleTextRecord(lineRecData, pSrcPtr, pLength);
+		else 
+			err = -1;
 	} else if (lineRecCode >= kLineRecordCommandMin &&
 			   lineRecCode <= kLineRecordCommandMax)
 	{
@@ -328,7 +339,7 @@ ReformatAWP::HandleTextRecord(uchar lineRecData,
 	if (tabFlags == kTabFlagsIsRuler)
 		noOutput = true;
 
-	while (byteCount--) {
+	while ((*pLength > 0) && (byteCount--)) {
 		ic = Read8(pSrcPtr, pLength);
 		if (*pLength < 0) {
 			err = -1;
