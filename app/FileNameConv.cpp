@@ -104,6 +104,7 @@ static const struct {
 	{ "BXY",  0xe0, 0x8000, 0 },		/* Binary II wrap around SHK */
 	{ "BSE",  0xe0, 0x8000, 0 },		/* Binary II wrap around SEA */
 	{ "SEA",  0xb3, 0xdb07, 0 },		/* GSHK SEA */
+	{ "TEXT", 0x04, 0x0000, 0 },		/* ASCII Text */
 	{ "GIF",  0xc0, 0x8006, 0 },		/* GIF image */
 	{ "JPG",  0x06, 0x0000, 0 },		/* JPEG (nicer than 'NON') */
 	{ "JPEG", 0x06, 0x0000, 0 },		/* JPEG (nicer than 'NON') */
