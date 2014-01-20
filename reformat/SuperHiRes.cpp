@@ -143,25 +143,25 @@ ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
 
 				pixelVal = (pixelByte >> 6) & 0x03;
 				//rgbval = fColorLookup[colorTable][pixelVal + 12];
-				colorIndex = colorTableOffset + pixelVal + 12;
+				colorIndex = colorTableOffset + pixelVal + 8;
 				SetPix(x, line*2, colorIndex);
 				SetPix(x++, line*2+1, colorIndex);
 
 				pixelVal = (pixelByte >> 4) & 0x03;
 				//rgbval = fColorLookup[colorTable][pixelVal + 8];
-				colorIndex = colorTableOffset + pixelVal + 8;
+				colorIndex = colorTableOffset + pixelVal + 12;
 				SetPix(x, line*2, colorIndex);
 				SetPix(x++, line*2+1, colorIndex);
 
 				pixelVal = (pixelByte >> 2) & 0x03;
 				//rgbval = fColorLookup[colorTable][pixelVal + 4];
-				colorIndex = colorTableOffset + pixelVal + 4;
+				colorIndex = colorTableOffset + pixelVal + 0;
 				SetPix(x, line*2, colorIndex);
 				SetPix(x++, line*2+1, colorIndex);
 
 				pixelVal = pixelByte & 0x03;
 				//rgbval = fColorLookup[colorTable][pixelVal];
-				colorIndex = colorTableOffset + pixelVal;
+				colorIndex = colorTableOffset + pixelVal + 4;
 				SetPix(x, line*2, colorIndex);
 				SetPix(x++, line*2+1, colorIndex);
 			}
