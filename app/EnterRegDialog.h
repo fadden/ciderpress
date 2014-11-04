@@ -19,32 +19,32 @@
  */
 class EnterRegDialog : public CDialog {
 public:
-	EnterRegDialog(CWnd* pParent = nil) : CDialog(IDD_REGISTRATION, pParent)
-	{ fDepth = 0; }
-	virtual ~EnterRegDialog(void) {}
+    EnterRegDialog(CWnd* pParent = nil) : CDialog(IDD_REGISTRATION, pParent)
+    { fDepth = 0; }
+    virtual ~EnterRegDialog(void) {}
 
-	CString		fUserName;
-	CString		fCompanyName;
-	CString		fRegKey;
+    CString     fUserName;
+    CString     fCompanyName;
+    CString     fRegKey;
 
-	static int GetRegInfo(CWnd* pWnd);
+    static int GetRegInfo(CWnd* pWnd);
 
 private:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnUserChange(void);
-	afx_msg void OnCompanyChange(void);
-	afx_msg void OnRegChange(void);
-	afx_msg void OnHelp(void);
+    afx_msg void OnUserChange(void);
+    afx_msg void OnCompanyChange(void);
+    afx_msg void OnRegChange(void);
+    afx_msg void OnHelp(void);
 
-	void HandleEditChange(int editID, int crcID);
+    void HandleEditChange(int editID, int crcID);
 
-	MyEdit		fMyEdit;
-	int			fDepth;
+    MyEdit      fMyEdit;
+    int         fDepth;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__ENTERREGDIALOG__*/

@@ -19,38 +19,38 @@ class ProgressDlg : public CDialog
 {
 // Construction
 public:
-	/*ProgressDlg(CWnd* pParent = NULL);   // standard constructor*/
+    /*ProgressDlg(CWnd* pParent = NULL);   // standard constructor*/
 
 // Dialog Data
-	//{{AFX_DATA(ProgressDlg)
-	enum { IDD = IDD_PROGRESS };
-		// NOTE: the ClassWizard will add data members here
-	//}}AFX_DATA
+    //{{AFX_DATA(ProgressDlg)
+    enum { IDD = IDD_PROGRESS };
+        // NOTE: the ClassWizard will add data members here
+    //}}AFX_DATA
 
-	bool*	fpCancelFlag;
+    bool*   fpCancelFlag;
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(ProgressDlg)
-	public:
-	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
-	protected:
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(ProgressDlg)
+    public:
+    virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
+    protected:
+    virtual void PostNcDestroy();
+    //}}AFX_VIRTUAL
 
 public:
-	BOOL Create(CWnd* pParentWnd = NULL) {
-		return CDialog::Create(IDD_PROGRESS, pParentWnd);
-	}
-	void SetCurrentFile(const char* fileName);
+    BOOL Create(CWnd* pParentWnd = NULL) {
+        return CDialog::Create(IDD_PROGRESS, pParentWnd);
+    }
+    void SetCurrentFile(const char* fileName);
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(ProgressDlg)
-	virtual void OnCancel();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Generated message map functions
+    //{{AFX_MSG(ProgressDlg)
+    virtual void OnCancel();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

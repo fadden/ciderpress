@@ -26,92 +26,92 @@
  */
 class DiskEditDialog : public CDialog {
 public:
-	DiskEditDialog(UINT nIDTemplate, CWnd* pParentWnd = NULL) :
-		CDialog(nIDTemplate, pParentWnd)
-	{
-		fReadOnly = true;
-		fpDiskFS = nil;
-		fFileName = "";
-		fPositionShift = 0;
-		fFirstResize = true;
-	}
-	virtual ~DiskEditDialog() {}
+    DiskEditDialog(UINT nIDTemplate, CWnd* pParentWnd = NULL) :
+        CDialog(nIDTemplate, pParentWnd)
+    {
+        fReadOnly = true;
+        fpDiskFS = nil;
+        fFileName = "";
+        fPositionShift = 0;
+        fFirstResize = true;
+    }
+    virtual ~DiskEditDialog() {}
 
-	void Setup(DiskFS* pDiskFS, const char* fileName) {
-		ASSERT(pDiskFS != nil);
-		ASSERT(fileName != nil);
-		fpDiskFS = pDiskFS;
-		fFileName = fileName;
-	}
+    void Setup(DiskFS* pDiskFS, const char* fileName) {
+        ASSERT(pDiskFS != nil);
+        ASSERT(fileName != nil);
+        fpDiskFS = pDiskFS;
+        fFileName = fileName;
+    }
 
-	enum { kSectorSize=256, kBlockSize=512 };
+    enum { kSectorSize=256, kBlockSize=512 };
 
-	virtual int LoadData(void) = 0;
+    virtual int LoadData(void) = 0;
 
-	virtual void DisplayData(void) = 0;
-	virtual void DisplayData(const unsigned char* buf, int size);
-	virtual void DisplayNibbleData(const unsigned char* srcBuf, int size);
+    virtual void DisplayData(void) = 0;
+    virtual void DisplayData(const unsigned char* buf, int size);
+    virtual void DisplayNibbleData(const unsigned char* srcBuf, int size);
 
-	bool GetReadOnly(void) const { return fReadOnly; }
-	void SetReadOnly(bool val) { fReadOnly = val; }
-	int GetPositionShift(void) const { return fPositionShift; }
-	void SetPositionShift(int val) { fPositionShift = val; }
-	DiskFS* GetDiskFS(void) const { return fpDiskFS; }
-	const char* GetFileName(void) const { return fFileName; }
+    bool GetReadOnly(void) const { return fReadOnly; }
+    void SetReadOnly(bool val) { fReadOnly = val; }
+    int GetPositionShift(void) const { return fPositionShift; }
+    void SetPositionShift(int val) { fPositionShift = val; }
+    DiskFS* GetDiskFS(void) const { return fpDiskFS; }
+    const char* GetFileName(void) const { return fFileName; }
 
 protected:
-	// return a low-ASCII character so we can read high-ASCII files
-	inline char PrintableChar(unsigned char ch) {
-		if (ch < 0x20)
-			return '.';
-		else if (ch < 0x80)
-			return ch;
-		else if (ch < 0xa0 || ch == 0xff)	// 0xff becomes 0x7f
-			return '.';
-		else
-			return ch & 0x7f;
-	}
+    // return a low-ASCII character so we can read high-ASCII files
+    inline char PrintableChar(unsigned char ch) {
+        if (ch < 0x20)
+            return '.';
+        else if (ch < 0x80)
+            return ch;
+        else if (ch < 0xa0 || ch == 0xff)   // 0xff becomes 0x7f
+            return '.';
+        else
+            return ch & 0x7f;
+    }
 
-	// overrides
-	virtual BOOL OnInitDialog(void);
+    // overrides
+    virtual BOOL OnInitDialog(void);
 
-	afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	afx_msg virtual void OnDone(void);
-	afx_msg virtual void OnHexMode(void);
-	afx_msg virtual void OnDoRead(void) = 0;
-	afx_msg virtual void OnDoWrite(void) = 0;
-	afx_msg virtual void OnReadPrev(void) = 0;
-	afx_msg virtual void OnReadNext(void) = 0;
-	afx_msg virtual void OnSubVolume(void);
-	afx_msg virtual void OnOpenFile(void) = 0;
-	afx_msg virtual void OnNibbleParms(void);
-	afx_msg virtual void OnHelp(void);
+    afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg virtual void OnDone(void);
+    afx_msg virtual void OnHexMode(void);
+    afx_msg virtual void OnDoRead(void) = 0;
+    afx_msg virtual void OnDoWrite(void) = 0;
+    afx_msg virtual void OnReadPrev(void) = 0;
+    afx_msg virtual void OnReadNext(void) = 0;
+    afx_msg virtual void OnSubVolume(void);
+    afx_msg virtual void OnOpenFile(void) = 0;
+    afx_msg virtual void OnNibbleParms(void);
+    afx_msg virtual void OnHelp(void);
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-	void SetSpinMode(int id, int base);
-	int ReadSpinner(int id, long* pVal);
-	void SetSpinner(int id, long val);
+    void SetSpinMode(int id, int base);
+    int ReadSpinner(int id, long* pVal);
+    void SetSpinner(int id, long val);
 
-	//void FillWithPattern(unsigned char* buf, int size, const char* pattern);
-	DIError OpenFile(const char* fileName, bool openRsrc, A2File** ppFile,
-		A2FileDescr** ppOpenFile);
+    //void FillWithPattern(unsigned char* buf, int size, const char* pattern);
+    DIError OpenFile(const char* fileName, bool openRsrc, A2File** ppFile,
+        A2FileDescr** ppOpenFile);
 
-	DiskFS*		fpDiskFS;
-	CString		fFileName;
-	CString		fAlertMsg;
-	bool		fReadOnly;
-	int			fPositionShift;
+    DiskFS*     fpDiskFS;
+    CString     fFileName;
+    CString     fAlertMsg;
+    bool        fReadOnly;
+    int         fPositionShift;
 
 private:
-	void InitNibbleParmList(void);
-	int ReplaceSpinCtrl(MySpinCtrl* pNewSpin, int idSpin, int idEdit);
-	MySpinCtrl	fTrackSpinner;
-	MySpinCtrl	fSectorSpinner;
-	bool		fFirstResize;
+    void InitNibbleParmList(void);
+    int ReplaceSpinCtrl(MySpinCtrl* pNewSpin, int idSpin, int idEdit);
+    MySpinCtrl  fTrackSpinner;
+    MySpinCtrl  fSectorSpinner;
+    bool        fFirstResize;
 
-	//afx_msg void OnPaint();
-	DECLARE_MESSAGE_MAP()
+    //afx_msg void OnPaint();
+    DECLARE_MESSAGE_MAP()
 };
 
 
@@ -121,35 +121,35 @@ private:
  */
 class SectorEditDialog : public DiskEditDialog {
 public:
-	SectorEditDialog(CWnd* pParentWnd = NULL) :
-		DiskEditDialog(IDD_DISKEDIT, pParentWnd)
-	{
-		fTrack = 0;
-		fSector = 0;
-	}
-	virtual ~SectorEditDialog() {}
+    SectorEditDialog(CWnd* pParentWnd = NULL) :
+        DiskEditDialog(IDD_DISKEDIT, pParentWnd)
+    {
+        fTrack = 0;
+        fSector = 0;
+    }
+    virtual ~SectorEditDialog() {}
 
-	virtual int LoadData(void);		// load the current track/sector
-	virtual void DisplayData(void) {
-		DiskEditDialog::DisplayData(fSectorData, kSectorSize);
-	}
+    virtual int LoadData(void);     // load the current track/sector
+    virtual void DisplayData(void) {
+        DiskEditDialog::DisplayData(fSectorData, kSectorSize);
+    }
 
-	//void SetTrack(int val) { fTrack = val; }
-	//void SetSector(int val) { fSector = val; }
+    //void SetTrack(int val) { fTrack = val; }
+    //void SetSector(int val) { fSector = val; }
 
-	// overrides
-	virtual BOOL OnInitDialog(void);
+    // overrides
+    virtual BOOL OnInitDialog(void);
 
 protected:
-	afx_msg virtual void OnDoRead(void);
-	afx_msg virtual void OnDoWrite(void);
-	afx_msg virtual void OnReadPrev(void);
-	afx_msg virtual void OnReadNext(void);
-	afx_msg virtual void OnOpenFile(void);
+    afx_msg virtual void OnDoRead(void);
+    afx_msg virtual void OnDoWrite(void);
+    afx_msg virtual void OnReadPrev(void);
+    afx_msg virtual void OnReadNext(void);
+    afx_msg virtual void OnOpenFile(void);
 
-	long		fTrack;
-	long		fSector;
-	unsigned char fSectorData[kSectorSize];
+    long        fTrack;
+    long        fSector;
+    unsigned char fSectorData[kSectorSize];
 };
 
 /*
@@ -157,44 +157,44 @@ protected:
  */
 class SectorFileEditDialog : public SectorEditDialog {
 public:
-	SectorFileEditDialog(SectorEditDialog* pSectEdit, CWnd* pParentWnd = NULL):
-		SectorEditDialog(pParentWnd)
-	{
-		DiskEditDialog::Setup(pSectEdit->GetDiskFS(),
-			pSectEdit->GetFileName());
-		fSectorIdx = 0;
-	}
-	virtual ~SectorFileEditDialog() {}
+    SectorFileEditDialog(SectorEditDialog* pSectEdit, CWnd* pParentWnd = NULL):
+        SectorEditDialog(pParentWnd)
+    {
+        DiskEditDialog::Setup(pSectEdit->GetDiskFS(),
+            pSectEdit->GetFileName());
+        fSectorIdx = 0;
+    }
+    virtual ~SectorFileEditDialog() {}
 
-	/* we do NOT own pOpenFile, and should not delete it */
-	void SetupFile(const char* fileName, bool rsrcFork, A2File* pFile,
-		A2FileDescr* pOpenFile)
-	{
-		fOpenFileName = fileName;
-		fOpenRsrcFork = rsrcFork;
-		fpFile = pFile;
-		fpOpenFile = pOpenFile;
-		fLength = 0;
-		if (fpOpenFile->Seek(0, DiskImgLib::kSeekEnd) == kDIErrNone)
-			fLength = fpOpenFile->Tell();
-	}
+    /* we do NOT own pOpenFile, and should not delete it */
+    void SetupFile(const char* fileName, bool rsrcFork, A2File* pFile,
+        A2FileDescr* pOpenFile)
+    {
+        fOpenFileName = fileName;
+        fOpenRsrcFork = rsrcFork;
+        fpFile = pFile;
+        fpOpenFile = pOpenFile;
+        fLength = 0;
+        if (fpOpenFile->Seek(0, DiskImgLib::kSeekEnd) == kDIErrNone)
+            fLength = fpOpenFile->Tell();
+    }
 
-	virtual int LoadData(void);		// load data from the current offset
+    virtual int LoadData(void);     // load data from the current offset
 
 private:
-	// overrides
-	virtual BOOL OnInitDialog(void);
+    // overrides
+    virtual BOOL OnInitDialog(void);
 
-	afx_msg virtual void OnReadPrev(void);
-	afx_msg virtual void OnReadNext(void);
+    afx_msg virtual void OnReadPrev(void);
+    afx_msg virtual void OnReadNext(void);
 
-	CString		fOpenFileName;
-	bool		fOpenRsrcFork;
-	A2File*		fpFile;
-	A2FileDescr* fpOpenFile;
-	//long		fOffset;
-	long		fSectorIdx;
-	di_off_t	fLength;
+    CString     fOpenFileName;
+    bool        fOpenRsrcFork;
+    A2File*     fpFile;
+    A2FileDescr* fpOpenFile;
+    //long      fOffset;
+    long        fSectorIdx;
+    di_off_t    fLength;
 };
 
 
@@ -204,32 +204,32 @@ private:
  */
 class BlockEditDialog : public DiskEditDialog {
 public:
-	BlockEditDialog(CWnd* pParentWnd = NULL) :
-		DiskEditDialog(IDD_DISKEDIT, pParentWnd)
-	{
-		fBlock = 0;
-	}
-	virtual ~BlockEditDialog() {}
+    BlockEditDialog(CWnd* pParentWnd = NULL) :
+        DiskEditDialog(IDD_DISKEDIT, pParentWnd)
+    {
+        fBlock = 0;
+    }
+    virtual ~BlockEditDialog() {}
 
-	virtual int LoadData(void);		// load the current block
-	virtual void DisplayData(void) {
-		DiskEditDialog::DisplayData(fBlockData, kBlockSize);
-	}
+    virtual int LoadData(void);     // load the current block
+    virtual void DisplayData(void) {
+        DiskEditDialog::DisplayData(fBlockData, kBlockSize);
+    }
 
-	// overrides
-	virtual BOOL OnInitDialog(void);
+    // overrides
+    virtual BOOL OnInitDialog(void);
 
 protected:
-	//void MoveControl(int id, int deltaX, int deltaY);
+    //void MoveControl(int id, int deltaX, int deltaY);
 
-	afx_msg virtual void OnDoRead(void);
-	afx_msg virtual void OnDoWrite(void);
-	afx_msg virtual void OnReadPrev(void);
-	afx_msg virtual void OnReadNext(void);
-	afx_msg virtual void OnOpenFile(void);
+    afx_msg virtual void OnDoRead(void);
+    afx_msg virtual void OnDoWrite(void);
+    afx_msg virtual void OnReadPrev(void);
+    afx_msg virtual void OnReadNext(void);
+    afx_msg virtual void OnOpenFile(void);
 
-	long		fBlock;
-	unsigned char fBlockData[kBlockSize];
+    long        fBlock;
+    unsigned char fBlockData[kBlockSize];
 };
 
 
@@ -238,44 +238,44 @@ protected:
  */
 class BlockFileEditDialog : public BlockEditDialog {
 public:
-	BlockFileEditDialog(BlockEditDialog* pBlockEdit, CWnd* pParentWnd = NULL) :
-		BlockEditDialog(pParentWnd)
-	{
-		DiskEditDialog::Setup(pBlockEdit->GetDiskFS(),
-			pBlockEdit->GetFileName());
-		fBlockIdx = 0;
-	}
-	virtual ~BlockFileEditDialog() {}
+    BlockFileEditDialog(BlockEditDialog* pBlockEdit, CWnd* pParentWnd = NULL) :
+        BlockEditDialog(pParentWnd)
+    {
+        DiskEditDialog::Setup(pBlockEdit->GetDiskFS(),
+            pBlockEdit->GetFileName());
+        fBlockIdx = 0;
+    }
+    virtual ~BlockFileEditDialog() {}
 
-	/* we do NOT own pOpenFile, and should not delete it */
-	void SetupFile(const char* fileName, bool rsrcFork, A2File* pFile,
-		A2FileDescr* pOpenFile)
-	{
-		fOpenFileName = fileName;
-		fOpenRsrcFork = rsrcFork;
-		fpFile = pFile;
-		fpOpenFile = pOpenFile;
-		fLength = 0;
-		if (fpOpenFile->Seek(0, DiskImgLib::kSeekEnd) == kDIErrNone)
-			fLength = fpOpenFile->Tell();
-	}
+    /* we do NOT own pOpenFile, and should not delete it */
+    void SetupFile(const char* fileName, bool rsrcFork, A2File* pFile,
+        A2FileDescr* pOpenFile)
+    {
+        fOpenFileName = fileName;
+        fOpenRsrcFork = rsrcFork;
+        fpFile = pFile;
+        fpOpenFile = pOpenFile;
+        fLength = 0;
+        if (fpOpenFile->Seek(0, DiskImgLib::kSeekEnd) == kDIErrNone)
+            fLength = fpOpenFile->Tell();
+    }
 
-	virtual int LoadData(void);		// load data from the current offset
+    virtual int LoadData(void);     // load data from the current offset
 
 private:
-	// overrides
-	virtual BOOL OnInitDialog(void);
+    // overrides
+    virtual BOOL OnInitDialog(void);
 
-	afx_msg virtual void OnReadPrev(void);
-	afx_msg virtual void OnReadNext(void);
+    afx_msg virtual void OnReadPrev(void);
+    afx_msg virtual void OnReadNext(void);
 
-	CString		fOpenFileName;
-	bool		fOpenRsrcFork;
-	A2File*		fpFile;
-	A2FileDescr* fpOpenFile;
-	//long		fOffset;
-	long		fBlockIdx;
-	di_off_t	fLength;
+    CString     fOpenFileName;
+    bool        fOpenRsrcFork;
+    A2File*     fpFile;
+    A2FileDescr* fpOpenFile;
+    //long      fOffset;
+    long        fBlockIdx;
+    di_off_t    fLength;
 };
 
 /*
@@ -284,32 +284,32 @@ private:
  */
 class NibbleEditDialog : public DiskEditDialog {
 public:
-	NibbleEditDialog(CWnd* pParentWnd = NULL) :
-		DiskEditDialog(IDD_DISKEDIT, pParentWnd)
-	{
-		fTrack = 0;
-	}
-	virtual ~NibbleEditDialog() {}
+    NibbleEditDialog(CWnd* pParentWnd = NULL) :
+        DiskEditDialog(IDD_DISKEDIT, pParentWnd)
+    {
+        fTrack = 0;
+    }
+    virtual ~NibbleEditDialog() {}
 
-	virtual int LoadData(void);		// load the current track/sector
-	virtual void DisplayData(void) {
-		DiskEditDialog::DisplayNibbleData(fNibbleData, fNibbleDataLen);
-	}
+    virtual int LoadData(void);     // load the current track/sector
+    virtual void DisplayData(void) {
+        DiskEditDialog::DisplayNibbleData(fNibbleData, fNibbleDataLen);
+    }
 
-	// overrides
-	virtual BOOL OnInitDialog(void);
+    // overrides
+    virtual BOOL OnInitDialog(void);
 
 protected:
-	afx_msg virtual void OnDoRead(void);
-	afx_msg virtual void OnDoWrite(void);
-	afx_msg virtual void OnReadPrev(void);
-	afx_msg virtual void OnReadNext(void);
-	afx_msg virtual void OnOpenFile(void) { ASSERT(false); }
-	afx_msg virtual void OnNibbleParms(void) { ASSERT(false); }
+    afx_msg virtual void OnDoRead(void);
+    afx_msg virtual void OnDoWrite(void);
+    afx_msg virtual void OnReadPrev(void);
+    afx_msg virtual void OnReadNext(void);
+    afx_msg virtual void OnOpenFile(void) { ASSERT(false); }
+    afx_msg virtual void OnNibbleParms(void) { ASSERT(false); }
 
-	long		fTrack;
-	unsigned char fNibbleData[DiskImgLib::kTrackAllocSize];
-	long		fNibbleDataLen;
+    long        fTrack;
+    unsigned char fNibbleData[DiskImgLib::kTrackAllocSize];
+    long        fNibbleDataLen;
 };
 
 #endif /*__DISK_EDIT_DIALOG__*/

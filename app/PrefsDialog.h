@@ -19,48 +19,48 @@
 class PrefsGeneralPage : public CPropertyPage
 {
 public:
-	PrefsGeneralPage(void) :
-	  CPropertyPage(IDD_PREF_GENERAL),
-	  fReady(false),
-	  fMimicShrinkIt(FALSE),
-	  fBadMacSHK(FALSE),
-	  fReduceSHKErrorChecks(FALSE),
-	  fCoerceDOSFilenames(FALSE),
-	  fSpacesToUnder(FALSE),
-	  fDefaultsPushed(FALSE),
-	  fOurAssociations(nil)
-		{}
-	virtual ~PrefsGeneralPage(void) {
-		delete[] fOurAssociations;
-	}
+    PrefsGeneralPage(void) :
+      CPropertyPage(IDD_PREF_GENERAL),
+      fReady(false),
+      fMimicShrinkIt(FALSE),
+      fBadMacSHK(FALSE),
+      fReduceSHKErrorChecks(FALSE),
+      fCoerceDOSFilenames(FALSE),
+      fSpacesToUnder(FALSE),
+      fDefaultsPushed(FALSE),
+      fOurAssociations(nil)
+        {}
+    virtual ~PrefsGeneralPage(void) {
+        delete[] fOurAssociations;
+    }
 
-	bool	fReady;
+    bool    fReady;
 
-	// fields on this page
-	BOOL	fColumn[kNumVisibleColumns];
-	BOOL	fMimicShrinkIt;
-	BOOL	fBadMacSHK;
-	BOOL	fReduceSHKErrorChecks;
-	BOOL	fCoerceDOSFilenames;
-	BOOL	fSpacesToUnder;
-	BOOL	fPasteJunkPaths;
-	BOOL	fBeepOnSuccess;
-	BOOL	fDefaultsPushed;
+    // fields on this page
+    BOOL    fColumn[kNumVisibleColumns];
+    BOOL    fMimicShrinkIt;
+    BOOL    fBadMacSHK;
+    BOOL    fReduceSHKErrorChecks;
+    BOOL    fCoerceDOSFilenames;
+    BOOL    fSpacesToUnder;
+    BOOL    fPasteJunkPaths;
+    BOOL    fBeepOnSuccess;
+    BOOL    fDefaultsPushed;
 
-	// initialized if we opened the file associations edit page
-	bool*	fOurAssociations;
+    // initialized if we opened the file associations edit page
+    bool*   fOurAssociations;
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnChange(void);
-	afx_msg void OnChangeRange(UINT);
-	afx_msg void OnDefaults(void);
-	afx_msg void OnAssociations(void);
-	afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-	afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg void OnChange(void);
+    afx_msg void OnChangeRange(UINT);
+    afx_msg void OnDefaults(void);
+    afx_msg void OnAssociations(void);
+    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 /*
@@ -69,33 +69,33 @@ protected:
 class PrefsDiskImagePage : public CPropertyPage
 {
 public:
-	PrefsDiskImagePage(void) :
-	  CPropertyPage(IDD_PREF_DISKIMAGE),
-	  fReady(false),
-	  fQueryImageFormat(FALSE),
-	  fOpenVolumeRO(FALSE),
-	  fProDOSAllowLower(FALSE),
-	  fProDOSUseSparse(FALSE)
-	  {}
+    PrefsDiskImagePage(void) :
+      CPropertyPage(IDD_PREF_DISKIMAGE),
+      fReady(false),
+      fQueryImageFormat(FALSE),
+      fOpenVolumeRO(FALSE),
+      fProDOSAllowLower(FALSE),
+      fProDOSUseSparse(FALSE)
+      {}
 
-	bool	fReady;
+    bool    fReady;
 
-	BOOL	fQueryImageFormat;
-	BOOL	fOpenVolumeRO;
-	BOOL	fOpenVolumePhys0;
-	BOOL	fProDOSAllowLower;
-	BOOL	fProDOSUseSparse;
+    BOOL    fQueryImageFormat;
+    BOOL    fOpenVolumeRO;
+    BOOL    fOpenVolumePhys0;
+    BOOL    fProDOSAllowLower;
+    BOOL    fProDOSUseSparse;
 
 protected:
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnChange(void);
-	//afx_msg void OnChangeRange(UINT);
-	afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-	afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg void OnChange(void);
+    //afx_msg void OnChangeRange(UINT);
+    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 /*
@@ -105,26 +105,26 @@ protected:
 class PrefsCompressionPage : public CPropertyPage
 {
 public:
-	PrefsCompressionPage(void) :
-	  CPropertyPage(IDD_PREF_COMPRESSION), fReady(false)
-	  {}
+    PrefsCompressionPage(void) :
+      CPropertyPage(IDD_PREF_COMPRESSION), fReady(false)
+      {}
 
-	bool	fReady;
+    bool    fReady;
 
-	int		fCompressType;		// radio button index
+    int     fCompressType;      // radio button index
 
 protected:
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnChangeRange(UINT);
-	afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-	afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg void OnChangeRange(UINT);
+    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
 
 private:
-	void DisableWnd(int id);
+    void DisableWnd(int id);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 /*
@@ -133,55 +133,55 @@ private:
 class PrefsFviewPage : public CPropertyPage
 {
 public:
-	PrefsFviewPage(void) :
-	  CPropertyPage(IDD_PREF_FVIEW), fReady(false)
-	{}
-	bool	fReady;
+    PrefsFviewPage(void) :
+      CPropertyPage(IDD_PREF_FVIEW), fReady(false)
+    {}
+    bool    fReady;
 
-	BOOL	fEOLConvRaw;
-	BOOL	fNoWrapText;
-	BOOL	fHighlightHexDump;
-	BOOL	fHighlightBASIC;
-	BOOL	fConvDisasmOneByteBrkCop;
-	BOOL	fConvHiResBlackWhite;
-	int		fConvDHRAlgorithm;		// drop list
+    BOOL    fEOLConvRaw;
+    BOOL    fNoWrapText;
+    BOOL    fHighlightHexDump;
+    BOOL    fHighlightBASIC;
+    BOOL    fConvDisasmOneByteBrkCop;
+    BOOL    fConvHiResBlackWhite;
+    int     fConvDHRAlgorithm;      // drop list
 
-	BOOL	fConvTextEOL_HA;
-	BOOL	fConvCPMText;
-	BOOL	fConvPascalText;
-	BOOL	fConvPascalCode;
-	BOOL	fConvApplesoft;
-	BOOL	fConvInteger;
-	BOOL	fConvBusiness;
-	BOOL	fConvGWP;
-	BOOL	fConvText8;
-	BOOL	fConvAWP;
-	BOOL	fConvADB;
-	BOOL	fConvASP;
-	BOOL	fConvSCAssem;
-	BOOL	fConvDisasm;
+    BOOL    fConvTextEOL_HA;
+    BOOL    fConvCPMText;
+    BOOL    fConvPascalText;
+    BOOL    fConvPascalCode;
+    BOOL    fConvApplesoft;
+    BOOL    fConvInteger;
+    BOOL    fConvBusiness;
+    BOOL    fConvGWP;
+    BOOL    fConvText8;
+    BOOL    fConvAWP;
+    BOOL    fConvADB;
+    BOOL    fConvASP;
+    BOOL    fConvSCAssem;
+    BOOL    fConvDisasm;
 
-	BOOL	fConvHiRes;
-	BOOL	fConvDHR;
-	BOOL	fConvSHR;
-	BOOL	fConvPrintShop;
-	BOOL	fConvMacPaint;
-	BOOL	fConvProDOSFolder;
-	BOOL	fConvResources;
-	BOOL	fRelaxGfxTypeCheck;
+    BOOL    fConvHiRes;
+    BOOL    fConvDHR;
+    BOOL    fConvSHR;
+    BOOL    fConvPrintShop;
+    BOOL    fConvMacPaint;
+    BOOL    fConvProDOSFolder;
+    BOOL    fConvResources;
+    BOOL    fRelaxGfxTypeCheck;
 
-	UINT	fMaxViewFileSizeKB;
+    UINT    fMaxViewFileSizeKB;
 
 protected:
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnChange(void);
-	afx_msg void OnChangeRange(UINT);
-	afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-	afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg void OnChange(void);
+    afx_msg void OnChangeRange(UINT);
+    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 /*
@@ -191,27 +191,27 @@ protected:
 class PrefsFilesPage : public CPropertyPage
 {
 public:
-	PrefsFilesPage(void) :
-	  CPropertyPage(IDD_PREF_FILES), fReady(false)
-	  {}
+    PrefsFilesPage(void) :
+      CPropertyPage(IDD_PREF_FILES), fReady(false)
+      {}
 
-	bool	fReady;
+    bool    fReady;
 
-	CString	fTempPath;
-	CString	fExtViewerExts;
+    CString fTempPath;
+    CString fExtViewerExts;
 
 protected:
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnChange(void);
-	afx_msg void OnChooseFolder(void);
-	afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-	afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg void OnChange(void);
+    afx_msg void OnChooseFolder(void);
+    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
 
-	MyBitmapButton	fChooseFolderButton;
+    MyBitmapButton  fChooseFolderButton;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 
@@ -221,22 +221,22 @@ protected:
 class PrefsSheet : public CPropertySheet
 {
 public:
-	PrefsSheet(CWnd* pParentWnd = NULL);
+    PrefsSheet(CWnd* pParentWnd = NULL);
 
-	PrefsGeneralPage		fGeneralPage;
-	PrefsDiskImagePage		fDiskImagePage;
-	PrefsCompressionPage	fCompressionPage;
-	PrefsFviewPage			fFviewPage;
-	PrefsFilesPage			fFilesPage;
+    PrefsGeneralPage        fGeneralPage;
+    PrefsDiskImagePage      fDiskImagePage;
+    PrefsCompressionPage    fCompressionPage;
+    PrefsFviewPage          fFviewPage;
+    PrefsFilesPage          fFilesPage;
 
 protected:
-	BOOL OnNcCreate(LPCREATESTRUCT cs);
+    BOOL OnNcCreate(LPCREATESTRUCT cs);
 
-	afx_msg void OnApplyNow();
-	LONG OnHelp(UINT wParam, LONG lParam);
-	void OnIDHelp(void);
+    afx_msg void OnApplyNow();
+    LONG OnHelp(UINT wParam, LONG lParam);
+    void OnIDHelp(void);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__PREFSDIALOG__*/

@@ -16,50 +16,50 @@
  */
 class ActionProgressDialog : public ProgressCancelDialog {
 public:
-	typedef enum {
-		kActionUnknown = 0,
-		kActionAdd,
-		kActionAddDisk,
-		kActionExtract,
-		kActionDelete,
-		kActionTest,
-		kActionRecompress,
-		kActionConvDisk,
-		kActionConvFile,
-	} Action;
+    typedef enum {
+        kActionUnknown = 0,
+        kActionAdd,
+        kActionAddDisk,
+        kActionExtract,
+        kActionDelete,
+        kActionTest,
+        kActionRecompress,
+        kActionConvDisk,
+        kActionConvFile,
+    } Action;
 
-	ActionProgressDialog(void) {
-		fAction = kActionUnknown;
-		//fpSelSet = nil;
-		//fpOptionsDlg = nil;
-		fCancel = false;
-		//fResult = 0;
-	}
-	virtual ~ActionProgressDialog(void) {}
+    ActionProgressDialog(void) {
+        fAction = kActionUnknown;
+        //fpSelSet = nil;
+        //fpOptionsDlg = nil;
+        fCancel = false;
+        //fResult = 0;
+    }
+    virtual ~ActionProgressDialog(void) {}
 
-	BOOL Create(Action action, CWnd* pParentWnd = NULL) {
-		fAction = action;
-		pParentWnd->EnableWindow(FALSE);
-		return ProgressCancelDialog::Create(&fCancel, IDD_ACTION_PROGRESS,
-			IDC_PROG_PROGRESS, pParentWnd);
-	}
-	void Cleanup(CWnd* pParentWnd) {
-		pParentWnd->EnableWindow(TRUE);
-		DestroyWindow();
-	}
+    BOOL Create(Action action, CWnd* pParentWnd = NULL) {
+        fAction = action;
+        pParentWnd->EnableWindow(FALSE);
+        return ProgressCancelDialog::Create(&fCancel, IDD_ACTION_PROGRESS,
+            IDC_PROG_PROGRESS, pParentWnd);
+    }
+    void Cleanup(CWnd* pParentWnd) {
+        pParentWnd->EnableWindow(TRUE);
+        DestroyWindow();
+    }
 
-	void SetArcName(const char* str);
-	void SetFileName(const char* str);
-	const CString GetFileName(void);
-	int SetProgress(int perc);
+    void SetArcName(const char* str);
+    void SetFileName(const char* str);
+    const CString GetFileName(void);
+    int SetProgress(int perc);
 
 private:
-	virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void);
 
-	Action			fAction;
-	bool			fCancel;
+    Action          fAction;
+    bool            fCancel;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__ACTIONPROGRESSDIALOG__*/

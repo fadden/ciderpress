@@ -9,22 +9,22 @@
  * The NList.Data file is divided into several sections, separated by lines
  * that start with a '*'.  They are:
  *
- *	ProDOS 8 MLI calls (prefaced with some comments)
- *	ProDOS 16 / GS/OS
- *	System tools (incl. GSBug goodies)
- *	User tools
- *	E1xxxx vectors
- *	E0xxxx vectors
- *	Softswitches and F8 ROM routines (plus Davex stuff at Bxxx)
- *	01xxxx vectors
- *	Nifty List service calls
- *	Resource type names
- *	Error codes (GS/OS and toolbox)
- *	HyperCardIIgs callbacks
- *	Request codes (for Finder extensions?)
+ *  ProDOS 8 MLI calls (prefaced with some comments)
+ *  ProDOS 16 / GS/OS
+ *  System tools (incl. GSBug goodies)
+ *  User tools
+ *  E1xxxx vectors
+ *  E0xxxx vectors
+ *  Softswitches and F8 ROM routines (plus Davex stuff at Bxxx)
+ *  01xxxx vectors
+ *  Nifty List service calls
+ *  Resource type names
+ *  Error codes (GS/OS and toolbox)
+ *  HyperCardIIgs callbacks
+ *  Request codes (for Finder extensions?)
  *
  * All lines have the general form:
- *	NNNN Text ...
+ *  NNNN Text ...
  * where "NNNN" is a 4-digit hexadecimal value.
  *
  * All sections are in some sort of sort order, though it differs for toolbox
@@ -53,72 +53,72 @@
 /*static*/ bool
 NiftyList::AppInit(const char* fileName)
 {
-	FILE* fp = nil;
-	long fileLen;
-	char* pData;
-	bool result = false;
+    FILE* fp = nil;
+    long fileLen;
+    char* pData;
+    bool result = false;
 
-	/*
-	 * Open the NList.Data file and load the contents into memory.
-	 */
-	fp = fopen(fileName, "rb");
-	if (fp == nil) {
-		WMSG1("NL Unable to open '%s'\n", fileName);
-		goto bail;
-	} else {
-		WMSG1("NL Reading '%s'\n", fileName);
-	}
+    /*
+     * Open the NList.Data file and load the contents into memory.
+     */
+    fp = fopen(fileName, "rb");
+    if (fp == nil) {
+        WMSG1("NL Unable to open '%s'\n", fileName);
+        goto bail;
+    } else {
+        WMSG1("NL Reading '%s'\n", fileName);
+    }
 
-	if (fseek(fp, 0, SEEK_END) < 0) {
-		WMSG0("Seek failed\n");
-		goto bail;
-	}
-	fileLen = ftell(fp);
-	rewind(fp);
+    if (fseek(fp, 0, SEEK_END) < 0) {
+        WMSG0("Seek failed\n");
+        goto bail;
+    }
+    fileLen = ftell(fp);
+    rewind(fp);
 
-	fFileData = new char[fileLen];
-	if (fFileData == nil) {
-		WMSG1("Failed allocating %d bytes\n", fileLen);
-		goto bail;
-	}
+    fFileData = new char[fileLen];
+    if (fFileData == nil) {
+        WMSG1("Failed allocating %d bytes\n", fileLen);
+        goto bail;
+    }
 
-	if (fread(fFileData, fileLen, 1, fp) != 1) {
-		WMSG1("Failed reading NList.Data (%d bytes)\n", fileLen);
-		goto bail;
-	}
+    if (fread(fFileData, fileLen, 1, fp) != 1) {
+        WMSG1("Failed reading NList.Data (%d bytes)\n", fileLen);
+        goto bail;
+    }
 
-	/*
-	 * Scan the data.
-	 */
-	pData = fFileData;
-	if (!ReadSection(&pData, &fileLen, &fP8MLI, kModeNormal))
-		goto bail;
-	if (!ReadSection(&pData, &fileLen, &fGSOS, kModeNormal))
-		goto bail;
-	if (!ReadSection(&pData, &fileLen, &fSystemTools, kModeNormal))
-		goto bail;
-	if (!ReadSection(&pData, &fileLen, nil, kModeSkip))	// user tools
-		goto bail;
-	if (!ReadSection(&pData, &fileLen, &fE1Vectors, kModeNormal))
-		goto bail;
-	if (!ReadSection(&pData, &fileLen, &fE0Vectors, kModeNormal))
-		goto bail;
-	if (!ReadSection(&pData, &fileLen, &f00Addrs, kModeNormal))
-		goto bail;
-	if (!ReadSection(&pData, &fileLen, &f01Vectors, kModeNormal))
-		goto bail;
+    /*
+     * Scan the data.
+     */
+    pData = fFileData;
+    if (!ReadSection(&pData, &fileLen, &fP8MLI, kModeNormal))
+        goto bail;
+    if (!ReadSection(&pData, &fileLen, &fGSOS, kModeNormal))
+        goto bail;
+    if (!ReadSection(&pData, &fileLen, &fSystemTools, kModeNormal))
+        goto bail;
+    if (!ReadSection(&pData, &fileLen, nil, kModeSkip)) // user tools
+        goto bail;
+    if (!ReadSection(&pData, &fileLen, &fE1Vectors, kModeNormal))
+        goto bail;
+    if (!ReadSection(&pData, &fileLen, &fE0Vectors, kModeNormal))
+        goto bail;
+    if (!ReadSection(&pData, &fileLen, &f00Addrs, kModeNormal))
+        goto bail;
+    if (!ReadSection(&pData, &fileLen, &f01Vectors, kModeNormal))
+        goto bail;
 
-	//DumpSection(fP8MLI);
-	//DumpSection(fGSOS);
+    //DumpSection(fP8MLI);
+    //DumpSection(fGSOS);
 
-	fDataReady = true;
-	result = true;
-	WMSG0("NL NiftyList data loaded\n");
+    fDataReady = true;
+    result = true;
+    WMSG0("NL NiftyList data loaded\n");
 
 bail:
-	if (fp != nil)
-		fclose(fp);
-	return result;
+    if (fp != nil)
+        fclose(fp);
+    return result;
 }
 
 /*
@@ -127,18 +127,18 @@ bail:
 /*static*/ bool
 NiftyList::AppCleanup(void)
 {
-	delete[] fP8MLI.pEntries;
-	delete[] fGSOS.pEntries;
-	delete[] fSystemTools.pEntries;
-	delete[] fE1Vectors.pEntries;
-	delete[] fE0Vectors.pEntries;
-	delete[] f00Addrs.pEntries;
-	delete[] f01Vectors.pEntries;
+    delete[] fP8MLI.pEntries;
+    delete[] fGSOS.pEntries;
+    delete[] fSystemTools.pEntries;
+    delete[] fE1Vectors.pEntries;
+    delete[] fE0Vectors.pEntries;
+    delete[] f00Addrs.pEntries;
+    delete[] f01Vectors.pEntries;
 
-	delete[] fFileData;
+    delete[] fFileData;
 
-	fDataReady = false;
-	return true;
+    fDataReady = false;
+    return true;
 }
 
 
@@ -150,113 +150,113 @@ NiftyList::AppCleanup(void)
  */
 /*static*/ bool
 NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
-	LoadMode mode)
+    LoadMode mode)
 {
-	assert(ppData != nil);
-	assert(pRemLen != nil);
-	assert(*ppData != nil);
-	assert(*pRemLen > 0);
-	assert(pSet != nil || mode == kModeSkip);
-	assert(mode == kModeNormal || mode == kModeSkip);
+    assert(ppData != nil);
+    assert(pRemLen != nil);
+    assert(*ppData != nil);
+    assert(*pRemLen > 0);
+    assert(pSet != nil || mode == kModeSkip);
+    assert(mode == kModeNormal || mode == kModeSkip);
 
-	char* pData = *ppData;
-	long remLen = *pRemLen;
-	int lineLen, numLines, entry;
+    char* pData = *ppData;
+    long remLen = *pRemLen;
+    int lineLen, numLines, entry;
 
-	/*
-	 * Count up the #of entries in this section.
-	 */
-	numLines = 0;
-	while (1) {
-		lineLen = ScanLine(pData, remLen);
-		if (lineLen == 0) {
-			WMSG1("Failed scanning line, remLen=%ld\n", remLen);
-			return false;
-		}
-		if (*pData == '*') {
-			pData += lineLen;
-			remLen -= lineLen;
-			break;		// end of section reached
-		}
+    /*
+     * Count up the #of entries in this section.
+     */
+    numLines = 0;
+    while (1) {
+        lineLen = ScanLine(pData, remLen);
+        if (lineLen == 0) {
+            WMSG1("Failed scanning line, remLen=%ld\n", remLen);
+            return false;
+        }
+        if (*pData == '*') {
+            pData += lineLen;
+            remLen -= lineLen;
+            break;      // end of section reached
+        }
 
-		pData += lineLen;
-		remLen -= lineLen;
-		numLines++;
-	}
+        pData += lineLen;
+        remLen -= lineLen;
+        numLines++;
+    }
 
-	if (mode == kModeSkip) {
-		WMSG1(" NL Skipping %d entries in section\n", numLines);
-		*ppData = pData;
-		*pRemLen = remLen;
-		return true;
-	} else {
-		WMSG1(" NL Found %d entries in section\n", numLines);
-	}
+    if (mode == kModeSkip) {
+        WMSG1(" NL Skipping %d entries in section\n", numLines);
+        *ppData = pData;
+        *pRemLen = remLen;
+        return true;
+    } else {
+        WMSG1(" NL Found %d entries in section\n", numLines);
+    }
 
-	/*
-	 * Allocate storage for the lookup array.
-	 */
-	assert(pSet->numEntries == 0 && pSet->pEntries == nil);
+    /*
+     * Allocate storage for the lookup array.
+     */
+    assert(pSet->numEntries == 0 && pSet->pEntries == nil);
 
-	pSet->pEntries = new NameValue[numLines];
-	if (pSet->pEntries == nil) {
-		WMSG0("NameValue alloc failed\n");
-		return false;
-	}
-	pSet->numEntries = numLines;
+    pSet->pEntries = new NameValue[numLines];
+    if (pSet->pEntries == nil) {
+        WMSG0("NameValue alloc failed\n");
+        return false;
+    }
+    pSet->numEntries = numLines;
 
-	/*
-	 * Add the entries to the list.
-	 */
-	pData = *ppData;
-	remLen = *pRemLen;
-	entry = 0;
-	while (1) {
-		lineLen = ScanLine(pData, remLen);
-		if (lineLen == 0) {
-			WMSG1("Failed scanning line(2), remLen=%ld\n", remLen);
-			return false;
-		}
+    /*
+     * Add the entries to the list.
+     */
+    pData = *ppData;
+    remLen = *pRemLen;
+    entry = 0;
+    while (1) {
+        lineLen = ScanLine(pData, remLen);
+        if (lineLen == 0) {
+            WMSG1("Failed scanning line(2), remLen=%ld\n", remLen);
+            return false;
+        }
 
-		if (*pData == '*') {
-			pData += lineLen;
-			remLen -= lineLen;
-			break;		// end of section reached
-		}
+        if (*pData == '*') {
+            pData += lineLen;
+            remLen -= lineLen;
+            break;      // end of section reached
+        }
 
-		if (lineLen < 6 || pData[4] != ' ') {
-			WMSG1("Found garbled line '%.80s'\n", pData);
-			return false;
-		}
-		if (pData[lineLen-2] == '\r' || pData[lineLen-2] == '\n')
-			pData[lineLen-2] = '\0';
-		else if (pData[lineLen-1] == '\r' || pData[lineLen-1] == '\n')
-			pData[lineLen-1] = '\0';
-		else {
-			WMSG2("No EOL found on '%.80s' (%d)\n", pData, lineLen);
-		}
+        if (lineLen < 6 || pData[4] != ' ') {
+            WMSG1("Found garbled line '%.80s'\n", pData);
+            return false;
+        }
+        if (pData[lineLen-2] == '\r' || pData[lineLen-2] == '\n')
+            pData[lineLen-2] = '\0';
+        else if (pData[lineLen-1] == '\r' || pData[lineLen-1] == '\n')
+            pData[lineLen-1] = '\0';
+        else {
+            WMSG2("No EOL found on '%.80s' (%d)\n", pData, lineLen);
+        }
 
-		assert(entry < numLines);
-		pSet->pEntries[entry].name = pData +5;
-		pSet->pEntries[entry].value = ConvHexFour(pData);
-		entry++;
+        assert(entry < numLines);
+        pSet->pEntries[entry].name = pData +5;
+        pSet->pEntries[entry].value = ConvHexFour(pData);
+        entry++;
 
-		pData += lineLen;
-		remLen -= lineLen;
-	}
-	assert(entry == numLines);
+        pData += lineLen;
+        remLen -= lineLen;
+    }
+    assert(entry == numLines);
 
-	*ppData = pData;
-	*pRemLen = remLen;
+    *ppData = pData;
+    *pRemLen = remLen;
 
-	/*
-	 * Sort the array.  In most cases it will already be in sorted order,
-	 * which is a worst-case for qsort, but the only really big section
-	 * (toolbox calls) is byte-swapped and sorts just fine with qsort.
-	 */
-	qsort(pSet->pEntries, numLines, sizeof(NameValue), SortNameValue);
+    /*
+     * Sort the array.  In most cases it will already be in sorted order,
+     * which is a worst-case for qsort, but the only really big section
+     * (toolbox calls) is byte-swapped and sorts just fine with qsort.
+     */
+    qsort(pSet->pEntries, numLines, sizeof(NameValue), SortNameValue);
 
-	return true;
+    return true;
 }
 
 /*
@@ -268,19 +268,19 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
 /*static*/ int
 NiftyList::ScanLine(const char* pData, long remLen)
 {
-	bool atEOL = false;
-	int lineLen = 0;
+    bool atEOL = false;
+    int lineLen = 0;
 
-	while (remLen--) {
-		if (*pData == '\r' || *pData == '\n')
-			atEOL = true;
-		else if (atEOL)
-			break;
-		pData++;
-		lineLen++;
-	}
+    while (remLen--) {
+        if (*pData == '\r' || *pData == '\n')
+            atEOL = true;
+        else if (atEOL)
+            break;
+        pData++;
+        lineLen++;
+    }
 
-	return lineLen;
+    return lineLen;
 }
 
 /*
@@ -289,17 +289,17 @@ NiftyList::ScanLine(const char* pData, long remLen)
 /*static*/ int
 NiftyList::SortNameValue(const void* v1, const void* v2)
 {
-	const NameValue* pnv1 = (const NameValue*) v1;
-	const NameValue* pnv2 = (const NameValue*) v2;
+    const NameValue* pnv1 = (const NameValue*) v1;
+    const NameValue* pnv2 = (const NameValue*) v2;
 
-	if (pnv1->value > pnv2->value)
-		return 1;
-	else if (pnv1->value < pnv2->value)
-		return -1;
-	else {
-		DebugBreak();	// should never be equal in well-formed file
-		return 0;
-	}
+    if (pnv1->value > pnv2->value)
+        return 1;
+    else if (pnv1->value < pnv2->value)
+        return -1;
+    else {
+        DebugBreak();   // should never be equal in well-formed file
+        return 0;
+    }
 }
 
 /*
@@ -308,14 +308,14 @@ NiftyList::SortNameValue(const void* v1, const void* v2)
 static inline int
 HexValue(char ch)
 {
-	if (ch >= '0' && ch <= '9')
-		return ch - '0';
-	if (ch >= 'A' && ch <= 'F')
-		return ch - 'A' +10;
-	if (ch >= 'a' && ch <= 'f')
-		return ch - 'a' +10;
-	DebugBreak();		// shouldn't happen on well-formed file
-	return -1;
+    if (ch >= '0' && ch <= '9')
+        return ch - '0';
+    if (ch >= 'A' && ch <= 'F')
+        return ch - 'A' +10;
+    if (ch >= 'a' && ch <= 'f')
+        return ch - 'a' +10;
+    DebugBreak();       // shouldn't happen on well-formed file
+    return -1;
 }
 
 /*
@@ -324,10 +324,10 @@ HexValue(char ch)
 /*static*/ unsigned short
 NiftyList::ConvHexFour(const char* data)
 {
-	return HexValue(data[0]) << 12 |
-		  HexValue(data[1]) << 8 |
-		  HexValue(data[2]) << 4 |
-		  HexValue(data[3]);
+    return HexValue(data[0]) << 12 |
+          HexValue(data[1]) << 8 |
+          HexValue(data[2]) << 4 |
+          HexValue(data[3]);
 }
 
 /*
@@ -336,14 +336,14 @@ NiftyList::ConvHexFour(const char* data)
 /*static*/ void
 NiftyList::DumpSection(const DataSet& dataSet)
 {
-	long ent;
+    long ent;
 
-	WMSG1("Dumping section (count=%ld)\n", dataSet.numEntries);
+    WMSG1("Dumping section (count=%ld)\n", dataSet.numEntries);
 
-	for (ent = 0; ent < dataSet.numEntries; ent++) {
-		WMSG3("%4d: %04x '%s'\n",
-			ent, dataSet.pEntries[ent].value, dataSet.pEntries[ent].name);
-	}
+    for (ent = 0; ent < dataSet.numEntries; ent++) {
+        WMSG3("%4d: %04x '%s'\n",
+            ent, dataSet.pEntries[ent].value, dataSet.pEntries[ent].name);
+    }
 }
 
 
@@ -356,23 +356,23 @@ NiftyList::DumpSection(const DataSet& dataSet)
 /*static*/ const char*
 NiftyList::Lookup(const DataSet& dataSet, unsigned short key)
 {
-	assert(dataSet.numEntries > 0);
+    assert(dataSet.numEntries > 0);
 
-	int high = dataSet.numEntries-1;
-	int low = 0;
-	int mid;
+    int high = dataSet.numEntries-1;
+    int low = 0;
+    int mid;
 
-	while (low <= high) {
-		mid = (high + low)/2;
-		unsigned short midVal = dataSet.pEntries[mid].value;
+    while (low <= high) {
+        mid = (high + low)/2;
+        unsigned short midVal = dataSet.pEntries[mid].value;
 
-		if (key > midVal)
-			low = mid +1;
-		else if (key < midVal)
-			high = mid -1;
-		else
-			return dataSet.pEntries[mid].name;
-	}
+        if (key > midVal)
+            low = mid +1;
+        else if (key < midVal)
+            high = mid -1;
+        else
+            return dataSet.pEntries[mid].name;
+    }
 
-	return nil;
+    return nil;
 }

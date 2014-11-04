@@ -16,14 +16,14 @@ END_MESSAGE_MAP()
 BOOL
 PasteSpecialDialog::OnInitDialog(void)
 {
-	CString countStr;
-	CWnd* pWnd;
+    CString countStr;
+    CWnd* pWnd;
 
-	countStr.Format(IDS_PASTE_SPECIAL_COUNT, 3);
-	pWnd = GetDlgItem(IDC_PASTE_SPECIAL_COUNT);
-	pWnd->SetWindowText(countStr);
+    countStr.Format(IDS_PASTE_SPECIAL_COUNT, 3);
+    pWnd = GetDlgItem(IDC_PASTE_SPECIAL_COUNT);
+    pWnd->SetWindowText(countStr);
 
-	return CDialog::OnInitDialog();
+    return CDialog::OnInitDialog();
 }
 #endif
 
@@ -33,22 +33,22 @@ PasteSpecialDialog::OnInitDialog(void)
 void
 PasteSpecialDialog::DoDataExchange(CDataExchange* pDX)
 {
-	if (!pDX->m_bSaveAndValidate) {
-		UINT ctrlId;
+    if (!pDX->m_bSaveAndValidate) {
+        UINT ctrlId;
 
-		if (fPasteHow == kPastePaths)
-			ctrlId = IDC_PASTE_SPECIAL_PATHS;
-		else
-			ctrlId = IDC_PASTE_SPECIAL_NOPATHS;
+        if (fPasteHow == kPastePaths)
+            ctrlId = IDC_PASTE_SPECIAL_PATHS;
+        else
+            ctrlId = IDC_PASTE_SPECIAL_NOPATHS;
 
-		CButton* pButton = (CButton*) GetDlgItem(ctrlId);
-		pButton->SetCheck(BST_CHECKED);
-	} else {
-		CButton* pButton = (CButton*) GetDlgItem(IDC_PASTE_SPECIAL_PATHS);
+        CButton* pButton = (CButton*) GetDlgItem(ctrlId);
+        pButton->SetCheck(BST_CHECKED);
+    } else {
+        CButton* pButton = (CButton*) GetDlgItem(IDC_PASTE_SPECIAL_PATHS);
 
-		if (pButton->GetCheck() == BST_CHECKED)
-			fPasteHow = kPastePaths;
-		else
-			fPasteHow = kPasteNoPaths;
-	}
+        if (pButton->GetCheck() == BST_CHECKED)
+            fPasteHow = kPastePaths;
+        else
+            fPasteHow = kPasteNoPaths;
+    }
 }

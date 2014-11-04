@@ -14,38 +14,38 @@
 
 class MyBitmapButton : public CButton {
 public:
-	MyBitmapButton(void) {
-		fhBitmap = nil;
-		fBitmapID = -1;
-	}
-	virtual ~MyBitmapButton(void) {
-		//WMSG0("~MyBitmapButton()\n");
-		Detach();	// it's not really our window
-		::DeleteObject(fhBitmap);
-	}
+    MyBitmapButton(void) {
+        fhBitmap = nil;
+        fBitmapID = -1;
+    }
+    virtual ~MyBitmapButton(void) {
+        //WMSG0("~MyBitmapButton()\n");
+        Detach();   // it's not really our window
+        ::DeleteObject(fhBitmap);
+    }
 
-	/* don't allow creation of a window */
-	int Create(LPCTSTR, LPCTSTR, DWORD, const RECT&, CWnd*, UINT, CCreateContext*) {
-		ASSERT(false);
-		return FALSE;
-	}
-	int Create(LPCTSTR, DWORD, const RECT&, CWnd*, UINT) {
-		ASSERT(false);
-		return FALSE;
-	}
+    /* don't allow creation of a window */
+    int Create(LPCTSTR, LPCTSTR, DWORD, const RECT&, CWnd*, UINT, CCreateContext*) {
+        ASSERT(false);
+        return FALSE;
+    }
+    int Create(LPCTSTR, DWORD, const RECT&, CWnd*, UINT) {
+        ASSERT(false);
+        return FALSE;
+    }
 
-	virtual BOOL SetBitmapID(int id);
-	virtual BOOL ReplaceDlgCtrl(CDialog* pDialog, int buttonID);
+    virtual BOOL SetBitmapID(int id);
+    virtual BOOL ReplaceDlgCtrl(CDialog* pDialog, int buttonID);
 
 protected:
-	virtual void UpdateBitmap(void);
-	afx_msg void OnSysColorChange(void);
+    virtual void UpdateBitmap(void);
+    afx_msg void OnSysColorChange(void);
 
 private:
-	HBITMAP		fhBitmap;
-	int			fBitmapID;
+    HBITMAP     fhBitmap;
+    int         fBitmapID;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__MYBITMAPBUTTON__*/

@@ -21,20 +21,20 @@ static char THIS_FILE[] = __FILE__;
 
 #if 0
 ProgressDlg::ProgressDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(ProgressDlg::IDD, pParent)
+    : CDialog(ProgressDlg::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(ProgressDlg)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+    //{{AFX_DATA_INIT(ProgressDlg)
+        // NOTE: the ClassWizard will add member initialization here
+    //}}AFX_DATA_INIT
 
-	fpCancelFlag = nil;
+    fpCancelFlag = nil;
 }
 #endif
 
 
 BEGIN_MESSAGE_MAP(ProgressDlg, CDialog)
-	//{{AFX_MSG_MAP(ProgressDlg)
-	//}}AFX_MSG_MAP
+    //{{AFX_MSG_MAP(ProgressDlg)
+    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -42,17 +42,17 @@ END_MESSAGE_MAP()
 
 BOOL ProgressDlg::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext) 
 {
-	// TODO: Add your specialized code here and/or call the base class
-	
-	return CDialog::Create(IDD, pParentWnd);
+    // TODO: Add your specialized code here and/or call the base class
+    
+    return CDialog::Create(IDD, pParentWnd);
 }
 
 void ProgressDlg::PostNcDestroy() 
 {
-	// TODO: Add your specialized code here and/or call the base class
-	delete this;
-	
-	//CDialog::PostNcDestroy();
+    // TODO: Add your specialized code here and/or call the base class
+    delete this;
+    
+    //CDialog::PostNcDestroy();
 }
 
 /*
@@ -62,17 +62,17 @@ void ProgressDlg::PostNcDestroy()
 void
 ProgressDlg::SetCurrentFile(const char* fileName)
 {
-	CWnd* pWnd = GetDlgItem(IDC_PROGRESS_FILENAME);
-	ASSERT(pWnd != nil);
-	pWnd->SetWindowText(fileName);
+    CWnd* pWnd = GetDlgItem(IDC_PROGRESS_FILENAME);
+    ASSERT(pWnd != nil);
+    pWnd->SetWindowText(fileName);
 }
 
 void ProgressDlg::OnCancel() 
 {
-	// TODO: Add extra cleanup here
-	WMSG0("Cancel button pushed\n");
-	ASSERT(fpCancelFlag != nil);
-	*fpCancelFlag = true;
-	
-	//CDialog::OnCancel();
+    // TODO: Add extra cleanup here
+    WMSG0("Cancel button pushed\n");
+    ASSERT(fpCancelFlag != nil);
+    *fpCancelFlag = true;
+    
+    //CDialog::OnCancel();
 }

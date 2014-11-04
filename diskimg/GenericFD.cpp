@@ -11,7 +11,7 @@
 
 /*
  * ===========================================================================
- *		GenericFD utility functions
+ *      GenericFD utility functions
  * ===========================================================================
  */
 
@@ -24,55 +24,55 @@
  */
 /*static*/ DIError
 GenericFD::CopyFile(GenericFD* pDst, GenericFD* pSrc, di_off_t length,
-	unsigned long* pCRC)
+    unsigned long* pCRC)
 {
-	DIError dierr = kDIErrNone;
-	const int kCopyBufSize = 32768;
-	unsigned char* copyBuf = nil;
-	int copySize;
+    DIError dierr = kDIErrNone;
+    const int kCopyBufSize = 32768;
+    unsigned char* copyBuf = nil;
+    int copySize;
 
-	WMSG1("+++ CopyFile: %ld bytes\n", (long) length);
+    WMSG1("+++ CopyFile: %ld bytes\n", (long) length);
 
-	if (pDst == nil || pSrc == nil || length < 0)
-		return kDIErrInvalidArg;
-	if (length == 0)
-		return kDIErrNone;
+    if (pDst == nil || pSrc == nil || length < 0)
+        return kDIErrInvalidArg;
+    if (length == 0)
+        return kDIErrNone;
 
-	copyBuf = new unsigned char[kCopyBufSize];
-	if (copyBuf == nil)
-		return kDIErrMalloc;
+    copyBuf = new unsigned char[kCopyBufSize];
+    if (copyBuf == nil)
+        return kDIErrMalloc;
 
-	if (pCRC != nil)
-		*pCRC = crc32(0L, Z_NULL, 0);
+    if (pCRC != nil)
+        *pCRC = crc32(0L, Z_NULL, 0);
 
-	while (length != 0) {
-		copySize = kCopyBufSize;
-		if (copySize > length)
-			copySize = (int) length;
+    while (length != 0) {
+        copySize = kCopyBufSize;
+        if (copySize > length)
+            copySize = (int) length;
 
-		dierr = pSrc->Read(copyBuf, copySize);
-		if (dierr != kDIErrNone)
-			goto bail;
+        dierr = pSrc->Read(copyBuf, copySize);
+        if (dierr != kDIErrNone)
+            goto bail;
 
-		if (pCRC != nil)
-			*pCRC = crc32(*pCRC, copyBuf, copySize);
+        if (pCRC != nil)
+            *pCRC = crc32(*pCRC, copyBuf, copySize);
 
-		dierr = pDst->Write(copyBuf, copySize);
-		if (dierr != kDIErrNone)
-			goto bail;
+        dierr = pDst->Write(copyBuf, copySize);
+        if (dierr != kDIErrNone)
+            goto bail;
 
-		length -= copySize;
-	}
+        length -= copySize;
+    }
 
 bail:
-	delete[] copyBuf;
-	return dierr;
+    delete[] copyBuf;
+    return dierr;
 }
 
 
 /*
  * ===========================================================================
- *		GFDFile
+ *      GFDFile
  * ===========================================================================
  */
 
@@ -92,42 +92,42 @@ bail:
 DIError
 GFDFile::Open(const char* filename, bool readOnly)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	if (fFp != nil)
-		return kDIErrAlreadyOpen;
-	if (filename == nil)
-		return kDIErrInvalidArg;
+    if (fFp != nil)
+        return kDIErrAlreadyOpen;
+    if (filename == nil)
+        return kDIErrInvalidArg;
     if (filename[0] == '\0')
         return kDIErrInvalidArg;
 
-	delete[] fPathName;
-	fPathName = new char[strlen(filename) +1];
-	strcpy(fPathName, filename);
+    delete[] fPathName;
+    fPathName = new char[strlen(filename) +1];
+    strcpy(fPathName, filename);
 
-	fFp = fopen(filename, readOnly ? "rb" : "r+b");
-	if (fFp == nil) {
-		if (errno == EACCES)
-			dierr = kDIErrAccessDenied;
-		else
-			dierr = ErrnoOrGeneric();
-		WMSG3("  GDFile Open failed opening '%s', ro=%d (err=%d)\n",
-			filename, readOnly, dierr);
-		return dierr;
-	}
+    fFp = fopen(filename, readOnly ? "rb" : "r+b");
+    if (fFp == nil) {
+        if (errno == EACCES)
+            dierr = kDIErrAccessDenied;
+        else
+            dierr = ErrnoOrGeneric();
+        WMSG3("  GDFile Open failed opening '%s', ro=%d (err=%d)\n",
+            filename, readOnly, dierr);
+        return dierr;
+    }
     fReadOnly = readOnly;
-	return dierr;
+    return dierr;
 }
 
 DIError
 GFDFile::Read(void* buf, size_t length, size_t* pActual)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
     size_t actual;
 
-	if (fFp == nil)
-		return kDIErrNotReady;
-	actual = ::fread(buf, 1, length, fFp);
+    if (fFp == nil)
+        return kDIErrNotReady;
+    actual = ::fread(buf, 1, length, fFp);
     if (actual == 0) {
         if (feof(fFp))
             return kDIErrEOF;
@@ -146,97 +146,97 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
                 length, actual, dierr);
             return dierr;
         }
-	} else {
+    } else {
         *pActual = actual;
     }
-	return dierr;
+    return dierr;
 }
 
 DIError
 GFDFile::Write(const void* buf, size_t length, size_t* pActual)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	if (fFp == nil)
-		return kDIErrNotReady;
-	if (fReadOnly)
-		return kDIErrAccessDenied;
-	assert(pActual == nil);		// not handling this yet
-	if (::fwrite(buf, length, 1, fFp) != 1) {
-		dierr = ErrnoOrGeneric();
-		WMSG2("  GDFile Write failed on %d bytes (err=%d)\n", length, dierr);
-		return dierr;
-	}
-	return dierr;
+    if (fFp == nil)
+        return kDIErrNotReady;
+    if (fReadOnly)
+        return kDIErrAccessDenied;
+    assert(pActual == nil);     // not handling this yet
+    if (::fwrite(buf, length, 1, fFp) != 1) {
+        dierr = ErrnoOrGeneric();
+        WMSG2("  GDFile Write failed on %d bytes (err=%d)\n", length, dierr);
+        return dierr;
+    }
+    return dierr;
 }
 
 DIError
 GFDFile::Seek(di_off_t offset, DIWhence whence)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
     //static const long kOneGB = 1024*1024*1024;
     //static const long kAlmostTwoGB = kOneGB + (kOneGB -1);
 
-	if (fFp == nil)
-		return kDIErrNotReady;
-	//assert(offset <= kAlmostTwoGB);
-	//if (::fseek(fFp, (long) offset, whence) != 0) {
-	if (::fseeko(fFp, offset, whence) != 0) {
-		dierr = ErrnoOrGeneric();
-		WMSG1("  GDFile Seek failed (err=%d)\n", dierr);
-		return dierr;
-	}
-	return dierr;
+    if (fFp == nil)
+        return kDIErrNotReady;
+    //assert(offset <= kAlmostTwoGB);
+    //if (::fseek(fFp, (long) offset, whence) != 0) {
+    if (::fseeko(fFp, offset, whence) != 0) {
+        dierr = ErrnoOrGeneric();
+        WMSG1("  GDFile Seek failed (err=%d)\n", dierr);
+        return dierr;
+    }
+    return dierr;
 }
 
 di_off_t
 GFDFile::Tell(void)
 {
-	DIError dierr = kDIErrNone;
-	di_off_t result;
+    DIError dierr = kDIErrNone;
+    di_off_t result;
 
-	if (fFp == nil)
-		return kDIErrNotReady;
-	//result = ::ftell(fFp);
-	result = ::ftello(fFp);
-	if (result == -1) {
-		dierr = ErrnoOrGeneric();
-		WMSG1("  GDFile Tell failed (err=%d)\n", dierr);
-		return result;
-	}
-	return result;
+    if (fFp == nil)
+        return kDIErrNotReady;
+    //result = ::ftell(fFp);
+    result = ::ftello(fFp);
+    if (result == -1) {
+        dierr = ErrnoOrGeneric();
+        WMSG1("  GDFile Tell failed (err=%d)\n", dierr);
+        return result;
+    }
+    return result;
 }
 
 DIError
 GFDFile::Truncate(void)
 {
 #if defined(HAVE_FTRUNCATE)
-	int cc;
-	cc = ::ftruncate(fileno(fFp), (long) Tell());
-	if (cc != 0)
-		return kDIErrWriteFailed;
+    int cc;
+    cc = ::ftruncate(fileno(fFp), (long) Tell());
+    if (cc != 0)
+        return kDIErrWriteFailed;
 #elif defined(HAVE_CHSIZE)
-	assert(false);      // not tested
-	int cc;
-	cc = ::chsize(fFd, (long) Tell());
-	if (cc != 0)
-		return kDIErrWriteFailed;
+    assert(false);      // not tested
+    int cc;
+    cc = ::chsize(fFd, (long) Tell());
+    if (cc != 0)
+        return kDIErrWriteFailed;
 #else
 # error "missing truncate"
 #endif
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 DIError
 GFDFile::Close(void)
 {
-	if (fFp == nil)
-		return kDIErrNotReady;
+    if (fFp == nil)
+        return kDIErrNotReady;
 
-	WMSG1("  GFDFile closing '%s'\n", fPathName);
-	fclose(fFp);
-	fFp = nil;
-	return kDIErrNone;
+    WMSG1("  GFDFile closing '%s'\n", fPathName);
+    fclose(fFp);
+    fFp = nil;
+    return kDIErrNone;
 }
 
 #else /*HAVE_FSEEKO*/
@@ -244,50 +244,50 @@ GFDFile::Close(void)
 DIError
 GFDFile::Open(const char* filename, bool readOnly)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	if (fFd >= 0)
-		return kDIErrAlreadyOpen;
-	if (filename == nil)
-		return kDIErrInvalidArg;
+    if (fFd >= 0)
+        return kDIErrAlreadyOpen;
+    if (filename == nil)
+        return kDIErrInvalidArg;
     if (filename[0] == '\0')
         return kDIErrInvalidArg;
 
-	delete[] fPathName;
-	fPathName = new char[strlen(filename) +1];
-	strcpy(fPathName, filename);
+    delete[] fPathName;
+    fPathName = new char[strlen(filename) +1];
+    strcpy(fPathName, filename);
 
-	fFd = open(filename, readOnly ? O_RDONLY|O_BINARY : O_RDWR|O_BINARY, 0);
-	if (fFd < 0) {
-		if (errno == EACCES)
-			dierr = kDIErrAccessDenied;
-		else
-			dierr = ErrnoOrGeneric();
-		WMSG3("  GDFile Open failed opening '%s', ro=%d (err=%d)\n",
-			filename, readOnly, dierr);
-		return dierr;
-	}
+    fFd = open(filename, readOnly ? O_RDONLY|O_BINARY : O_RDWR|O_BINARY, 0);
+    if (fFd < 0) {
+        if (errno == EACCES)
+            dierr = kDIErrAccessDenied;
+        else
+            dierr = ErrnoOrGeneric();
+        WMSG3("  GDFile Open failed opening '%s', ro=%d (err=%d)\n",
+            filename, readOnly, dierr);
+        return dierr;
+    }
     fReadOnly = readOnly;
-	return dierr;
+    return dierr;
 }
 
 DIError
 GFDFile::Read(void* buf, size_t length, size_t* pActual)
 {
-	DIError dierr;
+    DIError dierr;
     ssize_t actual;
 
-	if (fFd < 0)
-		return kDIErrNotReady;
-	actual = ::read(fFd, buf, length);
+    if (fFd < 0)
+        return kDIErrNotReady;
+    actual = ::read(fFd, buf, length);
     if (actual == 0)
         return kDIErrEOF;
-	if (actual < 0) {
+    if (actual < 0) {
         dierr = ErrnoOrGeneric();
         WMSG3("  GDFile Read failed on %d bytes (actual=%d, err=%d)\n",
             length, actual, dierr);
         return dierr;
-	}
+    }
 
     if (pActual == nil) {
         if (actual != (ssize_t) length) {
@@ -295,118 +295,118 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
                 length, actual);
             return kDIErrReadFailed;
         }
-	} else {
+    } else {
         *pActual = actual;
     }
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 DIError
 GFDFile::Write(const void* buf, size_t length, size_t* pActual)
 {
-	DIError dierr;
-	ssize_t actual;
+    DIError dierr;
+    ssize_t actual;
 
-	if (fFd < 0)
-		return kDIErrNotReady;
-	if (fReadOnly)
-		return kDIErrAccessDenied;
-	assert(pActual == nil);		// not handling partial writes yet
-	actual = ::write(fFd, buf, length);
-	if (actual != (ssize_t) length) {
-		dierr = ErrnoOrGeneric();
-		WMSG3("  GDFile Write failed on %d bytes (actual=%d err=%d)\n",
-			length, actual, dierr);
-		return dierr;
-	}
-	return kDIErrNone;
+    if (fFd < 0)
+        return kDIErrNotReady;
+    if (fReadOnly)
+        return kDIErrAccessDenied;
+    assert(pActual == nil);     // not handling partial writes yet
+    actual = ::write(fFd, buf, length);
+    if (actual != (ssize_t) length) {
+        dierr = ErrnoOrGeneric();
+        WMSG3("  GDFile Write failed on %d bytes (actual=%d err=%d)\n",
+            length, actual, dierr);
+        return dierr;
+    }
+    return kDIErrNone;
 }
 
 DIError
 GFDFile::Seek(di_off_t offset, DIWhence whence)
 {
-	DIError dierr = kDIErrNone;
-	if (fFd < 0)
-		return kDIErrNotReady;
+    DIError dierr = kDIErrNone;
+    if (fFd < 0)
+        return kDIErrNotReady;
 
 #ifdef WIN32
-	__int64 newPosn;
-	const __int64 kFailure = (__int64) -1;
-	newPosn = ::_lseeki64(fFd, (__int64) offset, whence);
+    __int64 newPosn;
+    const __int64 kFailure = (__int64) -1;
+    newPosn = ::_lseeki64(fFd, (__int64) offset, whence);
 #else
-	di_off_t newPosn;
-	const di_off_t kFailure = (di_off_t) -1;
-	newPosn = lseek(fFd, offset, whence);
+    di_off_t newPosn;
+    const di_off_t kFailure = (di_off_t) -1;
+    newPosn = lseek(fFd, offset, whence);
 #endif
 
-	if (newPosn == kFailure) {
-		assert((unsigned long) offset != 0xccccccccUL);	// uninitialized data!
-		dierr = ErrnoOrGeneric();
-		WMSG3("  GDFile Seek %ld-%lu failed (err=%d)\n",
-			(long) (offset >> 32), (unsigned long) offset, dierr);
-	}
-	return dierr;
+    if (newPosn == kFailure) {
+        assert((unsigned long) offset != 0xccccccccUL); // uninitialized data!
+        dierr = ErrnoOrGeneric();
+        WMSG3("  GDFile Seek %ld-%lu failed (err=%d)\n",
+            (long) (offset >> 32), (unsigned long) offset, dierr);
+    }
+    return dierr;
 }
 
 di_off_t
 GFDFile::Tell(void)
 {
-	DIError dierr = kDIErrNone;
-	di_off_t result;
+    DIError dierr = kDIErrNone;
+    di_off_t result;
 
-	if (fFd < 0)
-		return kDIErrNotReady;
+    if (fFd < 0)
+        return kDIErrNotReady;
 
 #ifdef WIN32
-	result = ::_lseeki64(fFd, 0, SEEK_CUR);
+    result = ::_lseeki64(fFd, 0, SEEK_CUR);
 #else
-	result = lseek(fFd, 0, SEEK_CUR);
+    result = lseek(fFd, 0, SEEK_CUR);
 #endif
 
-	if (result == -1) {
-		dierr = ErrnoOrGeneric();
-		WMSG1("  GDFile Tell failed (err=%d)\n", dierr);
-		return result;
-	}
-	return result;
+    if (result == -1) {
+        dierr = ErrnoOrGeneric();
+        WMSG1("  GDFile Tell failed (err=%d)\n", dierr);
+        return result;
+    }
+    return result;
 }
 
 DIError
 GFDFile::Truncate(void)
 {
 #if defined(HAVE_FTRUNCATE)
-	int cc;
-	cc = ::ftruncate(fFd, (long) Tell());
-	if (cc != 0)
-		return kDIErrWriteFailed;
+    int cc;
+    cc = ::ftruncate(fFd, (long) Tell());
+    if (cc != 0)
+        return kDIErrWriteFailed;
 #elif defined(HAVE_CHSIZE)
-	int cc;
-	cc = ::chsize(fFd, (long) Tell());
-	if (cc != 0)
-		return kDIErrWriteFailed;
+    int cc;
+    cc = ::chsize(fFd, (long) Tell());
+    if (cc != 0)
+        return kDIErrWriteFailed;
 #else
 # error "missing truncate"
 #endif
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 DIError
 GFDFile::Close(void)
 {
-	if (fFd < 0)
-		return kDIErrNotReady;
+    if (fFd < 0)
+        return kDIErrNotReady;
 
-	WMSG1("  GFDFile closing '%s'\n", fPathName);
-	::close(fFd);
-	fFd = -1;
-	return kDIErrNone;
+    WMSG1("  GFDFile closing '%s'\n", fPathName);
+    ::close(fFd);
+    fFd = -1;
+    return kDIErrNone;
 }
 #endif /*HAVE_FSEEKO else*/
 
 
 /*
  * ===========================================================================
- *		GFDBuffer
+ *      GFDBuffer
  * ===========================================================================
  */
 
@@ -414,16 +414,16 @@ DIError
 GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
     bool readOnly)
 {
-	if (fBuffer != nil)
-		return kDIErrAlreadyOpen;
-	if (length <= 0)
-		return kDIErrInvalidArg;
-	if (length > kMaxReasonableSize) {
-		// be reasonable
-		WMSG1(" GFDBuffer refusing to allocate buffer size(long)=%ld bytes\n",
-			(long) length);
-		return kDIErrInvalidArg;
-	}
+    if (fBuffer != nil)
+        return kDIErrAlreadyOpen;
+    if (length <= 0)
+        return kDIErrInvalidArg;
+    if (length > kMaxReasonableSize) {
+        // be reasonable
+        WMSG1(" GFDBuffer refusing to allocate buffer size(long)=%ld bytes\n",
+            (long) length);
+        return kDIErrInvalidArg;
+    }
 
     /* if buffer is nil, allocate it ourselves */
     if (buffer == nil) {
@@ -433,26 +433,26 @@ GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
     } else
         fBuffer = buffer;
 
-	fLength = (long) length;
+    fLength = (long) length;
     fAllocLength = (long) length;
-	fDoDelete = doDelete;
+    fDoDelete = doDelete;
     fDoExpand = doExpand;
-	fReadOnly = readOnly;
+    fReadOnly = readOnly;
 
-	fCurrentOffset = 0;
+    fCurrentOffset = 0;
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 DIError
 GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
 {
-	if (fBuffer == nil)
-		return kDIErrNotReady;
+    if (fBuffer == nil)
+        return kDIErrNotReady;
     if (length == 0)
         return kDIErrInvalidArg;
 
-	if (fCurrentOffset + (long)length > fLength) {
+    if (fCurrentOffset + (long)length > fLength) {
         if (pActual == nil) {
             WMSG3("  GFDBuffer underrrun off=%ld len=%d flen=%ld\n",
                 (long) fCurrentOffset, length, (long) fLength);
@@ -466,23 +466,23 @@ GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
             if (length == 0)
                 return kDIErrEOF;
         }
-	}
+    }
     if (pActual != nil)
         *pActual = length;
 
-	memcpy(buf, (const char*)fBuffer + fCurrentOffset, length);
-	fCurrentOffset += length;
+    memcpy(buf, (const char*)fBuffer + fCurrentOffset, length);
+    fCurrentOffset += length;
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 DIError
 GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
 {
-	if (fBuffer == nil)
-		return kDIErrNotReady;
-	assert(pActual == nil);		// not handling this yet
-	if (fCurrentOffset + (long)length > fLength) {
+    if (fBuffer == nil)
+        return kDIErrNotReady;
+    assert(pActual == nil);     // not handling this yet
+    if (fCurrentOffset + (long)length > fLength) {
         if (!fDoExpand) {
             WMSG3("  GFDBuffer overrun off=%ld len=%d flen=%ld\n",
                 (long) fCurrentOffset, length, (long) fLength);
@@ -504,7 +504,7 @@ GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
             /* does not fit, realloc buffer */
             fAllocLength = (long) fCurrentOffset + (long)length + 8*1024;
             WMSG1("Reallocating buffer (new size = %ld)\n", fAllocLength);
-			assert(fAllocLength < kMaxReasonableSize);
+            assert(fAllocLength < kMaxReasonableSize);
             char* newBuf = new char[(int) fAllocLength];
             if (newBuf == nil)
                 return kDIErrMalloc;
@@ -519,78 +519,78 @@ GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
             fBuffer = newBuf;
             fLength = (long) fCurrentOffset + (long)length;
         }
-	}
+    }
 
-	memcpy((char*)fBuffer + fCurrentOffset, buf, length);
-	fCurrentOffset += length;
+    memcpy((char*)fBuffer + fCurrentOffset, buf, length);
+    fCurrentOffset += length;
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 DIError
 GFDBuffer::Seek(di_off_t offset, DIWhence whence)
 {
-	if (fBuffer == nil)
-		return kDIErrNotReady;
+    if (fBuffer == nil)
+        return kDIErrNotReady;
 
-	switch (whence) {
-	case kSeekSet:
-		if (offset < 0 || offset >= fLength)
-			return kDIErrInvalidArg;
-		fCurrentOffset = offset;
-		break;
-	case kSeekEnd:
-		if (offset > 0 || offset < -fLength)
-			return kDIErrInvalidArg;
-		fCurrentOffset = fLength + offset;
-		break;
-	case kSeekCur:
-		if (offset < -fCurrentOffset ||
-			offset >= (fLength - fCurrentOffset))
-		{
-			return kDIErrInvalidArg;
-		}
-		fCurrentOffset += offset;
-		break;
-	default:
-		assert(false);
-		return kDIErrInvalidArg;
-	}
+    switch (whence) {
+    case kSeekSet:
+        if (offset < 0 || offset >= fLength)
+            return kDIErrInvalidArg;
+        fCurrentOffset = offset;
+        break;
+    case kSeekEnd:
+        if (offset > 0 || offset < -fLength)
+            return kDIErrInvalidArg;
+        fCurrentOffset = fLength + offset;
+        break;
+    case kSeekCur:
+        if (offset < -fCurrentOffset ||
+            offset >= (fLength - fCurrentOffset))
+        {
+            return kDIErrInvalidArg;
+        }
+        fCurrentOffset += offset;
+        break;
+    default:
+        assert(false);
+        return kDIErrInvalidArg;
+    }
 
-	assert(fCurrentOffset >= 0 && fCurrentOffset <= fLength);
-	return kDIErrNone;
+    assert(fCurrentOffset >= 0 && fCurrentOffset <= fLength);
+    return kDIErrNone;
 }
 
 di_off_t
 GFDBuffer::Tell(void)
 {
-	if (fBuffer == nil)
-		return (di_off_t) -1;
-	return fCurrentOffset;
+    if (fBuffer == nil)
+        return (di_off_t) -1;
+    return fCurrentOffset;
 }
 
 DIError
 GFDBuffer::Close(void)
 {
-	if (fBuffer == nil)
-		return kDIErrNone;
+    if (fBuffer == nil)
+        return kDIErrNone;
 
-	if (fDoDelete) {
-		WMSG0("  GFDBuffer closing and deleting\n");
-		delete[] (char*) fBuffer;
-	} else {
-		WMSG0("  GFDBuffer closing\n");
-	}
-	fBuffer = nil;
+    if (fDoDelete) {
+        WMSG0("  GFDBuffer closing and deleting\n");
+        delete[] (char*) fBuffer;
+    } else {
+        WMSG0("  GFDBuffer closing\n");
+    }
+    fBuffer = nil;
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 
 #ifdef _WIN32
 /*
  * ===========================================================================
- *		GFDWinVolume
+ *      GFDWinVolume
  * ===========================================================================
  */
 
@@ -612,265 +612,265 @@ GFDBuffer::Close(void)
 DIError
 GFDWinVolume::Open(const char* deviceName, bool readOnly)
 {
-	DIError dierr = kDIErrNone;
-	HANDLE handle = nil;
-	//unsigned long kTwoGBBlocks;
-	
-	if (fVolAccess.Ready())
-		return kDIErrAlreadyOpen;
-	if (deviceName == nil)
-		return kDIErrInvalidArg;
+    DIError dierr = kDIErrNone;
+    HANDLE handle = nil;
+    //unsigned long kTwoGBBlocks;
+    
+    if (fVolAccess.Ready())
+        return kDIErrAlreadyOpen;
+    if (deviceName == nil)
+        return kDIErrInvalidArg;
     if (deviceName[0] == '\0')
         return kDIErrInvalidArg;
 
-	delete[] fPathName;
-	fPathName = new char[strlen(deviceName) +1];
-	strcpy(fPathName, deviceName);
+    delete[] fPathName;
+    fPathName = new char[strlen(deviceName) +1];
+    strcpy(fPathName, deviceName);
 
-	dierr = fVolAccess.Open(deviceName, readOnly);
-	if (dierr != kDIErrNone)
-		goto bail;
+    dierr = fVolAccess.Open(deviceName, readOnly);
+    if (dierr != kDIErrNone)
+        goto bail;
 
-	fBlockSize = fVolAccess.GetBlockSize();	// must be power of 2
-	assert(fBlockSize > 0);
-	//kTwoGBBlocks = kTwoGB / fBlockSize;
+    fBlockSize = fVolAccess.GetBlockSize(); // must be power of 2
+    assert(fBlockSize > 0);
+    //kTwoGBBlocks = kTwoGB / fBlockSize;
 
-	unsigned long totalBlocks;
-	totalBlocks = fVolAccess.GetTotalBlocks();
-	fVolumeEOF = (di_off_t)totalBlocks * fBlockSize;
+    unsigned long totalBlocks;
+    totalBlocks = fVolAccess.GetTotalBlocks();
+    fVolumeEOF = (di_off_t)totalBlocks * fBlockSize;
 
-	assert(fVolumeEOF > 0);
+    assert(fVolumeEOF > 0);
 
     fReadOnly = readOnly;
 
 bail:
-	return dierr;
+    return dierr;
 }
 
 DIError
 GFDWinVolume::Read(void* buf, size_t length, size_t* pActual)
 {
-	DIError dierr = kDIErrNone;
-	unsigned char* blkBuf = nil;
+    DIError dierr = kDIErrNone;
+    unsigned char* blkBuf = nil;
 
-	//WMSG2(" GFDWinVolume: reading %ld bytes from offset %ld\n", length,
-	//	fCurrentOffset);
+    //WMSG2(" GFDWinVolume: reading %ld bytes from offset %ld\n", length,
+    //  fCurrentOffset);
 
-	if (!fVolAccess.Ready())
-		return kDIErrNotReady;
+    if (!fVolAccess.Ready())
+        return kDIErrNotReady;
 
-	// don't allow reading past the end of file
-	if (fCurrentOffset + (long) length > fVolumeEOF) {
-		if (pActual == nil)
-			return kDIErrDataUnderrun;
-		length = (size_t) (fVolumeEOF - fCurrentOffset);
-	}
-	if (pActual != nil)
-		*pActual = length;
-	if (length == 0)
-		return kDIErrNone;
+    // don't allow reading past the end of file
+    if (fCurrentOffset + (long) length > fVolumeEOF) {
+        if (pActual == nil)
+            return kDIErrDataUnderrun;
+        length = (size_t) (fVolumeEOF - fCurrentOffset);
+    }
+    if (pActual != nil)
+        *pActual = length;
+    if (length == 0)
+        return kDIErrNone;
 
-	long advanceLen = length;
+    long advanceLen = length;
 
-	blkBuf = new unsigned char[fBlockSize];		// get this off the heap??
-	long blockIndex = (long) (fCurrentOffset / fBlockSize);
-	int bufOffset = (int) (fCurrentOffset % fBlockSize);	// req power of 2
-	assert(blockIndex >= 0);
+    blkBuf = new unsigned char[fBlockSize];     // get this off the heap??
+    long blockIndex = (long) (fCurrentOffset / fBlockSize);
+    int bufOffset = (int) (fCurrentOffset % fBlockSize);    // req power of 2
+    assert(blockIndex >= 0);
 
-	/*
-	 * When possible, do multi-block reads directly into "buf".  The first
-	 * and last block may require special handling.
-	 */
-	while (length) {
-		assert(length > 0);
+    /*
+     * When possible, do multi-block reads directly into "buf".  The first
+     * and last block may require special handling.
+     */
+    while (length) {
+        assert(length > 0);
 
-		if (bufOffset != 0 || length < (size_t) fBlockSize) {
-			assert(bufOffset >= 0 && bufOffset < fBlockSize);
+        if (bufOffset != 0 || length < (size_t) fBlockSize) {
+            assert(bufOffset >= 0 && bufOffset < fBlockSize);
 
-			size_t thisCount;
+            size_t thisCount;
 
-			dierr = fVolAccess.ReadBlocks(blockIndex, 1, blkBuf);
-			if (dierr != kDIErrNone)
-				goto bail;
+            dierr = fVolAccess.ReadBlocks(blockIndex, 1, blkBuf);
+            if (dierr != kDIErrNone)
+                goto bail;
 
-			thisCount = fBlockSize - bufOffset;
-			if (thisCount > length)
-				thisCount = length;
+            thisCount = fBlockSize - bufOffset;
+            if (thisCount > length)
+                thisCount = length;
 
-			//WMSG2("    Copying %d bytes from block %d\n",
-			//	thisCount, blockIndex);
+            //WMSG2("    Copying %d bytes from block %d\n",
+            //  thisCount, blockIndex);
 
-			memcpy(buf, blkBuf + bufOffset, thisCount);
-			length -= thisCount;
-			buf = (char*) buf + thisCount;
+            memcpy(buf, blkBuf + bufOffset, thisCount);
+            length -= thisCount;
+            buf = (char*) buf + thisCount;
 
-			bufOffset = 0;
-			blockIndex++;
-		} else {
-			assert(bufOffset == 0);
+            bufOffset = 0;
+            blockIndex++;
+        } else {
+            assert(bufOffset == 0);
 
-			long blockCount = length / fBlockSize;
-			assert(blockCount < 32768);
+            long blockCount = length / fBlockSize;
+            assert(blockCount < 32768);
 
-			dierr = fVolAccess.ReadBlocks(blockIndex, (short) blockCount, buf);
-			if (dierr != kDIErrNone)
-				goto bail;
+            dierr = fVolAccess.ReadBlocks(blockIndex, (short) blockCount, buf);
+            if (dierr != kDIErrNone)
+                goto bail;
 
-			length -= blockCount * fBlockSize;
-			buf = (char*) buf + blockCount * fBlockSize;
+            length -= blockCount * fBlockSize;
+            buf = (char*) buf + blockCount * fBlockSize;
 
-			blockIndex += blockCount;
-		}
+            blockIndex += blockCount;
+        }
 
-	}
+    }
 
-	fCurrentOffset += advanceLen;
+    fCurrentOffset += advanceLen;
 
 bail:
-	delete[] blkBuf;
-	return dierr;
+    delete[] blkBuf;
+    return dierr;
 }
 
 DIError
 GFDWinVolume::Write(const void* buf, size_t length, size_t* pActual)
 {
-	DIError dierr = kDIErrNone;
-	unsigned char* blkBuf = nil;
+    DIError dierr = kDIErrNone;
+    unsigned char* blkBuf = nil;
 
-	//WMSG2(" GFDWinVolume: writing %ld bytes at offset %ld\n", length,
-	//	fCurrentOffset);
+    //WMSG2(" GFDWinVolume: writing %ld bytes at offset %ld\n", length,
+    //  fCurrentOffset);
 
-	if (!fVolAccess.Ready())
-		return kDIErrNotReady;
-	if (fReadOnly)
-		return kDIErrAccessDenied;
+    if (!fVolAccess.Ready())
+        return kDIErrNotReady;
+    if (fReadOnly)
+        return kDIErrAccessDenied;
 
-	// don't allow writing past the end of the volume
-	if (fCurrentOffset + (long) length > fVolumeEOF) {
-		if (pActual == nil)
-			return kDIErrDataOverrun;
-		length = (size_t) (fVolumeEOF - fCurrentOffset);
-	}
-	if (pActual != nil)
-		*pActual = length;
-	if (length == 0)
-		return kDIErrNone;
+    // don't allow writing past the end of the volume
+    if (fCurrentOffset + (long) length > fVolumeEOF) {
+        if (pActual == nil)
+            return kDIErrDataOverrun;
+        length = (size_t) (fVolumeEOF - fCurrentOffset);
+    }
+    if (pActual != nil)
+        *pActual = length;
+    if (length == 0)
+        return kDIErrNone;
 
-	long advanceLen = length;
+    long advanceLen = length;
 
-	blkBuf = new unsigned char[fBlockSize];		// get this out of the heap??
-	long blockIndex = (long) (fCurrentOffset / fBlockSize);
-	int bufOffset = (int) (fCurrentOffset % fBlockSize);	// req power of 2
-	assert(blockIndex >= 0);
+    blkBuf = new unsigned char[fBlockSize];     // get this out of the heap??
+    long blockIndex = (long) (fCurrentOffset / fBlockSize);
+    int bufOffset = (int) (fCurrentOffset % fBlockSize);    // req power of 2
+    assert(blockIndex >= 0);
 
-	/*
-	 * When possible, do multi-block writes directly from "buf".  The first
-	 * and last block may require special handling.
-	 */
-	while (length) {
-		assert(length > 0);
+    /*
+     * When possible, do multi-block writes directly from "buf".  The first
+     * and last block may require special handling.
+     */
+    while (length) {
+        assert(length > 0);
 
-		if (bufOffset != 0 || length < (size_t) fBlockSize) {
-			assert(bufOffset >= 0 && bufOffset < fBlockSize);
+        if (bufOffset != 0 || length < (size_t) fBlockSize) {
+            assert(bufOffset >= 0 && bufOffset < fBlockSize);
 
-			size_t thisCount;
+            size_t thisCount;
 
-			dierr = fVolAccess.ReadBlocks(blockIndex, 1, blkBuf);
-			if (dierr != kDIErrNone)
-				goto bail;
+            dierr = fVolAccess.ReadBlocks(blockIndex, 1, blkBuf);
+            if (dierr != kDIErrNone)
+                goto bail;
 
-			thisCount = fBlockSize - bufOffset;
-			if (thisCount > length)
-				thisCount = length;
+            thisCount = fBlockSize - bufOffset;
+            if (thisCount > length)
+                thisCount = length;
 
-			//WMSG3("    Copying %d bytes into block %d (off=%d)\n",
-			//	thisCount, blockIndex, bufOffset);
+            //WMSG3("    Copying %d bytes into block %d (off=%d)\n",
+            //  thisCount, blockIndex, bufOffset);
 
-			memcpy(blkBuf + bufOffset, buf, thisCount);
-			length -= thisCount;
-			buf = (char*) buf + thisCount;
+            memcpy(blkBuf + bufOffset, buf, thisCount);
+            length -= thisCount;
+            buf = (char*) buf + thisCount;
 
-			dierr = fVolAccess.WriteBlocks(blockIndex, 1, blkBuf);
-			if (dierr != kDIErrNone)
-				goto bail;
+            dierr = fVolAccess.WriteBlocks(blockIndex, 1, blkBuf);
+            if (dierr != kDIErrNone)
+                goto bail;
 
-			bufOffset = 0;
-			blockIndex++;
-		} else {
-			assert(bufOffset == 0);
+            bufOffset = 0;
+            blockIndex++;
+        } else {
+            assert(bufOffset == 0);
 
-			long blockCount = length / fBlockSize;
-			assert(blockCount < 32768);
+            long blockCount = length / fBlockSize;
+            assert(blockCount < 32768);
 
-			dierr = fVolAccess.WriteBlocks(blockIndex, (short) blockCount, buf);
-			if (dierr != kDIErrNone)
-				goto bail;
+            dierr = fVolAccess.WriteBlocks(blockIndex, (short) blockCount, buf);
+            if (dierr != kDIErrNone)
+                goto bail;
 
-			length -= blockCount * fBlockSize;
-			buf = (char*) buf + blockCount * fBlockSize;
+            length -= blockCount * fBlockSize;
+            buf = (char*) buf + blockCount * fBlockSize;
 
-			blockIndex += blockCount;
-		}
+            blockIndex += blockCount;
+        }
 
-	}
+    }
 
-	fCurrentOffset += advanceLen;
+    fCurrentOffset += advanceLen;
 
 bail:
-	delete[] blkBuf;
-	return dierr;
+    delete[] blkBuf;
+    return dierr;
 }
 
 DIError
 GFDWinVolume::Seek(di_off_t offset, DIWhence whence)
 {
-	if (!fVolAccess.Ready())
-		return kDIErrNotReady;
+    if (!fVolAccess.Ready())
+        return kDIErrNotReady;
 
-	switch (whence) {
-	case kSeekSet:
-		if (offset < 0 || offset >= fVolumeEOF)
-			return kDIErrInvalidArg;
-		fCurrentOffset = offset;
-		break;
-	case kSeekEnd:
-		if (offset > 0 || offset < -fVolumeEOF)
-			return kDIErrInvalidArg;
-		fCurrentOffset = fVolumeEOF + offset;
-		break;
-	case kSeekCur:
-		if (offset < -fCurrentOffset ||
-			offset >= (fVolumeEOF - fCurrentOffset))
-		{
-			return kDIErrInvalidArg;
-		}
-		fCurrentOffset += offset;
-		break;
-	default:
-		assert(false);
-		return kDIErrInvalidArg;
-	}
+    switch (whence) {
+    case kSeekSet:
+        if (offset < 0 || offset >= fVolumeEOF)
+            return kDIErrInvalidArg;
+        fCurrentOffset = offset;
+        break;
+    case kSeekEnd:
+        if (offset > 0 || offset < -fVolumeEOF)
+            return kDIErrInvalidArg;
+        fCurrentOffset = fVolumeEOF + offset;
+        break;
+    case kSeekCur:
+        if (offset < -fCurrentOffset ||
+            offset >= (fVolumeEOF - fCurrentOffset))
+        {
+            return kDIErrInvalidArg;
+        }
+        fCurrentOffset += offset;
+        break;
+    default:
+        assert(false);
+        return kDIErrInvalidArg;
+    }
 
-	assert(fCurrentOffset >= 0 && fCurrentOffset <= fVolumeEOF);
-	return kDIErrNone;
+    assert(fCurrentOffset >= 0 && fCurrentOffset <= fVolumeEOF);
+    return kDIErrNone;
 }
 
 di_off_t
 GFDWinVolume::Tell(void)
 {
-	if (!fVolAccess.Ready())
-		return (di_off_t) -1;
-	return fCurrentOffset;
+    if (!fVolAccess.Ready())
+        return (di_off_t) -1;
+    return fCurrentOffset;
 }
 
 DIError
 GFDWinVolume::Close(void)
 {
-	if (!fVolAccess.Ready())
-		return kDIErrNotReady;
+    if (!fVolAccess.Ready())
+        return kDIErrNotReady;
 
-	WMSG0("  GFDWinVolume closing\n");
-	fVolAccess.Close();
-	return kDIErrNone;
+    WMSG0("  GFDWinVolume closing\n");
+    fVolAccess.Close();
+    return kDIErrNone;
 }
 #endif /*_WIN32*/

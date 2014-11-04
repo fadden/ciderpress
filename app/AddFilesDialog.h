@@ -22,59 +22,59 @@
  */
 class AddFilesDialog : public SelectFilesDialog {
 public:
-	AddFilesDialog(CWnd* pParentWnd = NULL) :
-		SelectFilesDialog("IDD_ADD_FILES", pParentWnd)
-	{
-		SetWindowTitle(_T("Add Files..."));
-		fStoragePrefix = "";
-		fStoragePrefixEnable = true;
-		fIncludeSubfolders = FALSE;
-		fStripFolderNames = FALSE;
-		fStripFolderNamesEnable = true;
-		fOverwriteExisting = FALSE;
-		fTypePreservation = 0;
-		fConvEOL = 0;
-		fConvEOLEnable = true;
+    AddFilesDialog(CWnd* pParentWnd = NULL) :
+        SelectFilesDialog("IDD_ADD_FILES", pParentWnd)
+    {
+        SetWindowTitle(_T("Add Files..."));
+        fStoragePrefix = "";
+        fStoragePrefixEnable = true;
+        fIncludeSubfolders = FALSE;
+        fStripFolderNames = FALSE;
+        fStripFolderNamesEnable = true;
+        fOverwriteExisting = FALSE;
+        fTypePreservation = 0;
+        fConvEOL = 0;
+        fConvEOLEnable = true;
 
-		fAcceptButtonID = IDC_SELECT_ACCEPT;
+        fAcceptButtonID = IDC_SELECT_ACCEPT;
 
-		fpTargetDiskFS = nil;
-		//fpTargetSubdir = nil;
-		fpDiskImg = nil;
-	}
-	virtual ~AddFilesDialog(void) {}
+        fpTargetDiskFS = nil;
+        //fpTargetSubdir = nil;
+        fpDiskImg = nil;
+    }
+    virtual ~AddFilesDialog(void) {}
 
-	/* values from dialog */
-	CString	fStoragePrefix;
-	bool	fStoragePrefixEnable;
-	BOOL	fIncludeSubfolders;
-	BOOL	fStripFolderNames;
-	bool	fStripFolderNamesEnable;
-	BOOL	fOverwriteExisting;
+    /* values from dialog */
+    CString fStoragePrefix;
+    bool    fStoragePrefixEnable;
+    BOOL    fIncludeSubfolders;
+    BOOL    fStripFolderNames;
+    bool    fStripFolderNamesEnable;
+    BOOL    fOverwriteExisting;
 
-	enum { kPreserveNone = 0, kPreserveTypes, kPreserveAndExtend };
-	int		fTypePreservation;
+    enum { kPreserveNone = 0, kPreserveTypes, kPreserveAndExtend };
+    int     fTypePreservation;
 
-	enum { kConvEOLNone = 0, kConvEOLType, kConvEOLAuto, kConvEOLAll };
-	int		fConvEOL;
-	bool	fConvEOLEnable;
+    enum { kConvEOLNone = 0, kConvEOLType, kConvEOLAuto, kConvEOLAll };
+    int     fConvEOL;
+    bool    fConvEOLEnable;
 
-	/* carryover from ChooseAddTargetDialog */
-	DiskImgLib::DiskFS*		fpTargetDiskFS;
-	//DiskImgLib::A2File*		fpTargetSubdir;
+    /* carryover from ChooseAddTargetDialog */
+    DiskImgLib::DiskFS*     fpTargetDiskFS;
+    //DiskImgLib::A2File*       fpTargetSubdir;
 
-	/* kluge; we carry this around for the benefit of AddDisk */
-	DiskImgLib::DiskImg*	fpDiskImg;
+    /* kluge; we carry this around for the benefit of AddDisk */
+    DiskImgLib::DiskImg*    fpDiskImg;
 
 private:
-	virtual bool MyDataExchange(bool saveAndValidate);
-	virtual void ShiftControls(int deltaX, int deltaY);
-	virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam);
+    virtual bool MyDataExchange(bool saveAndValidate);
+    virtual void ShiftControls(int deltaX, int deltaY);
+    virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam);
 
-	void OnIDHelp(void);
-	bool ValidateStoragePrefix(void);
+    void OnIDHelp(void);
+    bool ValidateStoragePrefix(void);
 
-	//DECLARE_MESSAGE_MAP()
+    //DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__ADDFILESDIALOG__*/

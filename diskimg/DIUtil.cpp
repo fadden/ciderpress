@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "DiskImgPriv.h"
 
-#define kFilenameExtDelim	'.' 	/* separates extension from filename */
+#define kFilenameExtDelim   '.'     /* separates extension from filename */
 
 /*
  * Get values from a memory buffer.
@@ -17,39 +17,39 @@
 unsigned short
 DiskImgLib::GetShortLE(const unsigned char* ptr)
 {
-	return *ptr | (unsigned short) *(ptr+1) << 8;
+    return *ptr | (unsigned short) *(ptr+1) << 8;
 }
 
 unsigned long
 DiskImgLib::GetLongLE(const unsigned char* ptr)
 {
-	return *ptr |
-			(unsigned long) *(ptr+1) << 8 |
-			(unsigned long) *(ptr+2) << 16 |
-			(unsigned long) *(ptr+3) << 24;
+    return *ptr |
+            (unsigned long) *(ptr+1) << 8 |
+            (unsigned long) *(ptr+2) << 16 |
+            (unsigned long) *(ptr+3) << 24;
 }
 
 unsigned short
 DiskImgLib::GetShortBE(const unsigned char* ptr)
 {
-	return *(ptr+1) | (unsigned short) *ptr << 8;
+    return *(ptr+1) | (unsigned short) *ptr << 8;
 }
 
 unsigned long
 DiskImgLib::GetLongBE(const unsigned char* ptr)
 {
-	return *(ptr+3) |
-			(unsigned long) *(ptr+2) << 8 |
-			(unsigned long) *(ptr+1) << 16 |
-			(unsigned long) *ptr << 24;
+    return *(ptr+3) |
+            (unsigned long) *(ptr+2) << 8 |
+            (unsigned long) *(ptr+1) << 16 |
+            (unsigned long) *ptr << 24;
 }
 
 unsigned long
 DiskImgLib::Get24BE(const unsigned char* ptr)
 {
-	return *(ptr+2) |
-			(unsigned long) *(ptr+1) << 8 |
-			(unsigned long) *ptr << 16;
+    return *(ptr+2) |
+            (unsigned long) *(ptr+1) << 8 |
+            (unsigned long) *ptr << 16;
 }
 
 void
@@ -91,15 +91,15 @@ DiskImgLib::PutLongBE(unsigned char* ptr, unsigned long val)
 DIError
 DiskImgLib::ReadShortLE(GenericFD* pGFD, short* pBuf)
 {
-	DIError dierr;
-	unsigned char val[2];
+    DIError dierr;
+    unsigned char val[2];
 
-	dierr = pGFD->Read(&val[0], 1);
-	if (dierr == kDIErrNone)
-		dierr = pGFD->Read(&val[1], 1);
+    dierr = pGFD->Read(&val[0], 1);
+    if (dierr == kDIErrNone)
+        dierr = pGFD->Read(&val[1], 1);
 
     *pBuf = val[0] | (short) val[1] << 8;
-	return dierr;
+    return dierr;
 }
 
 /*
@@ -108,19 +108,19 @@ DiskImgLib::ReadShortLE(GenericFD* pGFD, short* pBuf)
 DIError
 DiskImgLib::ReadLongLE(GenericFD* pGFD, long* pBuf)
 {
-	DIError dierr;
-	unsigned char val[4];
+    DIError dierr;
+    unsigned char val[4];
 
-	dierr = pGFD->Read(&val[0], 1);
-	if (dierr == kDIErrNone)
-		dierr = pGFD->Read(&val[1], 1);
-	if (dierr == kDIErrNone)
-		dierr = pGFD->Read(&val[2], 1);
-	if (dierr == kDIErrNone)
-		dierr = pGFD->Read(&val[3], 1);
+    dierr = pGFD->Read(&val[0], 1);
+    if (dierr == kDIErrNone)
+        dierr = pGFD->Read(&val[1], 1);
+    if (dierr == kDIErrNone)
+        dierr = pGFD->Read(&val[2], 1);
+    if (dierr == kDIErrNone)
+        dierr = pGFD->Read(&val[3], 1);
 
     *pBuf = val[0] | (long)val[1] << 8 | (long)val[2] << 16 | (long)val[3] << 24;
-	return dierr;
+    return dierr;
 }
 
 /*
@@ -131,7 +131,7 @@ DiskImgLib::WriteShortLE(FILE* fp, unsigned short val)
 {
     putc(val, fp);
     putc(val >> 8, fp);
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 /*
@@ -144,7 +144,7 @@ DiskImgLib::WriteLongLE(FILE* fp, unsigned long val)
     putc(val >> 8, fp);
     putc(val >> 16, fp);
     putc(val >> 24, fp);
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 /*
@@ -222,55 +222,55 @@ DiskImgLib::WriteLongBE(GenericFD* pGFD, unsigned long val)
 const char*
 DiskImgLib::FilenameOnly(const char* pathname, char fssep)
 {
-	const char* retstr;
-	const char* pSlash;
-	char* tmpStr = nil;
+    const char* retstr;
+    const char* pSlash;
+    char* tmpStr = nil;
 
-	assert(pathname != nil);
-	if (fssep == '\0') {
-		retstr = pathname;
-		goto bail;
-	}
+    assert(pathname != nil);
+    if (fssep == '\0') {
+        retstr = pathname;
+        goto bail;
+    }
 
-	pSlash = strrchr(pathname, fssep);
-	if (pSlash == nil) {
-		retstr = pathname;		/* whole thing is the filename */
-		goto bail;
-	}
+    pSlash = strrchr(pathname, fssep);
+    if (pSlash == nil) {
+        retstr = pathname;      /* whole thing is the filename */
+        goto bail;
+    }
 
-	pSlash++;
-	if (*pSlash == '\0') {
-		if (strlen(pathname) < 2) {
-			retstr = pathname;	/* the pathname is just "/"?  Whatever */
-			goto bail;
-		}
+    pSlash++;
+    if (*pSlash == '\0') {
+        if (strlen(pathname) < 2) {
+            retstr = pathname;  /* the pathname is just "/"?  Whatever */
+            goto bail;
+        }
 
-		/* some bonehead put an fssep on the very end; back up before it */
-		/* (not efficient, but this should be rare, and I'm feeling lazy) */
-		tmpStr = strdup(pathname);
-		tmpStr[strlen(pathname)-1] = '\0';
-		pSlash = strrchr(tmpStr, fssep);
+        /* some bonehead put an fssep on the very end; back up before it */
+        /* (not efficient, but this should be rare, and I'm feeling lazy) */
+        tmpStr = strdup(pathname);
+        tmpStr[strlen(pathname)-1] = '\0';
+        pSlash = strrchr(tmpStr, fssep);
 
-		if (pSlash == nil) {
-			retstr = pathname;	/* just a filename with a '/' after it */
-			goto bail;
-		}
+        if (pSlash == nil) {
+            retstr = pathname;  /* just a filename with a '/' after it */
+            goto bail;
+        }
 
-		pSlash++;
-		if (*pSlash == '\0') {
-			retstr = pathname;	/* I give up! */
-			goto bail;
-		}
+        pSlash++;
+        if (*pSlash == '\0') {
+            retstr = pathname;  /* I give up! */
+            goto bail;
+        }
 
-		retstr = pathname + (pSlash - tmpStr);
+        retstr = pathname + (pSlash - tmpStr);
 
-	} else {
-		retstr = pSlash;
-	}
+    } else {
+        retstr = pSlash;
+    }
 
 bail:
-	free(tmpStr);
-	return retstr;
+    free(tmpStr);
+    return retstr;
 }
 
 /*
@@ -287,22 +287,22 @@ bail:
 const char*
 DiskImgLib::FindExtension(const char* pathname, char fssep)
 {
-	const char* pFilename;
-	const char* pExt;
+    const char* pFilename;
+    const char* pExt;
 
-	/*
-	 * We have to isolate the filename so that we don't get excited
-	 * about "/foo.bar/file".
-	 */
-	pFilename = FilenameOnly(pathname, fssep);
-	assert(pFilename != nil);
-	pExt = strrchr(pFilename, kFilenameExtDelim);
+    /*
+     * We have to isolate the filename so that we don't get excited
+     * about "/foo.bar/file".
+     */
+    pFilename = FilenameOnly(pathname, fssep);
+    assert(pFilename != nil);
+    pExt = strrchr(pFilename, kFilenameExtDelim);
 
-	/* also check for "/blah/foo.", which doesn't count */
-	if (pExt != nil && *(pExt+1) != '\0')
-		return pExt;
+    /* also check for "/blah/foo.", which doesn't count */
+    if (pExt != nil && *(pExt+1) != '\0')
+        return pExt;
 
-	return nil;
+    return nil;
 }
 
 /*
@@ -313,14 +313,14 @@ DiskImgLib::FindExtension(const char* pathname, char fssep)
 char*
 DiskImgLib::StrcpyNew(const char* str)
 {
-	char* newStr;
+    char* newStr;
 
-	if (str == nil)
-		return nil;
-	newStr = new char[strlen(str)+1];
-	if (newStr != nil)
-		strcpy(newStr, str);
-	return newStr;
+    if (str == nil)
+        return nil;
+    newStr = new char[strlen(str)+1];
+    if (newStr != nil)
+        strcpy(newStr, str);
+    return newStr;
 }
 
 
@@ -331,30 +331,30 @@ DiskImgLib::StrcpyNew(const char* str)
 DIError
 DiskImgLib::LastErrorToDIError(void)
 {
-	DWORD lastErr = ::GetLastError();
+    DWORD lastErr = ::GetLastError();
 
-	switch (lastErr) {
-	case ERROR_FILE_NOT_FOUND:		return kDIErrFileNotFound;		// 2
-	case ERROR_ACCESS_DENIED:		return kDIErrAccessDenied;		// 5
-	case ERROR_WRITE_PROTECT:		return kDIErrWriteProtected;	// 19
-	case ERROR_SECTOR_NOT_FOUND:	return kDIErrGeneric;			// 27
-	case ERROR_SHARING_VIOLATION:	return kDIErrSharingViolation;	// 32
-	case ERROR_HANDLE_EOF:			return kDIErrEOF;				// 38
-	case ERROR_INVALID_PARAMETER:	return kDIErrInvalidArg;		// 87
-	case ERROR_SEM_TIMEOUT:			return kDIErrGenericIO;			// 121
-		// ERROR_SEM_TIMEOUT seen read bad blocks from floptical under Win2K
+    switch (lastErr) {
+    case ERROR_FILE_NOT_FOUND:      return kDIErrFileNotFound;      // 2
+    case ERROR_ACCESS_DENIED:       return kDIErrAccessDenied;      // 5
+    case ERROR_WRITE_PROTECT:       return kDIErrWriteProtected;    // 19
+    case ERROR_SECTOR_NOT_FOUND:    return kDIErrGeneric;           // 27
+    case ERROR_SHARING_VIOLATION:   return kDIErrSharingViolation;  // 32
+    case ERROR_HANDLE_EOF:          return kDIErrEOF;               // 38
+    case ERROR_INVALID_PARAMETER:   return kDIErrInvalidArg;        // 87
+    case ERROR_SEM_TIMEOUT:         return kDIErrGenericIO;         // 121
+        // ERROR_SEM_TIMEOUT seen read bad blocks from floptical under Win2K
 
-	case ERROR_INVALID_HANDLE:										// 6
-		WMSG0("HEY: got ERROR_INVALID_HANDLE!\n");
-		return kDIErrInternal;
-	case ERROR_NEGATIVE_SEEK:										// 131
-		WMSG0("HEY: got ERROR_NEGATIVE_SEEK!\n");
-		return kDIErrInternal;
-	default:
-		WMSG2("LastErrorToDIError: not converting 0x%08lx (%ld)\n",
-			lastErr, lastErr);
-		return kDIErrGeneric;
-	}
+    case ERROR_INVALID_HANDLE:                                      // 6
+        WMSG0("HEY: got ERROR_INVALID_HANDLE!\n");
+        return kDIErrInternal;
+    case ERROR_NEGATIVE_SEEK:                                       // 131
+        WMSG0("HEY: got ERROR_NEGATIVE_SEEK!\n");
+        return kDIErrInternal;
+    default:
+        WMSG2("LastErrorToDIError: not converting 0x%08lx (%ld)\n",
+            lastErr, lastErr);
+        return kDIErrGeneric;
+    }
 }
 
 /*
@@ -364,16 +364,16 @@ DiskImgLib::LastErrorToDIError(void)
 bool
 DiskImgLib::IsWin9x(void)
 {
-	OSVERSIONINFO osvers;
-	BOOL result;
+    OSVERSIONINFO osvers;
+    BOOL result;
 
-	osvers.dwOSVersionInfoSize = sizeof(osvers);
-	result = ::GetVersionEx(&osvers);
-	assert(result != FALSE);
+    osvers.dwOSVersionInfoSize = sizeof(osvers);
+    result = ::GetVersionEx(&osvers);
+    assert(result != FALSE);
 
-	if (osvers.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-		return true;
-	else
-		return false;
+    if (osvers.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+        return true;
+    else
+        return false;
 }
 #endif

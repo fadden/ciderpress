@@ -19,11 +19,11 @@
 void
 ChooseFilesDlg::ShiftControls(int deltaX, int deltaY)
 {
-	/*
-	 * These only need to be here so that the initial move puts them
-	 * where they belong.  Once the dialog has been created, the
-	 * CFileDialog will move things where they need to go.
-	 */
-	MoveControl(this, IDC_CHOOSEFILES_STATIC1, 0, deltaY, false);
-	SelectFilesDialog::ShiftControls(deltaX, deltaY);
+    /*
+     * These only need to be here so that the initial move puts them
+     * where they belong.  Once the dialog has been created, the
+     * CFileDialog will move things where they need to go.
+     */
+    MoveControl(this, IDC_CHOOSEFILES_STATIC1, 0, deltaY, false);
+    SelectFilesDialog::ShiftControls(deltaX, deltaY);
 }

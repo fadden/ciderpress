@@ -12,15 +12,15 @@
 #include "HelpTopics.h"
 #include "GenericArchive.h"
 #include "Main.h"
-#include "../diskimg/DiskImg.h"		// need kStorageSeedling
+#include "../diskimg/DiskImg.h"     // need kStorageSeedling
 #include <math.h>
 
 /*
  * Tape layout:
- *	10.6 seconds of 770Hz (8192 cycles * 1300 usec/cycle)
- *	1/2 cycle at 400 usec/cycle, followed by 1/2 cycle at 500 usec/cycle
- *	Data, using 500 usec/cycle for '0' and 1000 usec/cycle for '1'
- *	There is no "end" marker, except perhaps for the absence of data
+ *  10.6 seconds of 770Hz (8192 cycles * 1300 usec/cycle)
+ *  1/2 cycle at 400 usec/cycle, followed by 1/2 cycle at 500 usec/cycle
+ *  Data, using 500 usec/cycle for '0' and 1000 usec/cycle for '1'
+ *  There is no "end" marker, except perhaps for the absence of data
  *
  * The last byte of data is an XOR checksum (seeded with 0xff).
  *
@@ -44,12 +44,12 @@
  * I'm not sure, and in the end it doesn't really matter.
  *
  * Typical instructions for loading data from tape look like this:
- *	- Type "LOAD" or "xxxx.xxxxR", but don't hit <return>.
- *	- Play tape until you here the tone.
- *	- Immediately hit stop.
- *	- Plug the cable from the Apple II into the tape player.
- *	- Hit "play" on the recorder, then immediately hit <return>.
- *	- When the Apple II beeps, it's done.  Stop the tape.
+ *  - Type "LOAD" or "xxxx.xxxxR", but don't hit <return>.
+ *  - Play tape until you here the tone.
+ *  - Immediately hit stop.
+ *  - Plug the cable from the Apple II into the tape player.
+ *  - Hit "play" on the recorder, then immediately hit <return>.
+ *  - When the Apple II beeps, it's done.  Stop the tape.
  *
  * How quickly do we need to sample?  The highest frequency we expect to
  * find is 2KHz, so anything over 4KHz should be sufficient.  However, we
@@ -254,17 +254,17 @@ FD0B: 60        753           RTS
 
 /*
  * ==========================================================================
- *		CassetteDialog
+ *      CassetteDialog
  * ==========================================================================
  */
 
 BEGIN_MESSAGE_MAP(CassetteDialog, CDialog)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_CASSETTE_LIST, OnListChange)
-	ON_NOTIFY(NM_DBLCLK, IDC_CASSETTE_LIST, OnListDblClick)
-	//ON_MESSAGE(WMU_DIALOG_READY, OnDialogReady)
-	ON_COMMAND(IDC_IMPORT_CHUNK, OnImport)
-	ON_COMMAND(IDHELP, OnHelp)
-	ON_CBN_SELCHANGE(IDC_CASSETTE_ALG, OnAlgorithmChange)
+    ON_NOTIFY(LVN_ITEMCHANGED, IDC_CASSETTE_LIST, OnListChange)
+    ON_NOTIFY(NM_DBLCLK, IDC_CASSETTE_LIST, OnListDblClick)
+    //ON_MESSAGE(WMU_DIALOG_READY, OnDialogReady)
+    ON_COMMAND(IDC_IMPORT_CHUNK, OnImport)
+    ON_COMMAND(IDHELP, OnHelp)
+    ON_CBN_SELCHANGE(IDC_CASSETTE_ALG, OnAlgorithmChange)
 END_MESSAGE_MAP()
 
 
@@ -274,77 +274,77 @@ END_MESSAGE_MAP()
 BOOL
 CassetteDialog::OnInitDialog(void)
 {
-	CRect rect;
-	const Preferences* pPreferences = GET_PREFERENCES();
+    CRect rect;
+    const Preferences* pPreferences = GET_PREFERENCES();
 
-	CDialog::OnInitDialog();		// does DDX init
+    CDialog::OnInitDialog();        // does DDX init
 
-	CWnd* pWnd;
-	pWnd = GetDlgItem(IDC_IMPORT_CHUNK);
-	pWnd->EnableWindow(FALSE);
+    CWnd* pWnd;
+    pWnd = GetDlgItem(IDC_IMPORT_CHUNK);
+    pWnd->EnableWindow(FALSE);
 
-	pWnd = GetDlgItem(IDC_CASSETTE_INPUT);
-	pWnd->SetWindowText(fFileName);
+    pWnd = GetDlgItem(IDC_CASSETTE_INPUT);
+    pWnd->SetWindowText(fFileName);
 
-	/* prep the combo box */
-	CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_CASSETTE_ALG);
-	ASSERT(pCombo != nil);
-	int defaultAlg = pPreferences->GetPrefLong(kPrCassetteAlgorithm);
-	if (defaultAlg > CassetteData::kAlgorithmMIN &&
-		defaultAlg < CassetteData::kAlgorithmMAX)
-	{
-		pCombo->SetCurSel(defaultAlg);
-	} else {
-		WMSG1("GLITCH: invalid defaultAlg in prefs (%d)\n", defaultAlg);
-		pCombo->SetCurSel(CassetteData::kAlgorithmZero);
-	}
-	fAlgorithm = (CassetteData::Algorithm) defaultAlg;
+    /* prep the combo box */
+    CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_CASSETTE_ALG);
+    ASSERT(pCombo != nil);
+    int defaultAlg = pPreferences->GetPrefLong(kPrCassetteAlgorithm);
+    if (defaultAlg > CassetteData::kAlgorithmMIN &&
+        defaultAlg < CassetteData::kAlgorithmMAX)
+    {
+        pCombo->SetCurSel(defaultAlg);
+    } else {
+        WMSG1("GLITCH: invalid defaultAlg in prefs (%d)\n", defaultAlg);
+        pCombo->SetCurSel(CassetteData::kAlgorithmZero);
+    }
+    fAlgorithm = (CassetteData::Algorithm) defaultAlg;
 
-	/*
-	 * Prep the listview control.
-	 *
-	 * Columns:
-	 *	[icon] Index | Format | Length | Checksum OK
-	 */
-	CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
-	ASSERT(pListView != nil);
-	ListView_SetExtendedListViewStyleEx(pListView->m_hWnd,
-		LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
+    /*
+     * Prep the listview control.
+     *
+     * Columns:
+     *  [icon] Index | Format | Length | Checksum OK
+     */
+    CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
+    ASSERT(pListView != nil);
+    ListView_SetExtendedListViewStyleEx(pListView->m_hWnd,
+        LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
-	int width0, width1, width2, width3, width4;
+    int width0, width1, width2, width3, width4;
 
-	pListView->GetClientRect(&rect);
-	width0 = pListView->GetStringWidth("XXIndexX");
-	width1 = pListView->GetStringWidth("XXFormatXmmmmmmmmmmmmmm");
-	width2 = pListView->GetStringWidth("XXLengthXm");
-	width3 = pListView->GetStringWidth("XXChecksumXm");
-	width4 = pListView->GetStringWidth("XXStart sampleX");
-	//width5 = pListView->GetStringWidth("XXEnd sampleX");
+    pListView->GetClientRect(&rect);
+    width0 = pListView->GetStringWidth("XXIndexX");
+    width1 = pListView->GetStringWidth("XXFormatXmmmmmmmmmmmmmm");
+    width2 = pListView->GetStringWidth("XXLengthXm");
+    width3 = pListView->GetStringWidth("XXChecksumXm");
+    width4 = pListView->GetStringWidth("XXStart sampleX");
+    //width5 = pListView->GetStringWidth("XXEnd sampleX");
 
-	pListView->InsertColumn(0, "Index", LVCFMT_LEFT, width0);
-	pListView->InsertColumn(1, "Format", LVCFMT_LEFT, width1);
-	pListView->InsertColumn(2, "Length", LVCFMT_LEFT, width2);
-	pListView->InsertColumn(3, "Checksum", LVCFMT_LEFT, width3);
-	pListView->InsertColumn(4, "Start sample", LVCFMT_LEFT, width4);
-	pListView->InsertColumn(5, "End sample", LVCFMT_LEFT,
-		rect.Width() - (width0+width1+width2+width3+width4)
-		/*- ::GetSystemMetrics(SM_CXVSCROLL)*/ );
+    pListView->InsertColumn(0, "Index", LVCFMT_LEFT, width0);
+    pListView->InsertColumn(1, "Format", LVCFMT_LEFT, width1);
+    pListView->InsertColumn(2, "Length", LVCFMT_LEFT, width2);
+    pListView->InsertColumn(3, "Checksum", LVCFMT_LEFT, width3);
+    pListView->InsertColumn(4, "Start sample", LVCFMT_LEFT, width4);
+    pListView->InsertColumn(5, "End sample", LVCFMT_LEFT,
+        rect.Width() - (width0+width1+width2+width3+width4)
+        /*- ::GetSystemMetrics(SM_CXVSCROLL)*/ );
 
-	/* add images for list; this MUST be loaded before header images */
-//	LoadListImages();
-//	pListView->SetImageList(&fListImageList, LVSIL_SMALL);
+    /* add images for list; this MUST be loaded before header images */
+//  LoadListImages();
+//  pListView->SetImageList(&fListImageList, LVSIL_SMALL);
 
-//	LoadList();
+//  LoadList();
 
-	CenterWindow();
+    CenterWindow();
 
-	//int cc = PostMessage(WMU_DIALOG_READY, 0, 0);
-	//ASSERT(cc != 0);
+    //int cc = PostMessage(WMU_DIALOG_READY, 0, 0);
+    //ASSERT(cc != 0);
 
-	if (!AnalyzeWAV())
-		OnCancel();
+    if (!AnalyzeWAV())
+        OnCancel();
 
-	return TRUE;
+    return TRUE;
 }
 
 #if 0
@@ -354,8 +354,8 @@ CassetteDialog::OnInitDialog(void)
 LONG
 CassetteDialog::OnDialogReady(UINT, LONG)
 {
-	//AnalyzeWAV();
-	return 0;
+    //AnalyzeWAV();
+    return 0;
 }
 #endif
 
@@ -366,12 +366,12 @@ CassetteDialog::OnDialogReady(UINT, LONG)
 void
 CassetteDialog::OnListChange(NMHDR*, LRESULT* pResult)
 {
-	WMSG0("List change\n");
-	CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
-	CButton* pButton = (CButton*) GetDlgItem(IDC_IMPORT_CHUNK);
-	pButton->EnableWindow(pListView->GetSelectedCount() != 0);
+    WMSG0("List change\n");
+    CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
+    CButton* pButton = (CButton*) GetDlgItem(IDC_IMPORT_CHUNK);
+    pButton->EnableWindow(pListView->GetSelectedCount() != 0);
 
-	*pResult = 0;
+    *pResult = 0;
 }
 
 
@@ -381,13 +381,13 @@ CassetteDialog::OnListChange(NMHDR*, LRESULT* pResult)
 void
 CassetteDialog::OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult)
 {
-	WMSG0("Double click!\n");
-	CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
+    WMSG0("Double click!\n");
+    CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
 
-	if (pListView->GetSelectedCount() == 1)
-		OnImport();
+    if (pListView->GetSelectedCount() == 1)
+        OnImport();
 
-	*pResult = 0;
+    *pResult = 0;
 }
 
 /*
@@ -396,11 +396,11 @@ CassetteDialog::OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult)
 void
 CassetteDialog::OnAlgorithmChange(void)
 {
-	CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_CASSETTE_ALG);
-	ASSERT(pCombo != nil);
-	WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
-	fAlgorithm = (CassetteData::Algorithm) pCombo->GetCurSel();
-	AnalyzeWAV();
+    CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_CASSETTE_ALG);
+    ASSERT(pCombo != nil);
+    WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
+    fAlgorithm = (CassetteData::Algorithm) pCombo->GetCurSel();
+    AnalyzeWAV();
 }
 
 /*
@@ -409,7 +409,7 @@ CassetteDialog::OnAlgorithmChange(void)
 void
 CassetteDialog::OnHelp(void)
 {
-	WinHelp(HELP_TOPIC_IMPORT_CASSETTE, HELP_CONTEXT);
+    WinHelp(HELP_TOPIC_IMPORT_CASSETTE, HELP_CONTEXT);
 }
 
 /*
@@ -419,71 +419,71 @@ CassetteDialog::OnHelp(void)
 void
 CassetteDialog::OnImport(void)
 {
-	/*
-	 * Figure out which item they have selected.
-	 */
-	CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
-	ASSERT(pListView != nil);
-	assert(pListView->GetSelectedCount() == 1);
+    /*
+     * Figure out which item they have selected.
+     */
+    CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
+    ASSERT(pListView != nil);
+    assert(pListView->GetSelectedCount() == 1);
 
-	POSITION posn;
-	posn = pListView->GetFirstSelectedItemPosition();
-	if (posn == nil) {
-		ASSERT(false);
-		return;
-	}
-	int idx = pListView->GetNextSelectedItem(posn);
+    POSITION posn;
+    posn = pListView->GetFirstSelectedItemPosition();
+    if (posn == nil) {
+        ASSERT(false);
+        return;
+    }
+    int idx = pListView->GetNextSelectedItem(posn);
 
-	/*
-	 * Set up the import dialog.
-	 */
-	CassImpTargetDialog impDialog(this);
+    /*
+     * Set up the import dialog.
+     */
+    CassImpTargetDialog impDialog(this);
 
-	impDialog.fFileName = "From.Tape";
-	impDialog.fFileLength = fDataArray[idx].GetDataLen();
-	impDialog.SetFileType(fDataArray[idx].GetFileType());
+    impDialog.fFileName = "From.Tape";
+    impDialog.fFileLength = fDataArray[idx].GetDataLen();
+    impDialog.SetFileType(fDataArray[idx].GetFileType());
 
-	if (impDialog.DoModal() != IDOK)
-		return;
+    if (impDialog.DoModal() != IDOK)
+        return;
 
-	/*
-	 * Write the file to the currently-open archive.
-	 */
-	GenericArchive::FileDetails details;
+    /*
+     * Write the file to the currently-open archive.
+     */
+    GenericArchive::FileDetails details;
 
-	details.entryKind = GenericArchive::FileDetails::kFileKindDataFork;
-	details.origName = "Cassette WAV";
-	details.storageName = impDialog.fFileName;
-	details.access = 0xe3;	// unlocked, backup bit set
-	details.fileType = impDialog.GetFileType();
-	if (details.fileType == kFileTypeBIN)
-		details.extraType = impDialog.fStartAddr;
-	else if (details.fileType == kFileTypeBAS)
-		details.extraType = 0x0801;
-	else
-		details.extraType = 0x0000;
-	details.storageType = DiskFS::kStorageSeedling;
-	time_t now = time(nil);
-	GenericArchive::UNIXTimeToDateTime(&now, &details.createWhen);
-	GenericArchive::UNIXTimeToDateTime(&now, &details.archiveWhen);
+    details.entryKind = GenericArchive::FileDetails::kFileKindDataFork;
+    details.origName = "Cassette WAV";
+    details.storageName = impDialog.fFileName;
+    details.access = 0xe3;  // unlocked, backup bit set
+    details.fileType = impDialog.GetFileType();
+    if (details.fileType == kFileTypeBIN)
+        details.extraType = impDialog.fStartAddr;
+    else if (details.fileType == kFileTypeBAS)
+        details.extraType = 0x0801;
+    else
+        details.extraType = 0x0000;
+    details.storageType = DiskFS::kStorageSeedling;
+    time_t now = time(nil);
+    GenericArchive::UNIXTimeToDateTime(&now, &details.createWhen);
+    GenericArchive::UNIXTimeToDateTime(&now, &details.archiveWhen);
 
-	CString errMsg;
+    CString errMsg;
 
-	fDirty = true;
-	if (!MainWindow::SaveToArchive(&details, fDataArray[idx].GetDataBuf(),
-		fDataArray[idx].GetDataLen(), nil, -1, /*ref*/errMsg, this))
-	{
-		goto bail;
-	}
+    fDirty = true;
+    if (!MainWindow::SaveToArchive(&details, fDataArray[idx].GetDataBuf(),
+        fDataArray[idx].GetDataLen(), nil, -1, /*ref*/errMsg, this))
+    {
+        goto bail;
+    }
 
 
 bail:
-	if (!errMsg.IsEmpty()) {
-		CString msg;
-		msg.Format("Unable to import file: %s.", (const char *) errMsg);
-		ShowFailureMsg(this, msg, IDS_FAILED);
-		return;
-	}
+    if (!errMsg.IsEmpty()) {
+        CString msg;
+        msg.Format("Unable to import file: %s.", (const char *) errMsg);
+        ShowFailureMsg(this, msg, IDS_FAILED);
+        return;
+    }
 }
 
 
@@ -495,55 +495,55 @@ bail:
 bool
 CassetteDialog::AnalyzeWAV(void)
 {
-	SoundFile soundFile;
-	CWaitCursor waitc;
-	CListCtrl* pListCtrl = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
-	CString errMsg;
-	long sampleOffset;
-	int idx;
+    SoundFile soundFile;
+    CWaitCursor waitc;
+    CListCtrl* pListCtrl = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
+    CString errMsg;
+    long sampleOffset;
+    int idx;
 
-	if (soundFile.Create(fFileName, &errMsg) != 0) {
-		ShowFailureMsg(this, errMsg, IDS_FAILED);
-		return false;
-	}
+    if (soundFile.Create(fFileName, &errMsg) != 0) {
+        ShowFailureMsg(this, errMsg, IDS_FAILED);
+        return false;
+    }
 
-	const WAVEFORMATEX* pFormat = soundFile.GetWaveFormat();
-	if (pFormat->nChannels < 1 || pFormat->nChannels > 2 ||
-		(pFormat->wBitsPerSample != 8 && pFormat->wBitsPerSample != 16))
-	{
-		errMsg.Format("Unexpected PCM format (%d channels, %d bits/sample)",
-			pFormat->nChannels, pFormat->wBitsPerSample);
-		ShowFailureMsg(this, errMsg, IDS_FAILED);
-		return false;
-	}
-	if (soundFile.GetDataLen() % soundFile.GetBPS() != 0) {
-		errMsg.Format("Unexpected sound data length (%ld, samples are %d bytes)",
-			soundFile.GetDataLen(), soundFile.GetBPS());
-		ShowFailureMsg(this, errMsg, IDS_FAILED);
-		return false;
-	}
+    const WAVEFORMATEX* pFormat = soundFile.GetWaveFormat();
+    if (pFormat->nChannels < 1 || pFormat->nChannels > 2 ||
+        (pFormat->wBitsPerSample != 8 && pFormat->wBitsPerSample != 16))
+    {
+        errMsg.Format("Unexpected PCM format (%d channels, %d bits/sample)",
+            pFormat->nChannels, pFormat->wBitsPerSample);
+        ShowFailureMsg(this, errMsg, IDS_FAILED);
+        return false;
+    }
+    if (soundFile.GetDataLen() % soundFile.GetBPS() != 0) {
+        errMsg.Format("Unexpected sound data length (%ld, samples are %d bytes)",
+            soundFile.GetDataLen(), soundFile.GetBPS());
+        ShowFailureMsg(this, errMsg, IDS_FAILED);
+        return false;
+    }
 
-	pListCtrl->DeleteAllItems();
+    pListCtrl->DeleteAllItems();
 
-	sampleOffset = 0;
-	for (idx = 0; idx < kMaxRecordings; idx++) {
-		long fileType;
-		bool result;
+    sampleOffset = 0;
+    for (idx = 0; idx < kMaxRecordings; idx++) {
+        long fileType;
+        bool result;
 
-		result = fDataArray[idx].Scan(&soundFile, fAlgorithm, &sampleOffset);
-		if (!result)
-			break;
+        result = fDataArray[idx].Scan(&soundFile, fAlgorithm, &sampleOffset);
+        if (!result)
+            break;
 
-		AddEntry(idx, pListCtrl, &fileType);
-		fDataArray[idx].SetFileType(fileType);
-	}
+        AddEntry(idx, pListCtrl, &fileType);
+        fDataArray[idx].SetFileType(fileType);
+    }
 
-	if (idx == 0) {
-		WMSG0("No Apple II files found\n");
-		/* that's okay, just show the empty list */
-	}
+    if (idx == 0) {
+        WMSG0("No Apple II files found\n");
+        /* that's okay, just show the empty list */
+    }
 
-	return true;
+    return true;
 }
 
 /*
@@ -554,54 +554,54 @@ CassetteDialog::AnalyzeWAV(void)
 void
 CassetteDialog::AddEntry(int idx, CListCtrl* pListCtrl, long* pFileType)
 {
-	CString tmpStr;
-	const CassetteData* pData = &fDataArray[idx];
-	const unsigned char* pDataBuf = pData->GetDataBuf();
+    CString tmpStr;
+    const CassetteData* pData = &fDataArray[idx];
+    const unsigned char* pDataBuf = pData->GetDataBuf();
 
-	ASSERT(pDataBuf != nil);
+    ASSERT(pDataBuf != nil);
 
-	tmpStr.Format("%d", idx);
-	pListCtrl->InsertItem(idx, tmpStr);
+    tmpStr.Format("%d", idx);
+    pListCtrl->InsertItem(idx, tmpStr);
 
-	*pFileType = kFileTypeBIN;
-	if (pData->GetDataLen() == 2) {
-		tmpStr.Format("Integer header ($%04X)",
-			pDataBuf[0] | pDataBuf[1] << 8);
-	} else if (pData->GetDataLen() == 3) {
-		tmpStr.Format("Applesoft header ($%04X $%02x)",
-			pDataBuf[0] | pDataBuf[1] << 8, pDataBuf[2]);
-	} else if (pData->GetDataLen() > 3 && idx > 0 &&
-		fDataArray[idx-1].GetDataLen() == 2)
-	{
-		tmpStr = "Integer BASIC";
-		*pFileType = kFileTypeINT;
-	} else if (pData->GetDataLen() > 3 && idx > 0 &&
-		fDataArray[idx-1].GetDataLen() == 3)
-	{
-		tmpStr = "Applesoft BASIC";
-		*pFileType = kFileTypeBAS;
-	} else {
-		tmpStr = "Binary";
-	}
-	pListCtrl->SetItemText(idx, 1, tmpStr);
-	
-	tmpStr.Format("%d", pData->GetDataLen());
-	pListCtrl->SetItemText(idx, 2, tmpStr);
-	if (pData->GetDataChkGood())
-		tmpStr.Format("Good (0x%02x)", pData->GetDataChecksum());
-	else
-		tmpStr.Format("BAD (0x%02x)", pData->GetDataChecksum());
-	pListCtrl->SetItemText(idx, 3, tmpStr);
-	tmpStr.Format("%ld", pData->GetDataOffset());
-	pListCtrl->SetItemText(idx, 4, tmpStr);
-	tmpStr.Format("%ld", pData->GetDataEndOffset());
-	pListCtrl->SetItemText(idx, 5, tmpStr);
+    *pFileType = kFileTypeBIN;
+    if (pData->GetDataLen() == 2) {
+        tmpStr.Format("Integer header ($%04X)",
+            pDataBuf[0] | pDataBuf[1] << 8);
+    } else if (pData->GetDataLen() == 3) {
+        tmpStr.Format("Applesoft header ($%04X $%02x)",
+            pDataBuf[0] | pDataBuf[1] << 8, pDataBuf[2]);
+    } else if (pData->GetDataLen() > 3 && idx > 0 &&
+        fDataArray[idx-1].GetDataLen() == 2)
+    {
+        tmpStr = "Integer BASIC";
+        *pFileType = kFileTypeINT;
+    } else if (pData->GetDataLen() > 3 && idx > 0 &&
+        fDataArray[idx-1].GetDataLen() == 3)
+    {
+        tmpStr = "Applesoft BASIC";
+        *pFileType = kFileTypeBAS;
+    } else {
+        tmpStr = "Binary";
+    }
+    pListCtrl->SetItemText(idx, 1, tmpStr);
+    
+    tmpStr.Format("%d", pData->GetDataLen());
+    pListCtrl->SetItemText(idx, 2, tmpStr);
+    if (pData->GetDataChkGood())
+        tmpStr.Format("Good (0x%02x)", pData->GetDataChecksum());
+    else
+        tmpStr.Format("BAD (0x%02x)", pData->GetDataChecksum());
+    pListCtrl->SetItemText(idx, 3, tmpStr);
+    tmpStr.Format("%ld", pData->GetDataOffset());
+    pListCtrl->SetItemText(idx, 4, tmpStr);
+    tmpStr.Format("%ld", pData->GetDataEndOffset());
+    pListCtrl->SetItemText(idx, 5, tmpStr);
 }
 
 
 /*
  * ==========================================================================
- *		CassetteData
+ *      CassetteData
  * ==========================================================================
  */
 
@@ -614,150 +614,150 @@ CassetteDialog::AddEntry(int idx, CListCtrl* pListCtrl, long* pFileType)
  */
 bool
 CassetteDialog::CassetteData::Scan(SoundFile* pSoundFile, Algorithm alg,
-	long* pStartOffset)
+    long* pStartOffset)
 {
-	const int kSampleChunkSize = 65536;		// should be multiple of 4
-	const WAVEFORMATEX* pFormat;
-	ScanState scanState;
-	long initialLen, dataLen, chunkLen, byteOffset;
-	long sampleStartIndex;
-	unsigned char* buf = nil;
-	float* sampleBuf = nil;
-	int bytesPerSample;
-	bool result = false;
-	unsigned char checkSum;
-	int outByteIndex, bitAcc;
+    const int kSampleChunkSize = 65536;     // should be multiple of 4
+    const WAVEFORMATEX* pFormat;
+    ScanState scanState;
+    long initialLen, dataLen, chunkLen, byteOffset;
+    long sampleStartIndex;
+    unsigned char* buf = nil;
+    float* sampleBuf = nil;
+    int bytesPerSample;
+    bool result = false;
+    unsigned char checkSum;
+    int outByteIndex, bitAcc;
 
-	bytesPerSample = pSoundFile->GetBPS();
-	assert(bytesPerSample >= 1 && bytesPerSample <= 4);
-	assert(kSampleChunkSize % bytesPerSample == 0);
-	byteOffset = *pStartOffset;
-	initialLen = dataLen = pSoundFile->GetDataLen() - byteOffset;
-	sampleStartIndex = byteOffset/bytesPerSample;
-	WMSG4("CassetteData::Scan(off=%ld / %ld) len=%ld  alg=%d\n",
-		byteOffset, sampleStartIndex, dataLen, alg);
+    bytesPerSample = pSoundFile->GetBPS();
+    assert(bytesPerSample >= 1 && bytesPerSample <= 4);
+    assert(kSampleChunkSize % bytesPerSample == 0);
+    byteOffset = *pStartOffset;
+    initialLen = dataLen = pSoundFile->GetDataLen() - byteOffset;
+    sampleStartIndex = byteOffset/bytesPerSample;
+    WMSG4("CassetteData::Scan(off=%ld / %ld) len=%ld  alg=%d\n",
+        byteOffset, sampleStartIndex, dataLen, alg);
 
-	pFormat = pSoundFile->GetWaveFormat();
+    pFormat = pSoundFile->GetWaveFormat();
 
-	buf = new unsigned char[kSampleChunkSize];
-	sampleBuf = new float[kSampleChunkSize/bytesPerSample];
-	if (fOutputBuf == nil)	// alloc on first use
-		fOutputBuf = new unsigned char[kMaxFileLen];
-	if (buf == nil || sampleBuf == nil || fOutputBuf == nil) {
-		WMSG0("Buffer alloc failed\n");
-		goto bail;
-	}
+    buf = new unsigned char[kSampleChunkSize];
+    sampleBuf = new float[kSampleChunkSize/bytesPerSample];
+    if (fOutputBuf == nil)  // alloc on first use
+        fOutputBuf = new unsigned char[kMaxFileLen];
+    if (buf == nil || sampleBuf == nil || fOutputBuf == nil) {
+        WMSG0("Buffer alloc failed\n");
+        goto bail;
+    }
 
-	memset(&scanState, 0, sizeof(scanState));
-	scanState.algorithm = alg;
-	scanState.phase = kPhaseScanFor770Start;
-	scanState.mode = kModeInitial0;
-	scanState.positive = false;
-	scanState.usecPerSample = 1000000.0f / (float) pFormat->nSamplesPerSec;
+    memset(&scanState, 0, sizeof(scanState));
+    scanState.algorithm = alg;
+    scanState.phase = kPhaseScanFor770Start;
+    scanState.mode = kModeInitial0;
+    scanState.positive = false;
+    scanState.usecPerSample = 1000000.0f / (float) pFormat->nSamplesPerSec;
 
-	checkSum = 0xff;
-	outByteIndex = 0;
-	bitAcc = 1;
+    checkSum = 0xff;
+    outByteIndex = 0;
+    bitAcc = 1;
 
-	/*
-	 * Loop until done or out of data.
-	 */
-	while (dataLen > 0) {
-		int cc;
+    /*
+     * Loop until done or out of data.
+     */
+    while (dataLen > 0) {
+        int cc;
 
-		chunkLen = dataLen;
-		if (chunkLen > kSampleChunkSize)
-			chunkLen = kSampleChunkSize;
+        chunkLen = dataLen;
+        if (chunkLen > kSampleChunkSize)
+            chunkLen = kSampleChunkSize;
 
-		cc = pSoundFile->ReadData(buf, byteOffset, chunkLen);
-		if (cc < 0) {
-			WMSG1("ReadData(%d) failed\n", chunkLen);
-			goto bail;
-		}
+        cc = pSoundFile->ReadData(buf, byteOffset, chunkLen);
+        if (cc < 0) {
+            WMSG1("ReadData(%d) failed\n", chunkLen);
+            goto bail;
+        }
 
-		ConvertSamplesToReal(pFormat, buf, chunkLen, sampleBuf);
+        ConvertSamplesToReal(pFormat, buf, chunkLen, sampleBuf);
 
-		for (int i = 0; i < chunkLen / bytesPerSample; i++) {
-			int bitVal;
-			if (ProcessSample(sampleBuf[i], sampleStartIndex + i,
-				&scanState, &bitVal))
-			{
-				if (outByteIndex >= kMaxFileLen) {
-					WMSG0("Cassette data overflow\n");
-					scanState.phase = kPhaseEndReached;
-				} else {
-					/* output a bit, shifting until bit 8 lights up */
-					assert(bitVal == 0 || bitVal == 1);
-					bitAcc = (bitAcc << 1) | bitVal;
-					if (bitAcc > 0xff) {
-						fOutputBuf[outByteIndex++] = (unsigned char) bitAcc;
-						checkSum ^= (unsigned char) bitAcc;
-						bitAcc = 1;
-					}
-				}
-			}
-			if (scanState.phase == kPhaseEndReached) {
-				dataLen -= i * bytesPerSample;
-				break;
-			}
-		}
-		if (scanState.phase == kPhaseEndReached)
-			break;
+        for (int i = 0; i < chunkLen / bytesPerSample; i++) {
+            int bitVal;
+            if (ProcessSample(sampleBuf[i], sampleStartIndex + i,
+                &scanState, &bitVal))
+            {
+                if (outByteIndex >= kMaxFileLen) {
+                    WMSG0("Cassette data overflow\n");
+                    scanState.phase = kPhaseEndReached;
+                } else {
+                    /* output a bit, shifting until bit 8 lights up */
+                    assert(bitVal == 0 || bitVal == 1);
+                    bitAcc = (bitAcc << 1) | bitVal;
+                    if (bitAcc > 0xff) {
+                        fOutputBuf[outByteIndex++] = (unsigned char) bitAcc;
+                        checkSum ^= (unsigned char) bitAcc;
+                        bitAcc = 1;
+                    }
+                }
+            }
+            if (scanState.phase == kPhaseEndReached) {
+                dataLen -= i * bytesPerSample;
+                break;
+            }
+        }
+        if (scanState.phase == kPhaseEndReached)
+            break;
 
-		dataLen -= chunkLen;
-		byteOffset += chunkLen;
-		sampleStartIndex += chunkLen / bytesPerSample;
-	}
+        dataLen -= chunkLen;
+        byteOffset += chunkLen;
+        sampleStartIndex += chunkLen / bytesPerSample;
+    }
 
-	switch (scanState.phase) {
-	case kPhaseScanFor770Start:
-	case kPhaseScanning770:
-		// expected case for trailing part of file
-		WMSG0("Scan ended while searching for 770\n");
-		goto bail;
-	case kPhaseScanForShort0:
-	case kPhaseShort0B:
-		WMSG0("Scan ended while searching for short 0/0B\n");
-		//DebugBreak();	// unusual
-		goto bail;
-	case kPhaseReadData:
-		WMSG0("Scan ended while reading data\n");
-		//DebugBreak();	// truncated WAV file?
-		goto bail;
-	case kPhaseEndReached:
-		WMSG0("Scan found end\n");
-		// winner!
-		break;
-	default:
-		WMSG1("Unknown phase %d\n", scanState.phase);
-		assert(false);
-		goto bail;
-	}
+    switch (scanState.phase) {
+    case kPhaseScanFor770Start:
+    case kPhaseScanning770:
+        // expected case for trailing part of file
+        WMSG0("Scan ended while searching for 770\n");
+        goto bail;
+    case kPhaseScanForShort0:
+    case kPhaseShort0B:
+        WMSG0("Scan ended while searching for short 0/0B\n");
+        //DebugBreak(); // unusual
+        goto bail;
+    case kPhaseReadData:
+        WMSG0("Scan ended while reading data\n");
+        //DebugBreak(); // truncated WAV file?
+        goto bail;
+    case kPhaseEndReached:
+        WMSG0("Scan found end\n");
+        // winner!
+        break;
+    default:
+        WMSG1("Unknown phase %d\n", scanState.phase);
+        assert(false);
+        goto bail;
+    }
 
-	WMSG3("*** Output %d bytes (bitAcc=0x%02x, checkSum=0x%02x)\n",
-		outByteIndex, bitAcc, checkSum);
+    WMSG3("*** Output %d bytes (bitAcc=0x%02x, checkSum=0x%02x)\n",
+        outByteIndex, bitAcc, checkSum);
 
-	if (outByteIndex == 0) {
-		fOutputLen = 0;
-		fChecksum = 0x00;
-		fChecksumGood = false;
-	} else {
-		fOutputLen = outByteIndex-1;
-		fChecksum = fOutputBuf[outByteIndex-1];
-		fChecksumGood = (checkSum == 0x00);
-	}
-	fStartSample = scanState.dataStart;
-	fEndSample = scanState.dataEnd;
+    if (outByteIndex == 0) {
+        fOutputLen = 0;
+        fChecksum = 0x00;
+        fChecksumGood = false;
+    } else {
+        fOutputLen = outByteIndex-1;
+        fChecksum = fOutputBuf[outByteIndex-1];
+        fChecksumGood = (checkSum == 0x00);
+    }
+    fStartSample = scanState.dataStart;
+    fEndSample = scanState.dataEnd;
 
-	/* we're done with this file; advance the start offset */
-	*pStartOffset = *pStartOffset + (initialLen - dataLen);
+    /* we're done with this file; advance the start offset */
+    *pStartOffset = *pStartOffset + (initialLen - dataLen);
 
-	result = true;
+    result = true;
 
 bail:
-	delete[] buf;
-	delete[] sampleBuf;
-	return result;
+    delete[] buf;
+    delete[] sampleBuf;
+    return result;
 }
 
 /*
@@ -767,63 +767,63 @@ bail:
  */
 void
 CassetteDialog::CassetteData::ConvertSamplesToReal(const WAVEFORMATEX* pFormat,
-	const unsigned char* buf, long chunkLen, float* sampleBuf)
+    const unsigned char* buf, long chunkLen, float* sampleBuf)
 {
-	int bps = ((pFormat->wBitsPerSample+7)/8) * pFormat->nChannels;
-	int bitsPerSample = pFormat->wBitsPerSample;
-	int offset = 0;
+    int bps = ((pFormat->wBitsPerSample+7)/8) * pFormat->nChannels;
+    int bitsPerSample = pFormat->wBitsPerSample;
+    int offset = 0;
 
-	assert(chunkLen % bps == 0);
+    assert(chunkLen % bps == 0);
 
-	if (bitsPerSample == 8) {
-		while (chunkLen > 0) {
-			*sampleBuf++ = (*buf - 128) / 128.0f;
-			//WMSG3("Sample8(%5d)=%d float=%.3f\n", offset, *buf, *(sampleBuf-1));
-			//offset++;
-			buf += bps;
-			chunkLen -= bps;
-		}
-	} else if (bitsPerSample == 16) {
-		while (chunkLen > 0) {
-			short sample = *buf | *(buf+1) << 8;
-			*sampleBuf++ = sample / 32768.0f;
-			//WMSG3("Sample16(%5d)=%d float=%.3f\n", offset, sample, *(sampleBuf-1));
-			//offset++;
-			buf += bps;
-			chunkLen -= bps;
-		}
-	} else {
-		assert(false);
-	}
+    if (bitsPerSample == 8) {
+        while (chunkLen > 0) {
+            *sampleBuf++ = (*buf - 128) / 128.0f;
+            //WMSG3("Sample8(%5d)=%d float=%.3f\n", offset, *buf, *(sampleBuf-1));
+            //offset++;
+            buf += bps;
+            chunkLen -= bps;
+        }
+    } else if (bitsPerSample == 16) {
+        while (chunkLen > 0) {
+            short sample = *buf | *(buf+1) << 8;
+            *sampleBuf++ = sample / 32768.0f;
+            //WMSG3("Sample16(%5d)=%d float=%.3f\n", offset, sample, *(sampleBuf-1));
+            //offset++;
+            buf += bps;
+            chunkLen -= bps;
+        }
+    } else {
+        assert(false);
+    }
 
-	//WMSG1("Conv %d\n", bitsPerSample);
+    //WMSG1("Conv %d\n", bitsPerSample);
 }
 
 /* width of 1/2 cycle in 770Hz lead-in */
-const float kLeadInHalfWidth = 650.0f;		// usec
+const float kLeadInHalfWidth = 650.0f;      // usec
 /* max error when detecting 770Hz lead-in, in usec */
-const float kLeadInMaxError = 108.0f;		// usec (542 - 758)
+const float kLeadInMaxError = 108.0f;       // usec (542 - 758)
 /* width of 1/2 cycle of "short 0" */
-const float kShortZeroHalfWidth = 200.0f;	// usec
+const float kShortZeroHalfWidth = 200.0f;   // usec
 /* max error when detection short 0 */
-const float kShortZeroMaxError = 150.0f;	// usec (50 - 350)
+const float kShortZeroMaxError = 150.0f;    // usec (50 - 350)
 /* width of 1/2 cycle of '0' */
-const float kZeroHalfWidth = 250.0f;		// usec
+const float kZeroHalfWidth = 250.0f;        // usec
 /* max error when detecting '0' */
-const float kZeroMaxError = 94.0f;			// usec
+const float kZeroMaxError = 94.0f;          // usec
 /* width of 1/2 cycle of '1' */
-const float kOneHalfWidth = 500.0f;			// usec
+const float kOneHalfWidth = 500.0f;         // usec
 /* max error when detecting '1' */
-const float kOneMaxError = 94.0f;			// usec
+const float kOneMaxError = 94.0f;           // usec
 /* after this many 770Hz half-cycles, start looking for short 0 */
-const long kLeadInHalfCycThreshold = 1540;	// 1 full second
+const long kLeadInHalfCycThreshold = 1540;  // 1 full second
 
 /* amplitude must change by this much before we switch out of "peak" mode */
-const float kPeakThreshold = 0.2f;			// 10%
+const float kPeakThreshold = 0.2f;          // 10%
 /* amplitude must change by at least this much to stay in "transition" mode */
-const float kTransMinDelta = 0.02f;			// 1%
+const float kTransMinDelta = 0.02f;         // 1%
 /* kTransMinDelta happens over this range */
-const float kTransDeltaBase = 45.35f;		// usec (1 sample at 22.05KHz)
+const float kTransDeltaBase = 45.35f;       // usec (1 sample at 22.05KHz)
 
 
 /*
@@ -833,18 +833,18 @@ const float kTransDeltaBase = 45.35f;		// usec (1 sample at 22.05KHz)
  */
 bool
 CassetteDialog::CassetteData::ProcessSample(float sample, long sampleIndex,
-	ScanState* pScanState, int* pBitVal)
+    ScanState* pScanState, int* pBitVal)
 {
-	if (pScanState->algorithm == kAlgorithmZero)
-		return ProcessSampleZero(sample, sampleIndex, pScanState, pBitVal);
-	else if (pScanState->algorithm == kAlgorithmRoundPeak ||
-			 pScanState->algorithm == kAlgorithmSharpPeak ||
-			 pScanState->algorithm == kAlgorithmShallowPeak)
-		return ProcessSamplePeak(sample, sampleIndex, pScanState, pBitVal);
-	else {
-		assert(false);
-		return false;
-	}
+    if (pScanState->algorithm == kAlgorithmZero)
+        return ProcessSampleZero(sample, sampleIndex, pScanState, pBitVal);
+    else if (pScanState->algorithm == kAlgorithmRoundPeak ||
+             pScanState->algorithm == kAlgorithmSharpPeak ||
+             pScanState->algorithm == kAlgorithmShallowPeak)
+        return ProcessSamplePeak(sample, sampleIndex, pScanState, pBitVal);
+    else {
+        assert(false);
+        return false;
+    }
 }
 
 /*
@@ -859,65 +859,65 @@ CassetteDialog::CassetteData::ProcessSample(float sample, long sampleIndex,
  */
 bool
 CassetteDialog::CassetteData::ProcessSampleZero(float sample, long sampleIndex,
-	ScanState* pScanState, int* pBitVal)
+    ScanState* pScanState, int* pBitVal)
 {
-	long timeDelta;
-	bool crossedZero = false;
-	bool emitBit = false;
+    long timeDelta;
+    bool crossedZero = false;
+    bool emitBit = false;
 
-	/*
-	 * Analyze the mode, changing to a new one when appropriate.
-	 */
-	switch (pScanState->mode) {
-	case kModeInitial0:
-		assert(pScanState->phase == kPhaseScanFor770Start);
-		pScanState->mode = kModeRunning;
-		break;
-	case kModeRunning:
-		if (pScanState->prevSample < 0.0f && sample >= 0.0f ||
-			pScanState->prevSample >= 0.0f && sample < 0.0f)
-		{
-			crossedZero = true;
-		}
-		break;
-	default:
-		assert(false);
-		break;
-	}
+    /*
+     * Analyze the mode, changing to a new one when appropriate.
+     */
+    switch (pScanState->mode) {
+    case kModeInitial0:
+        assert(pScanState->phase == kPhaseScanFor770Start);
+        pScanState->mode = kModeRunning;
+        break;
+    case kModeRunning:
+        if (pScanState->prevSample < 0.0f && sample >= 0.0f ||
+            pScanState->prevSample >= 0.0f && sample < 0.0f)
+        {
+            crossedZero = true;
+        }
+        break;
+    default:
+        assert(false);
+        break;
+    }
 
-	/*
-	 * Deal with a zero crossing.
-	 *
-	 * We currently just grab the first point after we cross.  We should
-	 * be grabbing the closest point or interpolating across.
-	 */
-	if (crossedZero) {
-		float halfCycleUsec;
-		int bias;
+    /*
+     * Deal with a zero crossing.
+     *
+     * We currently just grab the first point after we cross.  We should
+     * be grabbing the closest point or interpolating across.
+     */
+    if (crossedZero) {
+        float halfCycleUsec;
+        int bias;
 
-		if (fabs(pScanState->prevSample) < fabs(sample))
-			bias = -1;		// previous sample was closer to zero point
-		else
-			bias = 0;		// current sample is closer
+        if (fabs(pScanState->prevSample) < fabs(sample))
+            bias = -1;      // previous sample was closer to zero point
+        else
+            bias = 0;       // current sample is closer
 
-		/* delta time for zero-to-zero (half cycle) */
-		timeDelta = (sampleIndex+bias) - pScanState->lastZeroIndex;
+        /* delta time for zero-to-zero (half cycle) */
+        timeDelta = (sampleIndex+bias) - pScanState->lastZeroIndex;
 
-		halfCycleUsec = timeDelta * pScanState->usecPerSample;
-		//WMSG3("Zero %6ld: half=%.1fusec full=%.1fusec\n",
-		//	sampleIndex, halfCycleUsec,
-		//	halfCycleUsec + pScanState->halfCycleWidth);
+        halfCycleUsec = timeDelta * pScanState->usecPerSample;
+        //WMSG3("Zero %6ld: half=%.1fusec full=%.1fusec\n",
+        //  sampleIndex, halfCycleUsec,
+        //  halfCycleUsec + pScanState->halfCycleWidth);
 
-		emitBit = UpdatePhase(pScanState, sampleIndex+bias, halfCycleUsec,
-			pBitVal);
+        emitBit = UpdatePhase(pScanState, sampleIndex+bias, halfCycleUsec,
+            pBitVal);
 
-		pScanState->lastZeroIndex = sampleIndex + bias;
-	}
+        pScanState->lastZeroIndex = sampleIndex + bias;
+    }
 
-	/* record this sample for the next go-round */
-	pScanState->prevSample = sample;
+    /* record this sample for the next go-round */
+    pScanState->prevSample = sample;
 
-	return emitBit;
+    return emitBit;
 }
 
 /*
@@ -925,133 +925,133 @@ CassetteDialog::CassetteData::ProcessSampleZero(float sample, long sampleIndex,
  */
 bool
 CassetteDialog::CassetteData::ProcessSamplePeak(float sample, long sampleIndex,
-	ScanState* pScanState, int* pBitVal)
+    ScanState* pScanState, int* pBitVal)
 {
-	/* values range from [-1.0,1.0), so range is 2.0 total */
-	long timeDelta;
-	float ampDelta;
-	float transitionLimit;
-	bool hitPeak = false;
-	bool emitBit = false;
+    /* values range from [-1.0,1.0), so range is 2.0 total */
+    long timeDelta;
+    float ampDelta;
+    float transitionLimit;
+    bool hitPeak = false;
+    bool emitBit = false;
 
-	/*
-	 * Analyze the mode, changing to a new one when appropriate.
-	 */
-	switch (pScanState->mode) {
-	case kModeInitial0:
-		assert(pScanState->phase == kPhaseScanFor770Start);
-		pScanState->mode = kModeInitial1;
-		break;
-	case kModeInitial1:
-		assert(pScanState->phase == kPhaseScanFor770Start);
-		if (sample >= pScanState->prevSample)
-			pScanState->positive = true;
-		else
-			pScanState->positive = false;
-		pScanState->mode = kModeInTransition;
-		/* set these up with something reasonable */
-		pScanState->lastPeakStartIndex = sampleIndex;
-		pScanState->lastPeakStartValue = sample;
-		break;
+    /*
+     * Analyze the mode, changing to a new one when appropriate.
+     */
+    switch (pScanState->mode) {
+    case kModeInitial0:
+        assert(pScanState->phase == kPhaseScanFor770Start);
+        pScanState->mode = kModeInitial1;
+        break;
+    case kModeInitial1:
+        assert(pScanState->phase == kPhaseScanFor770Start);
+        if (sample >= pScanState->prevSample)
+            pScanState->positive = true;
+        else
+            pScanState->positive = false;
+        pScanState->mode = kModeInTransition;
+        /* set these up with something reasonable */
+        pScanState->lastPeakStartIndex = sampleIndex;
+        pScanState->lastPeakStartValue = sample;
+        break;
 
-	case kModeInTransition:
-		/*
-		 * Stay here until two adjacent samples are very close in amplitude
-		 * (or we change direction).  We need to adjust our amplitude
-		 * threshold based on sampling frequency, or at higher sample
-		 * rates we're going to think everything is a transition.
-		 *
-		 * The approach here is overly simplistic, and is prone to failure
-		 * when the sampling rate is high, especially with 8-bit samples
-		 * or sound cards that don't really have 16-bit resolution.  The
-		 * proper way to do this is to keep a short history, and evaluate
-		 * the delta amplitude over longer periods.  [At this point I'd
-		 * rather just tell people to record at 22.05KHz.]
-		 *
-		 * Set the "hitPeak" flag and handle the consequences below.
-		 */
-		if (pScanState->algorithm == kAlgorithmRoundPeak)
-			transitionLimit = kTransMinDelta *
-					(pScanState->usecPerSample / kTransDeltaBase);
-		else
-			transitionLimit = 0.0f;
+    case kModeInTransition:
+        /*
+         * Stay here until two adjacent samples are very close in amplitude
+         * (or we change direction).  We need to adjust our amplitude
+         * threshold based on sampling frequency, or at higher sample
+         * rates we're going to think everything is a transition.
+         *
+         * The approach here is overly simplistic, and is prone to failure
+         * when the sampling rate is high, especially with 8-bit samples
+         * or sound cards that don't really have 16-bit resolution.  The
+         * proper way to do this is to keep a short history, and evaluate
+         * the delta amplitude over longer periods.  [At this point I'd
+         * rather just tell people to record at 22.05KHz.]
+         *
+         * Set the "hitPeak" flag and handle the consequences below.
+         */
+        if (pScanState->algorithm == kAlgorithmRoundPeak)
+            transitionLimit = kTransMinDelta *
+                    (pScanState->usecPerSample / kTransDeltaBase);
+        else
+            transitionLimit = 0.0f;
 
-		if (pScanState->positive) {
-			if (sample < pScanState->prevSample + transitionLimit) {
-				pScanState->mode = kModeAtPeak;
-				hitPeak = true;
-			}
-		} else {
-			if (sample > pScanState->prevSample - transitionLimit) {
-				pScanState->mode = kModeAtPeak;
-				hitPeak = true;
-			}
-		}
-		break;
-	case kModeAtPeak:
-		/*
-		 * Stay here until we're a certain distance above or below the
-		 * previous peak.  This also keeps us in a holding pattern for
-		 * large flat areas.
-		 */
-		transitionLimit = kPeakThreshold;
-		if (pScanState->algorithm == kAlgorithmShallowPeak)
-			transitionLimit /= 4.0f;
+        if (pScanState->positive) {
+            if (sample < pScanState->prevSample + transitionLimit) {
+                pScanState->mode = kModeAtPeak;
+                hitPeak = true;
+            }
+        } else {
+            if (sample > pScanState->prevSample - transitionLimit) {
+                pScanState->mode = kModeAtPeak;
+                hitPeak = true;
+            }
+        }
+        break;
+    case kModeAtPeak:
+        /*
+         * Stay here until we're a certain distance above or below the
+         * previous peak.  This also keeps us in a holding pattern for
+         * large flat areas.
+         */
+        transitionLimit = kPeakThreshold;
+        if (pScanState->algorithm == kAlgorithmShallowPeak)
+            transitionLimit /= 4.0f;
 
-		ampDelta = pScanState->lastPeakStartValue - sample;
-		if (ampDelta < 0)
-			ampDelta = -ampDelta;
-		if (ampDelta > transitionLimit) {
-			if (sample >= pScanState->lastPeakStartValue)
-				pScanState->positive = true;		// going up
-			else
-				pScanState->positive = false;		// going down
+        ampDelta = pScanState->lastPeakStartValue - sample;
+        if (ampDelta < 0)
+            ampDelta = -ampDelta;
+        if (ampDelta > transitionLimit) {
+            if (sample >= pScanState->lastPeakStartValue)
+                pScanState->positive = true;        // going up
+            else
+                pScanState->positive = false;       // going down
 
-			/* mark the end of the peak; could be same as start of peak */
-			pScanState->mode = kModeInTransition;
-		}
-		break;
-	default:
-		assert(false);
-		break;
-	}
+            /* mark the end of the peak; could be same as start of peak */
+            pScanState->mode = kModeInTransition;
+        }
+        break;
+    default:
+        assert(false);
+        break;
+    }
 
-	/*
-	 * If we hit "peak" criteria, we regard the *previous* sample as the
-	 * peak.  This is very important for lower sampling rates (e.g. 8KHz).
-	 */
-	if (hitPeak) {
-		/* compute half-cycle amplitude and time */
-		float halfCycleUsec; //, fullCycleUsec;
+    /*
+     * If we hit "peak" criteria, we regard the *previous* sample as the
+     * peak.  This is very important for lower sampling rates (e.g. 8KHz).
+     */
+    if (hitPeak) {
+        /* compute half-cycle amplitude and time */
+        float halfCycleUsec; //, fullCycleUsec;
 
-		/* delta time for peak-to-peak (half cycle) */
-		timeDelta = (sampleIndex-1) - pScanState->lastPeakStartIndex;
-		/* amplitude peak-to-peak */
-		ampDelta = pScanState->lastPeakStartValue - pScanState->prevSample;
-		if (ampDelta < 0)
-			ampDelta = -ampDelta;
+        /* delta time for peak-to-peak (half cycle) */
+        timeDelta = (sampleIndex-1) - pScanState->lastPeakStartIndex;
+        /* amplitude peak-to-peak */
+        ampDelta = pScanState->lastPeakStartValue - pScanState->prevSample;
+        if (ampDelta < 0)
+            ampDelta = -ampDelta;
 
-		halfCycleUsec = timeDelta * pScanState->usecPerSample;
-		//if (sampleIndex > 584327 && sampleIndex < 590000) {
-		//	WMSG4("Peak %6ld: amp=%.3f height=%.3f peakWidth=%.1fusec\n",
-		//		sampleIndex-1, pScanState->prevSample, ampDelta,
-		//		halfCycleUsec);
-		//	::Sleep(10);
-		//}
-		if (sampleIndex == 32739)
-			WMSG0("whee\n");
+        halfCycleUsec = timeDelta * pScanState->usecPerSample;
+        //if (sampleIndex > 584327 && sampleIndex < 590000) {
+        //  WMSG4("Peak %6ld: amp=%.3f height=%.3f peakWidth=%.1fusec\n",
+        //      sampleIndex-1, pScanState->prevSample, ampDelta,
+        //      halfCycleUsec);
+        //  ::Sleep(10);
+        //}
+        if (sampleIndex == 32739)
+            WMSG0("whee\n");
 
-		emitBit = UpdatePhase(pScanState, sampleIndex-1, halfCycleUsec, pBitVal);
+        emitBit = UpdatePhase(pScanState, sampleIndex-1, halfCycleUsec, pBitVal);
 
-		/* set the "peak start" values */
-		pScanState->lastPeakStartIndex = sampleIndex-1;
-		pScanState->lastPeakStartValue = pScanState->prevSample;
-	}
+        /* set the "peak start" values */
+        pScanState->lastPeakStartIndex = sampleIndex-1;
+        pScanState->lastPeakStartValue = pScanState->prevSample;
+    }
 
-	/* record this sample for the next go-round */
-	pScanState->prevSample = sample;
+    /* record this sample for the next go-round */
+    pScanState->prevSample = sample;
 
-	return emitBit;
+    return emitBit;
 }
 
 
@@ -1067,126 +1067,126 @@ CassetteDialog::CassetteData::ProcessSamplePeak(float sample, long sampleIndex,
  */
 bool
 CassetteDialog::CassetteData::UpdatePhase(ScanState* pScanState, long sampleIndex,
-	float halfCycleUsec, int* pBitVal)
+    float halfCycleUsec, int* pBitVal)
 {
-	float fullCycleUsec;
-	bool emitBit = false;
+    float fullCycleUsec;
+    bool emitBit = false;
 
-	if (pScanState->halfCycleWidth != 0.0f)
-		fullCycleUsec = halfCycleUsec + pScanState->halfCycleWidth;
-	else
-		fullCycleUsec = 0.0f;	// only have first half
+    if (pScanState->halfCycleWidth != 0.0f)
+        fullCycleUsec = halfCycleUsec + pScanState->halfCycleWidth;
+    else
+        fullCycleUsec = 0.0f;   // only have first half
 
-	switch (pScanState->phase) {
-	case kPhaseScanFor770Start:
-		/* watch for a cycle of the appropriate length */
-		if (fullCycleUsec != 0.0f &&
-			fullCycleUsec > kLeadInHalfWidth*2.0f - kLeadInMaxError*2.0f &&
-			fullCycleUsec < kLeadInHalfWidth*2.0f + kLeadInMaxError*2.0f)
-		{
-			//WMSG1("  scanning 770 at %ld\n", sampleIndex);
-			pScanState->phase = kPhaseScanning770;
-			pScanState->num770 = 1;
-		}
-		break;
-	case kPhaseScanning770:
-		/* count up the 770Hz cycles */
-		if (fullCycleUsec != 0.0f &&
-			fullCycleUsec > kLeadInHalfWidth*2.0f - kLeadInMaxError*2.0f &&
-			fullCycleUsec < kLeadInHalfWidth*2.0f + kLeadInMaxError*2.0f)
-		{
-			pScanState->num770++;
-			if (pScanState->num770 > kLeadInHalfCycThreshold/2) {
-				/* looks like a solid tone, advance to next phase */
-				pScanState->phase = kPhaseScanForShort0;
-				WMSG0("  looking for short 0\n");
-			}
-		} else if (fullCycleUsec != 0.0f) {
-			/* pattern lost, reset */
-			if (pScanState->num770 > 5) {
-				WMSG3("  lost 770 at %ld width=%.1f (count=%ld)\n",
-					sampleIndex, fullCycleUsec, pScanState->num770);
-			}
-			pScanState->phase = kPhaseScanFor770Start;
-		}
-		/* else we only have a half cycle, so do nothing */
-		break;
-	case kPhaseScanForShort0:
-		/* found what looks like a 770Hz field, find the short 0 */
-		if (halfCycleUsec > kShortZeroHalfWidth - kShortZeroMaxError &&
-			halfCycleUsec < kShortZeroHalfWidth + kShortZeroMaxError)
-		{
-			WMSG3("  found short zero (half=%.1f) at %ld after %ld 770s\n",
-				halfCycleUsec, sampleIndex, pScanState->num770);
-			pScanState->phase = kPhaseShort0B;
-			/* make sure we treat current sample as first half */
-			pScanState->halfCycleWidth = 0.0f;
-		} else
-		if (fullCycleUsec != 0.0f &&
-			fullCycleUsec > kLeadInHalfWidth*2.0f - kLeadInMaxError*2.0f &&
-			fullCycleUsec < kLeadInHalfWidth*2.0f + kLeadInMaxError*2.0f)
-		{
-			/* found another 770Hz cycle */
-			pScanState->num770++;
-		} else if (fullCycleUsec != 0.0f) {
-			/* full cycle of the wrong size, we've lost it */
-			WMSG3("  Lost 770 at %ld width=%.1f (count=%ld)\n",
-				sampleIndex, fullCycleUsec, pScanState->num770);
-			pScanState->phase = kPhaseScanFor770Start;
-		}
-		break;
-	case kPhaseShort0B:
-		/* pick up the second half of the start cycle */
-		assert(fullCycleUsec != 0.0f);
-		if (fullCycleUsec > (kShortZeroHalfWidth + kZeroHalfWidth) - kZeroMaxError*2.0f &&
-			fullCycleUsec < (kShortZeroHalfWidth + kZeroHalfWidth) + kZeroMaxError*2.0f)
-		{
-			/* as expected */
-			WMSG2("  Found 0B %.1f (total %.1f), advancing to 'read data' phase\n",
-				halfCycleUsec, fullCycleUsec);
-			pScanState->dataStart = sampleIndex;
-			pScanState->phase = kPhaseReadData;
-		} else {
-			/* must be a false-positive at end of tone */
-			WMSG2("  Didn't find post-short-0 value (half=%.1f + %.1f)\n",
-				pScanState->halfCycleWidth, halfCycleUsec);
-			pScanState->phase = kPhaseScanFor770Start;
-		}
-		break;
+    switch (pScanState->phase) {
+    case kPhaseScanFor770Start:
+        /* watch for a cycle of the appropriate length */
+        if (fullCycleUsec != 0.0f &&
+            fullCycleUsec > kLeadInHalfWidth*2.0f - kLeadInMaxError*2.0f &&
+            fullCycleUsec < kLeadInHalfWidth*2.0f + kLeadInMaxError*2.0f)
+        {
+            //WMSG1("  scanning 770 at %ld\n", sampleIndex);
+            pScanState->phase = kPhaseScanning770;
+            pScanState->num770 = 1;
+        }
+        break;
+    case kPhaseScanning770:
+        /* count up the 770Hz cycles */
+        if (fullCycleUsec != 0.0f &&
+            fullCycleUsec > kLeadInHalfWidth*2.0f - kLeadInMaxError*2.0f &&
+            fullCycleUsec < kLeadInHalfWidth*2.0f + kLeadInMaxError*2.0f)
+        {
+            pScanState->num770++;
+            if (pScanState->num770 > kLeadInHalfCycThreshold/2) {
+                /* looks like a solid tone, advance to next phase */
+                pScanState->phase = kPhaseScanForShort0;
+                WMSG0("  looking for short 0\n");
+            }
+        } else if (fullCycleUsec != 0.0f) {
+            /* pattern lost, reset */
+            if (pScanState->num770 > 5) {
+                WMSG3("  lost 770 at %ld width=%.1f (count=%ld)\n",
+                    sampleIndex, fullCycleUsec, pScanState->num770);
+            }
+            pScanState->phase = kPhaseScanFor770Start;
+        }
+        /* else we only have a half cycle, so do nothing */
+        break;
+    case kPhaseScanForShort0:
+        /* found what looks like a 770Hz field, find the short 0 */
+        if (halfCycleUsec > kShortZeroHalfWidth - kShortZeroMaxError &&
+            halfCycleUsec < kShortZeroHalfWidth + kShortZeroMaxError)
+        {
+            WMSG3("  found short zero (half=%.1f) at %ld after %ld 770s\n",
+                halfCycleUsec, sampleIndex, pScanState->num770);
+            pScanState->phase = kPhaseShort0B;
+            /* make sure we treat current sample as first half */
+            pScanState->halfCycleWidth = 0.0f;
+        } else
+        if (fullCycleUsec != 0.0f &&
+            fullCycleUsec > kLeadInHalfWidth*2.0f - kLeadInMaxError*2.0f &&
+            fullCycleUsec < kLeadInHalfWidth*2.0f + kLeadInMaxError*2.0f)
+        {
+            /* found another 770Hz cycle */
+            pScanState->num770++;
+        } else if (fullCycleUsec != 0.0f) {
+            /* full cycle of the wrong size, we've lost it */
+            WMSG3("  Lost 770 at %ld width=%.1f (count=%ld)\n",
+                sampleIndex, fullCycleUsec, pScanState->num770);
+            pScanState->phase = kPhaseScanFor770Start;
+        }
+        break;
+    case kPhaseShort0B:
+        /* pick up the second half of the start cycle */
+        assert(fullCycleUsec != 0.0f);
+        if (fullCycleUsec > (kShortZeroHalfWidth + kZeroHalfWidth) - kZeroMaxError*2.0f &&
+            fullCycleUsec < (kShortZeroHalfWidth + kZeroHalfWidth) + kZeroMaxError*2.0f)
+        {
+            /* as expected */
+            WMSG2("  Found 0B %.1f (total %.1f), advancing to 'read data' phase\n",
+                halfCycleUsec, fullCycleUsec);
+            pScanState->dataStart = sampleIndex;
+            pScanState->phase = kPhaseReadData;
+        } else {
+            /* must be a false-positive at end of tone */
+            WMSG2("  Didn't find post-short-0 value (half=%.1f + %.1f)\n",
+                pScanState->halfCycleWidth, halfCycleUsec);
+            pScanState->phase = kPhaseScanFor770Start;
+        }
+        break;
 
-	case kPhaseReadData:
-		/* check width of full cycle; don't double error allowance */
-		if (fullCycleUsec != 0.0f) {
-			if (fullCycleUsec > kZeroHalfWidth*2 - kZeroMaxError*2 &&
-				fullCycleUsec < kZeroHalfWidth*2 + kZeroMaxError*2)
-			{
-				*pBitVal = 0;
-				emitBit = true;
-			} else
-			if (fullCycleUsec > kOneHalfWidth*2 - kOneMaxError*2 &&
-				fullCycleUsec < kOneHalfWidth*2 + kOneMaxError*2)
-			{
-				*pBitVal = 1;
-				emitBit = true;
-			} else {
-				/* bad cycle, assume end reached */
-				WMSG2("  Bad full cycle time %.1f in data at %ld, bailing\n",
-					fullCycleUsec, sampleIndex);
-				pScanState->dataEnd = sampleIndex;
-				pScanState->phase = kPhaseEndReached;
-			}
-		}
-		break;
-	default:
-		assert(false);
-		break;
-	}
+    case kPhaseReadData:
+        /* check width of full cycle; don't double error allowance */
+        if (fullCycleUsec != 0.0f) {
+            if (fullCycleUsec > kZeroHalfWidth*2 - kZeroMaxError*2 &&
+                fullCycleUsec < kZeroHalfWidth*2 + kZeroMaxError*2)
+            {
+                *pBitVal = 0;
+                emitBit = true;
+            } else
+            if (fullCycleUsec > kOneHalfWidth*2 - kOneMaxError*2 &&
+                fullCycleUsec < kOneHalfWidth*2 + kOneMaxError*2)
+            {
+                *pBitVal = 1;
+                emitBit = true;
+            } else {
+                /* bad cycle, assume end reached */
+                WMSG2("  Bad full cycle time %.1f in data at %ld, bailing\n",
+                    fullCycleUsec, sampleIndex);
+                pScanState->dataEnd = sampleIndex;
+                pScanState->phase = kPhaseEndReached;
+            }
+        }
+        break;
+    default:
+        assert(false);
+        break;
+    }
 
-	/* save the half-cycle stats */
-	if (pScanState->halfCycleWidth == 0.0f)
-		pScanState->halfCycleWidth = halfCycleUsec;
-	else
-		pScanState->halfCycleWidth = 0.0f;
+    /* save the half-cycle stats */
+    if (pScanState->halfCycleWidth == 0.0f)
+        pScanState->halfCycleWidth = halfCycleUsec;
+    else
+        pScanState->halfCycleWidth = 0.0f;
 
-	return emitBit;
+    return emitBit;
 }

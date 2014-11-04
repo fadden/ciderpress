@@ -26,34 +26,34 @@
  */
 class ModelessDialog : public CDialog {
 public:
-	ModelessDialog(void) : fOkayToDelete(false) {}
-	virtual ~ModelessDialog(void) { ASSERT(fOkayToDelete); }
+    ModelessDialog(void) : fOkayToDelete(false) {}
+    virtual ~ModelessDialog(void) { ASSERT(fOkayToDelete); }
 
-	/*
-	 * OK button clicked.  Must override to prevent standard EndDialog
-	 * behavior.
-	 */
-	virtual void OnOK(void) {
-		if (UpdateData() != FALSE)		// try the DDX/DDV stuff, if any
-			DestroyWindow();
-	}
-	/*
-	 * ESC key hit or Cancel button clicked.  Must override to prevent
-	 * standard EndDialog behavior.
-	 */
-	virtual void OnCancel(void) {
-		DestroyWindow();
-	}
+    /*
+     * OK button clicked.  Must override to prevent standard EndDialog
+     * behavior.
+     */
+    virtual void OnOK(void) {
+        if (UpdateData() != FALSE)      // try the DDX/DDV stuff, if any
+            DestroyWindow();
+    }
+    /*
+     * ESC key hit or Cancel button clicked.  Must override to prevent
+     * standard EndDialog behavior.
+     */
+    virtual void OnCancel(void) {
+        DestroyWindow();
+    }
 
 protected:
-	void PostNcDestroy(void) {
-		// this may not arrive immediately
-		fOkayToDelete = true;
-		delete this;
-	}
+    void PostNcDestroy(void) {
+        // this may not arrive immediately
+        fOkayToDelete = true;
+        delete this;
+    }
 
 private:
-	bool fOkayToDelete;		// sanity check
+    bool fOkayToDelete;     // sanity check
 };
 
 
@@ -63,53 +63,53 @@ private:
  */
 class ExclusiveModelessDialog : public ModelessDialog {
 public:
-	ExclusiveModelessDialog(void) : fpParentWnd(nil) {}
-	virtual ~ExclusiveModelessDialog(void) {};
+    ExclusiveModelessDialog(void) : fpParentWnd(nil) {}
+    virtual ~ExclusiveModelessDialog(void) {};
 
-	/* disable the parent window before we're created */
-	BOOL Create(int dialogID, CWnd* pParentWnd = NULL) {
-		ASSERT(pParentWnd != nil);		// else what's the point?
-		if (pParentWnd != nil) {
-			fpParentWnd = pParentWnd;
-			fpParentWnd->EnableWindow(FALSE);
-		}
-		return ModelessDialog::Create(dialogID, pParentWnd);
-	}
+    /* disable the parent window before we're created */
+    BOOL Create(int dialogID, CWnd* pParentWnd = NULL) {
+        ASSERT(pParentWnd != nil);      // else what's the point?
+        if (pParentWnd != nil) {
+            fpParentWnd = pParentWnd;
+            fpParentWnd->EnableWindow(FALSE);
+        }
+        return ModelessDialog::Create(dialogID, pParentWnd);
+    }
 
-	/* enable the parent window before we're destroyed */
-	virtual BOOL DestroyWindow(void) {
-		if (fpParentWnd != nil)
-			fpParentWnd->EnableWindow(TRUE);
-		return ModelessDialog::DestroyWindow();
-	}
+    /* enable the parent window before we're destroyed */
+    virtual BOOL DestroyWindow(void) {
+        if (fpParentWnd != nil)
+            fpParentWnd->EnableWindow(TRUE);
+        return ModelessDialog::DestroyWindow();
+    }
 
 private:
-	CWnd*	fpParentWnd;
+    CWnd*   fpParentWnd;
 };
 
 /*
-	From DLGCORE.CPP line 516:
+    From DLGCORE.CPP line 516:
 
-	// disable parent (before creating dialog)
-	HWND hWndParent = PreModal();	// ATM: finds parent of modal dlg
-	AfxUnhookWindowCreate();
-	BOOL bEnableParent = FALSE;
-	if (hWndParent != NULL && ::IsWindowEnabled(hWndParent))
-	{
-		::EnableWindow(hWndParent, FALSE);
-		bEnableParent = TRUE;
-	}
+    // disable parent (before creating dialog)
+    HWND hWndParent = PreModal();   // ATM: finds parent of modal dlg
+    AfxUnhookWindowCreate();
+    BOOL bEnableParent = FALSE;
+    if (hWndParent != NULL && ::IsWindowEnabled(hWndParent))
+    {
+        ::EnableWindow(hWndParent, FALSE);
+        bEnableParent = TRUE;
+    }
 
 [...]
 
-  	if (bEnableParent)
-		::EnableWindow(hWndParent, TRUE);
-	if (hWndParent != NULL && ::GetActiveWindow() == m_hWnd)
-		::SetActiveWindow(hWndParent);
+    if (bEnableParent)
+        ::EnableWindow(hWndParent, TRUE);
+    if (hWndParent != NULL && ::GetActiveWindow() == m_hWnd)
+        ::SetActiveWindow(hWndParent);
 
-	// destroy modal window
-	DestroyWindow();
-	PostModal();
+    // destroy modal window
+    DestroyWindow();
+    PostModal();
 
 */
 

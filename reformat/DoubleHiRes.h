@@ -16,39 +16,39 @@
  */
 class ReformatDHR : public ReformatGraphics {
 public:
-	ReformatDHR(void) {}
-	virtual ~ReformatDHR(void) {}
+    ReformatDHR(void) {}
+    virtual ~ReformatDHR(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
-	enum {
-		kPixelsPerLine = 560,
-		kNumLines = 192,
+    enum {
+        kPixelsPerLine = 560,
+        kNumLines = 192,
 
-		kOutputWidth = 560,
-		kOutputHeight = 384,
-		kPageSize = 8192,
-		kExpectedSize = kPageSize*2,
-		kNumDHRColors = 16,
-	};
+        kOutputWidth = 560,
+        kOutputHeight = 384,
+        kPageSize = 8192,
+        kExpectedSize = kPageSize*2,
+        kNumDHRColors = 16,
+    };
 
-	/* this MUST match up with prefs ctrl indices (IDC_DHR_CONV_COMBO) */
-	typedef enum {
-		kDHRBlackWhite = 0,
-		kDHRLatched = 1,
-		kDHRPlain140 = 2,
-		kDHRWindow = 3,
-	} Algorithms;
+    /* this MUST match up with prefs ctrl indices (IDC_DHR_CONV_COMBO) */
+    typedef enum {
+        kDHRBlackWhite = 0,
+        kDHRLatched = 1,
+        kDHRPlain140 = 2,
+        kDHRWindow = 3,
+    } Algorithms;
 
-	void InitColorLookup(void);
-	MyDIBitmap* DHRScreenToBitmap(const unsigned char* buf);
+    void InitColorLookup(void);
+    MyDIBitmap* DHRScreenToBitmap(const unsigned char* buf);
 
-	Algorithms	fAlgorithm;
-	int			fLineOffset[kNumLines];
-	unsigned int fColorLookup[4][kNumDHRColors];
+    Algorithms  fAlgorithm;
+    int         fLineOffset[kNumLines];
+    unsigned int fColorLookup[4][kNumDHRColors];
 };
 
 #endif /*__LR_DOUBLEHIRES__*/

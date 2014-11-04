@@ -19,21 +19,21 @@ namespace DiskImgLib {
  */
 class DISKIMG_API SPTI {
 public:
-	// Read blocks from the device.
-	static DIError ReadBlocks(HANDLE handle, long startBlock, short numBlocks,
-		long blockSize, void* buf);
+    // Read blocks from the device.
+    static DIError ReadBlocks(HANDLE handle, long startBlock, short numBlocks,
+        long blockSize, void* buf);
 
-	// Get the capacity, expressed as the highest-available LBA and the device
-	//  block size.
-	static DIError GetDeviceCapacity(HANDLE handle, unsigned long* pLastBlock,
-		unsigned long* pBlockSize);
+    // Get the capacity, expressed as the highest-available LBA and the device
+    //  block size.
+    static DIError GetDeviceCapacity(HANDLE handle, unsigned long* pLastBlock,
+        unsigned long* pBlockSize);
 
 private:
-	SPTI(void) {}
-	~SPTI(void) {}
+    SPTI(void) {}
+    ~SPTI(void) {}
 };
 
-};	// namespace DiskImgLib
+};  // namespace DiskImgLib
 
 #endif /*_WIN32*/
 

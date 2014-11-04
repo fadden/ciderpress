@@ -11,9 +11,9 @@
 #include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(EditCommentDialog, CDialog)
-	ON_BN_CLICKED(IDC_COMMENT_DELETE, OnDelete)
-	ON_WM_HELPINFO()
-	ON_COMMAND(IDHELP, OnHelp)
+    ON_BN_CLICKED(IDC_COMMENT_DELETE, OnDelete)
+    ON_WM_HELPINFO()
+    ON_COMMAND(IDHELP, OnHelp)
 END_MESSAGE_MAP()
 
 
@@ -24,12 +24,12 @@ END_MESSAGE_MAP()
 BOOL
 EditCommentDialog::OnInitDialog(void)
 {
-	if (fNewComment) {
-		CWnd* pWnd = GetDlgItem(IDC_COMMENT_DELETE);
-		pWnd->EnableWindow(FALSE);
-	}
+    if (fNewComment) {
+        CWnd* pWnd = GetDlgItem(IDC_COMMENT_DELETE);
+        pWnd->EnableWindow(FALSE);
+    }
 
-	return CDialog::OnInitDialog();
+    return CDialog::OnInitDialog();
 }
 
 /*
@@ -38,7 +38,7 @@ EditCommentDialog::OnInitDialog(void)
 void
 EditCommentDialog::DoDataExchange(CDataExchange* pDX)
 {
-	DDX_Text(pDX, IDC_COMMENT_EDIT, fComment);
+    DDX_Text(pDX, IDC_COMMENT_EDIT, fComment);
 }
 
 /*
@@ -47,16 +47,16 @@ EditCommentDialog::DoDataExchange(CDataExchange* pDX)
 void
 EditCommentDialog::OnDelete(void)
 {
-	CString question, title;
-	int result;
+    CString question, title;
+    int result;
 
-	title.LoadString(IDS_EDIT_COMMENT);
-	question.LoadString(IDS_DEL_COMMENT_OK);
-	result = MessageBox(question, title, MB_OKCANCEL | MB_ICONQUESTION);
-	if (result == IDCANCEL)
-		return;
+    title.LoadString(IDS_EDIT_COMMENT);
+    question.LoadString(IDS_DEL_COMMENT_OK);
+    result = MessageBox(question, title, MB_OKCANCEL | MB_ICONQUESTION);
+    if (result == IDCANCEL)
+        return;
 
-	EndDialog(kDeleteCommentID);
+    EndDialog(kDeleteCommentID);
 }
 
 /*
@@ -65,8 +65,8 @@ EditCommentDialog::OnDelete(void)
 BOOL
 EditCommentDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
-	WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }
 
 /*
@@ -75,5 +75,5 @@ EditCommentDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 void
 EditCommentDialog::OnHelp(void)
 {
-	WinHelp(HELP_TOPIC_EDIT_COMMENT, HELP_CONTEXT);
+    WinHelp(HELP_TOPIC_EDIT_COMMENT, HELP_CONTEXT);
 }

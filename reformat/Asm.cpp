@@ -16,28 +16,28 @@
 
 /*
  * ===========================================================================
- *		S-C Assembler
+ *      S-C Assembler
  * ===========================================================================
  */
 
 /*
  * S-C Assembler file format (thanks to Paul Schlyter, pausch at saaf.se):
  *
- *	<16-bit file length>  [DOS 3.3 only]
- *	<line> ...
+ *  <16-bit file length>  [DOS 3.3 only]
+ *  <line> ...
  *
  * Each line consists of:
- *	<8-bit line length>
- *	<16-bit line number>
- *	<characters> ...
- *	<end-of-line token ($00)>
+ *  <8-bit line length>
+ *  <16-bit line number>
+ *  <characters> ...
+ *  <end-of-line token ($00)>
  *
  * Characters may be:
- *	$00-$1f: invalid
- *	$20-$7f: literal character
- *	$80-$bf: compressed spaces (0 to 63 count)
- *	$c0    : RLE token ($c0 <n> <ch> == repeat <ch> for <n> times)
- *	$c1-$ff: invalid
+ *  $00-$1f: invalid
+ *  $20-$7f: literal character
+ *  $80-$bf: compressed spaces (0 to 63 count)
+ *  $c0    : RLE token ($c0 <n> <ch> == repeat <ch> for <n> times)
+ *  $c1-$ff: invalid
  *
  * There is no end-of-file marker.
  */
@@ -48,24 +48,24 @@
 void
 ReformatSCAssem::Examine(ReformatHolder* pHolder)
 {
-	if (pHolder->GetFileType() == kTypeINT && pHolder->GetAuxType() == 0) {
-		if (ReformatSCAssem::IsSCAssem(pHolder)) {
-			/* definitely S-C assembler */
-			pHolder->SetApplic(ReformatHolder::kReformatSCAssem,
-				ReformatHolder::kApplicYes,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		} else {
-			/* possibly S-C assembler */
-			pHolder->SetApplic(ReformatHolder::kReformatSCAssem,
-				ReformatHolder::kApplicMaybe,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		}
-	} else {
-		/* not S-C assembler */
-		pHolder->SetApplic(ReformatHolder::kReformatSCAssem,
-			ReformatHolder::kApplicNot,
-			ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-	}
+    if (pHolder->GetFileType() == kTypeINT && pHolder->GetAuxType() == 0) {
+        if (ReformatSCAssem::IsSCAssem(pHolder)) {
+            /* definitely S-C assembler */
+            pHolder->SetApplic(ReformatHolder::kReformatSCAssem,
+                ReformatHolder::kApplicYes,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        } else {
+            /* possibly S-C assembler */
+            pHolder->SetApplic(ReformatHolder::kReformatSCAssem,
+                ReformatHolder::kApplicMaybe,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        }
+    } else {
+        /* not S-C assembler */
+        pHolder->SetApplic(ReformatHolder::kReformatSCAssem,
+            ReformatHolder::kApplicNot,
+            ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    }
 }
 
 /*
@@ -79,23 +79,23 @@ ReformatSCAssem::Examine(ReformatHolder* pHolder)
 /*static*/ bool
 ReformatSCAssem::IsSCAssem(const ReformatHolder* pHolder)
 {
-	const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
-	long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
-	int len;
+    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    int len;
 
-	len = *ptr;
-	if (len == 0 || len > srcLen)
-		return false;		// should return an error, really
-	if (ptr[len-1] == 0x00) {
-		WMSG0("  Found 0x00, looks like S-C assembler\n");
-		return true;
-	} else if (ptr[len-1] == 0x01) {
-		WMSG0("  Found 0x01, looks like Integer BASIC\n");
-		return false;
-	} else {
-		WMSG1("  Got strange value 0x%02x during S-C test\n", ptr[len-1]);
-		return false;		// again, should return an error
-	}
+    len = *ptr;
+    if (len == 0 || len > srcLen)
+        return false;       // should return an error, really
+    if (ptr[len-1] == 0x00) {
+        WMSG0("  Found 0x00, looks like S-C assembler\n");
+        return true;
+    } else if (ptr[len-1] == 0x01) {
+        WMSG0("  Found 0x01, looks like Integer BASIC\n");
+        return false;
+    } else {
+        WMSG1("  Got strange value 0x%02x during S-C test\n", ptr[len-1]);
+        return false;       // again, should return an error
+    }
 }
 
 
@@ -105,98 +105,98 @@ ReformatSCAssem::IsSCAssem(const ReformatHolder* pHolder)
  */
 int
 ReformatSCAssem::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	long length = srcLen;
-	// (this was written before tab stuff in ReformatAsm class existed)
-	static const char* kSpaces64 =  "                                "
-									"                                ";
-	int retval = -1;
+    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    long length = srcLen;
+    // (this was written before tab stuff in ReformatAsm class existed)
+    static const char* kSpaces64 =  "                                "
+                                    "                                ";
+    int retval = -1;
 
-	fUseRTF = false;
+    fUseRTF = false;
 
-	RTFBegin();
+    RTFBegin();
 
-	/*
-	 * Make sure there's enough here to get started.  We want to return an
-	 * "okay" result because we want this treated like a reformatted empty
-	 * BASIC program rather than a non-Integer file.
-	 */
-	if (length < 2) {
-		WMSG0("  SCAssem truncated?\n");
-		BufPrintf("\r\n");
-		goto done;
-	}
+    /*
+     * Make sure there's enough here to get started.  We want to return an
+     * "okay" result because we want this treated like a reformatted empty
+     * BASIC program rather than a non-Integer file.
+     */
+    if (length < 2) {
+        WMSG0("  SCAssem truncated?\n");
+        BufPrintf("\r\n");
+        goto done;
+    }
 
-	while (length > 0) {
-		unsigned char lineLen;
-		unsigned short lineNum;
+    while (length > 0) {
+        unsigned char lineLen;
+        unsigned short lineNum;
 
-		/* pull the length byte, which we sanity-check */
-		lineLen = *srcPtr++;
-		length--;
-		if (lineLen == 0) {
-			WMSG0("  SCAssem found zero-length line?\n");
-			break;
-		}
+        /* pull the length byte, which we sanity-check */
+        lineLen = *srcPtr++;
+        length--;
+        if (lineLen == 0) {
+            WMSG0("  SCAssem found zero-length line?\n");
+            break;
+        }
 
-		/* line number */
-		lineNum = Read16(&srcPtr, &length);
-		BufPrintf("%04u ", lineNum);
+        /* line number */
+        lineNum = Read16(&srcPtr, &length);
+        BufPrintf("%04u ", lineNum);
 
-		while (*srcPtr != 0x00 && length > 0) {
-			if (*srcPtr >= 0x20 && *srcPtr <= 0x7f) {
-				BufPrintf("%c", *srcPtr);
-			} else if (*srcPtr >= 0x80 && *srcPtr <= 0xbf) {
-				BufPrintf("%s", kSpaces64 + (64+128 - *srcPtr));
-			} else if (*srcPtr == 0xc0) {
-				if (length > 2) {
-					int count = *(srcPtr+1);
-					unsigned char ch = *(srcPtr+2);
+        while (*srcPtr != 0x00 && length > 0) {
+            if (*srcPtr >= 0x20 && *srcPtr <= 0x7f) {
+                BufPrintf("%c", *srcPtr);
+            } else if (*srcPtr >= 0x80 && *srcPtr <= 0xbf) {
+                BufPrintf("%s", kSpaces64 + (64+128 - *srcPtr));
+            } else if (*srcPtr == 0xc0) {
+                if (length > 2) {
+                    int count = *(srcPtr+1);
+                    unsigned char ch = *(srcPtr+2);
 
-					srcPtr += 2;
-					length -= 2;
-					while (count--)
-						BufPrintf("%c", ch);
-				} else {
-					WMSG1("  SCAssem GLITCH: RLE but only %d chars left\n",
-						length);
-					BufPrintf("?!?");
-				}
-			} else {
-				WMSG1("  SCAssem invalid char 0x%02x\n", *srcPtr);
-				BufPrintf("?");
-			}
+                    srcPtr += 2;
+                    length -= 2;
+                    while (count--)
+                        BufPrintf("%c", ch);
+                } else {
+                    WMSG1("  SCAssem GLITCH: RLE but only %d chars left\n",
+                        length);
+                    BufPrintf("?!?");
+                }
+            } else {
+                WMSG1("  SCAssem invalid char 0x%02x\n", *srcPtr);
+                BufPrintf("?");
+            }
 
-			srcPtr++;
-			length--;
-		}
+            srcPtr++;
+            length--;
+        }
 
-		/* skip past EOL token */
-		ASSERT(*srcPtr == 0x00 || length <= 0);
-		srcPtr++;
-		length--;
+        /* skip past EOL token */
+        ASSERT(*srcPtr == 0x00 || length <= 0);
+        srcPtr++;
+        length--;
 
-		RTFNewPara();
-	}
+        RTFNewPara();
+    }
 
 done:
-	RTFEnd();
+    RTFEnd();
 
-	SetResultBuffer(pOutput);
-	retval = 0;
+    SetResultBuffer(pOutput);
+    retval = 0;
 
 //bail:
-	return retval;
+    return retval;
 }
 
 
 /*
  * ===========================================================================
- *		Merlin 8 and Merlin 8/16 Assembler
+ *      Merlin 8 and Merlin 8/16 Assembler
  * ===========================================================================
  */
 
@@ -225,37 +225,37 @@ done:
 void
 ReformatMerlin::Examine(ReformatHolder* pHolder)
 {
-	if (pHolder->GetFileType() == kTypeTXT) {
-		bool isAsm = ReformatMerlin::IsMerlin(pHolder);
-		bool isDotS = strcasecmp(pHolder->GetNameExt(), ".S") == 0;
+    if (pHolder->GetFileType() == kTypeTXT) {
+        bool isAsm = ReformatMerlin::IsMerlin(pHolder);
+        bool isDotS = strcasecmp(pHolder->GetNameExt(), ".S") == 0;
 
-		if (isAsm && isDotS) {
-			/* gotta be */
-			pHolder->SetApplic(ReformatHolder::kReformatMerlin,
-				ReformatHolder::kApplicYes,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		} else if (isAsm) {
-			/* probably Merlin assembler, or at least *some* sort of asm */
-			pHolder->SetApplic(ReformatHolder::kReformatMerlin,
-				ReformatHolder::kApplicProbably,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		} else if (isDotS) {
-			/* not likely, but offer it as non-default option */
-			pHolder->SetApplic(ReformatHolder::kReformatMerlin,
-				ReformatHolder::kApplicProbablyNot,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		} else {
-			/* probably not Merlin, don't allow */
-			pHolder->SetApplic(ReformatHolder::kReformatMerlin,
-				ReformatHolder::kApplicNot,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		}
-	} else {
-		/* not S-C assembler */
-		pHolder->SetApplic(ReformatHolder::kReformatMerlin,
-			ReformatHolder::kApplicNot,
-			ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-	}
+        if (isAsm && isDotS) {
+            /* gotta be */
+            pHolder->SetApplic(ReformatHolder::kReformatMerlin,
+                ReformatHolder::kApplicYes,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        } else if (isAsm) {
+            /* probably Merlin assembler, or at least *some* sort of asm */
+            pHolder->SetApplic(ReformatHolder::kReformatMerlin,
+                ReformatHolder::kApplicProbably,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        } else if (isDotS) {
+            /* not likely, but offer it as non-default option */
+            pHolder->SetApplic(ReformatHolder::kReformatMerlin,
+                ReformatHolder::kApplicProbablyNot,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        } else {
+            /* probably not Merlin, don't allow */
+            pHolder->SetApplic(ReformatHolder::kReformatMerlin,
+                ReformatHolder::kApplicNot,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        }
+    } else {
+        /* not S-C assembler */
+        pHolder->SetApplic(ReformatHolder::kReformatMerlin,
+            ReformatHolder::kApplicNot,
+            ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    }
 }
 
 /*
@@ -274,49 +274,49 @@ ReformatMerlin::Examine(ReformatHolder* pHolder)
 /*static*/ bool
 ReformatMerlin::IsMerlin(const ReformatHolder* pHolder)
 {
-	const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
-	long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
 
-	bool isLineStart = true;
-	int lineCount, spaceLineCount, commentLineCount;
+    bool isLineStart = true;
+    int lineCount, spaceLineCount, commentLineCount;
 
-	lineCount = spaceLineCount = commentLineCount = 0;
-	while (srcLen--) {
-		if ((*ptr & 0x80) == 0 && (*ptr != 0x20)) {
-			WMSG1("  Merlin: not, found 0x%02x\n", *ptr);
-			return false;
-		}
+    lineCount = spaceLineCount = commentLineCount = 0;
+    while (srcLen--) {
+        if ((*ptr & 0x80) == 0 && (*ptr != 0x20)) {
+            WMSG1("  Merlin: not, found 0x%02x\n", *ptr);
+            return false;
+        }
 
-		if (isLineStart) {
-			lineCount++;
+        if (isLineStart) {
+            lineCount++;
 
-			if ((*ptr & 0x7f) == 0x20 && srcLen != 0 &&
-				(*(ptr+1) & 0x7f) != 0x20)
-				spaceLineCount++;
-			if (*ptr == 0xaa)		// '*'
-				commentLineCount++;
-			isLineStart = false;
-		}
+            if ((*ptr & 0x7f) == 0x20 && srcLen != 0 &&
+                (*(ptr+1) & 0x7f) != 0x20)
+                spaceLineCount++;
+            if (*ptr == 0xaa)       // '*'
+                commentLineCount++;
+            isLineStart = false;
+        }
 
-		if (*ptr == 0x8d)
-			isLineStart = true;
+        if (*ptr == 0x8d)
+            isLineStart = true;
 
-		ptr++;
-	}
+        ptr++;
+    }
 
-	if (!lineCount)
-		return false;		// don't divide by zero
+    if (!lineCount)
+        return false;       // don't divide by zero
 
-	WMSG1("  Merlin: found %d lines\n", lineCount);
-	WMSG4("    %d start with spaces (%.3f%%), %d with comments (%.3f%%)\n",
-		spaceLineCount, (spaceLineCount * 100.0) / lineCount,
-		commentLineCount, (commentLineCount * 100.0) / lineCount);
+    WMSG1("  Merlin: found %d lines\n", lineCount);
+    WMSG4("    %d start with spaces (%.3f%%), %d with comments (%.3f%%)\n",
+        spaceLineCount, (spaceLineCount * 100.0) / lineCount,
+        commentLineCount, (commentLineCount * 100.0) / lineCount);
 
-	if ((spaceLineCount * 100) / lineCount > 40)
-		return true;
-	if (((spaceLineCount + commentLineCount) * 100) / lineCount > 50)
-		return true;
-	return false;
+    if ((spaceLineCount * 100) / lineCount > 40)
+        return true;
+    if (((spaceLineCount + commentLineCount) * 100) / lineCount > 50)
+        return true;
+    return false;
 }
 
 
@@ -331,91 +331,91 @@ ReformatMerlin::IsMerlin(const ReformatHolder* pHolder)
  */
 int
 ReformatMerlin::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	long length = srcLen;
-	int retval = -1;
-	enum { kStateLabel, kStateMnemonic, kStateOperand, kStateComment };
-	int tabStop[] = { 0, 9, 15, 26 };	// 1:1 map with state enum
-	int state;
-	unsigned char quoteChar = '\0';
+    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    long length = srcLen;
+    int retval = -1;
+    enum { kStateLabel, kStateMnemonic, kStateOperand, kStateComment };
+    int tabStop[] = { 0, 9, 15, 26 };   // 1:1 map with state enum
+    int state;
+    unsigned char quoteChar = '\0';
 
-	fUseRTF = false;
+    fUseRTF = false;
 
-	RTFBegin();
+    RTFBegin();
 
-	bool isLineStart = true;
-	for ( ; srcLen > 0; srcLen--, srcPtr++) {
-		if (isLineStart) {
-			isLineStart = false;
-			OutputStart();		// begin new line in output buffer
-			state = kStateLabel;
-			if (*srcPtr == 0xaa)
-				state = kStateComment;
-		}
-		if (*srcPtr == 0x8d) {
-			OutputFinish();		// end of line
+    bool isLineStart = true;
+    for ( ; srcLen > 0; srcLen--, srcPtr++) {
+        if (isLineStart) {
+            isLineStart = false;
+            OutputStart();      // begin new line in output buffer
+            state = kStateLabel;
+            if (*srcPtr == 0xaa)
+                state = kStateComment;
+        }
+        if (*srcPtr == 0x8d) {
+            OutputFinish();     // end of line
 
-			BufPrintf("%s", GetOutBuf());
-			RTFNewPara();
+            BufPrintf("%s", GetOutBuf());
+            RTFNewPara();
 
-			isLineStart = true;
-			if (quoteChar != '\0') {
-				DebugBreak();
-				quoteChar = '\0';
-			}
-			continue;
-		}
+            isLineStart = true;
+            if (quoteChar != '\0') {
+                DebugBreak();
+                quoteChar = '\0';
+            }
+            continue;
+        }
 
-		if (state >= kStateComment) {
-			Output(*srcPtr & 0x7f);
-		} else if (quoteChar != '\0') {
-			if (*srcPtr == quoteChar) {
-				/* close quote */
-				quoteChar = '\0';
-			}
-			Output(*srcPtr & 0x7f);
-		} else if (state == kStateOperand &&
-				   (*srcPtr == '\'' + 0x80 || *srcPtr == '"' + 0x80))
-		{
-			/* open quote */
-			quoteChar = *srcPtr;
-			Output(quoteChar & 0x7f);
-		} else if (*srcPtr == 0xa0) {		// high-ASCII space
-			// does not trigger on 0x20; this matches behavior of
-			// Merlin-16 v3.40
-			state++;
-			OutputTab(tabStop[state]);
-		} else if (*srcPtr == 0xbb) {		// high-ASCII ';'
-			// just comment, or comment on mnemonic w/o operand
-			// (shouldn't tab out if line started with label but
-			// contains 0x20s instead of 0xa0s between components;
-			// oh well.)
-			state = kStateComment;
-			OutputTab(tabStop[state]);
-			Output(*srcPtr & 0x7f);
-		} else {
-			Output(*srcPtr & 0x7f);
-		}
-	}
+        if (state >= kStateComment) {
+            Output(*srcPtr & 0x7f);
+        } else if (quoteChar != '\0') {
+            if (*srcPtr == quoteChar) {
+                /* close quote */
+                quoteChar = '\0';
+            }
+            Output(*srcPtr & 0x7f);
+        } else if (state == kStateOperand &&
+                   (*srcPtr == '\'' + 0x80 || *srcPtr == '"' + 0x80))
+        {
+            /* open quote */
+            quoteChar = *srcPtr;
+            Output(quoteChar & 0x7f);
+        } else if (*srcPtr == 0xa0) {       // high-ASCII space
+            // does not trigger on 0x20; this matches behavior of
+            // Merlin-16 v3.40
+            state++;
+            OutputTab(tabStop[state]);
+        } else if (*srcPtr == 0xbb) {       // high-ASCII ';'
+            // just comment, or comment on mnemonic w/o operand
+            // (shouldn't tab out if line started with label but
+            // contains 0x20s instead of 0xa0s between components;
+            // oh well.)
+            state = kStateComment;
+            OutputTab(tabStop[state]);
+            Output(*srcPtr & 0x7f);
+        } else {
+            Output(*srcPtr & 0x7f);
+        }
+    }
 
 //done:
-	RTFEnd();
+    RTFEnd();
 
-	SetResultBuffer(pOutput);
-	retval = 0;
+    SetResultBuffer(pOutput);
+    retval = 0;
 
 //bail:
-	return retval;
+    return retval;
 }
 
 
 /*
  * ===========================================================================
- *		LISA Assembler - v2.x
+ *      LISA Assembler - v2.x
  * ===========================================================================
  */
 
@@ -433,26 +433,26 @@ ReformatMerlin::Process(const ReformatHolder* pHolder,
 void
 ReformatLISA2::Examine(ReformatHolder* pHolder)
 {
-	if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS &&
-		pHolder->GetFileType() == kTypeDOS_B)
-	{
-		if (ReformatLISA2::IsLISA(pHolder)) {
-			/* definitely LISA */
-			pHolder->SetApplic(ReformatHolder::kReformatLISA2,
-				ReformatHolder::kApplicYes,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		} else {
-			/* maybe LISA */
-			pHolder->SetApplic(ReformatHolder::kReformatLISA2,
-				ReformatHolder::kApplicMaybe,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		}
-	} else {
-		/* not LISA */
-		pHolder->SetApplic(ReformatHolder::kReformatLISA2,
-			ReformatHolder::kApplicNot,
-			ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-	}
+    if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS &&
+        pHolder->GetFileType() == kTypeDOS_B)
+    {
+        if (ReformatLISA2::IsLISA(pHolder)) {
+            /* definitely LISA */
+            pHolder->SetApplic(ReformatHolder::kReformatLISA2,
+                ReformatHolder::kApplicYes,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        } else {
+            /* maybe LISA */
+            pHolder->SetApplic(ReformatHolder::kReformatLISA2,
+                ReformatHolder::kApplicMaybe,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        }
+    } else {
+        /* not LISA */
+        pHolder->SetApplic(ReformatHolder::kReformatLISA2,
+            ReformatHolder::kApplicNot,
+            ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    }
 }
 
 /*
@@ -461,20 +461,20 @@ ReformatLISA2::Examine(ReformatHolder* pHolder)
 bool
 ReformatLISA2::IsLISA(const ReformatHolder* pHolder)
 {
-	const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
-	long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
-	unsigned short version, len;
+    const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    unsigned short version, len;
 
-	if (srcLen < 8)
-		return false;
+    if (srcLen < 8)
+        return false;
 
-	version = Read16(&srcPtr, &srcLen);
-	len = Read16(&srcPtr, &srcLen);
+    version = Read16(&srcPtr, &srcLen);
+    len = Read16(&srcPtr, &srcLen);
 
-	if (len > srcLen)
-		return false;
+    if (len > srcLen)
+        return false;
 
-	return true;
+    return true;
 }
 
 
@@ -504,7 +504,7 @@ static const char gOpcodes[] =
 /*
  * Format:
  *  2-byte version (?)
- *	2-byte length
+ *  2-byte length
  *  <LINE> ...
  *
  * Each line is:
@@ -520,27 +520,27 @@ static const char gOpcodes[] =
  */
 int
 ReformatLISA2::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
+    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
     long actualLen;
-	int retval = -1;
+    int retval = -1;
 
-	fUseRTF = false;
+    fUseRTF = false;
 
     if (srcLen < 8) {
-		WMSG0("  LISA truncated?\n");
+        WMSG0("  LISA truncated?\n");
         goto bail;
     }
 
-	unsigned short version;
+    unsigned short version;
 
-	version = Read16(&srcPtr, &srcLen);		// usually 0x1800; maybe "2.4"?
-	actualLen = Read16(&srcPtr, &srcLen);
+    version = Read16(&srcPtr, &srcLen);     // usually 0x1800; maybe "2.4"?
+    actualLen = Read16(&srcPtr, &srcLen);
 
-	WMSG2("  LISA version 0x%04x, len=%d\n", version, actualLen);
+    WMSG2("  LISA version 0x%04x, len=%d\n", version, actualLen);
 
     if (actualLen > srcLen) {
         WMSG2("  LISA bad length (len=%ld actual=%ld)\n", srcLen, actualLen);
@@ -561,7 +561,7 @@ ReformatLISA2::Process(const ReformatHolder* pHolder,
 
         lineNum++;
 
-		OutputStart();
+        OutputStart();
         ProcessLine(srcPtr);
         OutputFinish();
 
@@ -572,8 +572,8 @@ ReformatLISA2::Process(const ReformatHolder* pHolder,
         actualLen -= lineLen+1;
     }
 
-	SetResultBuffer(pOutput);
-	retval = 0;
+    SetResultBuffer(pOutput);
+    retval = 0;
 
 bail:
     return retval;
@@ -585,7 +585,7 @@ ReformatLISA2::ProcessLine(const unsigned char* buf)
     int len = *buf;
     unsigned char uch;
 
-	// consume length byte
+    // consume length byte
     buf++;
     len--;
 
@@ -594,25 +594,25 @@ ReformatLISA2::ProcessLine(const unsigned char* buf)
         OutputTab(kOpTab);
     } else if (*buf != ';' && len > 8) {
         // starting with 8-character label
-		bool doPrint = true;
+        bool doPrint = true;
         for (int i = 0; i < 8; i++) {
             uch = *buf;
             if (uch < 0x20 || uch >= 0x80) {
                 WMSG1("  LISA funky char 0x%02x in label\n", uch);
                 break;
             } else if (uch == 0x20) {
-				doPrint = false;
-			}
-			if (doPrint)
-				Output(uch);
+                doPrint = false;
+            }
+            if (doPrint)
+                Output(uch);
             buf++;
             len--;
         }
-		if (len > 0 && *buf == ':') {
-			Output(*buf);
-			buf++;
-			len--;
-		}
+        if (len > 0 && *buf == ':') {
+            Output(*buf);
+            buf++;
+            len--;
+        }
         OutputTab(kOpTab);
     }
 
@@ -622,31 +622,31 @@ ReformatLISA2::ProcessLine(const unsigned char* buf)
         uch = *buf++;
 
         if (uch >= 0x20 && uch < 0x80) {
-			if (mnemonicDone && uch != 0x20)
-				operandDone = true;
-			if (mnemonicDone && !operandDone && uch == 0x20) {
-				// suppress extra spaces between mnemonic and operand
-			} else
-				Output(uch);
+            if (mnemonicDone && uch != 0x20)
+                operandDone = true;
+            if (mnemonicDone && !operandDone && uch == 0x20) {
+                // suppress extra spaces between mnemonic and operand
+            } else
+                Output(uch);
         } else if (uch < 0x20) {
-			// Values from 0x01 - 0x05 are used to separate the opcode from
-			// the operand, and seem to "hint" the operand type (immediate,
-			// absolute, etc).  Just ignore for now.
+            // Values from 0x01 - 0x05 are used to separate the opcode from
+            // the operand, and seem to "hint" the operand type (immediate,
+            // absolute, etc).  Just ignore for now.
         } else if (uch == 0x0d) {
             // don't output CR to line buf
             if (len) {
                 WMSG0("WARNING: got early CR\n");
-			}
+            }
         } else if (mnemonicDone) {
-			// Values >= 0x80 are mnemonics, but we've already seen it.
+            // Values >= 0x80 are mnemonics, but we've already seen it.
             // LISA seems to use 0xbb to separate operand and comment field
             // (would be "STP" mnemonic).  I don't see other uses, so I'm
-			// just going to tab over instead of outputing a second
-			// mnemonic value.
-			if (len > 1) {
-				OutputTab(kComTab);
-				Output(';');
-			}
+            // just going to tab over instead of outputing a second
+            // mnemonic value.
+            if (len > 1) {
+                OutputTab(kComTab);
+                Output(';');
+            }
         } else {
             const char* mnemonic;
 
@@ -663,7 +663,7 @@ ReformatLISA2::ProcessLine(const unsigned char* buf)
 
 /*
  * ===========================================================================
- *		LISA Assembler - v4 and v5
+ *      LISA Assembler - v4 and v5
  * ===========================================================================
  */
 
@@ -672,9 +672,9 @@ ReformatLISA2::ProcessLine(const unsigned char* buf)
  * version number in the aux type.  The version is always < $4000.
  *
  * The file format looks like this:
- *	4-byte header
- *	symbol dictionary, 8 bytes per symbol
- *	<line> ...
+ *  4-byte header
+ *  symbol dictionary, 8 bytes per symbol
+ *  <line> ...
  *
  * The way the lines are decoded is fairly involved.  The code here was
  * developed from the LISA v3.2a sources, as found on the A2ROMulan CD-ROM.
@@ -750,30 +750,30 @@ static const char gMnemonics3[256*3 +1] =
 void
 ReformatLISA3::Examine(ReformatHolder* pHolder)
 {
-	/*
-	 * Note we cannot false-positive on an INT file on a DOS disk, because
-	 * in DOS 3.3 INT files always have zero aux type.
-	 */
-	if (pHolder->GetFileType() == kTypeINT &&
-		pHolder->GetAuxType() < 0x4000)
-	{
-		if (ReformatLISA3::IsLISA(pHolder)) {
-			/* definitely LISA */
-			pHolder->SetApplic(ReformatHolder::kReformatLISA3,
-				ReformatHolder::kApplicYes,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		} else {
-			/* possibly LISA */
-			pHolder->SetApplic(ReformatHolder::kReformatLISA3,
-				ReformatHolder::kApplicMaybe,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		}
-	} else {
-		/* not LISA */
-		pHolder->SetApplic(ReformatHolder::kReformatLISA3,
-			ReformatHolder::kApplicNot,
-			ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-	}
+    /*
+     * Note we cannot false-positive on an INT file on a DOS disk, because
+     * in DOS 3.3 INT files always have zero aux type.
+     */
+    if (pHolder->GetFileType() == kTypeINT &&
+        pHolder->GetAuxType() < 0x4000)
+    {
+        if (ReformatLISA3::IsLISA(pHolder)) {
+            /* definitely LISA */
+            pHolder->SetApplic(ReformatHolder::kReformatLISA3,
+                ReformatHolder::kApplicYes,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        } else {
+            /* possibly LISA */
+            pHolder->SetApplic(ReformatHolder::kReformatLISA3,
+                ReformatHolder::kApplicMaybe,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        }
+    } else {
+        /* not LISA */
+        pHolder->SetApplic(ReformatHolder::kReformatLISA3,
+            ReformatHolder::kApplicNot,
+            ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    }
 }
 
 /*
@@ -783,15 +783,15 @@ ReformatLISA3::Examine(ReformatHolder* pHolder)
 /*static*/ bool
 ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
 {
-	bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
-	const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
-	long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
+    const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
 
-	if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS)
-		return false;		// can only live under ProDOS; need len + aux type
+    if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS)
+        return false;       // can only live under ProDOS; need len + aux type
 
-	if (srcLen < kHeaderLen+2)
-		return false;		// too short
+    if (srcLen < kHeaderLen+2)
+        return false;       // too short
 
     unsigned short codeLen, symLen;
 
@@ -811,7 +811,7 @@ ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
         return false;
     }
 
-	return true;
+    return true;
 }
 
 /*
@@ -819,19 +819,19 @@ ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
  */
 int
 ReformatLISA3::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	int retval = -1;
+    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    int retval = -1;
 
     if (srcLen < kHeaderLen+2) {
         WMSG0("  LISA3 too short\n");
         goto bail;
     }
 
-	fUseRTF = false;
+    fUseRTF = false;
 
     unsigned short codeLen, symLen;
 
@@ -856,7 +856,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
     fSymCount = symLen / 8;
     fSymTab = srcPtr + kHeaderLen;
 #if 0
-	int ii;
+    int ii;
     for (ii = 0; ii < fSymCount; ii++) {
         OutputStart();
         PrintSymEntry(ii);
@@ -954,11 +954,11 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
     WMSG3("codePtr=%p endPtr=%p numLines=%d\n", codePtr, endPtr, lineNum-1);
     WMSG1("extra = %d\n", endPtr - codePtr);
 
-	SetResultBuffer(pOutput);
-	retval = 0;
+    SetResultBuffer(pOutput);
+    retval = 0;
 
 bail:
-	fSymTab = nil;
+    fSymTab = nil;
     return retval;
 }
 
@@ -1056,7 +1056,7 @@ bail:
  */
 void
 ReformatLISA3::ConvertOperand(unsigned char mnemonic,
-	const unsigned char** pCodePtr, int* pLen)
+    const unsigned char** pCodePtr, int* pLen)
 {
     static const char kOPRTRST1[] = "+-*/&|^=<>%<><";
     static const char kOPRTRST2[] = "\0\0\0\0\0\0\0\0\0\0\0==>";
@@ -1270,9 +1270,9 @@ ReformatLISA3::PrintNum(int adrsMode, unsigned char val,
         }
         if (strLen > len) {
             Output("!BAD STR!");
-			DebugBreak();
+            DebugBreak();
             result = kResultFailed;
-			goto bail;
+            goto bail;
         }
         char delim;
         if (*codePtr >= 0x80)
@@ -1321,7 +1321,7 @@ ReformatLISA3::PrintSymEntry(int ent)
     if (ent < 0 || ent >= fSymCount) {
         Output("!BAD SYM!");
         WMSG2("invalid entry %d (max %d)\n", ent, fSymCount);
-		DebugBreak();
+        DebugBreak();
         return;
     }
 
@@ -1390,7 +1390,7 @@ ReformatLISA3::PrintComment(int adrsMode, const unsigned char* codePtr, int len)
 
 /*
  * ===========================================================================
- *		LISA Assembler - v4 and v5
+ *      LISA Assembler - v4 and v5
  * ===========================================================================
  */
 
@@ -1399,9 +1399,9 @@ ReformatLISA3::PrintComment(int adrsMode, const unsigned char* codePtr, int len)
  * assembler version number in the aux type.  The version is always > $4000.
  *
  * The file format looks like this:
- *	16-byte header
- *	symbol dictionary
- *	<line> ...
+ *  16-byte header
+ *  symbol dictionary
+ *  <line> ...
  *
  * The way the lines are decoded is fairly involved.  The code here was
  * developed from the LISA/816 v5.0a (433) sources, as found on
@@ -1414,30 +1414,30 @@ ReformatLISA3::PrintComment(int adrsMode, const unsigned char* codePtr, int len)
 void
 ReformatLISA4::Examine(ReformatHolder* pHolder)
 {
-	/*
-	 * Note we cannot false-positive on an INT file on a DOS disk, because
-	 * in DOS 3.3 INT files always have zero aux type.
-	 */
-	if (pHolder->GetFileType() == kTypeINT &&
-		pHolder->GetAuxType() >= 0x4000)
-	{
-		if (ReformatLISA4::IsLISA(pHolder)) {
-			/* definitely LISA */
-			pHolder->SetApplic(ReformatHolder::kReformatLISA4,
-				ReformatHolder::kApplicYes,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		} else {
-			/* possibly LISA */
-			pHolder->SetApplic(ReformatHolder::kReformatLISA4,
-				ReformatHolder::kApplicMaybe,
-				ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-		}
-	} else {
-		/* not LISA */
-		pHolder->SetApplic(ReformatHolder::kReformatLISA4,
-			ReformatHolder::kApplicNot,
-			ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-	}
+    /*
+     * Note we cannot false-positive on an INT file on a DOS disk, because
+     * in DOS 3.3 INT files always have zero aux type.
+     */
+    if (pHolder->GetFileType() == kTypeINT &&
+        pHolder->GetAuxType() >= 0x4000)
+    {
+        if (ReformatLISA4::IsLISA(pHolder)) {
+            /* definitely LISA */
+            pHolder->SetApplic(ReformatHolder::kReformatLISA4,
+                ReformatHolder::kApplicYes,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        } else {
+            /* possibly LISA */
+            pHolder->SetApplic(ReformatHolder::kReformatLISA4,
+                ReformatHolder::kApplicMaybe,
+                ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+        }
+    } else {
+        /* not LISA */
+        pHolder->SetApplic(ReformatHolder::kReformatLISA4,
+            ReformatHolder::kApplicNot,
+            ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    }
 }
 
 /*
@@ -1447,15 +1447,15 @@ ReformatLISA4::Examine(ReformatHolder* pHolder)
 /*static*/ bool
 ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
 {
-	bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
-	const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
-	long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
+    const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
 
-	if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS)
-		return false;		// can only live under ProDOS; need len + aux type
+    if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS)
+        return false;       // can only live under ProDOS; need len + aux type
 
-	if (srcLen < kHeaderLen+2)
-		return false;		// too short
+    if (srcLen < kHeaderLen+2)
+        return false;       // too short
 
     unsigned short version;
     unsigned short symEnd;
@@ -1471,25 +1471,25 @@ ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
     }
     if (symCount > symEnd) {
         WMSG2("  LISA4 funky symCount (count=%d end=%d)\n",
-			symCount, symEnd);
+            symCount, symEnd);
         return false;;
     }
 
-	unsigned char opTab, adTab, comTab;
+    unsigned char opTab, adTab, comTab;
     opTab = srcPtr[0x06];
     adTab = srcPtr[0x07];
     comTab = srcPtr[0x08];
 
-	if (opTab < 1 || adTab < 2 || comTab < 3) {
-		WMSG0("  LISA4 missing tabs\n");
-		return false;
-	}
-	if (opTab >= 128 || adTab >= 128 || comTab >= 128) {
-		WMSG0("  LISA4 huge tabs\n");
-		return false;
-	}
+    if (opTab < 1 || adTab < 2 || comTab < 3) {
+        WMSG0("  LISA4 missing tabs\n");
+        return false;
+    }
+    if (opTab >= 128 || adTab >= 128 || comTab >= 128) {
+        WMSG0("  LISA4 huge tabs\n");
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 static const char* gHexDigit = "0123456789ABCDEF";
@@ -1500,8 +1500,8 @@ static const char* gHexDigit = "0123456789ABCDEF";
  *
  * Some entries were not present in the editor sources, but were used
  * by sample source code, and have been added here:
- *	0x6c .assume
- *	0x7f .table
+ *  0x6c .assume
+ *  0x7f .table
  */
 static const char* gMnemonics4[] = {
     // 00 - 0f
@@ -1560,19 +1560,19 @@ static const char* gMnemonics4[] = {
  */
 int
 ReformatLISA4::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	int retval = -1;
+    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    int retval = -1;
 
     if (srcLen < kHeaderLen+2) {
         WMSG0("  LISA4 too short\n");
         goto bail;
     }
 
-	fUseRTF = false;
+    fUseRTF = false;
 
     unsigned short version;
     unsigned short symEnd;
@@ -1598,11 +1598,11 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
         WMSG0("  LISA4 funky symCount\n");
         goto bail;
     }
-	if (fSymCount > 0) {
-		fSymTab = new const unsigned char*[fSymCount];
-		if (fSymTab == nil)
-			goto bail;
-	}
+    if (fSymCount > 0) {
+        fSymTab = new const unsigned char*[fSymCount];
+        if (fSymTab == nil)
+            goto bail;
+    }
 
     const unsigned char* symPtr;
     const unsigned char* endPtr;
@@ -1649,7 +1649,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
         int lineLen;
 
         lineNum++;
-		OutputStart();
+        OutputStart();
 
         flagByte = *codePtr++;
         if (flagByte < 0x80) {
@@ -1698,10 +1698,10 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
                 /* OutMnem - simple, standard mnemonic */
                 lineLen = 1;
                 OutputTab(fOpTab);
-				if (gMnemonics4[flagByte])
-					Output(gMnemonics4[flagByte]);
-				else
-					Output("!BAD MNEMONIC!");
+                if (gMnemonics4[flagByte])
+                    Output(gMnemonics4[flagByte]);
+                else
+                    Output("!BAD MNEMONIC!");
             }
         }
         
@@ -1719,15 +1719,15 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     }
 
     WMSG3("  LISA4 codePtr=%p endPtr=%p numLines=%d\n",
-		codePtr, endPtr, lineNum-1);
+        codePtr, endPtr, lineNum-1);
     WMSG1("  LISA4 extra = %d\n", endPtr - codePtr);
 
-	SetResultBuffer(pOutput);
-	retval = 0;
+    SetResultBuffer(pOutput);
+    retval = 0;
 
 bail:
     delete[] fSymTab;
-	fSymTab = nil;
+    fSymTab = nil;
     return retval;
 }
 
@@ -1800,13 +1800,13 @@ ReformatLISA4::ProcessLine(const unsigned char* codePtr, int len)
         //printf("{MAC:%d}", len);
     } else {
         OutputTab(fOpTab);
-		if (gMnemonics4[mnemonic] != NULL)
-			Output(gMnemonics4[mnemonic]);
-		else {
-			Output("!BAD MNEMONIC!");
-			WMSG1("  LISA4 bad mnemonic 0x%02x\n", mnemonic);
-			DebugBreak();
-		}
+        if (gMnemonics4[mnemonic] != NULL)
+            Output(gMnemonics4[mnemonic]);
+        else {
+            Output("!BAD MNEMONIC!");
+            WMSG1("  LISA4 bad mnemonic 0x%02x\n", mnemonic);
+            DebugBreak();
+        }
         if (mnemonic >= kSS) {
             /* CnvMnem2 - mnemonic has no associated operand */
             /* need to fall into ConvertOperand to show comment */
@@ -1837,7 +1837,7 @@ bail:
  */
 void
 ReformatLISA4::ConvertOperand(unsigned char mnemonic,
-	const unsigned char** pCodePtr, int* pLen)
+    const unsigned char** pCodePtr, int* pLen)
 {
     /*
      * Address header char.
@@ -2097,7 +2097,7 @@ not_operator:
  */
 void
 ReformatLISA4::PrintDec(int count, const unsigned char** pCodePtr,
-	int* pLen)
+    int* pLen)
 {
     const unsigned char* codePtr = *pCodePtr;
     int len = *pLen;
@@ -2120,7 +2120,7 @@ ReformatLISA4::PrintDec(int count, const unsigned char** pCodePtr,
  */
 void
 ReformatLISA4::PrintHex(int count, const unsigned char** pCodePtr,
-	int* pLen)
+    int* pLen)
 {
     const unsigned char* codePtr = *pCodePtr;
     int len = *pLen;
@@ -2144,7 +2144,7 @@ ReformatLISA4::PrintHex(int count, const unsigned char** pCodePtr,
  */
 void
 ReformatLISA4::PrintBin(int count, const unsigned char** pCodePtr,
-	int* pLen)
+    int* pLen)
 {
     const unsigned char* codePtr = *pCodePtr;
     int len = *pLen;
@@ -2349,7 +2349,7 @@ ReformatLISA4::PrintComplexOperand(unsigned char opr,
         }
     } else {
         Output("!BAD CPLX OPRND!");
-		DebugBreak();
+        DebugBreak();
         printf("OPR=%d SUBCLASS=%d", opr, subClass);
         return kResultFailed;
     }

@@ -20,31 +20,31 @@ class DiskArchive;
  */
 class RenameVolumeDialog : public CDialog {
 public:
-	RenameVolumeDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_RENAME_VOLUME, pParentWnd)
-	{
-		fpArchive = nil;
-	}
-	virtual ~RenameVolumeDialog(void) {}
+    RenameVolumeDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_RENAME_VOLUME, pParentWnd)
+    {
+        fpArchive = nil;
+    }
+    virtual ~RenameVolumeDialog(void) {}
 
-	const DiskArchive*	fpArchive;
-	CString				fNewName;
-	DiskImgLib::DiskFS*	fpChosenDiskFS;
+    const DiskArchive*  fpArchive;
+    CString             fNewName;
+    DiskImgLib::DiskFS* fpChosenDiskFS;
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
-	afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	afx_msg void OnHelp(void);
+    afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg void OnHelp(void);
 
-	DiskFSTree	fDiskFSTree;
+    DiskFSTree  fDiskFSTree;
 
 private:
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__RENAMEVOLUME__*/

@@ -25,46 +25,46 @@
  */
 class RenameEntryDialog : public CDialog {
 public:
-	RenameEntryDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_RENAME_ENTRY, pParentWnd)
-	{
-		fFssep = '=';
-		//fNewNameLimit = 0;
-		fpArchive = nil;
-		fpEntry = nil;
-		fCanRenameFullPath = false;
-		fCanChangeFssep = false;
-	}
-	virtual ~RenameEntryDialog(void) {}
+    RenameEntryDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_RENAME_ENTRY, pParentWnd)
+    {
+        fFssep = '=';
+        //fNewNameLimit = 0;
+        fpArchive = nil;
+        fpEntry = nil;
+        fCanRenameFullPath = false;
+        fCanChangeFssep = false;
+    }
+    virtual ~RenameEntryDialog(void) {}
 
-	void SetCanRenameFullPath(bool val) { fCanRenameFullPath = val; }
-	void SetCanChangeFssep(bool val) { fCanChangeFssep = val; }
+    void SetCanRenameFullPath(bool val) { fCanRenameFullPath = val; }
+    void SetCanChangeFssep(bool val) { fCanChangeFssep = val; }
 
-	CString		fOldName;
-	char		fFssep;
-	CString		fNewName;
-	//int			fNewNameLimit;			// max #of chars accepted, or 0
-	const GenericArchive*	fpArchive;
-	const GenericEntry*		fpEntry;
+    CString     fOldName;
+    char        fFssep;
+    CString     fNewName;
+    //int           fNewNameLimit;          // max #of chars accepted, or 0
+    const GenericArchive*   fpArchive;
+    const GenericEntry*     fpEntry;
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnSkip(void);
-	afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	afx_msg void OnHelp(void);
+    afx_msg void OnSkip(void);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg void OnHelp(void);
 
 private:
-	//CString		fOldPath;		// pathname component, or empty if canRenFull
-	CString		fOldFile;		// filename component, or full name if ^^^
-	CString		fBasePath;
-	CString		fFssepStr;
-	bool		fCanRenameFullPath;
-	bool		fCanChangeFssep;
+    //CString       fOldPath;       // pathname component, or empty if canRenFull
+    CString     fOldFile;       // filename component, or full name if ^^^
+    CString     fBasePath;
+    CString     fFssepStr;
+    bool        fCanRenameFullPath;
+    bool        fCanChangeFssep;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__RENAMEENTRYDIALOG__*/

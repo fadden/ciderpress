@@ -14,28 +14,28 @@
 #include "NufxArchive.h"
 #include "HelpTopics.h"
 #include "resource.h"
-#include <afxpriv.h>		// need WM_COMMANDHELP
+#include <afxpriv.h>        // need WM_COMMANDHELP
 
 
 /*
  * ===========================================================================
- *		PrefsGeneralPage
+ *      PrefsGeneralPage
  * ===========================================================================
  */
 
 BEGIN_MESSAGE_MAP(PrefsGeneralPage, CPropertyPage)
-	ON_CONTROL_RANGE(BN_CLICKED, IDC_COL_PATHNAME, IDC_COL_ACCESS, OnChangeRange)
-	ON_BN_CLICKED(IDC_PREF_SHRINKIT_COMPAT, OnChange)
-	ON_BN_CLICKED(IDC_PREF_REDUCE_SHK_ERROR_CHECKS, OnChange)
-	ON_BN_CLICKED(IDC_PREF_SHK_BAD_MAC, OnChange)
-	ON_BN_CLICKED(IDC_PREF_COERCE_DOS, OnChange)
-	ON_BN_CLICKED(IDC_PREF_SPACES_TO_UNDER, OnChange)
-	ON_BN_CLICKED(IDC_PREF_PASTE_JUNKPATHS, OnChange)
-	ON_BN_CLICKED(IDC_PREF_SUCCESS_BEEP, OnChange)
-	ON_BN_CLICKED(IDC_COL_DEFAULTS, OnDefaults)
-	ON_BN_CLICKED(IDC_PREF_ASSOCIATIONS, OnAssociations)
-	ON_MESSAGE(WM_HELP, OnHelp)
-	ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
+    ON_CONTROL_RANGE(BN_CLICKED, IDC_COL_PATHNAME, IDC_COL_ACCESS, OnChangeRange)
+    ON_BN_CLICKED(IDC_PREF_SHRINKIT_COMPAT, OnChange)
+    ON_BN_CLICKED(IDC_PREF_REDUCE_SHK_ERROR_CHECKS, OnChange)
+    ON_BN_CLICKED(IDC_PREF_SHK_BAD_MAC, OnChange)
+    ON_BN_CLICKED(IDC_PREF_COERCE_DOS, OnChange)
+    ON_BN_CLICKED(IDC_PREF_SPACES_TO_UNDER, OnChange)
+    ON_BN_CLICKED(IDC_PREF_PASTE_JUNKPATHS, OnChange)
+    ON_BN_CLICKED(IDC_PREF_SUCCESS_BEEP, OnChange)
+    ON_BN_CLICKED(IDC_COL_DEFAULTS, OnDefaults)
+    ON_BN_CLICKED(IDC_PREF_ASSOCIATIONS, OnAssociations)
+    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
 
@@ -46,12 +46,12 @@ END_MESSAGE_MAP()
 void
 PrefsGeneralPage::OnChange(void)
 {
-	SetModified(TRUE);
+    SetModified(TRUE);
 }
 void
 PrefsGeneralPage::OnChangeRange(UINT nID)
 {
-	SetModified(TRUE);
+    SetModified(TRUE);
 }
 
 /*
@@ -65,22 +65,22 @@ PrefsGeneralPage::OnChangeRange(UINT nID)
 void
 PrefsGeneralPage::OnDefaults(void)
 {
-	WMSG0("DEFAULTS!\n");
+    WMSG0("DEFAULTS!\n");
 
-	CButton* pButton;
+    CButton* pButton;
 
-	fDefaultsPushed = true;
+    fDefaultsPushed = true;
 
-	ASSERT(IDC_COL_ACCESS == IDC_COL_PATHNAME + (kNumVisibleColumns-1));
+    ASSERT(IDC_COL_ACCESS == IDC_COL_PATHNAME + (kNumVisibleColumns-1));
 
-	/* assumes that the controls are numbered sequentially */
-	for (int i = 0; i < kNumVisibleColumns; i++) {
-		pButton = (CButton*) GetDlgItem(IDC_COL_PATHNAME+i);
-		ASSERT(pButton != nil);
-		pButton->SetCheck(1);	// 0=unchecked, 1=checked, 2=indeterminate
-	}
+    /* assumes that the controls are numbered sequentially */
+    for (int i = 0; i < kNumVisibleColumns; i++) {
+        pButton = (CButton*) GetDlgItem(IDC_COL_PATHNAME+i);
+        ASSERT(pButton != nil);
+        pButton->SetCheck(1);   // 0=unchecked, 1=checked, 2=indeterminate
+    }
 
-	SetModified(TRUE);
+    SetModified(TRUE);
 }
 
 /*
@@ -91,18 +91,18 @@ PrefsGeneralPage::OnDefaults(void)
 void
 PrefsGeneralPage::OnAssociations(void)
 {
-	EditAssocDialog assocDlg;
+    EditAssocDialog assocDlg;
 
-	assocDlg.fOurAssociations = fOurAssociations;
-	fOurAssociations = nil;
+    assocDlg.fOurAssociations = fOurAssociations;
+    fOurAssociations = nil;
 
-	if (assocDlg.DoModal() == IDOK) {
-		// steal the modified associations
-		delete[] fOurAssociations;
-		fOurAssociations = assocDlg.fOurAssociations;
-		assocDlg.fOurAssociations = nil;
-		SetModified(TRUE);
-	}
+    if (assocDlg.DoModal() == IDOK) {
+        // steal the modified associations
+        delete[] fOurAssociations;
+        fOurAssociations = assocDlg.fOurAssociations;
+        assocDlg.fOurAssociations = nil;
+        SetModified(TRUE);
+    }
 }
 
 /*
@@ -114,26 +114,26 @@ PrefsGeneralPage::OnAssociations(void)
 void
 PrefsGeneralPage::DoDataExchange(CDataExchange* pDX)
 {
-	fReady = true;
+    fReady = true;
 
-	ASSERT(NELEM(fColumn) == 9);
-	DDX_Check(pDX, IDC_COL_PATHNAME, fColumn[0]);
-	DDX_Check(pDX, IDC_COL_TYPE, fColumn[1]);
-	DDX_Check(pDX, IDC_COL_AUXTYPE, fColumn[2]);
-	DDX_Check(pDX, IDC_COL_MODDATE, fColumn[3]);
-	DDX_Check(pDX, IDC_COL_FORMAT, fColumn[4]);
-	DDX_Check(pDX, IDC_COL_SIZE, fColumn[5]);
-	DDX_Check(pDX, IDC_COL_RATIO, fColumn[6]);
-	DDX_Check(pDX, IDC_COL_PACKED, fColumn[7]);
-	DDX_Check(pDX, IDC_COL_ACCESS, fColumn[8]);
+    ASSERT(NELEM(fColumn) == 9);
+    DDX_Check(pDX, IDC_COL_PATHNAME, fColumn[0]);
+    DDX_Check(pDX, IDC_COL_TYPE, fColumn[1]);
+    DDX_Check(pDX, IDC_COL_AUXTYPE, fColumn[2]);
+    DDX_Check(pDX, IDC_COL_MODDATE, fColumn[3]);
+    DDX_Check(pDX, IDC_COL_FORMAT, fColumn[4]);
+    DDX_Check(pDX, IDC_COL_SIZE, fColumn[5]);
+    DDX_Check(pDX, IDC_COL_RATIO, fColumn[6]);
+    DDX_Check(pDX, IDC_COL_PACKED, fColumn[7]);
+    DDX_Check(pDX, IDC_COL_ACCESS, fColumn[8]);
 
-	DDX_Check(pDX, IDC_PREF_SHRINKIT_COMPAT, fMimicShrinkIt);
-	DDX_Check(pDX, IDC_PREF_SHK_BAD_MAC, fBadMacSHK);
-	DDX_Check(pDX, IDC_PREF_REDUCE_SHK_ERROR_CHECKS, fReduceSHKErrorChecks);
-	DDX_Check(pDX, IDC_PREF_COERCE_DOS, fCoerceDOSFilenames);
-	DDX_Check(pDX, IDC_PREF_SPACES_TO_UNDER, fSpacesToUnder);
-	DDX_Check(pDX, IDC_PREF_PASTE_JUNKPATHS, fPasteJunkPaths);
-	DDX_Check(pDX, IDC_PREF_SUCCESS_BEEP, fBeepOnSuccess);
+    DDX_Check(pDX, IDC_PREF_SHRINKIT_COMPAT, fMimicShrinkIt);
+    DDX_Check(pDX, IDC_PREF_SHK_BAD_MAC, fBadMacSHK);
+    DDX_Check(pDX, IDC_PREF_REDUCE_SHK_ERROR_CHECKS, fReduceSHKErrorChecks);
+    DDX_Check(pDX, IDC_PREF_COERCE_DOS, fCoerceDOSFilenames);
+    DDX_Check(pDX, IDC_PREF_SPACES_TO_UNDER, fSpacesToUnder);
+    DDX_Check(pDX, IDC_PREF_PASTE_JUNKPATHS, fPasteJunkPaths);
+    DDX_Check(pDX, IDC_PREF_SUCCESS_BEEP, fBeepOnSuccess);
 }
 
 /*
@@ -142,8 +142,8 @@ PrefsGeneralPage::DoDataExchange(CDataExchange* pDX)
 LONG
 PrefsGeneralPage::OnHelp(UINT wParam, LONG lParam)
 {
-	WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }
 /*
  * User pressed the PropertySheet "Help" button.
@@ -151,25 +151,25 @@ PrefsGeneralPage::OnHelp(UINT wParam, LONG lParam)
 LONG
 PrefsGeneralPage::OnCommandHelp(UINT, LONG)
 {
-	WinHelp(HELP_TOPIC_PREFS_GENERAL, HELP_CONTEXT);
-	return 0;		// doesn't matter
+    WinHelp(HELP_TOPIC_PREFS_GENERAL, HELP_CONTEXT);
+    return 0;       // doesn't matter
 }
 
 
 /*
  * ===========================================================================
- *		PrefsDiskImagePage
+ *      PrefsDiskImagePage
  * ===========================================================================
  */
 
 BEGIN_MESSAGE_MAP(PrefsDiskImagePage, CPropertyPage)
-	ON_BN_CLICKED(IDC_PDISK_CONFIRM_FORMAT, OnChange)
-	ON_BN_CLICKED(IDC_PDISK_OPENVOL_RO, OnChange)
-	ON_BN_CLICKED(IDC_PDISK_OPENVOL_PHYS0, OnChange)
-	ON_BN_CLICKED(IDC_PDISK_PRODOS_ALLOWLOWER, OnChange)
-	ON_BN_CLICKED(IDC_PDISK_PRODOS_USESPARSE, OnChange)
-	ON_MESSAGE(WM_HELP, OnHelp)
-	ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
+    ON_BN_CLICKED(IDC_PDISK_CONFIRM_FORMAT, OnChange)
+    ON_BN_CLICKED(IDC_PDISK_OPENVOL_RO, OnChange)
+    ON_BN_CLICKED(IDC_PDISK_OPENVOL_PHYS0, OnChange)
+    ON_BN_CLICKED(IDC_PDISK_PRODOS_ALLOWLOWER, OnChange)
+    ON_BN_CLICKED(IDC_PDISK_PRODOS_USESPARSE, OnChange)
+    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
 /*
@@ -178,8 +178,8 @@ END_MESSAGE_MAP()
 BOOL
 PrefsDiskImagePage::OnInitDialog(void)
 {
-	//WMSG0("OnInit!\n");
-	return CPropertyPage::OnInitDialog();
+    //WMSG0("OnInit!\n");
+    return CPropertyPage::OnInitDialog();
 }
 
 /*
@@ -188,14 +188,14 @@ PrefsDiskImagePage::OnInitDialog(void)
 void
 PrefsDiskImagePage::OnChange(void)
 {
-	WMSG0("OnChange\n");
-	SetModified(TRUE);
+    WMSG0("OnChange\n");
+    SetModified(TRUE);
 }
 //void
 //PrefsDiskImagePage::OnChangeRange(UINT nID)
 //{
-//	WMSG1("OnChangeRange id=%d\n", nID);
-//	SetModified(TRUE);
+//  WMSG1("OnChangeRange id=%d\n", nID);
+//  SetModified(TRUE);
 //}
 
 
@@ -205,12 +205,12 @@ PrefsDiskImagePage::OnChange(void)
 void
 PrefsDiskImagePage::DoDataExchange(CDataExchange* pDX)
 {
-	fReady = true;
-	DDX_Check(pDX, IDC_PDISK_CONFIRM_FORMAT, fQueryImageFormat);
-	DDX_Check(pDX, IDC_PDISK_OPENVOL_RO, fOpenVolumeRO);
-	DDX_Check(pDX, IDC_PDISK_OPENVOL_PHYS0, fOpenVolumePhys0);
-	DDX_Check(pDX, IDC_PDISK_PRODOS_ALLOWLOWER, fProDOSAllowLower);
-	DDX_Check(pDX, IDC_PDISK_PRODOS_USESPARSE, fProDOSUseSparse);
+    fReady = true;
+    DDX_Check(pDX, IDC_PDISK_CONFIRM_FORMAT, fQueryImageFormat);
+    DDX_Check(pDX, IDC_PDISK_OPENVOL_RO, fOpenVolumeRO);
+    DDX_Check(pDX, IDC_PDISK_OPENVOL_PHYS0, fOpenVolumePhys0);
+    DDX_Check(pDX, IDC_PDISK_PRODOS_ALLOWLOWER, fProDOSAllowLower);
+    DDX_Check(pDX, IDC_PDISK_PRODOS_USESPARSE, fProDOSUseSparse);
 }
 
 /*
@@ -219,8 +219,8 @@ PrefsDiskImagePage::DoDataExchange(CDataExchange* pDX)
 LONG
 PrefsDiskImagePage::OnHelp(UINT wParam, LONG lParam)
 {
-	WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }
 /*
  * User pressed the PropertySheet "Help" button.
@@ -228,21 +228,21 @@ PrefsDiskImagePage::OnHelp(UINT wParam, LONG lParam)
 LONG
 PrefsDiskImagePage::OnCommandHelp(UINT, LONG)
 {
-	WinHelp(HELP_TOPIC_PREFS_DISK_IMAGE, HELP_CONTEXT);
-	return 0;		// doesn't matter
+    WinHelp(HELP_TOPIC_PREFS_DISK_IMAGE, HELP_CONTEXT);
+    return 0;       // doesn't matter
 }
 
 
 /*
  * ===========================================================================
- *		PrefsCompressionPage
+ *      PrefsCompressionPage
  * ===========================================================================
  */
 
 BEGIN_MESSAGE_MAP(PrefsCompressionPage, CPropertyPage)
-	ON_CONTROL_RANGE(BN_CLICKED, IDC_DEFC_UNCOMPRESSED, IDC_DEFC_BZIP2, OnChangeRange)
-	ON_MESSAGE(WM_HELP, OnHelp)
-	ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
+    ON_CONTROL_RANGE(BN_CLICKED, IDC_DEFC_UNCOMPRESSED, IDC_DEFC_BZIP2, OnChangeRange)
+    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
 
@@ -252,45 +252,45 @@ END_MESSAGE_MAP()
 BOOL
 PrefsCompressionPage::OnInitDialog(void)
 {
-	if (!NufxArchive::IsCompressionSupported(kNuThreadFormatHuffmanSQ)) {
-		DisableWnd(IDC_DEFC_SQUEEZE);
-		if (fCompressType == kNuThreadFormatHuffmanSQ)
-			fCompressType = kNuThreadFormatUncompressed;
-	}
-	if (!NufxArchive::IsCompressionSupported(kNuThreadFormatLZW1)) {
-		DisableWnd(IDC_DEFC_LZW1);
-		if (fCompressType == kNuThreadFormatLZW1)
-			fCompressType = kNuThreadFormatUncompressed;
-	}
-	if (!NufxArchive::IsCompressionSupported(kNuThreadFormatLZW2)) {
-		DisableWnd(IDC_DEFC_LZW2);
-		if (fCompressType == kNuThreadFormatLZW2) {
-			fCompressType = kNuThreadFormatUncompressed;
-		}
-	}
-	if (!NufxArchive::IsCompressionSupported(kNuThreadFormatLZC12)) {
-		DisableWnd(IDC_DEFC_LZC12);
-		if (fCompressType == kNuThreadFormatLZC12)
-			fCompressType = kNuThreadFormatUncompressed;
-	}
-	if (!NufxArchive::IsCompressionSupported(kNuThreadFormatLZC16)) {
-		DisableWnd(IDC_DEFC_LZC16);
-		if (fCompressType == kNuThreadFormatLZC16)
-			fCompressType = kNuThreadFormatUncompressed;
-	}
-	if (!NufxArchive::IsCompressionSupported(kNuThreadFormatDeflate)) {
-		DisableWnd(IDC_DEFC_DEFLATE);
-		if (fCompressType == kNuThreadFormatDeflate)
-			fCompressType = kNuThreadFormatUncompressed;
-	}
-	if (!NufxArchive::IsCompressionSupported(kNuThreadFormatBzip2)) {
-		DisableWnd(IDC_DEFC_BZIP2);
-		if (fCompressType == kNuThreadFormatBzip2)
-			fCompressType = kNuThreadFormatUncompressed;
-	}
+    if (!NufxArchive::IsCompressionSupported(kNuThreadFormatHuffmanSQ)) {
+        DisableWnd(IDC_DEFC_SQUEEZE);
+        if (fCompressType == kNuThreadFormatHuffmanSQ)
+            fCompressType = kNuThreadFormatUncompressed;
+    }
+    if (!NufxArchive::IsCompressionSupported(kNuThreadFormatLZW1)) {
+        DisableWnd(IDC_DEFC_LZW1);
+        if (fCompressType == kNuThreadFormatLZW1)
+            fCompressType = kNuThreadFormatUncompressed;
+    }
+    if (!NufxArchive::IsCompressionSupported(kNuThreadFormatLZW2)) {
+        DisableWnd(IDC_DEFC_LZW2);
+        if (fCompressType == kNuThreadFormatLZW2) {
+            fCompressType = kNuThreadFormatUncompressed;
+        }
+    }
+    if (!NufxArchive::IsCompressionSupported(kNuThreadFormatLZC12)) {
+        DisableWnd(IDC_DEFC_LZC12);
+        if (fCompressType == kNuThreadFormatLZC12)
+            fCompressType = kNuThreadFormatUncompressed;
+    }
+    if (!NufxArchive::IsCompressionSupported(kNuThreadFormatLZC16)) {
+        DisableWnd(IDC_DEFC_LZC16);
+        if (fCompressType == kNuThreadFormatLZC16)
+            fCompressType = kNuThreadFormatUncompressed;
+    }
+    if (!NufxArchive::IsCompressionSupported(kNuThreadFormatDeflate)) {
+        DisableWnd(IDC_DEFC_DEFLATE);
+        if (fCompressType == kNuThreadFormatDeflate)
+            fCompressType = kNuThreadFormatUncompressed;
+    }
+    if (!NufxArchive::IsCompressionSupported(kNuThreadFormatBzip2)) {
+        DisableWnd(IDC_DEFC_BZIP2);
+        if (fCompressType == kNuThreadFormatBzip2)
+            fCompressType = kNuThreadFormatUncompressed;
+    }
 
-	/* now invoke DoDataExchange with our modified fCompressType */
-	return CPropertyPage::OnInitDialog();
+    /* now invoke DoDataExchange with our modified fCompressType */
+    return CPropertyPage::OnInitDialog();
 }
 
 /*
@@ -299,13 +299,13 @@ PrefsCompressionPage::OnInitDialog(void)
 void
 PrefsCompressionPage::DisableWnd(int id)
 {
-	CWnd* pWnd;
-	pWnd = GetDlgItem(id);
-	if (pWnd == nil) {
-		ASSERT(false);
-		return;
-	}
-	pWnd->EnableWindow(FALSE);
+    CWnd* pWnd;
+    pWnd = GetDlgItem(id);
+    if (pWnd == nil) {
+        ASSERT(false);
+        return;
+    }
+    pWnd->EnableWindow(FALSE);
 }
 
 /*
@@ -314,7 +314,7 @@ PrefsCompressionPage::DisableWnd(int id)
 void
 PrefsCompressionPage::OnChangeRange(UINT nID)
 {
-	SetModified(TRUE);
+    SetModified(TRUE);
 }
 
 /*
@@ -326,9 +326,9 @@ PrefsCompressionPage::OnChangeRange(UINT nID)
 void
 PrefsCompressionPage::DoDataExchange(CDataExchange* pDX)
 {
-	//WMSG0("OnInit comp!\n");
-	fReady = true;
-	DDX_Radio(pDX, IDC_DEFC_UNCOMPRESSED, fCompressType);
+    //WMSG0("OnInit comp!\n");
+    fReady = true;
+    DDX_Radio(pDX, IDC_DEFC_UNCOMPRESSED, fCompressType);
 }
 
 /*
@@ -337,8 +337,8 @@ PrefsCompressionPage::DoDataExchange(CDataExchange* pDX)
 LONG
 PrefsCompressionPage::OnHelp(UINT wParam, LONG lParam)
 {
-	WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }
 /*
  * User pressed the PropertySheet "Help" button.
@@ -346,24 +346,24 @@ PrefsCompressionPage::OnHelp(UINT wParam, LONG lParam)
 LONG
 PrefsCompressionPage::OnCommandHelp(UINT, LONG)
 {
-	WinHelp(HELP_TOPIC_PREFS_COMPRESSION, HELP_CONTEXT);
-	return 0;		// doesn't matter
+    WinHelp(HELP_TOPIC_PREFS_COMPRESSION, HELP_CONTEXT);
+    return 0;       // doesn't matter
 }
 
 
 /*
  * ===========================================================================
- *		PrefsFviewPage
+ *      PrefsFviewPage
  * ===========================================================================
  */
 
 BEGIN_MESSAGE_MAP(PrefsFviewPage, CPropertyPage)
-	ON_CONTROL_RANGE(BN_CLICKED, IDC_PVIEW_NOWRAP_TEXT, IDC_PVIEW_HIRES_BW, OnChangeRange)
-	ON_CONTROL_RANGE(BN_CLICKED, IDC_PVIEW_HITEXT, IDC_PVIEW_TEXT8, OnChangeRange)
-	ON_EN_CHANGE(IDC_PVIEW_SIZE_EDIT, OnChange)
-	ON_CBN_SELCHANGE(IDC_PVIEW_DHR_CONV_COMBO, OnChange)
-	ON_MESSAGE(WM_HELP, OnHelp)
-	ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
+    ON_CONTROL_RANGE(BN_CLICKED, IDC_PVIEW_NOWRAP_TEXT, IDC_PVIEW_HIRES_BW, OnChangeRange)
+    ON_CONTROL_RANGE(BN_CLICKED, IDC_PVIEW_HITEXT, IDC_PVIEW_TEXT8, OnChangeRange)
+    ON_EN_CHANGE(IDC_PVIEW_SIZE_EDIT, OnChange)
+    ON_CBN_SELCHANGE(IDC_PVIEW_DHR_CONV_COMBO, OnChange)
+    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
 /*
@@ -372,22 +372,22 @@ END_MESSAGE_MAP()
 BOOL
 PrefsFviewPage::OnInitDialog(void)
 {
-	//WMSG0("OnInit!\n");
-	CSpinButtonCtrl* pSpin;
+    //WMSG0("OnInit!\n");
+    CSpinButtonCtrl* pSpin;
 
-	//WMSG0("Configuring spin\n");
+    //WMSG0("Configuring spin\n");
 
-	pSpin = (CSpinButtonCtrl*) GetDlgItem(IDC_PVIEW_SIZE_SPIN);
-	ASSERT(pSpin != nil);
+    pSpin = (CSpinButtonCtrl*) GetDlgItem(IDC_PVIEW_SIZE_SPIN);
+    ASSERT(pSpin != nil);
 
-	UDACCEL uda;
-	uda.nSec = 0;
-	uda.nInc = 64;
-	pSpin->SetRange(1, 32767);
-	pSpin->SetAccel(1, &uda);
-	WMSG0("OnInit done!\n");
+    UDACCEL uda;
+    uda.nSec = 0;
+    uda.nInc = 64;
+    pSpin->SetRange(1, 32767);
+    pSpin->SetAccel(1, &uda);
+    WMSG0("OnInit done!\n");
 
-	return CPropertyPage::OnInitDialog();
+    return CPropertyPage::OnInitDialog();
 }
 
 /*
@@ -396,14 +396,14 @@ PrefsFviewPage::OnInitDialog(void)
 void
 PrefsFviewPage::OnChange(void)
 {
-	WMSG0("OnChange\n");
-	SetModified(TRUE);
+    WMSG0("OnChange\n");
+    SetModified(TRUE);
 }
 void
 PrefsFviewPage::OnChangeRange(UINT nID)
 {
-	WMSG1("OnChangeRange id=%d\n", nID);
-	SetModified(TRUE);
+    WMSG1("OnChangeRange id=%d\n", nID);
+    SetModified(TRUE);
 }
 
 
@@ -413,40 +413,40 @@ PrefsFviewPage::OnChangeRange(UINT nID)
 void
 PrefsFviewPage::DoDataExchange(CDataExchange* pDX)
 {
-	fReady = true;
-	//DDX_Check(pDX, IDC_PVIEW_EOL_RAW, fEOLConvRaw);
-	DDX_Check(pDX, IDC_PVIEW_NOWRAP_TEXT, fNoWrapText);
-	DDX_Check(pDX, IDC_PVIEW_BOLD_HEXDUMP, fHighlightHexDump);
-	DDX_Check(pDX, IDC_PVIEW_BOLD_BASIC, fHighlightBASIC);
-	DDX_Check(pDX, IDC_PVIEW_DISASM_ONEBYTEBRKCOP, fConvDisasmOneByteBrkCop);
-	DDX_Check(pDX, IDC_PVIEW_HIRES_BW, fConvHiResBlackWhite);
-	DDX_CBIndex(pDX, IDC_PVIEW_DHR_CONV_COMBO, fConvDHRAlgorithm);
+    fReady = true;
+    //DDX_Check(pDX, IDC_PVIEW_EOL_RAW, fEOLConvRaw);
+    DDX_Check(pDX, IDC_PVIEW_NOWRAP_TEXT, fNoWrapText);
+    DDX_Check(pDX, IDC_PVIEW_BOLD_HEXDUMP, fHighlightHexDump);
+    DDX_Check(pDX, IDC_PVIEW_BOLD_BASIC, fHighlightBASIC);
+    DDX_Check(pDX, IDC_PVIEW_DISASM_ONEBYTEBRKCOP, fConvDisasmOneByteBrkCop);
+    DDX_Check(pDX, IDC_PVIEW_HIRES_BW, fConvHiResBlackWhite);
+    DDX_CBIndex(pDX, IDC_PVIEW_DHR_CONV_COMBO, fConvDHRAlgorithm);
 
-	DDX_Check(pDX, IDC_PVIEW_HITEXT, fConvTextEOL_HA);
-	DDX_Check(pDX, IDC_PVIEW_CPMTEXT, fConvCPMText);
-	DDX_Check(pDX, IDC_PVIEW_PASCALTEXT, fConvPascalText);
-	DDX_Check(pDX, IDC_PVIEW_PASCALCODE, fConvPascalCode);
-	DDX_Check(pDX, IDC_PVIEW_APPLESOFT, fConvApplesoft);
-	DDX_Check(pDX, IDC_PVIEW_INTEGER, fConvInteger);
-	DDX_Check(pDX, IDC_PVIEW_GWP, fConvGWP);
-	DDX_Check(pDX, IDC_PVIEW_TEXT8, fConvText8);
-	DDX_Check(pDX, IDC_PVIEW_AWP, fConvAWP);
-	DDX_Check(pDX, IDC_PVIEW_ADB, fConvADB);
-	DDX_Check(pDX, IDC_PVIEW_ASP, fConvASP);
-	DDX_Check(pDX, IDC_PVIEW_SCASSEM, fConvSCAssem);
-	DDX_Check(pDX, IDC_PVIEW_DISASM, fConvDisasm);
+    DDX_Check(pDX, IDC_PVIEW_HITEXT, fConvTextEOL_HA);
+    DDX_Check(pDX, IDC_PVIEW_CPMTEXT, fConvCPMText);
+    DDX_Check(pDX, IDC_PVIEW_PASCALTEXT, fConvPascalText);
+    DDX_Check(pDX, IDC_PVIEW_PASCALCODE, fConvPascalCode);
+    DDX_Check(pDX, IDC_PVIEW_APPLESOFT, fConvApplesoft);
+    DDX_Check(pDX, IDC_PVIEW_INTEGER, fConvInteger);
+    DDX_Check(pDX, IDC_PVIEW_GWP, fConvGWP);
+    DDX_Check(pDX, IDC_PVIEW_TEXT8, fConvText8);
+    DDX_Check(pDX, IDC_PVIEW_AWP, fConvAWP);
+    DDX_Check(pDX, IDC_PVIEW_ADB, fConvADB);
+    DDX_Check(pDX, IDC_PVIEW_ASP, fConvASP);
+    DDX_Check(pDX, IDC_PVIEW_SCASSEM, fConvSCAssem);
+    DDX_Check(pDX, IDC_PVIEW_DISASM, fConvDisasm);
 
-	DDX_Check(pDX, IDC_PVIEW_HIRES, fConvHiRes);
-	DDX_Check(pDX, IDC_PVIEW_DHR, fConvDHR);
-	DDX_Check(pDX, IDC_PVIEW_SHR, fConvSHR);
-	DDX_Check(pDX, IDC_PVIEW_PRINTSHOP, fConvPrintShop);
-	DDX_Check(pDX, IDC_PVIEW_MACPAINT, fConvMacPaint);
-	DDX_Check(pDX, IDC_PVIEW_PRODOSFOLDER, fConvProDOSFolder);
-	DDX_Check(pDX, IDC_PVIEW_RESOURCES, fConvResources);
-	DDX_Check(pDX, IDC_PVIEW_RELAX_GFX, fRelaxGfxTypeCheck);
+    DDX_Check(pDX, IDC_PVIEW_HIRES, fConvHiRes);
+    DDX_Check(pDX, IDC_PVIEW_DHR, fConvDHR);
+    DDX_Check(pDX, IDC_PVIEW_SHR, fConvSHR);
+    DDX_Check(pDX, IDC_PVIEW_PRINTSHOP, fConvPrintShop);
+    DDX_Check(pDX, IDC_PVIEW_MACPAINT, fConvMacPaint);
+    DDX_Check(pDX, IDC_PVIEW_PRODOSFOLDER, fConvProDOSFolder);
+    DDX_Check(pDX, IDC_PVIEW_RESOURCES, fConvResources);
+    DDX_Check(pDX, IDC_PVIEW_RELAX_GFX, fRelaxGfxTypeCheck);
 
-	DDX_Text(pDX, IDC_PVIEW_SIZE_EDIT, fMaxViewFileSizeKB);
-	DDV_MinMaxUInt(pDX, fMaxViewFileSizeKB, 1, 32767);
+    DDX_Text(pDX, IDC_PVIEW_SIZE_EDIT, fMaxViewFileSizeKB);
+    DDV_MinMaxUInt(pDX, fMaxViewFileSizeKB, 1, 32767);
 }
 
 /*
@@ -455,8 +455,8 @@ PrefsFviewPage::DoDataExchange(CDataExchange* pDX)
 LONG
 PrefsFviewPage::OnHelp(UINT wParam, LONG lParam)
 {
-	WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }
 /*
  * User pressed the PropertySheet "Help" button.
@@ -464,23 +464,23 @@ PrefsFviewPage::OnHelp(UINT wParam, LONG lParam)
 LONG
 PrefsFviewPage::OnCommandHelp(UINT, LONG)
 {
-	WinHelp(HELP_TOPIC_PREFS_FVIEW, HELP_CONTEXT);
-	return 0;		// doesn't matter
+    WinHelp(HELP_TOPIC_PREFS_FVIEW, HELP_CONTEXT);
+    return 0;       // doesn't matter
 }
 
 
 /*
  * ===========================================================================
- *		PrefsFilesPage
+ *      PrefsFilesPage
  * ===========================================================================
  */
 
 BEGIN_MESSAGE_MAP(PrefsFilesPage, CPropertyPage)
-	ON_EN_CHANGE(IDC_PREF_TEMP_FOLDER, OnChange)
-	ON_EN_CHANGE(IDC_PREF_EXTVIEWER_EXTS, OnChange)
-	ON_BN_CLICKED(IDC_PREF_CHOOSE_TEMP_FOLDER, OnChooseFolder)
-	ON_MESSAGE(WM_HELP, OnHelp)
-	ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
+    ON_EN_CHANGE(IDC_PREF_TEMP_FOLDER, OnChange)
+    ON_EN_CHANGE(IDC_PREF_EXTVIEWER_EXTS, OnChange)
+    ON_BN_CLICKED(IDC_PREF_CHOOSE_TEMP_FOLDER, OnChooseFolder)
+    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
 
@@ -490,10 +490,10 @@ END_MESSAGE_MAP()
 BOOL
 PrefsFilesPage::OnInitDialog(void)
 {
-	fChooseFolderButton.ReplaceDlgCtrl(this, IDC_PREF_CHOOSE_TEMP_FOLDER);
-	fChooseFolderButton.SetBitmapID(IDB_CHOOSE_FOLDER);
+    fChooseFolderButton.ReplaceDlgCtrl(this, IDC_PREF_CHOOSE_TEMP_FOLDER);
+    fChooseFolderButton.SetBitmapID(IDB_CHOOSE_FOLDER);
 
-	return CPropertyPage::OnInitDialog();
+    return CPropertyPage::OnInitDialog();
 }
 
 /*
@@ -502,7 +502,7 @@ PrefsFilesPage::OnInitDialog(void)
 void
 PrefsFilesPage::OnChange(void)
 {
-	SetModified(TRUE);
+    SetModified(TRUE);
 }
 
 /*
@@ -511,22 +511,22 @@ PrefsFilesPage::OnChange(void)
 void
 PrefsFilesPage::DoDataExchange(CDataExchange* pDX)
 {
-	fReady = true;
-	DDX_Text(pDX, IDC_PREF_TEMP_FOLDER, fTempPath);
-	DDX_Text(pDX, IDC_PREF_EXTVIEWER_EXTS, fExtViewerExts);
+    fReady = true;
+    DDX_Text(pDX, IDC_PREF_TEMP_FOLDER, fTempPath);
+    DDX_Text(pDX, IDC_PREF_EXTVIEWER_EXTS, fExtViewerExts);
 
-	/* validate the path field */
-	if (pDX->m_bSaveAndValidate) {
-		if (fTempPath.IsEmpty()) {
-			CString appName;
-			appName.LoadString(IDS_MB_APP_NAME);
-			MessageBox("You must specify a path for temp files",
-				appName, MB_OK);
-			pDX->Fail();
-		}
+    /* validate the path field */
+    if (pDX->m_bSaveAndValidate) {
+        if (fTempPath.IsEmpty()) {
+            CString appName;
+            appName.LoadString(IDS_MB_APP_NAME);
+            MessageBox("You must specify a path for temp files",
+                appName, MB_OK);
+            pDX->Fail();
+        }
 
-		// we *could* try to validate the path here...
-	}
+        // we *could* try to validate the path here...
+    }
 }
 
 /*
@@ -535,25 +535,25 @@ PrefsFilesPage::DoDataExchange(CDataExchange* pDX)
 void
 PrefsFilesPage::OnChooseFolder(void)
 {
-	ChooseDirDialog chooseDir(this);
-	CWnd* pEditWnd;
-	CString editPath;
+    ChooseDirDialog chooseDir(this);
+    CWnd* pEditWnd;
+    CString editPath;
 
-	/* get the currently-showing text from the edit field */
-	pEditWnd = GetDlgItem(IDC_PREF_TEMP_FOLDER);
-	ASSERT(pEditWnd != nil);
-	pEditWnd->GetWindowText(editPath);
+    /* get the currently-showing text from the edit field */
+    pEditWnd = GetDlgItem(IDC_PREF_TEMP_FOLDER);
+    ASSERT(pEditWnd != nil);
+    pEditWnd->GetWindowText(editPath);
 
-	chooseDir.SetPathName(editPath);
-	if (chooseDir.DoModal() == IDOK) {
-		const char* ccp = chooseDir.GetPathName();
-		WMSG1("New temp path chosen = '%s'\n", ccp);
+    chooseDir.SetPathName(editPath);
+    if (chooseDir.DoModal() == IDOK) {
+        const char* ccp = chooseDir.GetPathName();
+        WMSG1("New temp path chosen = '%s'\n", ccp);
 
-		pEditWnd->SetWindowText(ccp);
+        pEditWnd->SetWindowText(ccp);
 
-		// activate the "apply" button
-		OnChange();
-	}
+        // activate the "apply" button
+        OnChange();
+    }
 }
 
 /*
@@ -562,8 +562,8 @@ PrefsFilesPage::OnChooseFolder(void)
 LONG
 PrefsFilesPage::OnHelp(UINT wParam, LONG lParam)
 {
-	WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }
 /*
  * User pressed the PropertySheet "Help" button.
@@ -571,38 +571,38 @@ PrefsFilesPage::OnHelp(UINT wParam, LONG lParam)
 LONG
 PrefsFilesPage::OnCommandHelp(UINT, LONG)
 {
-	WinHelp(HELP_TOPIC_PREFS_FILES, HELP_CONTEXT);
-	return 0;		// doesn't matter
+    WinHelp(HELP_TOPIC_PREFS_FILES, HELP_CONTEXT);
+    return 0;       // doesn't matter
 }
 
 
 /*
  * ===========================================================================
- *		PrefsSheet
+ *      PrefsSheet
  * ===========================================================================
  */
 
 BEGIN_MESSAGE_MAP(PrefsSheet, CPropertySheet)
-	ON_WM_NCCREATE()
-	ON_BN_CLICKED(ID_APPLY_NOW, OnApplyNow)
-	ON_COMMAND(ID_HELP, OnIDHelp)
-	ON_MESSAGE(WM_HELP, OnHelp)
+    ON_WM_NCCREATE()
+    ON_BN_CLICKED(ID_APPLY_NOW, OnApplyNow)
+    ON_COMMAND(ID_HELP, OnIDHelp)
+    ON_MESSAGE(WM_HELP, OnHelp)
 END_MESSAGE_MAP()
 
 /*
  * Construct the preferences dialog from the individual pages.
  */
 PrefsSheet::PrefsSheet(CWnd* pParentWnd) :
-	CPropertySheet("Preferences", pParentWnd)
+    CPropertySheet("Preferences", pParentWnd)
 {
-	AddPage(&fGeneralPage);
-	AddPage(&fDiskImagePage);
-	AddPage(&fFviewPage);
-	AddPage(&fCompressionPage);
-	AddPage(&fFilesPage);
+    AddPage(&fGeneralPage);
+    AddPage(&fDiskImagePage);
+    AddPage(&fFviewPage);
+    AddPage(&fCompressionPage);
+    AddPage(&fFilesPage);
 
-	/* this happens automatically with appropriate ID_HELP handlers */
-	//m_psh.dwFlags |= PSH_HASHELP;
+    /* this happens automatically with appropriate ID_HELP handlers */
+    //m_psh.dwFlags |= PSH_HASHELP;
 }
 
 /*
@@ -614,10 +614,10 @@ PrefsSheet::PrefsSheet(CWnd* pParentWnd) :
 BOOL
 PrefsSheet::OnNcCreate(LPCREATESTRUCT cs)
 {
-	//WMSG0("PrefsSheet OnNcCreate\n");
-	BOOL val = CPropertySheet::OnNcCreate(cs);
-	ModifyStyleEx(0, WS_EX_CONTEXTHELP);
-	return val;
+    //WMSG0("PrefsSheet OnNcCreate\n");
+    BOOL val = CPropertySheet::OnNcCreate(cs);
+    ModifyStyleEx(0, WS_EX_CONTEXTHELP);
+    return val;
 }
 
 /*
@@ -631,49 +631,49 @@ PrefsSheet::OnNcCreate(LPCREATESTRUCT cs)
 void
 PrefsSheet::OnApplyNow(void)
 {
-	BOOL result;
+    BOOL result;
 
-	if (fGeneralPage.fReady) {
-		//WMSG0("Apply to general?\n");
-		result = fGeneralPage.UpdateData(TRUE);
-		if (!result)
-			return;
-	}
-	if (fDiskImagePage.fReady) {
-		//WMSG0("Apply to disk images?\n");
-		result = fDiskImagePage.UpdateData(TRUE);
-		if (!result)
-			return;
-	}
-	if (fCompressionPage.fReady) {
-		//WMSG0("Apply to compression?\n");
-		result = fCompressionPage.UpdateData(TRUE);
-		if (!result)
-			return;
-	}
-	if (fFviewPage.fReady) {
-		//WMSG0("Apply to fview?\n");
-		result = fFviewPage.UpdateData(TRUE);
-		if (!result)
-			return;
-	}
+    if (fGeneralPage.fReady) {
+        //WMSG0("Apply to general?\n");
+        result = fGeneralPage.UpdateData(TRUE);
+        if (!result)
+            return;
+    }
+    if (fDiskImagePage.fReady) {
+        //WMSG0("Apply to disk images?\n");
+        result = fDiskImagePage.UpdateData(TRUE);
+        if (!result)
+            return;
+    }
+    if (fCompressionPage.fReady) {
+        //WMSG0("Apply to compression?\n");
+        result = fCompressionPage.UpdateData(TRUE);
+        if (!result)
+            return;
+    }
+    if (fFviewPage.fReady) {
+        //WMSG0("Apply to fview?\n");
+        result = fFviewPage.UpdateData(TRUE);
+        if (!result)
+            return;
+    }
 
-	if (fFilesPage.fReady) {
-		//WMSG0("Apply to fview?\n");
-		result = fFilesPage.UpdateData(TRUE);
-		if (!result)
-			return;
-	}
+    if (fFilesPage.fReady) {
+        //WMSG0("Apply to fview?\n");
+        result = fFilesPage.UpdateData(TRUE);
+        if (!result)
+            return;
+    }
 
-	/* reset all to "unmodified" state */
-	WMSG0("All 'applies' were successful\n");
-	((MainWindow*) AfxGetMainWnd())->ApplyNow(this);
-	fGeneralPage.SetModified(FALSE);
-	fGeneralPage.fDefaultsPushed = false;
-	fDiskImagePage.SetModified(FALSE);
-	fCompressionPage.SetModified(FALSE);
-	fFviewPage.SetModified(FALSE);
-	fFilesPage.SetModified(FALSE);
+    /* reset all to "unmodified" state */
+    WMSG0("All 'applies' were successful\n");
+    ((MainWindow*) AfxGetMainWnd())->ApplyNow(this);
+    fGeneralPage.SetModified(FALSE);
+    fGeneralPage.fDefaultsPushed = false;
+    fDiskImagePage.SetModified(FALSE);
+    fCompressionPage.SetModified(FALSE);
+    fFviewPage.SetModified(FALSE);
+    fFilesPage.SetModified(FALSE);
 }
 
 /*
@@ -692,7 +692,7 @@ PrefsSheet::OnApplyNow(void)
 void
 PrefsSheet::OnIDHelp(void)
 {
-	WMSG0("PrefsSheet OnIDHelp\n");
+    WMSG0("PrefsSheet OnIDHelp\n");
     SendMessage(WM_COMMANDHELP);
 }
 
@@ -703,11 +703,11 @@ PrefsSheet::OnIDHelp(void)
 LONG
 PrefsSheet::OnHelp(UINT wParam, LONG lParam)
 {
-	HELPINFO* lpHelpInfo = (HELPINFO*) lParam;
+    HELPINFO* lpHelpInfo = (HELPINFO*) lParam;
 
-	WMSG0("PrefsSheet OnHelp\n");
-	DWORD context = lpHelpInfo->iCtrlId;
-	WinHelp(context, HELP_CONTEXTPOPUP);
+    WMSG0("PrefsSheet OnHelp\n");
+    DWORD context = lpHelpInfo->iCtrlId;
+    WinHelp(context, HELP_CONTEXTPOPUP);
 
-	return TRUE;	// yes, we handled it
+    return TRUE;    // yes, we handled it
 }

@@ -78,7 +78,7 @@ typedef enum DIError {
     kDIErrWriteFailed           = -32,
     kDIErrDataUnderrun          = -33,  // tried to read off end of the image
     kDIErrDataOverrun           = -34,  // tried to write off end of the image
-    kDIErrGenericIO				= -35,  // generic I/O error
+    kDIErrGenericIO             = -35,  // generic I/O error
 
     kDIErrOddLength             = -40,  // image size not multiple of sectors
     kDIErrUnrecognizedFileFmt   = -41,  // file format just not recognized
@@ -230,7 +230,7 @@ private:
     static ASPI*    fpASPI;
 };
 
-extern bool gAllowWritePhys0;	// ugh -- see Win32BlockIO.cpp
+extern bool gAllowWritePhys0;   // ugh -- see Win32BlockIO.cpp
 
 
 /*
@@ -648,10 +648,10 @@ public:
             return kMacHighASCII[uch - 0x80];
     }
 
-	// Allow write access to physical disk 0.  This is usually the boot disk,
-	// but with some BIOS the first IDE drive is always physical 0 even if
-	// you're booting from SATA.  This only has meaning under Win32.
-	static void SetAllowWritePhys0(bool val);
+    // Allow write access to physical disk 0.  This is usually the boot disk,
+    // but with some BIOS the first IDE drive is always physical 0 even if
+    // you're booting from SATA.  This only has meaning under Win32.
+    static void SetAllowWritePhys0(bool val);
 
     /*
      * Get string constants for enumerated values.
@@ -1257,8 +1257,8 @@ public:
      * compare function can be overridden for systems like HFS, where "case
      * insensitive" has a different meaning because of the native
      * character set.
-	 *
-	 * The A2File* returned should not be deleted.
+     *
+     * The A2File* returned should not be deleted.
      */
     typedef int (*StringCompareFunc)(const char* str1, const char* str2);
     A2File* GetFileByName(const char* pathName, StringCompareFunc func = NULL);

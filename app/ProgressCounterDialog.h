@@ -17,54 +17,54 @@
  */
 class ProgressCounterDialog : public CancelDialog {
 public:
-	BOOL Create(const CString& descr, CWnd* pParentWnd = NULL) {
-		fpParentWnd = pParentWnd;
-		fDescr = descr;
-		fCountFormat = "%d";
-		fCancel = false;
+    BOOL Create(const CString& descr, CWnd* pParentWnd = NULL) {
+        fpParentWnd = pParentWnd;
+        fDescr = descr;
+        fCountFormat = "%d";
+        fCancel = false;
 
-		/* disable the parent window before we're created */
-		if (pParentWnd != NULL)
-			pParentWnd->EnableWindow(FALSE);
-		return CancelDialog::Create(&fCancel, IDD_PROGRESS_COUNTER,
-					pParentWnd);
-	}
-	/* enable the parent window before we're destroyed */
-	virtual BOOL DestroyWindow(void) {
-		if (fpParentWnd != nil)
-			fpParentWnd->EnableWindow(TRUE);
-		return ModelessDialog::DestroyWindow();
-	}
+        /* disable the parent window before we're created */
+        if (pParentWnd != NULL)
+            pParentWnd->EnableWindow(FALSE);
+        return CancelDialog::Create(&fCancel, IDD_PROGRESS_COUNTER,
+                    pParentWnd);
+    }
+    /* enable the parent window before we're destroyed */
+    virtual BOOL DestroyWindow(void) {
+        if (fpParentWnd != nil)
+            fpParentWnd->EnableWindow(TRUE);
+        return ModelessDialog::DestroyWindow();
+    }
 
-	/* set a format string, e.g. "Processing file %d" */
-	void SetCounterFormat(const CString& fmt) { fCountFormat = fmt; }
+    /* set a format string, e.g. "Processing file %d" */
+    void SetCounterFormat(const CString& fmt) { fCountFormat = fmt; }
 
-	/* set the current count */
-	void SetCount(int count) {
-		CString msg;
-		msg.Format(fCountFormat, count);
-		GetDlgItem(IDC_PROGRESS_COUNTER_COUNT)->SetWindowText(msg);
-	}
+    /* set the current count */
+    void SetCount(int count) {
+        CString msg;
+        msg.Format(fCountFormat, count);
+        GetDlgItem(IDC_PROGRESS_COUNTER_COUNT)->SetWindowText(msg);
+    }
 
-	/* get the status of the "cancelled" flag */
-	bool GetCancel(void) const { return fCancel; }
+    /* get the status of the "cancelled" flag */
+    bool GetCancel(void) const { return fCancel; }
 
 private:
-	BOOL OnInitDialog(void) {
-		CancelDialog::OnInitDialog();
+    BOOL OnInitDialog(void) {
+        CancelDialog::OnInitDialog();
 
-		CWnd* pWnd = GetDlgItem(IDC_PROGRESS_COUNTER_DESC);
-		pWnd->SetWindowText(fDescr);
-		pWnd = GetDlgItem(IDC_PROGRESS_COUNTER_COUNT);
-		pWnd->SetWindowText("");
-		pWnd->SetFocus();			// get focus off of the Cancel button
-		return FALSE;				// accept our focus
-	}
+        CWnd* pWnd = GetDlgItem(IDC_PROGRESS_COUNTER_DESC);
+        pWnd->SetWindowText(fDescr);
+        pWnd = GetDlgItem(IDC_PROGRESS_COUNTER_COUNT);
+        pWnd->SetWindowText("");
+        pWnd->SetFocus();           // get focus off of the Cancel button
+        return FALSE;               // accept our focus
+    }
 
-	CWnd*			fpParentWnd;
-	CString			fDescr;
-	CString			fCountFormat;
-	bool			fCancel;
+    CWnd*           fpParentWnd;
+    CString         fDescr;
+    CString         fCountFormat;
+    bool            fCancel;
 };
 
 #endif /*__PROGRESSCOUNTERDIALOG__*/

@@ -16,30 +16,30 @@
  */
 class EditAssocDialog : public CDialog {
 public:
-	EditAssocDialog(CWnd* pParentWnd = nil) :
-	  CDialog(IDD_ASSOCIATIONS, pParentWnd),
-	  fOurAssociations(nil)
-		{}
-	virtual ~EditAssocDialog() {
-		delete[] fOurAssociations;
-	}
+    EditAssocDialog(CWnd* pParentWnd = nil) :
+      CDialog(IDD_ASSOCIATIONS, pParentWnd),
+      fOurAssociations(nil)
+        {}
+    virtual ~EditAssocDialog() {
+        delete[] fOurAssociations;
+    }
 
-	// Which associations are ours.  This should be left uninitialized;
-	// Setup() takes care of that.  The caller may "steal" the array
-	// afterward, freeing it with delete[].
-	bool*	fOurAssociations;
+    // Which associations are ours.  This should be left uninitialized;
+    // Setup() takes care of that.  The caller may "steal" the array
+    // afterward, freeing it with delete[].
+    bool*   fOurAssociations;
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void);
 
-	void Setup(bool loadAssoc);
+    void Setup(bool loadAssoc);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__EDITASSOCDIALOG__*/

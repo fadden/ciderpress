@@ -10,7 +10,7 @@
 #include "MyEdit.h"
 
 //BEGIN_MESSAGE_MAP(MyBitmapButton, CButton)
-//	ON_WM_SYSCOLORCHANGE()
+//  ON_WM_SYSCOLORCHANGE()
 //END_MESSAGE_MAP()
 
 /*
@@ -21,14 +21,14 @@
 BOOL
 MyEdit::ReplaceDlgCtrl(CDialog* pDialog, int editID)
 {
-	CWnd* pWnd = pDialog->GetDlgItem(editID);
-	if (pWnd == nil)
-		return FALSE;
+    CWnd* pWnd = pDialog->GetDlgItem(editID);
+    if (pWnd == nil)
+        return FALSE;
 
-	/* latch on to their window handle */
-	Attach(pWnd->m_hWnd);
+    /* latch on to their window handle */
+    Attach(pWnd->m_hWnd);
 
-	return TRUE;
+    return TRUE;
 }
 
 /*
@@ -37,9 +37,9 @@ MyEdit::ReplaceDlgCtrl(CDialog* pDialog, int editID)
 void
 MyEdit::SetProperties(int props)
 {
-	fCapsOnly = (props & kCapsOnly) != 0;
-	fHexOnly = (props & kHexOnly) != 0;
-	fNoWhiteSpace = (props & kNoWhiteSpace) != 0;
+    fCapsOnly = (props & kCapsOnly) != 0;
+    fHexOnly = (props & kHexOnly) != 0;
+    fNoWhiteSpace = (props & kNoWhiteSpace) != 0;
 }
 
 
@@ -49,28 +49,28 @@ MyEdit::SetProperties(int props)
 BOOL
 MyEdit::PreTranslateMessage(MSG* pMsg)
 {
-	if (pMsg->message == WM_CHAR) {
-		if (fCapsOnly)
-			pMsg->wParam = toupper(pMsg->wParam);
-		if (fNoWhiteSpace) {
-			if (pMsg->wParam == ' ' || pMsg->wParam == '\t')
-				return TRUE;		// we handled it
-		}
-		if (fHexOnly) {
-			if ((pMsg->wParam >= '0' && pMsg->wParam <= '9') ||
-				(pMsg->wParam >= 'a' && pMsg->wParam <= 'f') ||
-				(pMsg->wParam >= 'A' && pMsg->wParam <= 'F'))
-			{
-				/* good, keep going */
-			} else if ((pMsg->wParam >= 0x20 && pMsg->wParam < 0x7f) ||
-				(pMsg->wParam >= 0xa0 && pMsg->wParam <= 0xff))
-			{
-				/* ignore this character */
-				return TRUE;	// we handled it
-			}
-			/* else it's a backspace or DEL or something */
-		}
-	}
+    if (pMsg->message == WM_CHAR) {
+        if (fCapsOnly)
+            pMsg->wParam = toupper(pMsg->wParam);
+        if (fNoWhiteSpace) {
+            if (pMsg->wParam == ' ' || pMsg->wParam == '\t')
+                return TRUE;        // we handled it
+        }
+        if (fHexOnly) {
+            if ((pMsg->wParam >= '0' && pMsg->wParam <= '9') ||
+                (pMsg->wParam >= 'a' && pMsg->wParam <= 'f') ||
+                (pMsg->wParam >= 'A' && pMsg->wParam <= 'F'))
+            {
+                /* good, keep going */
+            } else if ((pMsg->wParam >= 0x20 && pMsg->wParam < 0x7f) ||
+                (pMsg->wParam >= 0xa0 && pMsg->wParam <= 0xff))
+            {
+                /* ignore this character */
+                return TRUE;    // we handled it
+            }
+            /* else it's a backspace or DEL or something */
+        }
+    }
 
-	return CEdit::PreTranslateMessage(pMsg);
+    return CEdit::PreTranslateMessage(pMsg);
 }

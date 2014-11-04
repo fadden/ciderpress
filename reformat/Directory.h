@@ -16,17 +16,17 @@
  */
 class ReformatDirectory : public ReformatText {
 public:
-	ReformatDirectory(void) {}
-	virtual ~ReformatDirectory(void) {}
+    ReformatDirectory(void) {}
+    virtual ~ReformatDirectory(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	void PrintDirEntries(const unsigned char* srcBuf,
-		long srcLen, bool showDeleted);
+    void PrintDirEntries(const unsigned char* srcBuf,
+        long srcLen, bool showDeleted);
 };
 
 #endif /*__LR_DIRECTORY__*/

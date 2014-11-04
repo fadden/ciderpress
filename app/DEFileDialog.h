@@ -29,32 +29,32 @@ using namespace DiskImgLib;
  */
 class DEFileDialog : public CDialog {
 public:
-	DEFileDialog(CWnd* pParentWnd = NULL) : CDialog(IDD_DEFILE, pParentWnd)
-	{
-		fOpenRsrcFork = false;
-		fName = "";
-	}
-	virtual ~DEFileDialog(void) {}
+    DEFileDialog(CWnd* pParentWnd = NULL) : CDialog(IDD_DEFILE, pParentWnd)
+    {
+        fOpenRsrcFork = false;
+        fName = "";
+    }
+    virtual ~DEFileDialog(void) {}
 
-	void Setup(DiskFS* pDiskFS) {
-		fpDiskFS = pDiskFS;
-	}
+    void Setup(DiskFS* pDiskFS) {
+        fpDiskFS = pDiskFS;
+    }
 
-	CString		fName;
-	int			fOpenRsrcFork;
+    CString     fName;
+    int         fOpenRsrcFork;
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg virtual void OnChange(void);
-	afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg virtual void OnChange(void);
+    afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
 private:
-	DiskFS*		fpDiskFS;
+    DiskFS*     fpDiskFS;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__DEFILEDIALOG__*/

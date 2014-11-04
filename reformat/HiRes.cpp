@@ -12,29 +12,29 @@
 /*
  * Hi-Res image format:
  *
- *	<16-bit load address>  [DOS 3.3 only]
- *	<16-bit file length>  [DOS 3.3 only]
- *	lines, in wonky format
+ *  <16-bit load address>  [DOS 3.3 only]
+ *  <16-bit file length>  [DOS 3.3 only]
+ *  lines, in wonky format
  *
  * Each line is 40 bytes long.  Each byte holds 7 bits that define a color
  * value from 0 to 3, and the high byte determines which set of colors to
  * use.
  *
  * The colors are:
- *	0 black0	4 black1		00 00 / 80 80
- *	1 green		5 orange		2a 55 / aa d5
- *	2 purple	6 blue			55 2a / d5 aa
- *	3 white0	7 white1		7f 7f / ff ff
+ *  0 black0    4 black1        00 00 / 80 80
+ *  1 green     5 orange        2a 55 / aa d5
+ *  2 purple    6 blue          55 2a / d5 aa
+ *  3 white0    7 white1        7f 7f / ff ff
  *
  * There is also a "half-shift" phenomenon for the second set, which appear
  * to be shifted half a pixel to the right.  The stair-step looks like this:
  *
- *	white0
- *	 purple
- *	  white1
- *	   blue
- *	    green
- *	     orange
+ *  white0
+ *   purple
+ *    white1
+ *     blue
+ *      green
+ *       orange
  *
  * white1/blue/orange have a half-pixel shift, while green/orange have a
  * full-pixel shift because the colors don't start until the appropriate
@@ -45,12 +45,12 @@
  * the 1s are.
  *
  * Some transition examples:
- *	purpleBBBorange
- *	purpleBBgreen
- *	  blueBgreen
+ *  purpleBBBorange
+ *  purpleBBgreen
+ *    blueBgreen
  *
- *	orangeWWblue
- *	 greenWWpurple
+ *  orangeWWblue
+ *   greenWWpurple
  *
  * The IIgs monochrome mode is not enabled on the RGB output unless you
  * turn off AN3 by hitting $c05e (it can be re-enabled by hitting $c05f).
@@ -145,23 +145,23 @@ The IIgs tech note #63 uses the following for border colors:
 
 KEGS uses this (rearranged slightly to match the above):
   const int g_dbhires_colors[] = {
-		\* rgb *\
-		0x000,		\* 0x0 black *\
-		0xd03,		\* 0x1 deep red *\
-		0x009,		\* 0x8 dark blue *\
-		0xd0d,		\* 0x9 purple *\
-		0x070,		\* 0x4 dark green *\
-		0x555,		\* 0x5 dark gray *\
-		0x22f,		\* 0xc medium blue *\
-		0x6af,		\* 0xd light blue *\
-		0x852,		\* 0x2 brown *\
-		0xf60,		\* 0x3 orange *\
-		0xaaa,		\* 0xa light gray *\
-		0xf98,		\* 0xb pink *\
-		0x0d0,		\* 0x6 green *\
-		0xff0,		\* 0x7 yellow *\
-		0x0f9,		\* 0xe aquamarine *\
-		0xfff		\* 0xf white *\
+        \* rgb *\
+        0x000,      \* 0x0 black *\
+        0xd03,      \* 0x1 deep red *\
+        0x009,      \* 0x8 dark blue *\
+        0xd0d,      \* 0x9 purple *\
+        0x070,      \* 0x4 dark green *\
+        0x555,      \* 0x5 dark gray *\
+        0x22f,      \* 0xc medium blue *\
+        0x6af,      \* 0xd light blue *\
+        0x852,      \* 0x2 brown *\
+        0xf60,      \* 0x3 orange *\
+        0xaaa,      \* 0xa light gray *\
+        0xf98,      \* 0xb pink *\
+        0x0d0,      \* 0x6 green *\
+        0xff0,      \* 0x7 yellow *\
+        0x0f9,      \* 0xe aquamarine *\
+        0xfff       \* 0xf white *\
 };
 
 The Apple values seem to be good.
@@ -177,46 +177,46 @@ The Apple values seem to be good.
 void
 ReformatHiRes::Examine(ReformatHolder* pHolder)
 {
-	ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
-	long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
-	long fileType = pHolder->GetFileType();
-	long auxType = pHolder->GetAuxType();
-	bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
-	bool relaxed;
+    ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
+    long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    long fileType = pHolder->GetFileType();
+    long auxType = pHolder->GetAuxType();
+    bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
+    bool relaxed;
 
-	relaxed = pHolder->GetOption(ReformatHolder::kOptRelaxGfxTypeCheck) != 0;
+    relaxed = pHolder->GetOption(ReformatHolder::kOptRelaxGfxTypeCheck) != 0;
 
-	if (dosStructure) {
-		if (fileType == kTypeBIN &&
-			(fileLen >= kExpectedSize-8 && fileLen <= kExpectedSize+1) /*&&
-			(auxType == 0x2000 || auxType == 0x4000)*/)
-		{
-			applies = ReformatHolder::kApplicProbably;
-		}
-	} else {
-		if (fileType == kTypeFOT /*&& auxType < 0x4000*/ &&
-			(fileLen >= kExpectedSize-8 && fileLen <= kExpectedSize+1))
-		{
-			applies = ReformatHolder::kApplicProbably;
-		} else if (relaxed && fileType == kTypeBIN &&
-			(fileLen >= kExpectedSize-8 && fileLen <= kExpectedSize+1))
-		{
-			applies = ReformatHolder::kApplicProbably;
-		}
-	}
+    if (dosStructure) {
+        if (fileType == kTypeBIN &&
+            (fileLen >= kExpectedSize-8 && fileLen <= kExpectedSize+1) /*&&
+            (auxType == 0x2000 || auxType == 0x4000)*/)
+        {
+            applies = ReformatHolder::kApplicProbably;
+        }
+    } else {
+        if (fileType == kTypeFOT /*&& auxType < 0x4000*/ &&
+            (fileLen >= kExpectedSize-8 && fileLen <= kExpectedSize+1))
+        {
+            applies = ReformatHolder::kApplicProbably;
+        } else if (relaxed && fileType == kTypeBIN &&
+            (fileLen >= kExpectedSize-8 && fileLen <= kExpectedSize+1))
+        {
+            applies = ReformatHolder::kApplicProbably;
+        }
+    }
 
-	pHolder->SetApplic(ReformatHolder::kReformatHiRes, applies,
-		ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
-	pHolder->SetApplic(ReformatHolder::kReformatHiRes_BW, applies,
-		ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    pHolder->SetApplic(ReformatHolder::kReformatHiRes, applies,
+        ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    pHolder->SetApplic(ReformatHolder::kReformatHiRes_BW, applies,
+        ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
 
-	/*
-	 * Set the "preferred" flag on one option.
-	 */
-	if (pHolder->GetOption(ReformatHolder::kOptHiResBW) == 0)
-		pHolder->SetApplicPreferred(ReformatHolder::kReformatHiRes);
-	else
-		pHolder->SetApplicPreferred(ReformatHolder::kReformatHiRes_BW);
+    /*
+     * Set the "preferred" flag on one option.
+     */
+    if (pHolder->GetOption(ReformatHolder::kOptHiResBW) == 0)
+        pHolder->SetApplicPreferred(ReformatHolder::kReformatHiRes);
+    else
+        pHolder->SetApplicPreferred(ReformatHolder::kReformatHiRes_BW);
 }
 
 /*
@@ -224,34 +224,34 @@ ReformatHiRes::Examine(ReformatHolder* pHolder)
  */
 int
 ReformatHiRes::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	MyDIBitmap* pDib;
-	const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	int retval = -1;
+    MyDIBitmap* pDib;
+    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    int retval = -1;
 
-	if (id == ReformatHolder::kReformatHiRes_BW)
-		fBlackWhite = true;
+    if (id == ReformatHolder::kReformatHiRes_BW)
+        fBlackWhite = true;
 
-	if (srcLen > kExpectedSize+1 || srcLen < kExpectedSize-8) {
-		WMSG2(" HiRes file is not ~%d bytes long (got %d)\n",
-			kExpectedSize, srcLen);
-		goto bail;
-	}
+    if (srcLen > kExpectedSize+1 || srcLen < kExpectedSize-8) {
+        WMSG2(" HiRes file is not ~%d bytes long (got %d)\n",
+            kExpectedSize, srcLen);
+        goto bail;
+    }
 
-	InitLineOffset(fLineOffset);
+    InitLineOffset(fLineOffset);
 
-	pDib = HiResScreenToBitmap(srcBuf);
-	if (pDib == nil)
-		goto bail;
+    pDib = HiResScreenToBitmap(srcBuf);
+    if (pDib == nil)
+        goto bail;
 
-	SetResultBuffer(pOutput, pDib);
-	retval = 0;
+    SetResultBuffer(pOutput, pDib);
+    retval = 0;
 
 bail:
-	return retval;
+    return retval;
 }
 
 /*
@@ -262,17 +262,17 @@ bail:
 /*static*/ void
 ReformatHiRes::InitLineOffset(int* pOffsetBuf)
 {
-	long offset;
-	int line;
+    long offset;
+    int line;
 
-	ASSERT(pOffsetBuf != nil);
+    ASSERT(pOffsetBuf != nil);
 
-	for (line = 0; line < kNumLines; line++) {
-		offset = (line & 0x07) << 10 | (line & 0x38) << 4 |
-					(line & 0xc0) >> 1 | (line & 0xc0) >> 3;
-		ASSERT(offset >= 0 && offset < (8192 - 40));
-		pOffsetBuf[line] = offset;
-	}
+    for (line = 0; line < kNumLines; line++) {
+        offset = (line & 0x07) << 10 | (line & 0x38) << 4 |
+                    (line & 0xc0) >> 1 | (line & 0xc0) >> 3;
+        ASSERT(offset >= 0 && offset < (8192 - 40));
+        pOffsetBuf[line] = offset;
+    }
 }
 
 
@@ -282,172 +282,172 @@ ReformatHiRes::InitLineOffset(int* pOffsetBuf)
 MyDIBitmap*
 ReformatHiRes::HiResScreenToBitmap(const unsigned char* buf)
 {
-	MyDIBitmap* pDib = new MyDIBitmap;
-	unsigned char* outBuf;
-	const int kLeadIn = 4;
-	unsigned int colorBuf[kLeadIn+kOutputWidth +1];		// 560 half-pixels 
-	int pixelBits[kPixelsPerLine];
-	int shiftBits[kPixelsPerLine];
-	int line;
+    MyDIBitmap* pDib = new MyDIBitmap;
+    unsigned char* outBuf;
+    const int kLeadIn = 4;
+    unsigned int colorBuf[kLeadIn+kOutputWidth +1];     // 560 half-pixels 
+    int pixelBits[kPixelsPerLine];
+    int shiftBits[kPixelsPerLine];
+    int line;
 
-	/* color map */
-	enum {
-		kColorBlack0 = 0,
-		kColorGreen,
-		kColorPurple,
-		kColorWhite0,
-		kColorBlack1,
-		kColorOrange,
-		kColorBlue,
-		kColorWhite1,
-		kColorNone,		// really only useful for debugging
-		kNumColors
-	};
-	RGBQUAD colorConv[kNumColors];
-	colorConv[0] = fPalette[kPaletteBlack];
-	colorConv[1] = fPalette[kPaletteGreen];
-	colorConv[2] = fPalette[kPalettePurple];
-	colorConv[3] = fPalette[kPaletteWhite];
-	colorConv[4] = fPalette[kPaletteBlack];
-	colorConv[5] = fPalette[kPaletteOrange];
-	colorConv[6] = fPalette[kPaletteMediumBlue];
-	colorConv[7] = fPalette[kPaletteWhite];
-	colorConv[8] = fPalette[kPaletteBlack];		// for "blank spaces"
+    /* color map */
+    enum {
+        kColorBlack0 = 0,
+        kColorGreen,
+        kColorPurple,
+        kColorWhite0,
+        kColorBlack1,
+        kColorOrange,
+        kColorBlue,
+        kColorWhite1,
+        kColorNone,     // really only useful for debugging
+        kNumColors
+    };
+    RGBQUAD colorConv[kNumColors];
+    colorConv[0] = fPalette[kPaletteBlack];
+    colorConv[1] = fPalette[kPaletteGreen];
+    colorConv[2] = fPalette[kPalettePurple];
+    colorConv[3] = fPalette[kPaletteWhite];
+    colorConv[4] = fPalette[kPaletteBlack];
+    colorConv[5] = fPalette[kPaletteOrange];
+    colorConv[6] = fPalette[kPaletteMediumBlue];
+    colorConv[7] = fPalette[kPaletteWhite];
+    colorConv[8] = fPalette[kPaletteBlack];     // for "blank spaces"
 
-	ASSERT(kOutputWidth == 2*kPixelsPerLine);
+    ASSERT(kOutputWidth == 2*kPixelsPerLine);
 
-	if (pDib == nil)
-		goto bail;
+    if (pDib == nil)
+        goto bail;
 
-	outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
-									4, kNumColors);
-	if (outBuf == nil) {
-		delete pDib;
-		pDib = nil;
-		goto bail;
-	}
-	pDib->SetColorTable(colorConv);
+    outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
+                                    4, kNumColors);
+    if (outBuf == nil) {
+        delete pDib;
+        pDib = nil;
+        goto bail;
+    }
+    pDib->SetColorTable(colorConv);
 
-	/*
-	 * Run through the lines.
-	 */
-	for (line = 0; line < kNumLines; line++) {
-		const unsigned char* lineData = buf + fLineOffset[line];
-		int* bitPtr = pixelBits;
-		int* shiftPtr = shiftBits;
+    /*
+     * Run through the lines.
+     */
+    for (line = 0; line < kNumLines; line++) {
+        const unsigned char* lineData = buf + fLineOffset[line];
+        int* bitPtr = pixelBits;
+        int* shiftPtr = shiftBits;
 
-		/* unravel the bits */
-		for (int byt = 0; byt < kPixelsPerLine / 7; byt++) {
-			unsigned char val = *lineData;
-			int shifted = (val & 0x80) != 0;
+        /* unravel the bits */
+        for (int byt = 0; byt < kPixelsPerLine / 7; byt++) {
+            unsigned char val = *lineData;
+            int shifted = (val & 0x80) != 0;
 
-			for (int bit = 0; bit < 7; bit++) {
-				*bitPtr++ = val & 0x01;
-				*shiftPtr++ = shifted;
-				val >>= 1;
-			}
-			lineData++;
-		}
-		ASSERT(lineData <= buf + kExpectedSize);
-		ASSERT((char*)bitPtr == (char*)pixelBits + sizeof(pixelBits));
-		ASSERT((char*)shiftPtr == (char*)shiftBits + sizeof(shiftBits));
+            for (int bit = 0; bit < 7; bit++) {
+                *bitPtr++ = val & 0x01;
+                *shiftPtr++ = shifted;
+                val >>= 1;
+            }
+            lineData++;
+        }
+        ASSERT(lineData <= buf + kExpectedSize);
+        ASSERT((char*)bitPtr == (char*)pixelBits + sizeof(pixelBits));
+        ASSERT((char*)shiftPtr == (char*)shiftBits + sizeof(shiftBits));
 
-		/*
-		 * Convert the bits to colors, taking half-pixel shifts into account.
-		 */
-		int idx;
-		for (idx = 0; idx < NELEM(colorBuf); idx++)
-			colorBuf[idx] = kColorNone;
-		if (fBlackWhite) {
-			for (idx = 0; idx < kPixelsPerLine; idx ++) {
-				int bufShift = (int) shiftBits[idx];
-				// simulate GS RGB by setting bufShift=0
-				ASSERT(bufShift == 0 || bufShift == 1);
-				int bufTarget = kLeadIn + idx * 2 + bufShift;
+        /*
+         * Convert the bits to colors, taking half-pixel shifts into account.
+         */
+        int idx;
+        for (idx = 0; idx < NELEM(colorBuf); idx++)
+            colorBuf[idx] = kColorNone;
+        if (fBlackWhite) {
+            for (idx = 0; idx < kPixelsPerLine; idx ++) {
+                int bufShift = (int) shiftBits[idx];
+                // simulate GS RGB by setting bufShift=0
+                ASSERT(bufShift == 0 || bufShift == 1);
+                int bufTarget = kLeadIn + idx * 2 + bufShift;
 
-				if (!pixelBits[idx]) {
-					colorBuf[bufTarget] = kColorBlack0;
-					colorBuf[bufTarget+1] = kColorBlack0;
-				} else {
-					colorBuf[bufTarget] = kColorWhite0;
-					colorBuf[bufTarget+1] = kColorWhite0;
-				}
-			}
-		} else {
-			for (idx = 0; idx < kPixelsPerLine; idx ++) {
-				int bufShift = (int) shiftBits[idx];
-				ASSERT(bufShift == 0 || bufShift == 1);
-				int colorShift = 4 * bufShift;
-				int bufTarget = kLeadIn + idx * 2 + bufShift;
+                if (!pixelBits[idx]) {
+                    colorBuf[bufTarget] = kColorBlack0;
+                    colorBuf[bufTarget+1] = kColorBlack0;
+                } else {
+                    colorBuf[bufTarget] = kColorWhite0;
+                    colorBuf[bufTarget+1] = kColorWhite0;
+                }
+            }
+        } else {
+            for (idx = 0; idx < kPixelsPerLine; idx ++) {
+                int bufShift = (int) shiftBits[idx];
+                ASSERT(bufShift == 0 || bufShift == 1);
+                int colorShift = 4 * bufShift;
+                int bufTarget = kLeadIn + idx * 2 + bufShift;
 
-				if (!pixelBits[idx]) {
-					colorBuf[bufTarget] = kColorBlack0 + colorShift;
-					colorBuf[bufTarget+1] = kColorBlack0 + colorShift;
-				} else {
-					if (colorBuf[bufTarget-2] != kColorBlack0 &&
-						colorBuf[bufTarget-2] != kColorBlack1 &&
-						colorBuf[bufTarget-2] != kColorNone)
-					{
-						/* previous bit was set, this is white */
-						colorBuf[bufTarget] = kColorWhite0 + colorShift;
-						colorBuf[bufTarget+1] = kColorWhite0 + colorShift;
+                if (!pixelBits[idx]) {
+                    colorBuf[bufTarget] = kColorBlack0 + colorShift;
+                    colorBuf[bufTarget+1] = kColorBlack0 + colorShift;
+                } else {
+                    if (colorBuf[bufTarget-2] != kColorBlack0 &&
+                        colorBuf[bufTarget-2] != kColorBlack1 &&
+                        colorBuf[bufTarget-2] != kColorNone)
+                    {
+                        /* previous bit was set, this is white */
+                        colorBuf[bufTarget] = kColorWhite0 + colorShift;
+                        colorBuf[bufTarget+1] = kColorWhite0 + colorShift;
 
-						/* make sure the previous bit is in with us */
-						colorBuf[bufTarget-2] = kColorWhite0 + colorShift;
-						colorBuf[bufTarget-1] = kColorWhite0 + colorShift;
-					} else {
-						/* previous bit was zero, this is color */
-						if (idx & 0x01) {
-							colorBuf[bufTarget] = kColorGreen + colorShift;
-							colorBuf[bufTarget+1] = kColorGreen + colorShift;
-						} else {
-							colorBuf[bufTarget] = kColorPurple + colorShift;
-							colorBuf[bufTarget+1] = kColorPurple + colorShift;
-						}
+                        /* make sure the previous bit is in with us */
+                        colorBuf[bufTarget-2] = kColorWhite0 + colorShift;
+                        colorBuf[bufTarget-1] = kColorWhite0 + colorShift;
+                    } else {
+                        /* previous bit was zero, this is color */
+                        if (idx & 0x01) {
+                            colorBuf[bufTarget] = kColorGreen + colorShift;
+                            colorBuf[bufTarget+1] = kColorGreen + colorShift;
+                        } else {
+                            colorBuf[bufTarget] = kColorPurple + colorShift;
+                            colorBuf[bufTarget+1] = kColorPurple + colorShift;
+                        }
 
-						/*
-						 * Do we have a run of the same color?  If so, smooth
-						 * the color out.  Note that white blends smoothly
-						 * with everything.
-						 */
-						if (colorBuf[bufTarget-4] == colorBuf[bufTarget] ||
-							colorBuf[bufTarget-4] == kColorWhite0 ||
-							colorBuf[bufTarget-4] == kColorWhite1)
-						{
-							/* back-fill previous gap with color */
-							ASSERT(colorBuf[bufTarget-2] == kColorBlack0 ||
-								   colorBuf[bufTarget-2] == kColorBlack1);
-							colorBuf[bufTarget-2] = colorBuf[bufTarget];
-							colorBuf[bufTarget-1] = colorBuf[bufTarget];
-						}
-					}
-				}
-			} /*for boolean pixels*/
-		} /*!black&white*/
+                        /*
+                         * Do we have a run of the same color?  If so, smooth
+                         * the color out.  Note that white blends smoothly
+                         * with everything.
+                         */
+                        if (colorBuf[bufTarget-4] == colorBuf[bufTarget] ||
+                            colorBuf[bufTarget-4] == kColorWhite0 ||
+                            colorBuf[bufTarget-4] == kColorWhite1)
+                        {
+                            /* back-fill previous gap with color */
+                            ASSERT(colorBuf[bufTarget-2] == kColorBlack0 ||
+                                   colorBuf[bufTarget-2] == kColorBlack1);
+                            colorBuf[bufTarget-2] = colorBuf[bufTarget];
+                            colorBuf[bufTarget-1] = colorBuf[bufTarget];
+                        }
+                    }
+                }
+            } /*for boolean pixels*/
+        } /*!black&white*/
 
-		/* convert colors to 4-bit bitmap pixels */
-		/* (NOTE: should advance by GetPitch(), not assume it's equal to width) */
+        /* convert colors to 4-bit bitmap pixels */
+        /* (NOTE: should advance by GetPitch(), not assume it's equal to width) */
 #define SetPix(x, y, twoval) \
-		outBuf[((kOutputHeight-1) - (y)) * (kOutputWidth/2) + (x)] = twoval
+        outBuf[((kOutputHeight-1) - (y)) * (kOutputWidth/2) + (x)] = twoval
 
-		unsigned char pix4;
-		for (int pix = 0; pix < kPixelsPerLine; pix++) {
-			int bufPosn = kLeadIn + pix * 2;
-			ASSERT(colorBuf[bufPosn] < kNumColors);
-			ASSERT(colorBuf[bufPosn+1] < kNumColors);
+        unsigned char pix4;
+        for (int pix = 0; pix < kPixelsPerLine; pix++) {
+            int bufPosn = kLeadIn + pix * 2;
+            ASSERT(colorBuf[bufPosn] < kNumColors);
+            ASSERT(colorBuf[bufPosn+1] < kNumColors);
 
-			pix4 = colorBuf[bufPosn] << 4 | colorBuf[bufPosn+1];
-			SetPix(pix, line*2, pix4);
-			SetPix(pix, line*2+1, pix4);
+            pix4 = colorBuf[bufPosn] << 4 | colorBuf[bufPosn+1];
+            SetPix(pix, line*2, pix4);
+            SetPix(pix, line*2+1, pix4);
 
-			//SetPix(pix*2, line*2, colorBuf[bufPosn]);
-			//SetPix(pix*2, line*2+1, colorBuf[bufPosn]);
-			//SetPix(pix*2+1, line*2, colorBuf[bufPosn+1]);
-			//SetPix(pix*2+1, line*2+1, colorBuf[bufPosn+1]);
-		}
-	} /*for each line*/
+            //SetPix(pix*2, line*2, colorBuf[bufPosn]);
+            //SetPix(pix*2, line*2+1, colorBuf[bufPosn]);
+            //SetPix(pix*2+1, line*2, colorBuf[bufPosn+1]);
+            //SetPix(pix*2+1, line*2+1, colorBuf[bufPosn+1]);
+        }
+    } /*for each line*/
 #undef SetPix
 
 bail:
-	return pDib;
+    return pDib;
 }

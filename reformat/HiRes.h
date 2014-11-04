@@ -16,29 +16,29 @@
  */
 class ReformatHiRes : public ReformatGraphics {
 public:
-	ReformatHiRes(void) { fBlackWhite = false; }
-	virtual ~ReformatHiRes(void) {}
+    ReformatHiRes(void) { fBlackWhite = false; }
+    virtual ~ReformatHiRes(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
-	enum {
-		kPixelsPerLine = 280,
-		kNumLines = 192,
+    enum {
+        kPixelsPerLine = 280,
+        kNumLines = 192,
 
-		kOutputWidth = 560,
-		kOutputHeight = 384,
-		kExpectedSize = 8192,
-	};
+        kOutputWidth = 560,
+        kOutputHeight = 384,
+        kExpectedSize = 8192,
+    };
 
 
-	static void InitLineOffset(int* pOffsetBuf);
-	MyDIBitmap* HiResScreenToBitmap(const unsigned char* buf);
+    static void InitLineOffset(int* pOffsetBuf);
+    MyDIBitmap* HiResScreenToBitmap(const unsigned char* buf);
 
-	int		fLineOffset[kNumLines];
-	bool	fBlackWhite;
+    int     fLineOffset[kNumLines];
+    bool    fBlackWhite;
 };
 
 #endif /*__LR_HIRES__*/

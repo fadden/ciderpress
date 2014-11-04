@@ -12,15 +12,15 @@
 #include "Registry.h"
 
 #if defined(_DEBUG_LOG)
-//#define kDebugLog	"C:\\test\\cplog.txt"
-#define kDebugLog	"C:\\cplog.txt"
+//#define kDebugLog "C:\\test\\cplog.txt"
+#define kDebugLog   "C:\\cplog.txt"
 #endif
 
 /* CiderPress version numbers */
-#define kAppMajorVersion	3
-#define kAppMinorVersion	0
-#define kAppBugVersion		1
-#define kAppDevString		""
+#define kAppMajorVersion    3
+#define kAppMinorVersion    0
+#define kAppBugVersion      1
+#define kAppDevString       ""
 
 /*
  * Windows application object.
@@ -28,23 +28,23 @@
 class MyApp: public CWinApp
 {
 public:
-	MyApp(LPCTSTR lpszAppName = NULL);
-	virtual ~MyApp(void);
+    MyApp(LPCTSTR lpszAppName = NULL);
+    virtual ~MyApp(void);
 
-	MyRegistry	fRegistry;
+    MyRegistry  fRegistry;
 
-	const char* GetExeFileName(void) const { return fExeFileName; }
-	const char* GetExeBaseName(void) const { return fExeBaseName; }
+    const char* GetExeFileName(void) const { return fExeFileName; }
+    const char* GetExeBaseName(void) const { return fExeBaseName; }
 
 private:
-	// Overridden functions
-	virtual BOOL InitInstance(void);
-	virtual BOOL OnIdle(LONG lCount);
+    // Overridden functions
+    virtual BOOL InitInstance(void);
+    virtual BOOL OnIdle(LONG lCount);
 
-	void LogModuleLocation(const char* name);
+    void LogModuleLocation(const char* name);
 
-	CString		fExeFileName;
-	CString		fExeBaseName;
+    CString     fExeFileName;
+    CString     fExeBaseName;
 };
 
 extern MyApp gMyApp;

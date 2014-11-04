@@ -15,7 +15,7 @@
  * Grab the notification that tells us an update has been made.
  */
 BEGIN_MESSAGE_MAP(MySpinCtrl, CSpinButtonCtrl)
-	ON_NOTIFY_REFLECT(UDN_DELTAPOS, OnDeltaPos)
+    ON_NOTIFY_REFLECT(UDN_DELTAPOS, OnDeltaPos)
 END_MESSAGE_MAP()
 
 
@@ -25,15 +25,15 @@ END_MESSAGE_MAP()
 // never gets WM_CREATE, because that comes before the subclassing occurs.
 void MySpinCtrl::PreSubclassWindow()
 {
-	_ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST NOT* be checked");
-	_ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
+    _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST NOT* be checked");
+    _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
 
-	// Do this so that, the first time, the up/down arrows work in the right
-	// direction, and the range is a reasonable value.
-	CSpinButtonCtrl::SetRange(fLow, fHigh);
-	SetRange(fLow, fHigh);
-	
-	CSpinButtonCtrl::PreSubclassWindow();
+    // Do this so that, the first time, the up/down arrows work in the right
+    // direction, and the range is a reasonable value.
+    CSpinButtonCtrl::SetRange(fLow, fHigh);
+    SetRange(fLow, fHigh);
+    
+    CSpinButtonCtrl::PreSubclassWindow();
 }
 #endif
 
@@ -45,13 +45,13 @@ void MySpinCtrl::PreSubclassWindow()
 bool
 MySpinCtrl::ConvLong(const char* str, long* pVal) const
 {
-	char* endp;
+    char* endp;
 
-	*pVal = strtol(str, &endp, GetBase());
-	if (endp == str || *endp != '\0')
-		return false;
+    *pVal = strtol(str, &endp, GetBase());
+    if (endp == str || *endp != '\0')
+        return false;
 
-	return true;
+    return true;
 }
 
 /*
@@ -60,40 +60,40 @@ MySpinCtrl::ConvLong(const char* str, long* pVal) const
 void
 MySpinCtrl::OnDeltaPos(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	_ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
-//	_ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
-	_ASSERTE(  (UDS_NOTHOUSANDS & GetStyle())  &&  "'No Thousands' style *MUST* be checked");
+    _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
+//  _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
+    _ASSERTE(  (UDS_NOTHOUSANDS & GetStyle())  &&  "'No Thousands' style *MUST* be checked");
 
-	NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
+    NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
 
-	/* grab value from buddy ctrl */
-	ASSERT(GetBuddy() != nil);
-	CString buddyStr;
-	GetBuddy()->GetWindowText(buddyStr);
+    /* grab value from buddy ctrl */
+    ASSERT(GetBuddy() != nil);
+    CString buddyStr;
+    GetBuddy()->GetWindowText(buddyStr);
 
-	long buddyVal, proposedVal;
+    long buddyVal, proposedVal;
 
-	if (!ConvLong(buddyStr, &buddyVal))
-		goto bail;		// bad string
-	proposedVal = buddyVal - pNMUpDown->iDelta;
+    if (!ConvLong(buddyStr, &buddyVal))
+        goto bail;      // bad string
+    proposedVal = buddyVal - pNMUpDown->iDelta;
 
-	/* peg at the end */
-	if (proposedVal < fLow)
-		proposedVal = fLow;
-	if (proposedVal > fHigh)
-		proposedVal = fHigh;
+    /* peg at the end */
+    if (proposedVal < fLow)
+        proposedVal = fLow;
+    if (proposedVal > fHigh)
+        proposedVal = fHigh;
 
-	if (proposedVal != buddyVal) {
-		/* set buddy control to new value */
-		if (GetBase() == 10)
-			buddyStr.Format("%d", proposedVal);
-		else
-			buddyStr.Format("%X", proposedVal);
-		GetBuddy()->SetWindowText(buddyStr);
-	}
-	
+    if (proposedVal != buddyVal) {
+        /* set buddy control to new value */
+        if (GetBase() == 10)
+            buddyStr.Format("%d", proposedVal);
+        else
+            buddyStr.Format("%X", proposedVal);
+        GetBuddy()->SetWindowText(buddyStr);
+    }
+    
 bail:
-	*pResult = 0;
+    *pResult = 0;
 }
 
 /*
@@ -104,24 +104,24 @@ bail:
 int
 MySpinCtrl::SetPos(int nPos)
 {
-	_ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
-//	_ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
+    _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
+//  _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
 
-	CString buddyStr;
+    CString buddyStr;
 
-	if (nPos < fLow || nPos > fHigh) {
-		//WMSG0(" MSP setpos out of range\n");
-		return -1;
-	}
+    if (nPos < fLow || nPos > fHigh) {
+        //WMSG0(" MSP setpos out of range\n");
+        return -1;
+    }
 
-	if (GetBase() == 10)
-		buddyStr.Format("%d", nPos);
-	else
-		buddyStr.Format("%X", nPos);
+    if (GetBase() == 10)
+        buddyStr.Format("%d", nPos);
+    else
+        buddyStr.Format("%X", nPos);
 
-	GetBuddy()->SetWindowText(buddyStr);
+    GetBuddy()->SetWindowText(buddyStr);
 
-	return -1;		// broken
+    return -1;      // broken
 }
 
 /*
@@ -132,37 +132,37 @@ MySpinCtrl::SetPos(int nPos)
 int
 MySpinCtrl::GetPos() const
 {
-	_ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
-//	_ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
+    _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
+//  _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
 
-	// Grab buddy edit control value.
-	CString buddyStr;
-	GetBuddy()->GetWindowText(buddyStr);
+    // Grab buddy edit control value.
+    CString buddyStr;
+    GetBuddy()->GetWindowText(buddyStr);
 
-	long val;
-	if (!ConvLong(buddyStr, &val))
-		return -1;
+    long val;
+    if (!ConvLong(buddyStr, &val))
+        return -1;
 
-	if (val < fLow || val > fHigh)
-		return -1;
+    if (val < fLow || val > fHigh)
+        return -1;
 
-	// if they typed a "sloppy value" in, make it look nice
-	CString reformatStr;
-	if (GetBase() == 10)
-		reformatStr.Format("%d", val);
-	else
-		reformatStr.Format("%X", val);
-	if (buddyStr != reformatStr)
-		GetBuddy()->SetWindowText(reformatStr);
+    // if they typed a "sloppy value" in, make it look nice
+    CString reformatStr;
+    if (GetBase() == 10)
+        reformatStr.Format("%d", val);
+    else
+        reformatStr.Format("%X", val);
+    if (buddyStr != reformatStr)
+        GetBuddy()->SetWindowText(reformatStr);
 
-	return val;
+    return val;
 }
 
 DWORD
 MySpinCtrl::GetRange(void) const
 {
-	_ASSERTE(! "Do NOT use this method!");
-	return 0;
+    _ASSERTE(! "Do NOT use this method!");
+    return 0;
 }
 
 /*
@@ -171,9 +171,9 @@ MySpinCtrl::GetRange(void) const
 void
 MySpinCtrl::GetRange32(int& lower, int& upper) const
 {
-	lower = fLow;
-	upper = fHigh;
-	//WMSG2(" MSP getting lower=%d upper=%d\n", lower, upper);
+    lower = fLow;
+    upper = fHigh;
+    //WMSG2(" MSP getting lower=%d upper=%d\n", lower, upper);
 }
 
 /*
@@ -182,10 +182,10 @@ MySpinCtrl::GetRange32(int& lower, int& upper) const
 void
 MySpinCtrl::SetRange32(int nLo, int nHi)
 {
-	_ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
-//	_ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
+    _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
+//  _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
 
-	fLow = nLo;
-	fHigh = nHi;
-	//WMSG2(" MSP setting lower=%d upper=%d\n", fLow, fHigh);
+    fLow = nLo;
+    fHigh = nHi;
+    //WMSG2(" MSP setting lower=%d upper=%d\n", fLow, fHigh);
 }

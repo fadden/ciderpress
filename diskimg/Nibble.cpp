@@ -36,7 +36,7 @@
     0xf7, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
 };
 /*static*/ unsigned char DiskImg::kInvDiskBytes53[256]; // all values are 0-31
-/*static*/ unsigned char DiskImg::kInvDiskBytes62[256];	// all values are 0-63
+/*static*/ unsigned char DiskImg::kInvDiskBytes62[256]; // all values are 0-63
 
 /*
  * Compute tables to convert disk bytes back to values.
@@ -79,25 +79,25 @@ DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
     int i;
 
     for (i = 0; i < trackLen; i++) {
-		bool foundAddr = false;
+        bool foundAddr = false;
 
-		if (pNibbleDescr->special == kNibbleSpecialSkipFirstAddrByte) {
-			if (/*buffer[i] == pNibbleDescr->addrProlog[0] &&*/
-				buffer[i+1] == pNibbleDescr->addrProlog[1] &&
-				buffer[i+2] == pNibbleDescr->addrProlog[2])
-			{
-				foundAddr = true;
-			}
-		} else {
-			if (buffer[i] == pNibbleDescr->addrProlog[0] &&
-				buffer[i+1] == pNibbleDescr->addrProlog[1] &&
-				buffer[i+2] == pNibbleDescr->addrProlog[2])
-			{
-				foundAddr = true;
-			}
-		}
+        if (pNibbleDescr->special == kNibbleSpecialSkipFirstAddrByte) {
+            if (/*buffer[i] == pNibbleDescr->addrProlog[0] &&*/
+                buffer[i+1] == pNibbleDescr->addrProlog[1] &&
+                buffer[i+2] == pNibbleDescr->addrProlog[2])
+            {
+                foundAddr = true;
+            }
+        } else {
+            if (buffer[i] == pNibbleDescr->addrProlog[0] &&
+                buffer[i+1] == pNibbleDescr->addrProlog[1] &&
+                buffer[i+2] == pNibbleDescr->addrProlog[2])
+            {
+                foundAddr = true;
+            }
+        }
 
-		if (foundAddr) {
+        if (foundAddr) {
             //i += 3;
 
             /* found the address header, decode the address */
@@ -122,7 +122,7 @@ DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
                 }
             }
 
-			i += 3;
+            i += 3;
 
             int j;
             for (j = 0; j < pNibbleDescr->addrEpilogVerifyCount; j++) {
@@ -564,13 +564,13 @@ DIError
 DiskImg::LoadNibbleTrack(long track, long* pTrackLen)
 {
     DIError dierr = kDIErrNone;
-	long offset;
+    long offset;
     assert(track >= 0 && track < kMaxNibbleTracks525);
 
     *pTrackLen = GetNibbleTrackLength(track);
-	offset = GetNibbleTrackOffset(track);
-	assert(*pTrackLen > 0);
-	assert(offset >= 0);
+    offset = GetNibbleTrackOffset(track);
+    assert(*pTrackLen > 0);
+    assert(offset >= 0);
 
     if (track == fNibbleTrackLoaded) {
 #ifdef NIB_VERBOSE_DEBUG
@@ -600,7 +600,7 @@ DiskImg::LoadNibbleTrack(long track, long* pTrackLen)
 
     fNibbleTrackLoaded = track;
 
-	return dierr;
+    return dierr;
 }
 
 /*
@@ -621,7 +621,7 @@ DiskImg::SaveNibbleTrack(void)
 
     /* write the track to fpDataGFD */
     dierr = CopyBytesIn(fNibbleTrackBuf, offset, trackLen);
-	return dierr;
+    return dierr;
 }
 
 
@@ -676,21 +676,21 @@ DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
  * On exit:
  *  fpNibbleDescr points to the most-likely-to-succeed NibbleDescr
  *  fDOSVolumeNum holds a volume number from one of the tracks
- *	fNumTracks holds the number of tracks on the disk
+ *  fNumTracks holds the number of tracks on the disk
  */
 DIError
 DiskImg::AnalyzeNibbleData(void)
 {
     assert(IsNibbleFormat(fPhysical));
 
-	if (fPhysical == kPhysicalFormatNib525_Var) {
-		/* TrackStar can have up to 40 */
-		fNumTracks = fpImageWrapper->GetNibbleNumTracks();
-		assert(fNumTracks > 0);
-	} else {
-		/* fixed-length formats (.nib, .nb2) are always 35 tracks */
-		fNumTracks = kTrackCount525;
-	}
+    if (fPhysical == kPhysicalFormatNib525_Var) {
+        /* TrackStar can have up to 40 */
+        fNumTracks = fpImageWrapper->GetNibbleNumTracks();
+        assert(fNumTracks > 0);
+    } else {
+        /* fixed-length formats (.nib, .nb2) are always 35 tracks */
+        fNumTracks = kTrackCount525;
+    }
 
     /*
      * Try to read sectors from tracks 1, 16, 17, and 26.  If we can get
@@ -701,11 +701,11 @@ DiskImg::AnalyzeNibbleData(void)
     int protoVol = kVolumeNumNotSet;
 
     for (i = 0; i < fNumNibbleDescrEntries; i++) {
-		if (fpNibbleDescrTable[i].numSectors == 0) {
-			/* uninitialized "custom" entry */
-			WMSG1("  Skipping '%s'\n", fpNibbleDescrTable[i].description);
-			continue;
-		}
+        if (fpNibbleDescrTable[i].numSectors == 0) {
+            /* uninitialized "custom" entry */
+            WMSG1("  Skipping '%s'\n", fpNibbleDescrTable[i].description);
+            continue;
+        }
         WMSG1("  Trying '%s'\n", fpNibbleDescrTable[i].description);
         goodTracks = 0;
 
@@ -750,16 +750,16 @@ DIError
 DiskImg::ReadNibbleSector(long track, int sector, void* buf,
     const NibbleDescr* pNibbleDescr)
 {
-	if (pNibbleDescr == nil) {
-		/* disk has no recognizable sectors */
-		WMSG0(" DI ReadNibbleSector: pNibbleDescr is nil, returning failure\n");
-		return kDIErrBadNibbleSectors;
-	}
-	if (sector >= pNibbleDescr->numSectors) {
-		/* e.g. trying to read sector 14 on a 13-sector disk */
-		WMSG0(" DI ReadNibbleSector: bad sector number request\n");
-		return kDIErrInvalidSector;
-	}
+    if (pNibbleDescr == nil) {
+        /* disk has no recognizable sectors */
+        WMSG0(" DI ReadNibbleSector: pNibbleDescr is nil, returning failure\n");
+        return kDIErrBadNibbleSectors;
+    }
+    if (sector >= pNibbleDescr->numSectors) {
+        /* e.g. trying to read sector 14 on a 13-sector disk */
+        WMSG0(" DI ReadNibbleSector: bad sector number request\n");
+        return kDIErrInvalidSector;
+    }
 
     assert(pNibbleDescr != nil);
     assert(IsNibbleFormat(fPhysical));
@@ -837,7 +837,7 @@ DiskImg::WriteNibbleSector(long track, int sector, const void* buf,
 DIError
 DiskImg::ReadNibbleTrack(long track, unsigned char* buf, long* pTrackLen)
 {
-	DIError dierr;
+    DIError dierr;
 
     dierr = LoadNibbleTrack(track, pTrackLen);
     if (dierr != kDIErrNone) {
@@ -845,8 +845,8 @@ DiskImg::ReadNibbleTrack(long track, unsigned char* buf, long* pTrackLen)
         return dierr;
     }
 
-	memcpy(buf, fNibbleTrackBuf, *pTrackLen);
-	return kDIErrNone;
+    memcpy(buf, fNibbleTrackBuf, *pTrackLen);
+    return kDIErrNone;
 }
 
 /*
@@ -859,26 +859,26 @@ DiskImg::ReadNibbleTrack(long track, unsigned char* buf, long* pTrackLen)
 DIError
 DiskImg::WriteNibbleTrack(long track, const unsigned char* buf, long trackLen)
 {
-	DIError dierr;
-	long oldTrackLen;
+    DIError dierr;
+    long oldTrackLen;
 
-	/* load the track to set the "current track" stuff */
+    /* load the track to set the "current track" stuff */
     dierr = LoadNibbleTrack(track, &oldTrackLen);
     if (dierr != kDIErrNone) {
         WMSG1("   DI WriteNibbleTrack: LoadNibbleTrack %ld failed\n", track);
         return dierr;
     }
 
-	if (trackLen > GetNibbleTrackAllocLength()) {
-		WMSG2("ERROR: tried to write too-long track len (%ld vs %d)\n",
-			trackLen, GetNibbleTrackAllocLength());
-		return kDIErrInvalidArg;
-	}
+    if (trackLen > GetNibbleTrackAllocLength()) {
+        WMSG2("ERROR: tried to write too-long track len (%ld vs %d)\n",
+            trackLen, GetNibbleTrackAllocLength());
+        return kDIErrInvalidArg;
+    }
 
-	if (trackLen < oldTrackLen)		// pad out any extra space
-		memset(fNibbleTrackBuf, 0xff, oldTrackLen);
-	memcpy(fNibbleTrackBuf, buf, trackLen);
-	fpImageWrapper->SetNibbleTrackLength(track, trackLen);
+    if (trackLen < oldTrackLen)     // pad out any extra space
+        memset(fNibbleTrackBuf, 0xff, oldTrackLen);
+    memcpy(fNibbleTrackBuf, buf, trackLen);
+    fpImageWrapper->SetNibbleTrackLength(track, trackLen);
 
     dierr = SaveNibbleTrack();
     if (dierr != kDIErrNone) {
@@ -886,7 +886,7 @@ DiskImg::WriteNibbleTrack(long track, const unsigned char* buf, long trackLen)
         return dierr;
     }
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 
@@ -917,30 +917,30 @@ DiskImg::FormatNibbles(GenericFD* pGFD) const
 
     DIError dierr = kDIErrNone;
     unsigned char trackBuf[kTrackAllocSize];
-	/* these should be the same except for var-len images */
-	long trackAllocLen = GetNibbleTrackAllocLength();
+    /* these should be the same except for var-len images */
+    long trackAllocLen = GetNibbleTrackAllocLength();
     long trackLen = GetNibbleTrackFormatLength();
     int track;
 
     assert(trackLen > 0);
     pGFD->Rewind();
 
-	/*
-	 * If we don't have sector access, take a shortcut and just fill the
-	 * entire image with 0xff.
-	 */
-	if (!fHasSectors) {
-		memset(trackBuf, 0xff, trackLen);
-		for (track = 0; track < GetNumTracks(); track++) {
-			/* write the track to the GFD */
-			dierr = pGFD->Write(trackBuf, trackAllocLen);
-			if (dierr != kDIErrNone)
-				return dierr;
-			fpImageWrapper->SetNibbleTrackLength(track, trackAllocLen);
-		}
+    /*
+     * If we don't have sector access, take a shortcut and just fill the
+     * entire image with 0xff.
+     */
+    if (!fHasSectors) {
+        memset(trackBuf, 0xff, trackLen);
+        for (track = 0; track < GetNumTracks(); track++) {
+            /* write the track to the GFD */
+            dierr = pGFD->Write(trackBuf, trackAllocLen);
+            if (dierr != kDIErrNone)
+                return dierr;
+            fpImageWrapper->SetNibbleTrackLength(track, trackAllocLen);
+        }
 
-		return kDIErrNone;
-	}
+        return kDIErrNone;
+    }
 
 
     assert(fHasSectors);
@@ -1037,8 +1037,8 @@ DiskImg::FormatNibbles(GenericFD* pGFD) const
         if (dierr != kDIErrNone)
             break;
 
-		/* on a variable-length image, reduce track len to match */
-		fpImageWrapper->SetNibbleTrackLength(track, trackLen);
+        /* on a variable-length image, reduce track len to match */
+        fpImageWrapper->SetNibbleTrackLength(track, trackLen);
     }
 
     return dierr;

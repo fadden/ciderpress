@@ -16,14 +16,14 @@
  * These must be in ascending order.
  */
 /*static*/ const NewDiskSize::RadioCtrlMap NewDiskSize::kCtrlMap[] = {
-	{ IDC_CONVDISK_140K,		280 },
-	{ IDC_CONVDISK_800K,		1600 },
-	{ IDC_CONVDISK_1440K,		2880 },
-	{ IDC_CONVDISK_5MB,			10240 },
-	{ IDC_CONVDISK_16MB,		32768 },
-	{ IDC_CONVDISK_20MB,		40960 },
-	{ IDC_CONVDISK_32MB,		65535 },
-	{ IDC_CONVDISK_SPECIFY,		kSpecified },
+    { IDC_CONVDISK_140K,        280 },
+    { IDC_CONVDISK_800K,        1600 },
+    { IDC_CONVDISK_1440K,       2880 },
+    { IDC_CONVDISK_5MB,         10240 },
+    { IDC_CONVDISK_16MB,        32768 },
+    { IDC_CONVDISK_20MB,        40960 },
+    { IDC_CONVDISK_32MB,        65535 },
+    { IDC_CONVDISK_SPECIFY,     kSpecified },
 };
 static const kEditBoxID = IDC_CONVDISK_SPECIFY_EDIT;
 
@@ -33,7 +33,7 @@ static const kEditBoxID = IDC_CONVDISK_SPECIFY_EDIT;
 /*static*/ unsigned int
 NewDiskSize::GetNumSizeEntries(void)
 {
-	return NELEM(kCtrlMap);
+    return NELEM(kCtrlMap);
 }
 
 /*
@@ -42,20 +42,20 @@ NewDiskSize::GetNumSizeEntries(void)
 /*static*/ long
 NewDiskSize::GetDiskSizeByIndex(int idx)
 {
-	ASSERT(idx >= 0 && idx < NELEM(kCtrlMap));
-	return kCtrlMap[idx].blocks;
+    ASSERT(idx >= 0 && idx < NELEM(kCtrlMap));
+    return kCtrlMap[idx].blocks;
 }
 
 /*static*/ void
 NewDiskSize::EnableButtons(CDialog* pDialog, BOOL state /*=true*/)
 {
-	CWnd* pWnd;
+    CWnd* pWnd;
 
-	for (int i = 0; i < NELEM(kCtrlMap); i++) {
-		pWnd = pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
-		if (pWnd != nil)
-			pWnd->EnableWindow(state);
-	}
+    for (int i = 0; i < NELEM(kCtrlMap); i++) {
+        pWnd = pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
+        if (pWnd != nil)
+            pWnd->EnableWindow(state);
+    }
 }
 
 /*
@@ -73,47 +73,47 @@ NewDiskSize::EnableButtons(CDialog* pDialog, BOOL state /*=true*/)
  */
 /*static*/ void
 NewDiskSize::EnableButtons_ProDOS(CDialog* pDialog, long totalBlocks,
-	long blocksUsed)
+    long blocksUsed)
 {
-	CButton* pButton;
-	long usedWithoutBitmap = blocksUsed - GetNumBitmapBlocks_ProDOS(totalBlocks);
-	bool first = true;
+    CButton* pButton;
+    long usedWithoutBitmap = blocksUsed - GetNumBitmapBlocks_ProDOS(totalBlocks);
+    bool first = true;
 
-	WMSG3("EnableButtons_ProDOS total=%ld used=%ld usedw/o=%ld\n",
-		totalBlocks, blocksUsed, usedWithoutBitmap);
+    WMSG3("EnableButtons_ProDOS total=%ld used=%ld usedw/o=%ld\n",
+        totalBlocks, blocksUsed, usedWithoutBitmap);
 
-	for (int i = 0; i < NELEM(kCtrlMap); i++) {
-		pButton = (CButton*) pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
-		if (pButton == nil) {
-			WMSG1("WARNING: couldn't find ctrlID %d\n", kCtrlMap[i].ctrlID);
-			continue;
-		}
+    for (int i = 0; i < NELEM(kCtrlMap); i++) {
+        pButton = (CButton*) pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
+        if (pButton == nil) {
+            WMSG1("WARNING: couldn't find ctrlID %d\n", kCtrlMap[i].ctrlID);
+            continue;
+        }
 
-		if (kCtrlMap[i].blocks == kSpecified) {
-			pButton->SetCheck(BST_UNCHECKED);
-			pButton->EnableWindow(TRUE);
-			CWnd* pWnd = pDialog->GetDlgItem(kEditBoxID);
-			pWnd->EnableWindow(FALSE);
-			continue;
-		}
+        if (kCtrlMap[i].blocks == kSpecified) {
+            pButton->SetCheck(BST_UNCHECKED);
+            pButton->EnableWindow(TRUE);
+            CWnd* pWnd = pDialog->GetDlgItem(kEditBoxID);
+            pWnd->EnableWindow(FALSE);
+            continue;
+        }
 
-		if (usedWithoutBitmap + GetNumBitmapBlocks_ProDOS(kCtrlMap[i].blocks) <=
-			kCtrlMap[i].blocks)
-		{
-			pButton->EnableWindow(TRUE);
-			if (first) {
-				pButton->SetCheck(BST_CHECKED);
-				first = false;
-			} else {
-				pButton->SetCheck(BST_UNCHECKED);
-			}
-		} else {
-			pButton->EnableWindow(FALSE);
-			pButton->SetCheck(BST_UNCHECKED);
-		}
-	}
+        if (usedWithoutBitmap + GetNumBitmapBlocks_ProDOS(kCtrlMap[i].blocks) <=
+            kCtrlMap[i].blocks)
+        {
+            pButton->EnableWindow(TRUE);
+            if (first) {
+                pButton->SetCheck(BST_CHECKED);
+                first = false;
+            } else {
+                pButton->SetCheck(BST_UNCHECKED);
+            }
+        } else {
+            pButton->EnableWindow(FALSE);
+            pButton->SetCheck(BST_UNCHECKED);
+        }
+    }
 
-	UpdateSpecifyEdit(pDialog);
+    UpdateSpecifyEdit(pDialog);
 }
 
 /*
@@ -121,10 +121,10 @@ NewDiskSize::EnableButtons_ProDOS(CDialog* pDialog, long totalBlocks,
  */
 /*static*/long
 NewDiskSize::GetNumBitmapBlocks_ProDOS(long totalBlocks) {
-	ASSERT(totalBlocks > 0);
-	const int kBitsPerBlock = 512 * 8;
-	int numBlocks = (totalBlocks + kBitsPerBlock-1) / kBitsPerBlock;
-	return numBlocks;
+    ASSERT(totalBlocks > 0);
+    const int kBitsPerBlock = 512 * 8;
+    int numBlocks = (totalBlocks + kBitsPerBlock-1) / kBitsPerBlock;
+    return numBlocks;
 }
 
 
@@ -134,33 +134,33 @@ NewDiskSize::GetNumBitmapBlocks_ProDOS(long totalBlocks) {
 /*static*/ void
 NewDiskSize::UpdateSpecifyEdit(CDialog* pDialog)
 {
-	CEdit* pEdit = (CEdit*) pDialog->GetDlgItem(kEditBoxID);
-	int i;
+    CEdit* pEdit = (CEdit*) pDialog->GetDlgItem(kEditBoxID);
+    int i;
 
-	if (pEdit == nil) {
-		ASSERT(false);
-		return;
-	}
+    if (pEdit == nil) {
+        ASSERT(false);
+        return;
+    }
 
-	for (i = 0; i < NELEM(kCtrlMap); i++) {
-		CButton* pButton = (CButton*) pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
-		if (pButton == nil) {
-			WMSG1("WARNING: couldn't find ctrlID %d\n", kCtrlMap[i].ctrlID);
-			continue;
-		}
+    for (i = 0; i < NELEM(kCtrlMap); i++) {
+        CButton* pButton = (CButton*) pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
+        if (pButton == nil) {
+            WMSG1("WARNING: couldn't find ctrlID %d\n", kCtrlMap[i].ctrlID);
+            continue;
+        }
 
-		if (pButton->GetCheck() == BST_CHECKED) {
-			if (kCtrlMap[i].blocks == kSpecified)
-				return;
-			break;
-		}
-	}
-	if (i == NELEM(kCtrlMap)) {
-		WMSG0("WARNING: couldn't find a checked radio button\n");
-		return;
-	}
+        if (pButton->GetCheck() == BST_CHECKED) {
+            if (kCtrlMap[i].blocks == kSpecified)
+                return;
+            break;
+        }
+    }
+    if (i == NELEM(kCtrlMap)) {
+        WMSG0("WARNING: couldn't find a checked radio button\n");
+        return;
+    }
 
-	CString fmt;
-	fmt.Format("%ld", kCtrlMap[i].blocks);
-	pEdit->SetWindowText(fmt);
+    CString fmt;
+    fmt.Format("%ld", kCtrlMap[i].blocks);
+    pEdit->SetWindowText(fmt);
 }

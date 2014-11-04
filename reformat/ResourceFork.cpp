@@ -18,38 +18,38 @@
  */
 static const char* kUnknownSysRsrc = _T("(system resource)");
 static const char* kRsrc8000[0x30] = {
-	// 0x8000 through 0x802f
-	kUnknownSysRsrc,			"rIcon",
-	"rPicture",					"rControlList",
-	"rControlTemplate",			"rC1InputString",
-	"rPString",					"rStringList",
-	"rMenuBar",					"rMenu",
-	"rMenuItem",				"rTextForLETextBox2",
-	"rCtlDefProc",				"rCtlColorTbl",
-	"rWindParam1",				"rWindParam2",
+    // 0x8000 through 0x802f
+    kUnknownSysRsrc,            "rIcon",
+    "rPicture",                 "rControlList",
+    "rControlTemplate",         "rC1InputString",
+    "rPString",                 "rStringList",
+    "rMenuBar",                 "rMenu",
+    "rMenuItem",                "rTextForLETextBox2",
+    "rCtlDefProc",              "rCtlColorTbl",
+    "rWindParam1",              "rWindParam2",
 
-	"rWindColor",				"rTextBlock",
-	"rStyleBlock",				"rToolStartup",
-	"rResName",					"rAlertString",
-	"rText",					"rCodeResource",
-	"rCDEVCode",				"rCDEVFlags",
-	"rTwoRects",				"rFileType",
-	"rListRef",					"rCString",
-	"rXCMD",					"rXFCN",
+    "rWindColor",               "rTextBlock",
+    "rStyleBlock",              "rToolStartup",
+    "rResName",                 "rAlertString",
+    "rText",                    "rCodeResource",
+    "rCDEVCode",                "rCDEVFlags",
+    "rTwoRects",                "rFileType",
+    "rListRef",                 "rCString",
+    "rXCMD",                    "rXFCN",
 
-	"rErrorString",				"rKTransTable",
-	"rWString",					"rC1OutputString",
-	"rSoundSample",				"rTERuler",
-	"rFSequence",				"rCursor",
-	"rItemStruct",				"rVersion",
-	"rComment",					"rBundle",
-	"rFinderPath",				"rPaletteWindow",
-	"rTaggedStrings",			"rPatternList",
+    "rErrorString",             "rKTransTable",
+    "rWString",                 "rC1OutputString",
+    "rSoundSample",             "rTERuler",
+    "rFSequence",               "rCursor",
+    "rItemStruct",              "rVersion",
+    "rComment",                 "rBundle",
+    "rFinderPath",              "rPaletteWindow",
+    "rTaggedStrings",           "rPatternList",
 };
 static const char* kRsrcC000[0x04] = {
-	// 0xc000 through 0xc003
-	kUnknownSysRsrc,			"rRectList",
-	"rPrintRecord",				"rFont",
+    // 0xc000 through 0xc003
+    kUnknownSysRsrc,            "rRectList",
+    "rPrintRecord",             "rFont",
 };
 
 /*
@@ -58,9 +58,9 @@ static const char* kRsrcC000[0x04] = {
 void
 ReformatResourceFork::Examine(ReformatHolder* pHolder)
 {
-	pHolder->SetApplic(ReformatHolder::kReformatResourceFork,
-		ReformatHolder::kApplicNot,
-		ReformatHolder::kApplicMaybe, ReformatHolder::kApplicNot);
+    pHolder->SetApplic(ReformatHolder::kReformatResourceFork,
+        ReformatHolder::kApplicNot,
+        ReformatHolder::kApplicMaybe, ReformatHolder::kApplicNot);
 }
 
 /*
@@ -68,99 +68,99 @@ ReformatResourceFork::Examine(ReformatHolder* pHolder)
  */
 int
 ReformatResourceFork::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	fUseRTF = false;
+    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    fUseRTF = false;
 
-	long rFileVersion, rFileToMap, rFileMapSize;
-	bool littleEndian;
-	bool result;
+    long rFileVersion, rFileToMap, rFileMapSize;
+    bool littleEndian;
+    bool result;
 
-	result = ReadHeader(srcBuf, srcLen, &rFileVersion, &rFileToMap,
-				&rFileMapSize, &littleEndian);
+    result = ReadHeader(srcBuf, srcLen, &rFileVersion, &rFileToMap,
+                &rFileMapSize, &littleEndian);
 
-	BufPrintf("Resource fork header (%s):\r\n",
-		littleEndian ? "Apple IIgs little-endian" : "Macintosh big-endian");
-	BufPrintf("  rFileVersion = %d\r\n", rFileVersion);
-	BufPrintf("  rFileToMap   = 0x%08lx\r\n", rFileToMap);
-	BufPrintf("  rFileMapSize = %ld\r\n", rFileMapSize);
-	BufPrintf("  rFileMemo:\r\n");
-	BufHexDump(srcBuf+12, 128);
-	BufPrintf("\r\n");
+    BufPrintf("Resource fork header (%s):\r\n",
+        littleEndian ? "Apple IIgs little-endian" : "Macintosh big-endian");
+    BufPrintf("  rFileVersion = %d\r\n", rFileVersion);
+    BufPrintf("  rFileToMap   = 0x%08lx\r\n", rFileToMap);
+    BufPrintf("  rFileMapSize = %ld\r\n", rFileMapSize);
+    BufPrintf("  rFileMemo:\r\n");
+    BufHexDump(srcBuf+12, 128);
+    BufPrintf("\r\n");
 
-	if (rFileVersion != 0) {
-		BufPrintf("Not an Apple IIgs resource fork (probably Macintosh).\r\n");
-		goto done;
-	}
-	if (!result) {
-		BufPrintf("Does not appear to be a valid resource fork.\r\n");
-		goto done;
-	}
+    if (rFileVersion != 0) {
+        BufPrintf("Not an Apple IIgs resource fork (probably Macintosh).\r\n");
+        goto done;
+    }
+    if (!result) {
+        BufPrintf("Does not appear to be a valid resource fork.\r\n");
+        goto done;
+    }
 
-	/* move to start of resource map */
-	const unsigned char* mapPtr;
-	long mapToIndex, mapIndexSize, mapIndexUsed;
+    /* move to start of resource map */
+    const unsigned char* mapPtr;
+    long mapToIndex, mapIndexSize, mapIndexUsed;
 
-	mapPtr = srcBuf + rFileToMap;
-	mapToIndex = Get16(mapPtr + 0x0e, littleEndian);
-	mapIndexSize = Get32(mapPtr + 0x14, littleEndian);
-	mapIndexUsed = Get32(mapPtr + 0x18, littleEndian);
+    mapPtr = srcBuf + rFileToMap;
+    mapToIndex = Get16(mapPtr + 0x0e, littleEndian);
+    mapIndexSize = Get32(mapPtr + 0x14, littleEndian);
+    mapIndexUsed = Get32(mapPtr + 0x18, littleEndian);
 
-	BufPrintf("Resource map:\r\n");
-	BufPrintf("  mapToIndex      = 0x%04x (file offset=0x%08lx)\n",
-		mapToIndex, mapToIndex + rFileToMap);
-	BufPrintf("  mapIndexSize    = %ld\r\n", mapIndexSize);
-	BufPrintf("  mapIndexUsed    = %ld\r\n", mapIndexUsed);
-	BufPrintf("  mapFreeListSize = %ld\r\n", Get16(mapPtr + 0x1c, littleEndian));
-	BufPrintf("  mapFreeListUsed = %ld\r\n", Get16(mapPtr + 0x1e, littleEndian));
+    BufPrintf("Resource map:\r\n");
+    BufPrintf("  mapToIndex      = 0x%04x (file offset=0x%08lx)\n",
+        mapToIndex, mapToIndex + rFileToMap);
+    BufPrintf("  mapIndexSize    = %ld\r\n", mapIndexSize);
+    BufPrintf("  mapIndexUsed    = %ld\r\n", mapIndexUsed);
+    BufPrintf("  mapFreeListSize = %ld\r\n", Get16(mapPtr + 0x1c, littleEndian));
+    BufPrintf("  mapFreeListUsed = %ld\r\n", Get16(mapPtr + 0x1e, littleEndian));
 
-	/* dump contents of resource reference records */
-	const unsigned char* indexPtr;
+    /* dump contents of resource reference records */
+    const unsigned char* indexPtr;
 
-	BufPrintf("\r\nResources:");
-	indexPtr = mapPtr + mapToIndex;
-	int i;
+    BufPrintf("\r\nResources:");
+    indexPtr = mapPtr + mapToIndex;
+    int i;
 
-	for (i = 0; i < mapIndexSize; i++) {
-		unsigned short resType = Get16(indexPtr + 0x00, littleEndian);
-		if (resType == 0)
-			break;		// should happen when i == mapIndexUsed
+    for (i = 0; i < mapIndexSize; i++) {
+        unsigned short resType = Get16(indexPtr + 0x00, littleEndian);
+        if (resType == 0)
+            break;      // should happen when i == mapIndexUsed
 
-		const char* typeDescr;
-		if (resType >= 0x8000 && resType < 0x8000 + NELEM(kRsrc8000))
-			typeDescr = kRsrc8000[resType - 0x8000];
-		else if (resType >= 0xc000 && resType < 0xc000 + NELEM(kRsrcC000))
-			typeDescr = kRsrcC000[resType - 0xc000];
-		else if (resType >= 0x0001 && resType <= 0x7fff)
-			typeDescr = _T("(application-defined resource)");
-		else
-			typeDescr = kUnknownSysRsrc;
+        const char* typeDescr;
+        if (resType >= 0x8000 && resType < 0x8000 + NELEM(kRsrc8000))
+            typeDescr = kRsrc8000[resType - 0x8000];
+        else if (resType >= 0xc000 && resType < 0xc000 + NELEM(kRsrcC000))
+            typeDescr = kRsrcC000[resType - 0xc000];
+        else if (resType >= 0x0001 && resType <= 0x7fff)
+            typeDescr = _T("(application-defined resource)");
+        else
+            typeDescr = kUnknownSysRsrc;
 
-		BufPrintf("\r\n  Entry #%d:\r\n", i);
-		BufPrintf("    resType   = 0x%04x - %s\r\n", resType, typeDescr);
-		BufPrintf("    resID     = 0x%04x\r\n",
-			Get32(indexPtr + 0x02, littleEndian));
-		BufPrintf("    resOffset = 0x%04x\r\n",
-			Get32(indexPtr + 0x06, littleEndian));
-		BufPrintf("    resAttr   = 0x%04x\r\n",
-			Get16(indexPtr + 0x0a, littleEndian));
-		BufPrintf("    resSize   = 0x%04x\r\n",
-			Get32(indexPtr + 0x0c, littleEndian));
-		//BufPrintf("    resHandle = 0x%04x\r\n",
-		//	Get32(indexPtr + 0x10, littleEndian));
+        BufPrintf("\r\n  Entry #%d:\r\n", i);
+        BufPrintf("    resType   = 0x%04x - %s\r\n", resType, typeDescr);
+        BufPrintf("    resID     = 0x%04x\r\n",
+            Get32(indexPtr + 0x02, littleEndian));
+        BufPrintf("    resOffset = 0x%04x\r\n",
+            Get32(indexPtr + 0x06, littleEndian));
+        BufPrintf("    resAttr   = 0x%04x\r\n",
+            Get16(indexPtr + 0x0a, littleEndian));
+        BufPrintf("    resSize   = 0x%04x\r\n",
+            Get32(indexPtr + 0x0c, littleEndian));
+        //BufPrintf("    resHandle = 0x%04x\r\n",
+        //  Get32(indexPtr + 0x10, littleEndian));
 
-		BufHexDump(srcBuf + Get32(indexPtr + 0x06, littleEndian),
-			Get32(indexPtr + 0x0c, littleEndian));
+        BufHexDump(srcBuf + Get32(indexPtr + 0x06, littleEndian),
+            Get32(indexPtr + 0x0c, littleEndian));
 
-		indexPtr += kRsrcMapEntryLen;
-	}
+        indexPtr += kRsrcMapEntryLen;
+    }
 
 done:
-	SetResultBuffer(pOutput);
-	return 0;
+    SetResultBuffer(pOutput);
+    return 0;
 }
 
 /*
@@ -168,33 +168,33 @@ done:
  */
 /*static*/ bool
 ReformatResourceFork::ReadHeader(const unsigned char* srcBuf, long srcLen,
-	long* pFileVersion, long* pFileToMap, long* pFileMapSize,
-	bool* pLittleEndian)
+    long* pFileVersion, long* pFileToMap, long* pFileMapSize,
+    bool* pLittleEndian)
 {
-	if (srcLen < 128) {
-		WMSG1("ReformatResource: invalid len %d\n", srcLen);
-		return false;
-	}
+    if (srcLen < 128) {
+        WMSG1("ReformatResource: invalid len %d\n", srcLen);
+        return false;
+    }
 
-	*pFileVersion = Get32LE(srcBuf);
-	if (*pFileVersion == 0)
-		*pLittleEndian = true;
-	else
-		*pLittleEndian = false;
+    *pFileVersion = Get32LE(srcBuf);
+    if (*pFileVersion == 0)
+        *pLittleEndian = true;
+    else
+        *pLittleEndian = false;
 
-	*pFileVersion = Get32(srcBuf, *pLittleEndian);
-	*pFileToMap = Get32(srcBuf+4, *pLittleEndian);
-	*pFileMapSize = Get32(srcBuf+8, *pLittleEndian);
+    *pFileVersion = Get32(srcBuf, *pLittleEndian);
+    *pFileToMap = Get32(srcBuf+4, *pLittleEndian);
+    *pFileMapSize = Get32(srcBuf+8, *pLittleEndian);
 
-	if (*pFileVersion != 0)
-		return false;
-	if (*pFileMapSize <= 0 || *pFileMapSize >= srcLen ||
-		*pFileToMap <= 0 || *pFileToMap >= srcLen)
-	{
-		return false;
-	}
+    if (*pFileVersion != 0)
+        return false;
+    if (*pFileMapSize <= 0 || *pFileMapSize >= srcLen ||
+        *pFileToMap <= 0 || *pFileToMap >= srcLen)
+    {
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 
@@ -205,58 +205,58 @@ ReformatResourceFork::ReadHeader(const unsigned char* srcBuf, long srcLen,
  */
 /*static*/ bool
 ReformatResourceFork::GetResource(const unsigned char* srcBuf, long srcLen,
-	unsigned short resourceType, unsigned long resourceID,
-	const unsigned char** pResource, long* pResourceLen)
+    unsigned short resourceType, unsigned long resourceID,
+    const unsigned char** pResource, long* pResourceLen)
 {
-	/* read the file header */
-	long rFileVersion, rFileToMap, rFileMapSize;
-	bool littleEndian;
-	bool result;
+    /* read the file header */
+    long rFileVersion, rFileToMap, rFileMapSize;
+    bool littleEndian;
+    bool result;
 
-	result = ReadHeader(srcBuf, srcLen, &rFileVersion, &rFileToMap,
-				&rFileMapSize, &littleEndian);
-	if (!result)
-		return false;
+    result = ReadHeader(srcBuf, srcLen, &rFileVersion, &rFileToMap,
+                &rFileMapSize, &littleEndian);
+    if (!result)
+        return false;
 
-	/* move to start of resource map */
-	const unsigned char* mapPtr;
-	long mapToIndex, mapIndexSize, mapIndexUsed;
+    /* move to start of resource map */
+    const unsigned char* mapPtr;
+    long mapToIndex, mapIndexSize, mapIndexUsed;
 
-	mapPtr = srcBuf + rFileToMap;
-	mapToIndex = Get16(mapPtr + 0x0e, littleEndian);
-	mapIndexSize = Get32(mapPtr + 0x14, littleEndian);
-	mapIndexUsed = Get32(mapPtr + 0x18, littleEndian);
+    mapPtr = srcBuf + rFileToMap;
+    mapToIndex = Get16(mapPtr + 0x0e, littleEndian);
+    mapIndexSize = Get32(mapPtr + 0x14, littleEndian);
+    mapIndexUsed = Get32(mapPtr + 0x18, littleEndian);
 
-	/* find the appropriate entry */
-	const unsigned char* indexPtr = mapPtr + mapToIndex;
-	int i;
+    /* find the appropriate entry */
+    const unsigned char* indexPtr = mapPtr + mapToIndex;
+    int i;
 
-	for (i = 0; i < mapIndexSize; i++) {
-		unsigned short resType;
-		unsigned long resID;
-		
-		resType = Get16(indexPtr + 0x00, littleEndian);
-		if (resType == 0)
-			break;		// should happen when i == mapIndexUsed
-		resID = Get32(indexPtr + 0x02, littleEndian);
+    for (i = 0; i < mapIndexSize; i++) {
+        unsigned short resType;
+        unsigned long resID;
+        
+        resType = Get16(indexPtr + 0x00, littleEndian);
+        if (resType == 0)
+            break;      // should happen when i == mapIndexUsed
+        resID = Get32(indexPtr + 0x02, littleEndian);
 
-		if (resType == resourceType && resID == resourceID) {
-			WMSG2("Found resource with type=0x%04x id=0x%04x\n",
-				resType, resID);
-			*pResource = srcBuf + Get32(indexPtr + 0x06, littleEndian);
-			*pResourceLen = Get32(indexPtr + 0x0c, littleEndian);
-			if (*pResource + *pResourceLen > srcBuf+srcLen) {
-				WMSG0(" Bad bounds on resource\n");
-				DebugBreak();
-				return false;
-			}
-			return true;
-		}
+        if (resType == resourceType && resID == resourceID) {
+            WMSG2("Found resource with type=0x%04x id=0x%04x\n",
+                resType, resID);
+            *pResource = srcBuf + Get32(indexPtr + 0x06, littleEndian);
+            *pResourceLen = Get32(indexPtr + 0x0c, littleEndian);
+            if (*pResource + *pResourceLen > srcBuf+srcLen) {
+                WMSG0(" Bad bounds on resource\n");
+                DebugBreak();
+                return false;
+            }
+            return true;
+        }
 
-		indexPtr += kRsrcMapEntryLen;
-	}
+        indexPtr += kRsrcMapEntryLen;
+    }
 
-	WMSG2("Resource not found (type=0x%04x id=0x%04x)\n",
-		resourceType, resourceID);
-	return false;
+    WMSG2("Resource not found (type=0x%04x id=0x%04x)\n",
+        resourceType, resourceID);
+    return false;
 }

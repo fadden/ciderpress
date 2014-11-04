@@ -13,12 +13,12 @@
 #include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(ChooseDirDialog, CDialog)
-	ON_NOTIFY(TVN_SELCHANGED, IDC_CHOOSEDIR_TREE, OnSelChanged)
-	ON_BN_CLICKED(IDC_CHOOSEDIR_EXPAND_TREE, OnExpandTree)
-	ON_BN_CLICKED(IDC_CHOOSEDIR_NEW_FOLDER, OnNewFolder)
-	ON_WM_HELPINFO()
-	//ON_COMMAND(ID_HELP, OnIDHelp)
-	ON_BN_CLICKED(IDHELP, OnHelp)
+    ON_NOTIFY(TVN_SELCHANGED, IDC_CHOOSEDIR_TREE, OnSelChanged)
+    ON_BN_CLICKED(IDC_CHOOSEDIR_EXPAND_TREE, OnExpandTree)
+    ON_BN_CLICKED(IDC_CHOOSEDIR_NEW_FOLDER, OnNewFolder)
+    ON_WM_HELPINFO()
+    //ON_COMMAND(ID_HELP, OnIDHelp)
+    ON_BN_CLICKED(IDHELP, OnHelp)
 END_MESSAGE_MAP()
 
 
@@ -28,39 +28,39 @@ END_MESSAGE_MAP()
 BOOL
 ChooseDirDialog::OnInitDialog(void)
 {
-	CDialog::OnInitDialog();
+    CDialog::OnInitDialog();
 
-	/* set up the "new folder" button */
-	fNewFolderButton.ReplaceDlgCtrl(this, IDC_CHOOSEDIR_NEW_FOLDER);
-	fNewFolderButton.SetBitmapID(IDB_NEW_FOLDER);
+    /* set up the "new folder" button */
+    fNewFolderButton.ReplaceDlgCtrl(this, IDC_CHOOSEDIR_NEW_FOLDER);
+    fNewFolderButton.SetBitmapID(IDB_NEW_FOLDER);
 
-	/* replace the tree control with a ShellTree */
-	if (fShellTree.ReplaceDlgCtrl(this, IDC_CHOOSEDIR_TREE) != TRUE) {
-		WMSG0("WARNING: ShellTree replacement failed\n");
-		ASSERT(false);
-	}
+    /* replace the tree control with a ShellTree */
+    if (fShellTree.ReplaceDlgCtrl(this, IDC_CHOOSEDIR_TREE) != TRUE) {
+        WMSG0("WARNING: ShellTree replacement failed\n");
+        ASSERT(false);
+    }
 
-	//enable images
-	fShellTree.EnableImages();
-	//populate for the with Shell Folders for the first time
-	fShellTree.PopulateTree(/*CSIDL_DRIVES*/);
+    //enable images
+    fShellTree.EnableImages();
+    //populate for the with Shell Folders for the first time
+    fShellTree.PopulateTree(/*CSIDL_DRIVES*/);
 
-	if (fPathName.IsEmpty()) {
-		// start somewhere reasonable
-		fShellTree.ExpandMyComputer();
-	} else {
-		CString msg("");
-		fShellTree.TunnelTree(fPathName, &msg);
-		if (!msg.IsEmpty()) {
-			/* failed */
-			WMSG2("TunnelTree failed on '%s' (%s), using MyComputer instead\n",
-				fPathName, msg);
-			fShellTree.ExpandMyComputer();
-		}
-	}
+    if (fPathName.IsEmpty()) {
+        // start somewhere reasonable
+        fShellTree.ExpandMyComputer();
+    } else {
+        CString msg("");
+        fShellTree.TunnelTree(fPathName, &msg);
+        if (!msg.IsEmpty()) {
+            /* failed */
+            WMSG2("TunnelTree failed on '%s' (%s), using MyComputer instead\n",
+                fPathName, msg);
+            fShellTree.ExpandMyComputer();
+        }
+    }
 
-	fShellTree.SetFocus();
-	return FALSE;	// leave focus on shell tree
+    fShellTree.SetFocus();
+    return FALSE;   // leave focus on shell tree
 }
 
 /*
@@ -69,17 +69,17 @@ ChooseDirDialog::OnInitDialog(void)
 BOOL
 ChooseDirDialog::PreTranslateMessage(MSG* pMsg)
 {
-	if (pMsg->message == WM_KEYDOWN &&
+    if (pMsg->message == WM_KEYDOWN &&
          pMsg->wParam == VK_RETURN)
-	{
-		//WMSG0("RETURN!\n");
-		if (GetFocus() == GetDlgItem(IDC_CHOOSEDIR_PATHEDIT)) {
-			OnExpandTree();
-			return TRUE;
-		}
-	}
+    {
+        //WMSG0("RETURN!\n");
+        if (GetFocus() == GetDlgItem(IDC_CHOOSEDIR_PATHEDIT)) {
+            OnExpandTree();
+            return TRUE;
+        }
+    }
 
-	return CDialog::PreTranslateMessage(pMsg);
+    return CDialog::PreTranslateMessage(pMsg);
 }
 
 /*
@@ -89,9 +89,9 @@ ChooseDirDialog::PreTranslateMessage(MSG* pMsg)
 BOOL
 ChooseDirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
-	DWORD context = lpHelpInfo->iCtrlId;
-	WinHelp(context, HELP_CONTEXTPOPUP);
-	return TRUE;	// indicate success??
+    DWORD context = lpHelpInfo->iCtrlId;
+    WinHelp(context, HELP_CONTEXTPOPUP);
+    return TRUE;    // indicate success??
 }
 
 /*
@@ -100,7 +100,7 @@ ChooseDirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 void
 ChooseDirDialog::OnHelp(void)
 {
-	WinHelp(HELP_TOPIC_CHOOSE_FOLDER, HELP_CONTEXT);
+    WinHelp(HELP_TOPIC_CHOOSE_FOLDER, HELP_CONTEXT);
 }
 
 /*
@@ -110,27 +110,27 @@ ChooseDirDialog::OnHelp(void)
 void
 ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
 {
-	CString path;
-	CWnd* pWnd = GetDlgItem(IDC_CHOOSEDIR_PATH);
-	ASSERT(pWnd != nil);
+    CString path;
+    CWnd* pWnd = GetDlgItem(IDC_CHOOSEDIR_PATH);
+    ASSERT(pWnd != nil);
 
-	if (fShellTree.GetFolderPath(&path))
-		fPathName = path;
-	else
-		fPathName = "";
-	pWnd->SetWindowText(fPathName);
+    if (fShellTree.GetFolderPath(&path))
+        fPathName = path;
+    else
+        fPathName = "";
+    pWnd->SetWindowText(fPathName);
 
-	// disable the "Select" button when there's no path ready
-	pWnd = GetDlgItem(IDOK);
-	ASSERT(pWnd != nil);
-	pWnd->EnableWindow(!fPathName.IsEmpty());
+    // disable the "Select" button when there's no path ready
+    pWnd = GetDlgItem(IDOK);
+    ASSERT(pWnd != nil);
+    pWnd->EnableWindow(!fPathName.IsEmpty());
 
-	// It's confusing to have two different paths showing, so wipe out the
-	// free entry field when the selection changes.
-	pWnd = GetDlgItem(IDC_CHOOSEDIR_PATHEDIT);
-	pWnd->SetWindowText("");
+    // It's confusing to have two different paths showing, so wipe out the
+    // free entry field when the selection changes.
+    pWnd = GetDlgItem(IDC_CHOOSEDIR_PATHEDIT);
+    pWnd->SetWindowText("");
 
-	*pResult = 0;
+    *pResult = 0;
 }
 
 /*
@@ -139,22 +139,22 @@ ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
 void
 ChooseDirDialog::OnExpandTree(void)
 {
-	CWnd* pWnd;
-	CString str;
-	CString msg;
+    CWnd* pWnd;
+    CString str;
+    CString msg;
 
-	pWnd = GetDlgItem(IDC_CHOOSEDIR_PATHEDIT);
-	ASSERT(pWnd != nil);
-	pWnd->GetWindowText(str);
+    pWnd = GetDlgItem(IDC_CHOOSEDIR_PATHEDIT);
+    ASSERT(pWnd != nil);
+    pWnd->GetWindowText(str);
 
-	if (!str.IsEmpty()) {
-		fShellTree.TunnelTree(str, &msg);
-		if (!msg.IsEmpty()) {
-			CString failed;
-			failed.LoadString(IDS_FAILED);
-			MessageBox(msg, failed, MB_OK | MB_ICONERROR);
-		}
-	}
+    if (!str.IsEmpty()) {
+        fShellTree.TunnelTree(str, &msg);
+        if (!msg.IsEmpty()) {
+            CString failed;
+            failed.LoadString(IDS_FAILED);
+            MessageBox(msg, failed, MB_OK | MB_ICONERROR);
+        }
+    }
 }
 
 /*
@@ -163,37 +163,37 @@ ChooseDirDialog::OnExpandTree(void)
 void
 ChooseDirDialog::OnNewFolder(void)
 {
-	if (fPathName.IsEmpty()) {
-		MessageBox("You can't create a folder in this part of the tree.",
-			"Bad Location", MB_OK | MB_ICONERROR);
-		return;
-	}
+    if (fPathName.IsEmpty()) {
+        MessageBox("You can't create a folder in this part of the tree.",
+            "Bad Location", MB_OK | MB_ICONERROR);
+        return;
+    }
 
-	NewFolderDialog newFolderDlg;
+    NewFolderDialog newFolderDlg;
 
-	newFolderDlg.fCurrentFolder = fPathName;
-	if (newFolderDlg.DoModal() == IDOK) {
-		if (newFolderDlg.GetFolderCreated()) {
-			/*
-			 * They created a new folder.  We want to add it to the tree
-			 * and then select it.  This is not too hard because we know
-			 * that the folder was created under the currently-selected
-			 * tree node.
-			 */
-			if (fShellTree.AddFolderAtSelection(newFolderDlg.fNewFolder)) {
-				CString msg;
-				WMSG1("Success, tunneling to '%s'\n",
-					newFolderDlg.fNewFullPath);
-				fShellTree.TunnelTree(newFolderDlg.fNewFullPath, &msg);
-				if (!msg.IsEmpty()) {
-					WMSG1("TunnelTree failed: %s\n", (LPCTSTR) msg);
-				}
-			} else {
-				WMSG0("AddFolderAtSelection FAILED\n");
-				ASSERT(false);
-			}
-		} else {
-			WMSG0("NewFolderDialog returned IDOK but no create\n");
-		}
-	}
+    newFolderDlg.fCurrentFolder = fPathName;
+    if (newFolderDlg.DoModal() == IDOK) {
+        if (newFolderDlg.GetFolderCreated()) {
+            /*
+             * They created a new folder.  We want to add it to the tree
+             * and then select it.  This is not too hard because we know
+             * that the folder was created under the currently-selected
+             * tree node.
+             */
+            if (fShellTree.AddFolderAtSelection(newFolderDlg.fNewFolder)) {
+                CString msg;
+                WMSG1("Success, tunneling to '%s'\n",
+                    newFolderDlg.fNewFullPath);
+                fShellTree.TunnelTree(newFolderDlg.fNewFullPath, &msg);
+                if (!msg.IsEmpty()) {
+                    WMSG1("TunnelTree failed: %s\n", (LPCTSTR) msg);
+                }
+            } else {
+                WMSG0("AddFolderAtSelection FAILED\n");
+                ASSERT(false);
+            }
+        } else {
+            WMSG0("NewFolderDialog returned IDOK but no create\n");
+        }
+    }
 }

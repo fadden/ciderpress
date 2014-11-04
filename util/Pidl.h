@@ -20,16 +20,16 @@ public:
     static LPITEMIDLIST GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi);
     static LPITEMIDLIST CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi);
     static BOOL GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, DWORD dwFlags,
-		LPSTR lpFriendlyName);
+        LPSTR lpFriendlyName);
     static LPITEMIDLIST CreatePidl(UINT cbSize);
     static UINT GetSize(LPCITEMIDLIST pidl);
     static LPITEMIDLIST Next(LPCITEMIDLIST pidl);
-	static BOOL GetPath(LPCITEMIDLIST pidl, CString* pPath);
+    static BOOL GetPath(LPCITEMIDLIST pidl, CString* pPath);
 
-	// Utility Functions
-	//static BOOL DoTheMenuThing(HWND hwnd, LPSHELLFOLDER lpsfParent,
-	//	LPITEMIDLIST lpi, LPPOINT lppt);
-	static int GetItemIcon(LPITEMIDLIST lpi, UINT uFlags);
+    // Utility Functions
+    //static BOOL DoTheMenuThing(HWND hwnd, LPSHELLFOLDER lpsfParent,
+    //  LPITEMIDLIST lpi, LPPOINT lppt);
+    static int GetItemIcon(LPITEMIDLIST lpi, UINT uFlags);
 };
 
 #endif /*__PIDL__*/

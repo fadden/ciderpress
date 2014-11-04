@@ -12,7 +12,7 @@
 
 /*
  * ===========================================================================
- *		A2File
+ *      A2File
  * ===========================================================================
  */
 
@@ -24,18 +24,18 @@
 void
 A2File::SetQuality(FileQuality quality)
 {
-	if (quality == kQualityGood &&
-		(fFileQuality == kQualitySuspicious || fFileQuality == kQualityDamaged))
-	{
-		assert(false);
-		return;
-	}
-	if (quality == kQualitySuspicious && fFileQuality == kQualityDamaged) {
-		//assert(false);
-		return;
-	}
+    if (quality == kQualityGood &&
+        (fFileQuality == kQualitySuspicious || fFileQuality == kQualityDamaged))
+    {
+        assert(false);
+        return;
+    }
+    if (quality == kQualitySuspicious && fFileQuality == kQualityDamaged) {
+        //assert(false);
+        return;
+    }
 
-	fFileQuality = quality;
+    fFileQuality = quality;
 }
 
 /*
@@ -44,13 +44,13 @@ A2File::SetQuality(FileQuality quality)
 void
 A2File::ResetQuality(void)
 {
-	fFileQuality = kQualityGood;
+    fFileQuality = kQualityGood;
 }
 
 
 /*
  * ===========================================================================
- *		DiskFS
+ *      DiskFS
  * ===========================================================================
  */
 
@@ -62,19 +62,19 @@ A2File::ResetQuality(void)
 void
 DiskFS::SetDiskImg(DiskImg* pImg)
 {
-	if (pImg == nil && fpImg == nil) {
-		WMSG0("SetDiskImg: no-op (both nil)\n");
-		return;
-	} else if (fpImg == pImg) {
-		WMSG0("SetDiskImg: no-op (old == new)\n");
-		return;
-	}
+    if (pImg == nil && fpImg == nil) {
+        WMSG0("SetDiskImg: no-op (both nil)\n");
+        return;
+    } else if (fpImg == pImg) {
+        WMSG0("SetDiskImg: no-op (old == new)\n");
+        return;
+    }
 
-	if (fpImg != nil)
-		fpImg->RemoveDiskFS(this);
-	if (pImg != nil)
-		pImg->AddDiskFS(this);
-	fpImg = pImg;
+    if (fpImg != nil)
+        fpImg->RemoveDiskFS(this);
+    if (pImg != nil)
+        pImg->AddDiskFS(this);
+    fpImg = pImg;
 }
 
 /*
@@ -83,24 +83,24 @@ DiskFS::SetDiskImg(DiskImg* pImg)
 DIError
 DiskFS::Flush(DiskImg::FlushMode mode)
 {
-	SubVolume* pSubVol = GetNextSubVolume(nil);
-	DIError dierr;
+    SubVolume* pSubVol = GetNextSubVolume(nil);
+    DIError dierr;
 
-	while (pSubVol != nil) {
+    while (pSubVol != nil) {
 
-		// quick sanity check
-		assert(pSubVol->GetDiskFS()->GetDiskImg() == pSubVol->GetDiskImg());
+        // quick sanity check
+        assert(pSubVol->GetDiskFS()->GetDiskImg() == pSubVol->GetDiskImg());
 
-		dierr = pSubVol->GetDiskFS()->Flush(mode);	// recurse
-		if (dierr != kDIErrNone)
-			return dierr;
+        dierr = pSubVol->GetDiskFS()->Flush(mode);  // recurse
+        if (dierr != kDIErrNone)
+            return dierr;
 
-		pSubVol = GetNextSubVolume(pSubVol);
-	}
+        pSubVol = GetNextSubVolume(pSubVol);
+    }
 
-	assert(fpImg != nil);
+    assert(fpImg != nil);
 
-	return fpImg->FlushImage(mode);
+    return fpImg->FlushImage(mode);
 }
 
 /*
@@ -109,22 +109,22 @@ DiskFS::Flush(DiskImg::FlushMode mode)
 void
 DiskFS::SetAllReadOnly(bool val)
 {
-	SubVolume* pSubVol = GetNextSubVolume(nil);
+    SubVolume* pSubVol = GetNextSubVolume(nil);
 
-	/* put current volume in read-only mode */
-	if (fpImg != nil)
-		fpImg->SetReadOnly(val);
+    /* put current volume in read-only mode */
+    if (fpImg != nil)
+        fpImg->SetReadOnly(val);
 
-	/* handle our kids */
-	while (pSubVol != nil) {
-		// quick sanity check
-		assert(pSubVol->GetDiskFS()->GetDiskImg() == pSubVol->GetDiskImg());
+    /* handle our kids */
+    while (pSubVol != nil) {
+        // quick sanity check
+        assert(pSubVol->GetDiskFS()->GetDiskImg() == pSubVol->GetDiskImg());
 
-		//pSubVol->GetDiskImg()->SetReadOnly(val);
-		pSubVol->GetDiskFS()->SetAllReadOnly(val);	// recurse
+        //pSubVol->GetDiskImg()->SetReadOnly(val);
+        pSubVol->GetDiskFS()->SetAllReadOnly(val);  // recurse
 
-		pSubVol = GetNextSubVolume(pSubVol);
-	}
+        pSubVol = GetNextSubVolume(pSubVol);
+    }
 }
 
 
@@ -164,16 +164,16 @@ DiskFS::SetAllReadOnly(bool val)
 void
 DiskFS::AddFileToList(A2File* pFile)
 {
-	assert(pFile->GetNext() == nil);
+    assert(pFile->GetNext() == nil);
 
-	if (fpA2Head == nil) {
-		assert(fpA2Tail == nil);
-		fpA2Head = fpA2Tail = pFile;
-	} else {
-		pFile->SetPrev(fpA2Tail);
-		fpA2Tail->SetNext(pFile);
-		fpA2Tail = pFile;
-	}
+    if (fpA2Head == nil) {
+        assert(fpA2Tail == nil);
+        fpA2Head = fpA2Tail = pFile;
+    } else {
+        pFile->SetPrev(fpA2Tail);
+        fpA2Tail->SetNext(pFile);
+        fpA2Tail = pFile;
+    }
 }
 
 /*
@@ -196,31 +196,31 @@ DiskFS::AddFileToList(A2File* pFile)
 void
 DiskFS::InsertFileInList(A2File* pFile, A2File* pPrev)
 {
-	assert(pFile->GetNext() == nil);
+    assert(pFile->GetNext() == nil);
 
-	if (fpA2Head == nil) {
-		assert(pPrev == nil);
-		fpA2Head = fpA2Tail = pFile;
-		return;
-	} else if (pPrev == nil) {
-		// create two entries on DOS disk, delete first, add new file
-		pFile->SetNext(fpA2Head);
-		fpA2Head = pFile;
-		return;
-	}
+    if (fpA2Head == nil) {
+        assert(pPrev == nil);
+        fpA2Head = fpA2Tail = pFile;
+        return;
+    } else if (pPrev == nil) {
+        // create two entries on DOS disk, delete first, add new file
+        pFile->SetNext(fpA2Head);
+        fpA2Head = pFile;
+        return;
+    }
 
-	/*
-	 * If we're inserting after the parent (i.e. we're the very first thing
-	 * in a subdir) or after a plain file, just drop it in.
-	 *
-	 * If we're inserting after a subdir, go fish.
-	 */
-	if (pPrev->IsDirectory() && pFile->GetParent() != pPrev) {
-		pPrev = SkipSubdir(pPrev);
-	}
+    /*
+     * If we're inserting after the parent (i.e. we're the very first thing
+     * in a subdir) or after a plain file, just drop it in.
+     *
+     * If we're inserting after a subdir, go fish.
+     */
+    if (pPrev->IsDirectory() && pFile->GetParent() != pPrev) {
+        pPrev = SkipSubdir(pPrev);
+    }
 
-	pFile->SetNext(pPrev->GetNext());
-	pPrev->SetNext(pFile);
+    pFile->SetNext(pPrev->GetNext());
+    pPrev->SetNext(pFile);
 }
 
 /*
@@ -231,30 +231,30 @@ DiskFS::InsertFileInList(A2File* pFile, A2File* pPrev)
 A2File*
 DiskFS::SkipSubdir(A2File* pSubdir)
 {
-	if (pSubdir->GetNext() == nil)
-		return pSubdir;		// end of list reached -- subdir is empty
+    if (pSubdir->GetNext() == nil)
+        return pSubdir;     // end of list reached -- subdir is empty
 
-	A2File* pCur = pSubdir;
-	A2File* pNext = nil;
+    A2File* pCur = pSubdir;
+    A2File* pNext = nil;
 
-	assert(pCur != nil);	// at least one time through the loop
+    assert(pCur != nil);    // at least one time through the loop
 
-	while (pCur != nil) {
-		pNext = pCur->GetNext();
-		if (pNext == nil)				// end of list reached
-			return pCur;
+    while (pCur != nil) {
+        pNext = pCur->GetNext();
+        if (pNext == nil)               // end of list reached
+            return pCur;
 
-		if (pNext->GetParent() != pSubdir)	// end of dir reached
-			return pCur;
-		if (pNext->IsDirectory())
-			pCur = SkipSubdir(pNext);	// get last entry in dir
-		else
-			pCur = pNext;				// advance forward one
-	}
+        if (pNext->GetParent() != pSubdir)  // end of dir reached
+            return pCur;
+        if (pNext->IsDirectory())
+            pCur = SkipSubdir(pNext);   // get last entry in dir
+        else
+            pCur = pNext;               // advance forward one
+    }
 
-	/* should never get here */
-	assert(false);
-	return pNext;
+    /* should never get here */
+    assert(false);
+    return pNext;
 }
 
 /*
@@ -265,28 +265,28 @@ DiskFS::SkipSubdir(A2File* pSubdir)
 void
 DiskFS::DeleteFileFromList(A2File* pFile)
 {
-	if (fpA2Head == pFile) {
-		/* delete the head of the list */
-		fpA2Head = fpA2Head->GetNext();
-		delete pFile;
-	} else {
-		A2File* pCur = fpA2Head;
-		while (pCur != nil) {
-			if (pCur->GetNext() == pFile) {
-				/* found it */
-				A2File* pNextNext = pCur->GetNext()->GetNext();
-				delete pCur->GetNext();
-				pCur->SetNext(pNextNext);
-				break;
-			}
-			pCur = pCur->GetNext();
-		}
+    if (fpA2Head == pFile) {
+        /* delete the head of the list */
+        fpA2Head = fpA2Head->GetNext();
+        delete pFile;
+    } else {
+        A2File* pCur = fpA2Head;
+        while (pCur != nil) {
+            if (pCur->GetNext() == pFile) {
+                /* found it */
+                A2File* pNextNext = pCur->GetNext()->GetNext();
+                delete pCur->GetNext();
+                pCur->SetNext(pNextNext);
+                break;
+            }
+            pCur = pCur->GetNext();
+        }
 
-		if (pCur == nil) {
-			WMSG0("GLITCH: couldn't find element to delete!\n");
-			assert(false);
-		}
-	}
+        if (pCur == nil) {
+            WMSG0("GLITCH: couldn't find element to delete!\n");
+            assert(false);
+        }
+    }
 }
 
 
@@ -299,10 +299,10 @@ DiskFS::DeleteFileFromList(A2File* pFile)
 A2File*
 DiskFS::GetNextFile(A2File* pFile) const
 {
-	if (pFile == NULL)
-		return fpA2Head;
-	else
-		return pFile->GetNext();
+    if (pFile == NULL)
+        return fpA2Head;
+    else
+        return pFile->GetNext();
 }
 
 /*
@@ -314,15 +314,15 @@ DiskFS::GetNextFile(A2File* pFile) const
 long
 DiskFS::GetFileCount(void) const
 {
-	long count = 0;
+    long count = 0;
 
-	A2File* pFile = fpA2Head;
-	while (pFile != nil) {
-		count++;
-		pFile = pFile->GetNext();
-	}
+    A2File* pFile = fpA2Head;
+    while (pFile != nil) {
+        count++;
+        pFile = pFile->GetNext();
+    }
 
-	return count;
+    return count;
 }
 
 /*
@@ -331,15 +331,15 @@ DiskFS::GetFileCount(void) const
 void
 DiskFS::DeleteFileList(void)
 {
-	A2File* pFile;
-	A2File* pNext;
+    A2File* pFile;
+    A2File* pNext;
 
-	pFile = fpA2Head;
-	while (pFile != nil) {
-		pNext = pFile->GetNext();
-		delete pFile;
-		pFile = pNext;
-	}
+    pFile = fpA2Head;
+    while (pFile != nil) {
+        pNext = pFile->GetNext();
+        delete pFile;
+        pFile = pNext;
+    }
 }
 
 /*
@@ -348,15 +348,15 @@ DiskFS::DeleteFileList(void)
 void
 DiskFS::DumpFileList(void)
 {
-	A2File* pFile;
+    A2File* pFile;
 
-	WMSG0("DiskFS file list contents:\n");
+    WMSG0("DiskFS file list contents:\n");
 
-	pFile = GetNextFile(nil);
-	while (pFile != nil) {
-		WMSG1(" %s\n", pFile->GetPathName());
-		pFile = GetNextFile(pFile);
-	}
+    pFile = GetNextFile(nil);
+    while (pFile != nil) {
+        WMSG1(" %s\n", pFile->GetPathName());
+        pFile = GetNextFile(pFile);
+    }
 }
 
 /*
@@ -370,20 +370,20 @@ DiskFS::DumpFileList(void)
 A2File*
 DiskFS::GetFileByName(const char* fileName, StringCompareFunc func)
 {
-	A2File* pFile;
+    A2File* pFile;
 
-	if (func == nil)
-		func = ::strcasecmp;
+    if (func == nil)
+        func = ::strcasecmp;
 
-	pFile = GetNextFile(nil);
-	while (pFile != nil) {
-		if ((*func)(pFile->GetPathName(), fileName) == 0)
-			return pFile;
+    pFile = GetNextFile(nil);
+    while (pFile != nil) {
+        if ((*func)(pFile->GetPathName(), fileName) == 0)
+            return pFile;
 
-		pFile = GetNextFile(pFile);
-	}
+        pFile = GetNextFile(pFile);
+    }
 
-	return nil;
+    return nil;
 }
 
 
@@ -398,61 +398,61 @@ DiskFS::GetFileByName(const char* fileName, StringCompareFunc func)
 void
 DiskFS::AddSubVolumeToList(DiskImg* pDiskImg, DiskFS* pDiskFS)
 {
-	SubVolume* pSubVol;
+    SubVolume* pSubVol;
 
-	/*
-	 * Check the arguments.
-	 */
-	if (pDiskImg == nil || pDiskFS == nil) {
-		WMSG2(" DiskFS bogus sub volume ptrs %08lx %08lx\n",
-			(long) pDiskImg, (long) pDiskFS);
-		assert(false);
-		return;
-	}
-	if (pDiskImg == fpImg || pDiskFS == this) {
-		WMSG0(" DiskFS attempt to add self to sub-vol list\n");
-		assert(false);
-		return;
-	}
-	if (pDiskFS->GetDiskImg() == nil) {
-		WMSG0(" DiskFS lacks a DiskImg pointer\n");
-		assert(false);
-		return;
-	}
-	pSubVol = fpSubVolumeHead;
-	while (pSubVol != nil) {
-		if (pSubVol->GetDiskImg() == pDiskImg ||
-			pSubVol->GetDiskFS() == pDiskFS)
-		{
-			WMSG0(" DiskFS multiple adds on diskimg or diskfs\n");
-			assert(false);
-			return;
-		}
-		pSubVol = pSubVol->GetNext();
-	}
+    /*
+     * Check the arguments.
+     */
+    if (pDiskImg == nil || pDiskFS == nil) {
+        WMSG2(" DiskFS bogus sub volume ptrs %08lx %08lx\n",
+            (long) pDiskImg, (long) pDiskFS);
+        assert(false);
+        return;
+    }
+    if (pDiskImg == fpImg || pDiskFS == this) {
+        WMSG0(" DiskFS attempt to add self to sub-vol list\n");
+        assert(false);
+        return;
+    }
+    if (pDiskFS->GetDiskImg() == nil) {
+        WMSG0(" DiskFS lacks a DiskImg pointer\n");
+        assert(false);
+        return;
+    }
+    pSubVol = fpSubVolumeHead;
+    while (pSubVol != nil) {
+        if (pSubVol->GetDiskImg() == pDiskImg ||
+            pSubVol->GetDiskFS() == pDiskFS)
+        {
+            WMSG0(" DiskFS multiple adds on diskimg or diskfs\n");
+            assert(false);
+            return;
+        }
+        pSubVol = pSubVol->GetNext();
+    }
 
-	assert(pDiskFS->GetDiskImg() == pDiskImg);
+    assert(pDiskFS->GetDiskImg() == pDiskImg);
 
-	/*
-	 * Looks good.  Add it.
-	 */
-	pSubVol = new SubVolume;
-	if (pSubVol == nil)
-		return;
+    /*
+     * Looks good.  Add it.
+     */
+    pSubVol = new SubVolume;
+    if (pSubVol == nil)
+        return;
 
-	pSubVol->Create(pDiskImg, pDiskFS);
+    pSubVol->Create(pDiskImg, pDiskFS);
 
-	if (fpSubVolumeHead == nil) {
-		assert(fpSubVolumeTail == nil);
-		fpSubVolumeHead = fpSubVolumeTail = pSubVol;
-	} else {
-		pSubVol->SetPrev(fpSubVolumeTail);
-		fpSubVolumeTail->SetNext(pSubVol);
-		fpSubVolumeTail = pSubVol;
-	}
+    if (fpSubVolumeHead == nil) {
+        assert(fpSubVolumeTail == nil);
+        fpSubVolumeHead = fpSubVolumeTail = pSubVol;
+    } else {
+        pSubVol->SetPrev(fpSubVolumeTail);
+        fpSubVolumeTail->SetNext(pSubVol);
+        fpSubVolumeTail = pSubVol;
+    }
 
-	/* make sure inheritable stuff gets copied */
-	CopyInheritables(pDiskFS);
+    /* make sure inheritable stuff gets copied */
+    CopyInheritables(pDiskFS);
 }
 
 /*
@@ -461,17 +461,17 @@ DiskFS::AddSubVolumeToList(DiskImg* pDiskImg, DiskFS* pDiskFS)
 void
 DiskFS::CopyInheritables(DiskFS* pNewFS)
 {
-	for (int i = 0; i < (int) NELEM(fParmTable); i++)
-		pNewFS->fParmTable[i] = fParmTable[i];
+    for (int i = 0; i < (int) NELEM(fParmTable); i++)
+        pNewFS->fParmTable[i] = fParmTable[i];
 
-	pNewFS->fScanForSubVolumes = fScanForSubVolumes;
+    pNewFS->fScanForSubVolumes = fScanForSubVolumes;
 
 #if 0
-	/* copy scan progress update stuff */
-	pNewFS->fpScanProgressCallback = fpScanProgressCallback;
-	pNewFS->fpScanProgressCookie = fpScanProgressCookie;
-	pNewFS->fpScanCount = -1;
-	strcpy(pNewFS->fpScanMsg, "HEY");
+    /* copy scan progress update stuff */
+    pNewFS->fpScanProgressCallback = fpScanProgressCallback;
+    pNewFS->fpScanProgressCookie = fpScanProgressCookie;
+    pNewFS->fpScanCount = -1;
+    strcpy(pNewFS->fpScanMsg, "HEY");
 #endif
 }
 
@@ -484,10 +484,10 @@ DiskFS::CopyInheritables(DiskFS* pNewFS)
 DiskFS::SubVolume*
 DiskFS::GetNextSubVolume(const SubVolume* pSubVol) const
 {
-	if (pSubVol == NULL)
-		return fpSubVolumeHead;
-	else
-		return pSubVol->GetNext();
+    if (pSubVol == NULL)
+        return fpSubVolumeHead;
+    else
+        return pSubVol->GetNext();
 }
 
 /*
@@ -496,15 +496,15 @@ DiskFS::GetNextSubVolume(const SubVolume* pSubVol) const
 void
 DiskFS::DeleteSubVolumeList(void)
 {
-	SubVolume* pSubVol;
-	SubVolume* pNext;
+    SubVolume* pSubVol;
+    SubVolume* pNext;
 
-	pSubVol = fpSubVolumeHead;
-	while (pSubVol != nil) {
-		pNext = pSubVol->GetNext();
-		delete pSubVol;
-		pSubVol = pNext;
-	}
+    pSubVol = fpSubVolumeHead;
+    while (pSubVol != nil) {
+        pNext = pSubVol->GetNext();
+        delete pSubVol;
+        pSubVol = pNext;
+    }
 }
 
 
@@ -514,8 +514,8 @@ DiskFS::DeleteSubVolumeList(void)
 long
 DiskFS::GetParameter(DiskFSParameter parm)
 {
-	assert(parm > kParmUnknown && parm < kParmMax);
-	return fParmTable[parm];
+    assert(parm > kParmUnknown && parm < kParmMax);
+    return fParmTable[parm];
 }
 
 /*
@@ -526,14 +526,14 @@ DiskFS::GetParameter(DiskFSParameter parm)
 void
 DiskFS::SetParameter(DiskFSParameter parm, long val)
 {
-	assert(parm > kParmUnknown && parm < kParmMax);
-	fParmTable[parm] = val;
+    assert(parm > kParmUnknown && parm < kParmMax);
+    fParmTable[parm] = val;
 
-	SubVolume* pSubVol = GetNextSubVolume(nil);
-	while (pSubVol != nil) {
-		pSubVol->GetDiskFS()->SetParameter(parm, val);
-		pSubVol = GetNextSubVolume(pSubVol);
-	}
+    SubVolume* pSubVol = GetNextSubVolume(nil);
+    while (pSubVol != nil) {
+        pSubVol->GetDiskFS()->SetParameter(parm, val);
+        pSubVol = GetNextSubVolume(pSubVol);
+    }
 }
 
 
@@ -543,16 +543,16 @@ DiskFS::SetParameter(DiskFSParameter parm, long val)
 void
 DiskFS::ScanForDamagedFiles(bool* pDamaged, bool* pSuspicious)
 {
-	A2File* pFile;
+    A2File* pFile;
 
-	*pDamaged = *pSuspicious = false;
+    *pDamaged = *pSuspicious = false;
 
-	pFile = GetNextFile(nil);
-	while (pFile != nil) {
-		if (pFile->GetQuality() == A2File::kQualityDamaged)
-			*pDamaged = true;
-		if (pFile->GetQuality() != A2File::kQualityGood)
-			*pSuspicious = true;
-		pFile = GetNextFile(pFile);
-	}
+    pFile = GetNextFile(nil);
+    while (pFile != nil) {
+        if (pFile->GetQuality() == A2File::kQualityDamaged)
+            *pDamaged = true;
+        if (pFile->GetQuality() != A2File::kQualityGood)
+            *pSuspicious = true;
+        pFile = GetNextFile(pFile);
+    }
 }

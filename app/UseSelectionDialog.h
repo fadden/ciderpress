@@ -17,46 +17,46 @@
  */
 class UseSelectionDialog : public CDialog {
 public:
-	UseSelectionDialog(int selCount, CWnd* pParentWnd = NULL, int rsrcID = IDD_USE_SELECTION) :
-		CDialog(rsrcID, pParentWnd), fSelectedCount(selCount)
-	{
-		// init values; these should be overridden before DoModal
-		fFilesToAction = 0;
-	}
-	virtual ~UseSelectionDialog(void) {}
+    UseSelectionDialog(int selCount, CWnd* pParentWnd = NULL, int rsrcID = IDD_USE_SELECTION) :
+        CDialog(rsrcID, pParentWnd), fSelectedCount(selCount)
+    {
+        // init values; these should be overridden before DoModal
+        fFilesToAction = 0;
+    }
+    virtual ~UseSelectionDialog(void) {}
 
-	// set up dialog parameters; must be called before DoModal
-	void Setup(int titleID, int okLabelID, int countID, int countsID,
-		int allID)
-	{
-		fTitleID = titleID;
-		fOkLabelID = okLabelID;
-		fSelCountID = countID;
-		fSelCountsID = countsID;
-		fAllID = allID;
-	}
+    // set up dialog parameters; must be called before DoModal
+    void Setup(int titleID, int okLabelID, int countID, int countsID,
+        int allID)
+    {
+        fTitleID = titleID;
+        fOkLabelID = okLabelID;
+        fSelCountID = countID;
+        fSelCountsID = countsID;
+        fAllID = allID;
+    }
 
-	enum { kActionSelection = 0, kActionAll = 1 };
-	int		fFilesToAction;
+    enum { kActionSelection = 0, kActionAll = 1 };
+    int     fFilesToAction;
 
 protected:
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	//afx_msg void OnHelp(void);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    //afx_msg void OnHelp(void);
 
 private:
-	int		fSelectedCount;
+    int     fSelectedCount;
 
-	/* dialog parameters */
-	int		fTitleID;
-	int		fOkLabelID;
-	int		fSelCountID;
-	int		fSelCountsID;
-	int		fAllID;
+    /* dialog parameters */
+    int     fTitleID;
+    int     fOkLabelID;
+    int     fSelCountID;
+    int     fSelCountsID;
+    int     fAllID;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__USE_SELECTION_DIALOG__*/

@@ -24,56 +24,56 @@
  */
 class ReformatSHR : public ReformatGraphics {
 public:
-	enum {
-		kNumLines = 200,
-		kPixelBytesPerLine = 160,
-		kNumColorTables = 16,
-		kNumEntriesPerColorTable = 16,
-		kColorTableEntrySize = 2,
-		kOutputWidth = 640,			// use pixel-doubling so we can get both
-		kOutputHeight = 400,		//   320 and 640 modes
-		kTotalSize = 32768,
-		kMaxPixelsPerScan = 1280,	// allow up to 1280x1024
-		kMaxScanLines = 1024,		//  in APF images
+    enum {
+        kNumLines = 200,
+        kPixelBytesPerLine = 160,
+        kNumColorTables = 16,
+        kNumEntriesPerColorTable = 16,
+        kColorTableEntrySize = 2,
+        kOutputWidth = 640,         // use pixel-doubling so we can get both
+        kOutputHeight = 400,        //   320 and 640 modes
+        kTotalSize = 32768,
+        kMaxPixelsPerScan = 1280,   // allow up to 1280x1024
+        kMaxScanLines = 1024,       //  in APF images
 
-		kSCBColorTableMask = 0x0f,
-		kSCBFillMode = 0x20,
-		kSCBInterrupts = 0x40,
-		kSCBNumPixels = 0x80,		// 0=320, 1=640
-	};
+        kSCBColorTableMask = 0x0f,
+        kSCBFillMode = 0x20,
+        kSCBInterrupts = 0x40,
+        kSCBNumPixels = 0x80,       // 0=320, 1=640
+    };
 
-	/*
-	 * This holds one SHR screen; the size must be 32768 bytes.
-	 */
-	typedef struct SHRScreen {
-		unsigned char	pixels[kNumLines * kPixelBytesPerLine];
-		unsigned char	scb[kNumLines];
-		unsigned char	reserved[256-kNumLines];
-		unsigned char	colorTable[kNumColorTables * kNumEntriesPerColorTable *
-									kColorTableEntrySize];
-	} SHRScreen;
+    /*
+     * This holds one SHR screen; the size must be 32768 bytes.
+     */
+    typedef struct SHRScreen {
+        unsigned char   pixels[kNumLines * kPixelBytesPerLine];
+        unsigned char   scb[kNumLines];
+        unsigned char   reserved[256-kNumLines];
+        unsigned char   colorTable[kNumColorTables * kNumEntriesPerColorTable *
+                                    kColorTableEntrySize];
+    } SHRScreen;
 
-	/* convert 0RGB into (R,G,B) */
-	void GSColor(int color, RGBTRIPLE* pTriple) {
-		pTriple->rgbtRed = ((color >> 8) & 0x0f) * 17;
-		pTriple->rgbtGreen = ((color >> 4) & 0x0f) * 17;
-		pTriple->rgbtBlue = (color & 0x0f) * 17;
-	}
-	void GSColor(int color, RGBQUAD* pQuad) {
-		pQuad->rgbRed = ((color >> 8) & 0x0f) * 17;
-		pQuad->rgbGreen = ((color >> 4) & 0x0f) * 17;
-		pQuad->rgbBlue = (color & 0x0f) * 17;
-		pQuad->rgbReserved = 0;
-	}
+    /* convert 0RGB into (R,G,B) */
+    void GSColor(int color, RGBTRIPLE* pTriple) {
+        pTriple->rgbtRed = ((color >> 8) & 0x0f) * 17;
+        pTriple->rgbtGreen = ((color >> 4) & 0x0f) * 17;
+        pTriple->rgbtBlue = (color & 0x0f) * 17;
+    }
+    void GSColor(int color, RGBQUAD* pQuad) {
+        pQuad->rgbRed = ((color >> 8) & 0x0f) * 17;
+        pQuad->rgbGreen = ((color >> 4) & 0x0f) * 17;
+        pQuad->rgbBlue = (color & 0x0f) * 17;
+        pQuad->rgbReserved = 0;
+    }
 
-	/* 16 palettes of 16 colors */
-	RGBQUAD		fColorTables[kNumColorTables][kNumEntriesPerColorTable];
+    /* 16 palettes of 16 colors */
+    RGBQUAD     fColorTables[kNumColorTables][kNumEntriesPerColorTable];
 
-	MyDIBitmap* SHRScreenToBitmap8(const SHRScreen* pScreen);
-	MyDIBitmap* SHRDataToBitmap8(const unsigned char* pPixels,
-		const unsigned char* pSCB, const unsigned char* pColorTable,
-		int pixelBytesPerLine, int numScanLines,
-		int outputWidth, int outputHeight);
+    MyDIBitmap* SHRScreenToBitmap8(const SHRScreen* pScreen);
+    MyDIBitmap* SHRDataToBitmap8(const unsigned char* pPixels,
+        const unsigned char* pSCB, const unsigned char* pColorTable,
+        int pixelBytesPerLine, int numScanLines,
+        int outputWidth, int outputHeight);
 };
 
 /*
@@ -81,16 +81,16 @@ public:
  */
 class ReformatUnpackedSHR : public ReformatSHR {
 public:
-	ReformatUnpackedSHR(void) {}
-	virtual ~ReformatUnpackedSHR(void) {}
+    ReformatUnpackedSHR(void) {}
+    virtual ~ReformatUnpackedSHR(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	SHRScreen	fScreen;
+    SHRScreen   fScreen;
 };
 
 /*
@@ -99,17 +99,17 @@ private:
  */
 class ReformatJEQSHR : public ReformatSHR {
 public:
-	ReformatJEQSHR(void) {}
-	virtual ~ReformatJEQSHR(void) {}
+    ReformatJEQSHR(void) {}
+    virtual ~ReformatJEQSHR(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	enum { kExpectedLen = 32288 };
-	SHRScreen	fScreen;
+    enum { kExpectedLen = 32288 };
+    SHRScreen   fScreen;
 };
 
 
@@ -118,17 +118,17 @@ private:
  */
 class ReformatPaintworksSHR : public ReformatSHR {
 public:
-	ReformatPaintworksSHR(void) {}
-	virtual ~ReformatPaintworksSHR(void) {}
+    ReformatPaintworksSHR(void) {}
+    virtual ~ReformatPaintworksSHR(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	enum { kMinSize = 223 };
-	//SHRScreen	fScreen;
+    enum { kMinSize = 223 };
+    //SHRScreen fScreen;
 };
 
 
@@ -137,16 +137,16 @@ private:
  */
 class ReformatPackedSHR : public ReformatSHR {
 public:
-	ReformatPackedSHR(void) {}
-	virtual ~ReformatPackedSHR(void) {}
+    ReformatPackedSHR(void) {}
+    virtual ~ReformatPackedSHR(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	SHRScreen	fScreen;
+    SHRScreen   fScreen;
 };
 
 /*
@@ -157,40 +157,40 @@ private:
  */
 class ReformatAPFSHR : public ReformatSHR {
 public:
-	ReformatAPFSHR(void) : fNonStandard(false), fPixelStore(nil),
-		fSCBStore(nil) {}
-	virtual ~ReformatAPFSHR(void) {
-		if (fPixelStore != nil && fPixelStore != fScreen.pixels)
-			delete[] fPixelStore;
-		if (fSCBStore != nil && fSCBStore != fScreen.scb)
-			delete[] fSCBStore;
-	}
+    ReformatAPFSHR(void) : fNonStandard(false), fPixelStore(nil),
+        fSCBStore(nil) {}
+    virtual ~ReformatAPFSHR(void) {
+        if (fPixelStore != nil && fPixelStore != fScreen.pixels)
+            delete[] fPixelStore;
+        if (fSCBStore != nil && fSCBStore != fScreen.scb)
+            delete[] fSCBStore;
+    }
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	int UnpackMain(const unsigned char* srcPtr, long srcLen);
-	int UnpackMultipal(unsigned char* dstPtr,
-		const unsigned char* srcPtr, long srcLen);
-	void UnpackNote(const unsigned char* srcPtr, long srcLen);
+    int UnpackMain(const unsigned char* srcPtr, long srcLen);
+    int UnpackMultipal(unsigned char* dstPtr,
+        const unsigned char* srcPtr, long srcLen);
+    void UnpackNote(const unsigned char* srcPtr, long srcLen);
 
-	/* use this for standard-sized images */
-	SHRScreen		fScreen;
+    /* use this for standard-sized images */
+    SHRScreen       fScreen;
 
-	/* set for non-standard images */
-	bool			fNonStandard;
+    /* set for non-standard images */
+    bool            fNonStandard;
 
-	/* use this for non-standard-sized images */
-	unsigned char*	fPixelStore;
-	unsigned char*	fSCBStore;
-	int				fNumScanLines;		// #of scan lines in image
-	int				fPixelsPerScanLine;
-	int				fPixelBytesPerLine;
-	int				fOutputWidth;
-	int				fOutputHeight;		// scan lines * 2
+    /* use this for non-standard-sized images */
+    unsigned char*  fPixelStore;
+    unsigned char*  fSCBStore;
+    int             fNumScanLines;      // #of scan lines in image
+    int             fPixelsPerScanLine;
+    int             fPixelBytesPerLine;
+    int             fOutputWidth;
+    int             fOutputHeight;      // scan lines * 2
 };
 
 /*
@@ -198,33 +198,33 @@ private:
  */
 class Reformat3200SHR : public ReformatSHR {
 public:
-	Reformat3200SHR(void) {}
-	virtual ~Reformat3200SHR(void) {}
+    Reformat3200SHR(void) {}
+    virtual ~Reformat3200SHR(void) {}
 
-	// alternate construction, used by APFSHR
-	Reformat3200SHR(SHRScreen* pScreen, unsigned char* multiPal) {
-		memcpy(&fScreen, pScreen, sizeof(fScreen));
-		memcpy(fExtColorTable, multiPal, sizeof(fExtColorTable));
-	}
+    // alternate construction, used by APFSHR
+    Reformat3200SHR(SHRScreen* pScreen, unsigned char* multiPal) {
+        memcpy(&fScreen, pScreen, sizeof(fScreen));
+        memcpy(fExtColorTable, multiPal, sizeof(fExtColorTable));
+    }
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
-	MyDIBitmap* SHR3200ToBitmap24(void);
+    MyDIBitmap* SHR3200ToBitmap24(void);
 
 protected:
-	enum {
-		kExtNumColorTables = kNumLines,
-		kExtTotalSize = 38400,
-	};
+    enum {
+        kExtNumColorTables = kNumLines,
+        kExtTotalSize = 38400,
+    };
 
-	SHRScreen	fScreen;		// only "pixels" is valid
+    SHRScreen   fScreen;        // only "pixels" is valid
 
-	/* this holds the 200 color tables, with the entries switched to normal */
-	unsigned char	fExtColorTable[kExtNumColorTables *
-							kNumEntriesPerColorTable * kColorTableEntrySize];
+    /* this holds the 200 color tables, with the entries switched to normal */
+    unsigned char   fExtColorTable[kExtNumColorTables *
+                            kNumEntriesPerColorTable * kColorTableEntrySize];
 };
 
 /*
@@ -232,13 +232,13 @@ protected:
  */
 class Reformat3201SHR : public Reformat3200SHR {
 public:
-	Reformat3201SHR(void) {}
-	virtual ~Reformat3201SHR(void) {}
+    Reformat3201SHR(void) {}
+    virtual ~Reformat3201SHR(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 };
 
 
@@ -247,29 +247,29 @@ public:
  */
 class DreamGrafix {
 public:
-	DreamGrafix(void) : fWidth(0), fHeight(0), fNumColors(0) {}
-	~DreamGrafix(void) {}
+    DreamGrafix(void) : fWidth(0), fHeight(0), fNumColors(0) {}
+    ~DreamGrafix(void) {}
 
-	/*
-	 * Scan the file.  If it's a DreamGrafix image, extract values from the
-	 * header fields and return "true".
-	 */
-	bool ScanDreamGrafix(ReformatHolder* pHolder);
+    /*
+     * Scan the file.  If it's a DreamGrafix image, extract values from the
+     * header fields and return "true".
+     */
+    bool ScanDreamGrafix(ReformatHolder* pHolder);
 
-	/*
-	 * Unpack a DreamGrafix SHR image compressed with LZW.
-	 */
-	bool UnpackDG(const unsigned char* srcBuf, long srcLen,
-		ReformatSHR::SHRScreen* pScreen, unsigned char* extColorTable);
+    /*
+     * Unpack a DreamGrafix SHR image compressed with LZW.
+     */
+    bool UnpackDG(const unsigned char* srcBuf, long srcLen,
+        ReformatSHR::SHRScreen* pScreen, unsigned char* extColorTable);
 
-	int fWidth;
-	int fHeight;
-	int fNumColors;
+    int fWidth;
+    int fHeight;
+    int fNumColors;
 
 private:
-	static int UnpackLZW(const unsigned char* srcBuf, long srcLen,
-		unsigned char* dstBuf, long dstLen);
-	enum { kHeaderOffset = 17 };
+    static int UnpackLZW(const unsigned char* srcBuf, long srcLen,
+        unsigned char* dstBuf, long dstLen);
+    enum { kHeaderOffset = 17 };
 };
 
 /*
@@ -277,17 +277,17 @@ private:
  */
 class ReformatDG256SHR : public ReformatSHR {
 public:
-	ReformatDG256SHR(void) {}
-	virtual ~ReformatDG256SHR(void) {}
+    ReformatDG256SHR(void) {}
+    virtual ~ReformatDG256SHR(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	DreamGrafix fDG;
-	SHRScreen	fScreen;
+    DreamGrafix fDG;
+    SHRScreen   fScreen;
 };
 
 /*
@@ -295,16 +295,16 @@ private:
  */
 class ReformatDG3200SHR : public Reformat3200SHR {
 public:
-	ReformatDG3200SHR(void) {}
-	virtual ~ReformatDG3200SHR(void) {}
+    ReformatDG3200SHR(void) {}
+    virtual ~ReformatDG3200SHR(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	DreamGrafix fDG;
+    DreamGrafix fDG;
 };
 
 #endif /*__LR_SUPERHIRES__*/

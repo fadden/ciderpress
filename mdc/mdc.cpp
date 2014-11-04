@@ -25,27 +25,27 @@ int gPid = -1;
  */
 MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
 {
-	time_t now;
-	now = time(nil);
+    time_t now;
+    now = time(nil);
 
 #ifdef _DEBUG_LOG
-	gLog = fopen(kDebugLog, "w");
-	if (gLog == nil)
-		abort();
-	::setvbuf(gLog, nil, _IONBF, 0);
+    gLog = fopen(kDebugLog, "w");
+    if (gLog == nil)
+        abort();
+    ::setvbuf(gLog, nil, _IONBF, 0);
 
-	gPid = ::getpid();
-	fprintf(gLog, "\n");
+    gPid = ::getpid();
+    fprintf(gLog, "\n");
 #endif
 
-	WMSG1("MDC started at %.24s\n", ctime(&now));
+    WMSG1("MDC started at %.24s\n", ctime(&now));
 
-	int tmpDbgFlag;
-	// enable memory leak detection
+    int tmpDbgFlag;
+    // enable memory leak detection
     tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
     tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
     _CrtSetDbgFlag(tmpDbgFlag);
-	WMSG0("Leak detection enabled\n");
+    WMSG0("Leak detection enabled\n");
 }
 
 /*
@@ -53,10 +53,10 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
  */
 MyApp::~MyApp(void)
 {
-	WMSG0("MDC SHUTTING DOWN\n\n");
+    WMSG0("MDC SHUTTING DOWN\n\n");
 #ifdef _DEBUG_LOG
-	if (gLog != nil)
-		fclose(gLog);
+    if (gLog != nil)
+        fclose(gLog);
 #endif
 }
 
@@ -69,9 +69,9 @@ MyApp::~MyApp(void)
 BOOL
 MyApp::InitInstance(void)
 {
-	m_pMainWnd = new MainWindow;
-	m_pMainWnd->ShowWindow(m_nCmdShow);
-	m_pMainWnd->UpdateWindow();
+    m_pMainWnd = new MainWindow;
+    m_pMainWnd->ShowWindow(m_nCmdShow);
+    m_pMainWnd->UpdateWindow();
 
-	return TRUE;
+    return TRUE;
 }

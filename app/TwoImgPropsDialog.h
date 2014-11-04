@@ -20,30 +20,30 @@
  */
 class TwoImgPropsDialog : public CDialog {
 public:
-	TwoImgPropsDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_TWOIMG_PROPS, pParentWnd),
-		fpHeader(NULL), fReadOnly(false)
-		{}
+    TwoImgPropsDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_TWOIMG_PROPS, pParentWnd),
+        fpHeader(NULL), fReadOnly(false)
+        {}
 
 
-	void Setup(TwoImgHeader* pHeader, bool readOnly) {
-		fpHeader = pHeader;
-		fReadOnly = readOnly;
-	}
+    void Setup(TwoImgHeader* pHeader, bool readOnly) {
+        fpHeader = pHeader;
+        fReadOnly = readOnly;
+    }
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	afx_msg void OnChange(void);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg void OnChange(void);
 
-	TwoImgHeader*	fpHeader;
-	bool			fReadOnly;
-	//bool			fModified;
+    TwoImgHeader*   fpHeader;
+    bool            fReadOnly;
+    //bool          fModified;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__TWOIMG_PROPS_DIALOG__*/

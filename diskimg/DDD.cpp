@@ -485,7 +485,7 @@ WrapperDDD::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
     *pDiskVolNum = bitBuffer.Reverse(val);
     WMSG1(" DDD found disk volume num = %d\n", *pDiskVolNum);
 
-	int track;
+    int track;
     for (track = 0; track < kNumTracks; track++) {
         unsigned char trackBuf[kTrackLen];
 
@@ -507,29 +507,29 @@ WrapperDDD::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
     /*
      * We should be within a byte or two of the end of the file.  Try
      * to read more and expect it to fail.
-	 *
-	 * Unfortunately, if this was a DOS DDD file, we could be up to 256
-	 * bytes off (the 1 additional byte it adds plus the remaining 255
-	 * bytes in the sector).  We have to choose between a tight auto-detect
-	 * and the ability to process DOS DDD files.
-	 *
-	 * Fortunately the need to hit track boundaries exactly and the quick test
-	 * for long runs of bytes provides some opportunity for correct
-	 * detection.
+     *
+     * Unfortunately, if this was a DOS DDD file, we could be up to 256
+     * bytes off (the 1 additional byte it adds plus the remaining 255
+     * bytes in the sector).  We have to choose between a tight auto-detect
+     * and the ability to process DOS DDD files.
+     *
+     * Fortunately the need to hit track boundaries exactly and the quick test
+     * for long runs of bytes provides some opportunity for correct
+     * detection.
      */
-	size_t actual;
-	char sctBuf[256 + 16];
+    size_t actual;
+    char sctBuf[256 + 16];
     dierr = pGFD->Read(&sctBuf, sizeof(sctBuf), &actual);
     if (dierr == kDIErrNone) {
-		if (actual > /*kMaxExcessByteCount*/ 256) {
-			WMSG1(" DDD looks like too much data in input file (%d extra)\n",
-				actual);
-			dierr = kDIErrBadCompressedData;
-			goto bail;
-		} else {
-			WMSG1(" DDD excess bytes (%d) within normal parameters\n", actual);
-		}
-	}
+        if (actual > /*kMaxExcessByteCount*/ 256) {
+            WMSG1(" DDD looks like too much data in input file (%d extra)\n",
+                actual);
+            dierr = kDIErrBadCompressedData;
+            goto bail;
+        } else {
+            WMSG1(" DDD excess bytes (%d) within normal parameters\n", actual);
+        }
+    }
 
     WMSG0(" DDD looks like a DDD archive!\n");
     dierr = kDIErrNone;

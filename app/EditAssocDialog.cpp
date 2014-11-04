@@ -13,8 +13,8 @@
 #include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(EditAssocDialog, CDialog)
-	ON_WM_HELPINFO()
-	ON_COMMAND(IDHELP, OnHelp)
+    ON_WM_HELPINFO()
+    ON_COMMAND(IDHELP, OnHelp)
 END_MESSAGE_MAP()
 
 /* this comes from VC++6.0 MSDN help */
@@ -30,33 +30,33 @@ END_MESSAGE_MAP()
 BOOL
 EditAssocDialog::OnInitDialog(void)
 {
-	CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
+    CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
 
-	ASSERT(pListView != nil);
-	//pListView->ModifyStyleEx(0, LVS_EX_CHECKBOXES);
-	ListView_SetExtendedListViewStyleEx(pListView->m_hWnd,
-		LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES);
+    ASSERT(pListView != nil);
+    //pListView->ModifyStyleEx(0, LVS_EX_CHECKBOXES);
+    ListView_SetExtendedListViewStyleEx(pListView->m_hWnd,
+        LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES);
 
-	/* move it over slightly so we see some overlap */
-	CRect rect;
-	GetWindowRect(&rect);
-	rect.left += 10;
-	rect.right += 10;
-	MoveWindow(&rect);
+    /* move it over slightly so we see some overlap */
+    CRect rect;
+    GetWindowRect(&rect);
+    rect.left += 10;
+    rect.right += 10;
+    MoveWindow(&rect);
 
 
-	/*
-	 * Initialize this before DDX stuff happens.  If the caller didn't
-	 * provide a set, load our own.
-	 */
-	if (fOurAssociations == nil) {
-		fOurAssociations = new bool[gMyApp.fRegistry.GetNumFileAssocs()];
-		Setup(true);
-	} else {
-		Setup(false);
-	}
+    /*
+     * Initialize this before DDX stuff happens.  If the caller didn't
+     * provide a set, load our own.
+     */
+    if (fOurAssociations == nil) {
+        fOurAssociations = new bool[gMyApp.fRegistry.GetNumFileAssocs()];
+        Setup(true);
+    } else {
+        Setup(false);
+    }
 
-	return CDialog::OnInitDialog();
+    return CDialog::OnInitDialog();
 }
 
 /*
@@ -70,41 +70,41 @@ EditAssocDialog::OnInitDialog(void)
 void
 EditAssocDialog::Setup(bool loadAssoc)
 {
-	WMSG0("Setup!\n");
+    WMSG0("Setup!\n");
 
-	CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
-	ASSERT(pListView != nil);
+    CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
+    ASSERT(pListView != nil);
 
-	ASSERT(fOurAssociations != nil);
+    ASSERT(fOurAssociations != nil);
 
-	/* two columns */
-	CRect rect;
-	pListView->GetClientRect(&rect);
-	int width;
+    /* two columns */
+    CRect rect;
+    pListView->GetClientRect(&rect);
+    int width;
 
-	width = pListView->GetStringWidth("XXExtensionXX");
-	pListView->InsertColumn(0, "Extension", LVCFMT_LEFT, width);
-	pListView->InsertColumn(1, "Association", LVCFMT_LEFT,
-		rect.Width() - width);
+    width = pListView->GetStringWidth("XXExtensionXX");
+    pListView->InsertColumn(0, "Extension", LVCFMT_LEFT, width);
+    pListView->InsertColumn(1, "Association", LVCFMT_LEFT,
+        rect.Width() - width);
 
-	int num = gMyApp.fRegistry.GetNumFileAssocs();
-	int idx = 0;
-	while (num--) {
-		CString ext, handler;
-		CString dispStr;
-		bool ours;
+    int num = gMyApp.fRegistry.GetNumFileAssocs();
+    int idx = 0;
+    while (num--) {
+        CString ext, handler;
+        CString dispStr;
+        bool ours;
 
-		gMyApp.fRegistry.GetFileAssoc(idx, &ext, &handler, &ours);
+        gMyApp.fRegistry.GetFileAssoc(idx, &ext, &handler, &ours);
 
-		pListView->InsertItem(idx, ext);
-		pListView->SetItemText(idx, 1, handler);
+        pListView->InsertItem(idx, ext);
+        pListView->SetItemText(idx, 1, handler);
 
-		if (loadAssoc)
-			fOurAssociations[idx] = ours;
-		idx++;
-	}
+        if (loadAssoc)
+            fOurAssociations[idx] = ours;
+        idx++;
+    }
 
-	//DeleteAllItems();	// for Reload case
+    //DeleteAllItems(); // for Reload case
 }
 
 /*
@@ -113,31 +113,31 @@ EditAssocDialog::Setup(bool loadAssoc)
 void
 EditAssocDialog::DoDataExchange(CDataExchange* pDX)
 {
-	CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
+    CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
 
-	ASSERT(fOurAssociations != nil);
-	if (fOurAssociations == nil)
-		return;
+    ASSERT(fOurAssociations != nil);
+    if (fOurAssociations == nil)
+        return;
 
-	int num = gMyApp.fRegistry.GetNumFileAssocs();
+    int num = gMyApp.fRegistry.GetNumFileAssocs();
 
-	if (!pDX->m_bSaveAndValidate) {
-		/* load fixed set of file associations */
-		int idx = 0;
-		while (num--) {
-			ListView_SetCheckState(pListView->m_hWnd, idx,
-				fOurAssociations[idx]);
-			idx++;
-		}
-	} else {
-		/* copy the checkboxes out */
-		int idx = 0;
-		while (num--) {
-			fOurAssociations[idx] =
-						(ListView_GetCheckState(pListView->m_hWnd, idx) != 0);
-			idx++;
-		}
-	}
+    if (!pDX->m_bSaveAndValidate) {
+        /* load fixed set of file associations */
+        int idx = 0;
+        while (num--) {
+            ListView_SetCheckState(pListView->m_hWnd, idx,
+                fOurAssociations[idx]);
+            idx++;
+        }
+    } else {
+        /* copy the checkboxes out */
+        int idx = 0;
+        while (num--) {
+            fOurAssociations[idx] =
+                        (ListView_GetCheckState(pListView->m_hWnd, idx) != 0);
+            idx++;
+        }
+    }
 }
 
 /*
@@ -146,7 +146,7 @@ EditAssocDialog::DoDataExchange(CDataExchange* pDX)
 BOOL
 EditAssocDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
-	return ShowContextHelp(this, lpHelpInfo);
+    return ShowContextHelp(this, lpHelpInfo);
 }
 
 /*
@@ -155,5 +155,5 @@ EditAssocDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 void
 EditAssocDialog::OnHelp(void)
 {
-	WinHelp(HELP_TOPIC_EDIT_ASSOC, HELP_CONTEXT);
+    WinHelp(HELP_TOPIC_EDIT_ASSOC, HELP_CONTEXT);
 }

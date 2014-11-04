@@ -17,25 +17,25 @@
  */
 
 #if defined(_DEBUG_LOG)
-#define kDebugLog	"C:\\mdclog.txt"
+#define kDebugLog   "C:\\mdclog.txt"
 #endif
 
 /* MDC version numbers */
-#define kAppMajorVersion	2
-#define kAppMinorVersion	2
-#define kAppBugVersion		0
+#define kAppMajorVersion    2
+#define kAppMinorVersion    2
+#define kAppBugVersion      0
 
 /*
  * Windows application object.
  */
 class MyApp : public CWinApp {
 public:
-	MyApp(LPCTSTR lpszAppName = NULL);
-	virtual ~MyApp(void);
+    MyApp(LPCTSTR lpszAppName = NULL);
+    virtual ~MyApp(void);
 
-	// Overridden functions
-	virtual BOOL InitInstance(void);
-	//virtual BOOL OnIdle(LONG lCount);
+    // Overridden functions
+    virtual BOOL InitInstance(void);
+    //virtual BOOL OnIdle(LONG lCount);
 };
 
 extern MyApp gMyApp;

@@ -16,17 +16,17 @@
  */
 class ReformatApplesoft : public ReformatText {
 public:
-	ReformatApplesoft(void) {}
-	virtual ~ReformatApplesoft(void) {}
+    ReformatApplesoft(void) {}
+    virtual ~ReformatApplesoft(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
-	/* share our token list with others */
-	enum { kTokenLen = 8, kTokenCount = 107 };
-	static const char* GetApplesoftTokens(void);
+    /* share our token list with others */
+    enum { kTokenLen = 8, kTokenCount = 107 };
+    static const char* GetApplesoftTokens(void);
 };
 
 /*
@@ -34,13 +34,13 @@ public:
  */
 class ReformatInteger : public ReformatText {
 public:
-	ReformatInteger(void) {}
-	virtual ~ReformatInteger(void) {}
+    ReformatInteger(void) {}
+    virtual ~ReformatInteger(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 };
 
 /*
@@ -48,17 +48,17 @@ public:
  */
 class ReformatBusiness : public ReformatText {
 public:
-	ReformatBusiness(void) {}
-	virtual ~ReformatBusiness(void) {}
+    ReformatBusiness(void) {}
+    virtual ~ReformatBusiness(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
-	/* share our token list with others - but this won't really work in its current form... */
-	enum { kTokenLen = 10, kTokenCount = 107 };
-	static const char* GetBusinessTokens(void);
+    /* share our token list with others - but this won't really work in its current form... */
+    enum { kTokenLen = 10, kTokenCount = 107 };
+    static const char* GetBusinessTokens(void);
 };
 
 #endif /*__LR_BASIC__*/

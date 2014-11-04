@@ -13,7 +13,7 @@
 
 /*
  * ===========================================================================
- *		CGripper
+ *      CGripper
  * ===========================================================================
  */
 
@@ -22,23 +22,23 @@
  * when we're over the gripper.
  */
 BEGIN_MESSAGE_MAP(CGripper, CScrollBar)
-	ON_WM_NCHITTEST()
+    ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
 
 UINT
 CGripper::OnNcHitTest(CPoint point) 
 {
-	UINT ht = CScrollBar::OnNcHitTest(point);
-	if (ht == HTCLIENT) {
-		ht = HTBOTTOMRIGHT;
-	}
-	return ht;
+    UINT ht = CScrollBar::OnNcHitTest(point);
+    if (ht == HTCLIENT) {
+        ht = HTBOTTOMRIGHT;
+    }
+    return ht;
 }
 
 
 /*
  * ===========================================================================
- *		RichEditXfer
+ *      RichEditXfer
  * ===========================================================================
  */
 
@@ -53,37 +53,37 @@ CGripper::OnNcHitTest(CPoint point)
 DWORD
 RichEditXfer::EditStreamCallback(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb)
 {
-	RichEditXfer* pThis = (RichEditXfer*) dwCookie;
+    RichEditXfer* pThis = (RichEditXfer*) dwCookie;
 
-	ASSERT(dwCookie != nil);
-	ASSERT(pbBuff != nil);
-	ASSERT(cb != 0);
-	ASSERT(pcb != nil);
+    ASSERT(dwCookie != nil);
+    ASSERT(pbBuff != nil);
+    ASSERT(cb != 0);
+    ASSERT(pcb != nil);
 
-	long copyLen = pThis->fLen;
-	if (copyLen > cb)
-		copyLen = cb;
-	if (copyLen == 0) {
-		ASSERT(pThis->fLen == 0);
-		goto bail;
-	}
+    long copyLen = pThis->fLen;
+    if (copyLen > cb)
+        copyLen = cb;
+    if (copyLen == 0) {
+        ASSERT(pThis->fLen == 0);
+        goto bail;
+    }
 
-	::memcpy(pbBuff, pThis->fBuf, copyLen);
+    ::memcpy(pbBuff, pThis->fBuf, copyLen);
 
-	pThis->fBuf += copyLen;
-	pThis->fLen -= copyLen;
+    pThis->fBuf += copyLen;
+    pThis->fLen -= copyLen;
 
-	//WMSG2("ESC: copyLen=%d, now fLen=%d\n", copyLen, pThis->fLen);
+    //WMSG2("ESC: copyLen=%d, now fLen=%d\n", copyLen, pThis->fLen);
 
 bail:
-	*pcb = copyLen;
-	return 0;
+    *pcb = copyLen;
+    return 0;
 }
 
 
 /*
  * ===========================================================================
- *		ExpandBuffer
+ *      ExpandBuffer
  * ===========================================================================
  */
 
@@ -93,21 +93,21 @@ bail:
 int
 ExpandBuffer::CreateWorkBuf(void)
 {
-	if (fWorkBuf != nil) {
-		ASSERT(fWorkMax > 0);
-		return 0;
-	}
+    if (fWorkBuf != nil) {
+        ASSERT(fWorkMax > 0);
+        return 0;
+    }
 
-	assert(fInitialSize > 0);
+    assert(fInitialSize > 0);
 
-	fWorkBuf = new char[fInitialSize];
-	if (fWorkBuf == nil)
-		return -1;
+    fWorkBuf = new char[fInitialSize];
+    if (fWorkBuf == nil)
+        return -1;
 
-	fWorkCount = 0;
-	fWorkMax = fInitialSize;
+    fWorkCount = 0;
+    fWorkMax = fInitialSize;
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -117,12 +117,12 @@ ExpandBuffer::CreateWorkBuf(void)
 void
 ExpandBuffer::SeizeBuffer(char** ppBuf, long* pLen)
 {
-	*ppBuf = fWorkBuf;
-	*pLen = fWorkCount;
+    *ppBuf = fWorkBuf;
+    *pLen = fWorkCount;
 
-	fWorkBuf = nil;
-	fWorkCount = 0;
-	fWorkMax = 0;
+    fWorkBuf = nil;
+    fWorkCount = 0;
+    fWorkMax = 0;
 }
 
 /*
@@ -134,31 +134,31 @@ ExpandBuffer::SeizeBuffer(char** ppBuf, long* pLen)
 int
 ExpandBuffer::GrowWorkBuf(void)
 {
-	int newIncr = fWorkMax;
-	if (newIncr > kWorkBufMaxIncrement)
-		newIncr = kWorkBufMaxIncrement;
+    int newIncr = fWorkMax;
+    if (newIncr > kWorkBufMaxIncrement)
+        newIncr = kWorkBufMaxIncrement;
 
-	//WMSG3("Extending buffer by %d (count=%d, max=%d)\n",
-	//	newIncr, fWorkCount, fWorkMax);
+    //WMSG3("Extending buffer by %d (count=%d, max=%d)\n",
+    //  newIncr, fWorkCount, fWorkMax);
 
-	fWorkMax += newIncr;
+    fWorkMax += newIncr;
 
-	/* debug-only check to catch runaways */
-//	ASSERT(fWorkMax < 1024*1024*24);
+    /* debug-only check to catch runaways */
+//  ASSERT(fWorkMax < 1024*1024*24);
 
-	char* newBuf = new char[fWorkMax];
-	if (newBuf == nil) {
-		WMSG1("ALLOC FAILURE (%ld)\n", fWorkMax);
-		ASSERT(false);
-		fWorkMax -= newIncr;	// put it back so we don't overrun
-		return -1;
-	}
+    char* newBuf = new char[fWorkMax];
+    if (newBuf == nil) {
+        WMSG1("ALLOC FAILURE (%ld)\n", fWorkMax);
+        ASSERT(false);
+        fWorkMax -= newIncr;    // put it back so we don't overrun
+        return -1;
+    }
 
-	memcpy(newBuf, fWorkBuf, fWorkCount);
-	delete[] fWorkBuf;
-	fWorkBuf = newBuf;
+    memcpy(newBuf, fWorkBuf, fWorkCount);
+    delete[] fWorkBuf;
+    fWorkBuf = newBuf;
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -167,15 +167,15 @@ ExpandBuffer::GrowWorkBuf(void)
 void
 ExpandBuffer::Write(const unsigned char* buf, long len)
 {
-	if (fWorkBuf == nil)
-		CreateWorkBuf();
-	while (fWorkCount + len >= fWorkMax) {
-		if (GrowWorkBuf() != 0)
-			return;
-	}
-	ASSERT(fWorkCount + len < fWorkMax);
-	memcpy(fWorkBuf + fWorkCount, buf, len);
-	fWorkCount += len;
+    if (fWorkBuf == nil)
+        CreateWorkBuf();
+    while (fWorkCount + len >= fWorkMax) {
+        if (GrowWorkBuf() != 0)
+            return;
+    }
+    ASSERT(fWorkCount + len < fWorkMax);
+    memcpy(fWorkBuf + fWorkCount, buf, len);
+    fWorkCount += len;
 }
 
 /*
@@ -184,7 +184,7 @@ ExpandBuffer::Write(const unsigned char* buf, long len)
 void
 ExpandBuffer::Putc(char ch)
 {
-	Write((const unsigned char*) &ch, 1);
+    Write((const unsigned char*) &ch, 1);
 }
 
 /*
@@ -197,29 +197,29 @@ ExpandBuffer::Printf(const char* format, ...)
 
     ASSERT(format != nil);
 
-	if (fWorkBuf == nil)
-		CreateWorkBuf();
+    if (fWorkBuf == nil)
+        CreateWorkBuf();
 
     va_start(args, format);
 
     if (format != nil) {
-		int count;
+        int count;
         count = _vsnprintf(fWorkBuf + fWorkCount, fWorkMax - fWorkCount,
-					format, args);
-		if (count < 0) {
-			if (GrowWorkBuf() != 0)
-				return;
+                    format, args);
+        if (count < 0) {
+            if (GrowWorkBuf() != 0)
+                return;
 
-			/* try one more time, then give up */
-			count = _vsnprintf(fWorkBuf + fWorkCount, fWorkMax - fWorkCount,
-					format, args);
-			ASSERT(count >= 0);
-			if (count < 0)
-				return;
-		}
+            /* try one more time, then give up */
+            count = _vsnprintf(fWorkBuf + fWorkCount, fWorkMax - fWorkCount,
+                    format, args);
+            ASSERT(count >= 0);
+            if (count < 0)
+                return;
+        }
 
-		fWorkCount += count;
-		ASSERT(fWorkCount <= fWorkMax);
+        fWorkCount += count;
+        ASSERT(fWorkCount <= fWorkMax);
     }
 
     va_end(args);
@@ -228,7 +228,7 @@ ExpandBuffer::Printf(const char* format, ...)
 
 /*
  * ===========================================================================
- *		Windows helpers
+ *      Windows helpers
  * ===========================================================================
  */
 
@@ -238,13 +238,13 @@ ExpandBuffer::Printf(const char* format, ...)
 void
 EnableControl(CDialog* pDlg, int id, bool enable)
 {
-	CWnd* pWnd = pDlg->GetDlgItem(id);
-	if (pWnd == nil) {
-		WMSG1("GLITCH: control %d not found in dialog\n", id);
-		ASSERT(false);
-	} else {
-		pWnd->EnableWindow(enable);
-	}
+    CWnd* pWnd = pDlg->GetDlgItem(id);
+    if (pWnd == nil) {
+        WMSG1("GLITCH: control %d not found in dialog\n", id);
+        ASSERT(false);
+    } else {
+        pWnd->EnableWindow(enable);
+    }
 }
 
 /*
@@ -254,21 +254,21 @@ EnableControl(CDialog* pDlg, int id, bool enable)
 void
 MoveControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
 {
-	CWnd* pWnd;
-	CRect rect;
+    CWnd* pWnd;
+    CRect rect;
 
-	pWnd = pDlg->GetDlgItem(id);
-	ASSERT(pWnd != nil);
-	if (pWnd == nil)
-		return;
+    pWnd = pDlg->GetDlgItem(id);
+    ASSERT(pWnd != nil);
+    if (pWnd == nil)
+        return;
 
-	pWnd->GetWindowRect(&rect);
-	pDlg->ScreenToClient(&rect);
-	rect.left += deltaX;
-	rect.right += deltaX;
-	rect.top += deltaY;
-	rect.bottom += deltaY;
-	pWnd->MoveWindow(&rect, redraw);
+    pWnd->GetWindowRect(&rect);
+    pDlg->ScreenToClient(&rect);
+    rect.left += deltaX;
+    rect.right += deltaX;
+    rect.top += deltaY;
+    rect.bottom += deltaY;
+    pWnd->MoveWindow(&rect, redraw);
 }
 
 /*
@@ -277,19 +277,19 @@ MoveControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
 void
 StretchControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
 {
-	CWnd* pWnd;
-	CRect rect;
+    CWnd* pWnd;
+    CRect rect;
 
-	pWnd = pDlg->GetDlgItem(id);
-	ASSERT(pWnd != nil);
-	if (pWnd == nil)
-		return;
+    pWnd = pDlg->GetDlgItem(id);
+    ASSERT(pWnd != nil);
+    if (pWnd == nil)
+        return;
 
-	pWnd->GetWindowRect(&rect);
-	pDlg->ScreenToClient(&rect);
-	rect.right += deltaX;
-	rect.bottom += deltaY;
-	pWnd->MoveWindow(&rect, redraw);
+    pWnd->GetWindowRect(&rect);
+    pDlg->ScreenToClient(&rect);
+    rect.right += deltaX;
+    rect.bottom += deltaY;
+    pWnd->MoveWindow(&rect, redraw);
 }
 
 /*
@@ -297,10 +297,10 @@ StretchControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
  */
 void
 MoveStretchControl(CDialog* pDlg, int id, int moveX, int moveY,
-	int stretchX, int stretchY, bool redraw)
+    int stretchX, int stretchY, bool redraw)
 {
-	MoveControl(pDlg, id, moveX, moveY, redraw);
-	StretchControl(pDlg, id, stretchX, stretchY, redraw);
+    MoveControl(pDlg, id, moveX, moveY, redraw);
+    StretchControl(pDlg, id, stretchX, stretchY, redraw);
 }
 
 /*
@@ -309,26 +309,26 @@ MoveStretchControl(CDialog* pDlg, int id, int moveX, int moveY,
  */
 HDWP
 MoveControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
-	bool redraw)
+    bool redraw)
 {
-	CWnd* pWnd;
-	CRect rect;
+    CWnd* pWnd;
+    CRect rect;
 
-	pWnd = pDlg->GetDlgItem(id);
-	ASSERT(pWnd != nil);
-	if (pWnd == nil)
-		return hdwp;
+    pWnd = pDlg->GetDlgItem(id);
+    ASSERT(pWnd != nil);
+    if (pWnd == nil)
+        return hdwp;
 
-	pWnd->GetWindowRect(&rect);
-	pDlg->ScreenToClient(&rect);
-	rect.left += deltaX;
-	rect.right += deltaX;
-	rect.top += deltaY;
-	rect.bottom += deltaY;
-	hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
-		rect.Width(), rect.Height(), 0);
+    pWnd->GetWindowRect(&rect);
+    pDlg->ScreenToClient(&rect);
+    rect.left += deltaX;
+    rect.right += deltaX;
+    rect.top += deltaY;
+    rect.bottom += deltaY;
+    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
+        rect.Width(), rect.Height(), 0);
 
-	return hdwp;
+    return hdwp;
 }
 
 /*
@@ -336,24 +336,24 @@ MoveControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
  */
 HDWP
 StretchControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
-	bool redraw)
+    bool redraw)
 {
-	CWnd* pWnd;
-	CRect rect;
+    CWnd* pWnd;
+    CRect rect;
 
-	pWnd = pDlg->GetDlgItem(id);
-	ASSERT(pWnd != nil);
-	if (pWnd == nil)
-		return hdwp;
+    pWnd = pDlg->GetDlgItem(id);
+    ASSERT(pWnd != nil);
+    if (pWnd == nil)
+        return hdwp;
 
-	pWnd->GetWindowRect(&rect);
-	pDlg->ScreenToClient(&rect);
-	rect.right += deltaX;
-	rect.bottom += deltaY;
-	hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
-		rect.Width(), rect.Height(), 0);
+    pWnd->GetWindowRect(&rect);
+    pDlg->ScreenToClient(&rect);
+    rect.right += deltaX;
+    rect.bottom += deltaY;
+    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
+        rect.Width(), rect.Height(), 0);
 
-	return hdwp;
+    return hdwp;
 }
 
 /*
@@ -361,28 +361,28 @@ StretchControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
  */
 HDWP
 MoveStretchControl(HDWP hdwp, CDialog* pDlg, int id, int moveX, int moveY,
-	int stretchX, int stretchY, bool redraw)
+    int stretchX, int stretchY, bool redraw)
 {
-	CWnd* pWnd;
-	CRect rect;
+    CWnd* pWnd;
+    CRect rect;
 
-	pWnd = pDlg->GetDlgItem(id);
-	ASSERT(pWnd != nil);
-	if (pWnd == nil)
-		return hdwp;
+    pWnd = pDlg->GetDlgItem(id);
+    ASSERT(pWnd != nil);
+    if (pWnd == nil)
+        return hdwp;
 
-	pWnd->GetWindowRect(&rect);
-	pDlg->ScreenToClient(&rect);
-	rect.left += moveX;
-	rect.right += moveX;
-	rect.top += moveY;
-	rect.bottom += moveY;
-	rect.right += stretchX;
-	rect.bottom += stretchY;
-	hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
-		rect.Width(), rect.Height(), 0);
+    pWnd->GetWindowRect(&rect);
+    pDlg->ScreenToClient(&rect);
+    rect.left += moveX;
+    rect.right += moveX;
+    rect.top += moveY;
+    rect.bottom += moveY;
+    rect.right += stretchX;
+    rect.bottom += stretchY;
+    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
+        rect.Width(), rect.Height(), 0);
 
-	return hdwp;
+    return hdwp;
 }
 
 /*
@@ -391,22 +391,22 @@ MoveStretchControl(HDWP hdwp, CDialog* pDlg, int id, int moveX, int moveY,
 int
 GetDlgButtonCheck(CWnd* pWnd, int id)
 {
-	CButton* pButton;
-	pButton = (CButton*) pWnd->GetDlgItem(id);
-	ASSERT(pButton != nil);
-	if (pButton == nil)
-		return -1;
-	return pButton->GetCheck();
+    CButton* pButton;
+    pButton = (CButton*) pWnd->GetDlgItem(id);
+    ASSERT(pButton != nil);
+    if (pButton == nil)
+        return -1;
+    return pButton->GetCheck();
 }
 void
 SetDlgButtonCheck(CWnd* pWnd, int id, int checkVal)
 {
-	CButton* pButton;
-	pButton = (CButton*) pWnd->GetDlgItem(id);
-	ASSERT(pButton != nil);
-	if (pButton == nil)
-		return;
-	pButton->SetCheck(checkVal);
+    CButton* pButton;
+    pButton = (CButton*) pWnd->GetDlgItem(id);
+    ASSERT(pButton != nil);
+    if (pButton == nil)
+        return;
+    pButton->SetCheck(checkVal);
 }
 
 
@@ -415,15 +415,15 @@ SetDlgButtonCheck(CWnd* pWnd, int id, int checkVal)
  */
 void
 CreateSimpleFont(CFont* pFont, CWnd* pWnd, const char* typeFace,
-		int pointSize)
+        int pointSize)
 {
-	CClientDC dc(pWnd);
-	int height;
+    CClientDC dc(pWnd);
+    int height;
 
-	height = -((dc.GetDeviceCaps(LOGPIXELSY) * pointSize) / 72);
-	pFont->CreateFont(height, 0, 0, 0, FW_NORMAL, 0, 0, 0,
-		DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS,
-		DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, typeFace);
+    height = -((dc.GetDeviceCaps(LOGPIXELSY) * pointSize) / 72);
+    pFont->CreateFont(height, 0, 0, 0, FW_NORMAL, 0, 0, 0,
+        DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS,
+        DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, typeFace);
 }
 
 /*
@@ -432,29 +432,29 @@ CreateSimpleFont(CFont* pFont, CWnd* pWnd, const char* typeFace,
 void
 GetWin32ErrorString(DWORD err, CString* pStr)
 {
-	DWORD count;
-	LPVOID lpMsgBuf;
+    DWORD count;
+    LPVOID lpMsgBuf;
 
-	count = FormatMessage( 
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-		FORMAT_MESSAGE_FROM_SYSTEM | 
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		err /*GetLastError()*/,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-		(LPTSTR) &lpMsgBuf,
-		0,
-		NULL 
-	);
+    count = FormatMessage( 
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_FROM_SYSTEM | 
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        err /*GetLastError()*/,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+        (LPTSTR) &lpMsgBuf,
+        0,
+        NULL 
+    );
 
-	if (!count) {
-		WMSG1("FormatMessage on err=0x%08lx failed\n", err);
-		pStr->Format("system error 0x%08lx.\n", err);
-	} else {
-		*pStr = (LPCTSTR)lpMsgBuf;
-		//MessageBox( NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
-		LocalFree( lpMsgBuf );
-	}
+    if (!count) {
+        WMSG1("FormatMessage on err=0x%08lx failed\n", err);
+        pStr->Format("system error 0x%08lx.\n", err);
+    } else {
+        *pStr = (LPCTSTR)lpMsgBuf;
+        //MessageBox( NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
+        LocalFree( lpMsgBuf );
+    }
 }
 
 /*
@@ -463,10 +463,10 @@ GetWin32ErrorString(DWORD err, CString* pStr)
 void
 ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID)
 {
-	CString failed;
+    CString failed;
 
-	failed.LoadString(titleStrID);
-	pWnd->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
+    failed.LoadString(titleStrID);
+    pWnd->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
 }
 
 /*
@@ -475,8 +475,8 @@ ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID)
 BOOL
 ShowContextHelp(CWnd* pWnd, HELPINFO* lpHelpInfo)
 {
-	pWnd->WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;
+    pWnd->WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;
 }
 
 /*
@@ -486,23 +486,23 @@ ShowContextHelp(CWnd* pWnd, HELPINFO* lpHelpInfo)
 bool
 IsWin9x(void)
 {
-	OSVERSIONINFO osvers;
-	BOOL result;
+    OSVERSIONINFO osvers;
+    BOOL result;
 
-	osvers.dwOSVersionInfoSize = sizeof(osvers);
-	result = ::GetVersionEx(&osvers);
-	assert(result != FALSE);
+    osvers.dwOSVersionInfoSize = sizeof(osvers);
+    result = ::GetVersionEx(&osvers);
+    assert(result != FALSE);
 
-	if (osvers.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-		return true;
-	else
-		return false;
+    if (osvers.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+        return true;
+    else
+        return false;
 }
 
 
 /*
  * ===========================================================================
- *		Miscellaneous
+ *      Miscellaneous
  * ===========================================================================
  */
 
@@ -514,27 +514,27 @@ IsWin9x(void)
 int
 GetPascalString(const char* buf, long maxLen, CString* pStr)
 {
-	int len = *buf++;
-	int retLen = len;
-	*pStr = "";
+    int len = *buf++;
+    int retLen = len;
+    *pStr = "";
 
-	if (len > maxLen) {
-		WMSG2("Invalid pascal string -- len=%d, maxLen=%d\n", len, maxLen);
-		return -1;
-	}
+    if (len > maxLen) {
+        WMSG2("Invalid pascal string -- len=%d, maxLen=%d\n", len, maxLen);
+        return -1;
+    }
 
-	while (len--) {
-		if (*buf == '\0') {
-			/* this suggests that we're not reading a pascal string */
-			WMSG0("Found pascal string with '\\0' in it\n");
-			return -1;
-		}
+    while (len--) {
+        if (*buf == '\0') {
+            /* this suggests that we're not reading a pascal string */
+            WMSG0("Found pascal string with '\\0' in it\n");
+            return -1;
+        }
 
-		/* not the fastest approach, but it'll do */
-		*pStr += *buf++;
-	}
+        /* not the fastest approach, but it'll do */
+        *pStr += *buf++;
+    }
 
-	return retLen;
+    return retLen;
 }
 
 /*
@@ -543,47 +543,47 @@ GetPascalString(const char* buf, long maxLen, CString* pStr)
 void
 LogHexDump(const void* vbuf, long len)
 {
-	const unsigned char* buf = (const unsigned char*) vbuf;
-	char outBuf[10 + 16*3 +1 +8];	// addr: 00 11 22 ... + 8 bytes slop
-	bool skipFirst;
-	long addr;
-	char* cp = nil;
-	int i;
+    const unsigned char* buf = (const unsigned char*) vbuf;
+    char outBuf[10 + 16*3 +1 +8];   // addr: 00 11 22 ... + 8 bytes slop
+    bool skipFirst;
+    long addr;
+    char* cp = nil;
+    int i;
 
-	WMSG2(" Memory at 0x%08lx %ld bytes:\n", buf, len);
-	if (len <= 0)
-		return;
+    WMSG2(" Memory at 0x%08lx %ld bytes:\n", buf, len);
+    if (len <= 0)
+        return;
 
-	addr = (int)buf & ~0x0f;
-	if (addr != (int) buf) {
-		sprintf(outBuf, "%08lx: ", addr);
-		for (i = addr; i < (int) buf; i++)
-			strcat(outBuf, "   ");
-		cp = outBuf + strlen(outBuf);
-		skipFirst = false;
-	} else {
-		skipFirst = true;
-	}
+    addr = (int)buf & ~0x0f;
+    if (addr != (int) buf) {
+        sprintf(outBuf, "%08lx: ", addr);
+        for (i = addr; i < (int) buf; i++)
+            strcat(outBuf, "   ");
+        cp = outBuf + strlen(outBuf);
+        skipFirst = false;
+    } else {
+        skipFirst = true;
+    }
 
-	while (len--) {
-		if (((int) buf & 0x0f) == 0) {
-			/* output the old, start a new line */
-			if (skipFirst) {
-				skipFirst = false;
-			} else {
-				WMSG1("  %s\n", outBuf);
-				addr += 16;
-			}
-			sprintf(outBuf, "%08lx: ", addr);
-			cp = outBuf + strlen(outBuf);
-		}
+    while (len--) {
+        if (((int) buf & 0x0f) == 0) {
+            /* output the old, start a new line */
+            if (skipFirst) {
+                skipFirst = false;
+            } else {
+                WMSG1("  %s\n", outBuf);
+                addr += 16;
+            }
+            sprintf(outBuf, "%08lx: ", addr);
+            cp = outBuf + strlen(outBuf);
+        }
 
-		sprintf(cp, "%02x ", *buf++);
-		cp += 3;
-	}
+        sprintf(cp, "%02x ", *buf++);
+        cp += 3;
+    }
 
-	/* output whatever is left */
-	WMSG1("  %s\n", outBuf);
+    /* output whatever is left */
+    WMSG1("  %s\n", outBuf);
 }
 
 /*
@@ -618,14 +618,14 @@ ComputePercent(LONGLONG part, LONGLONG full)
 void
 FormatDate(time_t when, CString* pStr)
 {
-	if (when == kDateNone) {
-		*pStr = "[No Date]";
-	} else if (when == kDateInvalid) {
-		*pStr = "<invalid>";
-	} else {
-		CTime modWhen(when);
-		*pStr = modWhen.Format("%d-%b-%y %H:%M");
-	}
+    if (when == kDateNone) {
+        *pStr = "[No Date]";
+    } else if (when == kDateInvalid) {
+        *pStr = "<invalid>";
+    } else {
+        CTime modWhen(when);
+        *pStr = modWhen.Format("%d-%b-%y %H:%M");
+    }
 }
 
 /*
@@ -638,45 +638,45 @@ FormatDate(time_t when, CString* pStr)
 char*
 stristr(const char* string1, const char* string2)
 {
-	char *cp1 = (char*) string1, *cp2, *cp1a;
-	char first; 			 // get the first char in string to find
+    char *cp1 = (char*) string1, *cp2, *cp1a;
+    char first;              // get the first char in string to find
 
-	first = string2[0]; 	 // first char often won't be alpha
-	if (isalpha(first)) 	{
-		first = tolower(first);
-		for ( ; *cp1  != '\0'; cp1++)
-		{
-			if (tolower(*cp1) == first)
-			{
-				for (cp1a = &cp1[1], cp2 = (char*) &string2[1]; ;
-				cp1a++, cp2++)
-				{ 
-					if (*cp2 == '\0')
-						return cp1;
-					if (tolower(*cp1a) != tolower(*cp2))
-						break;
-				}
-			}
-		}
-	}
-	else
-	{
-		for ( ; *cp1 != '\0' ; cp1++)
-		{
-			if (*cp1 == first)
-			{
-				for (cp1a = &cp1[1], cp2 = (char*) &string2[1]; ;
-				cp1a++, cp2++)
-				{
-					if (*cp2 == '\0')
-						return cp1;
-					if (tolower(*cp1a) != tolower(*cp2))
-						break;
-				}
-			}
-		}
-	}
-	return NULL;
+    first = string2[0];      // first char often won't be alpha
+    if (isalpha(first))     {
+        first = tolower(first);
+        for ( ; *cp1  != '\0'; cp1++)
+        {
+            if (tolower(*cp1) == first)
+            {
+                for (cp1a = &cp1[1], cp2 = (char*) &string2[1]; ;
+                cp1a++, cp2++)
+                { 
+                    if (*cp2 == '\0')
+                        return cp1;
+                    if (tolower(*cp1a) != tolower(*cp2))
+                        break;
+                }
+            }
+        }
+    }
+    else
+    {
+        for ( ; *cp1 != '\0' ; cp1++)
+        {
+            if (*cp1 == first)
+            {
+                for (cp1a = &cp1[1], cp2 = (char*) &string2[1]; ;
+                cp1a++, cp2++)
+                {
+                    if (*cp2 == '\0')
+                        return cp1;
+                    if (tolower(*cp1a) != tolower(*cp2))
+                        break;
+                }
+            }
+        }
+    }
+    return NULL;
 }
 
 
@@ -694,47 +694,47 @@ stristr(const char* string1, const char* string2)
 void
 VectorizeString(char* mangle, char** argv, int* pArgc)
 {
-	bool inWhiteSpace = true;
-	bool inQuote = false;
-	char* cp = mangle;
-	int idx = 0;
+    bool inWhiteSpace = true;
+    bool inQuote = false;
+    char* cp = mangle;
+    int idx = 0;
 
-	while (*cp != '\0') {
-		ASSERT(!inWhiteSpace || !inQuote);
-		if (!inQuote && (*cp == ' ' || *cp == '\t')) {
-			if (!inWhiteSpace && !inQuote) {
-				/* end of token */
-				*cp = '\0';
-			}
-			inWhiteSpace = true;
-		} else {
-			if (inWhiteSpace) {
-				/* start of token */
-				if (idx >= *pArgc) {
-					//WMSG2("Max #of args (%d) exceeded, ignoring '%s'\n",
-					//	*pArgc, cp);
-					break;
-				}
-				argv[idx++] = cp;
-			}
+    while (*cp != '\0') {
+        ASSERT(!inWhiteSpace || !inQuote);
+        if (!inQuote && (*cp == ' ' || *cp == '\t')) {
+            if (!inWhiteSpace && !inQuote) {
+                /* end of token */
+                *cp = '\0';
+            }
+            inWhiteSpace = true;
+        } else {
+            if (inWhiteSpace) {
+                /* start of token */
+                if (idx >= *pArgc) {
+                    //WMSG2("Max #of args (%d) exceeded, ignoring '%s'\n",
+                    //  *pArgc, cp);
+                    break;
+                }
+                argv[idx++] = cp;
+            }
 
-			if (*cp == '"') {
-				/* consume the quote */
-				memmove(cp, cp+1, strlen(cp));	// move the last '\0' down too
-				cp--;
-				inQuote = !inQuote;
-			}
+            if (*cp == '"') {
+                /* consume the quote */
+                memmove(cp, cp+1, strlen(cp));  // move the last '\0' down too
+                cp--;
+                inQuote = !inQuote;
+            }
 
-			inWhiteSpace = false;
-		}
-		cp++;
-	}
+            inWhiteSpace = false;
+        }
+        cp++;
+    }
 
-	if (inQuote) {
-		WMSG0("WARNING: ended in quote\n");
-	}
+    if (inQuote) {
+        WMSG0("WARNING: ended in quote\n");
+    }
 
-	*pArgc = idx;
+    *pArgc = idx;
 }
 
 
@@ -744,66 +744,66 @@ VectorizeString(char* mangle, char** argv, int* pArgc)
  */
 static void
 DowncaseSubstring(CString* pStr, int startPos, int endPos,
-	bool prevWasSpace)
+    bool prevWasSpace)
 {
-	static const char* shortWords[] = {
-		"of", "the", "a", "an", "and", "to", "in"
-	};
-	static const char* leaveAlone[] = {
-		"BBS", "3D"
-	};
-	static const char* justLikeThis[] = {
-		"ProDOS", "IIe", "IIc", "IIgs"
-	};
-	CString token;
-	bool firstCap = true;
-	int i;
+    static const char* shortWords[] = {
+        "of", "the", "a", "an", "and", "to", "in"
+    };
+    static const char* leaveAlone[] = {
+        "BBS", "3D"
+    };
+    static const char* justLikeThis[] = {
+        "ProDOS", "IIe", "IIc", "IIgs"
+    };
+    CString token;
+    bool firstCap = true;
+    int i;
 
-	token = pStr->Mid(startPos, endPos - startPos);
-	//WMSG1("  TOKEN: '%s'\n", token);
+    token = pStr->Mid(startPos, endPos - startPos);
+    //WMSG1("  TOKEN: '%s'\n", token);
 
-	/* these words are left alone */
-	for (i = 0; i < NELEM(leaveAlone); i++) {
-		if (token.CompareNoCase(leaveAlone[i]) == 0) {
-			//WMSG1("    Leaving alone '%s'\n", token);
-			return;
-		}
-	}
+    /* these words are left alone */
+    for (i = 0; i < NELEM(leaveAlone); i++) {
+        if (token.CompareNoCase(leaveAlone[i]) == 0) {
+            //WMSG1("    Leaving alone '%s'\n", token);
+            return;
+        }
+    }
 
-	/* words with specific capitalization */
-	for (i = 0; i < NELEM(justLikeThis); i++) {
-		if (token.CompareNoCase(justLikeThis[i]) == 0) {
-			WMSG2("    Setting '%s' to '%s'\n", token, justLikeThis[i]);
-			for (int j = startPos; j < endPos; j++)
-				pStr->SetAt(j, justLikeThis[i][j - startPos]);
-			return;
-		}
-	}
+    /* words with specific capitalization */
+    for (i = 0; i < NELEM(justLikeThis); i++) {
+        if (token.CompareNoCase(justLikeThis[i]) == 0) {
+            WMSG2("    Setting '%s' to '%s'\n", token, justLikeThis[i]);
+            for (int j = startPos; j < endPos; j++)
+                pStr->SetAt(j, justLikeThis[i][j - startPos]);
+            return;
+        }
+    }
 
-	/* these words are not capitalized unless they start a phrase */
-	if (prevWasSpace) {
-		for (i = 0; i < NELEM(shortWords); i++) {
-			if (token.CompareNoCase(shortWords[i]) == 0) {
-				//WMSG1("    No leading cap for '%s'\n", token);
-				firstCap = false;
-				break;
-			}
-		}
-	}
+    /* these words are not capitalized unless they start a phrase */
+    if (prevWasSpace) {
+        for (i = 0; i < NELEM(shortWords); i++) {
+            if (token.CompareNoCase(shortWords[i]) == 0) {
+                //WMSG1("    No leading cap for '%s'\n", token);
+                firstCap = false;
+                break;
+            }
+        }
+    }
 
-	/* check for roman numerals; we leave those capitalized */
-	CString romanTest = token.SpanIncluding("IVX");
-	if (romanTest.GetLength() == token.GetLength()) {
-		//WMSG1("    Looks like roman numerals '%s'\n", token);
-		return;
-	}
+    /* check for roman numerals; we leave those capitalized */
+    CString romanTest = token.SpanIncluding("IVX");
+    if (romanTest.GetLength() == token.GetLength()) {
+        //WMSG1("    Looks like roman numerals '%s'\n", token);
+        return;
+    }
 
-	if (firstCap)
-		startPos++;
+    if (firstCap)
+        startPos++;
 
-	for (i = startPos; i < endPos; i++) {
-		pStr->SetAt(i, tolower(pStr->GetAt(i)));
-	}
+    for (i = startPos; i < endPos; i++) {
+        pStr->SetAt(i, tolower(pStr->GetAt(i)));
+    }
 }
 
 /*
@@ -814,55 +814,55 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
 void
 InjectLowercase(CString* pStr)
 {
-	int len = pStr->GetLength();
-	static const char* kGapChars = " .:&-+/\\()<>@*";
-	int startPos, endPos;
+    int len = pStr->GetLength();
+    static const char* kGapChars = " .:&-+/\\()<>@*";
+    int startPos, endPos;
 
-	//*pStr = "AND PRODOS FOR THE IIGS";
-	//len = pStr->GetLength();
-	//WMSG1("InjectLowercase: '%s'\n", *pStr);
+    //*pStr = "AND PRODOS FOR THE IIGS";
+    //len = pStr->GetLength();
+    //WMSG1("InjectLowercase: '%s'\n", *pStr);
 
-	for (int i = 0; i < len; i++) {
-		char ch = pStr->GetAt(i);
-		if (ch >= 'a' && ch <= 'z') {
-			WMSG1("Found lowercase 0x%02x, skipping InjectLower\n", ch);
-			return;
-		}
-	}
+    for (int i = 0; i < len; i++) {
+        char ch = pStr->GetAt(i);
+        if (ch >= 'a' && ch <= 'z') {
+            WMSG1("Found lowercase 0x%02x, skipping InjectLower\n", ch);
+            return;
+        }
+    }
 
-	startPos = 0;
-	while (startPos < len) {
-		/* find start of token */
-		char ch;
-		do {
-			ch = pStr->GetAt(startPos);
-			if (strchr(kGapChars, ch) == nil)
-				break;
-			startPos++;
-		} while (startPos < len);
-		if (startPos == len)
-			break;
+    startPos = 0;
+    while (startPos < len) {
+        /* find start of token */
+        char ch;
+        do {
+            ch = pStr->GetAt(startPos);
+            if (strchr(kGapChars, ch) == nil)
+                break;
+            startPos++;
+        } while (startPos < len);
+        if (startPos == len)
+            break;
 
-		/* find end of token */
-		endPos = startPos + 1;
-		while (endPos < len) {
-			ch = pStr->GetAt(endPos);
-			if (strchr(kGapChars, ch) != nil)
-				break;
-			endPos++;
-		}
+        /* find end of token */
+        endPos = startPos + 1;
+        while (endPos < len) {
+            ch = pStr->GetAt(endPos);
+            if (strchr(kGapChars, ch) != nil)
+                break;
+            endPos++;
+        }
 
-		/* endPos now points at first char past end of token */
+        /* endPos now points at first char past end of token */
 
-		bool prevWasSpace;
-		if (startPos == 0)
-			prevWasSpace = false;
-		else
-			prevWasSpace = (pStr->GetAt(startPos-1) == ' ');
-		DowncaseSubstring(pStr, startPos, endPos, prevWasSpace);
+        bool prevWasSpace;
+        if (startPos == 0)
+            prevWasSpace = false;
+        else
+            prevWasSpace = (pStr->GetAt(startPos-1) == ' ');
+        DowncaseSubstring(pStr, startPos, endPos, prevWasSpace);
 
-		startPos = endPos;
-	}
+        startPos = endPos;
+    }
 }
 
 
@@ -873,30 +873,30 @@ InjectLowercase(CString* pStr)
 bool
 MatchSemicolonList(const CString set, const CString match)
 {
-	const char* cp;
-	CString mangle(set);
-	int matchLen = match.GetLength();
+    const char* cp;
+    CString mangle(set);
+    int matchLen = match.GetLength();
 
-	if (!matchLen)
-		return false;
+    if (!matchLen)
+        return false;
 
-	mangle.Remove(' ');
-	for (cp = mangle; *cp != '\0'; ) {
-		if (strncasecmp(cp, match, matchLen) == 0 &&
-			(cp[matchLen] == ';' || cp[matchLen] == '\0'))
-		{
-			WMSG2("+++ Found '%s' at '%s'\n", (LPCTSTR) match, cp);
-			return true;
-		}
+    mangle.Remove(' ');
+    for (cp = mangle; *cp != '\0'; ) {
+        if (strncasecmp(cp, match, matchLen) == 0 &&
+            (cp[matchLen] == ';' || cp[matchLen] == '\0'))
+        {
+            WMSG2("+++ Found '%s' at '%s'\n", (LPCTSTR) match, cp);
+            return true;
+        }
 
-		while (*cp != ';' && *cp != '\0')
-			cp++;
-		if (*cp == ';')
-			cp++;
-	}
+        while (*cp != ';' && *cp != '\0')
+            cp++;
+        if (*cp == ';')
+            cp++;
+    }
 
-	WMSG2("--- No match for '%s' in '%s'\n", (LPCTSTR) match, (LPCTSTR) set);
-	return false;
+    WMSG2("--- No match for '%s' in '%s'\n", (LPCTSTR) match, (LPCTSTR) set);
+    return false;
 }
 
 
@@ -908,12 +908,12 @@ MatchSemicolonList(const CString set, const CString match)
 char*
 StrcpyNew(const char* str)
 {
-	char* newStr;
+    char* newStr;
 
-	if (str == nil)
-		return nil;
-	newStr = new char[strlen(str)+1];
-	if (newStr != nil)
-		strcpy(newStr, str);
-	return newStr;
+    if (str == nil)
+        return nil;
+    newStr = new char[strlen(str)+1];
+    if (newStr != nil)
+        strcpy(newStr, str);
+    return newStr;
 }

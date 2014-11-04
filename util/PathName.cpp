@@ -32,11 +32,11 @@
 
 /*
  * ===========================================================================
- *		Filename utils
+ *      Filename utils
  * ===========================================================================
  */
 
-#define kFilenameExtDelim	'.' 	/* separates extension from filename */
+#define kFilenameExtDelim   '.'     /* separates extension from filename */
 
 /*
  * Find the filename component of a local pathname.  Uses the fssep passed
@@ -48,55 +48,55 @@
 const char*
 FilenameOnly(const char* pathname, char fssep)
 {
-	const char* retstr;
-	const char* pSlash;
-	char* tmpStr = nil;
+    const char* retstr;
+    const char* pSlash;
+    char* tmpStr = nil;
 
-	ASSERT(pathname != nil);
-	if (fssep == '\0') {
-		retstr = pathname;
-		goto bail;
-	}
+    ASSERT(pathname != nil);
+    if (fssep == '\0') {
+        retstr = pathname;
+        goto bail;
+    }
 
-	pSlash = strrchr(pathname, fssep);
-	if (pSlash == nil) {
-		retstr = pathname;		/* whole thing is the filename */
-		goto bail;
-	}
+    pSlash = strrchr(pathname, fssep);
+    if (pSlash == nil) {
+        retstr = pathname;      /* whole thing is the filename */
+        goto bail;
+    }
 
-	pSlash++;
-	if (*pSlash == '\0') {
-		if (strlen(pathname) < 2) {
-			retstr = pathname;	/* the pathname is just "/"?  Whatever */
-			goto bail;
-		}
+    pSlash++;
+    if (*pSlash == '\0') {
+        if (strlen(pathname) < 2) {
+            retstr = pathname;  /* the pathname is just "/"?  Whatever */
+            goto bail;
+        }
 
-		/* some bonehead put an fssep on the very end; back up before it */
-		/* (not efficient, but this should be rare, and I'm feeling lazy) */
-		tmpStr = strdup(pathname);
-		tmpStr[strlen(pathname)-1] = '\0';
-		pSlash = strrchr(tmpStr, fssep);
+        /* some bonehead put an fssep on the very end; back up before it */
+        /* (not efficient, but this should be rare, and I'm feeling lazy) */
+        tmpStr = strdup(pathname);
+        tmpStr[strlen(pathname)-1] = '\0';
+        pSlash = strrchr(tmpStr, fssep);
 
-		if (pSlash == nil) {
-			retstr = pathname;	/* just a filename with a '/' after it */
-			goto bail;
-		}
+        if (pSlash == nil) {
+            retstr = pathname;  /* just a filename with a '/' after it */
+            goto bail;
+        }
 
-		pSlash++;
-		if (*pSlash == '\0') {
-			retstr = pathname;	/* I give up! */
-			goto bail;
-		}
+        pSlash++;
+        if (*pSlash == '\0') {
+            retstr = pathname;  /* I give up! */
+            goto bail;
+        }
 
-		retstr = pathname + (pSlash - tmpStr);
+        retstr = pathname + (pSlash - tmpStr);
 
-	} else {
-		retstr = pSlash;
-	}
+    } else {
+        retstr = pSlash;
+    }
 
 bail:
-	free(tmpStr);
-	return retstr;
+    free(tmpStr);
+    return retstr;
 }
 
 /*
@@ -113,22 +113,22 @@ bail:
 const char*
 FindExtension(const char* pathname, char fssep)
 {
-	const char* pFilename;
-	const char* pExt;
+    const char* pFilename;
+    const char* pExt;
 
-	/*
-	 * We have to isolate the filename so that we don't get excited
-	 * about "/foo.bar/file".
-	 */
-	pFilename = FilenameOnly(pathname, fssep);
-	ASSERT(pFilename != nil);
-	pExt = strrchr(pFilename, kFilenameExtDelim);
+    /*
+     * We have to isolate the filename so that we don't get excited
+     * about "/foo.bar/file".
+     */
+    pFilename = FilenameOnly(pathname, fssep);
+    ASSERT(pFilename != nil);
+    pExt = strrchr(pFilename, kFilenameExtDelim);
 
-	/* also check for "/blah/foo.", which doesn't count */
-	if (pExt != nil && *(pExt+1) != '\0')
-		return pExt;
+    /* also check for "/blah/foo.", which doesn't count */
+    if (pExt != nil && *(pExt+1) != '\0')
+        return pExt;
 
-	return nil;
+    return nil;
 }
 
 
@@ -139,22 +139,22 @@ FindExtension(const char* pathname, char fssep)
 CString
 PathName::GetFileName(void)
 {
-	CString str;
+    CString str;
 
-	SplitIFN();
-	str = fFileName;
-	str += fExt;
+    SplitIFN();
+    str = fFileName;
+    str += fExt;
 
-	{
-		const char* ccp;
-		ccp = FilenameOnly(fPathName, '\\');
-		if (strcmp(ccp, str) != 0) {
-			WMSG2("NOTE: got different filenames '%s' vs '%s'\n",
-				ccp, (LPCTSTR) str);
-		}
-	}
+    {
+        const char* ccp;
+        ccp = FilenameOnly(fPathName, '\\');
+        if (strcmp(ccp, str) != 0) {
+            WMSG2("NOTE: got different filenames '%s' vs '%s'\n",
+                ccp, (LPCTSTR) str);
+        }
+    }
 
-	return str;
+    return str;
 }
 
 /*
@@ -163,9 +163,9 @@ PathName::GetFileName(void)
 CString
 PathName::GetDriveOnly(void)
 {
-	SplitIFN();
+    SplitIFN();
 
-	return fDrive;
+    return fDrive;
 }
 
 /*
@@ -174,13 +174,13 @@ PathName::GetDriveOnly(void)
 CString
 PathName::GetDriveAndPath(void)
 {
-	CString str;
+    CString str;
 
-	SplitIFN();
-	str = fDrive;
-	str += fDir;
+    SplitIFN();
+    str = fDrive;
+    str += fDir;
 
-	return str;
+    return str;
 }
 
 /*
@@ -189,9 +189,9 @@ PathName::GetDriveAndPath(void)
 CString
 PathName::GetPathOnly(void)
 {
-	SplitIFN();
+    SplitIFN();
 
-	return fDir;
+    return fDir;
 }
 
 /*
@@ -200,20 +200,20 @@ PathName::GetPathOnly(void)
 CString
 PathName::GetExtension(void)
 {
-	SplitIFN();
+    SplitIFN();
 
-	{
-		const char* ccp;
-		ccp = FindExtension(fPathName, '\\');
-		if ((ccp == nil && strlen(fExt) > 0) ||
-			(ccp != nil && strcmp(ccp, fExt) != 0))
-		{
-			WMSG2("NOTE: got different extensions '%s' vs '%s'\n",
-				ccp, (LPCTSTR) fExt);
-		}
-	}
+    {
+        const char* ccp;
+        ccp = FindExtension(fPathName, '\\');
+        if ((ccp == nil && strlen(fExt) > 0) ||
+            (ccp != nil && strcmp(ccp, fExt) != 0))
+        {
+            WMSG2("NOTE: got different extensions '%s' vs '%s'\n",
+                ccp, (LPCTSTR) fExt);
+        }
+    }
 
-	return fExt;
+    return fExt;
 }
 
 /*
@@ -224,90 +224,90 @@ PathName::GetExtension(void)
 int
 PathName::SFNToLFN(void)
 {
-	char buf[MAX_PATH];
-	WIN32_FIND_DATA findFileData;
-	HANDLE hFind;
-	char* cp;
-	DWORD len;
-	CString lfn;
-	bool hadEndingSlash = false;
+    char buf[MAX_PATH];
+    WIN32_FIND_DATA findFileData;
+    HANDLE hFind;
+    char* cp;
+    DWORD len;
+    CString lfn;
+    bool hadEndingSlash = false;
 
-	lfn = "";
-	if (fPathName.IsEmpty())
-		return 0;
+    lfn = "";
+    if (fPathName.IsEmpty())
+        return 0;
 
-	/* fully expand it */
-	len = ::GetFullPathName(fPathName, sizeof(buf), buf, &cp);
-	if (len == 0 || len >= sizeof(buf))
-		return -1;
-	//WMSG1("  FullPathName='%s'\n", buf);
+    /* fully expand it */
+    len = ::GetFullPathName(fPathName, sizeof(buf), buf, &cp);
+    if (len == 0 || len >= sizeof(buf))
+        return -1;
+    //WMSG1("  FullPathName='%s'\n", buf);
 
-	if (buf[len-1] == '\\') {
-		hadEndingSlash = true;
-		buf[len-1] = '\0';
-		len--;
-	}
+    if (buf[len-1] == '\\') {
+        hadEndingSlash = true;
+        buf[len-1] = '\0';
+        len--;
+    }
 
-	/*
-	 * Walk forward in the buffer, passing increasingly-long filenames into
-	 * FindFirstFile.
-	 */
-	cp = buf;
-	while (cp != buf + len) {
-		if (*cp == '\\') {
-			if (cp == buf) {
-				/* just the leading '\'; shouldn't happen after GetFPN? */
-				lfn += "\\";
-			} else if (cp == buf+2 && *buf != '\\') {
-				/* this is probably "C:\", which FindFF doesn't handle */
-				*cp = '\0';
-				lfn += buf;
-				lfn += "\\";
-				*cp = '\\';
-			} else {
-				*cp = '\0';
-				hFind = ::FindFirstFile(buf, &findFileData);
-				if (hFind == INVALID_HANDLE_VALUE) {
-					DWORD err = ::GetLastError();
-					WMSG2("FindFirstFile '%s' failed, err=%d\n", buf, err);
-					return -1;
-				} else {
-					FindClose(hFind);
-				}
-				//WMSG2("  COMPONENT '%s' [%s]\n", findFileData.cFileName,
-				//	findFileData.cAlternateFileName);
-				lfn += findFileData.cFileName;
-				lfn += "\\";
-				*cp = '\\';
-			}
-		}
+    /*
+     * Walk forward in the buffer, passing increasingly-long filenames into
+     * FindFirstFile.
+     */
+    cp = buf;
+    while (cp != buf + len) {
+        if (*cp == '\\') {
+            if (cp == buf) {
+                /* just the leading '\'; shouldn't happen after GetFPN? */
+                lfn += "\\";
+            } else if (cp == buf+2 && *buf != '\\') {
+                /* this is probably "C:\", which FindFF doesn't handle */
+                *cp = '\0';
+                lfn += buf;
+                lfn += "\\";
+                *cp = '\\';
+            } else {
+                *cp = '\0';
+                hFind = ::FindFirstFile(buf, &findFileData);
+                if (hFind == INVALID_HANDLE_VALUE) {
+                    DWORD err = ::GetLastError();
+                    WMSG2("FindFirstFile '%s' failed, err=%d\n", buf, err);
+                    return -1;
+                } else {
+                    FindClose(hFind);
+                }
+                //WMSG2("  COMPONENT '%s' [%s]\n", findFileData.cFileName,
+                //  findFileData.cAlternateFileName);
+                lfn += findFileData.cFileName;
+                lfn += "\\";
+                *cp = '\\';
+            }
+        }
 
-		cp++;
-	}
-	//WMSG1("  Interim name = '%s'\n", (LPCTSTR) lfn);
+        cp++;
+    }
+    //WMSG1("  Interim name = '%s'\n", (LPCTSTR) lfn);
 
-	if (*(cp-1) != '\\') {
-		/* there was some stuff after the last '\\'; handle it */
-		hFind = ::FindFirstFile(buf, &findFileData);
-		if (hFind == INVALID_HANDLE_VALUE) {
-			DWORD err = ::GetLastError();
-			WMSG2("FindFirstFile '%s' failed, err=%d\n", buf, err);
-			return -1;
-		} else {
-			FindClose(hFind);
-		}
-		//WMSG2("  COMPONENT2 '%s' [%s]\n", findFileData.cFileName,
-		//	findFileData.cAlternateFileName);
-		lfn += findFileData.cFileName;
-	}
+    if (*(cp-1) != '\\') {
+        /* there was some stuff after the last '\\'; handle it */
+        hFind = ::FindFirstFile(buf, &findFileData);
+        if (hFind == INVALID_HANDLE_VALUE) {
+            DWORD err = ::GetLastError();
+            WMSG2("FindFirstFile '%s' failed, err=%d\n", buf, err);
+            return -1;
+        } else {
+            FindClose(hFind);
+        }
+        //WMSG2("  COMPONENT2 '%s' [%s]\n", findFileData.cFileName,
+        //  findFileData.cAlternateFileName);
+        lfn += findFileData.cFileName;
+    }
 
-	//WMSG1("  Almost done = '%s'\n", (LPCTSTR) lfn);
-	if (hadEndingSlash)
-		lfn += "\\";
+    //WMSG1("  Almost done = '%s'\n", (LPCTSTR) lfn);
+    if (hadEndingSlash)
+        lfn += "\\";
 
-	fPathName = lfn;
+    fPathName = lfn;
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -316,14 +316,14 @@ PathName::SFNToLFN(void)
 CString
 PathName::GetDescription()
 {
-	CString		szTypeName;
-	SHFILEINFO	sfi;
+    CString     szTypeName;
+    SHFILEINFO  sfi;
 
-	SHGetFileInfo(fPathName, 0, &sfi, sizeof(SHFILEINFO), SHGFI_TYPENAME);
+    SHGetFileInfo(fPathName, 0, &sfi, sizeof(SHFILEINFO), SHGFI_TYPENAME);
 
-	szTypeName = sfi.szTypeName;
+    szTypeName = sfi.szTypeName;
 
-	return szTypeName;
+    return szTypeName;
 }
 
 /*
@@ -337,49 +337,49 @@ PathName::GetDescription()
 bool
 PathName::Exists(void)
 {
-//	if (strncmp(fPathName, "\\\\", 2) == 0) {
-//		WMSG1("Refusing to check for network path '%s'\n", fPathName);
-//		return false;
-//	}
+//  if (strncmp(fPathName, "\\\\", 2) == 0) {
+//      WMSG1("Refusing to check for network path '%s'\n", fPathName);
+//      return false;
+//  }
 
-	return (::access(fPathName, 0) != -1);
+    return (::access(fPathName, 0) != -1);
 
 #if 0
-	WIN32_FIND_DATA fd;
-	bool result;
+    WIN32_FIND_DATA fd;
+    bool result;
 
-	CString	szFindPath = fPathName;
-	int nSlash = szFindPath.ReverseFind('\\');
+    CString szFindPath = fPathName;
+    int nSlash = szFindPath.ReverseFind('\\');
 
-	if( nSlash == szFindPath.GetLength()-1)
-	{
-		szFindPath = szFindPath.Left(nSlash);
-	}
+    if( nSlash == szFindPath.GetLength()-1)
+    {
+        szFindPath = szFindPath.Left(nSlash);
+    }
 
-	HANDLE hFind = FindFirstFile( szFindPath, &fd );
+    HANDLE hFind = FindFirstFile( szFindPath, &fd );
 
-	if ( hFind != INVALID_HANDLE_VALUE )
-	{
-		FindClose( hFind );
-	}
+    if ( hFind != INVALID_HANDLE_VALUE )
+    {
+        FindClose( hFind );
+    }
 
-	result = (hFind != INVALID_HANDLE_VALUE);
+    result = (hFind != INVALID_HANDLE_VALUE);
 #endif
 
 #if 0
-	if (::access(fPathName, 0) != -1) {
-		/* exists */
-		if (!result) {
-			ASSERT(false);
-		}
-	} else {
-		/* doesn't exist */
-		if (result) {
-			ASSERT(false);
-		}
-	}
+    if (::access(fPathName, 0) != -1) {
+        /* exists */
+        if (!result) {
+            ASSERT(false);
+        }
+    } else {
+        /* doesn't exist */
+        if (result) {
+            ASSERT(false);
+        }
+    }
 
-	return result;
+    return result;
 #endif
 }
 
@@ -393,19 +393,19 @@ instead of removing the backshash at the end of the path, i add a * to find any 
 FileName.cpp line 135:
 replace
 ----------------------
-	if( nSlash == szFindPath.GetLength()-1)
-	{
-		szFindPath = szFindPath.Left(nSlash);
-	}
+    if( nSlash == szFindPath.GetLength()-1)
+    {
+        szFindPath = szFindPath.Left(nSlash);
+    }
 ----------------------
 with
 ----------------------
-	if( nSlash == szFindPath.GetLength()-1)
-	{
-		szFindPath += "*";
-	}
-	else
-		szFindPath += "\\*";
+    if( nSlash == szFindPath.GetLength()-1)
+    {
+        szFindPath += "*";
+    }
+    else
+        szFindPath += "\\*";
 ----------------------
 */
 
@@ -415,14 +415,14 @@ with
 int
 PathName::Mkdir(const char* dir)
 {
-	int err = 0;
+    int err = 0;
 
-	ASSERT(dir != nil);
+    ASSERT(dir != nil);
 
-	if (mkdir(dir) < 0)
-		err = errno ? errno : -1;
+    if (mkdir(dir) < 0)
+        err = errno ? errno : -1;
 
-	return err;
+    return err;
 }
 
 /*
@@ -435,63 +435,63 @@ PathName::Mkdir(const char* dir)
  */
 int
 PathName::GetFileInfo(const char* pathname, struct stat* psb,
-	time_t* pModWhen, bool* pExists, bool* pIsReadable, bool* pIsDirectory)
+    time_t* pModWhen, bool* pExists, bool* pIsReadable, bool* pIsDirectory)
 {
-	struct stat sbuf;
-	int cc;
+    struct stat sbuf;
+    int cc;
 
-	/*
-	 * On base network path, e.g. \\webby\fadden, the stat() call fails
-	 * with ENOENT, but the access() call succeeds.  Not sure if this
-	 * can happen in other circumstances, so I'm not messing with it
-	 * for now.
-	 */
-	//{
-	//	int cc2 = access(pathname, 0);
-	//}
+    /*
+     * On base network path, e.g. \\webby\fadden, the stat() call fails
+     * with ENOENT, but the access() call succeeds.  Not sure if this
+     * can happen in other circumstances, so I'm not messing with it
+     * for now.
+     */
+    //{
+    //  int cc2 = access(pathname, 0);
+    //}
 
-	if (pModWhen != nil)
-		*pModWhen = (time_t) -1;
-	if (pExists != nil)
-		*pExists = false;
-	if (pIsReadable != nil)
-		*pIsReadable = false;
-	if (pIsDirectory != nil)
-		*pIsDirectory = false;
+    if (pModWhen != nil)
+        *pModWhen = (time_t) -1;
+    if (pExists != nil)
+        *pExists = false;
+    if (pIsReadable != nil)
+        *pIsReadable = false;
+    if (pIsDirectory != nil)
+        *pIsDirectory = false;
 
-	cc = stat(pathname, &sbuf);
-	if (psb != nil)
-		*psb = sbuf;
-	if (cc != 0) {
-		if (errno == ENOENT) {
-			if (pExists != nil)
-				*pExists = false;
-			return 0;
-		} else
-			return errno;
-	}
+    cc = stat(pathname, &sbuf);
+    if (psb != nil)
+        *psb = sbuf;
+    if (cc != 0) {
+        if (errno == ENOENT) {
+            if (pExists != nil)
+                *pExists = false;
+            return 0;
+        } else
+            return errno;
+    }
 
-	if (pExists != nil)
-		*pExists = true;
+    if (pExists != nil)
+        *pExists = true;
 
-	if (pIsDirectory != nil && S_ISDIR(sbuf.st_mode))
-		*pIsDirectory = true;
-	if (pModWhen != nil)
-		*pModWhen = sbuf.st_mtime;
+    if (pIsDirectory != nil && S_ISDIR(sbuf.st_mode))
+        *pIsDirectory = true;
+    if (pModWhen != nil)
+        *pModWhen = sbuf.st_mtime;
 
-	if (pIsReadable != nil) {
-		/*
-		 * Test if we can read this file.  How do we do that?  The easy but
-		 * slow way is to call access(2), the harder way is to figure out
-		 * what user/group we are and compare the appropriate file mode.
-		 */
-		if (access(pathname, R_OK) < 0)
-			*pIsReadable = false;
-		else
-			*pIsReadable = true;
-	}
+    if (pIsReadable != nil) {
+        /*
+         * Test if we can read this file.  How do we do that?  The easy but
+         * slow way is to call access(2), the harder way is to figure out
+         * what user/group we are and compare the appropriate file mode.
+         */
+        if (access(pathname, R_OK) < 0)
+            *pIsReadable = false;
+        else
+            *pIsReadable = true;
+    }
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -499,9 +499,9 @@ PathName::GetFileInfo(const char* pathname, struct stat* psb,
  */
 int
 PathName::CheckFileStatus(struct stat* psb, bool* pExists, bool* pIsReadable,
-	bool* pIsDir)
+    bool* pIsDir)
 {
-	return GetFileInfo(fPathName, psb, nil, pExists, pIsReadable, pIsDir);
+    return GetFileInfo(fPathName, psb, nil, pExists, pIsReadable, pIsDir);
 }
 
 /*
@@ -510,12 +510,12 @@ PathName::CheckFileStatus(struct stat* psb, bool* pExists, bool* pIsReadable,
 time_t
 PathName::GetModWhen(void)
 {
-	time_t when;
+    time_t when;
 
-	if (GetFileInfo(fPathName, nil, &when, nil, nil, nil) != 0)
-		return (time_t) -1;
+    if (GetFileInfo(fPathName, nil, &when, nil, nil, nil) != 0)
+        return (time_t) -1;
 
-	return when;
+    return when;
 }
 
 /*
@@ -524,19 +524,19 @@ PathName::GetModWhen(void)
 int
 PathName::SetModWhen(time_t when)
 {
-	struct utimbuf utbuf;
+    struct utimbuf utbuf;
 
-	if (when == (time_t) -1 || when == kDateNone || when == kDateInvalid) {
-		WMSG1("NOTE: not setting invalid date (%ld)\n", when);
-		return 0;
-	}
+    if (when == (time_t) -1 || when == kDateNone || when == kDateInvalid) {
+        WMSG1("NOTE: not setting invalid date (%ld)\n", when);
+        return 0;
+    }
 
-	utbuf.actime = utbuf.modtime = when;
+    utbuf.actime = utbuf.modtime = when;
 
-	if (utime(fPathName, &utbuf) < 0)
-		return errno;
+    if (utime(fPathName, &utbuf) < 0)
+        return errno;
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -549,52 +549,52 @@ PathName::SetModWhen(time_t when)
  */
 int
 PathName::CreateSubdirIFN(const char* pathStart, const char* pathEnd,
-	char fssep)
+    char fssep)
 {
-	int err = 0;
-	char* tmpBuf = nil;
-	bool isDirectory;
-	bool exists;
+    int err = 0;
+    char* tmpBuf = nil;
+    bool isDirectory;
+    bool exists;
 
-	ASSERT(pathStart != nil);
-	ASSERT(pathEnd != nil);
-	ASSERT(fssep != '\0');
+    ASSERT(pathStart != nil);
+    ASSERT(pathEnd != nil);
+    ASSERT(fssep != '\0');
 
-	/* pathStart might have whole path, but we only want up to "pathEnd" */
-	tmpBuf = strdup(pathStart);
-	tmpBuf[pathEnd - pathStart +1] = '\0';
+    /* pathStart might have whole path, but we only want up to "pathEnd" */
+    tmpBuf = strdup(pathStart);
+    tmpBuf[pathEnd - pathStart +1] = '\0';
 
-	err = GetFileInfo(tmpBuf, nil, nil, &exists, nil, &isDirectory);
-	if (err != 0) {
-		WMSG1("  Could not get file info for '%s'\n", tmpBuf);
-		goto bail;
-	} else if (!exists) {
-		/* dir doesn't exist; move up a level and check parent */
-		pathEnd = strrchr(tmpBuf, fssep);
-		if (pathEnd != nil) {
-			pathEnd--;
-			ASSERT(pathEnd >= tmpBuf);
-			err = CreateSubdirIFN(tmpBuf, pathEnd, fssep);
-			if (err != 0)
-				goto bail;
-		}
+    err = GetFileInfo(tmpBuf, nil, nil, &exists, nil, &isDirectory);
+    if (err != 0) {
+        WMSG1("  Could not get file info for '%s'\n", tmpBuf);
+        goto bail;
+    } else if (!exists) {
+        /* dir doesn't exist; move up a level and check parent */
+        pathEnd = strrchr(tmpBuf, fssep);
+        if (pathEnd != nil) {
+            pathEnd--;
+            ASSERT(pathEnd >= tmpBuf);
+            err = CreateSubdirIFN(tmpBuf, pathEnd, fssep);
+            if (err != 0)
+                goto bail;
+        }
 
-		/* parent is taken care of; create this one */
-		err = Mkdir(tmpBuf);
-		if (err != 0)
-			goto bail;
-	} else {
-		/* file does exist, make sure it's a directory */
-		if (!isDirectory) {
-			WMSG1("Existing file '%s' is not a directory\n", tmpBuf);
-			err = ENOTDIR;
-			goto bail;
-		}
-	}
+        /* parent is taken care of; create this one */
+        err = Mkdir(tmpBuf);
+        if (err != 0)
+            goto bail;
+    } else {
+        /* file does exist, make sure it's a directory */
+        if (!isDirectory) {
+            WMSG1("Existing file '%s' is not a directory\n", tmpBuf);
+            err = ENOTDIR;
+            goto bail;
+        }
+    }
 
 bail:
-	free(tmpBuf);
-	return err;
+    free(tmpBuf);
+    return err;
 }
 
 /*
@@ -609,60 +609,60 @@ bail:
 int
 PathName::CreatePathIFN(void)
 {
-	int err = 0;
-	CString pathName(fPathName);
-	char* pathStart;
-	const char* pathEnd;
+    int err = 0;
+    CString pathName(fPathName);
+    char* pathStart;
+    const char* pathEnd;
 
-	ASSERT(fFssep != '\0');
+    ASSERT(fFssep != '\0');
 
-	pathStart = pathName.GetBuffer(0);
-	/* BAD: network paths begin with "\\", not a drive letter */
-//	if (pathStart[0] == fFssep)
-//		pathStart++;
+    pathStart = pathName.GetBuffer(0);
+    /* BAD: network paths begin with "\\", not a drive letter */
+//  if (pathStart[0] == fFssep)
+//      pathStart++;
 
-	/* remove trailing fssep */
-	if (pathStart[strlen(pathStart)-1] == fFssep)
-		pathStart[strlen(pathStart)-1] = '\0';
+    /* remove trailing fssep */
+    if (pathStart[strlen(pathStart)-1] == fFssep)
+        pathStart[strlen(pathStart)-1] = '\0';
 
-	/* work around bug in Win32 strrchr */
-	if (pathStart[0] == '\0' || pathStart[1] == '\0') {
-		err = EINVAL;
-		goto bail;
-	}
+    /* work around bug in Win32 strrchr */
+    if (pathStart[0] == '\0' || pathStart[1] == '\0') {
+        err = EINVAL;
+        goto bail;
+    }
 
-	pathEnd = strrchr(pathStart, fFssep);
-	if (pathEnd == nil) {
-		/* no subdirectory components found */
-		goto bail;
-	}
-	pathEnd--;	// back up past the fssep
+    pathEnd = strrchr(pathStart, fFssep);
+    if (pathEnd == nil) {
+        /* no subdirectory components found */
+        goto bail;
+    }
+    pathEnd--;  // back up past the fssep
 
-	ASSERT(pathEnd >= pathStart);
-	if (pathEnd - pathStart < 0) {
-		err = EINVAL;
-		goto bail;
-	}
+    ASSERT(pathEnd >= pathStart);
+    if (pathEnd - pathStart < 0) {
+        err = EINVAL;
+        goto bail;
+    }
 
-	/*
-	 * Special-case the root directory, e.g. "C:\", which needs the final
-	 * slash to be recognized by Windows file calls.
-	 */
-	if (pathEnd - pathStart == 1 && pathStart[1] == ':' &&
-		(toupper(pathStart[0]) >= 'A' && toupper(pathStart[0]) <= 'Z'))
-	{
-		pathEnd++;	// put it back on
-	}
+    /*
+     * Special-case the root directory, e.g. "C:\", which needs the final
+     * slash to be recognized by Windows file calls.
+     */
+    if (pathEnd - pathStart == 1 && pathStart[1] == ':' &&
+        (toupper(pathStart[0]) >= 'A' && toupper(pathStart[0]) <= 'Z'))
+    {
+        pathEnd++;  // put it back on
+    }
 
-	/*
-	 * Test to determine which directories exist.  The most likely case
-	 * is that some or all of the components have already been created,
-	 * so we start with the last one and work backward.
-	 */
-	err = CreateSubdirIFN(pathStart, pathEnd, fFssep);
-	/* fall through with err */
+    /*
+     * Test to determine which directories exist.  The most likely case
+     * is that some or all of the components have already been created,
+     * so we start with the last one and work backward.
+     */
+    err = CreateSubdirIFN(pathStart, pathEnd, fFssep);
+    /* fall through with err */
 
 bail:
-	pathName.ReleaseBuffer();
-	return err;
+    pathName.ReleaseBuffer();
+    return err;
 }

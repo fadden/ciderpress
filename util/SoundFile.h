@@ -27,61 +27,61 @@
  */
 class SoundFile {
 public:
-	SoundFile(void) :
-		mFP(nil),
-		mDoClose(false),
-		mFileStart(0),
-		mSampleStart(-1),
-		mSampleLen(-1)
-	{
-		memset(&mFormat, 0, sizeof(mFormat));
-	}
-	virtual ~SoundFile(void) {
-		if (mDoClose && mFP != nil)
-			fclose(mFP);
-	}
+    SoundFile(void) :
+        mFP(nil),
+        mDoClose(false),
+        mFileStart(0),
+        mSampleStart(-1),
+        mSampleLen(-1)
+    {
+        memset(&mFormat, 0, sizeof(mFormat));
+    }
+    virtual ~SoundFile(void) {
+        if (mDoClose && mFP != nil)
+            fclose(mFP);
+    }
 
-	/* create the object from a file on disk; returns 0 on success */
-	int Create(const char* fileName, CString* pErrMsg);
-	/* create from FILE*; if doClose==true, file will be closed on error */
-	int Create(FILE* fp, long len, bool doClose, CString* pErrMsg);
+    /* create the object from a file on disk; returns 0 on success */
+    int Create(const char* fileName, CString* pErrMsg);
+    /* create from FILE*; if doClose==true, file will be closed on error */
+    int Create(FILE* fp, long len, bool doClose, CString* pErrMsg);
 
-	/* create object from a buffer of memory */
-	//int Create(const void* buf, long len);
+    /* create object from a buffer of memory */
+    //int Create(const void* buf, long len);
 
-	/* read a block of audio samples from the specified offset */
-	int ReadData(void* buf, long sampleOffset, long len) const;
+    /* read a block of audio samples from the specified offset */
+    int ReadData(void* buf, long sampleOffset, long len) const;
 
-	/* seek to an absolute offset within the WAV file */
-	int SeekAbs(long offset) { return fseek(mFP, offset, SEEK_SET); }
+    /* seek to an absolute offset within the WAV file */
+    int SeekAbs(long offset) { return fseek(mFP, offset, SEEK_SET); }
 
-	long GetDataOffset(void) const { return mSampleStart; }
-	unsigned long GetDataLen(void) const { return mSampleLen; }
-	const WAVEFORMATEX* GetWaveFormat(void) { return &mFormat; }
+    long GetDataOffset(void) const { return mSampleStart; }
+    unsigned long GetDataLen(void) const { return mSampleLen; }
+    const WAVEFORMATEX* GetWaveFormat(void) { return &mFormat; }
 
-	/* returns the #of bytes per sample (all channels) */
-	int GetBPS(void) const {
-		assert(mFP != nil);
-		return ((mFormat.wBitsPerSample+7)/8) * mFormat.nChannels;
-	}
+    /* returns the #of bytes per sample (all channels) */
+    int GetBPS(void) const {
+        assert(mFP != nil);
+        return ((mFormat.wBitsPerSample+7)/8) * mFormat.nChannels;
+    }
 
 private:
-	int SkipToHeader(unsigned long hdrID, unsigned long* pChunkLen);
+    int SkipToHeader(unsigned long hdrID, unsigned long* pChunkLen);
 
-	enum { kWAVMinSize = 40 };
+    enum { kWAVMinSize = 40 };
 
-	//void*			mBuffer;		// pointer to memory we need to delete
-	FILE*			mFP;			// currently open sound file
-	bool			mDoClose;		// do we own mFP?
+    //void*         mBuffer;        // pointer to memory we need to delete
+    FILE*           mFP;            // currently open sound file
+    bool            mDoClose;       // do we own mFP?
 
-	long			mFileStart;		// so we can rewind the sound file
-	long			mSampleStart;	// offset in mem or file to sound samples
-	unsigned long	mSampleLen;		// length in bytes of audio sample section
+    long            mFileStart;     // so we can rewind the sound file
+    long            mSampleStart;   // offset in mem or file to sound samples
+    unsigned long   mSampleLen;     // length in bytes of audio sample section
 
-	WAVEFORMATEX	mFormat;		// WAV parameters (from mmsystem.h/mmreg.h)
+    WAVEFORMATEX    mFormat;        // WAV parameters (from mmsystem.h/mmreg.h)
 };
 
-#if 0		// contents of the WAVEFORMATEX struct; "cbSize" is not in WAV file
+#if 0       // contents of the WAVEFORMATEX struct; "cbSize" is not in WAV file
 typedef struct tWAVEFORMATEX
 {
     WORD    wFormatTag;        /* format type */

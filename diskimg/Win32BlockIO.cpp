@@ -36,7 +36,7 @@
 
 /*
  * ===========================================================================
- *		Win32VolumeAccess
+ *      Win32VolumeAccess
  * ===========================================================================
  */
 
@@ -46,59 +46,59 @@
 DIError
 Win32VolumeAccess::Open(const char* deviceName, bool readOnly)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	assert(deviceName != nil);
+    assert(deviceName != nil);
 
-	if (fpBlockAccess != nil) {
-		assert(false);
-		return kDIErrAlreadyOpen;
-	}
+    if (fpBlockAccess != nil) {
+        assert(false);
+        return kDIErrAlreadyOpen;
+    }
 
-	if (strncmp(deviceName, kASPIDev, strlen(kASPIDev)) == 0) {
-		fpBlockAccess = new ASPIBlockAccess;
-		if (fpBlockAccess == nil) {
-			dierr = kDIErrMalloc;
-			goto bail;
-		}
-		dierr = fpBlockAccess->Open(deviceName, readOnly);
-		if (dierr != kDIErrNone)
-			goto bail;
-	} else if (deviceName[0] >= 'A' && deviceName[0] <= 'Z') {
-		fpBlockAccess = new LogicalBlockAccess;
-		if (fpBlockAccess == nil) {
-			dierr = kDIErrMalloc;
-			goto bail;
-		}
-		dierr = fpBlockAccess->Open(deviceName, readOnly);
-		if (dierr != kDIErrNone)
-			goto bail;
-	} else if (deviceName[0] >= '0' && deviceName[0] <= '9') {
-		fpBlockAccess = new PhysicalBlockAccess;
-		if (fpBlockAccess == nil) {
-			dierr = kDIErrMalloc;
-			goto bail;
-		}
-		dierr = fpBlockAccess->Open(deviceName, readOnly);
-		if (dierr != kDIErrNone)
-			goto bail;
-	} else {
-		WMSG1(" Win32VA: '%s' isn't the name of a device\n", deviceName);
-		return kDIErrInternal;
-	}
+    if (strncmp(deviceName, kASPIDev, strlen(kASPIDev)) == 0) {
+        fpBlockAccess = new ASPIBlockAccess;
+        if (fpBlockAccess == nil) {
+            dierr = kDIErrMalloc;
+            goto bail;
+        }
+        dierr = fpBlockAccess->Open(deviceName, readOnly);
+        if (dierr != kDIErrNone)
+            goto bail;
+    } else if (deviceName[0] >= 'A' && deviceName[0] <= 'Z') {
+        fpBlockAccess = new LogicalBlockAccess;
+        if (fpBlockAccess == nil) {
+            dierr = kDIErrMalloc;
+            goto bail;
+        }
+        dierr = fpBlockAccess->Open(deviceName, readOnly);
+        if (dierr != kDIErrNone)
+            goto bail;
+    } else if (deviceName[0] >= '0' && deviceName[0] <= '9') {
+        fpBlockAccess = new PhysicalBlockAccess;
+        if (fpBlockAccess == nil) {
+            dierr = kDIErrMalloc;
+            goto bail;
+        }
+        dierr = fpBlockAccess->Open(deviceName, readOnly);
+        if (dierr != kDIErrNone)
+            goto bail;
+    } else {
+        WMSG1(" Win32VA: '%s' isn't the name of a device\n", deviceName);
+        return kDIErrInternal;
+    }
 
-	// Need to do this now so we can use floppy geometry.
-	dierr = fpBlockAccess->DetectCapacity(&fTotalBlocks);
-	if (dierr != kDIErrNone)
-		goto bail;
-	assert(fTotalBlocks >= 0);
+    // Need to do this now so we can use floppy geometry.
+    dierr = fpBlockAccess->DetectCapacity(&fTotalBlocks);
+    if (dierr != kDIErrNone)
+        goto bail;
+    assert(fTotalBlocks >= 0);
 
 bail:
-	if (dierr != kDIErrNone) {
-		delete fpBlockAccess;
-		fpBlockAccess = nil;
-	}
-	return dierr;
+    if (dierr != kDIErrNone) {
+        delete fpBlockAccess;
+        fpBlockAccess = nil;
+    }
+    return dierr;
 }
 
 /*
@@ -107,24 +107,24 @@ bail:
 void
 Win32VolumeAccess::Close(void)
 {
-	if (fpBlockAccess != nil) {
-		DIError dierr;
-		WMSG0("  Win32VolumeAccess closing\n");
+    if (fpBlockAccess != nil) {
+        DIError dierr;
+        WMSG0("  Win32VolumeAccess closing\n");
 
-		dierr = FlushCache(true);
-		if (dierr != kDIErrNone) {
-			WMSG1("WARNING: Win32VA Close: FlushCache failed (err=%ld)\n",
-				dierr);
-			// not much we can do
-		}
-		dierr = fpBlockAccess->Close();
-		if (dierr != kDIErrNone) {
-			WMSG1("WARNING: Win32VolumeAccess BlockAccess Close failed (err=%ld)\n",
-				dierr);
-		}
-		delete fpBlockAccess;
-		fpBlockAccess = nil;
-	}
+        dierr = FlushCache(true);
+        if (dierr != kDIErrNone) {
+            WMSG1("WARNING: Win32VA Close: FlushCache failed (err=%ld)\n",
+                dierr);
+            // not much we can do
+        }
+        dierr = fpBlockAccess->Close();
+        if (dierr != kDIErrNone) {
+            WMSG1("WARNING: Win32VolumeAccess BlockAccess Close failed (err=%ld)\n",
+                dierr);
+        }
+        delete fpBlockAccess;
+        fpBlockAccess = nil;
+    }
 }
 
 
@@ -141,52 +141,52 @@ Win32VolumeAccess::Close(void)
  */
 DIError
 Win32VolumeAccess::ReadBlocks(long startBlock, short blockCount,
-	void* buf)
+    void* buf)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	assert(startBlock >= 0);
-	assert(blockCount > 0);
-	assert(buf != nil);
-	assert(fpBlockAccess != nil);
+    assert(startBlock >= 0);
+    assert(blockCount > 0);
+    assert(buf != nil);
+    assert(fpBlockAccess != nil);
 
-	if (blockCount == 1) {
-		if (fBlockCache.IsBlockInCache(startBlock)) {
-			fBlockCache.GetFromCache(startBlock, buf);
-			return kDIErrNone;
-		}
-	} else {
-		// If they're reading in large stretches, we don't need to use
-		// the cache.  There is some chance that what we're about to
-		// read might include dirty blocks currently in the cache, so
-		// we flush what we have before the read.
-		dierr = FlushCache(true);
-		if (dierr != kDIErrNone)
-			return dierr;
-	}
+    if (blockCount == 1) {
+        if (fBlockCache.IsBlockInCache(startBlock)) {
+            fBlockCache.GetFromCache(startBlock, buf);
+            return kDIErrNone;
+        }
+    } else {
+        // If they're reading in large stretches, we don't need to use
+        // the cache.  There is some chance that what we're about to
+        // read might include dirty blocks currently in the cache, so
+        // we flush what we have before the read.
+        dierr = FlushCache(true);
+        if (dierr != kDIErrNone)
+            return dierr;
+    }
 
-	/* go read from the volume */
-	dierr = fpBlockAccess->ReadBlocks(startBlock, blockCount, buf);
-	if (dierr != kDIErrNone)
-		goto bail;
+    /* go read from the volume */
+    dierr = fpBlockAccess->ReadBlocks(startBlock, blockCount, buf);
+    if (dierr != kDIErrNone)
+        goto bail;
 
 
-	/* if we're doing single-block reads, put it in the cache */
-	if (blockCount == 1) {
-		if (!fBlockCache.IsRoomInCache(startBlock)) {
-			dierr = FlushCache(true);		// make room
-			if (dierr != kDIErrNone)
-				goto bail;
-		}
+    /* if we're doing single-block reads, put it in the cache */
+    if (blockCount == 1) {
+        if (!fBlockCache.IsRoomInCache(startBlock)) {
+            dierr = FlushCache(true);       // make room
+            if (dierr != kDIErrNone)
+                goto bail;
+        }
 
-		// after flushing, this should never fail
-		dierr = fBlockCache.PutInCache(startBlock, buf, false);
-		if (dierr != kDIErrNone)
-			goto bail;
-	}
+        // after flushing, this should never fail
+        dierr = fBlockCache.PutInCache(startBlock, buf, false);
+        if (dierr != kDIErrNone)
+            goto bail;
+    }
 
 bail:
-	return dierr;
+    return dierr;
 }
 
 
@@ -198,45 +198,45 @@ bail:
  */
 DIError
 Win32VolumeAccess::WriteBlocks(long startBlock, short blockCount,
-	const void* buf)
+    const void* buf)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	assert(startBlock >= 0);
-	assert(blockCount > 0);
-	assert(buf != nil);
+    assert(startBlock >= 0);
+    assert(blockCount > 0);
+    assert(buf != nil);
 
-	if (blockCount == 1) {
-		/* is this block already in the cache? */
-		if (!fBlockCache.IsBlockInCache(startBlock)) {
-			/* not present, make sure it fits */
-			if (!fBlockCache.IsRoomInCache(startBlock)) {
-				dierr = FlushCache(true);		// make room
-				if (dierr != kDIErrNone)
-					goto bail;
-			}
-		}
+    if (blockCount == 1) {
+        /* is this block already in the cache? */
+        if (!fBlockCache.IsBlockInCache(startBlock)) {
+            /* not present, make sure it fits */
+            if (!fBlockCache.IsRoomInCache(startBlock)) {
+                dierr = FlushCache(true);       // make room
+                if (dierr != kDIErrNone)
+                    goto bail;
+            }
+        }
 
-		// after flushing, this should never fail
-		dierr = fBlockCache.PutInCache(startBlock, buf, true);
-		if (dierr != kDIErrNone)
-			goto bail;
-	} else {
-		// If they're writing in large stretches, we don't need to use
-		// the cache.  We need to flush the cache in case what we're about
-		// to write would overwrite something in the cache -- if we don't,
-		// what's in the cache will effectively revert what we're about to
-		// write.
-		dierr = FlushCache(true);
-		if (dierr != kDIErrNone)
-			goto bail;
-		dierr = DoWriteBlocks(startBlock, blockCount, buf);
-		if (dierr != kDIErrNone)
-			goto bail;
-	}
+        // after flushing, this should never fail
+        dierr = fBlockCache.PutInCache(startBlock, buf, true);
+        if (dierr != kDIErrNone)
+            goto bail;
+    } else {
+        // If they're writing in large stretches, we don't need to use
+        // the cache.  We need to flush the cache in case what we're about
+        // to write would overwrite something in the cache -- if we don't,
+        // what's in the cache will effectively revert what we're about to
+        // write.
+        dierr = FlushCache(true);
+        if (dierr != kDIErrNone)
+            goto bail;
+        dierr = DoWriteBlocks(startBlock, blockCount, buf);
+        if (dierr != kDIErrNone)
+            goto bail;
+    }
 
 bail:
-	return dierr;
+    return dierr;
 }
 
 
@@ -255,41 +255,41 @@ bail:
 DIError
 Win32VolumeAccess::FlushCache(bool purge)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	//WMSG1("  Win32VA: FlushCache (%d)\n", purge);
+    //WMSG1("  Win32VA: FlushCache (%d)\n", purge);
 
-	if (fBlockCache.IsDirty()) {
-		long firstBlock;
-		int numBlocks;
-		void* buf;
+    if (fBlockCache.IsDirty()) {
+        long firstBlock;
+        int numBlocks;
+        void* buf;
 
-		fBlockCache.GetCachePointer(&firstBlock, &numBlocks, &buf);
+        fBlockCache.GetCachePointer(&firstBlock, &numBlocks, &buf);
 
-		WMSG3("FlushCache writing first=%d num=%d (purge=%d)\n",
-			firstBlock, numBlocks, purge);
-		dierr = DoWriteBlocks(firstBlock, numBlocks, buf);
-		if (dierr != kDIErrNone) {
-			WMSG1("  Win32VA: FlushCache write blocks failed (err=%d)\n",
-				dierr);
-			goto bail;
-		}
+        WMSG3("FlushCache writing first=%d num=%d (purge=%d)\n",
+            firstBlock, numBlocks, purge);
+        dierr = DoWriteBlocks(firstBlock, numBlocks, buf);
+        if (dierr != kDIErrNone) {
+            WMSG1("  Win32VA: FlushCache write blocks failed (err=%d)\n",
+                dierr);
+            goto bail;
+        }
 
-		// all written, clear the dirty flags
-		fBlockCache.Scrub();
-	}
+        // all written, clear the dirty flags
+        fBlockCache.Scrub();
+    }
 
-	if (purge)
-		fBlockCache.Purge();
+    if (purge)
+        fBlockCache.Purge();
 
 bail:
-	return dierr;
+    return dierr;
 }
 
 
 /*
  * ===========================================================================
- *		BlockAccess
+ *      BlockAccess
  * ===========================================================================
  */
 
@@ -304,37 +304,37 @@ bail:
  */
 DIError
 Win32VolumeAccess::BlockAccess::DetectCapacitySPTI(HANDLE handle,
-	bool isCDROM, long* pNumBlocks)
+    bool isCDROM, long* pNumBlocks)
 {
 #ifndef HAVE_WINDOWS_CDROM
-	if (isCDROM)
-		return kDIErrCDROMNotSupported;
+    if (isCDROM)
+        return kDIErrCDROMNotSupported;
 #endif
 
-	DIError dierr = kDIErrNone;
-	unsigned long lba, blockLen;
+    DIError dierr = kDIErrNone;
+    unsigned long lba, blockLen;
 
-	dierr = SPTI::GetDeviceCapacity(handle, &lba, &blockLen);
-	if (dierr != kDIErrNone)
-		goto bail;
+    dierr = SPTI::GetDeviceCapacity(handle, &lba, &blockLen);
+    if (dierr != kDIErrNone)
+        goto bail;
 
-	WMSG3("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)\n",
-		lba, blockLen, lba*blockLen);
+    WMSG3("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)\n",
+        lba, blockLen, lba*blockLen);
 
-	if (isCDROM && blockLen != kCDROMSectorSize) {
-		WMSG1("Unacceptable CD-ROM blockLen=%ld, bailing\n", blockLen);
-		dierr = kDIErrReadFailed;
-		goto bail;
-	}
+    if (isCDROM && blockLen != kCDROMSectorSize) {
+        WMSG1("Unacceptable CD-ROM blockLen=%ld, bailing\n", blockLen);
+        dierr = kDIErrReadFailed;
+        goto bail;
+    }
 
-	// The LBA is the last valid block on the disk.  To get the disk size,
-	// we need to add one.
+    // The LBA is the last valid block on the disk.  To get the disk size,
+    // we need to add one.
 
-	*pNumBlocks = (blockLen/512) * (lba+1);
-	WMSG1(" SPTI returning 512-byte block count %ld\n", *pNumBlocks);
+    *pNumBlocks = (blockLen/512) * (lba+1);
+    WMSG1(" SPTI returning 512-byte block count %ld\n", *pNumBlocks);
 
 bail:
-	return dierr;
+    return dierr;
 }
 
 /*
@@ -351,88 +351,88 @@ bail:
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::ScanCapacity(BlockAccess* pThis, long* pNumBlocks)
 {
-	DIError dierr = kDIErrNone;
-	// max out at 8GB (-1 block)
-	const long kLargest = DiskImgLib::kVolumeMaxBlocks;
-	const long kTypicalSizes[] = {
-		// these must be in ascending order
-		720*1024 / BlockAccess::kBlockSize,			// 720K floppy
-		1440*1024 / BlockAccess::kBlockSize,		// 1.44MB floppy
-		32*1024*1024 / BlockAccess::kBlockSize,		// 32MB flash card
-		64*1024*1024 / BlockAccess::kBlockSize,		// 64MB flash card
-		128*1024*1024 / BlockAccess::kBlockSize,	// 128MB flash card
-		256*1024*1024 / BlockAccess::kBlockSize,	// 256MB flash card
-		//512*1024*1024 / BlockAccess::kBlockSize,	// 512MB flash card
-		2*1024*1024*(1024/BlockAccess::kBlockSize),	// 2GB mark
-		kLargest
-	};
-	long totalBlocks = 0;
-	int i;
+    DIError dierr = kDIErrNone;
+    // max out at 8GB (-1 block)
+    const long kLargest = DiskImgLib::kVolumeMaxBlocks;
+    const long kTypicalSizes[] = {
+        // these must be in ascending order
+        720*1024 / BlockAccess::kBlockSize,         // 720K floppy
+        1440*1024 / BlockAccess::kBlockSize,        // 1.44MB floppy
+        32*1024*1024 / BlockAccess::kBlockSize,     // 32MB flash card
+        64*1024*1024 / BlockAccess::kBlockSize,     // 64MB flash card
+        128*1024*1024 / BlockAccess::kBlockSize,    // 128MB flash card
+        256*1024*1024 / BlockAccess::kBlockSize,    // 256MB flash card
+        //512*1024*1024 / BlockAccess::kBlockSize,  // 512MB flash card
+        2*1024*1024*(1024/BlockAccess::kBlockSize), // 2GB mark
+        kLargest
+    };
+    long totalBlocks = 0;
+    int i;
 
 
-	// Trivial check to make sure *anything* works, and to establish block 0
-	// as valid in case we have to bin-search.
-	if (!CanReadBlock(pThis, 0)) {
-		WMSG0("  Win32VolumeAccess: can't read block 0\n");
-		dierr = kDIErrReadFailed;
-		goto bail;
-	}
+    // Trivial check to make sure *anything* works, and to establish block 0
+    // as valid in case we have to bin-search.
+    if (!CanReadBlock(pThis, 0)) {
+        WMSG0("  Win32VolumeAccess: can't read block 0\n");
+        dierr = kDIErrReadFailed;
+        goto bail;
+    }
 
-	for (i = 0; i < NELEM(kTypicalSizes); i++) {
-		if (!CanReadBlock(pThis, kTypicalSizes[i])) {
-			/* failed reading, see if N-1 is readable */
-			if (CanReadBlock(pThis, kTypicalSizes[i] - 1)) {
-				/* found it */
-				totalBlocks = kTypicalSizes[i];
-				break;
-			} else {
-				/* we overshot, binary-search backwards */
-				WMSG1("OVERSHOT at %ld\n", kTypicalSizes[i]);
-				long good, bad;
-				if (i == 0)
-					good = 0;
-				else
-					good = kTypicalSizes[i-1];	// know this one is good
-				bad = kTypicalSizes[i]-1;		// know this one is bad
+    for (i = 0; i < NELEM(kTypicalSizes); i++) {
+        if (!CanReadBlock(pThis, kTypicalSizes[i])) {
+            /* failed reading, see if N-1 is readable */
+            if (CanReadBlock(pThis, kTypicalSizes[i] - 1)) {
+                /* found it */
+                totalBlocks = kTypicalSizes[i];
+                break;
+            } else {
+                /* we overshot, binary-search backwards */
+                WMSG1("OVERSHOT at %ld\n", kTypicalSizes[i]);
+                long good, bad;
+                if (i == 0)
+                    good = 0;
+                else
+                    good = kTypicalSizes[i-1];  // know this one is good
+                bad = kTypicalSizes[i]-1;       // know this one is bad
 
-				while (good != bad-1) {
-					long check = (good + bad) / 2;
-					assert(check > good);
-					assert(check < bad);
+                while (good != bad-1) {
+                    long check = (good + bad) / 2;
+                    assert(check > good);
+                    assert(check < bad);
 
-					if (CanReadBlock(pThis, check))
-						good = check;
-					else
-						bad = check;
-				}
-				totalBlocks = bad;
-				break;
-			}
-		}
-	}
-	if (totalBlocks == 0) {
-		if (i == NELEM(kTypicalSizes)) {
-			/* huge volume, we never found a bad block */
-			totalBlocks = kLargest;
-		} else {
-			/* we never found a good block */
-			WMSG0("  Win32VolumeAccess unable to determine size\n");
-			dierr = kDIErrReadFailed;
-			goto bail;
-		}
-	}
+                    if (CanReadBlock(pThis, check))
+                        good = check;
+                    else
+                        bad = check;
+                }
+                totalBlocks = bad;
+                break;
+            }
+        }
+    }
+    if (totalBlocks == 0) {
+        if (i == NELEM(kTypicalSizes)) {
+            /* huge volume, we never found a bad block */
+            totalBlocks = kLargest;
+        } else {
+            /* we never found a good block */
+            WMSG0("  Win32VolumeAccess unable to determine size\n");
+            dierr = kDIErrReadFailed;
+            goto bail;
+        }
+    }
 
-	if (totalBlocks > (3 * 1024 * 1024) / BlockAccess::kBlockSize) {
-		WMSG2("  GFDWinVolume: size is %ld (%.2fMB)\n",
-			totalBlocks, (float) totalBlocks / (2048.0));
-	} else {
-		WMSG2("  GFDWinVolume: size is %ld (%.2fKB)\n",
-			totalBlocks, (float) totalBlocks / 2.0);
-	}
-	*pNumBlocks = totalBlocks;
+    if (totalBlocks > (3 * 1024 * 1024) / BlockAccess::kBlockSize) {
+        WMSG2("  GFDWinVolume: size is %ld (%.2fMB)\n",
+            totalBlocks, (float) totalBlocks / (2048.0));
+    } else {
+        WMSG2("  GFDWinVolume: size is %ld (%.2fKB)\n",
+            totalBlocks, (float) totalBlocks / 2.0);
+    }
+    *pNumBlocks = totalBlocks;
 
 bail:
-	return dierr;
+    return dierr;
 }
 
 /*
@@ -441,17 +441,17 @@ bail:
 /*static*/ bool
 Win32VolumeAccess::BlockAccess::CanReadBlock(BlockAccess* pThis, long blockNum)
 {
-	DIError dierr;
-	unsigned char buf[BlockAccess::kBlockSize];
+    DIError dierr;
+    unsigned char buf[BlockAccess::kBlockSize];
 
-	dierr = pThis->ReadBlocks(blockNum, 1, buf);
-	if (dierr == kDIErrNone) {
-		WMSG1("    +++ Checked %ld (good)\n", blockNum);
-		return true;
-	} else {
-		WMSG1("    +++ Checked %ld (bad)\n", blockNum);
-		return false;
-	}
+    dierr = pThis->ReadBlocks(blockNum, 1, buf);
+    if (dierr == kDIErrNone) {
+        WMSG1("    +++ Checked %ld (good)\n", blockNum);
+        return true;
+    } else {
+        WMSG1("    +++ Checked %ld (bad)\n", blockNum);
+        return false;
+    }
 }
 
 
@@ -464,46 +464,46 @@ Win32VolumeAccess::BlockAccess::CanReadBlock(BlockAccess* pThis, long blockNum)
  * Most of these definitions come from MSFT knowledge base article #174569,
  * "BUG: Int 21 Read/Write Track on Logical Drive Fails on OSR2 and Later".
  */
-#define VWIN32_DIOC_DOS_IOCTL		1		// Int 21h 4400h through 4411h
-#define VWIN32_DIOC_DOS_INT25		2
-#define VWIN32_DIOC_DOS_INT26		3
-#define VWIN32_DIOC_DOS_INT13		4
-#define VWIN32_DIOC_DOS_DRIVEINFO	6		// Int 21h 730x commands
+#define VWIN32_DIOC_DOS_IOCTL       1       // Int 21h 4400h through 4411h
+#define VWIN32_DIOC_DOS_INT25       2
+#define VWIN32_DIOC_DOS_INT26       3
+#define VWIN32_DIOC_DOS_INT13       4
+#define VWIN32_DIOC_DOS_DRIVEINFO   6       // Int 21h 730x commands
 
 typedef struct _DIOC_REGISTERS {
-	DWORD reg_EBX;
-	DWORD reg_EDX;
-	DWORD reg_ECX;
-	DWORD reg_EAX;
-	DWORD reg_EDI;
-	DWORD reg_ESI;
-	DWORD reg_Flags;
+    DWORD reg_EBX;
+    DWORD reg_EDX;
+    DWORD reg_ECX;
+    DWORD reg_EAX;
+    DWORD reg_EDI;
+    DWORD reg_ESI;
+    DWORD reg_Flags;
 } DIOC_REGISTERS, *PDIOC_REGISTERS;
 
 #define CARRY_FLAG 1
 
 #pragma pack(1)
 typedef struct _DISKIO {
-	DWORD  dwStartSector;   // starting logical sector number
-	WORD   wSectors;        // number of sectors
-	DWORD  dwBuffer;        // address of read/write buffer
+    DWORD  dwStartSector;   // starting logical sector number
+    WORD   wSectors;        // number of sectors
+    DWORD  dwBuffer;        // address of read/write buffer
 } DISKIO, *PDISKIO;
 typedef struct _DRIVEMAPINFO {
-    BYTE	dmiAllocationLength;
-    BYTE	dmiInfoLength;
-    BYTE	dmiFlags;
-    BYTE	dmiInt13Unit;
-    DWORD	dmiAssociatedDriveMap;
-    DWORD	dmiPartitionStartRBA_lo;
-	DWORD	dmiPartitionStartRBA_hi;
+    BYTE    dmiAllocationLength;
+    BYTE    dmiInfoLength;
+    BYTE    dmiFlags;
+    BYTE    dmiInt13Unit;
+    DWORD   dmiAssociatedDriveMap;
+    DWORD   dmiPartitionStartRBA_lo;
+    DWORD   dmiPartitionStartRBA_hi;
 } DRIVEMAPINFO, *PDRIVEMAPINFO;
 #pragma pack()
 
-#define kInt13StatusMissingAddrMark	2		// sector number above media format
-#define kInt13StatusWriteProtected	3		// disk is write protected
-#define kInt13StatusSectorNotFound	4		// sector number above drive cap
+#define kInt13StatusMissingAddrMark 2       // sector number above media format
+#define kInt13StatusWriteProtected  3       // disk is write protected
+#define kInt13StatusSectorNotFound  4       // sector number above drive cap
 // == 10 for bad blocks??
-#define kInt13StatusTimeout			128		// drive not responding
+#define kInt13StatusTimeout         128     // drive not responding
 
 #if 0
 /*
@@ -515,80 +515,80 @@ typedef struct _DRIVEMAPINFO {
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::GetInt13Unit(HANDLE handle, int driveNum, int* pInt13Unit)
 {
-	DIError dierr = kDIErrNone;
-	BOOL result;
-	DWORD cb;
-	DRIVEMAPINFO driveMapInfo = {0};
-	DIOC_REGISTERS reg = {0};
-	const int kGetDriveMapInfo = 0x6f;
-	const int kDeviceCategory1 = 0x08;		// for older stuff
-	const int kDeviceCategory2 = 0x48;		// for FAT32
+    DIError dierr = kDIErrNone;
+    BOOL result;
+    DWORD cb;
+    DRIVEMAPINFO driveMapInfo = {0};
+    DIOC_REGISTERS reg = {0};
+    const int kGetDriveMapInfo = 0x6f;
+    const int kDeviceCategory1 = 0x08;      // for older stuff
+    const int kDeviceCategory2 = 0x48;      // for FAT32
 
-	assert(handle != nil);
-	assert(driveNum > 0 && driveNum <= kNumLogicalVolumes);
-	assert(pInt13Unit != nil);
+    assert(handle != nil);
+    assert(driveNum > 0 && driveNum <= kNumLogicalVolumes);
+    assert(pInt13Unit != nil);
 
-	*pInt13Unit = -1;
+    *pInt13Unit = -1;
 
-	driveMapInfo.dmiAllocationLength = sizeof(DRIVEMAPINFO);	// should be 16
+    driveMapInfo.dmiAllocationLength = sizeof(DRIVEMAPINFO);    // should be 16
 
-	reg.reg_EAX = 0x440d;		// generic IOCTL
-	reg.reg_EBX = driveNum;
-	reg.reg_ECX = MAKEWORD(kGetDriveMapInfo, kDeviceCategory1);
-	reg.reg_EDX = (DWORD) &driveMapInfo;
+    reg.reg_EAX = 0x440d;       // generic IOCTL
+    reg.reg_EBX = driveNum;
+    reg.reg_ECX = MAKEWORD(kGetDriveMapInfo, kDeviceCategory1);
+    reg.reg_EDX = (DWORD) &driveMapInfo;
 
-	result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_IOCTL,
-				&reg, sizeof(reg),
-				&reg, sizeof(reg), &cb, 0);
-	if (result == 0) {
-		WMSG1("  DeviceIoControl(Int21h, 6fh) FAILED (err=%ld)\n",
-			GetLastError());
-		dierr = LastErrorToDIError();
-		goto bail;
-	}
+    result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_IOCTL,
+                &reg, sizeof(reg),
+                &reg, sizeof(reg), &cb, 0);
+    if (result == 0) {
+        WMSG1("  DeviceIoControl(Int21h, 6fh) FAILED (err=%ld)\n",
+            GetLastError());
+        dierr = LastErrorToDIError();
+        goto bail;
+    }
 
-	if (reg.reg_Flags & CARRY_FLAG) {
-		WMSG1("  --- retrying GDMI with alternate device category (ax=%ld)\n",
-			reg.reg_EAX);
-		reg.reg_EAX = 0x440d;		// generic IOCTL
-		reg.reg_EBX = driveNum;
-		reg.reg_ECX = MAKEWORD(kGetDriveMapInfo, kDeviceCategory2);
-		reg.reg_EDX = (DWORD) &driveMapInfo;
-		result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_IOCTL,
-					&reg, sizeof(reg),
-					&reg, sizeof(reg), &cb, 0);
-	}
-	if (result == 0) {
-		WMSG1("  DeviceIoControl(Int21h, 6fh)(retry) FAILED (err=%ld)\n",
-			GetLastError());
-		dierr = LastErrorToDIError();
-		goto bail;
-	}
-	if (reg.reg_Flags & CARRY_FLAG) {
-		WMSG1("  --- GetDriveMapInfo call (retry) failed (ax=%ld)\n",
-			reg.reg_EAX);
-		dierr = kDIErrReadFailed;	// close enough
-		goto bail;
-	}
+    if (reg.reg_Flags & CARRY_FLAG) {
+        WMSG1("  --- retrying GDMI with alternate device category (ax=%ld)\n",
+            reg.reg_EAX);
+        reg.reg_EAX = 0x440d;       // generic IOCTL
+        reg.reg_EBX = driveNum;
+        reg.reg_ECX = MAKEWORD(kGetDriveMapInfo, kDeviceCategory2);
+        reg.reg_EDX = (DWORD) &driveMapInfo;
+        result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_IOCTL,
+                    &reg, sizeof(reg),
+                    &reg, sizeof(reg), &cb, 0);
+    }
+    if (result == 0) {
+        WMSG1("  DeviceIoControl(Int21h, 6fh)(retry) FAILED (err=%ld)\n",
+            GetLastError());
+        dierr = LastErrorToDIError();
+        goto bail;
+    }
+    if (reg.reg_Flags & CARRY_FLAG) {
+        WMSG1("  --- GetDriveMapInfo call (retry) failed (ax=%ld)\n",
+            reg.reg_EAX);
+        dierr = kDIErrReadFailed;   // close enough
+        goto bail;
+    }
 
-	WMSG3("     +++ DriveMapInfo len=%d flags=%d unit=%d\n",
-		driveMapInfo.dmiInfoLength, driveMapInfo.dmiFlags,
-		driveMapInfo.dmiInt13Unit);
-	WMSG3("     +++   driveMap=0x%08lx RBA=0x%08lx 0x%08lx\n",
-		driveMapInfo.dmiAssociatedDriveMap,
-		driveMapInfo.dmiPartitionStartRBA_hi,
-		driveMapInfo.dmiPartitionStartRBA_lo);
+    WMSG3("     +++ DriveMapInfo len=%d flags=%d unit=%d\n",
+        driveMapInfo.dmiInfoLength, driveMapInfo.dmiFlags,
+        driveMapInfo.dmiInt13Unit);
+    WMSG3("     +++   driveMap=0x%08lx RBA=0x%08lx 0x%08lx\n",
+        driveMapInfo.dmiAssociatedDriveMap,
+        driveMapInfo.dmiPartitionStartRBA_hi,
+        driveMapInfo.dmiPartitionStartRBA_lo);
 
-	if (driveMapInfo.dmiInfoLength < 4) {
-		/* results not covered in reply? */
-		dierr = kDIErrReadFailed;		// not close, but it'll do
-		goto bail;
-	}
+    if (driveMapInfo.dmiInfoLength < 4) {
+        /* results not covered in reply? */
+        dierr = kDIErrReadFailed;       // not close, but it'll do
+        goto bail;
+    }
 
-	*pInt13Unit = driveMapInfo.dmiInt13Unit;
+    *pInt13Unit = driveMapInfo.dmiInt13Unit;
 
 bail:
-	return dierr;
+    return dierr;
 }
 #endif
 
@@ -605,49 +605,49 @@ bail:
  */
 /*static*/ bool
 Win32VolumeAccess::BlockAccess::LookupFloppyGeometry(long totalBlocks,
-	DiskGeometry* pGeometry)
+    DiskGeometry* pGeometry)
 {
-	static const struct {
-		FloppyKind	kind;
-		long		blockCount;		// total #of blocks on the disk
-		int			numCyls;		// #of cylinders
-		int			numHeads;		// #of heads per cylinder
-		int			numSectors;		// #of sectors/track
-	} floppyGeometry[] = {
-		{ kFloppyUnknown,	-1,		-1,	-1,	-1 },
-		{ kFloppy525_360,	360*2,	40,	2,	9 },
-		{ kFloppy525_1200,	1200*2,	80,	2,	15 },
-		{ kFloppy35_720,	720*2,	80,	2,	9 },
-		{ kFloppy35_1440,	1440*2,	80,	2,	18 },
-		{ kFloppy35_2880,	2880*2,	80,	2,	36 }
-	};
+    static const struct {
+        FloppyKind  kind;
+        long        blockCount;     // total #of blocks on the disk
+        int         numCyls;        // #of cylinders
+        int         numHeads;       // #of heads per cylinder
+        int         numSectors;     // #of sectors/track
+    } floppyGeometry[] = {
+        { kFloppyUnknown,   -1,     -1, -1, -1 },
+        { kFloppy525_360,   360*2,  40, 2,  9 },
+        { kFloppy525_1200,  1200*2, 80, 2,  15 },
+        { kFloppy35_720,    720*2,  80, 2,  9 },
+        { kFloppy35_1440,   1440*2, 80, 2,  18 },
+        { kFloppy35_2880,   2880*2, 80, 2,  36 }
+    };
 
-	/* verify that we can directly index the table with the enum */
-	for (int chk = 0; chk < NELEM(floppyGeometry); chk++) {
-		assert(floppyGeometry[chk].kind == chk);
-	}
-	assert(chk == kFloppyMax);
+    /* verify that we can directly index the table with the enum */
+    for (int chk = 0; chk < NELEM(floppyGeometry); chk++) {
+        assert(floppyGeometry[chk].kind == chk);
+    }
+    assert(chk == kFloppyMax);
 
-	if (totalBlocks <= 0) {
-		// still auto-detecting volume size?
-		return false;
-	}
+    if (totalBlocks <= 0) {
+        // still auto-detecting volume size?
+        return false;
+    }
 
-	int i;
-	for (i = 0; i < NELEM(floppyGeometry); i++)
-		if (floppyGeometry[i].blockCount == totalBlocks)
-			break;
+    int i;
+    for (i = 0; i < NELEM(floppyGeometry); i++)
+        if (floppyGeometry[i].blockCount == totalBlocks)
+            break;
 
-	if (i == NELEM(floppyGeometry)) {
-		WMSG1(  "GetFloppyGeometry: no match for blocks=%ld\n", totalBlocks);
-		return false;
-	}
+    if (i == NELEM(floppyGeometry)) {
+        WMSG1(  "GetFloppyGeometry: no match for blocks=%ld\n", totalBlocks);
+        return false;
+    }
 
-	pGeometry->numCyls = floppyGeometry[i].numCyls;
-	pGeometry->numHeads = floppyGeometry[i].numHeads;
-	pGeometry->numSectors = floppyGeometry[i].numSectors;
+    pGeometry->numCyls = floppyGeometry[i].numCyls;
+    pGeometry->numHeads = floppyGeometry[i].numHeads;
+    pGeometry->numSectors = floppyGeometry[i].numSectors;
 
-	return true;
+    return true;
 }
 #endif
 
@@ -660,34 +660,34 @@ Win32VolumeAccess::BlockAccess::LookupFloppyGeometry(long totalBlocks,
  */
 /*static*/ bool
 Win32VolumeAccess::BlockAccess::BlockToCylinderHeadSector(long blockNum,
-	const DiskGeometry* pGeometry, int* pCylinder, int* pHead,
-	int* pSector, long* pLastBlockOnTrack)
+    const DiskGeometry* pGeometry, int* pCylinder, int* pHead,
+    int* pSector, long* pLastBlockOnTrack)
 {
-	int cylinder, head, sector;
-	long lastBlockOnTrack;
-	int leftOver;
+    int cylinder, head, sector;
+    long lastBlockOnTrack;
+    int leftOver;
 
-	cylinder = blockNum / (pGeometry->numSectors * pGeometry->numHeads);
-	leftOver = blockNum - cylinder * (pGeometry->numSectors * pGeometry->numHeads);
-	head = leftOver / pGeometry->numSectors;
-	sector = leftOver - (head * pGeometry->numSectors);
+    cylinder = blockNum / (pGeometry->numSectors * pGeometry->numHeads);
+    leftOver = blockNum - cylinder * (pGeometry->numSectors * pGeometry->numHeads);
+    head = leftOver / pGeometry->numSectors;
+    sector = leftOver - (head * pGeometry->numSectors);
 
-	assert(cylinder >= 0 && cylinder < pGeometry->numCyls);
-	assert(head >= 0 && head < pGeometry->numHeads);
-	assert(sector >= 0 && sector < pGeometry->numSectors);
+    assert(cylinder >= 0 && cylinder < pGeometry->numCyls);
+    assert(head >= 0 && head < pGeometry->numHeads);
+    assert(sector >= 0 && sector < pGeometry->numSectors);
 
-	lastBlockOnTrack = blockNum + (pGeometry->numSectors - sector -1);
+    lastBlockOnTrack = blockNum + (pGeometry->numSectors - sector -1);
 
-	if (pCylinder != nil)
-		*pCylinder = cylinder;
-	if (pHead != nil)
-		*pHead = head;
-	if (pSector != nil)
-		*pSector = sector+1;
-	if (pLastBlockOnTrack != nil)
-		*pLastBlockOnTrack = lastBlockOnTrack;
+    if (pCylinder != nil)
+        *pCylinder = cylinder;
+    if (pHead != nil)
+        *pHead = head;
+    if (pSector != nil)
+        *pSector = sector+1;
+    if (pLastBlockOnTrack != nil)
+        *pLastBlockOnTrack = lastBlockOnTrack;
 
-	return true;
+    return true;
 }
 
 /*
@@ -695,33 +695,33 @@ Win32VolumeAccess::BlockAccess::BlockToCylinderHeadSector(long blockNum,
  */
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::GetFloppyDriveKind(HANDLE handle, int unitNum,
-	FloppyKind* pKind)
+    FloppyKind* pKind)
 {
-	DIOC_REGISTERS	reg = {0};
-	DWORD			cb;
-	BOOL			result;
+    DIOC_REGISTERS  reg = {0};
+    DWORD           cb;
+    BOOL            result;
 
-	reg.reg_EAX = MAKEWORD(0, 0x08);	// Read Diskette Drive Parameters
-	reg.reg_EDX = MAKEWORD(unitNum, 0);
+    reg.reg_EAX = MAKEWORD(0, 0x08);    // Read Diskette Drive Parameters
+    reg.reg_EDX = MAKEWORD(unitNum, 0);
 
-	result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
-				sizeof(reg), &reg, sizeof(reg), &cb, 0);
+    result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
+                sizeof(reg), &reg, sizeof(reg), &cb, 0);
 
-	if (result == 0 || (reg.reg_Flags & CARRY_FLAG)) {
-		WMSG3(" GetFloppyKind failed: result=%d flags=0x%04x AH=%d\n",
-			result, reg.reg_Flags, HIBYTE(reg.reg_EAX));
-		return kDIErrGeneric;
-	}
+    if (result == 0 || (reg.reg_Flags & CARRY_FLAG)) {
+        WMSG3(" GetFloppyKind failed: result=%d flags=0x%04x AH=%d\n",
+            result, reg.reg_Flags, HIBYTE(reg.reg_EAX));
+        return kDIErrGeneric;
+    }
 
-	int bl = LOBYTE(reg.reg_EBX);
-	if (bl > 0 && bl < 6)
-		*pKind = (FloppyKind) bl;
-	else {
-		WMSG1(" GetFloppyKind: unrecognized kind %d\n", bl);
-		return kDIErrGeneric;
-	}
+    int bl = LOBYTE(reg.reg_EBX);
+    if (bl > 0 && bl < 6)
+        *pKind = (FloppyKind) bl;
+    else {
+        WMSG1(" GetFloppyKind: unrecognized kind %d\n", bl);
+        return kDIErrGeneric;
+    }
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 /*
@@ -739,49 +739,49 @@ Win32VolumeAccess::BlockAccess::GetFloppyDriveKind(HANDLE handle, int unitNum,
  */
 /*static*/ int
 Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
-	int cylinder, int head, int sector, short blockCount, void* buf)
+    int cylinder, int head, int sector, short blockCount, void* buf)
 {
-	DIOC_REGISTERS	reg = {0};
-	DWORD			cb;
-	BOOL			result;
+    DIOC_REGISTERS  reg = {0};
+    DWORD           cb;
+    BOOL            result;
 
-	if (unitNum < 0 || unitNum >= 4) {
-		assert(false);
-		return kDIErrInternal;
-	}
+    if (unitNum < 0 || unitNum >= 4) {
+        assert(false);
+        return kDIErrInternal;
+    }
 
-	for (int retry = 0; retry < kMaxFloppyRetries; retry++) {
-		reg.reg_EAX = MAKEWORD(blockCount, 0x02);	// read N sectors
-		reg.reg_EBX = (DWORD) buf;
-		reg.reg_ECX = MAKEWORD(sector, cylinder);
-		reg.reg_EDX = MAKEWORD(unitNum, head);
+    for (int retry = 0; retry < kMaxFloppyRetries; retry++) {
+        reg.reg_EAX = MAKEWORD(blockCount, 0x02);   // read N sectors
+        reg.reg_EBX = (DWORD) buf;
+        reg.reg_ECX = MAKEWORD(sector, cylinder);
+        reg.reg_EDX = MAKEWORD(unitNum, head);
 
-		//WMSG4("   DIOC Int13h read c=%d h=%d s=%d rc=%d\n",
-		//	cylinder, head, sector, blockCount);
-		result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
-					sizeof(reg), &reg, sizeof(reg), &cb, 0);
+        //WMSG4("   DIOC Int13h read c=%d h=%d s=%d rc=%d\n",
+        //  cylinder, head, sector, blockCount);
+        result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
+                    sizeof(reg), &reg, sizeof(reg), &cb, 0);
 
-		if (result != 0 && !(reg.reg_Flags & CARRY_FLAG))
-			break;	// success!
+        if (result != 0 && !(reg.reg_Flags & CARRY_FLAG))
+            break;  // success!
 
-		/* if it's an invalid sector request, bail out immediately */
-		if (HIBYTE(reg.reg_EAX) == kInt13StatusSectorNotFound ||
-			HIBYTE(reg.reg_EAX) == kInt13StatusMissingAddrMark)
-		{
-			break;
-		}
-		WMSG1("   DIOC soft read failure, ax=0x%08lx\n", reg.reg_EAX);
-	}
-	if (!result || (reg.reg_Flags & CARRY_FLAG)) {
-		int ah = HIBYTE(reg.reg_EAX);
-		WMSG2("  DIOC read failed, result=%d ah=%ld\n", result, ah);
-		if (ah != 0)
-			return ah;
-		else
-			return -1;
-	}
+        /* if it's an invalid sector request, bail out immediately */
+        if (HIBYTE(reg.reg_EAX) == kInt13StatusSectorNotFound ||
+            HIBYTE(reg.reg_EAX) == kInt13StatusMissingAddrMark)
+        {
+            break;
+        }
+        WMSG1("   DIOC soft read failure, ax=0x%08lx\n", reg.reg_EAX);
+    }
+    if (!result || (reg.reg_Flags & CARRY_FLAG)) {
+        int ah = HIBYTE(reg.reg_EAX);
+        WMSG2("  DIOC read failed, result=%d ah=%ld\n", result, ah);
+        if (ah != 0)
+            return ah;
+        else
+            return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -795,57 +795,57 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
  */
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
-	const DiskGeometry* pGeometry, long startBlock, short blockCount,
-	void* buf)
+    const DiskGeometry* pGeometry, long startBlock, short blockCount,
+    void* buf)
 {
-	int cylinder, head, sector;
-	int status, runCount;
-	long lastBlockOnTrack;
+    int cylinder, head, sector;
+    int status, runCount;
+    long lastBlockOnTrack;
 
-	if (unitNum < 0 || unitNum >= 4) {
-		assert(false);
-		return kDIErrInternal;
-	}
-	if (startBlock < 0 || blockCount <= 0)
-		return kDIErrInvalidArg;
-	if (startBlock + blockCount > pGeometry->blockCount) {
-		WMSG2(" ReadInt13h: invalid request for start=%ld count=%d\n",
-			startBlock, blockCount);
-		return kDIErrReadFailed;
-	}
+    if (unitNum < 0 || unitNum >= 4) {
+        assert(false);
+        return kDIErrInternal;
+    }
+    if (startBlock < 0 || blockCount <= 0)
+        return kDIErrInvalidArg;
+    if (startBlock + blockCount > pGeometry->blockCount) {
+        WMSG2(" ReadInt13h: invalid request for start=%ld count=%d\n",
+            startBlock, blockCount);
+        return kDIErrReadFailed;
+    }
 
-	while (blockCount) {
-		int result;
-		result = BlockToCylinderHeadSector(startBlock, pGeometry,
-					&cylinder, &head, &sector, &lastBlockOnTrack);
-		assert(result);
+    while (blockCount) {
+        int result;
+        result = BlockToCylinderHeadSector(startBlock, pGeometry,
+                    &cylinder, &head, &sector, &lastBlockOnTrack);
+        assert(result);
 
-		/*
-		 * According to "The Undocumented PC", the average BIOS will read
-		 * at most one or two tracks reliably.  It's really geared toward
-		 * writing a single track or cylinder with one call.  We want to
-		 * be sure that our read doesn't straddle tracks, so we break it
-		 * down as needed.
-		 */
-		runCount = lastBlockOnTrack - startBlock +1;
-		if (runCount > blockCount)
-			runCount = blockCount;
-		//WMSG3("R runCount=%d lastBlkOnT=%d start=%d\n",
-		//	runCount, lastBlockOnTrack, startBlock);
-		assert(runCount > 0);
+        /*
+         * According to "The Undocumented PC", the average BIOS will read
+         * at most one or two tracks reliably.  It's really geared toward
+         * writing a single track or cylinder with one call.  We want to
+         * be sure that our read doesn't straddle tracks, so we break it
+         * down as needed.
+         */
+        runCount = lastBlockOnTrack - startBlock +1;
+        if (runCount > blockCount)
+            runCount = blockCount;
+        //WMSG3("R runCount=%d lastBlkOnT=%d start=%d\n",
+        //  runCount, lastBlockOnTrack, startBlock);
+        assert(runCount > 0);
 
-		status = ReadBlocksInt13h(handle, unitNum, cylinder, head, sector,
-					runCount, buf);
-		if (status != 0) {
-			WMSG1("  DIOC read failed (status=%d)\n", status);
-			return kDIErrReadFailed;
-		}
+        status = ReadBlocksInt13h(handle, unitNum, cylinder, head, sector,
+                    runCount, buf);
+        if (status != 0) {
+            WMSG1("  DIOC read failed (status=%d)\n", status);
+            return kDIErrReadFailed;
+        }
 
-		startBlock += runCount;
-		blockCount -= runCount;
-	}
+        startBlock += runCount;
+        blockCount -= runCount;
+    }
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 /*
@@ -860,41 +860,41 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
  */
 /*static*/ int
 Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
-	int cylinder, int head, int sector, short blockCount,
-	const void* buf)
+    int cylinder, int head, int sector, short blockCount,
+    const void* buf)
 {
-	DIOC_REGISTERS	reg = {0};
-	DWORD			cb;
-	BOOL			result;
+    DIOC_REGISTERS  reg = {0};
+    DWORD           cb;
+    BOOL            result;
 
-	for (int retry = 0; retry < kMaxFloppyRetries; retry++) {
-		reg.reg_EAX = MAKEWORD(blockCount, 0x03);	// write N sectors
-		reg.reg_EBX = (DWORD) buf;
-		reg.reg_ECX = MAKEWORD(sector, cylinder);
-		reg.reg_EDX = MAKEWORD(unitNum, head);
+    for (int retry = 0; retry < kMaxFloppyRetries; retry++) {
+        reg.reg_EAX = MAKEWORD(blockCount, 0x03);   // write N sectors
+        reg.reg_EBX = (DWORD) buf;
+        reg.reg_ECX = MAKEWORD(sector, cylinder);
+        reg.reg_EDX = MAKEWORD(unitNum, head);
 
-		WMSG4("   DIOC Int13h write c=%d h=%d s=%d rc=%d\n",
-			cylinder, head, sector, blockCount);
-		result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
-					sizeof(reg), &reg, sizeof(reg), &cb, 0);
+        WMSG4("   DIOC Int13h write c=%d h=%d s=%d rc=%d\n",
+            cylinder, head, sector, blockCount);
+        result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
+                    sizeof(reg), &reg, sizeof(reg), &cb, 0);
 
-		if (result != 0 && !(reg.reg_Flags & CARRY_FLAG))
-			break;	// success!
+        if (result != 0 && !(reg.reg_Flags & CARRY_FLAG))
+            break;  // success!
 
-		if (HIBYTE(reg.reg_EAX) == kInt13StatusWriteProtected)
-			break;	// no point retrying this
-		WMSG1("    DIOC soft write failure, ax=0x%08lx\n", reg.reg_EAX);
-	}
-	if (!result || (reg.reg_Flags & CARRY_FLAG)) {
-		int ah = HIBYTE(reg.reg_EAX);
-		WMSG2("  DIOC write failed, result=%d ah=%ld\n", result, ah);
-		if (ah != 0)
-			return ah;
-		else
-			return -1;
-	}
+        if (HIBYTE(reg.reg_EAX) == kInt13StatusWriteProtected)
+            break;  // no point retrying this
+        WMSG1("    DIOC soft write failure, ax=0x%08lx\n", reg.reg_EAX);
+    }
+    if (!result || (reg.reg_Flags & CARRY_FLAG)) {
+        int ah = HIBYTE(reg.reg_EAX);
+        WMSG2("  DIOC write failed, result=%d ah=%ld\n", result, ah);
+        if (ah != 0)
+            return ah;
+        else
+            return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -909,54 +909,54 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
  */
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
-	const DiskGeometry* pGeometry, long startBlock, short blockCount,
-	const void* buf)
+    const DiskGeometry* pGeometry, long startBlock, short blockCount,
+    const void* buf)
 {
-	int cylinder, head, sector;
-	int status, runCount;
-	long lastBlockOnTrack;
+    int cylinder, head, sector;
+    int status, runCount;
+    long lastBlockOnTrack;
 
-	// make sure this is a floppy drive and we know which unit it is
-	if (unitNum < 0 || unitNum >= 4) {
-		assert(false);
-		return kDIErrInternal;
-	}
-	if (startBlock < 0 || blockCount <= 0)
-		return kDIErrInvalidArg;
-	if (startBlock + blockCount > pGeometry->blockCount) {
-		WMSG2(" WriteInt13h: invalid request for start=%ld count=%d\n",
-			startBlock, blockCount);
-		return kDIErrWriteFailed;
-	}
+    // make sure this is a floppy drive and we know which unit it is
+    if (unitNum < 0 || unitNum >= 4) {
+        assert(false);
+        return kDIErrInternal;
+    }
+    if (startBlock < 0 || blockCount <= 0)
+        return kDIErrInvalidArg;
+    if (startBlock + blockCount > pGeometry->blockCount) {
+        WMSG2(" WriteInt13h: invalid request for start=%ld count=%d\n",
+            startBlock, blockCount);
+        return kDIErrWriteFailed;
+    }
 
-	while (blockCount) {
-		int result;
-		result = BlockToCylinderHeadSector(startBlock, pGeometry,
-					&cylinder, &head, &sector, &lastBlockOnTrack);
-		assert(result);
+    while (blockCount) {
+        int result;
+        result = BlockToCylinderHeadSector(startBlock, pGeometry,
+                    &cylinder, &head, &sector, &lastBlockOnTrack);
+        assert(result);
 
-		runCount = lastBlockOnTrack - startBlock +1;
-		if (runCount > blockCount)
-			runCount = blockCount;
-		//WMSG3("W runCount=%d lastBlkOnT=%d start=%d\n",
-		//	runCount, lastBlockOnTrack, startBlock);
-		assert(runCount > 0);
+        runCount = lastBlockOnTrack - startBlock +1;
+        if (runCount > blockCount)
+            runCount = blockCount;
+        //WMSG3("W runCount=%d lastBlkOnT=%d start=%d\n",
+        //  runCount, lastBlockOnTrack, startBlock);
+        assert(runCount > 0);
 
-		status = WriteBlocksInt13h(handle, unitNum, cylinder, head, sector,
-					runCount, buf);
-		if (status != 0) {
-			WMSG1("  DIOC write failed (status=%d)\n", status);
-			if (status == kInt13StatusWriteProtected)
-				return kDIErrWriteProtected;
-			else
-				return kDIErrWriteFailed;
-		}
+        status = WriteBlocksInt13h(handle, unitNum, cylinder, head, sector,
+                    runCount, buf);
+        if (status != 0) {
+            WMSG1("  DIOC write failed (status=%d)\n", status);
+            if (status == kInt13StatusWriteProtected)
+                return kDIErrWriteProtected;
+            else
+                return kDIErrWriteFailed;
+        }
 
-		startBlock += runCount;
-		blockCount -= runCount;
-	}
+        startBlock += runCount;
+        blockCount -= runCount;
+    }
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 
@@ -968,67 +968,67 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
  */
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle, int driveNum,
-	long startBlock, short blockCount, void* buf)
+    long startBlock, short blockCount, void* buf)
 {
 #if 0
-	assert(false);		// discouraged
-	BOOL			result;
-	DWORD			cb;
-	DIOC_REGISTERS	reg = {0};
-	DISKIO			dio = {0};
+    assert(false);      // discouraged
+    BOOL            result;
+    DWORD           cb;
+    DIOC_REGISTERS  reg = {0};
+    DISKIO          dio = {0};
 
-	dio.dwStartSector = startBlock;
-	dio.wSectors      = (WORD) blockCount;
-	dio.dwBuffer      = (DWORD) buf;
+    dio.dwStartSector = startBlock;
+    dio.wSectors      = (WORD) blockCount;
+    dio.dwBuffer      = (DWORD) buf;
 
-	reg.reg_EAX = fDriveNum - 1;	// Int 25h drive numbers are 0-based.
-	reg.reg_EBX = (DWORD)&dio;
-	reg.reg_ECX = 0xFFFF;		// use DISKIO struct
+    reg.reg_EAX = fDriveNum - 1;    // Int 25h drive numbers are 0-based.
+    reg.reg_EBX = (DWORD)&dio;
+    reg.reg_ECX = 0xFFFF;       // use DISKIO struct
 
-	WMSG3("   Int25 read start=%d count=%d\n",
-		startBlock, blockCount);
-	result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_INT25,
-				&reg, sizeof(reg),
-				&reg, sizeof(reg), &cb, 0);
+    WMSG3("   Int25 read start=%d count=%d\n",
+        startBlock, blockCount);
+    result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_INT25,
+                &reg, sizeof(reg),
+                &reg, sizeof(reg), &cb, 0);
 
-	// Determine if the DeviceIoControl call and the read succeeded.
-	result = result && !(reg.reg_Flags & CARRY_FLAG);
+    // Determine if the DeviceIoControl call and the read succeeded.
+    result = result && !(reg.reg_Flags & CARRY_FLAG);
 
-	WMSG2("     +++ read from block %ld (result=%d)\n", startBlock, result);
-	if (!result)
-		return kDIErrReadFailed;
+    WMSG2("     +++ read from block %ld (result=%d)\n", startBlock, result);
+    if (!result)
+        return kDIErrReadFailed;
 #else
-	BOOL			result;
-	DWORD			cb;
-	DIOC_REGISTERS	reg = {0};
-	DISKIO			dio = {0};
+    BOOL            result;
+    DWORD           cb;
+    DIOC_REGISTERS  reg = {0};
+    DISKIO          dio = {0};
 
-	dio.dwStartSector = startBlock;
-	dio.wSectors      = (WORD) blockCount;
-	dio.dwBuffer      = (DWORD) buf;
+    dio.dwStartSector = startBlock;
+    dio.wSectors      = (WORD) blockCount;
+    dio.dwBuffer      = (DWORD) buf;
 
-	reg.reg_EAX = 0x7305;	// Ext_ABSDiskReadWrite
-	reg.reg_EBX = (DWORD)&dio;
-	reg.reg_ECX = -1;
-	reg.reg_EDX = driveNum;	// Int 21h, fn 7305h drive numbers are 1-based
-	assert(reg.reg_ESI == 0);	// read/write flag
+    reg.reg_EAX = 0x7305;   // Ext_ABSDiskReadWrite
+    reg.reg_EBX = (DWORD)&dio;
+    reg.reg_ECX = -1;
+    reg.reg_EDX = driveNum; // Int 21h, fn 7305h drive numbers are 1-based
+    assert(reg.reg_ESI == 0);   // read/write flag
 
-	WMSG2("   Int21/7305h read start=%d count=%d\n",
-		startBlock, blockCount);
-	result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_DRIVEINFO,
-				&reg, sizeof(reg),
-				&reg, sizeof(reg), &cb, 0);
+    WMSG2("   Int21/7305h read start=%d count=%d\n",
+        startBlock, blockCount);
+    result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_DRIVEINFO,
+                &reg, sizeof(reg),
+                &reg, sizeof(reg), &cb, 0);
 
-	// Determine if the DeviceIoControl call and the read succeeded.
-	result = result && !(reg.reg_Flags & CARRY_FLAG);
+    // Determine if the DeviceIoControl call and the read succeeded.
+    result = result && !(reg.reg_Flags & CARRY_FLAG);
 
-	WMSG4("     +++ RB21h %ld %d (result=%d lastError=%ld)\n",
-		startBlock, blockCount, result, GetLastError());
-	if (!result)
-		return kDIErrReadFailed;
+    WMSG4("     +++ RB21h %ld %d (result=%d lastError=%ld)\n",
+        startBlock, blockCount, result, GetLastError());
+    if (!result)
+        return kDIErrReadFailed;
 #endif
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 /*
@@ -1039,38 +1039,38 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle, int driveNum,
  */
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::WriteBlocksInt21h(HANDLE handle, int driveNum,
-	long startBlock, short blockCount, const void* buf)
+    long startBlock, short blockCount, const void* buf)
 {
-	BOOL			result;
-	DWORD			cb;
-	DIOC_REGISTERS	reg = {0};
-	DISKIO			dio = {0};
+    BOOL            result;
+    DWORD           cb;
+    DIOC_REGISTERS  reg = {0};
+    DISKIO          dio = {0};
 
-	dio.dwStartSector = startBlock;
-	dio.wSectors      = (WORD) blockCount;
-	dio.dwBuffer      = (DWORD) buf;
+    dio.dwStartSector = startBlock;
+    dio.wSectors      = (WORD) blockCount;
+    dio.dwBuffer      = (DWORD) buf;
 
-	reg.reg_EAX = 0x7305;	// Ext_ABSDiskReadWrite
-	reg.reg_EBX = (DWORD)&dio;
-	reg.reg_ECX = -1;
-	reg.reg_EDX = driveNum;	// Int 21h, fn 7305h drive numbers are 1-based
-	reg.reg_ESI = 0x6001;		// write normal data (bit flags)
+    reg.reg_EAX = 0x7305;   // Ext_ABSDiskReadWrite
+    reg.reg_EBX = (DWORD)&dio;
+    reg.reg_ECX = -1;
+    reg.reg_EDX = driveNum; // Int 21h, fn 7305h drive numbers are 1-based
+    reg.reg_ESI = 0x6001;       // write normal data (bit flags)
 
-	//WMSG2("   Int21/7305h write start=%d count=%d\n",
-	//	startBlock, blockCount);
-	result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_DRIVEINFO,
-				&reg, sizeof(reg),
-				&reg, sizeof(reg), &cb, 0);
+    //WMSG2("   Int21/7305h write start=%d count=%d\n",
+    //  startBlock, blockCount);
+    result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_DRIVEINFO,
+                &reg, sizeof(reg),
+                &reg, sizeof(reg), &cb, 0);
 
-	// Determine if the DeviceIoControl call and the read succeeded.
-	result = result && !(reg.reg_Flags & CARRY_FLAG);
+    // Determine if the DeviceIoControl call and the read succeeded.
+    result = result && !(reg.reg_Flags & CARRY_FLAG);
 
-	WMSG4("     +++ WB21h %ld %d (result=%d lastError=%ld)\n",
-		startBlock, blockCount, result, GetLastError());
-	if (!result)
-		return kDIErrWriteFailed;
+    WMSG4("     +++ WB21h %ld %d (result=%d lastError=%ld)\n",
+        startBlock, blockCount, result, GetLastError());
+    if (!result)
+        return kDIErrWriteFailed;
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 
@@ -1079,44 +1079,44 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt21h(HANDLE handle, int driveNum,
  */
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::ReadBlocksWin2K(HANDLE handle,
-	long startBlock, short blockCount, void* buf)
+    long startBlock, short blockCount, void* buf)
 {
-	/*
-	 * Try to read the blocks.  Under Win2K the seek and read calls appear
-	 * to succeed, but the value in "actual" is set to zero to indicate
-	 * that we're trying to read past EOF.
-	 */
-	DWORD posn, actual;
+    /*
+     * Try to read the blocks.  Under Win2K the seek and read calls appear
+     * to succeed, but the value in "actual" is set to zero to indicate
+     * that we're trying to read past EOF.
+     */
+    DWORD posn, actual;
 
-	/*
-	 * Win2K: the 3rd argument holds the high 32 bits of the distance to
-	 * move.  This isn't supported in Win9x, which means Win9x is limited
-	 * to 2GB files.
-	 */
-	LARGE_INTEGER li;
-	li.QuadPart = (LONGLONG) startBlock * (LONGLONG) kBlockSize;
-	posn = ::SetFilePointer(handle, li.LowPart, &li.HighPart,
-				FILE_BEGIN);
-	if (posn == INVALID_SET_FILE_POINTER) {
-		DWORD lerr = GetLastError();
-		WMSG1("  GFDWinVolume ReadBlock: SFP failed (err=%ld)\n", lerr);
-		return LastErrorToDIError();
-	}
+    /*
+     * Win2K: the 3rd argument holds the high 32 bits of the distance to
+     * move.  This isn't supported in Win9x, which means Win9x is limited
+     * to 2GB files.
+     */
+    LARGE_INTEGER li;
+    li.QuadPart = (LONGLONG) startBlock * (LONGLONG) kBlockSize;
+    posn = ::SetFilePointer(handle, li.LowPart, &li.HighPart,
+                FILE_BEGIN);
+    if (posn == INVALID_SET_FILE_POINTER) {
+        DWORD lerr = GetLastError();
+        WMSG1("  GFDWinVolume ReadBlock: SFP failed (err=%ld)\n", lerr);
+        return LastErrorToDIError();
+    }
 
-	//WMSG2("   ReadFile block start=%d count=%d\n", startBlock, blockCount);
+    //WMSG2("   ReadFile block start=%d count=%d\n", startBlock, blockCount);
 
-	BOOL result;
-	result = ::ReadFile(handle, buf, blockCount * kBlockSize, &actual, nil);
-	if (!result) {
-		DWORD lerr = GetLastError();
-		WMSG3("  ReadBlocksWin2K: ReadFile failed (start=%ld count=%d err=%ld)\n",
-			startBlock, blockCount, lerr);
-		return LastErrorToDIError();
-	}
-	if ((long) actual != blockCount * kBlockSize)
-		return kDIErrEOF;
+    BOOL result;
+    result = ::ReadFile(handle, buf, blockCount * kBlockSize, &actual, nil);
+    if (!result) {
+        DWORD lerr = GetLastError();
+        WMSG3("  ReadBlocksWin2K: ReadFile failed (start=%ld count=%d err=%ld)\n",
+            startBlock, blockCount, lerr);
+        return LastErrorToDIError();
+    }
+    if ((long) actual != blockCount * kBlockSize)
+        return kDIErrEOF;
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 
@@ -1125,37 +1125,37 @@ Win32VolumeAccess::BlockAccess::ReadBlocksWin2K(HANDLE handle,
  */
 /*static*/ DIError
 Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
-	long startBlock, short blockCount, const void* buf)
+    long startBlock, short blockCount, const void* buf)
 {
-	DWORD posn, actual;
+    DWORD posn, actual;
 
-	posn = ::SetFilePointer(handle, startBlock * kBlockSize, nil,
-				FILE_BEGIN);
-	if (posn == INVALID_SET_FILE_POINTER) {
-		DWORD lerr = GetLastError();
-		WMSG2("  GFDWinVolume ReadBlocks: SFP %ld failed (err=%ld)\n",
-			startBlock * kBlockSize, lerr);
-		return LastErrorToDIError();
-	}
+    posn = ::SetFilePointer(handle, startBlock * kBlockSize, nil,
+                FILE_BEGIN);
+    if (posn == INVALID_SET_FILE_POINTER) {
+        DWORD lerr = GetLastError();
+        WMSG2("  GFDWinVolume ReadBlocks: SFP %ld failed (err=%ld)\n",
+            startBlock * kBlockSize, lerr);
+        return LastErrorToDIError();
+    }
 
-	BOOL result;
-	result = ::WriteFile(handle, buf, blockCount * kBlockSize, &actual, nil);
-	if (!result) {
-		DWORD lerr = GetLastError();
-		WMSG1("  GFDWinVolume WriteBlocks: WriteFile failed (err=%ld)\n",
-			lerr);
-		return LastErrorToDIError();
-	}
-	if ((long) actual != blockCount * kBlockSize)
-		return kDIErrEOF;		// unexpected on a write call?
+    BOOL result;
+    result = ::WriteFile(handle, buf, blockCount * kBlockSize, &actual, nil);
+    if (!result) {
+        DWORD lerr = GetLastError();
+        WMSG1("  GFDWinVolume WriteBlocks: WriteFile failed (err=%ld)\n",
+            lerr);
+        return LastErrorToDIError();
+    }
+    if ((long) actual != blockCount * kBlockSize)
+        return kDIErrEOF;       // unexpected on a write call?
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 
 /*
  * ===========================================================================
- *		LogicalBlockAccess
+ *      LogicalBlockAccess
  * ===========================================================================
  */
 
@@ -1165,140 +1165,140 @@ Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
 DIError
 Win32VolumeAccess::LogicalBlockAccess::Open(const char* deviceName, bool readOnly)
 {
-	DIError dierr = kDIErrNone;
-	const bool kPreferASPI = true;
+    DIError dierr = kDIErrNone;
+    const bool kPreferASPI = true;
 
-	assert(fHandle == nil);
-	fIsCDROM = false;
-	fDriveNum = -1;
+    assert(fHandle == nil);
+    fIsCDROM = false;
+    fDriveNum = -1;
 
-	if (deviceName[0] < 'A' || deviceName[0] > 'Z' ||
-		deviceName[1] != ':' || deviceName[2] != '\\' ||
-		deviceName[3] != '\0')
-	{
-		WMSG1("  LogicalBlockAccess: invalid device name '%s'\n", deviceName);
-		assert(false);
-		dierr = kDIErrInvalidArg;
-		goto bail;
-	}
-	if (deviceName[0] == 'C') {
-		if (readOnly == false) {
-			WMSG0("  REFUSING WRITE ACCESS TO C:\\ \n");
-			return kDIErrVWAccessForbidden;
-		}
-	}
+    if (deviceName[0] < 'A' || deviceName[0] > 'Z' ||
+        deviceName[1] != ':' || deviceName[2] != '\\' ||
+        deviceName[3] != '\0')
+    {
+        WMSG1("  LogicalBlockAccess: invalid device name '%s'\n", deviceName);
+        assert(false);
+        dierr = kDIErrInvalidArg;
+        goto bail;
+    }
+    if (deviceName[0] == 'C') {
+        if (readOnly == false) {
+            WMSG0("  REFUSING WRITE ACCESS TO C:\\ \n");
+            return kDIErrVWAccessForbidden;
+        }
+    }
 
-	DWORD access;
-	if (readOnly)
-		access = GENERIC_READ;
-	else
-		access = GENERIC_READ | GENERIC_WRITE;
+    DWORD access;
+    if (readOnly)
+        access = GENERIC_READ;
+    else
+        access = GENERIC_READ | GENERIC_WRITE;
 
-	UINT driveType;
-	driveType = GetDriveType(deviceName);
-	if (driveType == DRIVE_CDROM) {
-		if (!Global::GetHasSPTI() && !Global::GetHasASPI())
-			return kDIErrCDROMNotSupported;
+    UINT driveType;
+    driveType = GetDriveType(deviceName);
+    if (driveType == DRIVE_CDROM) {
+        if (!Global::GetHasSPTI() && !Global::GetHasASPI())
+            return kDIErrCDROMNotSupported;
 
-		fIsCDROM = true;
-		// SPTI needs this -- maybe to enforce exclusive access?
-		access |= GENERIC_WRITE;
-	}
+        fIsCDROM = true;
+        // SPTI needs this -- maybe to enforce exclusive access?
+        access |= GENERIC_WRITE;
+    }
 
-	if (fIsWin9x) {
-		if (fIsCDROM)
-			return kDIErrCDROMNotSupported;
+    if (fIsWin9x) {
+        if (fIsCDROM)
+            return kDIErrCDROMNotSupported;
 
-		fHandle = CreateFile("\\\\.\\vwin32", 0, 0, NULL,
-					OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
-		if (fHandle == INVALID_HANDLE_VALUE) {
-			DWORD lastError = GetLastError();
-			WMSG1("  Win32LVOpen: CreateFile(vwin32) failed (err=%ld)\n",
-				lastError);
-			dierr = LastErrorToDIError();
-			goto bail;
-		}
-		fDriveNum = deviceName[0] - 'A' +1;
-		assert(fDriveNum > 0 && fDriveNum <= kNumLogicalVolumes);
+        fHandle = CreateFile("\\\\.\\vwin32", 0, 0, NULL,
+                    OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
+        if (fHandle == INVALID_HANDLE_VALUE) {
+            DWORD lastError = GetLastError();
+            WMSG1("  Win32LVOpen: CreateFile(vwin32) failed (err=%ld)\n",
+                lastError);
+            dierr = LastErrorToDIError();
+            goto bail;
+        }
+        fDriveNum = deviceName[0] - 'A' +1;
+        assert(fDriveNum > 0 && fDriveNum <= kNumLogicalVolumes);
 
 #if 0
-		int int13Unit;
-		dierr = GetInt13Unit(fHandle, fDriveNum, &int13Unit);
-		if (dierr != kDIErrNone)
-			goto bail;
-		if (int13Unit < 4) {
-			fFloppyUnit = int13Unit;
-			WMSG2(" Logical volume #%d looks like floppy unit %d\n",
-				fDriveNum, fFloppyUnit);
-		}
+        int int13Unit;
+        dierr = GetInt13Unit(fHandle, fDriveNum, &int13Unit);
+        if (dierr != kDIErrNone)
+            goto bail;
+        if (int13Unit < 4) {
+            fFloppyUnit = int13Unit;
+            WMSG2(" Logical volume #%d looks like floppy unit %d\n",
+                fDriveNum, fFloppyUnit);
+        }
 #endif
-	} else {
-		char device[7] = "\\\\.\\_:";
-		device[4] = deviceName[0];
-		WMSG1("Opening '%s'\n", device);
+    } else {
+        char device[7] = "\\\\.\\_:";
+        device[4] = deviceName[0];
+        WMSG1("Opening '%s'\n", device);
 
-		// If we're reading, allow others to write.  If we're writing, insist
-		// upon exclusive access to the volume.
-		DWORD shareMode = FILE_SHARE_READ;
-		if (access == GENERIC_READ)
-			shareMode |= FILE_SHARE_WRITE;
+        // If we're reading, allow others to write.  If we're writing, insist
+        // upon exclusive access to the volume.
+        DWORD shareMode = FILE_SHARE_READ;
+        if (access == GENERIC_READ)
+            shareMode |= FILE_SHARE_WRITE;
 
-		fHandle = CreateFile(device, access, shareMode,
-					NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		if (fHandle == INVALID_HANDLE_VALUE) {
-			DWORD lastError = GetLastError();
-			dierr = LastErrorToDIError();
-			if (lastError == ERROR_INVALID_PARAMETER && shareMode == FILE_SHARE_READ)
-			{
-				// Win2K spits this back if the volume is open and we're
-				// not specifying FILE_SHARE_WRITE.  Give it a try, just to
-				// see if it works, so we can tell the difference between
-				// an internal library error and an active filesystem.
-				HANDLE tmpHandle;
-				tmpHandle = CreateFile(device, access, FILE_SHARE_READ|FILE_SHARE_WRITE,
-							NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-				if (tmpHandle != INVALID_HANDLE_VALUE) {
-					dierr = kDIErrNoExclusiveAccess;
-					::CloseHandle(tmpHandle);
-				}
-			}
-			WMSG2("  LBAccess Open: CreateFile failed (err=%ld dierr=%d)\n",
-				lastError, dierr);
-			goto bail;
-		}
-	}
+        fHandle = CreateFile(device, access, shareMode,
+                    NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (fHandle == INVALID_HANDLE_VALUE) {
+            DWORD lastError = GetLastError();
+            dierr = LastErrorToDIError();
+            if (lastError == ERROR_INVALID_PARAMETER && shareMode == FILE_SHARE_READ)
+            {
+                // Win2K spits this back if the volume is open and we're
+                // not specifying FILE_SHARE_WRITE.  Give it a try, just to
+                // see if it works, so we can tell the difference between
+                // an internal library error and an active filesystem.
+                HANDLE tmpHandle;
+                tmpHandle = CreateFile(device, access, FILE_SHARE_READ|FILE_SHARE_WRITE,
+                            NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                if (tmpHandle != INVALID_HANDLE_VALUE) {
+                    dierr = kDIErrNoExclusiveAccess;
+                    ::CloseHandle(tmpHandle);
+                }
+            }
+            WMSG2("  LBAccess Open: CreateFile failed (err=%ld dierr=%d)\n",
+                lastError, dierr);
+            goto bail;
+        }
+    }
 
-	assert(fHandle != nil && fHandle != INVALID_HANDLE_VALUE);
+    assert(fHandle != nil && fHandle != INVALID_HANDLE_VALUE);
 
 #if 0
-	if (fIsCDROM) {
-		assert(Global::GetHasSPTI() || Global::GetHasASPI());
-		if (Global::GetHasASPI() && (!Global::GetHasSPTI() || kPreferASPI)) {
-			WMSG0("  LBAccess using ASPI\n");
-			fCDBaggage.fUseASPI = true;
-		} else {
-			WMSG0("  LBAccess using SPTI\n");
-			fCDBaggage.fUseASPI = false;
-		}
+    if (fIsCDROM) {
+        assert(Global::GetHasSPTI() || Global::GetHasASPI());
+        if (Global::GetHasASPI() && (!Global::GetHasSPTI() || kPreferASPI)) {
+            WMSG0("  LBAccess using ASPI\n");
+            fCDBaggage.fUseASPI = true;
+        } else {
+            WMSG0("  LBAccess using SPTI\n");
+            fCDBaggage.fUseASPI = false;
+        }
 
-		if (fCDBaggage.fUseASPI) {
-			dierr = FindASPIDriveMapping(deviceName[0]);
-			if (dierr != kDIErrNone) {
-				WMSG0("ERROR: couldn't find ASPI drive mapping\n");
-				dierr = kDIErrNoASPIMapping;
-				goto bail;
-			}
-		}
-	}
+        if (fCDBaggage.fUseASPI) {
+            dierr = FindASPIDriveMapping(deviceName[0]);
+            if (dierr != kDIErrNone) {
+                WMSG0("ERROR: couldn't find ASPI drive mapping\n");
+                dierr = kDIErrNoASPIMapping;
+                goto bail;
+            }
+        }
+    }
 #endif
 
 bail:
-	if (dierr != kDIErrNone) {
-		if (fHandle != nil && fHandle != INVALID_HANDLE_VALUE)
-			::CloseHandle(fHandle);
-		fHandle = nil;
-	}
-	return dierr;
+    if (dierr != kDIErrNone) {
+        if (fHandle != nil && fHandle != INVALID_HANDLE_VALUE)
+            ::CloseHandle(fHandle);
+        fHandle = nil;
+    }
+    return dierr;
 }
 
 /*
@@ -1307,11 +1307,11 @@ bail:
 DIError
 Win32VolumeAccess::LogicalBlockAccess::Close(void)
 {
-	if (fHandle != nil) {
-		::CloseHandle(fHandle);
-		fHandle = nil;
-	}
-	return kDIErrNone;
+    if (fHandle != nil) {
+        ::CloseHandle(fHandle);
+        fHandle = nil;
+    }
+    return kDIErrNone;
 }
 
 
@@ -1320,102 +1320,102 @@ Win32VolumeAccess::LogicalBlockAccess::Close(void)
  */
 DIError
 Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
-	long startBlock, short blockCount, void* buf)
+    long startBlock, short blockCount, void* buf)
 {
 #ifdef HAVE_WINDOWS_CDROM
-	DIError dierr;
+    DIError dierr;
 
-	assert(handle != nil);
-	assert(startBlock >= 0);
-	assert(blockCount > 0);
-	assert(buf != nil);
+    assert(handle != nil);
+    assert(startBlock >= 0);
+    assert(blockCount > 0);
+    assert(buf != nil);
 
-	//WMSG2(" CDROM read block %ld (%ld)\n", startBlock, block);
+    //WMSG2(" CDROM read block %ld (%ld)\n", startBlock, block);
 
-	/* alloc sector buffer on first use */
-	if (fLastSectorCache == nil) {
-		fLastSectorCache = new unsigned char[kCDROMSectorSize];
-		if (fLastSectorCache == nil)
-			return kDIErrMalloc;
-		assert(fLastSectorNum == -1);
-	}
+    /* alloc sector buffer on first use */
+    if (fLastSectorCache == nil) {
+        fLastSectorCache = new unsigned char[kCDROMSectorSize];
+        if (fLastSectorCache == nil)
+            return kDIErrMalloc;
+        assert(fLastSectorNum == -1);
+    }
 
-	/*
-	 * Map a range of 512-byte blocks to a range of 2048-byte blocks.
-	 */
-	assert(kCDROMSectorSize % kBlockSize == 0);
-	const int kFactor = kCDROMSectorSize / kBlockSize;
-	long sectorIndex = startBlock / kFactor;
-	int sectorOffset = (int) (startBlock % kFactor);	// 0-3
+    /*
+     * Map a range of 512-byte blocks to a range of 2048-byte blocks.
+     */
+    assert(kCDROMSectorSize % kBlockSize == 0);
+    const int kFactor = kCDROMSectorSize / kBlockSize;
+    long sectorIndex = startBlock / kFactor;
+    int sectorOffset = (int) (startBlock % kFactor);    // 0-3
 
-	/*
-	 * When possible, do multi-block reads directly into "buf".  The first
-	 * and last block may require special handling.
-	 */
-	while (blockCount) {
-		assert(blockCount > 0);
+    /*
+     * When possible, do multi-block reads directly into "buf".  The first
+     * and last block may require special handling.
+     */
+    while (blockCount) {
+        assert(blockCount > 0);
 
-		if (sectorOffset != 0 || blockCount < kFactor) {
-			assert(sectorOffset >= 0 && sectorOffset < kFactor);
+        if (sectorOffset != 0 || blockCount < kFactor) {
+            assert(sectorOffset >= 0 && sectorOffset < kFactor);
 
-			/* get from single-block cache or from disc */
-			if (sectorIndex != fLastSectorNum) {
-				fLastSectorNum = -1;		// invalidate, in case of error
+            /* get from single-block cache or from disc */
+            if (sectorIndex != fLastSectorNum) {
+                fLastSectorNum = -1;        // invalidate, in case of error
 
-				dierr = SPTI::ReadBlocks(handle, sectorIndex, 1,
-							kCDROMSectorSize, fLastSectorCache);
-				if (dierr != kDIErrNone)
-					return dierr;
+                dierr = SPTI::ReadBlocks(handle, sectorIndex, 1,
+                            kCDROMSectorSize, fLastSectorCache);
+                if (dierr != kDIErrNone)
+                    return dierr;
 
-				fLastSectorNum = sectorIndex;
-			}
+                fLastSectorNum = sectorIndex;
+            }
 
-			int thisNumBlocks;
-			thisNumBlocks = kFactor - sectorOffset;
-			if (thisNumBlocks > blockCount)
-				thisNumBlocks = blockCount;
+            int thisNumBlocks;
+            thisNumBlocks = kFactor - sectorOffset;
+            if (thisNumBlocks > blockCount)
+                thisNumBlocks = blockCount;
 
-			//WMSG3("  Small copy (sectIdx=%ld off=%d*512 size=%d*512)\n",
-			//	sectorIndex, sectorOffset, thisNumBlocks);
-			memcpy(buf, fLastSectorCache + sectorOffset * kBlockSize,
-				thisNumBlocks * kBlockSize);
+            //WMSG3("  Small copy (sectIdx=%ld off=%d*512 size=%d*512)\n",
+            //  sectorIndex, sectorOffset, thisNumBlocks);
+            memcpy(buf, fLastSectorCache + sectorOffset * kBlockSize,
+                thisNumBlocks * kBlockSize);
 
-			blockCount -= thisNumBlocks;
-			buf = (unsigned char*) buf + (thisNumBlocks * kBlockSize);
+            blockCount -= thisNumBlocks;
+            buf = (unsigned char*) buf + (thisNumBlocks * kBlockSize);
 
-			sectorOffset = 0;
-			sectorIndex++;
-		} else {
-			fLastSectorNum = -1;		// invalidate single-block cache
+            sectorOffset = 0;
+            sectorIndex++;
+        } else {
+            fLastSectorNum = -1;        // invalidate single-block cache
 
-			int numSectors;
-			numSectors = blockCount / kFactor;	// rounds down
+            int numSectors;
+            numSectors = blockCount / kFactor;  // rounds down
 
-			//WMSG2("  Big read (sectIdx=%ld numSect=%d)\n",
-			//	sectorIndex, numSectors);
-			dierr = SPTI::ReadBlocks(handle, sectorIndex, numSectors,
-						kCDROMSectorSize, buf);
-			if (dierr != kDIErrNone)
-				return dierr;
+            //WMSG2("  Big read (sectIdx=%ld numSect=%d)\n",
+            //  sectorIndex, numSectors);
+            dierr = SPTI::ReadBlocks(handle, sectorIndex, numSectors,
+                        kCDROMSectorSize, buf);
+            if (dierr != kDIErrNone)
+                return dierr;
 
-			blockCount -= numSectors * kFactor;
-			buf = (unsigned char*) buf + (numSectors * kCDROMSectorSize);
+            blockCount -= numSectors * kFactor;
+            buf = (unsigned char*) buf + (numSectors * kCDROMSectorSize);
 
-			sectorIndex += numSectors;
-		}
-	}
+            sectorIndex += numSectors;
+        }
+    }
 
-	return kDIErrNone;
+    return kDIErrNone;
 
 #else
-	return kDIErrCDROMNotSupported;
+    return kDIErrCDROMNotSupported;
 #endif
 }
 
 
 /*
  * ===========================================================================
- *		PhysicalBlockAccess
+ *      PhysicalBlockAccess
  * ===========================================================================
  */
 
@@ -1425,108 +1425,108 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
 DIError
 Win32VolumeAccess::PhysicalBlockAccess::Open(const char* deviceName, bool readOnly)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	// initialize all local state
-	assert(fHandle == nil);
-	fInt13Unit = -1;
-	fFloppyKind = kFloppyUnknown;
-	memset(&fGeometry, 0, sizeof(fGeometry));
+    // initialize all local state
+    assert(fHandle == nil);
+    fInt13Unit = -1;
+    fFloppyKind = kFloppyUnknown;
+    memset(&fGeometry, 0, sizeof(fGeometry));
 
-	// sanity-check name; not this only works for first 10 devices
-	if (deviceName[0] < '0' || deviceName[0] > '9' ||
-		deviceName[1] < '0' || deviceName[1] > '9' ||
-		deviceName[2] != ':' || deviceName[3] != '\\' ||
-		deviceName[4] != '\0')
-	{
-		WMSG1("  PhysicalBlockAccess: invalid device name '%s'\n", deviceName);
-		assert(false);
-		dierr = kDIErrInvalidArg;
-		goto bail;
-	}
+    // sanity-check name; not this only works for first 10 devices
+    if (deviceName[0] < '0' || deviceName[0] > '9' ||
+        deviceName[1] < '0' || deviceName[1] > '9' ||
+        deviceName[2] != ':' || deviceName[3] != '\\' ||
+        deviceName[4] != '\0')
+    {
+        WMSG1("  PhysicalBlockAccess: invalid device name '%s'\n", deviceName);
+        assert(false);
+        dierr = kDIErrInvalidArg;
+        goto bail;
+    }
 
-	if (deviceName[0] == '8' && deviceName[1] == '0') {
-		if (!gAllowWritePhys0 && readOnly == false) {
-			WMSG0("  REFUSING WRITE ACCESS TO 80:\\ \n");
-			return kDIErrVWAccessForbidden;
-		}
-	}
+    if (deviceName[0] == '8' && deviceName[1] == '0') {
+        if (!gAllowWritePhys0 && readOnly == false) {
+            WMSG0("  REFUSING WRITE ACCESS TO 80:\\ \n");
+            return kDIErrVWAccessForbidden;
+        }
+    }
 
-	fInt13Unit = (deviceName[0] - '0') * 16 + deviceName[1] - '0';
-	if (!fIsWin9x && fInt13Unit < 0x80) {
-		WMSG0("GLITCH: can't open floppy as physical unit in Win2K\n");
-		dierr = kDIErrInvalidArg;
-		goto bail;
-	}
-	if (fIsWin9x && fInt13Unit >= 0x80) {
-		WMSG0("GLITCH: can't access physical HD in Win9x\n");
-		dierr = kDIErrInvalidArg;
-		goto bail;
-	}
-	if ((fInt13Unit >= 0x00 && fInt13Unit < 0x04) ||
-		(fInt13Unit >= 0x80 && fInt13Unit < 0x88))
-	{
-		WMSG1("  Win32VA/P: opening unit %02xh\n", fInt13Unit);
-	} else {
-		WMSG2("GLITCH: converted '%s' to %02xh\n", deviceName, fInt13Unit);
-		dierr = kDIErrInternal;
-		goto bail;
-	}
+    fInt13Unit = (deviceName[0] - '0') * 16 + deviceName[1] - '0';
+    if (!fIsWin9x && fInt13Unit < 0x80) {
+        WMSG0("GLITCH: can't open floppy as physical unit in Win2K\n");
+        dierr = kDIErrInvalidArg;
+        goto bail;
+    }
+    if (fIsWin9x && fInt13Unit >= 0x80) {
+        WMSG0("GLITCH: can't access physical HD in Win9x\n");
+        dierr = kDIErrInvalidArg;
+        goto bail;
+    }
+    if ((fInt13Unit >= 0x00 && fInt13Unit < 0x04) ||
+        (fInt13Unit >= 0x80 && fInt13Unit < 0x88))
+    {
+        WMSG1("  Win32VA/P: opening unit %02xh\n", fInt13Unit);
+    } else {
+        WMSG2("GLITCH: converted '%s' to %02xh\n", deviceName, fInt13Unit);
+        dierr = kDIErrInternal;
+        goto bail;
+    }
 
-	DWORD access;
-	if (readOnly)
-		access = GENERIC_READ;
-	else
-		access = GENERIC_READ | GENERIC_WRITE;
+    DWORD access;
+    if (readOnly)
+        access = GENERIC_READ;
+    else
+        access = GENERIC_READ | GENERIC_WRITE;
 
-	if (fIsWin9x) {
-		fHandle = CreateFile("\\\\.\\vwin32", 0, 0, NULL,
-					OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
-		if (fHandle == INVALID_HANDLE_VALUE) {
-			DWORD lastError = GetLastError();
-			WMSG1("  Win32VA/PBOpen: CreateFile(vwin32) failed (err=%ld)\n",
-				lastError);
-			dierr = LastErrorToDIError();
-			goto bail;
-		}
+    if (fIsWin9x) {
+        fHandle = CreateFile("\\\\.\\vwin32", 0, 0, NULL,
+                    OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
+        if (fHandle == INVALID_HANDLE_VALUE) {
+            DWORD lastError = GetLastError();
+            WMSG1("  Win32VA/PBOpen: CreateFile(vwin32) failed (err=%ld)\n",
+                lastError);
+            dierr = LastErrorToDIError();
+            goto bail;
+        }
 
-		/* figure out the geometry */
-		dierr = DetectFloppyGeometry();
-		if (dierr != kDIErrNone)
-			goto bail;
-	} else {
-		char device[19] = "\\\\.\\PhysicalDrive_";
-		assert(fInt13Unit >= 0x80 && fInt13Unit <= 0x89);
-		device[17] = fInt13Unit - 0x80 + '0';
-		WMSG2("Opening '%s' (access=0x%02x)\n", device, access);
+        /* figure out the geometry */
+        dierr = DetectFloppyGeometry();
+        if (dierr != kDIErrNone)
+            goto bail;
+    } else {
+        char device[19] = "\\\\.\\PhysicalDrive_";
+        assert(fInt13Unit >= 0x80 && fInt13Unit <= 0x89);
+        device[17] = fInt13Unit - 0x80 + '0';
+        WMSG2("Opening '%s' (access=0x%02x)\n", device, access);
 
-		// If we're reading, allow others to write.  If we're writing, insist
-		// upon exclusive access to the volume.
-		DWORD shareMode = FILE_SHARE_READ;
-		if (access == GENERIC_READ)
-			shareMode |= FILE_SHARE_WRITE;
+        // If we're reading, allow others to write.  If we're writing, insist
+        // upon exclusive access to the volume.
+        DWORD shareMode = FILE_SHARE_READ;
+        if (access == GENERIC_READ)
+            shareMode |= FILE_SHARE_WRITE;
 
-		fHandle = CreateFile(device, access, shareMode,
-					NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		if (fHandle == INVALID_HANDLE_VALUE) {
-			DWORD lastError = GetLastError();
-			dierr = LastErrorToDIError();
-			WMSG2("  PBAccess Open: CreateFile failed (err=%ld dierr=%d)\n",
-				lastError, dierr);
-			goto bail;
-		}
-	}
+        fHandle = CreateFile(device, access, shareMode,
+                    NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (fHandle == INVALID_HANDLE_VALUE) {
+            DWORD lastError = GetLastError();
+            dierr = LastErrorToDIError();
+            WMSG2("  PBAccess Open: CreateFile failed (err=%ld dierr=%d)\n",
+                lastError, dierr);
+            goto bail;
+        }
+    }
 
-	assert(fHandle != nil && fHandle != INVALID_HANDLE_VALUE);
+    assert(fHandle != nil && fHandle != INVALID_HANDLE_VALUE);
 
 bail:
-	if (dierr != kDIErrNone) {
-		if (fHandle != nil && fHandle != INVALID_HANDLE_VALUE)
-			::CloseHandle(fHandle);
-		fHandle = nil;
-	}
+    if (dierr != kDIErrNone) {
+        if (fHandle != nil && fHandle != INVALID_HANDLE_VALUE)
+            ::CloseHandle(fHandle);
+        fHandle = nil;
+    }
 
-	return dierr;
+    return dierr;
 }
 
 /*
@@ -1537,90 +1537,90 @@ bail:
 DIError
 Win32VolumeAccess::PhysicalBlockAccess::DetectFloppyGeometry(void)
 {
-	DIError dierr = kDIErrNone;
-	static const struct {
-		FloppyKind		kind;
-		DiskGeometry	geom;
-	} floppyGeometry[] = {
-		{ kFloppyUnknown,	{ -1,	-1,	-1,	-1		} },
-		{ kFloppy525_360,	{ 40,	2,	9,	360*2	} },
-		{ kFloppy525_1200,	{ 80,	2,	15,	1200*2	} },
-		{ kFloppy35_720,	{ 80,	2,	9,	720*2	} },
-		{ kFloppy35_1440,	{ 80,	2,	18,	1440*2	} },
-		{ kFloppy35_2880,	{ 80,	2,	36,	2880*2	} }
-	};
-	unsigned char buf[kBlockSize];
-	FloppyKind driveKind;
-	int status;
+    DIError dierr = kDIErrNone;
+    static const struct {
+        FloppyKind      kind;
+        DiskGeometry    geom;
+    } floppyGeometry[] = {
+        { kFloppyUnknown,   { -1,   -1, -1, -1      } },
+        { kFloppy525_360,   { 40,   2,  9,  360*2   } },
+        { kFloppy525_1200,  { 80,   2,  15, 1200*2  } },
+        { kFloppy35_720,    { 80,   2,  9,  720*2   } },
+        { kFloppy35_1440,   { 80,   2,  18, 1440*2  } },
+        { kFloppy35_2880,   { 80,   2,  36, 2880*2  } }
+    };
+    unsigned char buf[kBlockSize];
+    FloppyKind driveKind;
+    int status;
 
-	/* verify that we can directly index the table with the enum */
-	for (int chk = 0; chk < NELEM(floppyGeometry); chk++) {
-		assert(floppyGeometry[chk].kind == chk);
-	}
-	assert(chk == kFloppyMax);
+    /* verify that we can directly index the table with the enum */
+    for (int chk = 0; chk < NELEM(floppyGeometry); chk++) {
+        assert(floppyGeometry[chk].kind == chk);
+    }
+    assert(chk == kFloppyMax);
 
 
-	/*
-	 * Issue a BIOS call to determine the kind of drive we're looking at.
-	 */
-	dierr = GetFloppyDriveKind(fHandle, fInt13Unit, &driveKind);
-	if (dierr != kDIErrNone)
-		goto bail;
+    /*
+     * Issue a BIOS call to determine the kind of drive we're looking at.
+     */
+    dierr = GetFloppyDriveKind(fHandle, fInt13Unit, &driveKind);
+    if (dierr != kDIErrNone)
+        goto bail;
 
-	switch (driveKind) {
-	case kFloppy35_2880:
-		status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 36, 1, buf);
-		if (status == 0) {
-			fFloppyKind = kFloppy35_2880;
-			break;
-		}
-		// else, fall through
-	case kFloppy35_1440:
-		status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 18, 1, buf);
-		if (status == 0) {
-			fFloppyKind = kFloppy35_1440;
-			break;
-		}
-		// else, fall through
-	case kFloppy35_720:
-		status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 9, 1, buf);
-		if (status == 0) {
-			fFloppyKind = kFloppy35_720;
-			break;
-		}
-		// else, fail
-		dierr = kDIErrReadFailed;
-		goto bail;
+    switch (driveKind) {
+    case kFloppy35_2880:
+        status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 36, 1, buf);
+        if (status == 0) {
+            fFloppyKind = kFloppy35_2880;
+            break;
+        }
+        // else, fall through
+    case kFloppy35_1440:
+        status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 18, 1, buf);
+        if (status == 0) {
+            fFloppyKind = kFloppy35_1440;
+            break;
+        }
+        // else, fall through
+    case kFloppy35_720:
+        status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 9, 1, buf);
+        if (status == 0) {
+            fFloppyKind = kFloppy35_720;
+            break;
+        }
+        // else, fail
+        dierr = kDIErrReadFailed;
+        goto bail;
 
-	case kFloppy525_1200:
-		status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 15, 1, buf);
-		if (status == 0) {
-			fFloppyKind = kFloppy525_1200;
-			break;
-		}
-		// else, fall through
-	case kFloppy525_360:
-		status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 9, 1, buf);
-		if (status == 0) {
-			fFloppyKind = kFloppy525_360;
-			break;
-		}
-		// else, fail
-		dierr = kDIErrReadFailed;
-		goto bail;
+    case kFloppy525_1200:
+        status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 15, 1, buf);
+        if (status == 0) {
+            fFloppyKind = kFloppy525_1200;
+            break;
+        }
+        // else, fall through
+    case kFloppy525_360:
+        status = ReadBlocksInt13h(fHandle, fInt13Unit, 0, 0, 9, 1, buf);
+        if (status == 0) {
+            fFloppyKind = kFloppy525_360;
+            break;
+        }
+        // else, fail
+        dierr = kDIErrReadFailed;
+        goto bail;
 
-	default:
-		WMSG1(" Unknown driveKind %d\n", driveKind);
-		assert(false);
-		dierr = kDIErrInternal;
-		goto bail;
-	}
+    default:
+        WMSG1(" Unknown driveKind %d\n", driveKind);
+        assert(false);
+        dierr = kDIErrInternal;
+        goto bail;
+    }
 
-	WMSG1("PBA: floppy disk appears to be type=%d\n", fFloppyKind);
-	fGeometry = floppyGeometry[fFloppyKind].geom;
+    WMSG1("PBA: floppy disk appears to be type=%d\n", fFloppyKind);
+    fGeometry = floppyGeometry[fFloppyKind].geom;
 
 bail:
-	return dierr;
+    return dierr;
 }
 
 #if 0
@@ -1630,15 +1630,15 @@ bail:
 DIError
 Win32VolumeAccess::PhysicalBlockAccess::FlushBlockDevice(void)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	if (::FlushFileBuffers(fHandle) == FALSE) {
-		DWORD lastError = GetLastError();
-		WMSG1("  Win32VA/PBAFlush: FlushFileBuffers failed (err=%ld)\n",
-			lastError);
-		dierr = LastErrorToDIError();
-	}
-	return dierr;
+    if (::FlushFileBuffers(fHandle) == FALSE) {
+        DWORD lastError = GetLastError();
+        WMSG1("  Win32VA/PBAFlush: FlushFileBuffers failed (err=%ld)\n",
+            lastError);
+        dierr = LastErrorToDIError();
+    }
+    return dierr;
 }
 #endif
 
@@ -1648,17 +1648,17 @@ Win32VolumeAccess::PhysicalBlockAccess::FlushBlockDevice(void)
 DIError
 Win32VolumeAccess::PhysicalBlockAccess::Close(void)
 {
-	if (fHandle != nil) {
-		::CloseHandle(fHandle);
-		fHandle = nil;
-	}
-	return kDIErrNone;
+    if (fHandle != nil) {
+        ::CloseHandle(fHandle);
+        fHandle = nil;
+    }
+    return kDIErrNone;
 }
 
 
 /*
  * ===========================================================================
- *		ASPIBlockAccess
+ *      ASPIBlockAccess
  * ===========================================================================
  */
 
@@ -1669,62 +1669,62 @@ Win32VolumeAccess::PhysicalBlockAccess::Close(void)
 DIError
 Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName, bool readOnly)
 {
-	DIError dierr = kDIErrNone;
+    DIError dierr = kDIErrNone;
 
-	if (fpASPI != nil)
-		return kDIErrAlreadyOpen;
+    if (fpASPI != nil)
+        return kDIErrAlreadyOpen;
 
-	fpASPI = Global::GetASPI();
-	if (fpASPI == nil)
-		return kDIErrASPIFailure;
+    fpASPI = Global::GetASPI();
+    if (fpASPI == nil)
+        return kDIErrASPIFailure;
 
-	if (strncmp(deviceName, kASPIDev, strlen(kASPIDev)) != 0) {
-		assert(false);
-		dierr = kDIErrInternal;
-		goto bail;
-	}
+    if (strncmp(deviceName, kASPIDev, strlen(kASPIDev)) != 0) {
+        assert(false);
+        dierr = kDIErrInternal;
+        goto bail;
+    }
 
-	const char* cp;
-	int adapter, target, lun;
-	int result;
+    const char* cp;
+    int adapter, target, lun;
+    int result;
 
-	cp = deviceName + strlen(kASPIDev);
-	result = 0;
-	result |= ExtractInt(&cp, &adapter);
-	result |= ExtractInt(&cp, &target);
-	result |= ExtractInt(&cp, &lun);
-	if (result != 0) {
-		WMSG1(" Win32VA couldn't parse '%s'\n", deviceName);
-		dierr = kDIErrInternal;
-		goto bail;
-	}
+    cp = deviceName + strlen(kASPIDev);
+    result = 0;
+    result |= ExtractInt(&cp, &adapter);
+    result |= ExtractInt(&cp, &target);
+    result |= ExtractInt(&cp, &lun);
+    if (result != 0) {
+        WMSG1(" Win32VA couldn't parse '%s'\n", deviceName);
+        dierr = kDIErrInternal;
+        goto bail;
+    }
 
-	fAdapter = adapter;
-	fTarget = target;
-	fLun = lun;
+    fAdapter = adapter;
+    fTarget = target;
+    fLun = lun;
 
-	unsigned char deviceType;
-	dierr = fpASPI->GetDeviceType(fAdapter, fTarget, fLun, &deviceType);
-	if (dierr != kDIErrNone ||
-		(deviceType != kScsiDevTypeCDROM && deviceType != kScsiDevTypeDASD))
-	{
-		WMSG2(" Win32VA bad GetDeviceType err=%d type=%d\n",
-			dierr, deviceType);
-		dierr = kDIErrInternal;		// should not be here at all
-		goto bail;
-	}
-	if (deviceType == kScsiDevTypeCDROM)
-		fReadOnly = true;
-	else
-		fReadOnly = readOnly;
+    unsigned char deviceType;
+    dierr = fpASPI->GetDeviceType(fAdapter, fTarget, fLun, &deviceType);
+    if (dierr != kDIErrNone ||
+        (deviceType != kScsiDevTypeCDROM && deviceType != kScsiDevTypeDASD))
+    {
+        WMSG2(" Win32VA bad GetDeviceType err=%d type=%d\n",
+            dierr, deviceType);
+        dierr = kDIErrInternal;     // should not be here at all
+        goto bail;
+    }
+    if (deviceType == kScsiDevTypeCDROM)
+        fReadOnly = true;
+    else
+        fReadOnly = readOnly;
 
-	WMSG4(" Win32VA successful 'open' of '%s' on %d:%d:%d\n",
-		deviceName, fAdapter, fTarget, fLun);
+    WMSG4(" Win32VA successful 'open' of '%s' on %d:%d:%d\n",
+        deviceName, fAdapter, fTarget, fLun);
 
 bail:
-	if (dierr != kDIErrNone)
-		fpASPI = nil;
-	return dierr;
+    if (dierr != kDIErrNone)
+        fpASPI = nil;
+    return dierr;
 }
 
 /*
@@ -1736,21 +1736,21 @@ bail:
 int
 Win32VolumeAccess::ASPIBlockAccess::ExtractInt(const char** pStr, int* pResult)
 {
-	char* end = nil;
+    char* end = nil;
 
-	if (*pStr == nil) {
-		assert(false);
-		return -1;
-	}
+    if (*pStr == nil) {
+        assert(false);
+        return -1;
+    }
 
-	*pResult = (int) strtol(*pStr, &end, 10);
+    *pResult = (int) strtol(*pStr, &end, 10);
 
-	if (end == nil)
-		*pStr = nil;
-	else
-		*pStr = end+1;
+    if (end == nil)
+        *pStr = nil;
+    else
+        *pStr = end+1;
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -1761,33 +1761,33 @@ Win32VolumeAccess::ASPIBlockAccess::ExtractInt(const char** pStr, int* pResult)
 DIError
 Win32VolumeAccess::ASPIBlockAccess::DetectCapacity(long* pNumBlocks)
 {
-	DIError dierr = kDIErrNone;
-	unsigned long lba, blockLen;
+    DIError dierr = kDIErrNone;
+    unsigned long lba, blockLen;
 
-	dierr = fpASPI->GetDeviceCapacity(fAdapter, fTarget, fLun, &lba,
-				&blockLen);
-	if (dierr != kDIErrNone)
-		goto bail;
+    dierr = fpASPI->GetDeviceCapacity(fAdapter, fTarget, fLun, &lba,
+                &blockLen);
+    if (dierr != kDIErrNone)
+        goto bail;
 
-	WMSG3("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)\n",
-		lba, blockLen, lba*blockLen);
+    WMSG3("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)\n",
+        lba, blockLen, lba*blockLen);
 
-	fChunkSize = blockLen;
+    fChunkSize = blockLen;
 
-	if ((blockLen % 512) != 0) {
-		WMSG1("Unacceptable CD-ROM blockLen=%ld, bailing\n", blockLen);
-		dierr = kDIErrReadFailed;
-		goto bail;
-	}
+    if ((blockLen % 512) != 0) {
+        WMSG1("Unacceptable CD-ROM blockLen=%ld, bailing\n", blockLen);
+        dierr = kDIErrReadFailed;
+        goto bail;
+    }
 
-	// The LBA is the last valid block on the disk.  To get the disk size,
-	// we need to add one.
+    // The LBA is the last valid block on the disk.  To get the disk size,
+    // we need to add one.
 
-	*pNumBlocks = (blockLen/512) * (lba+1);
-	WMSG1(" ASPI returning 512-byte block count %ld\n", *pNumBlocks);
+    *pNumBlocks = (blockLen/512) * (lba+1);
+    WMSG1(" ASPI returning 512-byte block count %ld\n", *pNumBlocks);
 
 bail:
-	return dierr;
+    return dierr;
 }
 
 /*
@@ -1798,87 +1798,87 @@ bail:
  */
 DIError
 Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount,
-	void* buf)
+    void* buf)
 {
-	DIError dierr;
+    DIError dierr;
 
-	// we're expecting fBlockSize to be 512 or 2048
-	assert(fChunkSize >= kBlockSize && fChunkSize <= 65536);
-	assert((fChunkSize % kBlockSize) == 0);
+    // we're expecting fBlockSize to be 512 or 2048
+    assert(fChunkSize >= kBlockSize && fChunkSize <= 65536);
+    assert((fChunkSize % kBlockSize) == 0);
 
-	/* alloc chunk buffer on first use */
-	if (fLastChunkCache == nil) {
-		fLastChunkCache = new unsigned char[fChunkSize];
-		if (fLastChunkCache == nil)
-			return kDIErrMalloc;
-		assert(fLastChunkNum == -1);
-	}
+    /* alloc chunk buffer on first use */
+    if (fLastChunkCache == nil) {
+        fLastChunkCache = new unsigned char[fChunkSize];
+        if (fLastChunkCache == nil)
+            return kDIErrMalloc;
+        assert(fLastChunkNum == -1);
+    }
 
-	/*
-	 * Map a range of N-byte blocks to a range of 2048-byte blocks.
-	 */
-	const int kFactor = fChunkSize / kBlockSize;
-	long chunkIndex = startBlock / kFactor;
-	int chunkOffset = (int) (startBlock % kFactor);	// small integer
+    /*
+     * Map a range of N-byte blocks to a range of 2048-byte blocks.
+     */
+    const int kFactor = fChunkSize / kBlockSize;
+    long chunkIndex = startBlock / kFactor;
+    int chunkOffset = (int) (startBlock % kFactor); // small integer
 
-	/*
-	 * When possible, do multi-block reads directly into "buf".  The first
-	 * and last block may require special handling.
-	 */
-	while (blockCount) {
-		assert(blockCount > 0);
+    /*
+     * When possible, do multi-block reads directly into "buf".  The first
+     * and last block may require special handling.
+     */
+    while (blockCount) {
+        assert(blockCount > 0);
 
-		if (chunkOffset != 0 || blockCount < kFactor) {
-			assert(chunkOffset >= 0 && chunkOffset < kFactor);
+        if (chunkOffset != 0 || blockCount < kFactor) {
+            assert(chunkOffset >= 0 && chunkOffset < kFactor);
 
-			/* get from single-block cache or from disc */
-			if (chunkIndex != fLastChunkNum) {
-				fLastChunkNum = -1;		// invalidate, in case of error
+            /* get from single-block cache or from disc */
+            if (chunkIndex != fLastChunkNum) {
+                fLastChunkNum = -1;     // invalidate, in case of error
 
-				dierr = fpASPI->ReadBlocks(fAdapter, fTarget, fLun, chunkIndex,
-							1, fChunkSize, fLastChunkCache);
-				if (dierr != kDIErrNone)
-					return dierr;
+                dierr = fpASPI->ReadBlocks(fAdapter, fTarget, fLun, chunkIndex,
+                            1, fChunkSize, fLastChunkCache);
+                if (dierr != kDIErrNone)
+                    return dierr;
 
-				fLastChunkNum = chunkIndex;
-			}
+                fLastChunkNum = chunkIndex;
+            }
 
-			int thisNumBlocks;
-			thisNumBlocks = kFactor - chunkOffset;
-			if (thisNumBlocks > blockCount)
-				thisNumBlocks = blockCount;
+            int thisNumBlocks;
+            thisNumBlocks = kFactor - chunkOffset;
+            if (thisNumBlocks > blockCount)
+                thisNumBlocks = blockCount;
 
-			//WMSG3("  Small copy (chIdx=%ld off=%d*512 size=%d*512)\n",
-			//	chunkIndex, chunkOffset, thisNumBlocks);
-			memcpy(buf, fLastChunkCache + chunkOffset * kBlockSize,
-				thisNumBlocks * kBlockSize);
+            //WMSG3("  Small copy (chIdx=%ld off=%d*512 size=%d*512)\n",
+            //  chunkIndex, chunkOffset, thisNumBlocks);
+            memcpy(buf, fLastChunkCache + chunkOffset * kBlockSize,
+                thisNumBlocks * kBlockSize);
 
-			blockCount -= thisNumBlocks;
-			buf = (unsigned char*) buf + (thisNumBlocks * kBlockSize);
+            blockCount -= thisNumBlocks;
+            buf = (unsigned char*) buf + (thisNumBlocks * kBlockSize);
 
-			chunkOffset = 0;
-			chunkIndex++;
-		} else {
-			fLastChunkNum = -1;		// invalidate single-block cache
+            chunkOffset = 0;
+            chunkIndex++;
+        } else {
+            fLastChunkNum = -1;     // invalidate single-block cache
 
-			int numChunks;
-			numChunks = blockCount / kFactor;	// rounds down
+            int numChunks;
+            numChunks = blockCount / kFactor;   // rounds down
 
-			//WMSG2("  Big read (chIdx=%ld numCh=%d)\n",
-			//	chunkIndex, numChunks);
-			dierr = fpASPI->ReadBlocks(fAdapter, fTarget, fLun, chunkIndex,
-						numChunks, fChunkSize, buf);
-			if (dierr != kDIErrNone)
-				return dierr;
+            //WMSG2("  Big read (chIdx=%ld numCh=%d)\n",
+            //  chunkIndex, numChunks);
+            dierr = fpASPI->ReadBlocks(fAdapter, fTarget, fLun, chunkIndex,
+                        numChunks, fChunkSize, buf);
+            if (dierr != kDIErrNone)
+                return dierr;
 
-			blockCount -= numChunks * kFactor;
-			buf = (unsigned char*) buf + (numChunks * fChunkSize);
+            blockCount -= numChunks * kFactor;
+            buf = (unsigned char*) buf + (numChunks * fChunkSize);
 
-			chunkIndex += numChunks;
-		}
-	}
+            chunkIndex += numChunks;
+        }
+    }
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 /*
@@ -1889,77 +1889,77 @@ Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount
  */
 DIError
 Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock, short blockCount,
-	const void* buf)
+    const void* buf)
 {
-	DIError dierr;
+    DIError dierr;
 
-	if (fReadOnly)
-		return kDIErrAccessDenied;
+    if (fReadOnly)
+        return kDIErrAccessDenied;
 
-	// we're expecting fBlockSize to be 512 or 2048
-	assert(fChunkSize >= kBlockSize && fChunkSize <= 65536);
-	assert((fChunkSize % kBlockSize) == 0);
+    // we're expecting fBlockSize to be 512 or 2048
+    assert(fChunkSize >= kBlockSize && fChunkSize <= 65536);
+    assert((fChunkSize % kBlockSize) == 0);
 
-	/* throw out the cache */
-	fLastChunkNum = -1;
+    /* throw out the cache */
+    fLastChunkNum = -1;
 
-	/*
-	 * Map a range of N-byte blocks to a range of 2048-byte blocks.
-	 */
-	const int kFactor = fChunkSize / kBlockSize;
-	long chunkIndex = startBlock / kFactor;
-	int chunkOffset = (int) (startBlock % kFactor);	// small integer
+    /*
+     * Map a range of N-byte blocks to a range of 2048-byte blocks.
+     */
+    const int kFactor = fChunkSize / kBlockSize;
+    long chunkIndex = startBlock / kFactor;
+    int chunkOffset = (int) (startBlock % kFactor); // small integer
 
-	/*
-	 * When possible, do multi-block writes directly from "buf".  The first
-	 * and last block may require special handling.
-	 */
-	while (blockCount) {
-		assert(blockCount > 0);
+    /*
+     * When possible, do multi-block writes directly from "buf".  The first
+     * and last block may require special handling.
+     */
+    while (blockCount) {
+        assert(blockCount > 0);
 
-		if (chunkOffset != 0 || blockCount < kFactor) {
-			assert(chunkOffset >= 0 && chunkOffset < kFactor);
+        if (chunkOffset != 0 || blockCount < kFactor) {
+            assert(chunkOffset >= 0 && chunkOffset < kFactor);
 
-			/* read the chunk we're writing a part of */
-			dierr = fpASPI->ReadBlocks(fAdapter, fTarget, fLun, chunkIndex,
-						1, fChunkSize, fLastChunkCache);
-			if (dierr != kDIErrNone)
-				return dierr;
+            /* read the chunk we're writing a part of */
+            dierr = fpASPI->ReadBlocks(fAdapter, fTarget, fLun, chunkIndex,
+                        1, fChunkSize, fLastChunkCache);
+            if (dierr != kDIErrNone)
+                return dierr;
 
-			int thisNumBlocks;
-			thisNumBlocks = kFactor - chunkOffset;
-			if (thisNumBlocks > blockCount)
-				thisNumBlocks = blockCount;
+            int thisNumBlocks;
+            thisNumBlocks = kFactor - chunkOffset;
+            if (thisNumBlocks > blockCount)
+                thisNumBlocks = blockCount;
 
-			WMSG3("  Small copy out (chIdx=%ld off=%d*512 size=%d*512)\n",
-				chunkIndex, chunkOffset, thisNumBlocks);
-			memcpy(fLastChunkCache + chunkOffset * kBlockSize, buf,
-				thisNumBlocks * kBlockSize);
+            WMSG3("  Small copy out (chIdx=%ld off=%d*512 size=%d*512)\n",
+                chunkIndex, chunkOffset, thisNumBlocks);
+            memcpy(fLastChunkCache + chunkOffset * kBlockSize, buf,
+                thisNumBlocks * kBlockSize);
 
-			blockCount -= thisNumBlocks;
-			buf = (const unsigned char*) buf + (thisNumBlocks * kBlockSize);
+            blockCount -= thisNumBlocks;
+            buf = (const unsigned char*) buf + (thisNumBlocks * kBlockSize);
 
-			chunkOffset = 0;
-			chunkIndex++;
-		} else {
-			int numChunks;
-			numChunks = blockCount / kFactor;	// rounds down
+            chunkOffset = 0;
+            chunkIndex++;
+        } else {
+            int numChunks;
+            numChunks = blockCount / kFactor;   // rounds down
 
-			WMSG2("  Big write (chIdx=%ld numCh=%d)\n",
-				chunkIndex, numChunks);
-			dierr = fpASPI->WriteBlocks(fAdapter, fTarget, fLun, chunkIndex,
-						numChunks, fChunkSize, buf);
-			if (dierr != kDIErrNone)
-				return dierr;
+            WMSG2("  Big write (chIdx=%ld numCh=%d)\n",
+                chunkIndex, numChunks);
+            dierr = fpASPI->WriteBlocks(fAdapter, fTarget, fLun, chunkIndex,
+                        numChunks, fChunkSize, buf);
+            if (dierr != kDIErrNone)
+                return dierr;
 
-			blockCount -= numChunks * kFactor;
-			buf = (const unsigned char*) buf + (numChunks * fChunkSize);
+            blockCount -= numChunks * kFactor;
+            buf = (const unsigned char*) buf + (numChunks * fChunkSize);
 
-			chunkIndex += numChunks;
-		}
-	}
+            chunkIndex += numChunks;
+        }
+    }
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 /*
@@ -1968,14 +1968,14 @@ Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock, short blockCoun
 DIError
 Win32VolumeAccess::ASPIBlockAccess::Close(void)
 {
-	fpASPI = nil;
-	return kDIErrNone;
+    fpASPI = nil;
+    return kDIErrNone;
 }
 
 
 /*
  * ===========================================================================
- *		CBCache
+ *      CBCache
  * ===========================================================================
  */
 
@@ -1985,14 +1985,14 @@ Win32VolumeAccess::ASPIBlockAccess::Close(void)
 bool
 CBCache::IsBlockInCache(long blockNum) const
 {
-	if (fFirstBlock == kEmpty)
-		return false;
-	assert(fNumBlocks > 0);
+    if (fFirstBlock == kEmpty)
+        return false;
+    assert(fNumBlocks > 0);
 
-	if (blockNum >= fFirstBlock && blockNum < fFirstBlock + fNumBlocks)
-		return true;
-	else
-		return false;
+    if (blockNum >= fFirstBlock && blockNum < fFirstBlock + fNumBlocks)
+        return true;
+    else
+        return false;
 }
 
 /*
@@ -2001,17 +2001,17 @@ CBCache::IsBlockInCache(long blockNum) const
 DIError
 CBCache::GetFromCache(long blockNum, void* buf)
 {
-	if (!IsBlockInCache(blockNum)) {
-		assert(false);
-		return kDIErrInternal;
-	}
+    if (!IsBlockInCache(blockNum)) {
+        assert(false);
+        return kDIErrInternal;
+    }
 
-	//WMSG1("   CBCache: getting block %d from cache\n", blockNum);
-	int offset = (blockNum - fFirstBlock) * kBlockSize;
-	assert(offset >= 0);
+    //WMSG1("   CBCache: getting block %d from cache\n", blockNum);
+    int offset = (blockNum - fFirstBlock) * kBlockSize;
+    assert(offset >= 0);
 
-	memcpy(buf, fCache + offset, kBlockSize);
-	return kDIErrNone;
+    memcpy(buf, fCache + offset, kBlockSize);
+    return kDIErrNone;
 }
 
 /*
@@ -2022,22 +2022,22 @@ CBCache::GetFromCache(long blockNum, void* buf)
 bool
 CBCache::IsRoomInCache(long blockNum) const
 {
-	if (fFirstBlock == kEmpty)
-		return true;
+    if (fFirstBlock == kEmpty)
+        return true;
 
-	// already in cache?
-	if (blockNum >= fFirstBlock && blockNum < fFirstBlock + fNumBlocks)
-		return true;
+    // already in cache?
+    if (blockNum >= fFirstBlock && blockNum < fFirstBlock + fNumBlocks)
+        return true;
 
-	// running off the end?
-	if (fNumBlocks == kMaxCachedBlocks)
-		return false;
+    // running off the end?
+    if (fNumBlocks == kMaxCachedBlocks)
+        return false;
 
-	// is it the exact next one?
-	if (fFirstBlock + fNumBlocks != blockNum)
-		return false;
+    // is it the exact next one?
+    if (fFirstBlock + fNumBlocks != blockNum)
+        return false;
 
-	return true;
+    return true;
 }
 
 /*
@@ -2052,44 +2052,44 @@ CBCache::IsRoomInCache(long blockNum) const
 DIError
 CBCache::PutInCache(long blockNum, const void* buf, bool isDirty)
 {
-	int blockOffset = -1;
-	if (!IsRoomInCache(blockNum)) {
-		assert(false);
-		return kDIErrInternal;
-	}
+    int blockOffset = -1;
+    if (!IsRoomInCache(blockNum)) {
+        assert(false);
+        return kDIErrInternal;
+    }
 
-	if (fFirstBlock == kEmpty) {
-		//WMSG1("   CBCache: starting anew with block %ld\n", blockNum);
-		fFirstBlock = blockNum;
-		fNumBlocks = 1;
-		blockOffset = 0;
-	} else if (blockNum == fFirstBlock + fNumBlocks) {
-		//WMSG1("   CBCache: appending block %ld\n", blockNum);
-		blockOffset = fNumBlocks;
-		fNumBlocks++;
-	} else if (blockNum >= fFirstBlock && blockNum < fFirstBlock + fNumBlocks) {
-		blockOffset = blockNum - fFirstBlock;
-	} else {
-		assert(false);
-		return kDIErrInternal;
-	}
-	assert(blockOffset != -1);
-	assert(blockOffset < kMaxCachedBlocks);
+    if (fFirstBlock == kEmpty) {
+        //WMSG1("   CBCache: starting anew with block %ld\n", blockNum);
+        fFirstBlock = blockNum;
+        fNumBlocks = 1;
+        blockOffset = 0;
+    } else if (blockNum == fFirstBlock + fNumBlocks) {
+        //WMSG1("   CBCache: appending block %ld\n", blockNum);
+        blockOffset = fNumBlocks;
+        fNumBlocks++;
+    } else if (blockNum >= fFirstBlock && blockNum < fFirstBlock + fNumBlocks) {
+        blockOffset = blockNum - fFirstBlock;
+    } else {
+        assert(false);
+        return kDIErrInternal;
+    }
+    assert(blockOffset != -1);
+    assert(blockOffset < kMaxCachedBlocks);
 
-	if (fDirty[blockOffset] && !isDirty) {
-		WMSG1("BUG: CBCache trying to clear dirty flag for block %ld\n",
-			blockNum);
-		assert(false);
-		return kDIErrInternal;
-	}
-	fDirty[blockOffset] = isDirty;
+    if (fDirty[blockOffset] && !isDirty) {
+        WMSG1("BUG: CBCache trying to clear dirty flag for block %ld\n",
+            blockNum);
+        assert(false);
+        return kDIErrInternal;
+    }
+    fDirty[blockOffset] = isDirty;
 
-	//WMSG2("   CBCache: adding block %d to cache at %d\n", blockNum, blockOffset);
-	int offset = blockOffset * kBlockSize;
-	assert(offset >= 0);
+    //WMSG2("   CBCache: adding block %d to cache at %d\n", blockNum, blockOffset);
+    int offset = blockOffset * kBlockSize;
+    assert(offset >= 0);
 
-	memcpy(fCache + offset, buf, kBlockSize);
-	return kDIErrNone;
+    memcpy(fCache + offset, buf, kBlockSize);
+    return kDIErrNone;
 }
 
 /*
@@ -2098,19 +2098,19 @@ CBCache::PutInCache(long blockNum, const void* buf, bool isDirty)
 bool
 CBCache::IsDirty(void) const
 {
-	if (fFirstBlock == kEmpty)
-		return false;
+    if (fFirstBlock == kEmpty)
+        return false;
 
-	assert(fNumBlocks > 0);
-	for (int i = 0; i < fNumBlocks; i++) {
-		if (fDirty[i]) {
-			//WMSG0("   CBCache: dirty blocks found\n");
-			return true;
-		}
-	}
+    assert(fNumBlocks > 0);
+    for (int i = 0; i < fNumBlocks; i++) {
+        if (fDirty[i]) {
+            //WMSG0("   CBCache: dirty blocks found\n");
+            return true;
+        }
+    }
 
-	//WMSG0("   CBCache: no dirty blocks found\n");
-	return false;
+    //WMSG0("   CBCache: no dirty blocks found\n");
+    return false;
 }
 
 /*
@@ -2120,11 +2120,11 @@ CBCache::IsDirty(void) const
 void
 CBCache::GetCachePointer(long* pFirstBlock, int* pNumBlocks, void** pBuf) const
 {
-	assert(fFirstBlock != kEmpty);	// not essential, but why call here if not?
+    assert(fFirstBlock != kEmpty);  // not essential, but why call here if not?
 
-	*pFirstBlock = fFirstBlock;
-	*pNumBlocks = fNumBlocks;
-	*pBuf = (void*) fCache;
+    *pFirstBlock = fFirstBlock;
+    *pNumBlocks = fNumBlocks;
+    *pBuf = (void*) fCache;
 }
 
 /*
@@ -2133,11 +2133,11 @@ CBCache::GetCachePointer(long* pFirstBlock, int* pNumBlocks, void** pBuf) const
 void
 CBCache::Scrub(void)
 {
-	if (fFirstBlock == kEmpty)
-		return;
+    if (fFirstBlock == kEmpty)
+        return;
 
-	for (int i = 0; i < fNumBlocks; i++)
-		fDirty[i] = false;
+    for (int i = 0; i < fNumBlocks; i++)
+        fDirty[i] = false;
 }
 
 /*
@@ -2146,18 +2146,18 @@ CBCache::Scrub(void)
 void
 CBCache::Purge(void)
 {
-	if (fFirstBlock == kEmpty)
-		return;
+    if (fFirstBlock == kEmpty)
+        return;
 
-	if (IsDirty()) {
-		// Should only happen after a write failure causes us to clean up.
-		WMSG0("HEY: CBCache purging dirty blocks!\n");
-		//assert(false);
-	}
-	Scrub();
+    if (IsDirty()) {
+        // Should only happen after a write failure causes us to clean up.
+        WMSG0("HEY: CBCache purging dirty blocks!\n");
+        //assert(false);
+    }
+    Scrub();
 
-	fFirstBlock = kEmpty;
-	fNumBlocks = 0;
+    fFirstBlock = kEmpty;
+    fNumBlocks = 0;
 }
 
 

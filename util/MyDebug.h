@@ -9,10 +9,10 @@
 #ifndef __MY_DEBUG__
 #define __MY_DEBUG__
 
-//#define _DEBUG_LOG		/* set this to force logging in all builds */
+//#define _DEBUG_LOG        /* set this to force logging in all builds */
 
 #ifndef _DEBUG
-//# define _DEBUG_LOG		/* define this to use logging for !_DEBUG */
+//# define _DEBUG_LOG       /* define this to use logging for !_DEBUG */
 #endif
 
 #if defined(_DEBUG_LOG)
@@ -20,18 +20,18 @@
 extern FILE* gLog;
 extern int gPid;
 #define WMSG0(fmt) \
-	{ fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt); }
+    { fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt); }
 #define WMSG1(fmt, arg0) \
-	{ fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0); }
+    { fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0); }
 #define WMSG2(fmt, arg0, arg1) \
-	{ fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0, arg1); }
+    { fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0, arg1); }
 #define WMSG3(fmt, arg0, arg1, arg2) \
-	{ fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0, arg1, arg2); }
+    { fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0, arg1, arg2); }
 #define WMSG4(fmt, arg0, arg1, arg2, arg3) \
-	{ fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0, arg1, arg2, arg3); }
+    { fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0, arg1, arg2, arg3); }
 #define WMSG5(fmt, arg0, arg1, arg2, arg3, arg4) \
-	{ fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0, arg1, arg2, arg3, \
-			arg4); }
+    { fprintf(gLog, "%05u ", gPid); fprintf(gLog, fmt, arg0, arg1, arg2, arg3, \
+            arg4); }
 
 #else
 /* can use TRACE0, TRACE1, etc to avoid header and '\n' */
@@ -40,12 +40,12 @@ extern int gPid;
 #define WMSG2(fmt, arg0, arg1) _RPTF2(_CRT_WARN, fmt, arg0, arg1)
 #define WMSG3(fmt, arg0, arg1, arg2) _RPTF3(_CRT_WARN, fmt, arg0, arg1, arg2)
 #define WMSG4(fmt, arg0, arg1, arg2, arg3) _RPTF4(_CRT_WARN, fmt, arg0, arg1, \
-			 arg2, arg3)
+             arg2, arg3)
 #if !defined(_RPTF5)
 # if defined(_DEBUG)
 #  define _RPTF5(rptno, msg, arg1, arg2, arg3, arg4, arg5) \
         do { if ((1 == _CrtDbgReport(rptno, __FILE__, __LINE__, NULL, msg, \
-										arg1, arg2, arg3, arg4, arg5))) \
+                                        arg1, arg2, arg3, arg4, arg5))) \
                 _CrtDbgBreak(); } while (0)
 # else
 #  define _RPTF5(rptno, msg, arg1, arg2, arg3, arg4, arg5)
@@ -53,7 +53,7 @@ extern int gPid;
 #endif
 
 #define WMSG5(fmt, arg0, arg1, arg2, arg3, arg4) _RPTF5(_CRT_WARN, fmt, arg0, \
-			arg1, arg2, arg3, arg4)
+            arg1, arg2, arg3, arg4)
 #endif
 
 /* make the memory leak test output more interesting */

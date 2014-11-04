@@ -19,29 +19,29 @@ using namespace DiskImgLib;
  */
 class SubVolumeDialog : public CDialog {
 public:
-	SubVolumeDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_SUBV, pParentWnd)
-	{
-		fListBoxIndex = 0;
-	}
-	virtual ~SubVolumeDialog(void) {}
+    SubVolumeDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_SUBV, pParentWnd)
+    {
+        fListBoxIndex = 0;
+    }
+    virtual ~SubVolumeDialog(void) {}
 
-	void Setup(DiskFS* pDiskFS) { fpDiskFS = pDiskFS; }
+    void Setup(DiskFS* pDiskFS) { fpDiskFS = pDiskFS; }
 
-	/* so long as we don't sort the list, this number is enough */
-	int			fListBoxIndex;
+    /* so long as we don't sort the list, this number is enough */
+    int         fListBoxIndex;
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg void OnItemDoubleClicked(void);
+    afx_msg void OnItemDoubleClicked(void);
 
 private:
-	DiskFS*		fpDiskFS;
+    DiskFS*     fpDiskFS;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__SUBVOLUMEDIALOG__*/

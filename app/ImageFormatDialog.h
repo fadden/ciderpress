@@ -20,62 +20,62 @@ using namespace DiskImgLib;
  */
 class ImageFormatDialog : public CDialog {
 public:
-	ImageFormatDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_DECONF, pParentWnd)
-	{
-		fInitialized = false;
-		fFileSource = "";
-		fAllowUnknown = false;
-		fOuterFormat = DiskImg::kOuterFormatUnknown;
-		fFileFormat = DiskImg::kFileFormatUnknown;
-		fPhysicalFormat = DiskImg::kPhysicalFormatUnknown;
-		fSectorOrder = DiskImg::kSectorOrderUnknown;
-		fFSFormat = DiskImg::kFormatUnknown;
-		fDisplayFormat = kShowAsBlocks;
+    ImageFormatDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_DECONF, pParentWnd)
+    {
+        fInitialized = false;
+        fFileSource = "";
+        fAllowUnknown = false;
+        fOuterFormat = DiskImg::kOuterFormatUnknown;
+        fFileFormat = DiskImg::kFileFormatUnknown;
+        fPhysicalFormat = DiskImg::kPhysicalFormatUnknown;
+        fSectorOrder = DiskImg::kSectorOrderUnknown;
+        fFSFormat = DiskImg::kFormatUnknown;
+        fDisplayFormat = kShowAsBlocks;
 
-		fQueryDisplayFormat = true;
-		fAllowGenericFormats = true;
-		fHasSectors = fHasBlocks = fHasNibbles = false;
-	}
+        fQueryDisplayFormat = true;
+        fAllowGenericFormats = true;
+        fHasSectors = fHasBlocks = fHasNibbles = false;
+    }
 
-	// initialize values from a DiskImg
-	void InitializeValues(const DiskImg* pImg);
+    // initialize values from a DiskImg
+    void InitializeValues(const DiskImg* pImg);
 
-	bool					fInitialized;
-	CString					fFileSource;
-	bool					fAllowUnknown;	// allow "unknown" choice?
+    bool                    fInitialized;
+    CString                 fFileSource;
+    bool                    fAllowUnknown;  // allow "unknown" choice?
 
-	DiskImg::OuterFormat	fOuterFormat;
-	DiskImg::FileFormat		fFileFormat;
-	DiskImg::PhysicalFormat	fPhysicalFormat;
-	DiskImg::SectorOrder	fSectorOrder;
-	DiskImg::FSFormat		fFSFormat;
+    DiskImg::OuterFormat    fOuterFormat;
+    DiskImg::FileFormat     fFileFormat;
+    DiskImg::PhysicalFormat fPhysicalFormat;
+    DiskImg::SectorOrder    fSectorOrder;
+    DiskImg::FSFormat       fFSFormat;
 
-	enum { kShowAsBlocks=0, kShowAsSectors=1, kShowAsNibbles=2 };
-	int						fDisplayFormat;
+    enum { kShowAsBlocks=0, kShowAsSectors=1, kShowAsNibbles=2 };
+    int                     fDisplayFormat;
 
-	void SetQueryDisplayFormat(bool val) { fQueryDisplayFormat = val; }
-	void SetAllowGenericFormats(bool val) { fAllowGenericFormats = val; }
+    void SetQueryDisplayFormat(bool val) { fQueryDisplayFormat = val; }
+    void SetAllowGenericFormats(bool val) { fAllowGenericFormats = val; }
 
 protected:
-	//virtual void DoDataExchange(CDataExchange* pDX);
-	virtual BOOL OnInitDialog(void);
-	void OnOK(void);
-	afx_msg virtual void OnHelp(void);
-	afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    //virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void);
+    void OnOK(void);
+    afx_msg virtual void OnHelp(void);
+    afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
-	struct ConvTable;
-	void LoadComboBoxes(void);
-	void LoadComboBox(int boxID, const ConvTable* pTable, int dflt);
-	int ConvComboSel(int boxID, const ConvTable* pTable);
+    struct ConvTable;
+    void LoadComboBoxes(void);
+    void LoadComboBox(int boxID, const ConvTable* pTable, int dflt);
+    int ConvComboSel(int boxID, const ConvTable* pTable);
 
-	bool					fQueryDisplayFormat;
-	bool					fAllowGenericFormats;
-	bool					fHasSectors;
-	bool					fHasBlocks;
-	bool					fHasNibbles;
+    bool                    fQueryDisplayFormat;
+    bool                    fAllowGenericFormats;
+    bool                    fHasSectors;
+    bool                    fHasBlocks;
+    bool                    fHasNibbles;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__IMAGEFORMATDIALOG__*/

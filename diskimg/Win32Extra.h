@@ -12,7 +12,7 @@
 #ifndef __WIN32EXTRA__
 #define __WIN32EXTRA__
 
-#include <winioctl.h>	// base definitions
+#include <winioctl.h>   // base definitions
 
 #ifndef IOCTL_DISK_GET_DRIVE_GEOMETRY_EX
 
@@ -29,7 +29,7 @@ BOOL DeviceIoControl(
 );
 */
 
-#define IOCTL_DISK_GET_DRIVE_GEOMETRY_EX	\
+#define IOCTL_DISK_GET_DRIVE_GEOMETRY_EX    \
   CTL_CODE(IOCTL_DISK_BASE, 0x0028, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
 typedef struct _DISK_GEOMETRY_EX {
@@ -40,14 +40,14 @@ typedef struct _DISK_GEOMETRY_EX {
 
 #if 0
 typedef struct _DISK_DETECTION_INFO {
-		DWORD SizeOfDetectInfo;
-		DETECTION_TYPE DetectionType;
-		union {
-			struct {
-				DISK_INT13_INFO Int13;
-				DISK_EX_INT13_INFO ExInt13;
-			};
-		};
+        DWORD SizeOfDetectInfo;
+        DETECTION_TYPE DetectionType;
+        union {
+            struct {
+                DISK_INT13_INFO Int13;
+                DISK_EX_INT13_INFO ExInt13;
+            };
+        };
 } DISK_DETECTION_INFO, *PDISK_DETECTION_INFO;
 
 PDISK_DETECTION_INFO DiskGeometryGetDetect(PDISK_GEOMETRY_EX Geometry);

@@ -4,8 +4,8 @@
  * See the file LICENSE for distribution terms.
  */
 // stdafx.cpp : source file that includes just the standard includes
-//	util.pch will be the pre-compiled header
-//	stdafx.obj will contain the pre-compiled type information
+//  util.pch will be the pre-compiled header
+//  stdafx.obj will contain the pre-compiled type information
 
 #include "stdafx.h"
 

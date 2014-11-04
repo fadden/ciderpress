@@ -14,26 +14,26 @@
 
 class ChooseFilesDlg : public SelectFilesDialog {
 public:
-	ChooseFilesDlg(CWnd* pParentWnd = NULL) :
-		SelectFilesDialog("IDD_CHOOSE_FILES", pParentWnd)
-	{
-		SetWindowTitle(_T("Choose Files..."));
+    ChooseFilesDlg(CWnd* pParentWnd = NULL) :
+        SelectFilesDialog("IDD_CHOOSE_FILES", pParentWnd)
+    {
+        SetWindowTitle(_T("Choose Files..."));
 
-		fAcceptButtonID = IDC_SELECT_ACCEPT;
-	}
-	virtual ~ChooseFilesDlg(void) {}
+        fAcceptButtonID = IDC_SELECT_ACCEPT;
+    }
+    virtual ~ChooseFilesDlg(void) {}
 
 private:
-	//virtual bool MyDataExchange(bool saveAndValidate);
-	virtual void ShiftControls(int deltaX, int deltaY);
-	//virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam);
+    //virtual bool MyDataExchange(bool saveAndValidate);
+    virtual void ShiftControls(int deltaX, int deltaY);
+    //virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam);
 
-	//void OnIDHelp(void);
+    //void OnIDHelp(void);
 
-	//int GetButtonCheck(int id);
-	//void SetButtonCheck(int id, int checkVal);
+    //int GetButtonCheck(int id);
+    //void SetButtonCheck(int id, int checkVal);
 
-	//DECLARE_MESSAGE_MAP()
+    //DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__CHOOSEFILESDIALOG__*/

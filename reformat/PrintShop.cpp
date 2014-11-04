@@ -21,38 +21,38 @@
 void
 ReformatPrintShop::Examine(ReformatHolder* pHolder)
 {
-	ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
-	long fileType = pHolder->GetFileType();
-	long auxType = pHolder->GetAuxType();
-	long length = pHolder->GetSourceLen(ReformatHolder::kPartData);
-	bool relaxed;
+    ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
+    long fileType = pHolder->GetFileType();
+    long auxType = pHolder->GetAuxType();
+    long length = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    bool relaxed;
 
-	relaxed = pHolder->GetOption(ReformatHolder::kOptRelaxGfxTypeCheck) != 0;
+    relaxed = pHolder->GetOption(ReformatHolder::kOptRelaxGfxTypeCheck) != 0;
 
-	if (length == 576 && fileType == kTypeBIN) {
-		/* PrintShop monochrome */
-		if (auxType == 0x4800 || auxType == 0x5800 ||
-			auxType == 0x6800 || auxType == 0x7800)
-			applies = ReformatHolder::kApplicYes;
-		else
-			applies = ReformatHolder::kApplicMaybe;	// below monitor listing
-	} else if (length == 1716) {
-		/* PrintShop GS color */
-		if (fileType == 0xf8) {
-			if (auxType == 0xc323)
-				applies = ReformatHolder::kApplicYes;
-			else
-				applies = ReformatHolder::kApplicProbably;
-		} else if (fileType == kTypeBIN && relaxed)
-			applies = ReformatHolder::kApplicMaybe;
-	} else if (length == 572) {
-		/* PrintShop GS monochrome */
-		if (fileType == 0xf8 && auxType == 0xc313)
-			applies = ReformatHolder::kApplicYes;
-	}
+    if (length == 576 && fileType == kTypeBIN) {
+        /* PrintShop monochrome */
+        if (auxType == 0x4800 || auxType == 0x5800 ||
+            auxType == 0x6800 || auxType == 0x7800)
+            applies = ReformatHolder::kApplicYes;
+        else
+            applies = ReformatHolder::kApplicMaybe; // below monitor listing
+    } else if (length == 1716) {
+        /* PrintShop GS color */
+        if (fileType == 0xf8) {
+            if (auxType == 0xc323)
+                applies = ReformatHolder::kApplicYes;
+            else
+                applies = ReformatHolder::kApplicProbably;
+        } else if (fileType == kTypeBIN && relaxed)
+            applies = ReformatHolder::kApplicMaybe;
+    } else if (length == 572) {
+        /* PrintShop GS monochrome */
+        if (fileType == 0xf8 && auxType == 0xc313)
+            applies = ReformatHolder::kApplicYes;
+    }
 
-	pHolder->SetApplic(ReformatHolder::kReformatPrintShop, applies,
-		ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    pHolder->SetApplic(ReformatHolder::kReformatPrintShop, applies,
+        ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
 }
 
 /*
@@ -60,29 +60,29 @@ ReformatPrintShop::Examine(ReformatHolder* pHolder)
  */
 int
 ReformatPrintShop::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	MyDIBitmap* pDib = nil;
-	const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
+    MyDIBitmap* pDib = nil;
+    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
 
-	if (srcLen == 572 || srcLen == 576) {
-		pDib = ConvertBW(srcBuf);
-	} else if (srcLen == 1716) {
-		pDib = ConvertColor(srcBuf);
-	} else {
-		WMSG1("PS shouldn't be here (len=%ld)\n", srcLen);
-		return -1;
-	}
+    if (srcLen == 572 || srcLen == 576) {
+        pDib = ConvertBW(srcBuf);
+    } else if (srcLen == 1716) {
+        pDib = ConvertColor(srcBuf);
+    } else {
+        WMSG1("PS shouldn't be here (len=%ld)\n", srcLen);
+        return -1;
+    }
 
-	if (pDib == nil) {
-		WMSG0("DIB creation failed\n");
-		return -1;
-	}
+    if (pDib == nil) {
+        WMSG0("DIB creation failed\n");
+        return -1;
+    }
 
-	SetResultBuffer(pOutput, pDib);
-	return 0;
+    SetResultBuffer(pOutput, pDib);
+    return 0;
 }
 
 /*
@@ -97,39 +97,39 @@ ReformatPrintShop::Process(const ReformatHolder* pHolder,
 MyDIBitmap*
 ReformatPrintShop::ConvertBW(const unsigned char* srcBuf)
 {
-	MyDIBitmap* pDib = new MyDIBitmap;
-	unsigned char* outBuf;
-	unsigned char* ptr;
-	int pitch;
-	int x, y;
+    MyDIBitmap* pDib = new MyDIBitmap;
+    unsigned char* outBuf;
+    unsigned char* ptr;
+    int pitch;
+    int x, y;
 
-	if (pDib == nil)
-		return nil;
+    if (pDib == nil)
+        return nil;
 
-	RGBQUAD colorConv[2];
-	colorConv[0].rgbRed = colorConv[0].rgbGreen = colorConv[0].rgbBlue = 255;
-	colorConv[1].rgbRed = colorConv[1].rgbGreen = colorConv[1].rgbBlue = 0;
-	colorConv[0].rgbReserved = colorConv[1].rgbReserved = 0;
+    RGBQUAD colorConv[2];
+    colorConv[0].rgbRed = colorConv[0].rgbGreen = colorConv[0].rgbBlue = 255;
+    colorConv[1].rgbRed = colorConv[1].rgbGreen = colorConv[1].rgbBlue = 0;
+    colorConv[0].rgbReserved = colorConv[1].rgbReserved = 0;
 
-	outBuf = (unsigned char*) pDib->Create(kWidth, kHeight, 1, 2);
-	if (outBuf == nil) {
-		delete pDib;
-		pDib = nil;
-		goto bail;
-	}
-	pDib->SetColorTable(colorConv);
+    outBuf = (unsigned char*) pDib->Create(kWidth, kHeight, 1, 2);
+    if (outBuf == nil) {
+        delete pDib;
+        pDib = nil;
+        goto bail;
+    }
+    pDib->SetColorTable(colorConv);
 
-	pitch = pDib->GetPitch();
+    pitch = pDib->GetPitch();
 
-	/* build it in standard upside-down Windows format */
-	for (y = kHeight-1; y >= 0; y--) {
-		ptr = outBuf + y * pitch;
-		for (x = 0; x < kWidth/8; x++)
-			*ptr++ = *srcBuf++;
-	}
+    /* build it in standard upside-down Windows format */
+    for (y = kHeight-1; y >= 0; y--) {
+        ptr = outBuf + y * pitch;
+        for (x = 0; x < kWidth/8; x++)
+            *ptr++ = *srcBuf++;
+    }
 
 bail:
-	return pDib;
+    return pDib;
 }
 
 /*
@@ -148,68 +148,68 @@ bail:
 MyDIBitmap*
 ReformatPrintShop::ConvertColor(const unsigned char* srcBuf)
 {
-	MyDIBitmap* pDib = new MyDIBitmap;
-	unsigned char* outBuf;
-	unsigned char* ptr;
-	unsigned char outVal;
-	unsigned short yellow, magenta, cyan;
-	int pitch;
-	int x, y, bit;
-	static const RGBQUAD kColorConv[8] = {
-		/* blue, green, red, reserved  YMC */
-		{ 0xff, 0xff, 0xff },		// 000 white
-		{ 0xff, 0x00, 0x00 },		// 001 cyan (blue)
-		{ 0x00, 0x00, 0xff },		// 010 magenta (red)
-		{ 0xcc, 0x00, 0xcc },		// 011 purple
-		{ 0x00, 0xff, 0xff },		// 100 yellow
-		{ 0x00, 0xff, 0x00 },		// 101 green
-		{ 0x00, 0x66, 0xff },		// 110 orange
-		{ 0x00, 0x00, 0x00 },		// 111 black
-	};
+    MyDIBitmap* pDib = new MyDIBitmap;
+    unsigned char* outBuf;
+    unsigned char* ptr;
+    unsigned char outVal;
+    unsigned short yellow, magenta, cyan;
+    int pitch;
+    int x, y, bit;
+    static const RGBQUAD kColorConv[8] = {
+        /* blue, green, red, reserved  YMC */
+        { 0xff, 0xff, 0xff },       // 000 white
+        { 0xff, 0x00, 0x00 },       // 001 cyan (blue)
+        { 0x00, 0x00, 0xff },       // 010 magenta (red)
+        { 0xcc, 0x00, 0xcc },       // 011 purple
+        { 0x00, 0xff, 0xff },       // 100 yellow
+        { 0x00, 0xff, 0x00 },       // 101 green
+        { 0x00, 0x66, 0xff },       // 110 orange
+        { 0x00, 0x00, 0x00 },       // 111 black
+    };
 
-	if (pDib == nil)
-		return nil;
+    if (pDib == nil)
+        return nil;
 
-	outBuf = (unsigned char*) pDib->Create(kWidth, kHeight, 4, 8);
-	if (outBuf == nil) {
-		delete pDib;
-		pDib = nil;
-		goto bail;
-	}
-	pDib->SetColorTable(kColorConv);
+    outBuf = (unsigned char*) pDib->Create(kWidth, kHeight, 4, 8);
+    if (outBuf == nil) {
+        delete pDib;
+        pDib = nil;
+        goto bail;
+    }
+    pDib->SetColorTable(kColorConv);
 
-	pitch = pDib->GetPitch();
+    pitch = pDib->GetPitch();
 
-	/*
-	 * Build it in standard upside-down Windows format.
-	 *
-	 * We pre-shift the yellow/magenta/cyan values into offsetting positions
-	 * to save ourselves a shift each time through the loop.
-	 */
-	for (y = kHeight-1; y >= 0; y--) {
-		ptr = outBuf + y * pitch;
-		for (x = 0; x < kWidth/8; x++) {
-			yellow = *srcBuf << 2;
-			magenta = *(srcBuf + (kWidth/8)*kHeight) << 1;
-			cyan = *(srcBuf + (kWidth/8)*kHeight *2);
+    /*
+     * Build it in standard upside-down Windows format.
+     *
+     * We pre-shift the yellow/magenta/cyan values into offsetting positions
+     * to save ourselves a shift each time through the loop.
+     */
+    for (y = kHeight-1; y >= 0; y--) {
+        ptr = outBuf + y * pitch;
+        for (x = 0; x < kWidth/8; x++) {
+            yellow = *srcBuf << 2;
+            magenta = *(srcBuf + (kWidth/8)*kHeight) << 1;
+            cyan = *(srcBuf + (kWidth/8)*kHeight *2);
 
-			/* each 3-bit combo turns into a 4-bit index, 2 per output byte */
-			for (bit = 0; bit < 4; bit++) {
-				outVal = ((yellow & 0x200) | (magenta & 0x100) | (cyan & 0x80)) >> 3;
-				yellow <<= 1;
-				magenta <<= 1;
-				cyan <<= 1;
-				outVal |= ((yellow & 0x200) | (magenta & 0x100) | (cyan & 0x80)) >> 7;
-				yellow <<= 1;
-				magenta <<= 1;
-				cyan <<= 1;
-				*ptr++ = outVal;
-			}
+            /* each 3-bit combo turns into a 4-bit index, 2 per output byte */
+            for (bit = 0; bit < 4; bit++) {
+                outVal = ((yellow & 0x200) | (magenta & 0x100) | (cyan & 0x80)) >> 3;
+                yellow <<= 1;
+                magenta <<= 1;
+                cyan <<= 1;
+                outVal |= ((yellow & 0x200) | (magenta & 0x100) | (cyan & 0x80)) >> 7;
+                yellow <<= 1;
+                magenta <<= 1;
+                cyan <<= 1;
+                *ptr++ = outVal;
+            }
 
-			srcBuf++;
-		}
-	}
+            srcBuf++;
+        }
+    }
 
 bail:
-	return pDib;
+    return pDib;
 }

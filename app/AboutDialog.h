@@ -18,20 +18,20 @@
  */
 class AboutDialog : public CDialog {
 public:
-	AboutDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_ABOUTDLG, pParentWnd)
-		{}
+    AboutDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_ABOUTDLG, pParentWnd)
+        {}
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
+    // overrides
+    virtual BOOL OnInitDialog(void);
 
-	afx_msg void OnAboutCredits(void);
-	afx_msg void OnEnterReg(void);
+    afx_msg void OnAboutCredits(void);
+    afx_msg void OnEnterReg(void);
 
-	//void ShowRegistrationInfo(void);
+    //void ShowRegistrationInfo(void);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__ABOUT_DIALOG__*/

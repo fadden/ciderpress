@@ -14,7 +14,7 @@
 #include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(EOLScanDialog, CDialog)
-	ON_COMMAND(IDHELP, OnHelp)
+    ON_COMMAND(IDHELP, OnHelp)
 END_MESSAGE_MAP()
 
 /*
@@ -23,30 +23,30 @@ END_MESSAGE_MAP()
 BOOL
 EOLScanDialog::OnInitDialog(void)
 {
-	CWnd* pWnd;
-	CString fmt;
+    CWnd* pWnd;
+    CString fmt;
 
-	fmt.Format("%ld", fCountChars);
-	pWnd = GetDlgItem(IDC_EOLSCAN_CHARS);
-	pWnd->SetWindowText(fmt);
+    fmt.Format("%ld", fCountChars);
+    pWnd = GetDlgItem(IDC_EOLSCAN_CHARS);
+    pWnd->SetWindowText(fmt);
 
-	fmt.Format("%ld", fCountCR);
-	pWnd = GetDlgItem(IDC_EOLSCAN_CR);
-	pWnd->SetWindowText(fmt);
+    fmt.Format("%ld", fCountCR);
+    pWnd = GetDlgItem(IDC_EOLSCAN_CR);
+    pWnd->SetWindowText(fmt);
 
-	fmt.Format("%ld", fCountLF);
-	pWnd = GetDlgItem(IDC_EOLSCAN_LF);
-	pWnd->SetWindowText(fmt);
+    fmt.Format("%ld", fCountLF);
+    pWnd = GetDlgItem(IDC_EOLSCAN_LF);
+    pWnd->SetWindowText(fmt);
 
-	fmt.Format("%ld", fCountCRLF);
-	pWnd = GetDlgItem(IDC_EOLSCAN_CRLF);
-	pWnd->SetWindowText(fmt);
+    fmt.Format("%ld", fCountCRLF);
+    pWnd = GetDlgItem(IDC_EOLSCAN_CRLF);
+    pWnd->SetWindowText(fmt);
 
-	fmt.Format("%ld", fCountHighASCII);
-	pWnd = GetDlgItem(IDC_EOLSCAN_HIGHASCII);
-	pWnd->SetWindowText(fmt);
+    fmt.Format("%ld", fCountHighASCII);
+    pWnd = GetDlgItem(IDC_EOLSCAN_HIGHASCII);
+    pWnd->SetWindowText(fmt);
 
-	return CDialog::OnInitDialog();
+    return CDialog::OnInitDialog();
 }
 
 /*
@@ -55,5 +55,5 @@ EOLScanDialog::OnInitDialog(void)
 void
 EOLScanDialog::OnHelp(void)
 {
-	WinHelp(HELP_TOPIC_EOL_SCAN, HELP_CONTEXT);
+    WinHelp(HELP_TOPIC_EOL_SCAN, HELP_CONTEXT);
 }

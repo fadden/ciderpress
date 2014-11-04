@@ -10,44 +10,44 @@
 #include "DiskEditOpenDialog.h"
 
 BEGIN_MESSAGE_MAP(DiskEditOpenDialog, CDialog)
-	ON_BN_CLICKED(IDC_DEOW_FILE, OnButtonFile)
-	ON_BN_CLICKED(IDC_DEOW_VOLUME, OnButtonVolume)
-	ON_BN_CLICKED(IDC_DEOW_CURRENT, OnButtonCurrent)
+    ON_BN_CLICKED(IDC_DEOW_FILE, OnButtonFile)
+    ON_BN_CLICKED(IDC_DEOW_VOLUME, OnButtonVolume)
+    ON_BN_CLICKED(IDC_DEOW_CURRENT, OnButtonCurrent)
 END_MESSAGE_MAP()
 
 
 BOOL
 DiskEditOpenDialog::OnInitDialog(void)
 {
-	if (!fArchiveOpen) {
-		CButton* pButton = (CButton*) GetDlgItem(IDC_DEOW_CURRENT);
-		ASSERT(pButton != nil);
-		pButton->EnableWindow(FALSE);
-	}
+    if (!fArchiveOpen) {
+        CButton* pButton = (CButton*) GetDlgItem(IDC_DEOW_CURRENT);
+        ASSERT(pButton != nil);
+        pButton->EnableWindow(FALSE);
+    }
 
-	return CDialog::OnInitDialog();
+    return CDialog::OnInitDialog();
 }
 
 /* user clicked "open file" button */
 void
 DiskEditOpenDialog::OnButtonFile(void)
 {
-	fOpenWhat = kOpenFile;
-	OnOK();
+    fOpenWhat = kOpenFile;
+    OnOK();
 }
 
 /* user clicked "open volume" button */
 void
 DiskEditOpenDialog::OnButtonVolume(void)
 {
-	fOpenWhat = kOpenVolume;
-	OnOK();
+    fOpenWhat = kOpenVolume;
+    OnOK();
 }
 
 /* user clicked "open current" button */
 void
 DiskEditOpenDialog::OnButtonCurrent(void)
 {
-	fOpenWhat = kOpenCurrent;
-	OnOK();
+    fOpenWhat = kOpenCurrent;
+    OnOK();
 }

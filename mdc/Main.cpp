@@ -20,10 +20,10 @@ const char* kWebSiteURL = "http://www.faddensoft.com/";
 
 
 BEGIN_MESSAGE_MAP(MainWindow, CFrameWnd)
-	ON_COMMAND(IDM_FILE_SCAN, OnFileScan)
-	ON_COMMAND(IDM_FILE_EXIT, OnFileExit)
-	ON_COMMAND(IDM_HELP_WEBSITE, OnHelpWebSite)
-	ON_COMMAND(IDM_HELP_ABOUT, OnHelpAbout)
+    ON_COMMAND(IDM_FILE_SCAN, OnFileScan)
+    ON_COMMAND(IDM_FILE_EXIT, OnFileExit)
+    ON_COMMAND(IDM_HELP_WEBSITE, OnHelpWebSite)
+    ON_COMMAND(IDM_HELP_ABOUT, OnHelpAbout)
 END_MESSAGE_MAP()
 
 
@@ -33,32 +33,32 @@ END_MESSAGE_MAP()
  */
 MainWindow::MainWindow()
 {
-	static const char* kAppName = "MDC";
+    static const char* kAppName = "MDC";
 
-	CString wndClass = AfxRegisterWndClass(
-		CS_DBLCLKS /*| CS_HREDRAW | CS_VREDRAW*/,
-		gMyApp.LoadStandardCursor(IDC_ARROW),
-		(HBRUSH) (COLOR_WINDOW + 1),
-		gMyApp.LoadIcon(IDI_MDC) );
+    CString wndClass = AfxRegisterWndClass(
+        CS_DBLCLKS /*| CS_HREDRAW | CS_VREDRAW*/,
+        gMyApp.LoadStandardCursor(IDC_ARROW),
+        (HBRUSH) (COLOR_WINDOW + 1),
+        gMyApp.LoadIcon(IDI_MDC) );
 
-	Create(wndClass, kAppName, WS_OVERLAPPEDWINDOW /*| WS_CLIPCHILDREN*/,
-		rectDefault, NULL, MAKEINTRESOURCE(IDC_MDC));
+    Create(wndClass, kAppName, WS_OVERLAPPEDWINDOW /*| WS_CLIPCHILDREN*/,
+        rectDefault, NULL, MAKEINTRESOURCE(IDC_MDC));
 
-	LoadAccelTable(MAKEINTRESOURCE(IDC_MDC));
+    LoadAccelTable(MAKEINTRESOURCE(IDC_MDC));
 
-	// initialize some OLE garbage
-	//AfxOleInit();
+    // initialize some OLE garbage
+    //AfxOleInit();
 
-	// required by MFC if Rich Edit controls are used
-	//AfxInitRichEdit();
+    // required by MFC if Rich Edit controls are used
+    //AfxInitRichEdit();
 
-	DiskImgLib::Global::SetDebugMsgHandler(DebugMsgHandler);
-	DiskImgLib::Global::AppInit();
+    DiskImgLib::Global::SetDebugMsgHandler(DebugMsgHandler);
+    DiskImgLib::Global::AppInit();
 
-	NuSetGlobalErrorMessageHandler(NufxErrorMsgHandler);
+    NuSetGlobalErrorMessageHandler(NufxErrorMsgHandler);
 
-	//fTitleAnimation = 0;
-	fCancelFlag = false;
+    //fTitleAnimation = 0;
+    fCancelFlag = false;
 }
 
 /*
@@ -68,11 +68,11 @@ MainWindow::MainWindow()
  */
 MainWindow::~MainWindow()
 {
-//	int cc;
-//	cc = ::WinHelp(m_hWnd, ::AfxGetApp()->m_pszHelpFilePath, HELP_QUIT, 0);
-//	WMSG1("Turning off WinHelp returned %d\n", cc);
+//  int cc;
+//  cc = ::WinHelp(m_hWnd, ::AfxGetApp()->m_pszHelpFilePath, HELP_QUIT, 0);
+//  WMSG1("Turning off WinHelp returned %d\n", cc);
 
-	DiskImgLib::Global::AppCleanup();
+    DiskImgLib::Global::AppCleanup();
 }
 
 /*
@@ -81,7 +81,7 @@ MainWindow::~MainWindow()
 void
 MainWindow::OnFileExit(void)
 {
-	SendMessage(WM_CLOSE, 0, 0);
+    SendMessage(WM_CLOSE, 0, 0);
 }
 
 /*
@@ -90,15 +90,15 @@ MainWindow::OnFileExit(void)
 void
 MainWindow::OnHelpWebSite(void)
 {
-	int err;
+    int err;
 
-	err = (int) ::ShellExecute(m_hWnd, _T("open"), kWebSiteURL, NULL, NULL,
-					SW_SHOWNORMAL);
-	if (err <= 32) {
-		CString msg;
-		msg.Format("Unable to launch web browser (err=%d).", err);
-		ShowFailureMsg(this, msg, IDS_FAILED);
-	}
+    err = (int) ::ShellExecute(m_hWnd, _T("open"), kWebSiteURL, NULL, NULL,
+                    SW_SHOWNORMAL);
+    if (err <= 32) {
+        CString msg;
+        msg.Format("Unable to launch web browser (err=%d).", err);
+        ShowFailureMsg(this, msg, IDS_FAILED);
+    }
 }
 
 /*
@@ -107,12 +107,12 @@ MainWindow::OnHelpWebSite(void)
 void
 MainWindow::OnHelpAbout(void)
 {
-	int result;
+    int result;
 
-	AboutDlg dlg(this);
+    AboutDlg dlg(this);
 
-	result = dlg.DoModal();
-	WMSG1("HelpAbout returned %d\n", result);
+    result = dlg.DoModal();
+    WMSG1("HelpAbout returned %d\n", result);
 }
 
 
@@ -122,13 +122,13 @@ MainWindow::OnHelpAbout(void)
 void
 MainWindow::OnFileScan(void)
 {
-	if (0) {
-		CString msg;
-		msg.LoadString(IDS_MUST_REGISTER);
-		ShowFailureMsg(this, msg, IDS_APP_TITLE);
-	} else {
-		ScanFiles();
-	}
+    if (0) {
+        CString msg;
+        msg.LoadString(IDS_MUST_REGISTER);
+        ShowFailureMsg(this, msg, IDS_APP_TITLE);
+    } else {
+        ScanFiles();
+    }
 }
 
 /*
@@ -145,25 +145,25 @@ MainWindow::OnFileScan(void)
 BOOL
 MainWindow::PeekAndPump(void)
 {
-	MSG msg;
+    MSG msg;
 
-	while (::PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
-		if (!AfxGetApp()->PumpMessage()) {
-			::PostQuitMessage(0);
-			return FALSE;
-		}
-	}
+    while (::PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
+        if (!AfxGetApp()->PumpMessage()) {
+            ::PostQuitMessage(0);
+            return FALSE;
+        }
+    }
 
-	LONG lIdle = 0;
-	while (AfxGetApp()->OnIdle(lIdle++))
-		;
-	return TRUE;
+    LONG lIdle = 0;
+    while (AfxGetApp()->OnIdle(lIdle++))
+        ;
+    return TRUE;
 }
 
 
 /*
  * ==========================================================================
- *		Disk image processing
+ *      Disk image processing
  * ==========================================================================
  */
 
@@ -173,16 +173,16 @@ MainWindow::PeekAndPump(void)
 /*static*/ void
 MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
 {
-	ASSERT(file != nil);
-	ASSERT(msg != nil);
+    ASSERT(file != nil);
+    ASSERT(msg != nil);
 
 #if defined(_DEBUG_LOG)
-	//fprintf(gLog, "%s(%d) : %s", file, line, msg);
-	fprintf(gLog, "%05u %s", gPid, msg);
+    //fprintf(gLog, "%s(%d) : %s", file, line, msg);
+    fprintf(gLog, "%05u %s", gPid, msg);
 #elif defined(_DEBUG)
-	_CrtDbgReport(_CRT_WARN, file, line, NULL, "%s", msg);
+    _CrtDbgReport(_CRT_WARN, file, line, NULL, "%s", msg);
 #else
-	/* do nothing */
+    /* do nothing */
 #endif
 }
 /*
@@ -191,34 +191,34 @@ MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
 /*static*/ NuResult
 MainWindow::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
 {
-	const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
+    const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
 #if defined(_DEBUG_LOG)
     if (pErrorMessage->isDebug) {
         fprintf(gLog, "%05u <nufxlib> [D] %s\n", gPid, pErrorMessage->message);
     } else {
-		fprintf(gLog, "%05u <nufxlib> %s\n", gPid, pErrorMessage->message);
+        fprintf(gLog, "%05u <nufxlib> %s\n", gPid, pErrorMessage->message);
     }
 #elif defined(_DEBUG)
     if (pErrorMessage->isDebug) {
-		_CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
-			NULL, "<nufxlib> [D] %s\n", pErrorMessage->message);
+        _CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
+            NULL, "<nufxlib> [D] %s\n", pErrorMessage->message);
     } else {
-		_CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
-			NULL, "<nufxlib> %s\n", pErrorMessage->message);
+        _CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
+            NULL, "<nufxlib> %s\n", pErrorMessage->message);
     }
 #else
-	/* do nothing */
+    /* do nothing */
 #endif
 
-	return kNuOK;
+    return kNuOK;
 }
 
 const int kLocalFssep = '\\';
 
 typedef struct ScanOpts {
-	FILE*			outfp;
-	ProgressDlg*	pProgress;
+    FILE*           outfp;
+    ProgressDlg*    pProgress;
 } ScanOpts;
 
 /*
@@ -227,161 +227,161 @@ typedef struct ScanOpts {
 void
 MainWindow::ScanFiles(void)
 {
-	ChooseFilesDlg chooseFiles;
-	ScanOpts scanOpts;
-	char curDir[MAX_PATH] = "";
-	CString errMsg;
-	CString outPath;
-	bool doResetDir = false;
+    ChooseFilesDlg chooseFiles;
+    ScanOpts scanOpts;
+    char curDir[MAX_PATH] = "";
+    CString errMsg;
+    CString outPath;
+    bool doResetDir = false;
 
-	memset(&scanOpts, 0, sizeof(scanOpts));
+    memset(&scanOpts, 0, sizeof(scanOpts));
 
-	/* choose input files */
-	chooseFiles.DoModal();
-	if (chooseFiles.GetExitStatus() != IDOK)
-		return;
+    /* choose input files */
+    chooseFiles.DoModal();
+    if (chooseFiles.GetExitStatus() != IDOK)
+        return;
 
-	const char* buf = chooseFiles.GetFileNames();
-	WMSG2("Selected path = '%s' (offset=%d)\n", buf,
-		chooseFiles.GetFileNameOffset());
+    const char* buf = chooseFiles.GetFileNames();
+    WMSG2("Selected path = '%s' (offset=%d)\n", buf,
+        chooseFiles.GetFileNameOffset());
 
-	/* choose output file */
-	CFileDialog dlg(FALSE, _T("txt"), NULL,
-		OFN_OVERWRITEPROMPT|OFN_NOREADONLYRETURN,
-		"Text Files (*.txt)|*.txt|All Files (*.*)|*.*||", this);
+    /* choose output file */
+    CFileDialog dlg(FALSE, _T("txt"), NULL,
+        OFN_OVERWRITEPROMPT|OFN_NOREADONLYRETURN,
+        "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||", this);
 
-	dlg.m_ofn.lpstrTitle = "Save Output As...";
-	strcpy(dlg.m_ofn.lpstrFile, "mdc-out.txt");
+    dlg.m_ofn.lpstrTitle = "Save Output As...";
+    strcpy(dlg.m_ofn.lpstrFile, "mdc-out.txt");
 
-	if (dlg.DoModal() != IDOK) {
-		goto bail;
-	}
+    if (dlg.DoModal() != IDOK) {
+        goto bail;
+    }
 
-	outPath = dlg.GetPathName();
-	WMSG1("NEW FILE '%s'\n", (LPCTSTR) outPath);
+    outPath = dlg.GetPathName();
+    WMSG1("NEW FILE '%s'\n", (LPCTSTR) outPath);
 
-	scanOpts.outfp = fopen(outPath, "w");
-	if (scanOpts.outfp == nil) {
-		ShowFailureMsg(this, "Unable to open output file", IDS_FAILED);
-		goto bail;
-	}
+    scanOpts.outfp = fopen(outPath, "w");
+    if (scanOpts.outfp == nil) {
+        ShowFailureMsg(this, "Unable to open output file", IDS_FAILED);
+        goto bail;
+    }
 
-	long major, minor, bug;
-	DiskImgLib::Global::GetVersion(&major, &minor, &bug);
-	fprintf(scanOpts.outfp, "MDC for Windows v%d.%d.%d (DiskImg library v%ld.%ld.%ld)\n",
-		kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
-		major, minor, bug);
-	fprintf(scanOpts.outfp,
-		"Copyright (C) 2006 by faddenSoft, LLC.  All rights reserved.\n");
-	fprintf(scanOpts.outfp,
-		"MDC is part of CiderPress, available from http://www.faddensoft.com/.\n");
-	NuGetVersion(&major, &minor, &bug, NULL, NULL);
-	fprintf(scanOpts.outfp,
-		"Linked against NufxLib v%ld.%ld.%ld and zlib v%s\n",
-		major, minor, bug, zlibVersion());
-	fprintf(scanOpts.outfp, "\n");
+    long major, minor, bug;
+    DiskImgLib::Global::GetVersion(&major, &minor, &bug);
+    fprintf(scanOpts.outfp, "MDC for Windows v%d.%d.%d (DiskImg library v%ld.%ld.%ld)\n",
+        kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
+        major, minor, bug);
+    fprintf(scanOpts.outfp,
+        "Copyright (C) 2006 by faddenSoft, LLC.  All rights reserved.\n");
+    fprintf(scanOpts.outfp,
+        "MDC is part of CiderPress, available from http://www.faddensoft.com/.\n");
+    NuGetVersion(&major, &minor, &bug, NULL, NULL);
+    fprintf(scanOpts.outfp,
+        "Linked against NufxLib v%ld.%ld.%ld and zlib v%s\n",
+        major, minor, bug, zlibVersion());
+    fprintf(scanOpts.outfp, "\n");
 
-	/* change to base directory */
-	if (GetCurrentDirectory(sizeof(curDir), curDir) == 0) {
-		errMsg = "Unable to get current directory.";
-		ShowFailureMsg(this, errMsg, IDS_FAILED);
-		goto bail;
-	}
-	if (SetCurrentDirectory(buf) == false) {
-		errMsg.Format("Unable to set current directory to '%s'.", buf);
-		ShowFailureMsg(this, errMsg, IDS_FAILED);
-		goto bail;
-	}
-	doResetDir = true;
+    /* change to base directory */
+    if (GetCurrentDirectory(sizeof(curDir), curDir) == 0) {
+        errMsg = "Unable to get current directory.";
+        ShowFailureMsg(this, errMsg, IDS_FAILED);
+        goto bail;
+    }
+    if (SetCurrentDirectory(buf) == false) {
+        errMsg.Format("Unable to set current directory to '%s'.", buf);
+        ShowFailureMsg(this, errMsg, IDS_FAILED);
+        goto bail;
+    }
+    doResetDir = true;
 
-	time_t now;
-	now = time(nil);
-	fprintf(scanOpts.outfp,
-		"Run started at %.24s in '%s'\n\n", ctime(&now), buf);
+    time_t now;
+    now = time(nil);
+    fprintf(scanOpts.outfp,
+        "Run started at %.24s in '%s'\n\n", ctime(&now), buf);
 
-	/* obstruct input to the main window */
-	EnableWindow(FALSE);
+    /* obstruct input to the main window */
+    EnableWindow(FALSE);
 
 
-	/* create a modeless dialog with a cancel button */
-	scanOpts.pProgress = new ProgressDlg;
-	if (scanOpts.pProgress == nil)
-		goto bail;
-	scanOpts.pProgress->fpCancelFlag = &fCancelFlag;
-	fCancelFlag = false;
-	if (scanOpts.pProgress->Create(this) == FALSE) {
-		WMSG0("WARNING: ProgressDlg init failed\n");
-		ASSERT(false);
-	} else {
-		scanOpts.pProgress->CenterWindow(this);
-	}
+    /* create a modeless dialog with a cancel button */
+    scanOpts.pProgress = new ProgressDlg;
+    if (scanOpts.pProgress == nil)
+        goto bail;
+    scanOpts.pProgress->fpCancelFlag = &fCancelFlag;
+    fCancelFlag = false;
+    if (scanOpts.pProgress->Create(this) == FALSE) {
+        WMSG0("WARNING: ProgressDlg init failed\n");
+        ASSERT(false);
+    } else {
+        scanOpts.pProgress->CenterWindow(this);
+    }
 
-	time_t start, end;
-	start = time(nil);
+    time_t start, end;
+    start = time(nil);
 
-	/* start cranking */
-	buf += chooseFiles.GetFileNameOffset();
-	while (*buf != '\0') {
-		if (Process(buf, &scanOpts, &errMsg) != 0) {
-			WMSG2("Skipping '%s': %s.\n", buf, (LPCTSTR) errMsg);
-		}
+    /* start cranking */
+    buf += chooseFiles.GetFileNameOffset();
+    while (*buf != '\0') {
+        if (Process(buf, &scanOpts, &errMsg) != 0) {
+            WMSG2("Skipping '%s': %s.\n", buf, (LPCTSTR) errMsg);
+        }
 
-		if (fCancelFlag) {
-			WMSG0("CANCELLED by user\n");
-			MessageBox("Cancelled!", "MDC", MB_OK);
-			goto bail;
-		}
+        if (fCancelFlag) {
+            WMSG0("CANCELLED by user\n");
+            MessageBox("Cancelled!", "MDC", MB_OK);
+            goto bail;
+        }
 
-		buf += strlen(buf)+1;
-	}
-	end = time(nil);
-	fprintf(scanOpts.outfp, "\nScan completed in %ld seconds.\n",
-		end - start);
+        buf += strlen(buf)+1;
+    }
+    end = time(nil);
+    fprintf(scanOpts.outfp, "\nScan completed in %ld seconds.\n",
+        end - start);
 
-	{
-		SetWindowText(_T("MDC Done!"));
+    {
+        SetWindowText(_T("MDC Done!"));
 
-		CString doneMsg;
-		CString appName;
+        CString doneMsg;
+        CString appName;
 
-		appName.LoadString(IDS_APP_TITLE);
+        appName.LoadString(IDS_APP_TITLE);
 #ifdef _DEBUG_LOG
-		doneMsg.Format("Processing completed.\r\n\r\n"
-					   "Output is in '%s', log messages in '%s'.",
-			outPath, kDebugLog);
+        doneMsg.Format("Processing completed.\r\n\r\n"
+                       "Output is in '%s', log messages in '%s'.",
+            outPath, kDebugLog);
 #else
-		doneMsg.Format("Processing completed.");
+        doneMsg.Format("Processing completed.");
 #endif
-		scanOpts.pProgress->MessageBox(doneMsg, appName, MB_OK|MB_ICONINFORMATION);
-	}
+        scanOpts.pProgress->MessageBox(doneMsg, appName, MB_OK|MB_ICONINFORMATION);
+    }
 
 bail:
-	if (scanOpts.outfp != nil)
-		fclose(scanOpts.outfp);
+    if (scanOpts.outfp != nil)
+        fclose(scanOpts.outfp);
 
-	if (doResetDir && SetCurrentDirectory(curDir) == false) {
-		errMsg.Format("Unable to reset current directory to '%s'.\n", curDir);
-		ShowFailureMsg(this, errMsg, IDS_FAILED);
-		// bummer
-	}
+    if (doResetDir && SetCurrentDirectory(curDir) == false) {
+        errMsg.Format("Unable to reset current directory to '%s'.\n", curDir);
+        ShowFailureMsg(this, errMsg, IDS_FAILED);
+        // bummer
+    }
 
-	// restore the main window
-	EnableWindow(TRUE);
+    // restore the main window
+    EnableWindow(TRUE);
 
-	if (scanOpts.pProgress != nil)
-		scanOpts.pProgress->DestroyWindow();
+    if (scanOpts.pProgress != nil)
+        scanOpts.pProgress->DestroyWindow();
 
-	SetWindowText(_T("MDC"));
+    SetWindowText(_T("MDC"));
 }
 
 /*
  * Directory structure and functions, based on zDIR in Info-Zip sources.
  */
 typedef struct Win32dirent {
-	char	d_attr;
-	char	d_name[MAX_PATH];
-	int 	d_first;
-	HANDLE	d_hFindFile;
+    char    d_attr;
+    char    d_name[MAX_PATH];
+    int     d_first;
+    HANDLE  d_hFindFile;
 } Win32dirent;
 
 static const char* kWildMatchAll = "*.*";
@@ -394,45 +394,45 @@ static const char* kWildMatchAll = "*.*";
 Win32dirent*
 MainWindow::OpenDir(const char* name)
 {
-	Win32dirent* dir = nil;
-	char* tmpStr = nil;
-	char* cp;
-	WIN32_FIND_DATA fnd;
+    Win32dirent* dir = nil;
+    char* tmpStr = nil;
+    char* cp;
+    WIN32_FIND_DATA fnd;
 
-	dir = (Win32dirent*) malloc(sizeof(*dir));
-	tmpStr = (char*) malloc(strlen(name) + (2 + sizeof(kWildMatchAll)));
-	if (dir == nil || tmpStr == nil)
-		goto failed;
+    dir = (Win32dirent*) malloc(sizeof(*dir));
+    tmpStr = (char*) malloc(strlen(name) + (2 + sizeof(kWildMatchAll)));
+    if (dir == nil || tmpStr == nil)
+        goto failed;
 
-	strcpy(tmpStr, name);
-	cp = tmpStr + strlen(tmpStr);
+    strcpy(tmpStr, name);
+    cp = tmpStr + strlen(tmpStr);
 
-	/* don't end in a colon (e.g. "C:") */
-	if ((cp - tmpStr) > 0 && strrchr(tmpStr, ':') == (cp - 1))
-		*cp++ = '.';
-	/* must end in a slash */
-	if ((cp - tmpStr) > 0 &&
-			strrchr(tmpStr, kLocalFssep) != (cp - 1))
-		*cp++ = kLocalFssep;
+    /* don't end in a colon (e.g. "C:") */
+    if ((cp - tmpStr) > 0 && strrchr(tmpStr, ':') == (cp - 1))
+        *cp++ = '.';
+    /* must end in a slash */
+    if ((cp - tmpStr) > 0 &&
+            strrchr(tmpStr, kLocalFssep) != (cp - 1))
+        *cp++ = kLocalFssep;
 
-	strcpy(cp, kWildMatchAll);
+    strcpy(cp, kWildMatchAll);
 
-	dir->d_hFindFile = FindFirstFile(tmpStr, &fnd);
-	if (dir->d_hFindFile == INVALID_HANDLE_VALUE)
-		goto failed;
+    dir->d_hFindFile = FindFirstFile(tmpStr, &fnd);
+    if (dir->d_hFindFile == INVALID_HANDLE_VALUE)
+        goto failed;
 
-	strcpy(dir->d_name, fnd.cFileName);
-	dir->d_attr = (unsigned char) fnd.dwFileAttributes;
-	dir->d_first = 1;
+    strcpy(dir->d_name, fnd.cFileName);
+    dir->d_attr = (unsigned char) fnd.dwFileAttributes;
+    dir->d_first = 1;
 
 bail:
-	free(tmpStr);
-	return dir;
+    free(tmpStr);
+    return dir;
 
 failed:
-	free(dir);
-	dir = nil;
-	goto bail;
+    free(dir);
+    dir = nil;
+    goto bail;
 }
 
 /*
@@ -443,18 +443,18 @@ failed:
 Win32dirent*
 MainWindow::ReadDir(Win32dirent* dir)
 {
-	if (dir->d_first)
-		dir->d_first = 0;
-	else {
-		WIN32_FIND_DATA fnd;
+    if (dir->d_first)
+        dir->d_first = 0;
+    else {
+        WIN32_FIND_DATA fnd;
 
-		if (!FindNextFile(dir->d_hFindFile, &fnd))
-			return nil;
-		strcpy(dir->d_name, fnd.cFileName);
-		dir->d_attr = (unsigned char) fnd.dwFileAttributes;
-	}
+        if (!FindNextFile(dir->d_hFindFile, &fnd))
+            return nil;
+        strcpy(dir->d_name, fnd.cFileName);
+        dir->d_attr = (unsigned char) fnd.dwFileAttributes;
+    }
 
-	return dir;
+    return dir;
 }
 
 /*
@@ -463,15 +463,15 @@ MainWindow::ReadDir(Win32dirent* dir)
 void
 MainWindow::CloseDir(Win32dirent* dir)
 {
-	if (dir == nil)
-		return;
+    if (dir == nil)
+        return;
 
-	FindClose(dir->d_hFindFile);
-	free(dir);
+    FindClose(dir->d_hFindFile);
+    free(dir);
 }
 
 /* might as well blend in with the UNIX version */
-#define DIR_NAME_LEN(dirent)	((int)strlen((dirent)->d_name))
+#define DIR_NAME_LEN(dirent)    ((int)strlen((dirent)->d_name))
 
 
 /*
@@ -482,48 +482,48 @@ MainWindow::CloseDir(Win32dirent* dir)
  */
 int
 MainWindow::Process(const char* pathname, ScanOpts* pScanOpts,
-	CString* pErrMsg)
+    CString* pErrMsg)
 {
-	bool exists, isDir, isReadable;
-	struct stat sb;
-	int result = -1;
+    bool exists, isDir, isReadable;
+    struct stat sb;
+    int result = -1;
 
-	if (fCancelFlag)
-		return -1;
+    if (fCancelFlag)
+        return -1;
 
-	ASSERT(pathname != nil);
-	ASSERT(pErrMsg != nil);
+    ASSERT(pathname != nil);
+    ASSERT(pErrMsg != nil);
 
-	PathName checkPath(pathname);
-	int ierr = checkPath.CheckFileStatus(&sb, &exists, &isReadable, &isDir);
-	if (ierr != 0) {
-		pErrMsg->Format("Unexpected error while examining '%s': %s", pathname,
-			strerror(ierr));
-		goto bail;
-	}
+    PathName checkPath(pathname);
+    int ierr = checkPath.CheckFileStatus(&sb, &exists, &isReadable, &isDir);
+    if (ierr != 0) {
+        pErrMsg->Format("Unexpected error while examining '%s': %s", pathname,
+            strerror(ierr));
+        goto bail;
+    }
 
-	if (!exists) {
-		pErrMsg->Format("Couldn't find '%s'", pathname);
-		goto bail;
-	}
-	if (!isReadable) {
-		pErrMsg->Format("File '%s' isn't readable", pathname);
-		goto bail;
-	}
-	if (isDir) {
-		result = ProcessDirectory(pathname, pScanOpts, pErrMsg);
-		goto bail;
-	}
+    if (!exists) {
+        pErrMsg->Format("Couldn't find '%s'", pathname);
+        goto bail;
+    }
+    if (!isReadable) {
+        pErrMsg->Format("File '%s' isn't readable", pathname);
+        goto bail;
+    }
+    if (isDir) {
+        result = ProcessDirectory(pathname, pScanOpts, pErrMsg);
+        goto bail;
+    }
 
-	(void) ScanDiskImage(pathname, pScanOpts);
+    (void) ScanDiskImage(pathname, pScanOpts);
 
-	result = 0;
+    result = 0;
 
 bail:
-	if (result != 0 && pErrMsg->IsEmpty()) {
-		pErrMsg->Format("Unable to add file '%s'", pathname);
-	}
-	return result;
+    if (result != 0 && pErrMsg->IsEmpty()) {
+        pErrMsg->Format("Unable to add file '%s'", pathname);
+    }
+    return result;
 }
 
 /*
@@ -533,58 +533,58 @@ bail:
  */
 int
 MainWindow::ProcessDirectory(const char* dirName, ScanOpts* pScanOpts,
-	CString* pErrMsg)
+    CString* pErrMsg)
 {
-	Win32dirent* dirp = nil;
-	Win32dirent* entry;
-	char nbuf[MAX_PATH];	/* malloc might be better; this soaks stack */
-	char fssep;
-	int len;
-	int result = -1;
+    Win32dirent* dirp = nil;
+    Win32dirent* entry;
+    char nbuf[MAX_PATH];    /* malloc might be better; this soaks stack */
+    char fssep;
+    int len;
+    int result = -1;
 
-	ASSERT(dirName != nil);
-	ASSERT(pErrMsg != nil);
+    ASSERT(dirName != nil);
+    ASSERT(pErrMsg != nil);
 
-	WMSG1("+++ DESCEND: '%s'\n", dirName);
+    WMSG1("+++ DESCEND: '%s'\n", dirName);
 
-	dirp = OpenDir(dirName);
-	if (dirp == nil) {
-		pErrMsg->Format("Failed on '%s': %s", dirName, strerror(errno));
-		goto bail;
-	}
+    dirp = OpenDir(dirName);
+    if (dirp == nil) {
+        pErrMsg->Format("Failed on '%s': %s", dirName, strerror(errno));
+        goto bail;
+    }
 
-	fssep = kLocalFssep;
+    fssep = kLocalFssep;
 
-	/* could use readdir_r, but we don't care about reentrancy here */
-	while ((entry = ReadDir(dirp)) != nil) {
-		/* skip the dotsies */
-		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-			continue;
+    /* could use readdir_r, but we don't care about reentrancy here */
+    while ((entry = ReadDir(dirp)) != nil) {
+        /* skip the dotsies */
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+            continue;
 
-		len = strlen(dirName);
-		if (len + DIR_NAME_LEN(entry) +2 > MAX_PATH) {
-			WMSG4("ERROR: Filename exceeds %d bytes: %s%c%s",
-				MAX_PATH, dirName, fssep, entry->d_name);
-			goto bail;
-		}
+        len = strlen(dirName);
+        if (len + DIR_NAME_LEN(entry) +2 > MAX_PATH) {
+            WMSG4("ERROR: Filename exceeds %d bytes: %s%c%s",
+                MAX_PATH, dirName, fssep, entry->d_name);
+            goto bail;
+        }
 
-		/* form the new name, inserting an fssep if needed */
-		strcpy(nbuf, dirName);
-		if (dirName[len-1] != fssep)
-			nbuf[len++] = fssep;
-		strcpy(nbuf+len, entry->d_name);
+        /* form the new name, inserting an fssep if needed */
+        strcpy(nbuf, dirName);
+        if (dirName[len-1] != fssep)
+            nbuf[len++] = fssep;
+        strcpy(nbuf+len, entry->d_name);
 
-		result = Process(nbuf, pScanOpts, pErrMsg);
-		if (result != 0)
-			goto bail;
-	}
+        result = Process(nbuf, pScanOpts, pErrMsg);
+        if (result != 0)
+            goto bail;
+    }
 
-	result = 0;
+    result = 0;
 
 bail:
-	if (dirp != nil)
-		(void)CloseDir(dirp);
-	return result;
+    if (dirp != nil)
+        (void)CloseDir(dirp);
+    return result;
 }
 
 
@@ -596,111 +596,111 @@ bail:
 int
 MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
 {
-	ASSERT(pathName != nil);
-	ASSERT(pScanOpts != nil);
-	ASSERT(pScanOpts->outfp != nil);
+    ASSERT(pathName != nil);
+    ASSERT(pScanOpts != nil);
+    ASSERT(pScanOpts->outfp != nil);
 
-	DIError dierr;
-	CString errMsg;
-	DiskImg diskImg;
-	DiskFS* pDiskFS = nil;
-	PathName path(pathName);
-	CString ext = path.GetExtension();
+    DIError dierr;
+    CString errMsg;
+    DiskImg diskImg;
+    DiskFS* pDiskFS = nil;
+    PathName path(pathName);
+    CString ext = path.GetExtension();
 
-	/* first, some housekeeping */
-	PeekAndPump();
-	pScanOpts->pProgress->SetCurrentFile(pathName);
-	if (fCancelFlag)
-		return -1;
+    /* first, some housekeeping */
+    PeekAndPump();
+    pScanOpts->pProgress->SetCurrentFile(pathName);
+    if (fCancelFlag)
+        return -1;
 
-	CString title;
-	title = _T("MDC ");
-	title += FilenameOnly(pathName, '\\');
-	SetWindowText(title);
+    CString title;
+    title = _T("MDC ");
+    title += FilenameOnly(pathName, '\\');
+    SetWindowText(title);
 
-	fprintf(pScanOpts->outfp, "File: %s\n", pathName);
-	fflush(pScanOpts->outfp);		// in case we crash
+    fprintf(pScanOpts->outfp, "File: %s\n", pathName);
+    fflush(pScanOpts->outfp);       // in case we crash
 
-	if (!ext.IsEmpty()) {
-		/* delete the leading '.' */
-		ext.Delete(0, 1);
-	}
+    if (!ext.IsEmpty()) {
+        /* delete the leading '.' */
+        ext.Delete(0, 1);
+    }
 
-	dierr = diskImg.OpenImage(pathName, '\\', true);
-	if (dierr != kDIErrNone) {
-		errMsg.Format("Unable to open '%s': %s", pathName,
-			DiskImgLib::DIStrError(dierr));
-		goto bail;
-	}
+    dierr = diskImg.OpenImage(pathName, '\\', true);
+    if (dierr != kDIErrNone) {
+        errMsg.Format("Unable to open '%s': %s", pathName,
+            DiskImgLib::DIStrError(dierr));
+        goto bail;
+    }
 
-	dierr = diskImg.AnalyzeImage();
-	if (dierr != kDIErrNone) {
-		errMsg.Format("Analysis of '%s' failed: %s", pathName,
-			DiskImgLib::DIStrError(dierr));
-		goto bail;
-	}
+    dierr = diskImg.AnalyzeImage();
+    if (dierr != kDIErrNone) {
+        errMsg.Format("Analysis of '%s' failed: %s", pathName,
+            DiskImgLib::DIStrError(dierr));
+        goto bail;
+    }
 
-	if (diskImg.GetFSFormat() == DiskImg::kFormatUnknown ||
-		diskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
-	{
-		errMsg.Format("Unable to identify filesystem on '%s'", pathName);
-		goto bail;
-	}
+    if (diskImg.GetFSFormat() == DiskImg::kFormatUnknown ||
+        diskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
+    {
+        errMsg.Format("Unable to identify filesystem on '%s'", pathName);
+        goto bail;
+    }
 
-	/* create an appropriate DiskFS object */
-	pDiskFS = diskImg.OpenAppropriateDiskFS();
-	if (pDiskFS == nil) {
-		/* unknown FS should've been caught above! */
-		ASSERT(false);
-		errMsg.Format("Format of '%s' not recognized.", pathName);
-		goto bail;
-	}
+    /* create an appropriate DiskFS object */
+    pDiskFS = diskImg.OpenAppropriateDiskFS();
+    if (pDiskFS == nil) {
+        /* unknown FS should've been caught above! */
+        ASSERT(false);
+        errMsg.Format("Format of '%s' not recognized.", pathName);
+        goto bail;
+    }
 
-	pDiskFS->SetScanForSubVolumes(DiskFS::kScanSubEnabled);
+    pDiskFS->SetScanForSubVolumes(DiskFS::kScanSubEnabled);
 
-	/* object created; prep it */
-	dierr = pDiskFS->Initialize(&diskImg, DiskFS::kInitFull);
-	if (dierr != kDIErrNone) {
-		errMsg.Format("Error reading list of files from disk: %s",
-			DiskImgLib::DIStrError(dierr));
-		goto bail;
-	}
+    /* object created; prep it */
+    dierr = pDiskFS->Initialize(&diskImg, DiskFS::kInitFull);
+    if (dierr != kDIErrNone) {
+        errMsg.Format("Error reading list of files from disk: %s",
+            DiskImgLib::DIStrError(dierr));
+        goto bail;
+    }
 
-	int kbytes;
-	if (pDiskFS->GetDiskImg()->GetHasBlocks())
-		kbytes = pDiskFS->GetDiskImg()->GetNumBlocks() / 2;
-	else if (pDiskFS->GetDiskImg()->GetHasSectors())
-		kbytes = (pDiskFS->GetDiskImg()->GetNumTracks() *
-				pDiskFS->GetDiskImg()->GetNumSectPerTrack()) / 4;
-	else
-		kbytes = 0;
-	fprintf(pScanOpts->outfp, "Disk: %s%s (%dKB)\n", pDiskFS->GetVolumeID(),
-		pDiskFS->GetFSDamaged() ? " [*]" : "", kbytes);
+    int kbytes;
+    if (pDiskFS->GetDiskImg()->GetHasBlocks())
+        kbytes = pDiskFS->GetDiskImg()->GetNumBlocks() / 2;
+    else if (pDiskFS->GetDiskImg()->GetHasSectors())
+        kbytes = (pDiskFS->GetDiskImg()->GetNumTracks() *
+                pDiskFS->GetDiskImg()->GetNumSectPerTrack()) / 4;
+    else
+        kbytes = 0;
+    fprintf(pScanOpts->outfp, "Disk: %s%s (%dKB)\n", pDiskFS->GetVolumeID(),
+        pDiskFS->GetFSDamaged() ? " [*]" : "", kbytes);
     fprintf(pScanOpts->outfp,
-		" Name                             Type Auxtyp Modified"
+        " Name                             Type Auxtyp Modified"
         "         Format   Length\n");
     fprintf(pScanOpts->outfp,
-		"------------------------------------------------------"
+        "------------------------------------------------------"
         "------------------------\n");
-	if (LoadDiskFSContents(pDiskFS, "", pScanOpts) != 0) {
-		errMsg.Format("Failed while loading contents of '%s'.", pathName);
-		goto bail;
-	}
+    if (LoadDiskFSContents(pDiskFS, "", pScanOpts) != 0) {
+        errMsg.Format("Failed while loading contents of '%s'.", pathName);
+        goto bail;
+    }
     fprintf(pScanOpts->outfp,
-		"------------------------------------------------------"
+        "------------------------------------------------------"
         "------------------------\n\n");
 
 bail:
-	delete pDiskFS;
+    delete pDiskFS;
 
-	//PeekAndPump();
+    //PeekAndPump();
 
-	if (!errMsg.IsEmpty()) {
-		fprintf(pScanOpts->outfp, "Failed: %s\n\n", (LPCTSTR) errMsg);
-		return -1;
-	} else {
-		return 0;
-	}
+    if (!errMsg.IsEmpty()) {
+        fprintf(pScanOpts->outfp, "Failed: %s\n\n", (LPCTSTR) errMsg);
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 /*
@@ -708,32 +708,32 @@ bail:
  */
 void
 MainWindow::AnalyzeFile(const A2File* pFile, RecordKind* pRecordKind,
-	LONGLONG* pTotalLen, LONGLONG* pTotalCompLen)
+    LONGLONG* pTotalLen, LONGLONG* pTotalCompLen)
 {
-	if (pFile->IsVolumeDirectory()) {
-		/* volume dir entry */
-		ASSERT(pFile->GetRsrcLength() < 0);
-		*pRecordKind = kRecordKindVolumeDir;
-		*pTotalLen = pFile->GetDataLength();
-		*pTotalCompLen = pFile->GetDataLength();
-	} else if (pFile->IsDirectory()) {
-		/* directory entry */
-		ASSERT(pFile->GetRsrcLength() < 0);
-		*pRecordKind = kRecordKindDirectory;
-		*pTotalLen = pFile->GetDataLength();
-		*pTotalCompLen = pFile->GetDataLength();
-	} else if (pFile->GetRsrcLength() >= 0) {
-		/* has resource fork */
-		*pRecordKind = kRecordKindForkedFile;
-		*pTotalLen = pFile->GetDataLength() + pFile->GetRsrcLength();
-		*pTotalCompLen =
-			pFile->GetDataSparseLength() + pFile->GetRsrcSparseLength();
-	} else {
-		/* just data fork */
-		*pRecordKind = kRecordKindFile;
-		*pTotalLen = pFile->GetDataLength();
-		*pTotalCompLen = pFile->GetDataSparseLength();
-	}
+    if (pFile->IsVolumeDirectory()) {
+        /* volume dir entry */
+        ASSERT(pFile->GetRsrcLength() < 0);
+        *pRecordKind = kRecordKindVolumeDir;
+        *pTotalLen = pFile->GetDataLength();
+        *pTotalCompLen = pFile->GetDataLength();
+    } else if (pFile->IsDirectory()) {
+        /* directory entry */
+        ASSERT(pFile->GetRsrcLength() < 0);
+        *pRecordKind = kRecordKindDirectory;
+        *pTotalLen = pFile->GetDataLength();
+        *pTotalCompLen = pFile->GetDataLength();
+    } else if (pFile->GetRsrcLength() >= 0) {
+        /* has resource fork */
+        *pRecordKind = kRecordKindForkedFile;
+        *pTotalLen = pFile->GetDataLength() + pFile->GetRsrcLength();
+        *pTotalCompLen =
+            pFile->GetDataSparseLength() + pFile->GetRsrcSparseLength();
+    } else {
+        /* just data fork */
+        *pRecordKind = kRecordKindFile;
+        *pTotalLen = pFile->GetDataLength();
+        *pTotalCompLen = pFile->GetDataSparseLength();
+    }
 }
 
 /*
@@ -753,38 +753,38 @@ MainWindow::IsRecordReadOnly(int access)
 
 /* ProDOS file type names; must be entirely in upper case */
 static const char gFileTypeNames[256][4] = {
-	"NON", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT",
-	"FOT", "BA3", "DA3", "WPF", "SOS", "$0D", "$0E", "DIR",
-	"RPD", "RPI", "AFD", "AFM", "AFR", "SCL", "PFS", "$17",
-	"$18", "ADB", "AWP", "ASP", "$1C", "$1D", "$1E", "$1F",
-	"TDM", "$21", "$22", "$23", "$24", "$25", "$26", "$27",
-	"$28", "$29", "8SC", "8OB", "8IC", "8LD", "P8C", "$2F",
-	"$30", "$31", "$32", "$33", "$34", "$35", "$36", "$37",
-	"$38", "$39", "$3A", "$3B", "$3C", "$3D", "$3E", "$3F",
-	"DIC", "OCR", "FTD", "$43", "$44", "$45", "$46", "$47",
-	"$48", "$49", "$4A", "$4B", "$4C", "$4D", "$4E", "$4F",
-	"GWP", "GSS", "GDB", "DRW", "GDP", "HMD", "EDU", "STN",
-	"HLP", "COM", "CFG", "ANM", "MUM", "ENT", "DVU", "FIN",
-	"$60", "$61", "$62", "$63", "$64", "$65", "$66", "$67",
-	"$68", "$69", "$6A", "BIO", "$6C", "TDR", "PRE", "HDV",
-	"$70", "$71", "$72", "$73", "$74", "$75", "$76", "$77",
-	"$78", "$79", "$7A", "$7B", "$7C", "$7D", "$7E", "$7F",
-	"$80", "$81", "$82", "$83", "$84", "$85", "$86", "$87",
-	"$88", "$89", "$8A", "$8B", "$8C", "$8D", "$8E", "$8F",
-	"$90", "$91", "$92", "$93", "$94", "$95", "$96", "$97",
-	"$98", "$99", "$9A", "$9B", "$9C", "$9D", "$9E", "$9F",
-	"WP ", "$A1", "$A2", "$A3", "$A4", "$A5", "$A6", "$A7",
-	"$A8", "$A9", "$AA", "GSB", "TDF", "BDF", "$AE", "$AF",
-	"SRC", "OBJ", "LIB", "S16", "RTL", "EXE", "PIF", "TIF",
-	"NDA", "CDA", "TOL", "DVR", "LDF", "FST", "$BE", "DOC",
-	"PNT", "PIC", "ANI", "PAL", "$C4", "OOG", "SCR", "CDV",
-	"FON", "FND", "ICN", "$CB", "$CC", "$CD", "$CE", "$CF",
-	"$D0", "$D1", "$D2", "$D3", "$D4", "MUS", "INS", "MDI",
-	"SND", "$D9", "$DA", "DBM", "$DC", "DDD", "$DE", "$DF",
-	"LBR", "$E1", "ATK", "$E3", "$E4", "$E5", "$E6", "$E7",
-	"$E8", "$E9", "$EA", "$EB", "$EC", "$ED", "R16", "PAS",
-	"CMD", "$F1", "$F2", "$F3", "$F4", "$F5", "$F6", "$F7",
-	"$F8", "OS ", "INT", "IVR", "BAS", "VAR", "REL", "SYS"
+    "NON", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT",
+    "FOT", "BA3", "DA3", "WPF", "SOS", "$0D", "$0E", "DIR",
+    "RPD", "RPI", "AFD", "AFM", "AFR", "SCL", "PFS", "$17",
+    "$18", "ADB", "AWP", "ASP", "$1C", "$1D", "$1E", "$1F",
+    "TDM", "$21", "$22", "$23", "$24", "$25", "$26", "$27",
+    "$28", "$29", "8SC", "8OB", "8IC", "8LD", "P8C", "$2F",
+    "$30", "$31", "$32", "$33", "$34", "$35", "$36", "$37",
+    "$38", "$39", "$3A", "$3B", "$3C", "$3D", "$3E", "$3F",
+    "DIC", "OCR", "FTD", "$43", "$44", "$45", "$46", "$47",
+    "$48", "$49", "$4A", "$4B", "$4C", "$4D", "$4E", "$4F",
+    "GWP", "GSS", "GDB", "DRW", "GDP", "HMD", "EDU", "STN",
+    "HLP", "COM", "CFG", "ANM", "MUM", "ENT", "DVU", "FIN",
+    "$60", "$61", "$62", "$63", "$64", "$65", "$66", "$67",
+    "$68", "$69", "$6A", "BIO", "$6C", "TDR", "PRE", "HDV",
+    "$70", "$71", "$72", "$73", "$74", "$75", "$76", "$77",
+    "$78", "$79", "$7A", "$7B", "$7C", "$7D", "$7E", "$7F",
+    "$80", "$81", "$82", "$83", "$84", "$85", "$86", "$87",
+    "$88", "$89", "$8A", "$8B", "$8C", "$8D", "$8E", "$8F",
+    "$90", "$91", "$92", "$93", "$94", "$95", "$96", "$97",
+    "$98", "$99", "$9A", "$9B", "$9C", "$9D", "$9E", "$9F",
+    "WP ", "$A1", "$A2", "$A3", "$A4", "$A5", "$A6", "$A7",
+    "$A8", "$A9", "$AA", "GSB", "TDF", "BDF", "$AE", "$AF",
+    "SRC", "OBJ", "LIB", "S16", "RTL", "EXE", "PIF", "TIF",
+    "NDA", "CDA", "TOL", "DVR", "LDF", "FST", "$BE", "DOC",
+    "PNT", "PIC", "ANI", "PAL", "$C4", "OOG", "SCR", "CDV",
+    "FON", "FND", "ICN", "$CB", "$CC", "$CD", "$CE", "$CF",
+    "$D0", "$D1", "$D2", "$D3", "$D4", "MUS", "INS", "MDI",
+    "SND", "$D9", "$DA", "DBM", "$DC", "DDD", "$DE", "$DF",
+    "LBR", "$E1", "ATK", "$E3", "$E4", "$E5", "$E6", "$E7",
+    "$E8", "$E9", "$EA", "$EB", "$EC", "$ED", "R16", "PAS",
+    "CMD", "$F1", "$F2", "$F3", "$F4", "$F5", "$F6", "$F7",
+    "$F8", "OS ", "INT", "IVR", "BAS", "VAR", "REL", "SYS"
 };
 
 /*
@@ -795,10 +795,10 @@ static const char gFileTypeNames[256][4] = {
 /*static*/ const char*
 MainWindow::GetFileTypeString(unsigned long fileType)
 {
-	if (fileType < NELEM(gFileTypeNames))
-		return gFileTypeNames[fileType];
-	else
-		return "???";
+    if (fileType < NELEM(gFileTypeNames))
+        return gFileTypeNames[fileType];
+    else
+        return "???";
 }
 
 /*  
@@ -809,7 +809,7 @@ static void
 MacSanitize(char* str)
 {       
     while (*str != '\0') {
-		*str = DiskImg::MacToASCII(*str);
+        *str = DiskImg::MacToASCII(*str);
         str++;
     }
 }   
@@ -821,80 +821,80 @@ MacSanitize(char* str)
  */
 int
 MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
-	ScanOpts* pScanOpts)
+    ScanOpts* pScanOpts)
 {
-	static const char* kBlankFileName = "<blank filename>";
-	DiskFS::SubVolume* pSubVol = nil;
-	A2File* pFile;
+    static const char* kBlankFileName = "<blank filename>";
+    DiskFS::SubVolume* pSubVol = nil;
+    A2File* pFile;
 
-	ASSERT(pDiskFS != nil);
-	pFile = pDiskFS->GetNextFile(nil);
-	for ( ; pFile != nil; pFile = pDiskFS->GetNextFile(pFile)) {
-		CString subVolName, dispName;
-		RecordKind recordKind;
-		LONGLONG totalLen, totalCompLen;
-		char tmpbuf[16];
+    ASSERT(pDiskFS != nil);
+    pFile = pDiskFS->GetNextFile(nil);
+    for ( ; pFile != nil; pFile = pDiskFS->GetNextFile(pFile)) {
+        CString subVolName, dispName;
+        RecordKind recordKind;
+        LONGLONG totalLen, totalCompLen;
+        char tmpbuf[16];
 
-		AnalyzeFile(pFile, &recordKind, &totalLen, &totalCompLen);
+        AnalyzeFile(pFile, &recordKind, &totalLen, &totalCompLen);
 
-		if (recordKind == kRecordKindVolumeDir) {
-			/* this is a volume directory */
-			WMSG1("Not displaying volume dir '%s'\n", pFile->GetPathName());
-			continue;
-		}
+        if (recordKind == kRecordKindVolumeDir) {
+            /* this is a volume directory */
+            WMSG1("Not displaying volume dir '%s'\n", pFile->GetPathName());
+            continue;
+        }
 
-		/* prepend volName for sub-volumes; must be valid Win32 dirname */
-		if (volName[0] != '\0')
-			subVolName.Format("_%s", volName);
+        /* prepend volName for sub-volumes; must be valid Win32 dirname */
+        if (volName[0] != '\0')
+            subVolName.Format("_%s", volName);
 
-		const char* ccp = pFile->GetPathName();
-		ASSERT(ccp != nil);
-		if (strlen(ccp) == 0)
-			ccp = kBlankFileName;
+        const char* ccp = pFile->GetPathName();
+        ASSERT(ccp != nil);
+        if (strlen(ccp) == 0)
+            ccp = kBlankFileName;
 
-		CString path(ccp);
-		if (DiskImg::UsesDOSFileStructure(pFile->GetFSFormat()) && 0)
-		{
-			InjectLowercase(&path);
-		}
+        CString path(ccp);
+        if (DiskImg::UsesDOSFileStructure(pFile->GetFSFormat()) && 0)
+        {
+            InjectLowercase(&path);
+        }
 
-		if (subVolName.IsEmpty())
-			dispName = path;
-		else {
-			dispName = subVolName;
-			dispName += ':';
-			dispName += path;
-		}
+        if (subVolName.IsEmpty())
+            dispName = path;
+        else {
+            dispName = subVolName;
+            dispName += ':';
+            dispName += path;
+        }
 
-		/* strip out ctrl chars and high ASCII in HFS names */
-		MacSanitize(dispName.GetBuffer(0));
-		dispName.ReleaseBuffer();
+        /* strip out ctrl chars and high ASCII in HFS names */
+        MacSanitize(dispName.GetBuffer(0));
+        dispName.ReleaseBuffer();
 
-		ccp = dispName;
+        ccp = dispName;
 
-		int len = strlen(ccp);
-		if (len <= 32) {
-			fprintf(pScanOpts->outfp, "%c%-32.32s ",
-				IsRecordReadOnly(pFile->GetAccess()) ? '*' : ' ',
-				ccp);
-		} else {
-			fprintf(pScanOpts->outfp, "%c..%-30.30s ",
-				IsRecordReadOnly(pFile->GetAccess()) ? '*' : ' ',
-				ccp + len - 30);
-		}
-		switch (recordKind) {
-		case kRecordKindUnknown:
-			fprintf(pScanOpts->outfp, "%s- $%04lX  ",
-				GetFileTypeString(pFile->GetFileType()),
-				pFile->GetAuxType());
-			break;
-		case kRecordKindDisk:
-			sprintf(tmpbuf, "%ldk", totalLen / 1024);
-			fprintf(pScanOpts->outfp, "Disk %-6s ", tmpbuf);
-			break;
-		case kRecordKindFile:
-		case kRecordKindForkedFile:
-		case kRecordKindDirectory:
+        int len = strlen(ccp);
+        if (len <= 32) {
+            fprintf(pScanOpts->outfp, "%c%-32.32s ",
+                IsRecordReadOnly(pFile->GetAccess()) ? '*' : ' ',
+                ccp);
+        } else {
+            fprintf(pScanOpts->outfp, "%c..%-30.30s ",
+                IsRecordReadOnly(pFile->GetAccess()) ? '*' : ' ',
+                ccp + len - 30);
+        }
+        switch (recordKind) {
+        case kRecordKindUnknown:
+            fprintf(pScanOpts->outfp, "%s- $%04lX  ",
+                GetFileTypeString(pFile->GetFileType()),
+                pFile->GetAuxType());
+            break;
+        case kRecordKindDisk:
+            sprintf(tmpbuf, "%ldk", totalLen / 1024);
+            fprintf(pScanOpts->outfp, "Disk %-6s ", tmpbuf);
+            break;
+        case kRecordKindFile:
+        case kRecordKindForkedFile:
+        case kRecordKindDirectory:
             if (pDiskFS->GetDiskImg()->GetFSFormat() == DiskImg::kFormatMacHFS)
             {
                 if (recordKind != kRecordKindDirectory &&
@@ -943,102 +943,102 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
                     recordKind == kRecordKindForkedFile ? '+' : ' ',
                     pFile->GetAuxType());
             }
-			break;
-		case kRecordKindVolumeDir:
-			/* should've trapped this earlier */
-			ASSERT(0);
-			fprintf(pScanOpts->outfp, "ERROR  ");
-			break;
-		default:
-			ASSERT(0);
-			fprintf(pScanOpts->outfp, "ERROR  ");
-			break;
-		}
+            break;
+        case kRecordKindVolumeDir:
+            /* should've trapped this earlier */
+            ASSERT(0);
+            fprintf(pScanOpts->outfp, "ERROR  ");
+            break;
+        default:
+            ASSERT(0);
+            fprintf(pScanOpts->outfp, "ERROR  ");
+            break;
+        }
 
-		CString date;
-		if (pFile->GetModWhen() == 0)
-			FormatDate(kDateNone, &date);
-		else
-			FormatDate(pFile->GetModWhen(), &date);
-		fprintf(pScanOpts->outfp, "%-15s  ", (LPCTSTR) date);
+        CString date;
+        if (pFile->GetModWhen() == 0)
+            FormatDate(kDateNone, &date);
+        else
+            FormatDate(pFile->GetModWhen(), &date);
+        fprintf(pScanOpts->outfp, "%-15s  ", (LPCTSTR) date);
 
-		const char* fmtStr;
-		switch (pFile->GetFSFormat()) {
-		case DiskImg::kFormatDOS33:
-		case DiskImg::kFormatDOS32:
-		case DiskImg::kFormatUNIDOS:
-		case DiskImg::kFormatOzDOS:
-			fmtStr = "DOS   ";
-			break;
-		case DiskImg::kFormatProDOS:
-			fmtStr = "ProDOS";
-			break;
-		case DiskImg::kFormatPascal:
-			fmtStr = "Pascal";
-			break;
-		case DiskImg::kFormatCPM:
-			fmtStr = "CP/M  ";
-			break;
-		case DiskImg::kFormatRDOS33:
-		case DiskImg::kFormatRDOS32:
-		case DiskImg::kFormatRDOS3:
-			fmtStr = "RDOS  ";
-			break;
-		case DiskImg::kFormatMacHFS:
-			fmtStr = "HFS   ";
-			break;
-		case DiskImg::kFormatMSDOS:
-			fmtStr = "MS-DOS";
-			break;
-		default:
-			fmtStr = "???   ";
-			break;
-		}
-		if (pFile->GetQuality() == A2File::kQualityDamaged)
-			fmtStr = "BROKEN";
-		else if (pFile->GetQuality() == A2File::kQualitySuspicious)
-			fmtStr = "BAD?  ";
+        const char* fmtStr;
+        switch (pFile->GetFSFormat()) {
+        case DiskImg::kFormatDOS33:
+        case DiskImg::kFormatDOS32:
+        case DiskImg::kFormatUNIDOS:
+        case DiskImg::kFormatOzDOS:
+            fmtStr = "DOS   ";
+            break;
+        case DiskImg::kFormatProDOS:
+            fmtStr = "ProDOS";
+            break;
+        case DiskImg::kFormatPascal:
+            fmtStr = "Pascal";
+            break;
+        case DiskImg::kFormatCPM:
+            fmtStr = "CP/M  ";
+            break;
+        case DiskImg::kFormatRDOS33:
+        case DiskImg::kFormatRDOS32:
+        case DiskImg::kFormatRDOS3:
+            fmtStr = "RDOS  ";
+            break;
+        case DiskImg::kFormatMacHFS:
+            fmtStr = "HFS   ";
+            break;
+        case DiskImg::kFormatMSDOS:
+            fmtStr = "MS-DOS";
+            break;
+        default:
+            fmtStr = "???   ";
+            break;
+        }
+        if (pFile->GetQuality() == A2File::kQualityDamaged)
+            fmtStr = "BROKEN";
+        else if (pFile->GetQuality() == A2File::kQualitySuspicious)
+            fmtStr = "BAD?  ";
 
-		fprintf(pScanOpts->outfp, "%s ", fmtStr);
+        fprintf(pScanOpts->outfp, "%s ", fmtStr);
 
 
 #if 0
-		/* compute the percent size */
-		if ((!totalLen && totalCompLen) || (totalLen && !totalCompLen))
-			fprintf(pScanOpts->outfp, "---   ");       /* weird */
-		else if (totalLen < totalCompLen)
-			fprintf(pScanOpts->outfp, ">100%% ");      /* compression failed? */
-		else {
-			sprintf(tmpbuf, "%02d%%", ComputePercent(totalCompLen, totalLen));
-			fprintf(pScanOpts->outfp, "%4s  ", tmpbuf);
-		}
+        /* compute the percent size */
+        if ((!totalLen && totalCompLen) || (totalLen && !totalCompLen))
+            fprintf(pScanOpts->outfp, "---   ");       /* weird */
+        else if (totalLen < totalCompLen)
+            fprintf(pScanOpts->outfp, ">100%% ");      /* compression failed? */
+        else {
+            sprintf(tmpbuf, "%02d%%", ComputePercent(totalCompLen, totalLen));
+            fprintf(pScanOpts->outfp, "%4s  ", tmpbuf);
+        }
 #endif
 
-		if (!totalLen && totalCompLen)
-			fprintf(pScanOpts->outfp, "   ????");      /* weird */
-		else
-			fprintf(pScanOpts->outfp, "%8ld", totalLen);
+        if (!totalLen && totalCompLen)
+            fprintf(pScanOpts->outfp, "   ????");      /* weird */
+        else
+            fprintf(pScanOpts->outfp, "%8ld", totalLen);
 
-		fprintf(pScanOpts->outfp, "\n");
-	}
+        fprintf(pScanOpts->outfp, "\n");
+    }
 
-	/*
-	 * Load all sub-volumes.
-	 */
-	pSubVol = pDiskFS->GetNextSubVolume(nil);
-	while (pSubVol != nil) {
-		const char* subVolName;
-		int ret;
+    /*
+     * Load all sub-volumes.
+     */
+    pSubVol = pDiskFS->GetNextSubVolume(nil);
+    while (pSubVol != nil) {
+        const char* subVolName;
+        int ret;
 
-		subVolName = pSubVol->GetDiskFS()->GetVolumeName();
-		if (subVolName == nil)
-			subVolName = "+++";		// could probably do better than this
+        subVolName = pSubVol->GetDiskFS()->GetVolumeName();
+        if (subVolName == nil)
+            subVolName = "+++";     // could probably do better than this
 
-		ret = LoadDiskFSContents(pSubVol->GetDiskFS(), subVolName, pScanOpts);
-		if (ret != 0)
-			return ret;
-		pSubVol = pDiskFS->GetNextSubVolume(pSubVol);
-	}
+        ret = LoadDiskFSContents(pSubVol->GetDiskFS(), subVolName, pScanOpts);
+        if (ret != 0)
+            return ret;
+        pSubVol = pDiskFS->GetNextSubVolume(pSubVol);
+    }
 
-	return 0;
+    return 0;
 }

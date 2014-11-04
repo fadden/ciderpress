@@ -14,7 +14,7 @@
 #define nil NULL
 
 // Windows equivalents
-#define strcasecmp		stricmp
-#define strncasecmp		strnicmp
+#define strcasecmp      stricmp
+#define strncasecmp     strnicmp
 
 #endif /*__FADDEN_STD__*/

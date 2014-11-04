@@ -10,7 +10,7 @@
 #include "NewFolderDialog.h"
 
 BEGIN_MESSAGE_MAP(NewFolderDialog, CDialog)
-	ON_WM_HELPINFO()
+    ON_WM_HELPINFO()
 END_MESSAGE_MAP()
 
 /*
@@ -31,45 +31,45 @@ END_MESSAGE_MAP()
 void
 NewFolderDialog::DoDataExchange(CDataExchange* pDX)
 {
-	if (!pDX->m_bSaveAndValidate)
-		DDX_Text(pDX, IDC_NEWFOLDER_CURDIR, fCurrentFolder);
+    if (!pDX->m_bSaveAndValidate)
+        DDX_Text(pDX, IDC_NEWFOLDER_CURDIR, fCurrentFolder);
 
-	DDX_Text(pDX, IDC_NEWFOLDER_NAME, fNewFolder);
+    DDX_Text(pDX, IDC_NEWFOLDER_NAME, fNewFolder);
 
-	/* validate the new folder by creating it */
-	if (pDX->m_bSaveAndValidate) {
-		if (fNewFolder.IsEmpty()) {
-			MessageBox("No name entered, not creating new folder.",
-				"CiderPress", MB_OK);
-			// fall out of DoModal with fFolderCreated==false
-		} else if (fNewFolder.Find('\\') >= 0 ||
-				   fNewFolder.Find('/') >= 0)
-		{
-			MessageBox("Folder names may not contain '/' or '\\'.",
-				"CiderPress", MB_OK);
-			pDX->Fail();
-		} else {
-			fNewFullPath = fCurrentFolder;
-			if (fNewFullPath.Right(1) != "\\")
-				fNewFullPath += "\\";
-			fNewFullPath += fNewFolder;
-			WMSG1("CREATING '%s'\n", fNewFullPath);
-			if (!::CreateDirectory(fNewFullPath, nil)) {
-				/* show the sometimes-bizarre Windows error string */
-				CString msg, errStr, failed;
-				DWORD dwerr = ::GetLastError();
-				GetWin32ErrorString(dwerr, &errStr);
-				msg.Format("Unable to create folder '%s': %s",
-					fNewFolder, errStr);
-				failed.LoadString(IDS_FAILED);
-				MessageBox(msg, failed, MB_OK | MB_ICONERROR);
-				pDX->Fail();
-			} else {
-				/* success! */
-				fFolderCreated = true;
-			}
-		}
-	}
+    /* validate the new folder by creating it */
+    if (pDX->m_bSaveAndValidate) {
+        if (fNewFolder.IsEmpty()) {
+            MessageBox("No name entered, not creating new folder.",
+                "CiderPress", MB_OK);
+            // fall out of DoModal with fFolderCreated==false
+        } else if (fNewFolder.Find('\\') >= 0 ||
+                   fNewFolder.Find('/') >= 0)
+        {
+            MessageBox("Folder names may not contain '/' or '\\'.",
+                "CiderPress", MB_OK);
+            pDX->Fail();
+        } else {
+            fNewFullPath = fCurrentFolder;
+            if (fNewFullPath.Right(1) != "\\")
+                fNewFullPath += "\\";
+            fNewFullPath += fNewFolder;
+            WMSG1("CREATING '%s'\n", fNewFullPath);
+            if (!::CreateDirectory(fNewFullPath, nil)) {
+                /* show the sometimes-bizarre Windows error string */
+                CString msg, errStr, failed;
+                DWORD dwerr = ::GetLastError();
+                GetWin32ErrorString(dwerr, &errStr);
+                msg.Format("Unable to create folder '%s': %s",
+                    fNewFolder, errStr);
+                failed.LoadString(IDS_FAILED);
+                MessageBox(msg, failed, MB_OK | MB_ICONERROR);
+                pDX->Fail();
+            } else {
+                /* success! */
+                fFolderCreated = true;
+            }
+        }
+    }
 }
 
 
@@ -79,6 +79,6 @@ NewFolderDialog::DoDataExchange(CDataExchange* pDX)
 BOOL
 NewFolderDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
-	WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }

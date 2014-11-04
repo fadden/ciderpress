@@ -10,7 +10,7 @@
 
 class DoneOpenDialog : public CDialog {
 public:
-	DoneOpenDialog(CWnd* pParentWnd = NULL) : CDialog(IDD_DONEOPEN, pParentWnd)
-		{}
-	virtual ~DoneOpenDialog(void) {}
+    DoneOpenDialog(CWnd* pParentWnd = NULL) : CDialog(IDD_DONEOPEN, pParentWnd)
+        {}
+    virtual ~DoneOpenDialog(void) {}
 };

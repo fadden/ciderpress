@@ -17,29 +17,29 @@
  */
 class CreateSubdirDialog : public CDialog {
 public:
-	CreateSubdirDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_CREATE_SUBDIR, pParentWnd)
-	{
-		fpArchive = nil;
-		fpParentEntry = nil;
-	}
-	virtual ~CreateSubdirDialog(void) {}
+    CreateSubdirDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_CREATE_SUBDIR, pParentWnd)
+    {
+        fpArchive = nil;
+        fpParentEntry = nil;
+    }
+    virtual ~CreateSubdirDialog(void) {}
 
-	CString		fBasePath;		// where subdir will be created
-	CString		fNewName;
-	const GenericArchive*	fpArchive;
-	const GenericEntry*		fpParentEntry;
+    CString     fBasePath;      // where subdir will be created
+    CString     fNewName;
+    const GenericArchive*   fpArchive;
+    const GenericEntry*     fpParentEntry;
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
 private:
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__CREATESUBDIRDIALOG__*/

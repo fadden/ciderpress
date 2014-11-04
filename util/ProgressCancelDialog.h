@@ -20,64 +20,64 @@
  */
 class ProgressCancelDialog : public CancelDialog {
 public:
-	ProgressCancelDialog(void) : fProgressID(0) {}
-	virtual ~ProgressCancelDialog(void) {}
+    ProgressCancelDialog(void) : fProgressID(0) {}
+    virtual ~ProgressCancelDialog(void) {}
 
-	BOOL Create(bool* pCancelFlag, int dialogID, int progressID,
-		CWnd* pParentWnd = NULL)
-	{
-		fProgressID = progressID;
-		return CancelDialog::Create(pCancelFlag, dialogID, pParentWnd);
-	}
+    BOOL Create(bool* pCancelFlag, int dialogID, int progressID,
+        CWnd* pParentWnd = NULL)
+    {
+        fProgressID = progressID;
+        return CancelDialog::Create(pCancelFlag, dialogID, pParentWnd);
+    }
 
-	enum { kProgressResolution = 1000 };
+    enum { kProgressResolution = 1000 };
 
-	/*
-	 * Update the progress meter.
-	 *
-	 * Returns IDOK if all is well, IDCANCEL if the "cancel" button was hit.
-	 */
-	int SetProgress(int newVal)
-	{
-		ASSERT(newVal >= 0 && newVal <= kProgressResolution);
+    /*
+     * Update the progress meter.
+     *
+     * Returns IDOK if all is well, IDCANCEL if the "cancel" button was hit.
+     */
+    int SetProgress(int newVal)
+    {
+        ASSERT(newVal >= 0 && newVal <= kProgressResolution);
 
-		CProgressCtrl* pProgress = (CProgressCtrl*) GetDlgItem(fProgressID);
-		if (pProgress != nil) {
-			/* would be nice to only set the range once */
-			pProgress->SetRange(0, kProgressResolution);
-			pProgress->SetPos(newVal);
-		}
+        CProgressCtrl* pProgress = (CProgressCtrl*) GetDlgItem(fProgressID);
+        if (pProgress != nil) {
+            /* would be nice to only set the range once */
+            pProgress->SetRange(0, kProgressResolution);
+            pProgress->SetPos(newVal);
+        }
 
-		if (*fpCancelFlag) {
-			// dim the button to ack receipt
-			CWnd* pWnd = GetDlgItem(IDCANCEL);
-			pWnd->EnableWindow(FALSE);
-			return IDCANCEL;
-		} else
-			return IDOK;
-	}
+        if (*fpCancelFlag) {
+            // dim the button to ack receipt
+            CWnd* pWnd = GetDlgItem(IDCANCEL);
+            pWnd->EnableWindow(FALSE);
+            return IDCANCEL;
+        } else
+            return IDOK;
+    }
 
 private:
-	BOOL OnInitDialog(void) {
-		CancelDialog::OnInitDialog();
+    BOOL OnInitDialog(void) {
+        CancelDialog::OnInitDialog();
 
-		ASSERT(fProgressID != 0);
-		CProgressCtrl* pProgress = (CProgressCtrl*) GetDlgItem(fProgressID);
-		ASSERT(pProgress != nil);
+        ASSERT(fProgressID != 0);
+        CProgressCtrl* pProgress = (CProgressCtrl*) GetDlgItem(fProgressID);
+        ASSERT(pProgress != nil);
 
-		/* for some reason this doesn't work if I do it here */
-		//pProgress->SetRange(0, kProgressResolution);
+        /* for some reason this doesn't work if I do it here */
+        //pProgress->SetRange(0, kProgressResolution);
 
-		pProgress->SetFocus();		// get focus off of the Cancel button
-		return FALSE;				// accept our focus
-	}
+        pProgress->SetFocus();      // get focus off of the Cancel button
+        return FALSE;               // accept our focus
+    }
 
-	// CancelDialog traps OnCancel
-	// ModelessDialog traps OnCancel/OnOK
+    // CancelDialog traps OnCancel
+    // ModelessDialog traps OnCancel/OnOK
 
-	//void PostNcDestroy(void) { delete this; }
+    //void PostNcDestroy(void) { delete this; }
 
-	int		fProgressID;
+    int     fProgressID;
 };
 
 #endif /*__PROGRESSCANCELDIALOG__*/

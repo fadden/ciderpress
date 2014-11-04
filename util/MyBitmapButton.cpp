@@ -11,7 +11,7 @@
 
 
 BEGIN_MESSAGE_MAP(MyBitmapButton, CButton)
-	ON_WM_SYSCOLORCHANGE()
+    ON_WM_SYSCOLORCHANGE()
 END_MESSAGE_MAP()
 
 
@@ -23,31 +23,31 @@ END_MESSAGE_MAP()
 BOOL
 MyBitmapButton::ReplaceDlgCtrl(CDialog* pDialog, int buttonID)
 {
-	CWnd* pWnd = pDialog->GetDlgItem(buttonID);
-	if (pWnd == nil)
-		return FALSE;
+    CWnd* pWnd = pDialog->GetDlgItem(buttonID);
+    if (pWnd == nil)
+        return FALSE;
 
 #if 0
-	DWORD styles = pWnd->GetStyle();
-	//DWORD stylesEx = pWnd->GetExStyle();
-	CString caption;
-	CRect rect;
-	pWnd->GetWindowText(caption);
-	pWnd->GetWindowRect(&rect);
-	pDialog->ScreenToClient(&rect);
+    DWORD styles = pWnd->GetStyle();
+    //DWORD stylesEx = pWnd->GetExStyle();
+    CString caption;
+    CRect rect;
+    pWnd->GetWindowText(caption);
+    pWnd->GetWindowRect(&rect);
+    pDialog->ScreenToClient(&rect);
 
-//	pWnd->DestroyWindow();
-	if (Create(caption, styles, rect, pDialog, buttonID) == FALSE) {
-		WMSG1("ERROR: unable to replace dialog ctrl (buttonID=%d)\n",
-			buttonID);
-		return FALSE;
-	}
+//  pWnd->DestroyWindow();
+    if (Create(caption, styles, rect, pDialog, buttonID) == FALSE) {
+        WMSG1("ERROR: unable to replace dialog ctrl (buttonID=%d)\n",
+            buttonID);
+        return FALSE;
+    }
 #endif
 
-	/* latch on to their window handle */
-	Attach(pWnd->m_hWnd);
+    /* latch on to their window handle */
+    Attach(pWnd->m_hWnd);
 
-	return TRUE;
+    return TRUE;
 }
 
 /*
@@ -56,9 +56,9 @@ MyBitmapButton::ReplaceDlgCtrl(CDialog* pDialog, int buttonID)
 BOOL
 MyBitmapButton::SetBitmapID(int id)
 {
-	fBitmapID = id;
-	UpdateBitmap();
-	return TRUE;
+    fBitmapID = id;
+    UpdateBitmap();
+    return TRUE;
 }
 
 /*
@@ -67,26 +67,26 @@ MyBitmapButton::SetBitmapID(int id)
 void
 MyBitmapButton::UpdateBitmap(void)
 {
-	HBITMAP hNewBits;
+    HBITMAP hNewBits;
 
-	if (fBitmapID == -1) {
-		WMSG0("ERROR: UpdateBitmap called before bitmap set\n");
-		ASSERT(false);
-		return;
-	}
+    if (fBitmapID == -1) {
+        WMSG0("ERROR: UpdateBitmap called before bitmap set\n");
+        ASSERT(false);
+        return;
+    }
 
-	hNewBits = (HBITMAP) ::LoadImage(AfxGetInstanceHandle(),
-		MAKEINTRESOURCE(fBitmapID), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
-	if (hNewBits == nil) {
-		WMSG1("WARNING: LoadImage failed (bitID=%d)\n", fBitmapID);
-		ASSERT(false);
-		return;
-	}
+    hNewBits = (HBITMAP) ::LoadImage(AfxGetInstanceHandle(),
+        MAKEINTRESOURCE(fBitmapID), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+    if (hNewBits == nil) {
+        WMSG1("WARNING: LoadImage failed (bitID=%d)\n", fBitmapID);
+        ASSERT(false);
+        return;
+    }
 
-	ASSERT(GetBitmap() == fhBitmap);
+    ASSERT(GetBitmap() == fhBitmap);
 
-	::DeleteObject(SetBitmap(hNewBits));
-	fhBitmap = hNewBits;
+    ::DeleteObject(SetBitmap(hNewBits));
+    fhBitmap = hNewBits;
 }
 
 /*
@@ -95,6 +95,6 @@ MyBitmapButton::UpdateBitmap(void)
 void
 MyBitmapButton::OnSysColorChange(void)
 {
-	WMSG1("MyBitmapButton 0x%08lx tracking color change\n", this);
-	UpdateBitmap();
+    WMSG1("MyBitmapButton 0x%08lx tracking color change\n", this);
+    UpdateBitmap();
 }

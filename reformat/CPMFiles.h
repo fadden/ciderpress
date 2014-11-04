@@ -16,13 +16,13 @@
  */
 class ReformatCPMText : public ReformatText {
 public:
-	ReformatCPMText(void) {}
-	virtual ~ReformatCPMText(void) {}
+    ReformatCPMText(void) {}
+    virtual ~ReformatCPMText(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 };
 
 #endif /*__LR_CPMFILES__*/

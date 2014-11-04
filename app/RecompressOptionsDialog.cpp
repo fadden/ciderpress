@@ -12,8 +12,8 @@
 #include "HelpTopics.h"
 
 //BEGIN_MESSAGE_MAP(UseSelectionDialog, CDialog)
-//	ON_WM_HELPINFO()
-//	//ON_COMMAND(IDHELP, OnHelp)
+//  ON_WM_HELPINFO()
+//  //ON_COMMAND(IDHELP, OnHelp)
 //END_MESSAGE_MAP()
 
 
@@ -23,9 +23,9 @@
 BOOL
 RecompressOptionsDialog::OnInitDialog(void)
 {
-	fCompressionIdx = LoadComboBox((NuThreadFormat) fCompressionType);
+    fCompressionIdx = LoadComboBox((NuThreadFormat) fCompressionType);
 
-	return UseSelectionDialog::OnInitDialog();
+    return UseSelectionDialog::OnInitDialog();
 }
 
 /*
@@ -37,40 +37,40 @@ RecompressOptionsDialog::OnInitDialog(void)
 int
 RecompressOptionsDialog::LoadComboBox(NuThreadFormat fmt)
 {
-	static const struct {
-		NuThreadFormat	format;
-		const char*		name;
-	} kComboStrings[] = {
-		{ kNuThreadFormatUncompressed,	"No compression" },
-		{ kNuThreadFormatHuffmanSQ,		"Squeeze" },
-		{ kNuThreadFormatLZW1,			"Dynamic LZW/1" },
-		{ kNuThreadFormatLZW2,			"Dynamic LZW/2" },
-		{ kNuThreadFormatLZC12,			"12-bit LZC" },
-		{ kNuThreadFormatLZC16,			"16-bit LZC" },
-		{ kNuThreadFormatDeflate,		"Deflate" },
-		{ kNuThreadFormatBzip2,			"Bzip2" },
-	};
+    static const struct {
+        NuThreadFormat  format;
+        const char*     name;
+    } kComboStrings[] = {
+        { kNuThreadFormatUncompressed,  "No compression" },
+        { kNuThreadFormatHuffmanSQ,     "Squeeze" },
+        { kNuThreadFormatLZW1,          "Dynamic LZW/1" },
+        { kNuThreadFormatLZW2,          "Dynamic LZW/2" },
+        { kNuThreadFormatLZC12,         "12-bit LZC" },
+        { kNuThreadFormatLZC16,         "16-bit LZC" },
+        { kNuThreadFormatDeflate,       "Deflate" },
+        { kNuThreadFormatBzip2,         "Bzip2" },
+    };
 
-	CComboBox* pCombo;
-	int idx, comboIdx;
-	int retIdx = 0;
+    CComboBox* pCombo;
+    int idx, comboIdx;
+    int retIdx = 0;
 
-	pCombo = (CComboBox*) GetDlgItem(IDC_RECOMP_COMP);
-	ASSERT(pCombo != nil);
+    pCombo = (CComboBox*) GetDlgItem(IDC_RECOMP_COMP);
+    ASSERT(pCombo != nil);
 
-	for (idx = comboIdx = 0; idx < NELEM(kComboStrings); idx++) {
-		if (NufxArchive::IsCompressionSupported(kComboStrings[idx].format)) {
-			pCombo->AddString(kComboStrings[idx].name);
-			pCombo->SetItemData(comboIdx, kComboStrings[idx].format);
+    for (idx = comboIdx = 0; idx < NELEM(kComboStrings); idx++) {
+        if (NufxArchive::IsCompressionSupported(kComboStrings[idx].format)) {
+            pCombo->AddString(kComboStrings[idx].name);
+            pCombo->SetItemData(comboIdx, kComboStrings[idx].format);
 
-			if (kComboStrings[idx].format == fmt)
-				retIdx = comboIdx;
+            if (kComboStrings[idx].format == fmt)
+                retIdx = comboIdx;
 
-			comboIdx++;
-		}
-	}
+            comboIdx++;
+        }
+    }
 
-	return retIdx;
+    return retIdx;
 }
 
 /*
@@ -79,17 +79,17 @@ RecompressOptionsDialog::LoadComboBox(NuThreadFormat fmt)
 void
 RecompressOptionsDialog::DoDataExchange(CDataExchange* pDX)
 {
-	DDX_CBIndex(pDX, IDC_RECOMP_COMP, fCompressionIdx);
+    DDX_CBIndex(pDX, IDC_RECOMP_COMP, fCompressionIdx);
 
-	if (pDX->m_bSaveAndValidate) {
-		CComboBox* pCombo;
-		pCombo = (CComboBox*) GetDlgItem(IDC_RECOMP_COMP);
-		ASSERT(pCombo != nil);
+    if (pDX->m_bSaveAndValidate) {
+        CComboBox* pCombo;
+        pCombo = (CComboBox*) GetDlgItem(IDC_RECOMP_COMP);
+        ASSERT(pCombo != nil);
 
-		fCompressionType = pCombo->GetItemData(fCompressionIdx);
-		WMSG2("DDX got type=%d from combo index %d\n",
-			fCompressionType, fCompressionIdx);
-	}
+        fCompressionType = pCombo->GetItemData(fCompressionIdx);
+        WMSG2("DDX got type=%d from combo index %d\n",
+            fCompressionType, fCompressionIdx);
+    }
 
-	UseSelectionDialog::DoDataExchange(pDX);
+    UseSelectionDialog::DoDataExchange(pDX);
 }

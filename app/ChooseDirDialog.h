@@ -19,35 +19,35 @@
  */
 class ChooseDirDialog : public CDialog {
 public:
-	ChooseDirDialog(CWnd* pParent = NULL, int dialogID = IDD_CHOOSEDIR) :
-		CDialog(dialogID, pParent)
-	{
-		fPathName = "";
-	}
-	virtual ~ChooseDirDialog(void) {}
+    ChooseDirDialog(CWnd* pParent = NULL, int dialogID = IDD_CHOOSEDIR) :
+        CDialog(dialogID, pParent)
+    {
+        fPathName = "";
+    }
+    virtual ~ChooseDirDialog(void) {}
 
-	const char* GetPathName(void) const { return fPathName; }
+    const char* GetPathName(void) const { return fPathName; }
 
-	// set the pathname; when DoModal is called this will tunnel in
-	void SetPathName(const char* str) { fPathName = str; }
+    // set the pathname; when DoModal is called this will tunnel in
+    void SetPathName(const char* str) { fPathName = str; }
 
 protected:
-	virtual BOOL OnInitDialog(void);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL OnInitDialog(void);
+    virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-	afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
-	afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	afx_msg void OnExpandTree(void);
-	afx_msg void OnNewFolder(void);
-	afx_msg void OnHelp(void);
+    afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg void OnExpandTree(void);
+    afx_msg void OnNewFolder(void);
+    afx_msg void OnHelp(void);
 
 private:
-	CString			fPathName;
+    CString         fPathName;
 
-	ShellTree		fShellTree;
-	MyBitmapButton	fNewFolderButton;
+    ShellTree       fShellTree;
+    MyBitmapButton  fNewFolderButton;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__CHOOSEDIRDIALOG__*/

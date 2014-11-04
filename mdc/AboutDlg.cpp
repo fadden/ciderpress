@@ -21,17 +21,17 @@ static char THIS_FILE[] = __FILE__;
 
 
 AboutDlg::AboutDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(AboutDlg::IDD, pParent)
+    : CDialog(AboutDlg::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(AboutDlg)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+    //{{AFX_DATA_INIT(AboutDlg)
+        // NOTE: the ClassWizard will add member initialization here
+    //}}AFX_DATA_INIT
 }
 
 
 BEGIN_MESSAGE_MAP(AboutDlg, CDialog)
-	//{{AFX_MSG_MAP(AboutDlg)
-	//}}AFX_MSG_MAP
+    //{{AFX_MSG_MAP(AboutDlg)
+    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -39,18 +39,18 @@ END_MESSAGE_MAP()
 
 BOOL AboutDlg::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
-	// TODO: Add extra initialization here
-	CWnd* pWnd = GetDlgItem(IDC_ABOUT_VERS);
-	ASSERT(pWnd != nil);
-	CString fmt, newText;
+    CDialog::OnInitDialog();
+    
+    // TODO: Add extra initialization here
+    CWnd* pWnd = GetDlgItem(IDC_ABOUT_VERS);
+    ASSERT(pWnd != nil);
+    CString fmt, newText;
 
-	pWnd->GetWindowText(fmt);
-	newText.Format(fmt, kAppMajorVersion, kAppMinorVersion, kAppBugVersion);
-	pWnd->SetWindowText(newText);
-	WMSG1("STR is '%s'\n", newText);
+    pWnd->GetWindowText(fmt);
+    newText.Format(fmt, kAppMajorVersion, kAppMinorVersion, kAppBugVersion);
+    pWnd->SetWindowText(newText);
+    WMSG1("STR is '%s'\n", newText);
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+    return TRUE;  // return TRUE unless you set the focus to a control
+                  // EXCEPTION: OCX Property Pages should return FALSE
 }

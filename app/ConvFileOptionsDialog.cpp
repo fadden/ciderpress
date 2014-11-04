@@ -17,7 +17,7 @@
 BOOL
 ConvFileOptionsDialog::OnInitDialog(void)
 {
-	return UseSelectionDialog::OnInitDialog();
+    return UseSelectionDialog::OnInitDialog();
 }
 #endif
 
@@ -27,9 +27,9 @@ ConvFileOptionsDialog::OnInitDialog(void)
 void
 ConvFileOptionsDialog::DoDataExchange(CDataExchange* pDX)
 {
-	//DDX_Check(pDX, IDC_CONVFILE_CONVDOS, fConvDOSText);
-	//DDX_Check(pDX, IDC_CONVFILE_CONVPASCAL, fConvPascalText);
-	DDX_Check(pDX, IDC_CONVFILE_PRESERVEDIR, fPreserveEmptyFolders);
+    //DDX_Check(pDX, IDC_CONVFILE_CONVDOS, fConvDOSText);
+    //DDX_Check(pDX, IDC_CONVFILE_CONVPASCAL, fConvPascalText);
+    DDX_Check(pDX, IDC_CONVFILE_PRESERVEDIR, fPreserveEmptyFolders);
 
-	UseSelectionDialog::DoDataExchange(pDX);
+    UseSelectionDialog::DoDataExchange(pDX);
 }

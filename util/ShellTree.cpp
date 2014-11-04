@@ -14,14 +14,14 @@
 
 /*
  * ==========================================================================
- *		ShellTree
+ *      ShellTree
  * ==========================================================================
  */
 
 BEGIN_MESSAGE_MAP(ShellTree, CTreeCtrl)
-	ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnFolderExpanding)
-	ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteShellItem)
-	ON_NOTIFY_REFLECT_EX(TVN_SELCHANGED, OnSelectionChange)
+    ON_NOTIFY_REFLECT(TVN_ITEMEXPANDING, OnFolderExpanding)
+    ON_NOTIFY_REFLECT(TVN_DELETEITEM, OnDeleteShellItem)
+    ON_NOTIFY_REFLECT_EX(TVN_SELCHANGED, OnSelectionChange)
 END_MESSAGE_MAP()
 
 
@@ -34,25 +34,25 @@ END_MESSAGE_MAP()
 BOOL
 ShellTree::ReplaceDlgCtrl(CDialog* pDialog, int treeID)
 {
-	CWnd* pWnd = pDialog->GetDlgItem(treeID);
-	if (pWnd == nil)
-		return FALSE;
+    CWnd* pWnd = pDialog->GetDlgItem(treeID);
+    if (pWnd == nil)
+        return FALSE;
 
 #if 0
-	DWORD styles = pWnd->GetStyle();
-	DWORD stylesEx = pWnd->GetExStyle();
-	CRect rect;
-	pWnd->GetWindowRect(&rect);
-	pDialog->ScreenToClient(&rect);
+    DWORD styles = pWnd->GetStyle();
+    DWORD stylesEx = pWnd->GetExStyle();
+    CRect rect;
+    pWnd->GetWindowRect(&rect);
+    pDialog->ScreenToClient(&rect);
 
-	pWnd->DestroyWindow();
-	CreateEx(stylesEx, WC_TREEVIEW, NULL, styles, rect, pDialog, treeID);
+    pWnd->DestroyWindow();
+    CreateEx(stylesEx, WC_TREEVIEW, NULL, styles, rect, pDialog, treeID);
 #endif
 
-	/* latch on to their window handle */
-	Attach(pWnd->m_hWnd);
+    /* latch on to their window handle */
+    Attach(pWnd->m_hWnd);
 
-	return TRUE;
+    return TRUE;
 }
 
 /*
@@ -63,62 +63,62 @@ ShellTree::ReplaceDlgCtrl(CDialog* pDialog, int treeID)
 BOOL
 ShellTree::PopulateTree(int nFolder) 
 {
-	LPSHELLFOLDER lpsf = nil, lpsf2 = nil;
-	LPITEMIDLIST lpi = nil;
-	TV_SORTCB tvscb;
-  	LPMALLOC lpMalloc = nil;
-	HRESULT hr;
-	BOOL retval = FALSE;
+    LPSHELLFOLDER lpsf = nil, lpsf2 = nil;
+    LPITEMIDLIST lpi = nil;
+    TV_SORTCB tvscb;
+    LPMALLOC lpMalloc = nil;
+    HRESULT hr;
+    BOOL retval = FALSE;
 
-	// Grab a malloc handle.
-	hr = ::SHGetMalloc(&lpMalloc);
-	if (FAILED(hr))
-		return FALSE;
+    // Grab a malloc handle.
+    hr = ::SHGetMalloc(&lpMalloc);
+    if (FAILED(hr))
+        return FALSE;
 
-	// Get a pointer to the desktop folder.
-	hr = SHGetDesktopFolder(&lpsf);
-	if (FAILED(hr))
-		goto bail;
+    // Get a pointer to the desktop folder.
+    hr = SHGetDesktopFolder(&lpsf);
+    if (FAILED(hr))
+        goto bail;
 
-	// Initialize the tree view to be empty.
-	DeleteAllItems();
+    // Initialize the tree view to be empty.
+    DeleteAllItems();
 
-	if (nFolder == CSIDL_DESKTOP) {
-		// already done
-		lpsf2 = lpsf;
-		lpsf = nil;
-		ASSERT(lpi == nil);
-	} else {
-		// find the desired special folder
-		hr = SHGetSpecialFolderLocation(m_hWnd, nFolder, &lpi);
-		if (FAILED(hr)) {
-			WMSG0("BUG: could not find requested special folder\n");
-			goto bail;
-		}
+    if (nFolder == CSIDL_DESKTOP) {
+        // already done
+        lpsf2 = lpsf;
+        lpsf = nil;
+        ASSERT(lpi == nil);
+    } else {
+        // find the desired special folder
+        hr = SHGetSpecialFolderLocation(m_hWnd, nFolder, &lpi);
+        if (FAILED(hr)) {
+            WMSG0("BUG: could not find requested special folder\n");
+            goto bail;
+        }
 
-		// bind a ShellFolder to the PIDL.
-		hr = lpsf->BindToObject(lpi, 0, IID_IShellFolder, (LPVOID *)&lpsf2);
-		if (FAILED(hr))
-			goto bail;
-	}
+        // bind a ShellFolder to the PIDL.
+        hr = lpsf->BindToObject(lpi, 0, IID_IShellFolder, (LPVOID *)&lpsf2);
+        if (FAILED(hr))
+            goto bail;
+    }
 
-	// fill in the tree starting from this point
-	FillTreeView(lpsf2, lpi, TVI_ROOT);
+    // fill in the tree starting from this point
+    FillTreeView(lpsf2, lpi, TVI_ROOT);
 
-	// Sort the items in the tree view
-	tvscb.hParent	  = TVI_ROOT;
-	tvscb.lParam	  = 0;
-	tvscb.lpfnCompare = TreeViewCompareProc;
-	SortChildrenCB(&tvscb);
+    // Sort the items in the tree view
+    tvscb.hParent     = TVI_ROOT;
+    tvscb.lParam      = 0;
+    tvscb.lpfnCompare = TreeViewCompareProc;
+    SortChildrenCB(&tvscb);
 
 bail:
-	if (lpsf != nil)
-		lpsf->Release();
-	if (lpsf != nil)
-		lpsf2->Release();
-	lpMalloc->Free(lpi);
+    if (lpsf != nil)
+        lpsf->Release();
+    if (lpsf != nil)
+        lpsf2->Release();
+    lpMalloc->Free(lpi);
 
-	return retval;
+    return retval;
 }
 
 /*
@@ -127,12 +127,12 @@ bail:
 void
 ShellTree::ExpandMyComputer(void)
 {
-	HTREEITEM hItem;
-	hItem = FindMyComputer();
-	if (hItem == nil)
-		hItem = GetRootItem();
-	Expand(hItem, TVE_EXPAND);
-	Select(hItem, TVGN_CARET);
+    HTREEITEM hItem;
+    hItem = FindMyComputer();
+    if (hItem == nil)
+        hItem = GetRootItem();
+    Expand(hItem, TVE_EXPAND);
+    Select(hItem, TVGN_CARET);
 }
 
 
@@ -146,183 +146,183 @@ ShellTree::ExpandMyComputer(void)
  */
 void
 ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
-	HTREEITEM hParent)
+    HTREEITEM hParent)
 {
-	CWaitCursor		wait;
-	HTREEITEM		hPrev = NULL;				  // Previous Item Added.
-	LPENUMIDLIST	lpe=NULL;
-	LPITEMIDLIST	lpi=NULL;
-	LPMALLOC		lpMalloc=NULL;
-	ULONG			ulFetched;
-	HRESULT 		hr;
-	HWND			hwnd=::GetParent(m_hWnd);
-	bool			gotOne = false;
+    CWaitCursor     wait;
+    HTREEITEM       hPrev = NULL;                 // Previous Item Added.
+    LPENUMIDLIST    lpe=NULL;
+    LPITEMIDLIST    lpi=NULL;
+    LPMALLOC        lpMalloc=NULL;
+    ULONG           ulFetched;
+    HRESULT         hr;
+    HWND            hwnd=::GetParent(m_hWnd);
+    bool            gotOne = false;
 
-	// Allocate a shell memory object. 
-	hr = ::SHGetMalloc(&lpMalloc);
-	if (FAILED(hr))
-	   return;
+    // Allocate a shell memory object. 
+    hr = ::SHGetMalloc(&lpMalloc);
+    if (FAILED(hr))
+       return;
 
-	// Get the IEnumIDList object for the given folder.
-	hr = lpsf->EnumObjects(hwnd,
-			SHCONTF_FOLDERS | SHCONTF_NONFOLDERS | SHCONTF_INCLUDEHIDDEN,
-			&lpe);
+    // Get the IEnumIDList object for the given folder.
+    hr = lpsf->EnumObjects(hwnd,
+            SHCONTF_FOLDERS | SHCONTF_NONFOLDERS | SHCONTF_INCLUDEHIDDEN,
+            &lpe);
 
-	if (SUCCEEDED(hr))
-	{
-		// Enumerate throught the list of folder and non-folder objects.
-		while (S_OK == lpe->Next(1, &lpi, &ulFetched))
-		{
-			//Create a fully qualified path to the current item
-			//The SH* shell api's take a fully qualified path pidl,
-			//(see GetIcon above where I call SHGetFileInfo) whereas the
-			//interface methods take a relative path pidl.
-			ULONG ulAttrs = SFGAO_HASSUBFOLDER | SFGAO_FOLDER |
-				SFGAO_FILESYSANCESTOR | SFGAO_DROPTARGET | SFGAO_HIDDEN;
-			bool goodOne;
+    if (SUCCEEDED(hr))
+    {
+        // Enumerate throught the list of folder and non-folder objects.
+        while (S_OK == lpe->Next(1, &lpi, &ulFetched))
+        {
+            //Create a fully qualified path to the current item
+            //The SH* shell api's take a fully qualified path pidl,
+            //(see GetIcon above where I call SHGetFileInfo) whereas the
+            //interface methods take a relative path pidl.
+            ULONG ulAttrs = SFGAO_HASSUBFOLDER | SFGAO_FOLDER |
+                SFGAO_FILESYSANCESTOR | SFGAO_DROPTARGET | SFGAO_HIDDEN;
+            bool goodOne;
 
-			// Determine what type of object we have.
-			lpsf->GetAttributesOf(1, (const struct _ITEMIDLIST **)&lpi, &ulAttrs);
+            // Determine what type of object we have.
+            lpsf->GetAttributesOf(1, (const struct _ITEMIDLIST **)&lpi, &ulAttrs);
 
 #if 1
-			{	/* DEBUG */
-				char szBuff[MAX_PATH];
-				if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
-					WMSG2(" Checking '%s' 0x%08lx\n",
-						szBuff, ulAttrs);
-				} else {
-					WMSG1(" Checking <no-name> 0x%08lx\n",
-						ulAttrs);
-				}
-			}
+            {   /* DEBUG */
+                char szBuff[MAX_PATH];
+                if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
+                    WMSG2(" Checking '%s' 0x%08lx\n",
+                        szBuff, ulAttrs);
+                } else {
+                    WMSG1(" Checking <no-name> 0x%08lx\n",
+                        ulAttrs);
+                }
+            }
 #endif
 
-			/*
-			 * (This should be converted to a table and automatically
-			 * scanned when assertions are enabled.)
-			 *
-			 * Win2K folders to show:
-			 *	'My Computer'			0xb0000100 [at root]
-			 *	'My Network Places'		0xb0000100 [at root]
-			 *	'My Documents'			0xb0000100 [at root]
-			 *	'WIN (C:)'				0xb0000100
-			 *	'Compact Disc (H:)'		0xb0000100	<-- SFGAO_REMOVABLE not set
-			 *	'Removable Disk (L:)'	0xb0000100
-			 *	'Documents and Settings' 0xf0400177
-			 *	'Entire Network'		0xb0000000
-			 *	'Microsoft Windows Network'	0xb0000000
-			 *	'Computers Near Me'		0xa0000100
-			 *	'ftp.apple.asimov.net'	0xa0000100
-			 *	'QA-C-Recv on QA'		0xa0000100
-			 *	'BACKUP'				0xf0400177
-			 *	'dudley'				0x70400177
-			 *
-			 * Win2K files, folders, etc. to hide:
-			 *	'gVim 6.1'				0x00000100
-			 *	'Internet Explorer'		0x20000000
-			 *	'Recycle Bin'			0x20000100 (folder + droptarget)
-			 *	'Control Panel'			0xa0000000
-			 *	'Scheduled Tasks on Shiny'	0x20000000
-			 *	'Add Network Place'		0x00000000
-			 *	'ColorBars.jpg'			0x40400177
-			 *
-			 * Win98 folders to show:
-			 *	'My Computer'			0xb0000100 [at root]
-			 *	'My Documents'			0xb0000100 [at root]
-			 *	'Network Neighborhood'	0xb0000100 [at root]
-			 *	'WIN98 (C:)'			0xb0000100
-			 *	[C:\]'My Documents'		0xf8000177
-			 *	'Entire Network'		0xb0000000
-			 *	'cpt'					0xe0000177
-			 *	'My eBooks'				0x60000177
-			 *
-			 * Win98 folders and stuff to hide:
-			 *	'Control Panel'			0x20000000
-			 *	'Printers'				0x20000100 (folder + droptarget)
-			 *	'Web Folders'			0xa0000000
-			 *	'BOOTLOG.TXT'			0x40080177
-			 *
-			 * Note that Win98 folders on disk don't have FILESYSANCESTOR
-			 * set.  If we check FOLDER && FILESYSTEM (0x60000000), we get
-			 * anything starting with 6/7/E/F, which appears safe.  We
-			 * need to do additional tests to pick up some of the A/B items
-			 * that we want while hiding the A items we don't want.
-			 *
-			 * FILESYSANCESTOR is 0x10000000, so that plus FOLDER allows
-			 * 3/7/b/f.  These appear to be entirely okay.
-			 *
-			 * DROPTARGET is 0x00000100, and HASSUBFOLDER is 0x80000000.
-			 * Combining with FOLDER yields 0xa00000100, allowing A/B/E/F.
-			 * The only at-risk is A, but combined with DROPTARGET we
-			 * seem to screen out all the bad ones.
-			 */
+            /*
+             * (This should be converted to a table and automatically
+             * scanned when assertions are enabled.)
+             *
+             * Win2K folders to show:
+             *  'My Computer'           0xb0000100 [at root]
+             *  'My Network Places'     0xb0000100 [at root]
+             *  'My Documents'          0xb0000100 [at root]
+             *  'WIN (C:)'              0xb0000100
+             *  'Compact Disc (H:)'     0xb0000100  <-- SFGAO_REMOVABLE not set
+             *  'Removable Disk (L:)'   0xb0000100
+             *  'Documents and Settings' 0xf0400177
+             *  'Entire Network'        0xb0000000
+             *  'Microsoft Windows Network' 0xb0000000
+             *  'Computers Near Me'     0xa0000100
+             *  'ftp.apple.asimov.net'  0xa0000100
+             *  'QA-C-Recv on QA'       0xa0000100
+             *  'BACKUP'                0xf0400177
+             *  'dudley'                0x70400177
+             *
+             * Win2K files, folders, etc. to hide:
+             *  'gVim 6.1'              0x00000100
+             *  'Internet Explorer'     0x20000000
+             *  'Recycle Bin'           0x20000100 (folder + droptarget)
+             *  'Control Panel'         0xa0000000
+             *  'Scheduled Tasks on Shiny'  0x20000000
+             *  'Add Network Place'     0x00000000
+             *  'ColorBars.jpg'         0x40400177
+             *
+             * Win98 folders to show:
+             *  'My Computer'           0xb0000100 [at root]
+             *  'My Documents'          0xb0000100 [at root]
+             *  'Network Neighborhood'  0xb0000100 [at root]
+             *  'WIN98 (C:)'            0xb0000100
+             *  [C:\]'My Documents'     0xf8000177
+             *  'Entire Network'        0xb0000000
+             *  'cpt'                   0xe0000177
+             *  'My eBooks'             0x60000177
+             *
+             * Win98 folders and stuff to hide:
+             *  'Control Panel'         0x20000000
+             *  'Printers'              0x20000100 (folder + droptarget)
+             *  'Web Folders'           0xa0000000
+             *  'BOOTLOG.TXT'           0x40080177
+             *
+             * Note that Win98 folders on disk don't have FILESYSANCESTOR
+             * set.  If we check FOLDER && FILESYSTEM (0x60000000), we get
+             * anything starting with 6/7/E/F, which appears safe.  We
+             * need to do additional tests to pick up some of the A/B items
+             * that we want while hiding the A items we don't want.
+             *
+             * FILESYSANCESTOR is 0x10000000, so that plus FOLDER allows
+             * 3/7/b/f.  These appear to be entirely okay.
+             *
+             * DROPTARGET is 0x00000100, and HASSUBFOLDER is 0x80000000.
+             * Combining with FOLDER yields 0xa00000100, allowing A/B/E/F.
+             * The only at-risk is A, but combined with DROPTARGET we
+             * seem to screen out all the bad ones.
+             */
 
-			if (lpifq == nil) {
-				/* dealing with stuff at the root level */
-				goodOne = ( (ulAttrs & SFGAO_FOLDER) &&
-							(ulAttrs & SFGAO_HASSUBFOLDER) &&
-							(ulAttrs & SFGAO_FILESYSANCESTOR) );
-			} else {
-				/* deeper down, we're picky in different ways */
-				bool isFolder = (ulAttrs & SFGAO_FOLDER) != 0;
-				bool fileSys = (ulAttrs & SFGAO_FILESYSTEM) != 0;
-				bool hasFSAncestor = (ulAttrs & SFGAO_FILESYSANCESTOR) != 0;
-				bool dropAndSub = (ulAttrs & SFGAO_DROPTARGET) != 0 &&
-								  (ulAttrs & SFGAO_HASSUBFOLDER) != 0;
+            if (lpifq == nil) {
+                /* dealing with stuff at the root level */
+                goodOne = ( (ulAttrs & SFGAO_FOLDER) &&
+                            (ulAttrs & SFGAO_HASSUBFOLDER) &&
+                            (ulAttrs & SFGAO_FILESYSANCESTOR) );
+            } else {
+                /* deeper down, we're picky in different ways */
+                bool isFolder = (ulAttrs & SFGAO_FOLDER) != 0;
+                bool fileSys = (ulAttrs & SFGAO_FILESYSTEM) != 0;
+                bool hasFSAncestor = (ulAttrs & SFGAO_FILESYSANCESTOR) != 0;
+                bool dropAndSub = (ulAttrs & SFGAO_DROPTARGET) != 0 &&
+                                  (ulAttrs & SFGAO_HASSUBFOLDER) != 0;
 
-				goodOne = isFolder &&
-							(fileSys || hasFSAncestor || dropAndSub);
-			}
+                goodOne = isFolder &&
+                            (fileSys || hasFSAncestor || dropAndSub);
+            }
 
-			if (goodOne) {
-				gotOne = true;
+            if (goodOne) {
+                gotOne = true;
 
-				if (!AddNode(lpsf, lpi, lpifq, ulAttrs, hParent, &hPrev)) {
-					WMSG0("AddNode failed!\n");
-					goto Done;
-				}
-			}
+                if (!AddNode(lpsf, lpi, lpifq, ulAttrs, hParent, &hPrev)) {
+                    WMSG0("AddNode failed!\n");
+                    goto Done;
+                }
+            }
 
-			lpMalloc->Free(lpi);  //Free the pidl that the shell gave us.
-			lpi=0;
-		}
-	}
+            lpMalloc->Free(lpi);  //Free the pidl that the shell gave us.
+            lpi=0;
+        }
+    }
 
-	// Sometimes SFGAO_HASSUBFOLDERS lies, notably in Network Neighborhood.
-	// When we actually scan the directory we can update the parent node
-	// if it turns out there's nothing underneath.
-	if (!gotOne) {
-		TVITEM tvi;
-		CString name = GetItemText(hParent);
-		tvi.hItem = hParent;
-		tvi.mask = TVIF_CHILDREN;
-		if (!GetItem(&tvi)) {
-			WMSG1("Could not get TV '%s'\n", name);
-			ASSERT(false);
-		} else if (tvi.cChildren) {
-			WMSG2("Removing child count (%d) from '%s'\n",
-				tvi.cChildren, name);
-			tvi.cChildren = 0;
-			if (!SetItem(&tvi)) {
-				WMSG1("Could not set TV '%s'\n", name);
-				ASSERT(false);
-			}
-		}
-	}
+    // Sometimes SFGAO_HASSUBFOLDERS lies, notably in Network Neighborhood.
+    // When we actually scan the directory we can update the parent node
+    // if it turns out there's nothing underneath.
+    if (!gotOne) {
+        TVITEM tvi;
+        CString name = GetItemText(hParent);
+        tvi.hItem = hParent;
+        tvi.mask = TVIF_CHILDREN;
+        if (!GetItem(&tvi)) {
+            WMSG1("Could not get TV '%s'\n", name);
+            ASSERT(false);
+        } else if (tvi.cChildren) {
+            WMSG2("Removing child count (%d) from '%s'\n",
+                tvi.cChildren, name);
+            tvi.cChildren = 0;
+            if (!SetItem(&tvi)) {
+                WMSG1("Could not set TV '%s'\n", name);
+                ASSERT(false);
+            }
+        }
+    }
 
 Done:
-	if (lpe)  
-		lpe->Release();
+    if (lpe)  
+        lpe->Release();
 
-	//The following 2 if statements will only be TRUE if we got here on an
-	//error condition from the "goto" statement.  Otherwise, we free this memory
-	//at the end of the while loop above.
-	if (lpi && lpMalloc)		   
-		lpMalloc->Free(lpi);
-	if (lpMalloc) 
-		lpMalloc->Release();
+    //The following 2 if statements will only be TRUE if we got here on an
+    //error condition from the "goto" statement.  Otherwise, we free this memory
+    //at the end of the while loop above.
+    if (lpi && lpMalloc)           
+        lpMalloc->Free(lpi);
+    if (lpMalloc) 
+        lpMalloc->Release();
 
-	//WMSG0("FillTreeView DONE\n");
+    //WMSG0("FillTreeView DONE\n");
 }
 
 /*
@@ -332,83 +332,83 @@ Done:
  */
 BOOL
 ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
-	unsigned long ulAttrs, HTREEITEM hParent, HTREEITEM* phPrev)
+    unsigned long ulAttrs, HTREEITEM hParent, HTREEITEM* phPrev)
 {
-	TVITEM 			tvi;
-	TVINSERTSTRUCT	tvins;
-	LPITEMIDLIST	lpifqThisItem = nil;
-	TVItemData*		lptvid = nil;
-	char			szBuff[MAX_PATH];
-	LPMALLOC		lpMalloc = nil;
-	HRESULT			hr;
-	BOOL			result = FALSE;
+    TVITEM          tvi;
+    TVINSERTSTRUCT  tvins;
+    LPITEMIDLIST    lpifqThisItem = nil;
+    TVItemData*     lptvid = nil;
+    char            szBuff[MAX_PATH];
+    LPMALLOC        lpMalloc = nil;
+    HRESULT         hr;
+    BOOL            result = FALSE;
 
-	hr = ::SHGetMalloc(&lpMalloc);
-	if (FAILED(hr))
-	   return FALSE;
+    hr = ::SHGetMalloc(&lpMalloc);
+    if (FAILED(hr))
+       return FALSE;
 
-	//Now get the friendly name that we'll put in the treeview.
-	if (!Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
-		WMSG0("HEY: failed getting friendly name\n");
-		goto bail; // Error - could not get friendly name.
-	}
-	//WMSG2("AddNode '%s' ATTR=0x%08lx\n", szBuff, ulAttrs);
+    //Now get the friendly name that we'll put in the treeview.
+    if (!Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
+        WMSG0("HEY: failed getting friendly name\n");
+        goto bail; // Error - could not get friendly name.
+    }
+    //WMSG2("AddNode '%s' ATTR=0x%08lx\n", szBuff, ulAttrs);
 
-	lptvid = (TVItemData*)lpMalloc->Alloc(sizeof(TVItemData));
-	if (!lptvid)
-		goto bail;
+    lptvid = (TVItemData*)lpMalloc->Alloc(sizeof(TVItemData));
+    if (!lptvid)
+        goto bail;
 
-	tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE |
-				TVIF_PARAM;
+    tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE |
+                TVIF_PARAM;
 
-	if (ulAttrs & SFGAO_HASSUBFOLDER) {
-		//This item has sub-folders, so let's put the + in the TreeView.
-		//The first time the user clicks on the item, we'll populate the
-		//sub-folders.
-		tvi.mask |= TVIF_CHILDREN;
-		tvi.cChildren = 1;
-	}
+    if (ulAttrs & SFGAO_HASSUBFOLDER) {
+        //This item has sub-folders, so let's put the + in the TreeView.
+        //The first time the user clicks on the item, we'll populate the
+        //sub-folders.
+        tvi.mask |= TVIF_CHILDREN;
+        tvi.cChildren = 1;
+    }
 
-	tvi.pszText	 = szBuff;
-	tvi.cchTextMax = MAX_PATH;		// (not needed for InsertItem)
+    tvi.pszText  = szBuff;
+    tvi.cchTextMax = MAX_PATH;      // (not needed for InsertItem)
 
-	// Allocate a fully-qualified PIDL and stuff it in.
-	lpifqThisItem = Pidl::ConcatPidls(lpifq, lpi);
+    // Allocate a fully-qualified PIDL and stuff it in.
+    lpifqThisItem = Pidl::ConcatPidls(lpifq, lpi);
 
-	// Add the icons.
-	GetNormalAndSelectedIcons(lpifqThisItem, &tvi);
+    // Add the icons.
+    GetNormalAndSelectedIcons(lpifqThisItem, &tvi);
 
-	// Done with lipfqThisItem.
-	lptvid->lpifq = lpifqThisItem;
-	lpifqThisItem = nil;
+    // Done with lipfqThisItem.
+    lptvid->lpifq = lpifqThisItem;
+    lpifqThisItem = nil;
 
-	// Put in a copy of the relative PIDL.
-	lptvid->lpi = Pidl::CopyITEMID(lpMalloc, lpi);
+    // Put in a copy of the relative PIDL.
+    lptvid->lpi = Pidl::CopyITEMID(lpMalloc, lpi);
 
-	// Stuff the parent folder's lpsf in.
-	lptvid->lpsfParent = lpsf;
-	lpsf->AddRef();
+    // Stuff the parent folder's lpsf in.
+    lptvid->lpsfParent = lpsf;
+    lpsf->AddRef();
 
-	// Done with lptvid.
-	tvi.lParam = (LPARAM)lptvid;
-	lptvid = nil;
+    // Done with lptvid.
+    tvi.lParam = (LPARAM)lptvid;
+    lptvid = nil;
 
-	// Populate the TreeView Insert Struct
-	// The item is the one filled above.
-	// Insert it after the last item inserted at this level.
-	// And indicate this is a root entry.
-	tvins.item		 = tvi;
-	tvins.hInsertAfter = *phPrev;
-	tvins.hParent 	 = hParent;
+    // Populate the TreeView Insert Struct
+    // The item is the one filled above.
+    // Insert it after the last item inserted at this level.
+    // And indicate this is a root entry.
+    tvins.item       = tvi;
+    tvins.hInsertAfter = *phPrev;
+    tvins.hParent    = hParent;
 
-	// Add the item to the tree
-	*phPrev = InsertItem(&tvins);
+    // Add the item to the tree
+    *phPrev = InsertItem(&tvins);
 
-	result = TRUE;
+    result = TRUE;
 
 bail:
-	lpMalloc->Release();
-	return result;
+    lpMalloc->Release();
+    return result;
 }
 
 /*
@@ -418,19 +418,19 @@ bail:
  */
 void
 ShellTree::GetNormalAndSelectedIcons(LPITEMIDLIST lpifq,
-							   LPTV_ITEM lptvitem)
+                               LPTV_ITEM lptvitem)
 {
    //Note that we don't check the return value here because if GetIcon()
    //fails, then we're in big trouble...
 
-	lptvitem->iImage = Pidl::GetItemIcon(lpifq,
-							  SHGFI_SYSICONINDEX | 
-							  SHGFI_SMALLICON);
+    lptvitem->iImage = Pidl::GetItemIcon(lpifq,
+                              SHGFI_SYSICONINDEX | 
+                              SHGFI_SMALLICON);
    
-	lptvitem->iSelectedImage = Pidl::GetItemIcon(lpifq,
-									  SHGFI_SYSICONINDEX | 
-									  SHGFI_SMALLICON |
-									  SHGFI_OPENICON);
+    lptvitem->iSelectedImage = Pidl::GetItemIcon(lpifq,
+                                      SHGFI_SYSICONINDEX | 
+                                      SHGFI_SMALLICON |
+                                      SHGFI_OPENICON);
    
    return;
 }
@@ -443,34 +443,34 @@ ShellTree::GetNormalAndSelectedIcons(LPITEMIDLIST lpifq,
 int CALLBACK 
 ShellTree::TreeViewCompareProc(LPARAM lparam1, LPARAM lparam2, LPARAM)
 {
-	TVItemData* lptvid1 = (TVItemData*)lparam1;
-	TVItemData* lptvid2 = (TVItemData*)lparam2;
-	HRESULT hr;
+    TVItemData* lptvid1 = (TVItemData*)lparam1;
+    TVItemData* lptvid2 = (TVItemData*)lparam2;
+    HRESULT hr;
 
-	hr = lptvid1->lpsfParent->CompareIDs(0, lptvid1->lpi, lptvid2->lpi);
-	
-	if (FAILED(hr)) {
-		ASSERT(false);
-		return 0;
-	}
+    hr = lptvid1->lpsfParent->CompareIDs(0, lptvid1->lpi, lptvid2->lpi);
+    
+    if (FAILED(hr)) {
+        ASSERT(false);
+        return 0;
+    }
 
 #if 0
-	if (lptvid1->alphaSort && lptvid2->alphaSort) {
-		char buf1[MAX_PATH], buf2[MAX_PATH];
-		if (Pidl::GetName(lptvid1->lpsfParent, lptvid1->lpi, SHGDN_NORMAL, buf1) &&
-			Pidl::GetName(lptvid2->lpsfParent, lptvid2->lpi, SHGDN_NORMAL, buf2))
-		{
-			WMSG3("COMPARING '%s' to '%s' (res=%d)\n", buf1, buf2,
-				(short) HRESULT_CODE(hr));
-			return stricmp(buf1, buf2);
-		} else {
-			ASSERT(false);
-			return 0;
-		}
-	}
+    if (lptvid1->alphaSort && lptvid2->alphaSort) {
+        char buf1[MAX_PATH], buf2[MAX_PATH];
+        if (Pidl::GetName(lptvid1->lpsfParent, lptvid1->lpi, SHGDN_NORMAL, buf1) &&
+            Pidl::GetName(lptvid2->lpsfParent, lptvid2->lpi, SHGDN_NORMAL, buf2))
+        {
+            WMSG3("COMPARING '%s' to '%s' (res=%d)\n", buf1, buf2,
+                (short) HRESULT_CODE(hr));
+            return stricmp(buf1, buf2);
+        } else {
+            ASSERT(false);
+            return 0;
+        }
+    }
 #endif
 
-	return (short) HRESULT_CODE(hr);
+    return (short) HRESULT_CODE(hr);
 }
 
 
@@ -484,126 +484,126 @@ ShellTree::TreeViewCompareProc(LPARAM lparam1, LPARAM lparam2, LPARAM)
 BOOL
 ShellTree::AddFolderAtSelection(const CString& name)
 {
-	LPSHELLFOLDER lpsf = nil;
-	LPITEMIDLIST lpi = nil;
-	HTREEITEM hParent;
-	LPMALLOC lpMalloc = nil;
-	LPENUMIDLIST lpe = nil;
-	const TVItemData* parentTvid;
-	TVItemData* newTvid = nil;
-	HWND hwnd = ::GetParent(m_hWnd);
-	char szBuff[MAX_PATH];
-	HTREEITEM hPrev = nil;
-	BOOL result = false;
-	CString debugName;
-	HRESULT hr;
+    LPSHELLFOLDER lpsf = nil;
+    LPITEMIDLIST lpi = nil;
+    HTREEITEM hParent;
+    LPMALLOC lpMalloc = nil;
+    LPENUMIDLIST lpe = nil;
+    const TVItemData* parentTvid;
+    TVItemData* newTvid = nil;
+    HWND hwnd = ::GetParent(m_hWnd);
+    char szBuff[MAX_PATH];
+    HTREEITEM hPrev = nil;
+    BOOL result = false;
+    CString debugName;
+    HRESULT hr;
 
-	WMSG1("AddFolderAtSelection '%s'\n", name);
+    WMSG1("AddFolderAtSelection '%s'\n", name);
 
-	// Allocate a shell memory object. 
-	hr = ::SHGetMalloc(&lpMalloc);
-	if (FAILED(hr))
-	   return FALSE;
+    // Allocate a shell memory object. 
+    hr = ::SHGetMalloc(&lpMalloc);
+    if (FAILED(hr))
+       return FALSE;
 
-	hParent = GetSelectedItem();
-	if (hParent == nil) {
-		WMSG0("Nothing selected!\n");
-		goto bail;
-	}
+    hParent = GetSelectedItem();
+    if (hParent == nil) {
+        WMSG0("Nothing selected!\n");
+        goto bail;
+    }
 
-	/*
-	 * Now we either need to create a new node in an existing tree, or if
-	 * we haven't expanded the current node yet then we can just let the
-	 * usual FillTree mechanism do it for us.
-	 *
-	 * If the current node is marked as having children, but has no
-	 * child structures, then it's a folder with sub-folders that hasn't
-	 * been filled in yet.  We don't need to do anything.
-	 *
-	 * If the current node doesn't have children, then this is a leaf
-	 * node that has just become a branch.  We update its "#of kids" state
-	 * and again let the usual mechanisms do their work.
-	 *
-	 * If the current node has expanded children, then we need to do the
-	 * work ourselves.  (It's that, or invalidate the entire subtree,
-	 * which has some UI consequences.)
-	 */
-	TVITEM tvi;
-	debugName = GetItemText(hParent);
-	tvi.hItem = hParent;
-	tvi.mask = TVIF_CHILDREN;
-	if (!GetItem(&tvi)) {
-		WMSG1("Could not get TV '%s'\n", debugName);
-		ASSERT(false);
-	} else {
-		HTREEITEM child = GetChildItem(hParent);
-		if (child == nil && tvi.cChildren) {
-			WMSG1(" Found unexpanded node, not adding %s\n", name);
-			result = TRUE;
-			goto bail;
-		} else if (child == nil && !tvi.cChildren) {
-			WMSG1(" Found former leaf node, updating kids in %s\n", debugName);
-			tvi.cChildren = 1;
-			if (!SetItem(&tvi)) {
-				WMSG1("Could not set TV '%s'\n", debugName);
-				ASSERT(false);
-			}
-			result = TRUE;
-			goto bail;
-		} else {
-			ASSERT(child != nil && tvi.cChildren != 0);
-			WMSG2(" Found expanded branch node '%s', adding new '%s'\n",
-				debugName, name);
-		}
-	}
+    /*
+     * Now we either need to create a new node in an existing tree, or if
+     * we haven't expanded the current node yet then we can just let the
+     * usual FillTree mechanism do it for us.
+     *
+     * If the current node is marked as having children, but has no
+     * child structures, then it's a folder with sub-folders that hasn't
+     * been filled in yet.  We don't need to do anything.
+     *
+     * If the current node doesn't have children, then this is a leaf
+     * node that has just become a branch.  We update its "#of kids" state
+     * and again let the usual mechanisms do their work.
+     *
+     * If the current node has expanded children, then we need to do the
+     * work ourselves.  (It's that, or invalidate the entire subtree,
+     * which has some UI consequences.)
+     */
+    TVITEM tvi;
+    debugName = GetItemText(hParent);
+    tvi.hItem = hParent;
+    tvi.mask = TVIF_CHILDREN;
+    if (!GetItem(&tvi)) {
+        WMSG1("Could not get TV '%s'\n", debugName);
+        ASSERT(false);
+    } else {
+        HTREEITEM child = GetChildItem(hParent);
+        if (child == nil && tvi.cChildren) {
+            WMSG1(" Found unexpanded node, not adding %s\n", name);
+            result = TRUE;
+            goto bail;
+        } else if (child == nil && !tvi.cChildren) {
+            WMSG1(" Found former leaf node, updating kids in %s\n", debugName);
+            tvi.cChildren = 1;
+            if (!SetItem(&tvi)) {
+                WMSG1("Could not set TV '%s'\n", debugName);
+                ASSERT(false);
+            }
+            result = TRUE;
+            goto bail;
+        } else {
+            ASSERT(child != nil && tvi.cChildren != 0);
+            WMSG2(" Found expanded branch node '%s', adding new '%s'\n",
+                debugName, name);
+        }
+    }
 
 
-	parentTvid = (TVItemData*)GetItemData(hParent);
-	ASSERT(parentTvid != nil);
+    parentTvid = (TVItemData*)GetItemData(hParent);
+    ASSERT(parentTvid != nil);
 
-	// Get a handle to the ShellFolder for the currently selected node.
-	hr = parentTvid->lpsfParent->BindToObject(parentTvid->lpi,
-				0, IID_IShellFolder, (LPVOID *)&lpsf);
-	if (FAILED(hr)) {
-		WMSG0("Glitch: unable to get ShellFolder for selected folder\n");
-		goto bail;
-	}
+    // Get a handle to the ShellFolder for the currently selected node.
+    hr = parentTvid->lpsfParent->BindToObject(parentTvid->lpi,
+                0, IID_IShellFolder, (LPVOID *)&lpsf);
+    if (FAILED(hr)) {
+        WMSG0("Glitch: unable to get ShellFolder for selected folder\n");
+        goto bail;
+    }
 
-	// Get an enumerator for the selected node.
-	hr = lpsf->EnumObjects(hwnd, SHCONTF_FOLDERS | SHCONTF_INCLUDEHIDDEN,
-			&lpe);
-	if (FAILED(hr)) {
-		WMSG0("Glitch: unable to get enumerator for selected folder\n");
-		goto bail;
-	}
+    // Get an enumerator for the selected node.
+    hr = lpsf->EnumObjects(hwnd, SHCONTF_FOLDERS | SHCONTF_INCLUDEHIDDEN,
+            &lpe);
+    if (FAILED(hr)) {
+        WMSG0("Glitch: unable to get enumerator for selected folder\n");
+        goto bail;
+    }
 
-	// Enumerate throught the list of folder and non-folder objects.
-	while (S_OK == lpe->Next(1, &lpi, nil)) {
-		if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
-			if (name.CompareNoCase(szBuff) == 0) {
-				/* match! */
-				if (!AddNode(lpsf, lpi, parentTvid->lpifq, 0, hParent, &hPrev)) {
-					WMSG0("AddNode failed!\n");
-					goto bail;
-				}
-				result = TRUE;
-				break;
-			}
-		}
+    // Enumerate throught the list of folder and non-folder objects.
+    while (S_OK == lpe->Next(1, &lpi, nil)) {
+        if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
+            if (name.CompareNoCase(szBuff) == 0) {
+                /* match! */
+                if (!AddNode(lpsf, lpi, parentTvid->lpifq, 0, hParent, &hPrev)) {
+                    WMSG0("AddNode failed!\n");
+                    goto bail;
+                }
+                result = TRUE;
+                break;
+            }
+        }
 
-		lpMalloc->Free(lpi);  //Free the pidl that the shell gave us.
-		lpi = nil;
-	}
+        lpMalloc->Free(lpi);  //Free the pidl that the shell gave us.
+        lpi = nil;
+    }
 
 bail:
-	if (lpi != nil)
-		lpMalloc->Free(lpi);
-	if (lpsf != nil)
-		lpsf->Release();
-	if (lpe != nil)  
-		lpe->Release();
-	lpMalloc->Release();
-	return result;
+    if (lpi != nil)
+        lpMalloc->Free(lpi);
+    if (lpsf != nil)
+        lpsf->Release();
+    if (lpe != nil)  
+        lpe->Release();
+    lpMalloc->Release();
+    return result;
 }
 
 
@@ -614,79 +614,79 @@ bail:
  */
 void ShellTree::OnFolderExpanding(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	TVItemData*		lptvid;	//Long pointer to TreeView item data
-	HRESULT			hr;
-	LPSHELLFOLDER	lpsf2=NULL;
-	TV_SORTCB		tvscb;
+    TVItemData*     lptvid; //Long pointer to TreeView item data
+    HRESULT         hr;
+    LPSHELLFOLDER   lpsf2=NULL;
+    TV_SORTCB       tvscb;
 
-	NM_TREEVIEW* pnmtv = (NM_TREEVIEW*)pNMHDR;
-	if (pnmtv->itemNew.state & TVIS_EXPANDEDONCE) {
-		WMSG0("Already expanded!\n");
-		return;
-	}
-		
-	lptvid = (TVItemData*)pnmtv->itemNew.lParam;
-	if (lptvid) {
-		hr = lptvid->lpsfParent->BindToObject(lptvid->lpi,
-				0, IID_IShellFolder,(LPVOID *)&lpsf2);
+    NM_TREEVIEW* pnmtv = (NM_TREEVIEW*)pNMHDR;
+    if (pnmtv->itemNew.state & TVIS_EXPANDEDONCE) {
+        WMSG0("Already expanded!\n");
+        return;
+    }
+        
+    lptvid = (TVItemData*)pnmtv->itemNew.lParam;
+    if (lptvid) {
+        hr = lptvid->lpsfParent->BindToObject(lptvid->lpi,
+                0, IID_IShellFolder,(LPVOID *)&lpsf2);
 
-		if (SUCCEEDED(hr))
-		{
-			FillTreeView(lpsf2,
-				   lptvid->lpifq,
-				   pnmtv->itemNew.hItem);
-		}
+        if (SUCCEEDED(hr))
+        {
+            FillTreeView(lpsf2,
+                   lptvid->lpifq,
+                   pnmtv->itemNew.hItem);
+        }
 
-		tvscb.hParent	  = pnmtv->itemNew.hItem;
-		tvscb.lParam	  = 0;
-		tvscb.lpfnCompare = TreeViewCompareProc;
+        tvscb.hParent     = pnmtv->itemNew.hItem;
+        tvscb.lParam      = 0;
+        tvscb.lpfnCompare = TreeViewCompareProc;
 
-		SortChildrenCB(&tvscb);
-	}	
-	
-	*pResult = 0;
+        SortChildrenCB(&tvscb);
+    }   
+    
+    *pResult = 0;
 }
 
 #if 0
 /****************************************************************************
 *
-*	FUNCTION:	GetContextMenu(NMHDR* pNMHDR, LRESULT* pResult) 
+*   FUNCTION:   GetContextMenu(NMHDR* pNMHDR, LRESULT* pResult) 
 *
-*	PURPOSE:	Diplays a popup menu for the folder selected. Pass the
-*				parameters from Rclick() to this function.
+*   PURPOSE:    Diplays a popup menu for the folder selected. Pass the
+*               parameters from Rclick() to this function.
 *
-*	MESSAGEMAP: NM_RCLICK;
+*   MESSAGEMAP: NM_RCLICK;
 *
 ****************************************************************************/
 void ShellTree::GetContextMenu(NMHDR*, LRESULT* pResult) 
 {
-	POINT			pt;
-	TVItemData*		lptvid;  //Long pointer to TreeView item data
-	TV_HITTESTINFO	tvhti;
-	TV_ITEM 		tvi;
+    POINT           pt;
+    TVItemData*     lptvid;  //Long pointer to TreeView item data
+    TV_HITTESTINFO  tvhti;
+    TV_ITEM         tvi;
 
-	::GetCursorPos((LPPOINT)&pt);
-	ScreenToClient(&pt);
-	tvhti.pt=pt;
-	HitTest(&tvhti);
-	SelectItem(tvhti.hItem);
-	if (tvhti.flags & (TVHT_ONITEMLABEL|TVHT_ONITEMICON))
-	{
-		ClientToScreen(&pt);
-		tvi.mask=TVIF_PARAM;
-		tvi.hItem=tvhti.hItem;
-		
-		if (!GetItem(&tvi)){
-			return;
-		}
-		
-		lptvid = (TVItemData*)tvi.lParam;
-		
-		Pidl::DoTheMenuThing(::GetParent(m_hWnd),
-			lptvid->lpsfParent, lptvid->lpi, &pt);
-	}	
-	
-	*pResult = 0;
+    ::GetCursorPos((LPPOINT)&pt);
+    ScreenToClient(&pt);
+    tvhti.pt=pt;
+    HitTest(&tvhti);
+    SelectItem(tvhti.hItem);
+    if (tvhti.flags & (TVHT_ONITEMLABEL|TVHT_ONITEMICON))
+    {
+        ClientToScreen(&pt);
+        tvi.mask=TVIF_PARAM;
+        tvi.hItem=tvhti.hItem;
+        
+        if (!GetItem(&tvi)){
+            return;
+        }
+        
+        lptvid = (TVItemData*)tvi.lParam;
+        
+        Pidl::DoTheMenuThing(::GetParent(m_hWnd),
+            lptvid->lpsfParent, lptvid->lpi, &pt);
+    }   
+    
+    *pResult = 0;
 }
 #endif
 
@@ -696,9 +696,9 @@ void ShellTree::GetContextMenu(NMHDR*, LRESULT* pResult)
 BOOL
 ShellTree::OnSelectionChange(NMHDR* pnmh, LRESULT* pResult)
 {
-	fFolderPathValid = OnFolderSelected(pnmh, pResult, fFolderPath);
-	*pResult = 0;
-	return FALSE;	// allow window parent to handle notification
+    fFolderPathValid = OnFolderSelected(pnmh, pResult, fFolderPath);
+    *pResult = 0;
+    return FALSE;   // allow window parent to handle notification
 }
 
 /*
@@ -708,75 +708,75 @@ ShellTree::OnSelectionChange(NMHDR* pnmh, LRESULT* pResult)
  */
 BOOL
 ShellTree::OnFolderSelected(NMHDR* pNMHDR, LRESULT* pResult,
-	CString &szFolderPath) 
+    CString &szFolderPath) 
 {
-	TVItemData*		lptvid;
-	LPSHELLFOLDER	lpsf2=NULL;
-	char			szBuff[MAX_PATH];
-	HRESULT 		hr;
-	BOOL			bRet=false;
-	HTREEITEM		hItem=NULL;
+    TVItemData*     lptvid;
+    LPSHELLFOLDER   lpsf2=NULL;
+    char            szBuff[MAX_PATH];
+    HRESULT         hr;
+    BOOL            bRet=false;
+    HTREEITEM       hItem=NULL;
 
-	hItem = GetSelectedItem();
-	if (hItem) {
-		lptvid = (TVItemData*)GetItemData(hItem);
+    hItem = GetSelectedItem();
+    if (hItem) {
+        lptvid = (TVItemData*)GetItemData(hItem);
 
-		if (lptvid && lptvid->lpsfParent && lptvid->lpi)
-		{
-			hr = lptvid->lpsfParent->BindToObject(lptvid->lpi,
-					 0, IID_IShellFolder, (LPVOID *)&lpsf2);
+        if (lptvid && lptvid->lpsfParent && lptvid->lpi)
+        {
+            hr = lptvid->lpsfParent->BindToObject(lptvid->lpi,
+                     0, IID_IShellFolder, (LPVOID *)&lpsf2);
 
-			if (SUCCEEDED(hr)) {
-				ULONG ulAttrs = SFGAO_FILESYSTEM;
+            if (SUCCEEDED(hr)) {
+                ULONG ulAttrs = SFGAO_FILESYSTEM;
 
-				// Determine what type of object we have.
-				lptvid->lpsfParent->GetAttributesOf(1,
-					(const struct _ITEMIDLIST **)&lptvid->lpi, &ulAttrs);
+                // Determine what type of object we have.
+                lptvid->lpsfParent->GetAttributesOf(1,
+                    (const struct _ITEMIDLIST **)&lptvid->lpi, &ulAttrs);
 
-				if (ulAttrs & (SFGAO_FILESYSTEM)) {
-					if (SHGetPathFromIDList(lptvid->lpifq, szBuff)){
-						szFolderPath = szBuff;
-						bRet = true;
-					}
-				}
+                if (ulAttrs & (SFGAO_FILESYSTEM)) {
+                    if (SHGetPathFromIDList(lptvid->lpifq, szBuff)){
+                        szFolderPath = szBuff;
+                        bRet = true;
+                    }
+                }
 
-				if (bRet) {
-					WMSG1("Now selected: '%s'\n", szBuff);
-				} else {
-					WMSG0("Now selected: <no path>\n");
-				}
+                if (bRet) {
+                    WMSG1("Now selected: '%s'\n", szBuff);
+                } else {
+                    WMSG0("Now selected: <no path>\n");
+                }
 
 #if 0
-				// If we're expanding into new territory, load the
-				// sub-tree.  [This makes it expand things that aren't
-				// necessarily going to be opened, which is very bad for
-				// empty floppy and CD-ROM drives.  Makes little sense.]
-				TV_SORTCB tvscb;
-				NM_TREEVIEW* pnmtv = (NM_TREEVIEW*)pNMHDR;
-				if ((pnmtv->itemNew.cChildren == 1) &&
-					!(pnmtv->itemNew.state & TVIS_EXPANDEDONCE))
-				{
-					FillTreeView(lpsf2, lptvid->lpifq, pnmtv->itemNew.hItem);
+                // If we're expanding into new territory, load the
+                // sub-tree.  [This makes it expand things that aren't
+                // necessarily going to be opened, which is very bad for
+                // empty floppy and CD-ROM drives.  Makes little sense.]
+                TV_SORTCB tvscb;
+                NM_TREEVIEW* pnmtv = (NM_TREEVIEW*)pNMHDR;
+                if ((pnmtv->itemNew.cChildren == 1) &&
+                    !(pnmtv->itemNew.state & TVIS_EXPANDEDONCE))
+                {
+                    FillTreeView(lpsf2, lptvid->lpifq, pnmtv->itemNew.hItem);
 
-					tvscb.hParent	  = pnmtv->itemNew.hItem;
-					tvscb.lParam	  = 0;
-					tvscb.lpfnCompare = TreeViewCompareProc;
-					SortChildrenCB(&tvscb);
-					
-					pnmtv->itemNew.state |= TVIS_EXPANDEDONCE;
-					pnmtv->itemNew.stateMask |= TVIS_EXPANDEDONCE;
-					pnmtv->itemNew.mask |= TVIF_STATE;
-					SetItem(&pnmtv->itemNew);
-				}
+                    tvscb.hParent     = pnmtv->itemNew.hItem;
+                    tvscb.lParam      = 0;
+                    tvscb.lpfnCompare = TreeViewCompareProc;
+                    SortChildrenCB(&tvscb);
+                    
+                    pnmtv->itemNew.state |= TVIS_EXPANDEDONCE;
+                    pnmtv->itemNew.stateMask |= TVIS_EXPANDEDONCE;
+                    pnmtv->itemNew.mask |= TVIF_STATE;
+                    SetItem(&pnmtv->itemNew);
+                }
 #endif
-			}
-		}
-		if(lpsf2)
-			lpsf2->Release();
-		
-	}	
-	*pResult = 0;
-	return bRet;
+            }
+        }
+        if(lpsf2)
+            lpsf2->Release();
+        
+    }   
+    *pResult = 0;
+    return bRet;
 }
 
 /*
@@ -785,27 +785,27 @@ ShellTree::OnFolderSelected(NMHDR* pNMHDR, LRESULT* pResult,
 void
 ShellTree::OnDeleteShellItem(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	TVItemData* lptvid=NULL;
-	HRESULT hr;
-	LPMALLOC lpMalloc;
+    TVItemData* lptvid=NULL;
+    HRESULT hr;
+    LPMALLOC lpMalloc;
 
-	//WMSG0("TVN_DELETEITEM\n");
+    //WMSG0("TVN_DELETEITEM\n");
 
-	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
+    NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
 
-	//Let's free the memory for the TreeView item data...
-	hr = SHGetMalloc(&lpMalloc);
-	if (FAILED(hr))
-		return;
-		
-	lptvid = (TVItemData*)pNMTreeView->itemOld.lParam;
-	lptvid->lpsfParent->Release();
-	lpMalloc->Free(lptvid->lpi);  
-	lpMalloc->Free(lptvid->lpifq);	
-	lpMalloc->Free(lptvid);  
-	lpMalloc->Release();
+    //Let's free the memory for the TreeView item data...
+    hr = SHGetMalloc(&lpMalloc);
+    if (FAILED(hr))
+        return;
+        
+    lptvid = (TVItemData*)pNMTreeView->itemOld.lParam;
+    lptvid->lpsfParent->Release();
+    lpMalloc->Free(lptvid->lpi);  
+    lpMalloc->Free(lptvid->lpifq);  
+    lpMalloc->Free(lptvid);  
+    lpMalloc->Release();
 
-	*pResult = 0;
+    *pResult = 0;
 }
 
 /*
@@ -817,138 +817,138 @@ ShellTree::OnDeleteShellItem(NMHDR* pNMHDR, LRESULT* pResult)
 void
 ShellTree::EnableImages()
 {
-	// Get the handle to the system image list, for our icons
-	HIMAGELIST hImageList;
-	SHFILEINFO sfi;
+    // Get the handle to the system image list, for our icons
+    HIMAGELIST hImageList;
+    SHFILEINFO sfi;
 
-	hImageList = (HIMAGELIST)SHGetFileInfo((LPCSTR)"C:\\", 
-					0, &sfi, sizeof(SHFILEINFO), 
-					SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
+    hImageList = (HIMAGELIST)SHGetFileInfo((LPCSTR)"C:\\", 
+                    0, &sfi, sizeof(SHFILEINFO), 
+                    SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
 
-	// Attach ImageList to TreeView
-	if (hImageList)
-		::SendMessage(m_hWnd, TVM_SETIMAGELIST, (WPARAM) TVSIL_NORMAL,
-			(LPARAM)hImageList);
+    // Attach ImageList to TreeView
+    if (hImageList)
+        ::SendMessage(m_hWnd, TVM_SETIMAGELIST, (WPARAM) TVSIL_NORMAL,
+            (LPARAM)hImageList);
 }
 
 /****************************************************************************
 *
-*	FUNCTION:	GetSelectedFolderPath(CString &szFolderPath)
+*   FUNCTION:   GetSelectedFolderPath(CString &szFolderPath)
 *
-*	PURPOSE:	Retrieves the path of the currently selected string.
-*				Pass a CString object that will hold the folder path. 
-*				If the path is not in the filesystem(eg MyComputer) 
-*				or none is selected it returns false.
+*   PURPOSE:    Retrieves the path of the currently selected string.
+*               Pass a CString object that will hold the folder path. 
+*               If the path is not in the filesystem(eg MyComputer) 
+*               or none is selected it returns false.
 *
-*	MESSAGEMAP: NONE
+*   MESSAGEMAP: NONE
 *
 ****************************************************************************/
 BOOL ShellTree::GetSelectedFolderPath(CString &szFolderPath)
 {
-	TVItemData*		lptvid;  //Long pointer to TreeView item data
-	LPSHELLFOLDER	lpsf2=NULL;
-	char			szBuff[MAX_PATH];
-	HTREEITEM		hItem=NULL;
-	HRESULT 		hr;
-	BOOL			bRet=false;
+    TVItemData*     lptvid;  //Long pointer to TreeView item data
+    LPSHELLFOLDER   lpsf2=NULL;
+    char            szBuff[MAX_PATH];
+    HTREEITEM       hItem=NULL;
+    HRESULT         hr;
+    BOOL            bRet=false;
 
-	hItem = GetSelectedItem();
-	if(hItem)
-	{
-		lptvid = (TVItemData*)GetItemData(hItem);
+    hItem = GetSelectedItem();
+    if(hItem)
+    {
+        lptvid = (TVItemData*)GetItemData(hItem);
 
-		if (lptvid && lptvid->lpsfParent && lptvid->lpi)
-		{
-			hr = lptvid->lpsfParent->BindToObject(lptvid->lpi,
-					 0, IID_IShellFolder,(LPVOID *)&lpsf2);
+        if (lptvid && lptvid->lpsfParent && lptvid->lpi)
+        {
+            hr = lptvid->lpsfParent->BindToObject(lptvid->lpi,
+                     0, IID_IShellFolder,(LPVOID *)&lpsf2);
 
-			if (SUCCEEDED(hr))
-			{
-				ULONG ulAttrs = SFGAO_FILESYSTEM;
+            if (SUCCEEDED(hr))
+            {
+                ULONG ulAttrs = SFGAO_FILESYSTEM;
 
-				// Determine what type of object we have.
-				lptvid->lpsfParent->GetAttributesOf(1,
-					(const struct _ITEMIDLIST **)&lptvid->lpi, &ulAttrs);
+                // Determine what type of object we have.
+                lptvid->lpsfParent->GetAttributesOf(1,
+                    (const struct _ITEMIDLIST **)&lptvid->lpi, &ulAttrs);
 
-				if (ulAttrs & (SFGAO_FILESYSTEM))
-				{
-					if(SHGetPathFromIDList(lptvid->lpifq, szBuff)){
-						szFolderPath = szBuff;
-						bRet = true;
-					}
-				}
-			}
+                if (ulAttrs & (SFGAO_FILESYSTEM))
+                {
+                    if(SHGetPathFromIDList(lptvid->lpifq, szBuff)){
+                        szFolderPath = szBuff;
+                        bRet = true;
+                    }
+                }
+            }
 
-		}
-		if(lpsf2)
-			lpsf2->Release();
-	}
-	return bRet;
+        }
+        if(lpsf2)
+            lpsf2->Release();
+    }
+    return bRet;
 }
 
 /****************************************************************************
 *
-*	FUNCTION:	GetParentShellFolder(HTREEITEM folderNode)
+*   FUNCTION:   GetParentShellFolder(HTREEITEM folderNode)
 *
-*	PURPOSE:	Retrieves the pointer to the ISHELLFOLDER interface
-*				of the tree node passed as the paramter.
+*   PURPOSE:    Retrieves the pointer to the ISHELLFOLDER interface
+*               of the tree node passed as the paramter.
 *
-*	MESSAGEMAP: NONE
+*   MESSAGEMAP: NONE
 *
 ****************************************************************************/
 LPSHELLFOLDER ShellTree::GetParentShellFolder(HTREEITEM folderNode)
 {
-	TVItemData*	lptvid;  //Long pointer to TreeView item data
+    TVItemData* lptvid;  //Long pointer to TreeView item data
 
-	lptvid = (TVItemData*)GetItemData(folderNode);
-	if (lptvid)
-		return lptvid->lpsfParent;
-	else
-		return NULL;
+    lptvid = (TVItemData*)GetItemData(folderNode);
+    if (lptvid)
+        return lptvid->lpsfParent;
+    else
+        return NULL;
 }
 
 /****************************************************************************
 *
-*	FUNCTION:	GetRelativeIDLIST(HTREEITEM folderNode)
+*   FUNCTION:   GetRelativeIDLIST(HTREEITEM folderNode)
 *
-*	PURPOSE:	Retrieves the Pointer to an ITEMIDLIST structure that
-*				identifies the subfolder relative to its parent folder.
-*				see GetParentShellFolder();
+*   PURPOSE:    Retrieves the Pointer to an ITEMIDLIST structure that
+*               identifies the subfolder relative to its parent folder.
+*               see GetParentShellFolder();
 *
-*	MESSAGEMAP: NONE
+*   MESSAGEMAP: NONE
 *
 ****************************************************************************/
 LPITEMIDLIST ShellTree::GetRelativeIDLIST(HTREEITEM folderNode)
 {
-	TVItemData*	lptvid;  //Long pointer to TreeView item data
+    TVItemData* lptvid;  //Long pointer to TreeView item data
 
-	lptvid = (TVItemData*)GetItemData(folderNode);
-	if (lptvid)
-		return lptvid->lpifq;
-	else
-		return NULL;
+    lptvid = (TVItemData*)GetItemData(folderNode);
+    if (lptvid)
+        return lptvid->lpifq;
+    else
+        return NULL;
 }
 
 /****************************************************************************
 *
-*	FUNCTION:	GetFullyQualifiedIDLIST(HTREEITEM folderNode)
+*   FUNCTION:   GetFullyQualifiedIDLIST(HTREEITEM folderNode)
 *
-*	PURPOSE:	Retrieves the Pointer to an ITEMIDLIST
-*				structure that identifies the subfolder relative to the
-*				desktop. This is a fully qualified Item Identifier
+*   PURPOSE:    Retrieves the Pointer to an ITEMIDLIST
+*               structure that identifies the subfolder relative to the
+*               desktop. This is a fully qualified Item Identifier
 *
-*	MESSAGEMAP: NONE
+*   MESSAGEMAP: NONE
 *
 ****************************************************************************/
 LPITEMIDLIST ShellTree::GetFullyQualifiedID(HTREEITEM folderNode)
 {
-	TVItemData*	lptvid;  //Long pointer to TreeView item data
+    TVItemData* lptvid;  //Long pointer to TreeView item data
 
-	lptvid = (TVItemData*)GetItemData(folderNode);
-	if (lptvid)
-		return lptvid->lpifq;
-	else
-		return NULL;
+    lptvid = (TVItemData*)GetItemData(folderNode);
+    if (lptvid)
+        return lptvid->lpifq;
+    else
+        return NULL;
 }
 
 
@@ -961,65 +961,65 @@ LPITEMIDLIST ShellTree::GetFullyQualifiedID(HTREEITEM folderNode)
 void
 ShellTree::TunnelTree(CString path, CString* pResultStr)
 {
-	const char* str = path;
-	int len;
+    const char* str = path;
+    int len;
 
-	if (str[0] == '\\' && str[1] == '\\') {
-		*pResultStr = "Can't expand network locations directly.";
-		return;
-	}
-	len = strlen(path);
-	if (len < 1) {
-		*pResultStr = "You must enter a folder name.";
-		return;
-	}
+    if (str[0] == '\\' && str[1] == '\\') {
+        *pResultStr = "Can't expand network locations directly.";
+        return;
+    }
+    len = strlen(path);
+    if (len < 1) {
+        *pResultStr = "You must enter a folder name.";
+        return;
+    }
 
-	/* make sure it ends in \ so splitpath knows it's a directory */
-	if (path[len-1] != '\\')
-		path += '\\';
+    /* make sure it ends in \ so splitpath knows it's a directory */
+    if (path[len-1] != '\\')
+        path += '\\';
 
-	/* if it doesn't exist, there's not much point in searching for it */
-	PathName pathName(path);
-	if (!pathName.Exists()) {
-		*pResultStr = "Folder not found.";
-		return;
-	}
+    /* if it doesn't exist, there's not much point in searching for it */
+    PathName pathName(path);
+    if (!pathName.Exists()) {
+        *pResultStr = "Folder not found.";
+        return;
+    }
 
-	/*
-	 * Find the folder that corresponds to "My Computer", and then scan
-	 * it for the drive letter.
-	 */
-	HTREEITEM myComputer = FindMyComputer();
-	if (myComputer == nil) {
-		*pResultStr = "Unable to locate My Computer in tree.";
-		return;
-	}
+    /*
+     * Find the folder that corresponds to "My Computer", and then scan
+     * it for the drive letter.
+     */
+    HTREEITEM myComputer = FindMyComputer();
+    if (myComputer == nil) {
+        *pResultStr = "Unable to locate My Computer in tree.";
+        return;
+    }
 
-	CString drive = pathName.GetDriveOnly();
-	WMSG1("Searching for drive='%s'\n", drive);
+    CString drive = pathName.GetDriveOnly();
+    WMSG1("Searching for drive='%s'\n", drive);
 
-	HTREEITEM node = FindDrive(myComputer, drive);
-	if (node == nil) {
-		/* unexpected -- couldn't find the drive */
-		pResultStr->Format("Unable to find drive %s.", drive);
-		return;
-	}
+    HTREEITEM node = FindDrive(myComputer, drive);
+    if (node == nil) {
+        /* unexpected -- couldn't find the drive */
+        pResultStr->Format("Unable to find drive %s.", drive);
+        return;
+    }
 
-	/*
-	 * We've got the node for the drive.  Now we just need to walk
-	 * through the tree one level at a time, comparing the name in
-	 * the tree against our pathname component.
-	 */
-	node = SearchTree(node, pathName.GetPathOnly());
+    /*
+     * We've got the node for the drive.  Now we just need to walk
+     * through the tree one level at a time, comparing the name in
+     * the tree against our pathname component.
+     */
+    node = SearchTree(node, pathName.GetPathOnly());
 
-	if (node == nil) {
-		/* unexpected -- file doesn't exist */
-		pResultStr->Format("Unable to find file '%s'.",
-			pathName.GetPathOnly());
-	} else {
-		Select(node, TVGN_CARET);
-		EnsureVisible(node);
-	}
+    if (node == nil) {
+        /* unexpected -- file doesn't exist */
+        pResultStr->Format("Unable to find file '%s'.",
+            pathName.GetPathOnly());
+    } else {
+        Select(node, TVGN_CARET);
+        EnsureVisible(node);
+    }
 }
 
 /*
@@ -1040,51 +1040,51 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
 HTREEITEM
 ShellTree::FindMyComputer(void)
 {
-	LPSHELLFOLDER desktop = nil;
-	LPITEMIDLIST myComputerPidl = nil;
-	LPMALLOC lpMalloc = nil;
-	HTREEITEM node;
-	HTREEITEM result = nil;
-	HRESULT hr;
+    LPSHELLFOLDER desktop = nil;
+    LPITEMIDLIST myComputerPidl = nil;
+    LPMALLOC lpMalloc = nil;
+    HTREEITEM node;
+    HTREEITEM result = nil;
+    HRESULT hr;
 
-	hr = ::SHGetMalloc(&lpMalloc);
-	if (FAILED(hr))
-	   return nil;
+    hr = ::SHGetMalloc(&lpMalloc);
+    if (FAILED(hr))
+       return nil;
 
-	hr = SHGetDesktopFolder(&desktop);
-	if (FAILED(hr))
-		goto bail;
+    hr = SHGetDesktopFolder(&desktop);
+    if (FAILED(hr))
+        goto bail;
 
-	hr = SHGetSpecialFolderLocation(nil, CSIDL_DRIVES, &myComputerPidl);
-	if (FAILED(hr))
-		goto bail;
+    hr = SHGetSpecialFolderLocation(nil, CSIDL_DRIVES, &myComputerPidl);
+    if (FAILED(hr))
+        goto bail;
 
-	node = GetRootItem();
-	while (node != nil) {
-		CString itemText = GetItemText(node);
-		TVItemData* pData = (TVItemData*) GetItemData(node);
-		ASSERT(pData != nil);
+    node = GetRootItem();
+    while (node != nil) {
+        CString itemText = GetItemText(node);
+        TVItemData* pData = (TVItemData*) GetItemData(node);
+        ASSERT(pData != nil);
 
-		hr = desktop->CompareIDs(0, myComputerPidl, pData->lpi);
-		if (SUCCEEDED(hr) && HRESULT_CODE(hr) == 0) {
-			WMSG1("MATCHED on '%s'\n", itemText);
-			result = node;
-			break;
-		}
-		node = GetNextSiblingItem(node);
-	}
+        hr = desktop->CompareIDs(0, myComputerPidl, pData->lpi);
+        if (SUCCEEDED(hr) && HRESULT_CODE(hr) == 0) {
+            WMSG1("MATCHED on '%s'\n", itemText);
+            result = node;
+            break;
+        }
+        node = GetNextSiblingItem(node);
+    }
 
-	if (result != nil && !ItemHasChildren(result)) {
-		WMSG0("Glitch: My Computer has no children\n");
-		result = nil;
-	}
+    if (result != nil && !ItemHasChildren(result)) {
+        WMSG0("Glitch: My Computer has no children\n");
+        result = nil;
+    }
 
 bail:
-	if (desktop != nil)
-		desktop->Release();
-	lpMalloc->Free(myComputerPidl);
-	lpMalloc->Release();
-	return result;
+    if (desktop != nil)
+        desktop->Release();
+    lpMalloc->Free(myComputerPidl);
+    lpMalloc->Release();
+    return result;
 }
 
 /*
@@ -1097,41 +1097,41 @@ bail:
 HTREEITEM
 ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
 {
-	CString udrive;
+    CString udrive;
 
-	/* expand & scan */
-	Expand(myComputer, TVE_EXPAND);
+    /* expand & scan */
+    Expand(myComputer, TVE_EXPAND);
 
-	HTREEITEM node;
-	node = GetChildItem(myComputer);
-	if (node == nil) {
-		ASSERT(false);	// we verified My Computer has kids earlier
-		return nil;
-	}
+    HTREEITEM node;
+    node = GetChildItem(myComputer);
+    if (node == nil) {
+        ASSERT(false);  // we verified My Computer has kids earlier
+        return nil;
+    }
 
-	/*
-	 * Look for the drive letter.  It's buried amongst other fluff, so
-	 * we have to rely on Windows preventing the use of a ":" anywhere
-	 * else in the string to avoid false-positives.
-	 *
-	 * We *might* be able to assume it looks like "(C:)", but that's
-	 * probably unwise.
-	 */
-	udrive = drive;
-	udrive.MakeUpper();
-	while (node != nil) {
-		CString itemText = GetItemText(node);
-		itemText.MakeUpper();
+    /*
+     * Look for the drive letter.  It's buried amongst other fluff, so
+     * we have to rely on Windows preventing the use of a ":" anywhere
+     * else in the string to avoid false-positives.
+     *
+     * We *might* be able to assume it looks like "(C:)", but that's
+     * probably unwise.
+     */
+    udrive = drive;
+    udrive.MakeUpper();
+    while (node != nil) {
+        CString itemText = GetItemText(node);
+        itemText.MakeUpper();
 
-		//WMSG2("COMPARING '%s' vs '%s'\n", udrive, itemText);
-		if (itemText.Find(udrive) != -1) {
-			WMSG2("MATCHED '%s' in '%s'\n", udrive, itemText);
-			break;
-		}
-		node = GetNextSiblingItem(node);
-	}
+        //WMSG2("COMPARING '%s' vs '%s'\n", udrive, itemText);
+        if (itemText.Find(udrive) != -1) {
+            WMSG2("MATCHED '%s' in '%s'\n", udrive, itemText);
+            break;
+        }
+        node = GetNextSiblingItem(node);
+    }
 
-	return node;
+    return node;
 }
 
 /*
@@ -1144,53 +1144,53 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
 HTREEITEM
 ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
 {
-	WMSG2("SearchTree node=0x%08lx path='%s'\n",
-		treeNode, (LPCTSTR) path);
+    WMSG2("SearchTree node=0x%08lx path='%s'\n",
+        treeNode, (LPCTSTR) path);
 
-	HTREEITEM node;
-	CString mangle(path);
-	char* start;
-	char* end;
+    HTREEITEM node;
+    CString mangle(path);
+    char* start;
+    char* end;
 
-	/* make a copy of "path" that we can mess with */
-	start = mangle.GetBuffer(0);
-	if (start == nil || *start != '\\' || *(start + strlen(start)-1) != '\\')
-		return nil;
-	start++;
+    /* make a copy of "path" that we can mess with */
+    start = mangle.GetBuffer(0);
+    if (start == nil || *start != '\\' || *(start + strlen(start)-1) != '\\')
+        return nil;
+    start++;
 
-	node = treeNode;
-	while (*start != '\0') {
-		/* grab first node in next level down */
-		Expand(node, TVE_EXPAND);	// need to fill in the tree
-		node = GetChildItem(node);
+    node = treeNode;
+    while (*start != '\0') {
+        /* grab first node in next level down */
+        Expand(node, TVE_EXPAND);   // need to fill in the tree
+        node = GetChildItem(node);
 
-		end = strchr(start, '\\');
-		if (end == nil) {
-			ASSERT(false);
-			return nil;
-		}
-		*end = '\0';
+        end = strchr(start, '\\');
+        if (end == nil) {
+            ASSERT(false);
+            return nil;
+        }
+        *end = '\0';
 
-		while (node != nil) {
-			CString itemText = GetItemText(node);
+        while (node != nil) {
+            CString itemText = GetItemText(node);
 
-			//WMSG2("COMPARE '%s' '%s'\n", start, itemText);
-			if (itemText.CompareNoCase(start) == 0) {
-				//WMSG2("MATCHED '%s' '%s'\n", itemText, start);
-				break;
-			}
+            //WMSG2("COMPARE '%s' '%s'\n", start, itemText);
+            if (itemText.CompareNoCase(start) == 0) {
+                //WMSG2("MATCHED '%s' '%s'\n", itemText, start);
+                break;
+            }
 
-			node = GetNextSiblingItem(node);
-		}
-		if (node == nil) {
-			WMSG2("NOT FOUND '%s' '%s'\n", (LPCTSTR) path, start);
-			break;
-		}
+            node = GetNextSiblingItem(node);
+        }
+        if (node == nil) {
+            WMSG2("NOT FOUND '%s' '%s'\n", (LPCTSTR) path, start);
+            break;
+        }
 
-		start = end+1;
-	}
+        start = end+1;
+    }
 
-	return node;
+    return node;
 }
 
 
@@ -1198,132 +1198,132 @@ ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
 
 /****************************************************************************
 *
-*	FUNCTION:	SearchTree( HTREEITEM treeNode,
-*							CString szSearchName )
+*   FUNCTION:   SearchTree( HTREEITEM treeNode,
+*                           CString szSearchName )
 *
-*	PURPOSE:	Too crude to explain, just use it
+*   PURPOSE:    Too crude to explain, just use it
 *
-*	WARNING:	Only works if you use the default PopulateTree()
-*				Not guaranteed to work on any future or existing
-*				version of windows. Use with caution. Pretty much
-*				ok if you're using on local drives
+*   WARNING:    Only works if you use the default PopulateTree()
+*               Not guaranteed to work on any future or existing
+*               version of windows. Use with caution. Pretty much
+*               ok if you're using on local drives
 *
 ****************************************************************************/
 bool ShellTree::SearchTree(HTREEITEM treeNode,
-							CString szSearchName,
-							FindAttribs attr)
+                            CString szSearchName,
+                            FindAttribs attr)
 {
-	TVItemData*	lptvid;  //Long pointer to TreeView item data
-	LPSHELLFOLDER	lpsf2=NULL;
-	char	drive[_MAX_DRIVE];
-	char	dir[_MAX_DIR];
-	char	fname[_MAX_FNAME];
-	char	ext[_MAX_EXT];
-	bool	bRet=false;
-	HRESULT hr;
-	CString szCompare;
+    TVItemData* lptvid;  //Long pointer to TreeView item data
+    LPSHELLFOLDER   lpsf2=NULL;
+    char    drive[_MAX_DRIVE];
+    char    dir[_MAX_DIR];
+    char    fname[_MAX_FNAME];
+    char    ext[_MAX_EXT];
+    bool    bRet=false;
+    HRESULT hr;
+    CString szCompare;
 
-	szSearchName.MakeUpper();
-	while(treeNode && bRet==false)
-	{
-		lptvid=(TVItemData*)GetItemData(treeNode);
-		if (lptvid && lptvid->lpsfParent && lptvid->lpi)
-		{
-			hr=lptvid->lpsfParent->BindToObject(lptvid->lpi,
-					 0,IID_IShellFolder,(LPVOID *)&lpsf2);
-			if (SUCCEEDED(hr))
-			{
-				ULONG ulAttrs = SFGAO_FILESYSTEM;
-				lptvid->lpsfParent->GetAttributesOf(1,
-					(const struct _ITEMIDLIST **)&lptvid->lpi, &ulAttrs);
-				if (ulAttrs & (SFGAO_FILESYSTEM))
-				{
-					if(SHGetPathFromIDList(lptvid->lpifq,
-						szCompare.GetBuffer(MAX_PATH)))
-					{
-						switch(attr)
-						{
-						case type_drive:
-							_splitpath(szCompare,drive,dir,fname,ext);
-							szCompare=drive;
-							break;
-						case type_folder:
-							szCompare = GetItemText(treeNode);
-							break;
-						}
-						szCompare.MakeUpper();
-						if(szCompare == szSearchName)
-						{
-							EnsureVisible(treeNode);
-							SelectItem(treeNode);
-							bRet=true;
-						}
-					}
-				}
-				lpsf2->Release();
-			}
-		}
-		treeNode = GetNextSiblingItem(treeNode);
-	}
-	return bRet;
+    szSearchName.MakeUpper();
+    while(treeNode && bRet==false)
+    {
+        lptvid=(TVItemData*)GetItemData(treeNode);
+        if (lptvid && lptvid->lpsfParent && lptvid->lpi)
+        {
+            hr=lptvid->lpsfParent->BindToObject(lptvid->lpi,
+                     0,IID_IShellFolder,(LPVOID *)&lpsf2);
+            if (SUCCEEDED(hr))
+            {
+                ULONG ulAttrs = SFGAO_FILESYSTEM;
+                lptvid->lpsfParent->GetAttributesOf(1,
+                    (const struct _ITEMIDLIST **)&lptvid->lpi, &ulAttrs);
+                if (ulAttrs & (SFGAO_FILESYSTEM))
+                {
+                    if(SHGetPathFromIDList(lptvid->lpifq,
+                        szCompare.GetBuffer(MAX_PATH)))
+                    {
+                        switch(attr)
+                        {
+                        case type_drive:
+                            _splitpath(szCompare,drive,dir,fname,ext);
+                            szCompare=drive;
+                            break;
+                        case type_folder:
+                            szCompare = GetItemText(treeNode);
+                            break;
+                        }
+                        szCompare.MakeUpper();
+                        if(szCompare == szSearchName)
+                        {
+                            EnsureVisible(treeNode);
+                            SelectItem(treeNode);
+                            bRet=true;
+                        }
+                    }
+                }
+                lpsf2->Release();
+            }
+        }
+        treeNode = GetNextSiblingItem(treeNode);
+    }
+    return bRet;
 }
 
 /****************************************************************************
 *
-*	FUNCTION:	TunnelTree(CString szFindPath)
+*   FUNCTION:   TunnelTree(CString szFindPath)
 *
-*	PURPOSE:	Too crude to explain, just use it
+*   PURPOSE:    Too crude to explain, just use it
 *
-*	WARNING:	Only works if you use the default PopulateTree()
-*				Not guaranteed to work on any future or existing
-*				version of windows. Use with caution. Pretty much
-*				ok if you're using on local drives
+*   WARNING:    Only works if you use the default PopulateTree()
+*               Not guaranteed to work on any future or existing
+*               version of windows. Use with caution. Pretty much
+*               ok if you're using on local drives
 *
 ****************************************************************************/
 void ShellTree::TunnelTree(CString szFindPath)
 {
-	HTREEITEM subNode = GetRootItem();
-	CString szPathHop;
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	char fname[_MAX_FNAME];
-	char ext[_MAX_EXT];
-	char delimiter[]="\\";
+    HTREEITEM subNode = GetRootItem();
+    CString szPathHop;
+    char drive[_MAX_DRIVE];
+    char dir[_MAX_DIR];
+    char fname[_MAX_FNAME];
+    char ext[_MAX_EXT];
+    char delimiter[]="\\";
 
-	PathName checkPath(szFindPath);
-	if(!checkPath.Exists())
-	{
-		MessageBox(szFindPath,"Folder not found",MB_ICONERROR);
-		return;
-	}
-		
-	if(szFindPath.ReverseFind('\\') != szFindPath.GetLength()-1)
-	{
-		szFindPath += "\\";
-	}
+    PathName checkPath(szFindPath);
+    if(!checkPath.Exists())
+    {
+        MessageBox(szFindPath,"Folder not found",MB_ICONERROR);
+        return;
+    }
+        
+    if(szFindPath.ReverseFind('\\') != szFindPath.GetLength()-1)
+    {
+        szFindPath += "\\";
+    }
 
-	_splitpath(szFindPath,drive,dir,fname,ext);
+    _splitpath(szFindPath,drive,dir,fname,ext);
 
-	//search the drive first
-	szPathHop=drive;
-	subNode=GetChildItem(subNode);
-	if(subNode)
-	{
-		if(SearchTree(subNode,szPathHop, ShellTree::type_drive))
-		{
-			//break down subfolders and search
-			char *p=strtok(dir,delimiter);
-			while(p)
-			{
-				subNode = GetSelectedItem();
-				subNode = GetChildItem(subNode);
-				if(SearchTree(subNode,p,ShellTree::type_folder))
-					p=strtok(NULL,delimiter);
-				else
-					p=NULL;
-			}
-		}
-	}
+    //search the drive first
+    szPathHop=drive;
+    subNode=GetChildItem(subNode);
+    if(subNode)
+    {
+        if(SearchTree(subNode,szPathHop, ShellTree::type_drive))
+        {
+            //break down subfolders and search
+            char *p=strtok(dir,delimiter);
+            while(p)
+            {
+                subNode = GetSelectedItem();
+                subNode = GetChildItem(subNode);
+                if(SearchTree(subNode,p,ShellTree::type_folder))
+                    p=strtok(NULL,delimiter);
+                else
+                    p=NULL;
+            }
+        }
+    }
 }
 
 
@@ -1333,180 +1333,180 @@ void ShellTree::TunnelTree(CString szFindPath)
 
 /****************************************************************************
 *
-*	FUNCTION:	SearchTree( HTREEITEM treeNode,
-*							CString szSearchName )
+*   FUNCTION:   SearchTree( HTREEITEM treeNode,
+*                           CString szSearchName )
 *
-*	PURPOSE:	Too crude to explain, just use it
+*   PURPOSE:    Too crude to explain, just use it
 *
-*	WARNING:	Only works if you use the default PopulateTree()
-*				Not guaranteed to work on any future or existing
-*				version of windows. Use with caution. Pretty much
-*				ok if you're using on local drives
+*   WARNING:    Only works if you use the default PopulateTree()
+*               Not guaranteed to work on any future or existing
+*               version of windows. Use with caution. Pretty much
+*               ok if you're using on local drives
 *
 ****************************************************************************/
 bool ShellTree::SearchTree(HTREEITEM treeNode,
-							CString szSearchName,
-							FindAttribs attr)
+                            CString szSearchName,
+                            FindAttribs attr)
 {
-	TVItemData*	lptvid;  //Long pointer to TreeView item data
-	LPSHELLFOLDER	lpsf2=NULL;
-	char	drive[_MAX_DRIVE];
-	char	dir[_MAX_DIR];
-	char	fname[_MAX_FNAME];
-	char	ext[_MAX_EXT];
-	bool	bRet=false;
-	HRESULT hr;
-	CString szCompare;
+    TVItemData* lptvid;  //Long pointer to TreeView item data
+    LPSHELLFOLDER   lpsf2=NULL;
+    char    drive[_MAX_DRIVE];
+    char    dir[_MAX_DIR];
+    char    fname[_MAX_FNAME];
+    char    ext[_MAX_EXT];
+    bool    bRet=false;
+    HRESULT hr;
+    CString szCompare;
 
-	szSearchName.MakeUpper();
-	while(treeNode && bRet==false)
-	{
-		lptvid=(TVItemData*)GetItemData(treeNode);
-		if (lptvid && lptvid->lpsfParent && lptvid->lpi)
-		{
-			hr=lptvid->lpsfParent->BindToObject(lptvid->lpi,
-					 0,IID_IShellFolder,(LPVOID *)&lpsf2);
-			if (SUCCEEDED(hr))
-			{
-				ULONG ulAttrs = SFGAO_FILESYSTEM;
-				lptvid->lpsfParent->GetAttributesOf(1, (const struct _ITEMIDLIST **)&lptvid->lpi, &ulAttrs);
-				if (ulAttrs & (SFGAO_FILESYSTEM))
-				{
-					if(SHGetPathFromIDList(lptvid->lpifq,
-						szCompare.GetBuffer(MAX_PATH)))
-					{
-						CString folder;
+    szSearchName.MakeUpper();
+    while(treeNode && bRet==false)
+    {
+        lptvid=(TVItemData*)GetItemData(treeNode);
+        if (lptvid && lptvid->lpsfParent && lptvid->lpi)
+        {
+            hr=lptvid->lpsfParent->BindToObject(lptvid->lpi,
+                     0,IID_IShellFolder,(LPVOID *)&lpsf2);
+            if (SUCCEEDED(hr))
+            {
+                ULONG ulAttrs = SFGAO_FILESYSTEM;
+                lptvid->lpsfParent->GetAttributesOf(1, (const struct _ITEMIDLIST **)&lptvid->lpi, &ulAttrs);
+                if (ulAttrs & (SFGAO_FILESYSTEM))
+                {
+                    if(SHGetPathFromIDList(lptvid->lpifq,
+                        szCompare.GetBuffer(MAX_PATH)))
+                    {
+                        CString folder;
 
-						SHGetSpecialFolderPath(NULL, 
-							folder.GetBuffer(MAX_PATH), 
-							CSIDL_COMMON_DESKTOPDIRECTORY, FALSE);	
-						if( szCompare.Find( folder ) != -1 )
-							if( szSearchName.Find( szCompare ) == -1 ) {
-								WMSG1("Magic match on '%s'\n", szCompare);
-								return false;
-							}
+                        SHGetSpecialFolderPath(NULL, 
+                            folder.GetBuffer(MAX_PATH), 
+                            CSIDL_COMMON_DESKTOPDIRECTORY, FALSE);  
+                        if( szCompare.Find( folder ) != -1 )
+                            if( szSearchName.Find( szCompare ) == -1 ) {
+                                WMSG1("Magic match on '%s'\n", szCompare);
+                                return false;
+                            }
 
-						SHGetSpecialFolderPath(NULL,
-							folder.GetBuffer(MAX_PATH),
-							CSIDL_DESKTOPDIRECTORY, FALSE );	
-						if( szCompare.Find( folder ) != -1 )
-							if( szSearchName.Find( szCompare ) == -1 ) {
-								WMSG4("MAGIC '%s'='%s' and '%s'='%s'\n",
-									szCompare, folder, szSearchName, szCompare);
-								return false;
-							}
+                        SHGetSpecialFolderPath(NULL,
+                            folder.GetBuffer(MAX_PATH),
+                            CSIDL_DESKTOPDIRECTORY, FALSE );    
+                        if( szCompare.Find( folder ) != -1 )
+                            if( szSearchName.Find( szCompare ) == -1 ) {
+                                WMSG4("MAGIC '%s'='%s' and '%s'='%s'\n",
+                                    szCompare, folder, szSearchName, szCompare);
+                                return false;
+                            }
 
-						SHGetSpecialFolderPath(NULL,
-							folder.GetBuffer(MAX_PATH),
-							CSIDL_PERSONAL, FALSE ); 
-						if( szCompare.Find( folder ) != -1 )
-							if( szSearchName.Find( szCompare ) == -1 ) {
-								WMSG1("Magic match on '%s'\n", szCompare);
-								return false;
-							}
+                        SHGetSpecialFolderPath(NULL,
+                            folder.GetBuffer(MAX_PATH),
+                            CSIDL_PERSONAL, FALSE ); 
+                        if( szCompare.Find( folder ) != -1 )
+                            if( szSearchName.Find( szCompare ) == -1 ) {
+                                WMSG1("Magic match on '%s'\n", szCompare);
+                                return false;
+                            }
 
-						switch(attr) {
-						case type_drive:
-							_splitpath(szCompare,drive,dir,fname,ext);
-							szCompare = drive;
-							break;
-						case type_folder:
-							szCompare = GetItemText(treeNode);
-							break;
-						}
-						szCompare.MakeUpper();
-						if(szCompare == szSearchName)
-						{
-							EnsureVisible(treeNode);
-							SelectItem(treeNode);
-							bRet=true;
-						}
-					}
-				}
-				lpsf2->Release();
-			}
-		}
-		treeNode = GetNextSiblingItem(treeNode);
-	}
-	return bRet;
+                        switch(attr) {
+                        case type_drive:
+                            _splitpath(szCompare,drive,dir,fname,ext);
+                            szCompare = drive;
+                            break;
+                        case type_folder:
+                            szCompare = GetItemText(treeNode);
+                            break;
+                        }
+                        szCompare.MakeUpper();
+                        if(szCompare == szSearchName)
+                        {
+                            EnsureVisible(treeNode);
+                            SelectItem(treeNode);
+                            bRet=true;
+                        }
+                    }
+                }
+                lpsf2->Release();
+            }
+        }
+        treeNode = GetNextSiblingItem(treeNode);
+    }
+    return bRet;
 }
 
 /****************************************************************************
 *
-*	FUNCTION:	TunnelTree(CString szFindPath)
+*   FUNCTION:   TunnelTree(CString szFindPath)
 *
-*	PURPOSE:	Too crude to explain, just use it
+*   PURPOSE:    Too crude to explain, just use it
 *
-*	WARNING:	Only works if you use the default PopulateTree()
-*				Not guaranteed to work on any future or existing
-*				version of windows. Use with caution. Pretty much
-*				ok if you're using on local drives
+*   WARNING:    Only works if you use the default PopulateTree()
+*               Not guaranteed to work on any future or existing
+*               version of windows. Use with caution. Pretty much
+*               ok if you're using on local drives
 *
 ****************************************************************************/
 void ShellTree::TunnelTree(CString szFindPath)
 {
-	HTREEITEM subNode = GetRootItem();
-	CString szPathHop;
-	char drive[_MAX_DRIVE];
-	char dir[_MAX_DIR];
-	char fname[_MAX_FNAME];
-	char ext[_MAX_EXT];
-	char delimiter[]="\\";
+    HTREEITEM subNode = GetRootItem();
+    CString szPathHop;
+    char drive[_MAX_DRIVE];
+    char dir[_MAX_DIR];
+    char fname[_MAX_FNAME];
+    char ext[_MAX_EXT];
+    char delimiter[]="\\";
 
-	PathName checkPath(szFindPath);
-	if(!checkPath.Exists()) {
-		MessageBox(szFindPath,"Folder not found",MB_ICONERROR);
-		return;
-	}
-		
-	if(szFindPath.ReverseFind('\\') != szFindPath.GetLength()-1) {
-		szFindPath += "\\";
-	}
+    PathName checkPath(szFindPath);
+    if(!checkPath.Exists()) {
+        MessageBox(szFindPath,"Folder not found",MB_ICONERROR);
+        return;
+    }
+        
+    if(szFindPath.ReverseFind('\\') != szFindPath.GetLength()-1) {
+        szFindPath += "\\";
+    }
 
-	_splitpath(szFindPath, drive, dir, fname, ext);
+    _splitpath(szFindPath, drive, dir, fname, ext);
 
-	HTREEITEM root = subNode;
-	//search the drive first
-	szPathHop=drive;
-	do {
-		CString currItem = GetItemText( root );
-		WMSG2("Scanning '%s' for drive '%s'\n", currItem, szPathHop);
-		if (ItemHasChildren(root))
-		{
-			Expand(root, TVE_EXPAND);
-			subNode = GetChildItem(root);
-			if(subNode)
-			{
-				if(SearchTree(subNode, szPathHop, ShellTree::type_drive))
-				{
-					// we have a match on the drive; SearchTree will have
-					// left it as the selected item
-					WMSG1("Tunnel match '%s' in subnode\n", szPathHop);
+    HTREEITEM root = subNode;
+    //search the drive first
+    szPathHop=drive;
+    do {
+        CString currItem = GetItemText( root );
+        WMSG2("Scanning '%s' for drive '%s'\n", currItem, szPathHop);
+        if (ItemHasChildren(root))
+        {
+            Expand(root, TVE_EXPAND);
+            subNode = GetChildItem(root);
+            if(subNode)
+            {
+                if(SearchTree(subNode, szPathHop, ShellTree::type_drive))
+                {
+                    // we have a match on the drive; SearchTree will have
+                    // left it as the selected item
+                    WMSG1("Tunnel match '%s' in subnode\n", szPathHop);
 
-					// break down subfolders and search
-					char* p = strtok(dir, delimiter);
-					while (p) {
-						subNode = GetSelectedItem();
-						subNode = GetChildItem(subNode);
-						if(SearchTree(subNode, p, ShellTree::type_folder))
-							p=strtok(NULL,delimiter);
-						else
-							p=NULL;
-					}
-					return;
-				}
-			}
-			Expand(root, TVE_COLLAPSE);
-		}
+                    // break down subfolders and search
+                    char* p = strtok(dir, delimiter);
+                    while (p) {
+                        subNode = GetSelectedItem();
+                        subNode = GetChildItem(subNode);
+                        if(SearchTree(subNode, p, ShellTree::type_folder))
+                            p=strtok(NULL,delimiter);
+                        else
+                            p=NULL;
+                    }
+                    return;
+                }
+            }
+            Expand(root, TVE_COLLAPSE);
+        }
 
-		root = GetNextSiblingItem( root );
-	} while( root );
+        root = GetNextSiblingItem( root );
+    } while( root );
 }
 #endif
 
 
 
-#if 0	// quick test
+#if 0   // quick test
 LPMALLOC g_pMalloc = nil;
 
 // Main_OnBrowse - browses for a program folder. 
@@ -1521,8 +1521,8 @@ void Main_OnBrowse(HWND hwnd)
     LPITEMIDLIST pidlPrograms;  // PIDL for Programs folder 
     LPITEMIDLIST pidlBrowse;    // PIDL selected by user 
  
-	if (g_pMalloc == nil)
-		::SHGetMalloc(&g_pMalloc);
+    if (g_pMalloc == nil)
+        ::SHGetMalloc(&g_pMalloc);
 
     // Allocate a buffer to receive browse information. 
     if ((lpBuffer = (LPSTR) g_pMalloc->Alloc( 

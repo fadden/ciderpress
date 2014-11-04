@@ -19,10 +19,10 @@
  * Following the 128-byte header (or at the very start of the data fork for
  * a file on the Mac) is:
  *
- *	+000-003: 4-byte big-endian version number (0 or 2)
- *	+004-307: pattern data (38 patterns * 8 bytes), not needed to decode image
- *	+308-511: 240 bytes of zeroes, used for padding
- *	+512-nnn: PackBits-encoded scan lines (72 bytes of output each)
+ *  +000-003: 4-byte big-endian version number (0 or 2)
+ *  +004-307: pattern data (38 patterns * 8 bytes), not needed to decode image
+ *  +308-511: 240 bytes of zeroes, used for padding
+ *  +512-nnn: PackBits-encoded scan lines (72 bytes of output each)
  *
  * The files seem to be stored in 512-byte chunks, but it's probably unwise to
  * expect anything other than some extra bytes at the end.
@@ -42,37 +42,37 @@
 void
 ReformatMacPaint::Examine(ReformatHolder* pHolder)
 {
-	ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
-	const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
-	long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
-	const char* nameExt = pHolder->GetNameExt();
-	long version;
+    ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
+    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    const char* nameExt = pHolder->GetNameExt();
+    long version;
 
-	if (fileLen < kMinSize) {
-		WMSG2("  MP: not long enough to be MacPaint (%d vs min %d)\n",
-			fileLen, kMinSize);
-		goto done;
-	} 
+    if (fileLen < kMinSize) {
+        WMSG2("  MP: not long enough to be MacPaint (%d vs min %d)\n",
+            fileLen, kMinSize);
+        goto done;
+    } 
 
-	version = Get32BE(ptr);
-	if (strcasecmp(nameExt, ".mac") == 0 && version >= 0 && version <= 3) {
-		WMSG0("  MP: found w/o MacBinary header\n");
-		applies = ReformatHolder::kApplicProbably;
-		goto done;
-	}
+    version = Get32BE(ptr);
+    if (strcasecmp(nameExt, ".mac") == 0 && version >= 0 && version <= 3) {
+        WMSG0("  MP: found w/o MacBinary header\n");
+        applies = ReformatHolder::kApplicProbably;
+        goto done;
+    }
 
-	version = Get32BE(ptr + 128);
-	if (version >= 0 && version <= 3 &&
-		ptr[65] == 'P' && ptr[66] == 'N' && ptr[67] == 'T' && ptr[68] == 'G')
-	{
-		WMSG0("  MP: found inside MacBinary header\n");
-		applies = ReformatHolder::kApplicProbably;
-		goto done;
-	}
+    version = Get32BE(ptr + 128);
+    if (version >= 0 && version <= 3 &&
+        ptr[65] == 'P' && ptr[66] == 'N' && ptr[67] == 'T' && ptr[68] == 'G')
+    {
+        WMSG0("  MP: found inside MacBinary header\n");
+        applies = ReformatHolder::kApplicProbably;
+        goto done;
+    }
 
 done:
-	pHolder->SetApplic(ReformatHolder::kReformatMacPaint, applies,
-		ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    pHolder->SetApplic(ReformatHolder::kReformatMacPaint, applies,
+        ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
 }
 
 /*
@@ -80,28 +80,28 @@ done:
  */
 int
 ReformatMacPaint::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	MyDIBitmap* pDib;
-	const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	int retval = -1;
+    MyDIBitmap* pDib;
+    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    int retval = -1;
 
-	if (srcLen < kMinSize || srcLen > kMaxSize) {
-		WMSG1(" MacPaint file is only %d bytes long\n", srcLen);
-		goto bail;
-	}
+    if (srcLen < kMinSize || srcLen > kMaxSize) {
+        WMSG1(" MacPaint file is only %d bytes long\n", srcLen);
+        goto bail;
+    }
 
-	pDib = ConvertMacPaint(srcBuf, srcLen);
-	if (pDib == nil)
-		goto bail;
+    pDib = ConvertMacPaint(srcBuf, srcLen);
+    if (pDib == nil)
+        goto bail;
 
-	SetResultBuffer(pOutput, pDib);
-	retval = 0;
+    SetResultBuffer(pOutput, pDib);
+    retval = 0;
 
 bail:
-	return retval;
+    return retval;
 }
 
 /*
@@ -113,71 +113,71 @@ bail:
 MyDIBitmap*
 ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
 {
-	MyDIBitmap* pDib = nil;
-	unsigned char* outBuf;
-	static const RGBQUAD colorConv[2] = {
-		/* blue, green, red, reserved */
-		{ 0x00, 0x00, 0x00 },	// black
-		{ 0xff, 0xff, 0xff },	// white
-	};
-	long version1, version2;
-	int offset;
+    MyDIBitmap* pDib = nil;
+    unsigned char* outBuf;
+    static const RGBQUAD colorConv[2] = {
+        /* blue, green, red, reserved */
+        { 0x00, 0x00, 0x00 },   // black
+        { 0xff, 0xff, 0xff },   // white
+    };
+    long version1, version2;
+    int offset;
 
-	version1 = Get32BE(srcBuf);
-	version2 = Get32BE(srcBuf+128);
-	if (version1 >= 0 && version1 <= 3) {
-		offset = 0;
-	} else if (version2 >= 0 && version2 <= 3 &&
-		srcBuf[65] == 'P' && srcBuf[66] == 'N' && srcBuf[67] == 'T' && srcBuf[68] == 'G')
-	{
-		offset = 128;
-	} else {
-		WMSG0("  MP couldn't determine picture offset!\n");
-		goto bail;
-	}
-	
-	pDib = new MyDIBitmap;
-	if (pDib == nil)
-		goto bail;
+    version1 = Get32BE(srcBuf);
+    version2 = Get32BE(srcBuf+128);
+    if (version1 >= 0 && version1 <= 3) {
+        offset = 0;
+    } else if (version2 >= 0 && version2 <= 3 &&
+        srcBuf[65] == 'P' && srcBuf[66] == 'N' && srcBuf[67] == 'T' && srcBuf[68] == 'G')
+    {
+        offset = 128;
+    } else {
+        WMSG0("  MP couldn't determine picture offset!\n");
+        goto bail;
+    }
+    
+    pDib = new MyDIBitmap;
+    if (pDib == nil)
+        goto bail;
 
-	srcBuf += offset;
-	srcBuf += kLeadingJunkCount;
-	length -= offset;
-	length -= kLeadingJunkCount;
-	WMSG1("Adjusted len is %d\n", length);
+    srcBuf += offset;
+    srcBuf += kLeadingJunkCount;
+    length -= offset;
+    length -= kLeadingJunkCount;
+    WMSG1("Adjusted len is %d\n", length);
 
-	outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
-									1, kNumColors);
-	if (outBuf == nil) {
-		delete pDib;
-		pDib = nil;
-		goto bail;
-	}
-	pDib->SetColorTable(colorConv);
+    outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
+                                    1, kNumColors);
+    if (outBuf == nil) {
+        delete pDib;
+        pDib = nil;
+        goto bail;
+    }
+    pDib->SetColorTable(colorConv);
 
-	unsigned char* outPtr;
-	int line;
+    unsigned char* outPtr;
+    int line;
 
-	/* top row goes at the bottom of the buffer */
-	outPtr = outBuf + (kOutputHeight-1) * (kOutputWidth / 8);
+    /* top row goes at the bottom of the buffer */
+    outPtr = outBuf + (kOutputHeight-1) * (kOutputWidth / 8);
 
-	/*
-	 * Loop through all lines.  When we've output 72 bytes, stop immediately
-	 * even if we're in a run.  Chances are good that the run was corrupted.
-	 */
-	for (line = 0; line < kOutputHeight; line++) {
-		UnPackBits(&srcBuf, &length, &outPtr, 72, 0xff);
+    /*
+     * Loop through all lines.  When we've output 72 bytes, stop immediately
+     * even if we're in a run.  Chances are good that the run was corrupted.
+     */
+    for (line = 0; line < kOutputHeight; line++) {
+        UnPackBits(&srcBuf, &length, &outPtr, 72, 0xff);
 
-		/* back up to start of next line */
-		outPtr -= 2*(kOutputWidth / 8);
+        /* back up to start of next line */
+        outPtr -= 2*(kOutputWidth / 8);
 
-		if (length < 0)
-			break;
-	}
-	if (length != 0) {
-		WMSG1("  MP found %d unused bytes at end\n", length);
-	}
+        if (length < 0)
+            break;
+    }
+    if (length != 0) {
+        WMSG1("  MP found %d unused bytes at end\n", length);
+    }
 
 bail:
-	return pDib;
+    return pDib;
 }

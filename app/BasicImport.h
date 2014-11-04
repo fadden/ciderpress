@@ -23,29 +23,29 @@
  */
 class BASTokenLookup {
 public:
-	BASTokenLookup(void)
-		: fTokenPtr(nil), fTokenLen(nil)
-		{}
-	~BASTokenLookup(void) {
-		delete[] fTokenPtr;
-		delete[] fTokenLen;
-	}
+    BASTokenLookup(void)
+        : fTokenPtr(nil), fTokenLen(nil)
+        {}
+    ~BASTokenLookup(void) {
+        delete[] fTokenPtr;
+        delete[] fTokenLen;
+    }
 
-	// Initialize the array.
-	void Init(const char* tokenList, int numTokens, int tokenLen);
+    // Initialize the array.
+    void Init(const char* tokenList, int numTokens, int tokenLen);
 
-	// Return the index of the matching token, or -1 if none found.
-	int Lookup(const char* str, int len, int* pFoundLen);
+    // Return the index of the matching token, or -1 if none found.
+    int Lookup(const char* str, int len, int* pFoundLen);
 
-	// Return a printable string.
-	const char* GetToken(int idx) {
-		return fTokenPtr[idx];
-	}
+    // Return a printable string.
+    const char* GetToken(int idx) {
+        return fTokenPtr[idx];
+    }
 
 private:
-	int				fNumTokens;
-	const char**	fTokenPtr;
-	int*			fTokenLen;
+    int             fNumTokens;
+    const char**    fTokenPtr;
+    int*            fTokenLen;
 };
 
 
@@ -56,49 +56,49 @@ private:
  */
 class ImportBASDialog : public CDialog {
 public:
-	ImportBASDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_IMPORT_BAS, pParentWnd), fDirty(false),
-			fOutput(nil), fOutputLen(-1)
-		{}
-	virtual ~ImportBASDialog(void) {
-		delete[] fOutput;
-	}
+    ImportBASDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_IMPORT_BAS, pParentWnd), fDirty(false),
+            fOutput(nil), fOutputLen(-1)
+        {}
+    virtual ~ImportBASDialog(void) {
+        delete[] fOutput;
+    }
 
-	CString fFileName;		// file to open
+    CString fFileName;      // file to open
 
-	// did we add something to the archive?
-	bool IsDirty(void) const { return fDirty; }
+    // did we add something to the archive?
+    bool IsDirty(void) const { return fDirty; }
 
 private:
-	virtual BOOL OnInitDialog(void);
-	//virtual void DoDataExchange(CDataExchange* pDX);
-	virtual void OnOK(void);
+    virtual BOOL OnInitDialog(void);
+    //virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void OnOK(void);
 
-	afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void);
 
-	bool ImportBAS(const char* fileName);
-	bool ConvertTextToBAS(const char* buf, long fileLen,
-		char** pOutBuf, long* pOutLen, ExpandBuffer* pMsgs);
-	bool ProcessBASLine(const char* buf, int len,
-		ExpandBuffer* pOutput, CString& msg);
-	bool FixBASLinePointers(char* buf, long len, unsigned short addr);
+    bool ImportBAS(const char* fileName);
+    bool ConvertTextToBAS(const char* buf, long fileLen,
+        char** pOutBuf, long* pOutLen, ExpandBuffer* pMsgs);
+    bool ProcessBASLine(const char* buf, int len,
+        ExpandBuffer* pOutput, CString& msg);
+    bool FixBASLinePointers(char* buf, long len, unsigned short addr);
 
-	const char* FindEOL(const char* buf, long max);
-	bool GetNextNWC(const char** pBuf, int* pLen, char* pCh);
+    const char* FindEOL(const char* buf, long max);
+    bool GetNextNWC(const char** pBuf, int* pLen, char* pCh);
 
-	void SetOutput(char* outBuf, long outLen) {
-		delete[] fOutput;
-		fOutput = outBuf;
-		fOutputLen = outLen;
-	}
+    void SetOutput(char* outBuf, long outLen) {
+        delete[] fOutput;
+        fOutput = outBuf;
+        fOutputLen = outLen;
+    }
 
-	BASTokenLookup	fBASLookup;
-	bool		fDirty;
+    BASTokenLookup  fBASLookup;
+    bool        fDirty;
 
-	char*		fOutput;
-	long		fOutputLen;
+    char*       fOutput;
+    long        fOutputLen;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__BASICIMPORT__*/

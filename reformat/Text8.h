@@ -17,18 +17,18 @@
  */
 class ReformatMagicWindow : public ReformatText {
 public:
-	ReformatMagicWindow(void) {}
-	virtual ~ReformatMagicWindow(void) {}
+    ReformatMagicWindow(void) {}
+    virtual ~ReformatMagicWindow(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	static bool IsFormatted(const ReformatHolder* pHolder);
+    static bool IsFormatted(const ReformatHolder* pHolder);
 
-	enum { kHeaderLen = 256 };
+    enum { kHeaderLen = 256 };
 };
 
 /*
@@ -36,13 +36,13 @@ private:
  */
 class ReformatGutenberg : public ReformatText {
 public:
-	ReformatGutenberg(void) {}
-	virtual ~ReformatGutenberg(void) {}
+    ReformatGutenberg(void) {}
+    virtual ~ReformatGutenberg(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 };
 

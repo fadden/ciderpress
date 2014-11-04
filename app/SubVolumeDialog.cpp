@@ -15,7 +15,7 @@
 
 
 BEGIN_MESSAGE_MAP(SubVolumeDialog, CDialog)
-	ON_LBN_DBLCLK(IDC_SUBV_LIST, OnItemDoubleClicked)
+    ON_LBN_DBLCLK(IDC_SUBV_LIST, OnItemDoubleClicked)
 END_MESSAGE_MAP()
 
 
@@ -25,24 +25,24 @@ END_MESSAGE_MAP()
 BOOL
 SubVolumeDialog::OnInitDialog(void)
 {
-	ASSERT(fpDiskFS != nil);
+    ASSERT(fpDiskFS != nil);
 
-	CListBox* pListBox = (CListBox*) GetDlgItem(IDC_SUBV_LIST);
-	ASSERT(pListBox != nil);
+    CListBox* pListBox = (CListBox*) GetDlgItem(IDC_SUBV_LIST);
+    ASSERT(pListBox != nil);
 
-//	if (pListBox->SetTabStops(12) != TRUE) {
-//		ASSERT(false);
-//	}
+//  if (pListBox->SetTabStops(12) != TRUE) {
+//      ASSERT(false);
+//  }
 
-	DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(nil);
-	ASSERT(pSubVol != nil);		// shouldn't be here otherwise
-	while (pSubVol != nil) {
-		pListBox->AddString(pSubVol->GetDiskFS()->GetVolumeID());
+    DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(nil);
+    ASSERT(pSubVol != nil);     // shouldn't be here otherwise
+    while (pSubVol != nil) {
+        pListBox->AddString(pSubVol->GetDiskFS()->GetVolumeID());
 
-		pSubVol = fpDiskFS->GetNextSubVolume(pSubVol);
-	}
+        pSubVol = fpDiskFS->GetNextSubVolume(pSubVol);
+    }
 
-	return CDialog::OnInitDialog();
+    return CDialog::OnInitDialog();
 }
 
 /*
@@ -51,7 +51,7 @@ SubVolumeDialog::OnInitDialog(void)
 void
 SubVolumeDialog::DoDataExchange(CDataExchange* pDX)
 {
-	DDX_LBIndex(pDX, IDC_SUBV_LIST, fListBoxIndex);
+    DDX_LBIndex(pDX, IDC_SUBV_LIST, fListBoxIndex);
 }
 
 /*
@@ -60,5 +60,5 @@ SubVolumeDialog::DoDataExchange(CDataExchange* pDX)
 void
 SubVolumeDialog::OnItemDoubleClicked(void)
 {
-	OnOK();
+    OnOK();
 }

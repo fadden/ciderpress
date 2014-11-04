@@ -19,13 +19,13 @@ using namespace DiskImgLib;
 void
 ReformatDirectory::Examine(ReformatHolder* pHolder)
 {
-	ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
+    ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
-	if (pHolder->GetFileType() == kTypeDIR)
-		applies = ReformatHolder::kApplicProbably;
+    if (pHolder->GetFileType() == kTypeDIR)
+        applies = ReformatHolder::kApplicProbably;
 
-	pHolder->SetApplic(ReformatHolder::kReformatProDOSDirectory, applies,
-		ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    pHolder->SetApplic(ReformatHolder::kReformatProDOSDirectory, applies,
+        ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
 }
 
 
@@ -35,33 +35,33 @@ ReformatDirectory::Examine(ReformatHolder* pHolder)
  */
 int
 ReformatDirectory::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	fUseRTF = false;
+    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    fUseRTF = false;
 
-	if (srcLen < 512 || (srcLen % 512) != 0) {
-		WMSG1("ReformatDirectory: invalid len %d\n", srcLen);
-		return -1;
-	}
+    if (srcLen < 512 || (srcLen % 512) != 0) {
+        WMSG1("ReformatDirectory: invalid len %d\n", srcLen);
+        return -1;
+    }
 
-	BufPrintf(" NAME           TYPE  BLOCKS  MODIFIED  "
-			  "       CREATED          ENDFILE SUBTYPE\r\n\r\n");
+    BufPrintf(" NAME           TYPE  BLOCKS  MODIFIED  "
+              "       CREATED          ENDFILE SUBTYPE\r\n\r\n");
 
-	PrintDirEntries(srcBuf, srcLen, false);
+    PrintDirEntries(srcBuf, srcLen, false);
 
-	BufPrintf("\r\nDeleted entries:\r\n");
-	PrintDirEntries(srcBuf, srcLen, true);
+    BufPrintf("\r\nDeleted entries:\r\n");
+    PrintDirEntries(srcBuf, srcLen, true);
 
-	if ((srcBuf[0x04] & 0xf0) == 0xf0) {
-		/* this is the volume directory */
-		BufPrintf("\r\nTotal blocks: %d\n", srcBuf[0x29] | srcBuf[0x2a] << 8);
-	}
+    if ((srcBuf[0x04] & 0xf0) == 0xf0) {
+        /* this is the volume directory */
+        BufPrintf("\r\nTotal blocks: %d\n", srcBuf[0x29] | srcBuf[0x2a] << 8);
+    }
 
-	SetResultBuffer(pOutput);
-	return 0;
+    SetResultBuffer(pOutput);
+    return 0;
 }
 
 /*
@@ -72,73 +72,73 @@ ReformatDirectory::Process(const ReformatHolder* pHolder,
  */
 void
 ReformatDirectory::PrintDirEntries(const unsigned char* srcBuf,
-	long srcLen, bool showDeleted)
+    long srcLen, bool showDeleted)
 {
-	const int kEntriesPerBlock = 0x0d;		// expected value for entries per blk
-	const int kEntryLength = 0x27;			// expected value for dir entry len
-	const int kMaxFileName = 15;
-	const unsigned char* pDirEntry;
-	int blockIdx;
-	int entryIdx;
+    const int kEntriesPerBlock = 0x0d;      // expected value for entries per blk
+    const int kEntryLength = 0x27;          // expected value for dir entry len
+    const int kMaxFileName = 15;
+    const unsigned char* pDirEntry;
+    int blockIdx;
+    int entryIdx;
 
-	for (blockIdx = 0; blockIdx < srcLen / 512; blockIdx++) {
-		pDirEntry = srcBuf + 512*blockIdx + 4;	// skip 4 bytes of prev/next
+    for (blockIdx = 0; blockIdx < srcLen / 512; blockIdx++) {
+        pDirEntry = srcBuf + 512*blockIdx + 4;  // skip 4 bytes of prev/next
 
-		for (entryIdx = 0; entryIdx < kEntriesPerBlock;
-										entryIdx++, pDirEntry += kEntryLength)
-		{
-			/* skip directory header; should probably check entries_per_block */
-			if (blockIdx == 0 && entryIdx == 0)
-				continue;
+        for (entryIdx = 0; entryIdx < kEntriesPerBlock;
+                                        entryIdx++, pDirEntry += kEntryLength)
+        {
+            /* skip directory header; should probably check entries_per_block */
+            if (blockIdx == 0 && entryIdx == 0)
+                continue;
 
-			if ((showDeleted && (pDirEntry[0x00] & 0xf0) == 0) ||
-				(!showDeleted && (pDirEntry[0x00] & 0xf0) != 0))
-			{
-				if (pDirEntry[0x01] == 0)	/* never-used entry */
-					continue;
+            if ((showDeleted && (pDirEntry[0x00] & 0xf0) == 0) ||
+                (!showDeleted && (pDirEntry[0x00] & 0xf0) != 0))
+            {
+                if (pDirEntry[0x01] == 0)   /* never-used entry */
+                    continue;
 
-				int nameLen = pDirEntry[0x00] & 0x0f;
-				if (nameLen == 0) {
-					/* scan for it */
-					while (pDirEntry[0x01 + nameLen] != 0 && nameLen < kMaxFileName)
-						nameLen++;
-				}
+                int nameLen = pDirEntry[0x00] & 0x0f;
+                if (nameLen == 0) {
+                    /* scan for it */
+                    while (pDirEntry[0x01 + nameLen] != 0 && nameLen < kMaxFileName)
+                        nameLen++;
+                }
 
-				char fileName[kMaxFileName +1];
-				strncpy(fileName, (const char*)&pDirEntry[0x01], kMaxFileName);
-				fileName[nameLen] = '\0';
+                char fileName[kMaxFileName +1];
+                strncpy(fileName, (const char*)&pDirEntry[0x01], kMaxFileName);
+                fileName[nameLen] = '\0';
 
-				CString createStr, modStr;
-				A2FileProDOS::ProDate prodosDateTime;
+                CString createStr, modStr;
+                A2FileProDOS::ProDate prodosDateTime;
 
-				prodosDateTime = pDirEntry[0x18] | pDirEntry[0x19] << 8 |
-								pDirEntry[0x1a] << 16 | pDirEntry[0x1b] << 24;
-				FormatDate(A2FileProDOS::ConvertProDate(prodosDateTime), &createStr);
-				prodosDateTime = pDirEntry[0x21] | pDirEntry[0x22] << 8 |
-								pDirEntry[0x23] << 16 | pDirEntry[0x24] << 24;
-				FormatDate(A2FileProDOS::ConvertProDate(prodosDateTime), &modStr);
+                prodosDateTime = pDirEntry[0x18] | pDirEntry[0x19] << 8 |
+                                pDirEntry[0x1a] << 16 | pDirEntry[0x1b] << 24;
+                FormatDate(A2FileProDOS::ConvertProDate(prodosDateTime), &createStr);
+                prodosDateTime = pDirEntry[0x21] | pDirEntry[0x22] << 8 |
+                                pDirEntry[0x23] << 16 | pDirEntry[0x24] << 24;
+                FormatDate(A2FileProDOS::ConvertProDate(prodosDateTime), &modStr);
 
-				char lockedFlag = '*';
-				if (pDirEntry[0x1e] & 0x80)
-					lockedFlag = ' ';
+                char lockedFlag = '*';
+                if (pDirEntry[0x1e] & 0x80)
+                    lockedFlag = ' ';
 
-				CString auxTypeStr;
-				unsigned short auxType = pDirEntry[0x1f] | pDirEntry[0x20] << 8;
-				if (pDirEntry[0x10] == 0x06)		// bin
-					auxTypeStr.Format("A=$%04X", auxType);
-				else if (pDirEntry[0x10] == 0x04)	// txt
-					auxTypeStr.Format("R=%5d", auxType);
+                CString auxTypeStr;
+                unsigned short auxType = pDirEntry[0x1f] | pDirEntry[0x20] << 8;
+                if (pDirEntry[0x10] == 0x06)        // bin
+                    auxTypeStr.Format("A=$%04X", auxType);
+                else if (pDirEntry[0x10] == 0x04)   // txt
+                    auxTypeStr.Format("R=%5d", auxType);
 
-				BufPrintf("%c%-15s %-3s  %6d %16s %16s %8d %s\r\n",
-					lockedFlag,
-					fileName,
-					PathProposal::FileTypeString(pDirEntry[0x10]),
-					pDirEntry[0x13] | pDirEntry[0x14] << 8,
-					modStr,
-					createStr,
-					pDirEntry[0x15] | pDirEntry[0x16] << 8 | pDirEntry[0x17] << 16,
-					auxTypeStr);
-			}
-		}
-	}
+                BufPrintf("%c%-15s %-3s  %6d %16s %16s %8d %s\r\n",
+                    lockedFlag,
+                    fileName,
+                    PathProposal::FileTypeString(pDirEntry[0x10]),
+                    pDirEntry[0x13] | pDirEntry[0x14] << 8,
+                    modStr,
+                    createStr,
+                    pDirEntry[0x15] | pDirEntry[0x16] << 8 | pDirEntry[0x17] << 16,
+                    auxTypeStr);
+            }
+        }
+    }
 }

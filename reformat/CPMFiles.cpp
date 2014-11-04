@@ -10,7 +10,7 @@
 #include "CPMFiles.h"
 
 
-const int kCtrlZ = 0x1a;		// end-of-file indicator
+const int kCtrlZ = 0x1a;        // end-of-file indicator
 
 /*
  * Table determining what's a binary character and what isn't.  This is
@@ -34,22 +34,22 @@ const int kCtrlZ = 0x1a;		// end-of-file indicator
  * -----
  */
 static const char gIsBinary[256] = {
-	1, 1, 1, 1, 1, 1, 1, 1,  0, 0, 0, 1, 0, 0, 1, 1,	/* ^@-^O */
-	1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,	/* ^P-^_ */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/*   - / */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0 - ? */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* @ - O */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* P - _ */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* ` - o */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 1,	/* p - DEL */
-	1, 1, 1, 1, 1, 1, 1, 1,  0, 0, 0, 1, 0, 0, 1, 1,	/* 0x80 */
-	1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,	/* 0x90 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xa0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xb0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xc0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xd0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xe0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xf0 */
+    1, 1, 1, 1, 1, 1, 1, 1,  0, 0, 0, 1, 0, 0, 1, 1,    /* ^@-^O */
+    1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,    /* ^P-^_ */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /*   - / */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0 - ? */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* @ - O */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* P - _ */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* ` - o */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 1,    /* p - DEL */
+    1, 1, 1, 1, 1, 1, 1, 1,  0, 0, 0, 1, 0, 0, 1, 1,    /* 0x80 */
+    1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,    /* 0x90 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xa0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xb0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xc0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xd0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xe0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xf0 */
 };
 
 /*
@@ -61,52 +61,52 @@ static const char gIsBinary[256] = {
 void
 ReformatCPMText::Examine(ReformatHolder* pHolder)
 {
-	ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
-	const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
-	long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
-	const char* nameExt = pHolder->GetNameExt();
-	bool foundCtrlZ = false;
+    ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
+    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
+    const char* nameExt = pHolder->GetNameExt();
+    bool foundCtrlZ = false;
 
-	/* only show this on CP/M disks */
-	if (pHolder->GetSourceFormat() != ReformatHolder::kSourceFormatCPM)
-		goto done;
-	applies = ReformatHolder::kApplicProbablyNot;
+    /* only show this on CP/M disks */
+    if (pHolder->GetSourceFormat() != ReformatHolder::kSourceFormatCPM)
+        goto done;
+    applies = ReformatHolder::kApplicProbablyNot;
 
-	/* allow, but don't default to, text conversion of ".com" files */
-	if (strcasecmp(nameExt, ".com") == 0) {
-		WMSG0("Not reformatting '.com' file as text\n");
-		goto done;
-	}
+    /* allow, but don't default to, text conversion of ".com" files */
+    if (strcasecmp(nameExt, ".com") == 0) {
+        WMSG0("Not reformatting '.com' file as text\n");
+        goto done;
+    }
 
-	/*
-	 * Scan file, looking for illegal chars.
-	 *
-	 * Thought for the day: could also require that Ctrl-Z appear in the
-	 * last 128 bytes of the file.  May want to count all high-ASCII values
-	 * as illegal but allow a certain percentage of "illegal" characters in
-	 * the mix.
-	 */
-	while (fileLen--) {
-		if (*ptr == kCtrlZ) {
-			foundCtrlZ = true;
-		} else if (foundCtrlZ && *ptr == 0x00) {
-			/* do nothing -- 0x00 is okay if it comes after Ctrl-Z */
-		} else {
-			if (gIsBinary[*ptr]) {
-				WMSG2("CP/M found binary char 0x%02x at offset 0x%04x\n",
-					*ptr,
-					ptr - pHolder->GetSourceBuf(ReformatHolder::kPartData));
-				break;
-			}
-		}
-		ptr++;
-	}
-	if (fileLen == -1)
-		applies = ReformatHolder::kApplicProbably;
+    /*
+     * Scan file, looking for illegal chars.
+     *
+     * Thought for the day: could also require that Ctrl-Z appear in the
+     * last 128 bytes of the file.  May want to count all high-ASCII values
+     * as illegal but allow a certain percentage of "illegal" characters in
+     * the mix.
+     */
+    while (fileLen--) {
+        if (*ptr == kCtrlZ) {
+            foundCtrlZ = true;
+        } else if (foundCtrlZ && *ptr == 0x00) {
+            /* do nothing -- 0x00 is okay if it comes after Ctrl-Z */
+        } else {
+            if (gIsBinary[*ptr]) {
+                WMSG2("CP/M found binary char 0x%02x at offset 0x%04x\n",
+                    *ptr,
+                    ptr - pHolder->GetSourceBuf(ReformatHolder::kPartData));
+                break;
+            }
+        }
+        ptr++;
+    }
+    if (fileLen == -1)
+        applies = ReformatHolder::kApplicProbably;
 
 done:
-	pHolder->SetApplic(ReformatHolder::kReformatCPMText, applies,
-		ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
+    pHolder->SetApplic(ReformatHolder::kReformatCPMText, applies,
+        ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
 }
 
 /*
@@ -120,26 +120,26 @@ done:
  */
 int
 ReformatCPMText::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
-	fUseRTF = false;
+    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
+    fUseRTF = false;
 
-	if (pHolder->GetSourceLen(part) == 0)
-		return -1;
+    if (pHolder->GetSourceLen(part) == 0)
+        return -1;
 
-	for (long ll = 0; ll < srcLen; ll++) {
-		if (*srcBuf == kCtrlZ /*|| *srcBuf == '\0'*/) {
-			srcLen = ll;
-			break;
-		}
-		srcBuf++;
-	}
+    for (long ll = 0; ll < srcLen; ll++) {
+        if (*srcBuf == kCtrlZ /*|| *srcBuf == '\0'*/) {
+            srcLen = ll;
+            break;
+        }
+        srcBuf++;
+    }
 
-	ConvertEOL(pHolder->GetSourceBuf(part), srcLen, true);
+    ConvertEOL(pHolder->GetSourceBuf(part), srcLen, true);
 
-	SetResultBuffer(pOutput);
-	return 0;
+    SetResultBuffer(pOutput);
+    return 0;
 }

@@ -17,22 +17,22 @@
  */
 class ConvFileOptionsDialog : public UseSelectionDialog {
 public:
-	ConvFileOptionsDialog(int selCount, CWnd* pParentWnd = NULL) :
-		UseSelectionDialog(selCount, pParentWnd, IDD_CONVFILE_OPTS)
-	{
-		fPreserveEmptyFolders = FALSE;
-	}
-	virtual ~ConvFileOptionsDialog(void) {}
+    ConvFileOptionsDialog(int selCount, CWnd* pParentWnd = NULL) :
+        UseSelectionDialog(selCount, pParentWnd, IDD_CONVFILE_OPTS)
+    {
+        fPreserveEmptyFolders = FALSE;
+    }
+    virtual ~ConvFileOptionsDialog(void) {}
 
-	//BOOL	fConvDOSText;
-	//BOOL	fConvPascalText;
-	BOOL	fPreserveEmptyFolders;
+    //BOOL  fConvDOSText;
+    //BOOL  fConvPascalText;
+    BOOL    fPreserveEmptyFolders;
 
 private:
-	//virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    //virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	//DECLARE_MESSAGE_MAP()
+    //DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__CONVFILE_OPTIONS_DIALOG__*/

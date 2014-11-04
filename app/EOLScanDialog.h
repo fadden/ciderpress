@@ -16,22 +16,22 @@
  */
 class EOLScanDialog : public CDialog {
 public:
-	EOLScanDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_EOLSCAN, pParentWnd)
-		{}
-	virtual ~EOLScanDialog(void) {}
+    EOLScanDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_EOLSCAN, pParentWnd)
+        {}
+    virtual ~EOLScanDialog(void) {}
 
-	long	fCountChars;
-	long	fCountCR;
-	long	fCountLF;
-	long	fCountCRLF;
-	long	fCountHighASCII;
+    long    fCountChars;
+    long    fCountCR;
+    long    fCountLF;
+    long    fCountCRLF;
+    long    fCountHighASCII;
 
 private:
-	BOOL OnInitDialog(void);
-	afx_msg void OnHelp(void);
+    BOOL OnInitDialog(void);
+    afx_msg void OnHelp(void);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__EOLSCANDIALOG__*/

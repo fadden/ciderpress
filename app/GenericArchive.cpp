@@ -41,7 +41,7 @@
 
 /*
  * ===========================================================================
- *		GenericEntry
+ *      GenericEntry
  * ===========================================================================
  */
 
@@ -50,35 +50,35 @@
  */
 GenericEntry::GenericEntry(void)
 {
-	fPathName = nil;
-	fFileName = nil;
-	fFssep = '\0';
-	fSubVolName = nil;
-	fDisplayName = nil;
-	fFileType = 0;
-	fAuxType = 0;
-	fAccess = 0;
-	fModWhen = kDateNone;
-	fCreateWhen = kDateNone;
-	fRecordKind = kRecordKindUnknown;
-	fFormatStr = "Unknown";
-	fCompressedLen = 0;
-	//fUncompressedLen = 0;
-	fDataForkLen = fRsrcForkLen = 0;
+    fPathName = nil;
+    fFileName = nil;
+    fFssep = '\0';
+    fSubVolName = nil;
+    fDisplayName = nil;
+    fFileType = 0;
+    fAuxType = 0;
+    fAccess = 0;
+    fModWhen = kDateNone;
+    fCreateWhen = kDateNone;
+    fRecordKind = kRecordKindUnknown;
+    fFormatStr = "Unknown";
+    fCompressedLen = 0;
+    //fUncompressedLen = 0;
+    fDataForkLen = fRsrcForkLen = 0;
 
-	fSourceFS = DiskImg::kFormatUnknown;
+    fSourceFS = DiskImg::kFormatUnknown;
 
-	fHasDataFork = false;
-	fHasRsrcFork = false;
-	fHasDiskImage = false;
-	fHasComment = false;
-	fHasNonEmptyComment = false;
+    fHasDataFork = false;
+    fHasRsrcFork = false;
+    fHasDiskImage = false;
+    fHasComment = false;
+    fHasNonEmptyComment = false;
 
-	fIndex = -1;
-	fpPrev = nil;
-	fpNext = nil;
+    fIndex = -1;
+    fpPrev = nil;
+    fpNext = nil;
 
-	fDamaged = fSuspicious = false;
+    fDamaged = fSuspicious = false;
 }
 
 /*
@@ -86,9 +86,9 @@ GenericEntry::GenericEntry(void)
  */
 GenericEntry::~GenericEntry(void)
 {
-	delete[] fPathName;
-	delete[] fSubVolName;
-	delete[] fDisplayName;
+    delete[] fPathName;
+    delete[] fSubVolName;
+    delete[] fDisplayName;
 }
 
 /*
@@ -97,74 +97,74 @@ GenericEntry::~GenericEntry(void)
 void
 GenericEntry::SetPathName(const char* path)
 {
-	ASSERT(path != nil && strlen(path) > 0);
-	if (fPathName != nil)
-		delete fPathName;
-	fPathName = new char[strlen(path)+1];
-	strcpy(fPathName, path);
-	// nuke the derived fields
-	fFileName = nil;
-	fFileNameExtension = nil;
-	delete[] fDisplayName;
-	fDisplayName = nil;
+    ASSERT(path != nil && strlen(path) > 0);
+    if (fPathName != nil)
+        delete fPathName;
+    fPathName = new char[strlen(path)+1];
+    strcpy(fPathName, path);
+    // nuke the derived fields
+    fFileName = nil;
+    fFileNameExtension = nil;
+    delete[] fDisplayName;
+    fDisplayName = nil;
 
-	/*
-	 * Warning: to be 100% pedantically correct here, we should NOT do this
-	 * if the fssep char is '_'.  However, that may not have been set by
-	 * the time we got here, so to do this "correctly" we'd need to delay
-	 * the underscorage until the first GetPathName call.
-	 */
-	const Preferences* pPreferences = GET_PREFERENCES();
-	if (pPreferences->GetPrefBool(kPrSpacesToUnder))
-		SpacesToUnderscores(fPathName);
+    /*
+     * Warning: to be 100% pedantically correct here, we should NOT do this
+     * if the fssep char is '_'.  However, that may not have been set by
+     * the time we got here, so to do this "correctly" we'd need to delay
+     * the underscorage until the first GetPathName call.
+     */
+    const Preferences* pPreferences = GET_PREFERENCES();
+    if (pPreferences->GetPrefBool(kPrSpacesToUnder))
+        SpacesToUnderscores(fPathName);
 }
 const char*
 GenericEntry::GetFileName(void)
 {
-	ASSERT(fPathName != nil);
-	if (fFileName == nil)
-		fFileName = FilenameOnly(fPathName, fFssep);
-	return fFileName;
+    ASSERT(fPathName != nil);
+    if (fFileName == nil)
+        fFileName = FilenameOnly(fPathName, fFssep);
+    return fFileName;
 }
 const char*
 GenericEntry::GetFileNameExtension(void)
 {
-	ASSERT(fPathName != nil);
-	if (fFileNameExtension == nil)
-		fFileNameExtension = FindExtension(fPathName, fFssep);
-	return fFileNameExtension;
+    ASSERT(fPathName != nil);
+    if (fFileNameExtension == nil)
+        fFileNameExtension = FindExtension(fPathName, fFssep);
+    return fFileNameExtension;
 }
 void
 GenericEntry::SetSubVolName(const char* name)
 {
-	delete[] fSubVolName;
-	fSubVolName = nil;
-	if (name != nil) {
-		fSubVolName = new char[strlen(name)+1];
-		strcpy(fSubVolName, name);
-	}
+    delete[] fSubVolName;
+    fSubVolName = nil;
+    if (name != nil) {
+        fSubVolName = new char[strlen(name)+1];
+        strcpy(fSubVolName, name);
+    }
 }
 const char*
 GenericEntry::GetDisplayName(void) const
 {
-	ASSERT(fPathName != nil);
-	if (fDisplayName != nil)
-		return fDisplayName;
+    ASSERT(fPathName != nil);
+    if (fDisplayName != nil)
+        return fDisplayName;
 
-	GenericEntry* pThis = const_cast<GenericEntry*>(this);
+    GenericEntry* pThis = const_cast<GenericEntry*>(this);
 
-	int len = strlen(fPathName) +1;
-	if (fSubVolName != nil)
-		len += strlen(fSubVolName) +1;
-	pThis->fDisplayName = new char[len];
-	if (fSubVolName != nil) {
-		char xtra[2] = { DiskFS::kDIFssep, '\0' };
-		strcpy(pThis->fDisplayName, fSubVolName);
-		strcat(pThis->fDisplayName, xtra);
-	} else
-		pThis->fDisplayName[0] = '\0';
-	strcat(pThis->fDisplayName, fPathName);
-	return pThis->fDisplayName;
+    int len = strlen(fPathName) +1;
+    if (fSubVolName != nil)
+        len += strlen(fSubVolName) +1;
+    pThis->fDisplayName = new char[len];
+    if (fSubVolName != nil) {
+        char xtra[2] = { DiskFS::kDIFssep, '\0' };
+        strcpy(pThis->fDisplayName, fSubVolName);
+        strcat(pThis->fDisplayName, xtra);
+    } else
+        pThis->fDisplayName[0] = '\0';
+    strcat(pThis->fDisplayName, fPathName);
+    return pThis->fDisplayName;
 }
 
 /*
@@ -173,7 +173,7 @@ GenericEntry::GetDisplayName(void) const
 const char*
 GenericEntry::GetFileTypeString(void) const
 {
-	return PathProposal::FileTypeString(fFileType);
+    return PathProposal::FileTypeString(fFileType);
 }
 
 /*
@@ -182,11 +182,11 @@ GenericEntry::GetFileTypeString(void) const
 /*static*/ void
 GenericEntry::SpacesToUnderscores(char* buf)
 {
-	while (*buf != '\0') {
-		if (*buf == ' ')
-			*buf = '_';
-		buf++;
-	}
+    while (*buf != '\0') {
+        if (*buf == ' ')
+            *buf = '_';
+        buf++;
+    }
 }
 
 
@@ -205,25 +205,25 @@ GenericEntry::SpacesToUnderscores(char* buf)
  */
 /*static*/ bool
 GenericEntry::CheckHighASCII(const unsigned char* buffer,
-	unsigned long count)
+    unsigned long count)
 {
-	bool isHighASCII;
+    bool isHighASCII;
 
-	ASSERT(buffer != nil);
-	ASSERT(count != 0);
+    ASSERT(buffer != nil);
+    ASSERT(count != 0);
 
-	isHighASCII = true;
-	while (count--) {
-		if ((*buffer & 0x80) == 0 && *buffer != 0x20 && *buffer != 0x00) {
-			WMSG1("Flunking CheckHighASCII on 0x%02x\n", *buffer);
-			isHighASCII = false;
-			break;
-		}
-		
-		buffer++;
-	}
+    isHighASCII = true;
+    while (count--) {
+        if ((*buffer & 0x80) == 0 && *buffer != 0x20 && *buffer != 0x00) {
+            WMSG1("Flunking CheckHighASCII on 0x%02x\n", *buffer);
+            isHighASCII = false;
+            break;
+        }
+        
+        buffer++;
+    }
 
-	return isHighASCII;
+    return isHighASCII;
 }
 
 /*
@@ -245,28 +245,28 @@ GenericEntry::CheckHighASCII(const unsigned char* buffer,
  * much point in tweaking it to death.
  */
 static const char gIsBinary[256] = {
-	1, 1, 1, 1, 1, 1, 1, 1,  0, 0, 0, 1, 0, 0, 1, 1,	/* ^@-^O */
-	1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,	/* ^P-^_ */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/*	 - / */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0 - ? */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* @ - O */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* P - _ */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* ` - o */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 1,	/* p - DEL */
-	1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,	/* 0x80 */
-	1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,	/* 0x90 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xa0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xb0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xc0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xd0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xe0 */
-	0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,	/* 0xf0 */
+    1, 1, 1, 1, 1, 1, 1, 1,  0, 0, 0, 1, 0, 0, 1, 1,    /* ^@-^O */
+    1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,    /* ^P-^_ */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /*   - / */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0 - ? */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* @ - O */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* P - _ */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* ` - o */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 1,    /* p - DEL */
+    1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,    /* 0x80 */
+    1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,    /* 0x90 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xa0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xb0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xc0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xd0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xe0 */
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xf0 */
 };
 
-#define kNuMaxUpperASCII	1		/* max #of binary chars per 100 bytes */
-#define kMinConvThreshold	40		/* min of 40 chars for auto-detect */
-#define kCharLF				'\n'
-#define kCharCR				'\r'
+#define kNuMaxUpperASCII    1       /* max #of binary chars per 100 bytes */
+#define kMinConvThreshold   40      /* min of 40 chars for auto-detect */
+#define kCharLF             '\n'
+#define kCharCR             '\r'
 /*
  * Decide, based on the contents of the buffer, whether we should do an
  * EOL conversion on the data.
@@ -293,83 +293,83 @@ static const char gIsBinary[256] = {
  */
 /*static*/ GenericEntry::ConvertEOL
 GenericEntry::DetermineConversion(const unsigned char* buffer, long count,
-	EOLType* pSourceType, ConvertHighASCII* pConvHA)
+    EOLType* pSourceType, ConvertHighASCII* pConvHA)
 {
-	ConvertHighASCII wantConvHA = *pConvHA;
-	long bufCount, numBinary, numLF, numCR;
-	bool isHighASCII;
-	unsigned char val;
+    ConvertHighASCII wantConvHA = *pConvHA;
+    long bufCount, numBinary, numLF, numCR;
+    bool isHighASCII;
+    unsigned char val;
 
-	*pSourceType = kEOLUnknown;
-	*pConvHA = kConvertHAOff;
+    *pSourceType = kEOLUnknown;
+    *pConvHA = kConvertHAOff;
 
-	if (count < kMinConvThreshold)
-		return kConvertEOLOff;
+    if (count < kMinConvThreshold)
+        return kConvertEOLOff;
 
     /*
      * Check to see if the buffer is all high-ASCII characters.  If it is,
      * we want to strip characters before we test them below.
-	 *
-	 * If high ASCII conversion is disabled, assume that any high-ASCII
-	 * characters are not meant to be line terminators, i.e. 0x8d != 0x0d.
+     *
+     * If high ASCII conversion is disabled, assume that any high-ASCII
+     * characters are not meant to be line terminators, i.e. 0x8d != 0x0d.
      */
-	if (wantConvHA == kConvertHAOn || wantConvHA == kConvertHAAuto) {
+    if (wantConvHA == kConvertHAOn || wantConvHA == kConvertHAAuto) {
         isHighASCII = CheckHighASCII(buffer, count);
-		WMSG1(" +++ Determined isHighASCII=%d\n", isHighASCII);
-	} else {
-		isHighASCII = false;
-		WMSG0(" +++ Not even checking isHighASCII\n");
-	}
+        WMSG1(" +++ Determined isHighASCII=%d\n", isHighASCII);
+    } else {
+        isHighASCII = false;
+        WMSG0(" +++ Not even checking isHighASCII\n");
+    }
 
-	bufCount = count;
-	numBinary = numLF = numCR = 0;
-	while (bufCount--) {
-		val = *buffer++;
-		if (isHighASCII)
-			val &= 0x7f;
-		if (gIsBinary[val])
-			numBinary++;
-		if (val == kCharLF)
-			numLF++;
-		if (val == kCharCR)
-			numCR++;
-	}
+    bufCount = count;
+    numBinary = numLF = numCR = 0;
+    while (bufCount--) {
+        val = *buffer++;
+        if (isHighASCII)
+            val &= 0x7f;
+        if (gIsBinary[val])
+            numBinary++;
+        if (val == kCharLF)
+            numLF++;
+        if (val == kCharCR)
+            numCR++;
+    }
 
-	/* if #found is > #allowed, it's a binary file */
-	if (count < 100) {
-		/* use simplified check on files between kNuMinConvThreshold and 100 */
-		if (numBinary > kNuMaxUpperASCII)
-			return kConvertEOLOff;
-	} else if (numBinary > (count / 100) * kNuMaxUpperASCII)
-		return kConvertEOLOff;
+    /* if #found is > #allowed, it's a binary file */
+    if (count < 100) {
+        /* use simplified check on files between kNuMinConvThreshold and 100 */
+        if (numBinary > kNuMaxUpperASCII)
+            return kConvertEOLOff;
+    } else if (numBinary > (count / 100) * kNuMaxUpperASCII)
+        return kConvertEOLOff;
 
-	/*
-	 * If our "convert to" setting is the same as what we're converting
-	 * from, we can turn off the converter and speed things up.
-	 *
-	 * These are simplistic, but this is intended as an optimization.  We
-	 * will blow it if the input has lots of CRs and LFs scattered about,
-	 * and they just happen to be in equal amounts, but it's not clear
-	 * to me that an automatic EOL conversion makes sense on that sort
-	 * of file anyway.
-	 *
-	 * None of this applies if we also need to do a high-ASCII conversion,
-	 * because we can't bypass the processing.
-	 */
-	if (isHighASCII) {
-		*pConvHA = kConvertHAOn;
-	} else {
-		if (numLF && !numCR)
-			*pSourceType = kEOLLF;
-		else if (!numLF && numCR)
-			*pSourceType = kEOLCR;
-		else if (numLF && numLF == numCR)
-			*pSourceType = kEOLCRLF;
-		else
-			*pSourceType = kEOLUnknown;
-	}
+    /*
+     * If our "convert to" setting is the same as what we're converting
+     * from, we can turn off the converter and speed things up.
+     *
+     * These are simplistic, but this is intended as an optimization.  We
+     * will blow it if the input has lots of CRs and LFs scattered about,
+     * and they just happen to be in equal amounts, but it's not clear
+     * to me that an automatic EOL conversion makes sense on that sort
+     * of file anyway.
+     *
+     * None of this applies if we also need to do a high-ASCII conversion,
+     * because we can't bypass the processing.
+     */
+    if (isHighASCII) {
+        *pConvHA = kConvertHAOn;
+    } else {
+        if (numLF && !numCR)
+            *pSourceType = kEOLLF;
+        else if (!numLF && numCR)
+            *pSourceType = kEOLCR;
+        else if (numLF && numLF == numCR)
+            *pSourceType = kEOLCRLF;
+        else
+            *pSourceType = kEOLUnknown;
+    }
 
-	return kConvertEOLOn;
+    return kConvertEOLOn;
 }
 
 /*
@@ -378,8 +378,8 @@ GenericEntry::DetermineConversion(const unsigned char* buffer, long count,
 static inline void
 PutEOL(FILE* fp)
 {
-	putc(kCharCR, fp);
-	putc(kCharLF, fp);
+    putc(kCharCR, fp);
+    putc(kCharLF, fp);
 }
 
 /*
@@ -398,86 +398,86 @@ PutEOL(FILE* fp)
  */
 /*static*/ int
 GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
-	ConvertEOL* pConv, ConvertHighASCII* pConvHA, bool* pLastCR)
+    ConvertEOL* pConv, ConvertHighASCII* pConvHA, bool* pLastCR)
 {
-	int err = 0;
+    int err = 0;
 
-	WMSG2("+++ WriteConvert conv=%d convHA=%d\n", *pConv, *pConvHA);
+    WMSG2("+++ WriteConvert conv=%d convHA=%d\n", *pConv, *pConvHA);
 
-	if (len == 0) {
-		WMSG0("WriteConvert asked to write 0 bytes; returning\n");
-		return err;
-	}
+    if (len == 0) {
+        WMSG0("WriteConvert asked to write 0 bytes; returning\n");
+        return err;
+    }
 
-	/* if we're in "auto" mode, scan the input for EOL and high ASCII */
-	if (*pConv == kConvertEOLAuto) {
-		EOLType sourceType;
-		*pConv = DetermineConversion((unsigned char*)buf, len, &sourceType,
-					pConvHA);
-		if (*pConv == kConvertEOLOn && sourceType == kEOLCRLF) {
-			WMSG0(" Auto-detected text conversion from CRLF; disabling\n");
-			*pConv = kConvertEOLOff;
-		}
-		WMSG2(" Auto-detected EOL conv=%d ha=%d\n", *pConv, *pConvHA);
-	} else if (*pConvHA == kConvertHAAuto) {
-		if (*pConv == kConvertEOLOn) {
-			/* definitely converting EOL, test for high ASCII */
-			if (CheckHighASCII((unsigned char*)buf, len))
-				*pConvHA = kConvertHAOn;
-			else
-				*pConvHA = kConvertHAOff;
-		} else {
-			/* not converting EOL, don't convert high ASCII */
-			*pConvHA = kConvertHAOff;
-		}
-	}
-	WMSG2("+++  After auto, conv=%d convHA=%d\n", *pConv, *pConvHA);
-	ASSERT(*pConv == kConvertEOLOn || *pConv == kConvertEOLOff);
-	ASSERT(*pConvHA == kConvertHAOn || *pConvHA == kConvertHAOff);
+    /* if we're in "auto" mode, scan the input for EOL and high ASCII */
+    if (*pConv == kConvertEOLAuto) {
+        EOLType sourceType;
+        *pConv = DetermineConversion((unsigned char*)buf, len, &sourceType,
+                    pConvHA);
+        if (*pConv == kConvertEOLOn && sourceType == kEOLCRLF) {
+            WMSG0(" Auto-detected text conversion from CRLF; disabling\n");
+            *pConv = kConvertEOLOff;
+        }
+        WMSG2(" Auto-detected EOL conv=%d ha=%d\n", *pConv, *pConvHA);
+    } else if (*pConvHA == kConvertHAAuto) {
+        if (*pConv == kConvertEOLOn) {
+            /* definitely converting EOL, test for high ASCII */
+            if (CheckHighASCII((unsigned char*)buf, len))
+                *pConvHA = kConvertHAOn;
+            else
+                *pConvHA = kConvertHAOff;
+        } else {
+            /* not converting EOL, don't convert high ASCII */
+            *pConvHA = kConvertHAOff;
+        }
+    }
+    WMSG2("+++  After auto, conv=%d convHA=%d\n", *pConv, *pConvHA);
+    ASSERT(*pConv == kConvertEOLOn || *pConv == kConvertEOLOff);
+    ASSERT(*pConvHA == kConvertHAOn || *pConvHA == kConvertHAOff);
 
-	/* write the output */
-	if (*pConv == kConvertEOLOff) {
-		if (fwrite(buf, len, 1, fp) != 1) {
-			err = errno;
-			WMSG1("WriteConvert failed, err=%d\n", errno);
-		}
-	} else {
-		ASSERT(*pConv == kConvertEOLOn);
-		bool lastCR = *pLastCR;
-		unsigned char uch;
-		int mask;
+    /* write the output */
+    if (*pConv == kConvertEOLOff) {
+        if (fwrite(buf, len, 1, fp) != 1) {
+            err = errno;
+            WMSG1("WriteConvert failed, err=%d\n", errno);
+        }
+    } else {
+        ASSERT(*pConv == kConvertEOLOn);
+        bool lastCR = *pLastCR;
+        unsigned char uch;
+        int mask;
 
-		if (*pConvHA == kConvertHAOn)
-			mask = 0x7f;
-		else
-			mask = 0xff;
+        if (*pConvHA == kConvertHAOn)
+            mask = 0x7f;
+        else
+            mask = 0xff;
 
-		while (len--) {
-			uch = (*buf) & mask;
+        while (len--) {
+            uch = (*buf) & mask;
 
-			if (uch == kCharCR) {
-				PutEOL(fp);
-				lastCR = true;
-			} else if (uch == kCharLF) {
-				if (!lastCR)
-					PutEOL(fp);
-				lastCR = false;
-			} else {
-				putc(uch, fp);
-				lastCR = false;
-			}
-			buf++;
-		}
-		*pLastCR = lastCR;
-	}
+            if (uch == kCharCR) {
+                PutEOL(fp);
+                lastCR = true;
+            } else if (uch == kCharLF) {
+                if (!lastCR)
+                    PutEOL(fp);
+                lastCR = false;
+            } else {
+                putc(uch, fp);
+                lastCR = false;
+            }
+            buf++;
+        }
+        *pLastCR = lastCR;
+    }
 
-	return err;
+    return err;
 }
 
 
 /*
  * ===========================================================================
- *		GenericArchive
+ *      GenericArchive
  * ===========================================================================
  */
 
@@ -487,28 +487,28 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
 void
 GenericArchive::AddEntry(GenericEntry* pEntry)
 {
-	if (fEntryHead == nil) {
-		ASSERT(fEntryTail == nil);
-		fEntryHead = pEntry;
-		fEntryTail = pEntry;
-		ASSERT(pEntry->GetPrev() == nil);
-		ASSERT(pEntry->GetNext() == nil);
-	} else {
-		ASSERT(fEntryTail != nil);
-		ASSERT(pEntry->GetPrev() == nil);
-		pEntry->SetPrev(fEntryTail);
-		ASSERT(fEntryTail->GetNext() == nil);
-		fEntryTail->SetNext(pEntry);
-		fEntryTail = pEntry;
-	}
+    if (fEntryHead == nil) {
+        ASSERT(fEntryTail == nil);
+        fEntryHead = pEntry;
+        fEntryTail = pEntry;
+        ASSERT(pEntry->GetPrev() == nil);
+        ASSERT(pEntry->GetNext() == nil);
+    } else {
+        ASSERT(fEntryTail != nil);
+        ASSERT(pEntry->GetPrev() == nil);
+        pEntry->SetPrev(fEntryTail);
+        ASSERT(fEntryTail->GetNext() == nil);
+        fEntryTail->SetNext(pEntry);
+        fEntryTail = pEntry;
+    }
 
-	fNumEntries++;
+    fNumEntries++;
 
-	//if (fEntryIndex != nil) {
-	//	WMSG0("Resetting fEntryIndex\n");
-	//	delete [] fEntryIndex;
-	//	fEntryIndex = nil;
-	//}
+    //if (fEntryIndex != nil) {
+    //  WMSG0("Resetting fEntryIndex\n");
+    //  delete [] fEntryIndex;
+    //  fEntryIndex = nil;
+    //}
 }
 
 /*
@@ -517,21 +517,21 @@ GenericArchive::AddEntry(GenericEntry* pEntry)
 void
 GenericArchive::DeleteEntries(void)
 {
-	GenericEntry* pEntry;
-	GenericEntry* pNext;
+    GenericEntry* pEntry;
+    GenericEntry* pNext;
 
-	WMSG1("Deleting %d archive entries\n", fNumEntries);
+    WMSG1("Deleting %d archive entries\n", fNumEntries);
 
-	pEntry = GetEntries();
-	while (pEntry != nil) {
-		pNext = pEntry->GetNext();
-		delete pEntry;
-		pEntry = pNext;
-	}
+    pEntry = GetEntries();
+    while (pEntry != nil) {
+        pNext = pEntry->GetNext();
+        delete pEntry;
+        pEntry = pNext;
+    }
 
-	//delete [] fEntryIndex;
-	fNumEntries = 0;
-	fEntryHead = fEntryTail = nil;
+    //delete [] fEntryIndex;
+    fNumEntries = 0;
+    fEntryHead = fEntryTail = nil;
 }
 
 #if 0
@@ -541,24 +541,24 @@ GenericArchive::DeleteEntries(void)
 void
 GenericArchive::CreateIndex(void)
 {
-	GenericEntry* pEntry;
-	int num;
+    GenericEntry* pEntry;
+    int num;
 
-	WMSG1("Creating entry index (%d entries)\n", fNumEntries);
+    WMSG1("Creating entry index (%d entries)\n", fNumEntries);
 
-	ASSERT(fNumEntries != 0);
+    ASSERT(fNumEntries != 0);
 
-	fEntryIndex = new GenericEntry*[fNumEntries];
-	if (fEntryIndex == nil)
-		return;
+    fEntryIndex = new GenericEntry*[fNumEntries];
+    if (fEntryIndex == nil)
+        return;
 
-	pEntry = GetEntries();
-	num = 0;
-	while (pEntry != nil) {
-		fEntryIndex[num] = pEntry;
-		pEntry = pEntry->GetNext();
-		num++;
-	}
+    pEntry = GetEntries();
+    num = 0;
+    while (pEntry != nil) {
+        fEntryIndex[num] = pEntry;
+        pEntry = pEntry->GetNext();
+        num++;
+    }
 }
 #endif
 
@@ -576,25 +576,25 @@ GenericArchive::CreateIndex(void)
 /*static*/ CString
 GenericArchive::GenDerivedTempName(const char* filename)
 {
-	static const char* kTmpTemplate = "CPtmp_XXXXXX";
-	CString mangle(filename);
-	int idx, len;
+    static const char* kTmpTemplate = "CPtmp_XXXXXX";
+    CString mangle(filename);
+    int idx, len;
 
-	ASSERT(filename != nil);
+    ASSERT(filename != nil);
 
-	len = mangle.GetLength();
-	ASSERT(len > 0);
-	idx = mangle.ReverseFind('\\');
-	if (idx < 0) {
-		/* generally shouldn't happen -- we're using full paths */
-		return kTmpTemplate;
-	} else {
-		mangle.Delete(idx+1, len-(idx+1));	/* delete out to the end */
-		mangle += kTmpTemplate;
-	}
-	WMSG2("GenDerived: passed '%s' returned '%s'\n", filename, mangle);
+    len = mangle.GetLength();
+    ASSERT(len > 0);
+    idx = mangle.ReverseFind('\\');
+    if (idx < 0) {
+        /* generally shouldn't happen -- we're using full paths */
+        return kTmpTemplate;
+    } else {
+        mangle.Delete(idx+1, len-(idx+1));  /* delete out to the end */
+        mangle += kTmpTemplate;
+    }
+    WMSG2("GenDerived: passed '%s' returned '%s'\n", filename, mangle);
 
-	return mangle;
+    return mangle;
 }
 
 
@@ -614,44 +614,44 @@ GenericArchive::GenDerivedTempName(const char* filename)
  */
 /*static*/ int
 GenericArchive::ComparePaths(const CString& name1, char fssep1,
-	const CString& name2, char fssep2)
+    const CString& name2, char fssep2)
 {
-	const char* cp1 = name1;
-	const char* cp2 = name2;
+    const char* cp1 = name1;
+    const char* cp2 = name2;
 
-	while (*cp1 != '\0' && *cp2 != '\0') {
-		if (*cp1 == fssep1) {
-			if (*cp2 != fssep2) {
-				/* one fssep, one not, no match */
-				if (*cp1 == *cp2)
-					return 1;
-				else
-					return *cp1 - *cp2;
-			} else {
-				/* both are fssep, it's a match even if ASCII is different */
-			}
-		} else if (*cp2 == fssep2) {
-			/* one fssep, one not */
-			if (*cp1 == *cp2)
-				return -1;
-			else
-				return *cp1 - *cp2;
-		} else if (tolower(*cp1) != tolower(*cp2)) {
-			/* mismatch */
-			return tolower(*cp1) - tolower(*cp2);
-		}
+    while (*cp1 != '\0' && *cp2 != '\0') {
+        if (*cp1 == fssep1) {
+            if (*cp2 != fssep2) {
+                /* one fssep, one not, no match */
+                if (*cp1 == *cp2)
+                    return 1;
+                else
+                    return *cp1 - *cp2;
+            } else {
+                /* both are fssep, it's a match even if ASCII is different */
+            }
+        } else if (*cp2 == fssep2) {
+            /* one fssep, one not */
+            if (*cp1 == *cp2)
+                return -1;
+            else
+                return *cp1 - *cp2;
+        } else if (tolower(*cp1) != tolower(*cp2)) {
+            /* mismatch */
+            return tolower(*cp1) - tolower(*cp2);
+        }
 
-		cp1++;
-		cp2++;
-	}
+        cp1++;
+        cp2++;
+    }
 
-	return *cp1 - *cp2;
+    return *cp1 - *cp2;
 }
 
 
 /*
  * ===========================================================================
- *		GenericArchive -- "add files" stuff
+ *      GenericArchive -- "add files" stuff
  * ===========================================================================
  */
 
@@ -675,11 +675,11 @@ GenericArchive::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime* pDateTime)
     ASSERT(pDateTime != nil);
 
     ptm = localtime(pWhen);
-	if (ptm == nil) {
-		ASSERT(*pWhen == kDateNone || *pWhen == kDateInvalid);
-		memset(pDateTime, 0, sizeof(*pDateTime));
-		return;
-	}
+    if (ptm == nil) {
+        ASSERT(*pWhen == kDateNone || *pWhen == kDateInvalid);
+        memset(pDateTime, 0, sizeof(*pDateTime));
+        return;
+    }
     pDateTime->second = ptm->tm_sec;
     pDateTime->minute = ptm->tm_min;
     pDateTime->hour = ptm->tm_hour;
@@ -700,106 +700,106 @@ GenericArchive::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime* pDateTime)
  */
 NuError
 GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
-	const char* pathname, struct stat* psb, FileDetails* pDetails)
+    const char* pathname, struct stat* psb, FileDetails* pDetails)
 {
-	//char* livePathStr;
-	time_t now;
+    //char* livePathStr;
+    time_t now;
 
-	ASSERT(pAddOpts != nil);
-	ASSERT(pathname != nil);
-	ASSERT(pDetails != nil);
+    ASSERT(pAddOpts != nil);
+    ASSERT(pathname != nil);
+    ASSERT(pDetails != nil);
 
-	/* init to defaults */
-	//pDetails->threadID = kNuThreadIDDataFork;
-	pDetails->entryKind = FileDetails::kFileKindDataFork;
-	//pDetails->fileSysID = kNuFileSysUnknown;
-	pDetails->fileSysFmt = DiskImg::kFormatUnknown;
-	pDetails->fileSysInfo = PathProposal::kDefaultStoredFssep;
-	pDetails->fileType = 0;
-	pDetails->extraType = 0;
-	pDetails->storageType = kNuStorageUnknown;	/* let NufxLib worry about it */
-	if (psb->st_mode & S_IWUSR)
-		pDetails->access = kNuAccessUnlocked;
-	else
-		pDetails->access = kNuAccessLocked;
+    /* init to defaults */
+    //pDetails->threadID = kNuThreadIDDataFork;
+    pDetails->entryKind = FileDetails::kFileKindDataFork;
+    //pDetails->fileSysID = kNuFileSysUnknown;
+    pDetails->fileSysFmt = DiskImg::kFormatUnknown;
+    pDetails->fileSysInfo = PathProposal::kDefaultStoredFssep;
+    pDetails->fileType = 0;
+    pDetails->extraType = 0;
+    pDetails->storageType = kNuStorageUnknown;  /* let NufxLib worry about it */
+    if (psb->st_mode & S_IWUSR)
+        pDetails->access = kNuAccessUnlocked;
+    else
+        pDetails->access = kNuAccessLocked;
 
 #if 0
-	/* if this is a disk image, fill in disk-specific fields */
-	if (NState_GetModAddAsDisk(pState)) {
-		if ((psb->st_size & 0x1ff) != 0) {
-			/* reject anything whose size isn't a multiple of 512 bytes */
-			printf("NOT storing odd-sized (%ld) file as disk image: %s\n",
-				(long)psb->st_size, livePathStr);
-		} else {
-			/* set fields; note the "preserve" stuff can override this */
-			pDetails->threadID = kNuThreadIDDiskImage;
-			pDetails->storageType = 512;
-			pDetails->extraType = psb->st_size / 512;
-		}
-	}
+    /* if this is a disk image, fill in disk-specific fields */
+    if (NState_GetModAddAsDisk(pState)) {
+        if ((psb->st_size & 0x1ff) != 0) {
+            /* reject anything whose size isn't a multiple of 512 bytes */
+            printf("NOT storing odd-sized (%ld) file as disk image: %s\n",
+                (long)psb->st_size, livePathStr);
+        } else {
+            /* set fields; note the "preserve" stuff can override this */
+            pDetails->threadID = kNuThreadIDDiskImage;
+            pDetails->storageType = 512;
+            pDetails->extraType = psb->st_size / 512;
+        }
+    }
 #endif
 
-	now = time(nil);
-	UNIXTimeToDateTime(&now, &pDetails->archiveWhen);
-	UNIXTimeToDateTime(&psb->st_mtime, &pDetails->modWhen);
-	UNIXTimeToDateTime(&psb->st_ctime, &pDetails->createWhen);
+    now = time(nil);
+    UNIXTimeToDateTime(&now, &pDetails->archiveWhen);
+    UNIXTimeToDateTime(&psb->st_mtime, &pDetails->modWhen);
+    UNIXTimeToDateTime(&psb->st_ctime, &pDetails->createWhen);
 
-	/* get adjusted filename, along with any preserved type info */
-	PathProposal pathProp;
-	pathProp.Init(pathname);
-	pathProp.LocalToArchive(pAddOpts);
+    /* get adjusted filename, along with any preserved type info */
+    PathProposal pathProp;
+    pathProp.Init(pathname);
+    pathProp.LocalToArchive(pAddOpts);
 
-	/* set up the local and archived pathnames */
-	pDetails->storageName = "";
-	if (!pAddOpts->fStoragePrefix.IsEmpty()) {
-		pDetails->storageName += pAddOpts->fStoragePrefix;
-		pDetails->storageName += pathProp.fStoredFssep;
-	}
-	pDetails->storageName += pathProp.fStoredPathName;
+    /* set up the local and archived pathnames */
+    pDetails->storageName = "";
+    if (!pAddOpts->fStoragePrefix.IsEmpty()) {
+        pDetails->storageName += pAddOpts->fStoragePrefix;
+        pDetails->storageName += pathProp.fStoredFssep;
+    }
+    pDetails->storageName += pathProp.fStoredPathName;
 
-	/*
-	 * Fill in the NuFileDetails struct.
-	 *
-	 * We use GetBuffer to get the string to ensure that the CString object
-	 * doesn't do anything while we're not looking.  The string won't be
-	 * modified, and it won't be around for very long, so it's not strictly
-	 * necessary to do this.  It is, however, the correct approach.
-	 */
-	pDetails->origName = pathname;
-	pDetails->fileSysInfo = pathProp.fStoredFssep;
-	pDetails->fileType = pathProp.fFileType;
-	pDetails->extraType = pathProp.fAuxType;
-	switch (pathProp.fThreadKind) {
-	case GenericEntry::kDataThread:
-		//pDetails->threadID = kNuThreadIDDataFork;
-		pDetails->entryKind = FileDetails::kFileKindDataFork;
-		break;
-	case GenericEntry::kRsrcThread:
-		//pDetails->threadID = kNuThreadIDRsrcFork;
-		pDetails->entryKind = FileDetails::kFileKindRsrcFork;
-		break;
-	case GenericEntry::kDiskImageThread:
-		//pDetails->threadID = kNuThreadIDDiskImage;
-		pDetails->entryKind = FileDetails::kFileKindDiskImage;
-		break;
-	default:
-		ASSERT(false);
-		// was initialized to default earlier
-		break;
-	}
+    /*
+     * Fill in the NuFileDetails struct.
+     *
+     * We use GetBuffer to get the string to ensure that the CString object
+     * doesn't do anything while we're not looking.  The string won't be
+     * modified, and it won't be around for very long, so it's not strictly
+     * necessary to do this.  It is, however, the correct approach.
+     */
+    pDetails->origName = pathname;
+    pDetails->fileSysInfo = pathProp.fStoredFssep;
+    pDetails->fileType = pathProp.fFileType;
+    pDetails->extraType = pathProp.fAuxType;
+    switch (pathProp.fThreadKind) {
+    case GenericEntry::kDataThread:
+        //pDetails->threadID = kNuThreadIDDataFork;
+        pDetails->entryKind = FileDetails::kFileKindDataFork;
+        break;
+    case GenericEntry::kRsrcThread:
+        //pDetails->threadID = kNuThreadIDRsrcFork;
+        pDetails->entryKind = FileDetails::kFileKindRsrcFork;
+        break;
+    case GenericEntry::kDiskImageThread:
+        //pDetails->threadID = kNuThreadIDDiskImage;
+        pDetails->entryKind = FileDetails::kFileKindDiskImage;
+        break;
+    default:
+        ASSERT(false);
+        // was initialized to default earlier
+        break;
+    }
 
 /*bail:*/
-	return kNuErrNone;
+    return kNuErrNone;
 }
 
 /*
  * Directory structure and functions, based on zDIR in Info-Zip sources.
  */
 typedef struct Win32dirent {
-	char	d_attr;
-	char	d_name[MAX_PATH];
-	int 	d_first;
-	HANDLE	d_hFindFile;
+    char    d_attr;
+    char    d_name[MAX_PATH];
+    int     d_first;
+    HANDLE  d_hFindFile;
 } Win32dirent;
 
 static const char* kWildMatchAll = "*.*";
@@ -812,45 +812,45 @@ static const char* kWildMatchAll = "*.*";
 Win32dirent*
 GenericArchive::OpenDir(const char* name)
 {
-	Win32dirent* dir = nil;
-	char* tmpStr = nil;
-	char* cp;
-	WIN32_FIND_DATA fnd;
+    Win32dirent* dir = nil;
+    char* tmpStr = nil;
+    char* cp;
+    WIN32_FIND_DATA fnd;
 
-	dir = (Win32dirent*) malloc(sizeof(*dir));
-	tmpStr = (char*) malloc(strlen(name) + (2 + sizeof(kWildMatchAll)));
-	if (dir == nil || tmpStr == nil)
-		goto failed;
+    dir = (Win32dirent*) malloc(sizeof(*dir));
+    tmpStr = (char*) malloc(strlen(name) + (2 + sizeof(kWildMatchAll)));
+    if (dir == nil || tmpStr == nil)
+        goto failed;
 
-	strcpy(tmpStr, name);
-	cp = tmpStr + strlen(tmpStr);
+    strcpy(tmpStr, name);
+    cp = tmpStr + strlen(tmpStr);
 
-	/* don't end in a colon (e.g. "C:") */
-	if ((cp - tmpStr) > 0 && strrchr(tmpStr, ':') == (cp - 1))
-		*cp++ = '.';
-	/* must end in a slash */
-	if ((cp - tmpStr) > 0 &&
-			strrchr(tmpStr, PathProposal::kLocalFssep) != (cp - 1))
-		*cp++ = PathProposal::kLocalFssep;
+    /* don't end in a colon (e.g. "C:") */
+    if ((cp - tmpStr) > 0 && strrchr(tmpStr, ':') == (cp - 1))
+        *cp++ = '.';
+    /* must end in a slash */
+    if ((cp - tmpStr) > 0 &&
+            strrchr(tmpStr, PathProposal::kLocalFssep) != (cp - 1))
+        *cp++ = PathProposal::kLocalFssep;
 
-	strcpy(cp, kWildMatchAll);
+    strcpy(cp, kWildMatchAll);
 
-	dir->d_hFindFile = FindFirstFile(tmpStr, &fnd);
-	if (dir->d_hFindFile == INVALID_HANDLE_VALUE)
-		goto failed;
+    dir->d_hFindFile = FindFirstFile(tmpStr, &fnd);
+    if (dir->d_hFindFile == INVALID_HANDLE_VALUE)
+        goto failed;
 
-	strcpy(dir->d_name, fnd.cFileName);
-	dir->d_attr = (unsigned char) fnd.dwFileAttributes;
-	dir->d_first = 1;
+    strcpy(dir->d_name, fnd.cFileName);
+    dir->d_attr = (unsigned char) fnd.dwFileAttributes;
+    dir->d_first = 1;
 
 bail:
-	free(tmpStr);
-	return dir;
+    free(tmpStr);
+    return dir;
 
 failed:
-	free(dir);
-	dir = nil;
-	goto bail;
+    free(dir);
+    dir = nil;
+    goto bail;
 }
 
 /*
@@ -861,18 +861,18 @@ failed:
 Win32dirent*
 GenericArchive::ReadDir(Win32dirent* dir)
 {
-	if (dir->d_first)
-		dir->d_first = 0;
-	else {
-		WIN32_FIND_DATA fnd;
+    if (dir->d_first)
+        dir->d_first = 0;
+    else {
+        WIN32_FIND_DATA fnd;
 
-		if (!FindNextFile(dir->d_hFindFile, &fnd))
-			return nil;
-		strcpy(dir->d_name, fnd.cFileName);
-		dir->d_attr = (unsigned char) fnd.dwFileAttributes;
-	}
+        if (!FindNextFile(dir->d_hFindFile, &fnd))
+            return nil;
+        strcpy(dir->d_name, fnd.cFileName);
+        dir->d_attr = (unsigned char) fnd.dwFileAttributes;
+    }
 
-	return dir;
+    return dir;
 }
 
 /*
@@ -881,19 +881,19 @@ GenericArchive::ReadDir(Win32dirent* dir)
 void
 GenericArchive::CloseDir(Win32dirent* dir)
 {
-	if (dir == nil)
-		return;
+    if (dir == nil)
+        return;
 
-	FindClose(dir->d_hFindFile);
-	free(dir);
+    FindClose(dir->d_hFindFile);
+    free(dir);
 }
 
 
 /* might as well blend in with the UNIX version */
-#define DIR_NAME_LEN(dirent)	((int)strlen((dirent)->d_name))
+#define DIR_NAME_LEN(dirent)    ((int)strlen((dirent)->d_name))
 
 //static NuError Win32AddFile(NulibState* pState, NuArchive* pArchive,
-//	const char* pathname);
+//  const char* pathname);
 
 
 /*
@@ -903,62 +903,62 @@ GenericArchive::CloseDir(Win32dirent* dir)
  */
 NuError
 GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
-	const char* dirName, CString* pErrMsg)
+    const char* dirName, CString* pErrMsg)
 {
-	NuError err = kNuErrNone;
-	Win32dirent* dirp = nil;
-	Win32dirent* entry;
-	char nbuf[MAX_PATH];	/* malloc might be better; this soaks stack */
-	char fssep;
-	int len;
+    NuError err = kNuErrNone;
+    Win32dirent* dirp = nil;
+    Win32dirent* entry;
+    char nbuf[MAX_PATH];    /* malloc might be better; this soaks stack */
+    char fssep;
+    int len;
 
-	ASSERT(pAddOpts != nil);
-	ASSERT(dirName != nil);
+    ASSERT(pAddOpts != nil);
+    ASSERT(dirName != nil);
 
-	WMSG1("+++ DESCEND: '%s'\n", dirName);
+    WMSG1("+++ DESCEND: '%s'\n", dirName);
 
-	dirp = OpenDir(dirName);
-	if (dirp == nil) {
-		if (errno == ENOTDIR)
-			err = kNuErrNotDir;
-		else
-			err = errno ? (NuError)errno : kNuErrOpenDir;
-		
-		pErrMsg->Format("Failed on '%s': %s.", dirName, NuStrError(err));
-		goto bail;
-	}
+    dirp = OpenDir(dirName);
+    if (dirp == nil) {
+        if (errno == ENOTDIR)
+            err = kNuErrNotDir;
+        else
+            err = errno ? (NuError)errno : kNuErrOpenDir;
+        
+        pErrMsg->Format("Failed on '%s': %s.", dirName, NuStrError(err));
+        goto bail;
+    }
 
-	fssep = PathProposal::kLocalFssep;
+    fssep = PathProposal::kLocalFssep;
 
-	/* could use readdir_r, but we don't care about reentrancy here */
-	while ((entry = ReadDir(dirp)) != nil) {
-		/* skip the dotsies */
-		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-			continue;
+    /* could use readdir_r, but we don't care about reentrancy here */
+    while ((entry = ReadDir(dirp)) != nil) {
+        /* skip the dotsies */
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+            continue;
 
-		len = strlen(dirName);
-		if (len + DIR_NAME_LEN(entry) +2 > MAX_PATH) {
-			err = kNuErrInternal;
-			WMSG4("ERROR: Filename exceeds %d bytes: %s%c%s",
-				MAX_PATH, dirName, fssep, entry->d_name);
-			goto bail;
-		}
+        len = strlen(dirName);
+        if (len + DIR_NAME_LEN(entry) +2 > MAX_PATH) {
+            err = kNuErrInternal;
+            WMSG4("ERROR: Filename exceeds %d bytes: %s%c%s",
+                MAX_PATH, dirName, fssep, entry->d_name);
+            goto bail;
+        }
 
-		/* form the new name, inserting an fssep if needed */
-		strcpy(nbuf, dirName);
-		if (dirName[len-1] != fssep)
-			nbuf[len++] = fssep;
-		strcpy(nbuf+len, entry->d_name);
+        /* form the new name, inserting an fssep if needed */
+        strcpy(nbuf, dirName);
+        if (dirName[len-1] != fssep)
+            nbuf[len++] = fssep;
+        strcpy(nbuf+len, entry->d_name);
 
-		err = Win32AddFile(pAddOpts, nbuf, pErrMsg);
-		if (err != kNuErrNone)
-			goto bail;
-	}
+        err = Win32AddFile(pAddOpts, nbuf, pErrMsg);
+        if (err != kNuErrNone)
+            goto bail;
+    }
 
 bail:
-	if (dirp != nil)
-		(void)CloseDir(dirp);
-	return err;
+    if (dirp != nil)
+        (void)CloseDir(dirp);
+    return err;
 }
 
 /*
@@ -970,93 +970,93 @@ bail:
  */
 NuError
 GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
-	const char* pathname, CString* pErrMsg)
+    const char* pathname, CString* pErrMsg)
 {
-	NuError err = kNuErrNone;
-	Boolean exists, isDir, isReadable;
-	FileDetails details;
-	struct stat sb;
+    NuError err = kNuErrNone;
+    Boolean exists, isDir, isReadable;
+    FileDetails details;
+    struct stat sb;
 
-	ASSERT(pAddOpts != nil);
-	ASSERT(pathname != nil);
+    ASSERT(pAddOpts != nil);
+    ASSERT(pathname != nil);
 
-	PathName checkPath(pathname);
-	int ierr = checkPath.CheckFileStatus(&sb, &exists, &isReadable, &isDir);
-	if (ierr != 0) {
-		err = kNuErrGeneric;
-		pErrMsg->Format("Unexpected error while examining '%s': %s.", pathname,
-			NuStrError((NuError) ierr));
-		goto bail;
-	}
+    PathName checkPath(pathname);
+    int ierr = checkPath.CheckFileStatus(&sb, &exists, &isReadable, &isDir);
+    if (ierr != 0) {
+        err = kNuErrGeneric;
+        pErrMsg->Format("Unexpected error while examining '%s': %s.", pathname,
+            NuStrError((NuError) ierr));
+        goto bail;
+    }
 
-	if (!exists) {
-		err = kNuErrFileNotFound;
-		pErrMsg->Format("Couldn't find '%s'", pathname);
-		goto bail;
-	}
-	if (!isReadable) {
-		err = kNuErrFileNotReadable;
-		pErrMsg->Format("File '%s' isn't readable.", pathname);
-		goto bail;
-	}
-	if (isDir) {
-		if (pAddOpts->fIncludeSubfolders)
-			err = Win32AddDirectory(pAddOpts, pathname, pErrMsg);
-		goto bail;
-	}
+    if (!exists) {
+        err = kNuErrFileNotFound;
+        pErrMsg->Format("Couldn't find '%s'", pathname);
+        goto bail;
+    }
+    if (!isReadable) {
+        err = kNuErrFileNotReadable;
+        pErrMsg->Format("File '%s' isn't readable.", pathname);
+        goto bail;
+    }
+    if (isDir) {
+        if (pAddOpts->fIncludeSubfolders)
+            err = Win32AddDirectory(pAddOpts, pathname, pErrMsg);
+        goto bail;
+    }
 
-	/*
-	 * We've found a file that we want to add.	We need to decide what
-	 * filetype and auxtype it has, and whether or not it's actually the
-	 * resource fork of another file.
-	 */
-	WMSG1("+++ ADD '%s'\n", pathname);
+    /*
+     * We've found a file that we want to add.  We need to decide what
+     * filetype and auxtype it has, and whether or not it's actually the
+     * resource fork of another file.
+     */
+    WMSG1("+++ ADD '%s'\n", pathname);
 
-	/*
-	 * Fill out the "details" structure.  The class has an automatic
-	 * conversion to NuFileDetails, but it relies on the CString storage
-	 * in the FileDetails, so be careful how you use it.
-	 */
-	err = GetFileDetails(pAddOpts, pathname, &sb, &details);
-	if (err != kNuErrNone)
-		goto bail;
+    /*
+     * Fill out the "details" structure.  The class has an automatic
+     * conversion to NuFileDetails, but it relies on the CString storage
+     * in the FileDetails, so be careful how you use it.
+     */
+    err = GetFileDetails(pAddOpts, pathname, &sb, &details);
+    if (err != kNuErrNone)
+        goto bail;
 
-	assert(strcmp(pathname, details.origName) == 0);
-	err = DoAddFile(pAddOpts, &details);
-	if (err == kNuErrSkipped)	// ignore "skipped" result
-		err = kNuErrNone;
-	if (err != kNuErrNone)
-		goto bail;
+    assert(strcmp(pathname, details.origName) == 0);
+    err = DoAddFile(pAddOpts, &details);
+    if (err == kNuErrSkipped)   // ignore "skipped" result
+        err = kNuErrNone;
+    if (err != kNuErrNone)
+        goto bail;
 
 bail:
-	if (err != kNuErrNone && pErrMsg->IsEmpty()) {
-		pErrMsg->Format("Unable to add file '%s': %s.",
-			pathname, NuStrError(err));
-	}
-	return err;
+    if (err != kNuErrNone && pErrMsg->IsEmpty()) {
+        pErrMsg->Format("Unable to add file '%s': %s.",
+            pathname, NuStrError(err));
+    }
+    return err;
 }
 
 /*
  * External entry point; just calls the system-specific version.
  *
  * [ I figure the GS/OS version will want to pass a copy of the file
- *	 info from the GSOSAddDirectory function back into GSOSAddFile, so we'd
- *	 want to call it from here with a nil pointer indicating that we
- *	 don't yet have the file info.	That way we can get the file info
- *	 from the directory read call and won't have to check it again in
- *	 GSOSAddFile. ]
+ *   info from the GSOSAddDirectory function back into GSOSAddFile, so we'd
+ *   want to call it from here with a nil pointer indicating that we
+ *   don't yet have the file info.  That way we can get the file info
+ *   from the directory read call and won't have to check it again in
+ *   GSOSAddFile. ]
  */
 NuError
 GenericArchive::AddFile(const AddFilesDialog* pAddOpts, const char* pathname,
-	CString* pErrMsg)
+    CString* pErrMsg)
 {
-	*pErrMsg = "";
-	return Win32AddFile(pAddOpts, pathname, pErrMsg);
+    *pErrMsg = "";
+    return Win32AddFile(pAddOpts, pathname, pErrMsg);
 }
 
 /*
  * ===========================================================================
- *		GenericArchive::FileDetails
+ *      GenericArchive::FileDetails
  * ===========================================================================
  */
 
@@ -1065,14 +1065,14 @@ GenericArchive::AddFile(const AddFilesDialog* pAddOpts, const char* pathname,
  */
 GenericArchive::FileDetails::FileDetails(void)
 {
-	//threadID = 0;
-	entryKind = kFileKindUnknown;
-	fileSysFmt = DiskImg::kFormatUnknown;
-	fileSysInfo = storageType = 0;
-	access = fileType = extraType = 0;
-	memset(&createWhen, 0, sizeof(createWhen));
-	memset(&modWhen, 0, sizeof(modWhen));
-	memset(&archiveWhen, 0, sizeof(archiveWhen));
+    //threadID = 0;
+    entryKind = kFileKindUnknown;
+    fileSysFmt = DiskImg::kFormatUnknown;
+    fileSysInfo = storageType = 0;
+    access = fileType = extraType = 0;
+    memset(&createWhen, 0, sizeof(createWhen));
+    memset(&modWhen, 0, sizeof(modWhen));
+    memset(&archiveWhen, 0, sizeof(archiveWhen));
 }
 
 /*
@@ -1083,74 +1083,74 @@ GenericArchive::FileDetails::FileDetails(void)
  */
 GenericArchive::FileDetails::operator const NuFileDetails() const
 {
-	NuFileDetails details;
+    NuFileDetails details;
 
-	//details.threadID = threadID;
-	switch (entryKind) {
-	case kFileKindDataFork:
-		details.threadID = kNuThreadIDDataFork;
-		break;
-	case kFileKindBothForks:	// not exactly supported, doesn't really matter
-	case kFileKindRsrcFork:
-		details.threadID = kNuThreadIDRsrcFork;
-		break;
-	case kFileKindDiskImage:
-		details.threadID = kNuThreadIDDiskImage;
-		break;
-	case kFileKindDirectory:
-	default:
-		WMSG1("Invalid entryKind (%d) for NuFileDetails conversion\n",
-			entryKind);
-		ASSERT(false);
-		details.threadID = 0;		// that makes it an old-style comment?!
-		break;
-	}
+    //details.threadID = threadID;
+    switch (entryKind) {
+    case kFileKindDataFork:
+        details.threadID = kNuThreadIDDataFork;
+        break;
+    case kFileKindBothForks:    // not exactly supported, doesn't really matter
+    case kFileKindRsrcFork:
+        details.threadID = kNuThreadIDRsrcFork;
+        break;
+    case kFileKindDiskImage:
+        details.threadID = kNuThreadIDDiskImage;
+        break;
+    case kFileKindDirectory:
+    default:
+        WMSG1("Invalid entryKind (%d) for NuFileDetails conversion\n",
+            entryKind);
+        ASSERT(false);
+        details.threadID = 0;       // that makes it an old-style comment?!
+        break;
+    }
 
-	details.origName = origName;		// CString to char*
-	details.storageName = storageName;	// CString to char*
-	//details.fileSysID = fileSysID;
-	details.fileSysInfo = fileSysInfo;
-	details.access = access;
-	details.fileType = fileType;
-	details.extraType = extraType;
-	details.storageType = storageType;
-	details.createWhen = createWhen;
-	details.modWhen = modWhen;
-	details.archiveWhen = archiveWhen;
+    details.origName = origName;        // CString to char*
+    details.storageName = storageName;  // CString to char*
+    //details.fileSysID = fileSysID;
+    details.fileSysInfo = fileSysInfo;
+    details.access = access;
+    details.fileType = fileType;
+    details.extraType = extraType;
+    details.storageType = storageType;
+    details.createWhen = createWhen;
+    details.modWhen = modWhen;
+    details.archiveWhen = archiveWhen;
 
-	switch (fileSysFmt) {
-	case DiskImg::kFormatProDOS:
-	case DiskImg::kFormatDOS33:
-	case DiskImg::kFormatDOS32:
-	case DiskImg::kFormatPascal:
-	case DiskImg::kFormatMacHFS:
-	case DiskImg::kFormatMacMFS:
-	case DiskImg::kFormatLisa:
-	case DiskImg::kFormatCPM:
-	//kFormatCharFST
-	case DiskImg::kFormatMSDOS:
-	//kFormatHighSierra
-	case DiskImg::kFormatISO9660:
-		/* these map directly */
-		details.fileSysID = (enum NuFileSysID) fileSysFmt;
-		break;
+    switch (fileSysFmt) {
+    case DiskImg::kFormatProDOS:
+    case DiskImg::kFormatDOS33:
+    case DiskImg::kFormatDOS32:
+    case DiskImg::kFormatPascal:
+    case DiskImg::kFormatMacHFS:
+    case DiskImg::kFormatMacMFS:
+    case DiskImg::kFormatLisa:
+    case DiskImg::kFormatCPM:
+    //kFormatCharFST
+    case DiskImg::kFormatMSDOS:
+    //kFormatHighSierra
+    case DiskImg::kFormatISO9660:
+        /* these map directly */
+        details.fileSysID = (enum NuFileSysID) fileSysFmt;
+        break;
 
-	case DiskImg::kFormatRDOS33:
-	case DiskImg::kFormatRDOS32:
-	case DiskImg::kFormatRDOS3:
-		/* these look like DOS33, e.g. text is high-ASCII */
-		details.fileSysID = kNuFileSysDOS33;
-		break;
+    case DiskImg::kFormatRDOS33:
+    case DiskImg::kFormatRDOS32:
+    case DiskImg::kFormatRDOS3:
+        /* these look like DOS33, e.g. text is high-ASCII */
+        details.fileSysID = kNuFileSysDOS33;
+        break;
 
-	default:
-		details.fileSysID = kNuFileSysUnknown;
-		break;
-	}
+    default:
+        details.fileSysID = kNuFileSysUnknown;
+        break;
+    }
 
 
-	// Return stack copy, which copies into compiler temporary with our
-	// copy constructor.
-	return details;
+    // Return stack copy, which copies into compiler temporary with our
+    // copy constructor.
+    return details;
 }
 
 /*
@@ -1160,27 +1160,27 @@ GenericArchive::FileDetails::operator const NuFileDetails() const
  */
 /*static*/ void
 GenericArchive::FileDetails::CopyFields(FileDetails* pDst,
-	const FileDetails* pSrc)
+    const FileDetails* pSrc)
 {
-	//pDst->threadID = pSrc->threadID;
-	pDst->entryKind = pSrc->entryKind;
-	pDst->origName = pSrc->origName;
-	pDst->storageName = pSrc->storageName;
-	pDst->fileSysFmt = pSrc->fileSysFmt;
-	pDst->fileSysInfo = pSrc->fileSysInfo;
-	pDst->access = pSrc->access;
-	pDst->fileType = pSrc->fileType;
-	pDst->extraType = pSrc->extraType;
-	pDst->storageType = pSrc->storageType;
-	pDst->createWhen = pSrc->createWhen;
-	pDst->modWhen = pSrc->modWhen;
-	pDst->archiveWhen = pSrc->archiveWhen;
+    //pDst->threadID = pSrc->threadID;
+    pDst->entryKind = pSrc->entryKind;
+    pDst->origName = pSrc->origName;
+    pDst->storageName = pSrc->storageName;
+    pDst->fileSysFmt = pSrc->fileSysFmt;
+    pDst->fileSysInfo = pSrc->fileSysInfo;
+    pDst->access = pSrc->access;
+    pDst->fileType = pSrc->fileType;
+    pDst->extraType = pSrc->extraType;
+    pDst->storageType = pSrc->storageType;
+    pDst->createWhen = pSrc->createWhen;
+    pDst->modWhen = pSrc->modWhen;
+    pDst->archiveWhen = pSrc->archiveWhen;
 }
 
 
 /*
  * ===========================================================================
- *		SelectionSet
+ *      SelectionSet
  * ===========================================================================
  */
 
@@ -1194,19 +1194,19 @@ GenericArchive::FileDetails::CopyFields(FileDetails* pDst,
 void
 SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask)
 {
-	WMSG1("CreateFromSelection (threadMask=0x%02x)\n", threadMask);
+    WMSG1("CreateFromSelection (threadMask=0x%02x)\n", threadMask);
 
-	POSITION posn;
-	posn = pContentList->GetFirstSelectedItemPosition();
-	ASSERT(posn != nil);
-	if (posn == nil)
-		return;
-	while (posn != nil) {
-		int num = pContentList->GetNextSelectedItem(/*ref*/ posn);
-		GenericEntry* pEntry = (GenericEntry*) pContentList->GetItemData(num);
+    POSITION posn;
+    posn = pContentList->GetFirstSelectedItemPosition();
+    ASSERT(posn != nil);
+    if (posn == nil)
+        return;
+    while (posn != nil) {
+        int num = pContentList->GetNextSelectedItem(/*ref*/ posn);
+        GenericEntry* pEntry = (GenericEntry*) pContentList->GetItemData(num);
 
-		AddToSet(pEntry, threadMask);
-	}
+        AddToSet(pEntry, threadMask);
+    }
 }
 
 /*
@@ -1215,14 +1215,14 @@ SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask)
 void
 SelectionSet::CreateFromAll(ContentList* pContentList, int threadMask)
 {
-	WMSG1("CreateFromAll (threadMask=0x%02x)\n", threadMask);
+    WMSG1("CreateFromAll (threadMask=0x%02x)\n", threadMask);
 
-	int count = pContentList->GetItemCount();
-	for (int idx = 0; idx < count; idx++) {
-		GenericEntry* pEntry = (GenericEntry*) pContentList->GetItemData(idx);
+    int count = pContentList->GetItemCount();
+    for (int idx = 0; idx < count; idx++) {
+        GenericEntry* pEntry = (GenericEntry*) pContentList->GetItemData(idx);
 
-		AddToSet(pEntry, threadMask);
-	}
+        AddToSet(pEntry, threadMask);
+    }
 }
 
 /*
@@ -1232,50 +1232,50 @@ SelectionSet::CreateFromAll(ContentList* pContentList, int threadMask)
 void
 SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
 {
-	SelectionEntry* pSelEntry;
+    SelectionEntry* pSelEntry;
 
-	//WMSG1("  Sel '%s'\n", pEntry->GetPathName());
+    //WMSG1("  Sel '%s'\n", pEntry->GetPathName());
 
-	if (!(threadMask & GenericEntry::kAllowVolumeDir) &&
-		 pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir)
-	{
-		/* only include volume dir if specifically requested */
-		//WMSG1(" Excluding volume dir '%s' from set\n", pEntry->GetPathName());
-		return;
-	}
+    if (!(threadMask & GenericEntry::kAllowVolumeDir) &&
+         pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir)
+    {
+        /* only include volume dir if specifically requested */
+        //WMSG1(" Excluding volume dir '%s' from set\n", pEntry->GetPathName());
+        return;
+    }
 
-	if (!(threadMask & GenericEntry::kAllowDirectory) &&
-		pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory)
-	{
-		/* only include directories if specifically requested */
-		//WMSG1(" Excluding folder '%s' from set\n", pEntry->GetPathName());
-		return;
-	}
+    if (!(threadMask & GenericEntry::kAllowDirectory) &&
+        pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory)
+    {
+        /* only include directories if specifically requested */
+        //WMSG1(" Excluding folder '%s' from set\n", pEntry->GetPathName());
+        return;
+    }
 
-	if (!(threadMask & GenericEntry::kAllowDamaged) && pEntry->GetDamaged())
-	{
-		/* only include "damaged" files if specifically requested */
-		return;
-	}
+    if (!(threadMask & GenericEntry::kAllowDamaged) && pEntry->GetDamaged())
+    {
+        /* only include "damaged" files if specifically requested */
+        return;
+    }
 
-	bool doAdd = false;
+    bool doAdd = false;
 
-	if (threadMask & GenericEntry::kAnyThread)
-		doAdd = true;
+    if (threadMask & GenericEntry::kAnyThread)
+        doAdd = true;
 
-	if ((threadMask & GenericEntry::kCommentThread) && pEntry->GetHasComment())
-		doAdd = true;
-	if ((threadMask & GenericEntry::kDataThread) && pEntry->GetHasDataFork())
-		doAdd = true;
-	if ((threadMask & GenericEntry::kRsrcThread) && pEntry->GetHasRsrcFork())
-		doAdd = true;
-	if ((threadMask & GenericEntry::kDiskImageThread) && pEntry->GetHasDiskImage())
-		doAdd = true;
+    if ((threadMask & GenericEntry::kCommentThread) && pEntry->GetHasComment())
+        doAdd = true;
+    if ((threadMask & GenericEntry::kDataThread) && pEntry->GetHasDataFork())
+        doAdd = true;
+    if ((threadMask & GenericEntry::kRsrcThread) && pEntry->GetHasRsrcFork())
+        doAdd = true;
+    if ((threadMask & GenericEntry::kDiskImageThread) && pEntry->GetHasDiskImage())
+        doAdd = true;
 
-	if (doAdd) {
-		pSelEntry = new SelectionEntry(pEntry);
-		AddEntry(pSelEntry);
-	}
+    if (doAdd) {
+        pSelEntry = new SelectionEntry(pEntry);
+        AddEntry(pSelEntry);
+    }
 }
 
 /*
@@ -1284,22 +1284,22 @@ SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
 void
 SelectionSet::AddEntry(SelectionEntry* pEntry)
 {
-	if (fEntryHead == nil) {
-		ASSERT(fEntryTail == nil);
-		fEntryHead = pEntry;
-		fEntryTail = pEntry;
-		ASSERT(pEntry->GetPrev() == nil);
-		ASSERT(pEntry->GetNext() == nil);
-	} else {
-		ASSERT(fEntryTail != nil);
-		ASSERT(pEntry->GetPrev() == nil);
-		pEntry->SetPrev(fEntryTail);
-		ASSERT(fEntryTail->GetNext() == nil);
-		fEntryTail->SetNext(pEntry);
-		fEntryTail = pEntry;
-	}
+    if (fEntryHead == nil) {
+        ASSERT(fEntryTail == nil);
+        fEntryHead = pEntry;
+        fEntryTail = pEntry;
+        ASSERT(pEntry->GetPrev() == nil);
+        ASSERT(pEntry->GetNext() == nil);
+    } else {
+        ASSERT(fEntryTail != nil);
+        ASSERT(pEntry->GetPrev() == nil);
+        pEntry->SetPrev(fEntryTail);
+        ASSERT(fEntryTail->GetNext() == nil);
+        fEntryTail->SetNext(pEntry);
+        fEntryTail = pEntry;
+    }
 
-	fNumEntries++;
+    fNumEntries++;
 }
 
 /*
@@ -1308,17 +1308,17 @@ SelectionSet::AddEntry(SelectionEntry* pEntry)
 void
 SelectionSet::DeleteEntries(void)
 {
-	SelectionEntry* pEntry;
-	SelectionEntry* pNext;
+    SelectionEntry* pEntry;
+    SelectionEntry* pNext;
 
-	WMSG0("Deleting selection entries\n");
+    WMSG0("Deleting selection entries\n");
 
-	pEntry = GetEntries();
-	while (pEntry != nil) {
-		pNext = pEntry->GetNext();
-		delete pEntry;
-		pEntry = pNext;
-	}
+    pEntry = GetEntries();
+    while (pEntry != nil) {
+        pNext = pEntry->GetNext();
+        delete pEntry;
+        pEntry = pNext;
+    }
 }
 
 /*
@@ -1327,21 +1327,21 @@ SelectionSet::DeleteEntries(void)
 int
 SelectionSet::CountMatchingPrefix(const char* prefix)
 {
-	SelectionEntry* pEntry;
-	int count = 0;
-	int len = strlen(prefix);
-	ASSERT(len > 0);
+    SelectionEntry* pEntry;
+    int count = 0;
+    int len = strlen(prefix);
+    ASSERT(len > 0);
 
-	pEntry = GetEntries();
-	while (pEntry != nil) {
-		GenericEntry* pGeneric = pEntry->GetEntry();
+    pEntry = GetEntries();
+    while (pEntry != nil) {
+        GenericEntry* pGeneric = pEntry->GetEntry();
 
-		if (strncasecmp(prefix, pGeneric->GetDisplayName(), len) == 0)
-			count++;
-		pEntry = pEntry->GetNext();
-	}
+        if (strncasecmp(prefix, pGeneric->GetDisplayName(), len) == 0)
+            count++;
+        pEntry = pEntry->GetNext();
+    }
 
-	return count;
+    return count;
 }
 
 /*
@@ -1350,13 +1350,13 @@ SelectionSet::CountMatchingPrefix(const char* prefix)
 void
 SelectionSet::Dump(void)
 {
-	const SelectionEntry* pEntry;
+    const SelectionEntry* pEntry;
 
-	WMSG1("SelectionSet: %d entries\n", fNumEntries);
+    WMSG1("SelectionSet: %d entries\n", fNumEntries);
 
-	pEntry = fEntryHead;
-	while (pEntry != nil) {
-		WMSG1("  : name='%s'\n", pEntry->GetEntry()->GetPathName());
-		pEntry = pEntry->GetNext();
-	}
+    pEntry = fEntryHead;
+    while (pEntry != nil) {
+        WMSG1("  : name='%s'\n", pEntry->GetEntry()->GetPathName());
+        pEntry = pEntry->GetNext();
+    }
 }

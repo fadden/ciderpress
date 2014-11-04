@@ -16,19 +16,19 @@
 void
 ReformatRaw::Examine(ReformatHolder* pHolder)
 {
-	pHolder->SetApplic(ReformatHolder::kReformatRaw,
-		ReformatHolder::kApplicAlways,
-		ReformatHolder::kApplicAlways, ReformatHolder::kApplicAlways);
+    pHolder->SetApplic(ReformatHolder::kReformatRaw,
+        ReformatHolder::kApplicAlways,
+        ReformatHolder::kApplicAlways, ReformatHolder::kApplicAlways);
 
-	if (pHolder->GetSourceLen(ReformatHolder::kPartData) == 0)
-		pHolder->SetApplicPreferred(ReformatHolder::kReformatRaw,
-									ReformatHolder::kPartData);
-	if (pHolder->GetSourceLen(ReformatHolder::kPartRsrc) == 0)
-		pHolder->SetApplicPreferred(ReformatHolder::kReformatRaw,
-									ReformatHolder::kPartRsrc);
-	if (pHolder->GetSourceLen(ReformatHolder::kPartCmmt) == 0)
-		pHolder->SetApplicPreferred(ReformatHolder::kReformatRaw,
-									ReformatHolder::kPartCmmt);
+    if (pHolder->GetSourceLen(ReformatHolder::kPartData) == 0)
+        pHolder->SetApplicPreferred(ReformatHolder::kReformatRaw,
+                                    ReformatHolder::kPartData);
+    if (pHolder->GetSourceLen(ReformatHolder::kPartRsrc) == 0)
+        pHolder->SetApplicPreferred(ReformatHolder::kReformatRaw,
+                                    ReformatHolder::kPartRsrc);
+    if (pHolder->GetSourceLen(ReformatHolder::kPartCmmt) == 0)
+        pHolder->SetApplicPreferred(ReformatHolder::kReformatRaw,
+                                    ReformatHolder::kPartCmmt);
 }
 
 /*
@@ -39,10 +39,10 @@ ReformatRaw::Examine(ReformatHolder* pHolder)
  */
 int
 ReformatRaw::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	return -1;
+    return -1;
 }
 
 
@@ -52,9 +52,9 @@ ReformatRaw::Process(const ReformatHolder* pHolder,
 void
 ReformatHexDump::Examine(ReformatHolder* pHolder)
 {
-	pHolder->SetApplic(ReformatHolder::kReformatHexDump,
-		ReformatHolder::kApplicAlways,
-		ReformatHolder::kApplicAlways, ReformatHolder::kApplicAlways);
+    pHolder->SetApplic(ReformatHolder::kReformatHexDump,
+        ReformatHolder::kApplicAlways,
+        ReformatHolder::kApplicAlways, ReformatHolder::kApplicAlways);
 }
 
 /*
@@ -62,33 +62,33 @@ ReformatHexDump::Examine(ReformatHolder* pHolder)
  */
 int
 ReformatHexDump::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
-	long srcLen = pHolder->GetSourceLen(part);
+    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    long srcLen = pHolder->GetSourceLen(part);
 
-	/*
-	 * The RichEdit control gets all wonky on large RTF files, but doesn't
-	 * seem to have trouble with large text files.  So, for large files,
-	 * turn off the RTF formatting.  We also allow the user the option of
-	 * turning the formatting off.
-	 */
-	if (srcLen > 65536)
-		fUseRTF = false;
-	if (fUseRTF) {
-		if (!pHolder->GetOption(ReformatHolder::kOptHiliteHexDump))
-			fUseRTF = false;
-	}
+    /*
+     * The RichEdit control gets all wonky on large RTF files, but doesn't
+     * seem to have trouble with large text files.  So, for large files,
+     * turn off the RTF formatting.  We also allow the user the option of
+     * turning the formatting off.
+     */
+    if (srcLen > 65536)
+        fUseRTF = false;
+    if (fUseRTF) {
+        if (!pHolder->GetOption(ReformatHolder::kOptHiliteHexDump))
+            fUseRTF = false;
+    }
 
-	RTFBegin();
+    RTFBegin();
 
-	BufHexDump(srcBuf, srcLen);
-	
-	RTFEnd();
+    BufHexDump(srcBuf, srcLen);
+    
+    RTFEnd();
 
-	SetResultBuffer(pOutput);
-	return 0;
+    SetResultBuffer(pOutput);
+    return 0;
 }
 
 
@@ -98,9 +98,9 @@ ReformatHexDump::Process(const ReformatHolder* pHolder,
 void
 ReformatEOL_HA::Examine(ReformatHolder* pHolder)
 {
-	pHolder->SetApplic(ReformatHolder::kReformatTextEOL_HA,
-		ReformatHolder::kApplicAlways,
-		ReformatHolder::kApplicAlways, ReformatHolder::kApplicAlways);
+    pHolder->SetApplic(ReformatHolder::kReformatTextEOL_HA,
+        ReformatHolder::kApplicAlways,
+        ReformatHolder::kApplicAlways, ReformatHolder::kApplicAlways);
 }
 
 /*
@@ -111,23 +111,23 @@ ReformatEOL_HA::Examine(ReformatHolder* pHolder)
  */
 int
 ReformatEOL_HA::Process(const ReformatHolder* pHolder,
-	ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-	ReformatOutput* pOutput)
+    ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+    ReformatOutput* pOutput)
 {
-	fUseRTF = false;
+    fUseRTF = false;
 
-	//WMSG0("Reformatting EOL (testing for high-ASCII too)\n");
+    //WMSG0("Reformatting EOL (testing for high-ASCII too)\n");
 
-	//bool isHighASCII = false;
+    //bool isHighASCII = false;
 
-	if (pHolder->GetSourceLen(part) == 0)
-		return -1;
+    if (pHolder->GetSourceLen(part) == 0)
+        return -1;
 
-	//isHighASCII = GenericEntry::CheckHighASCII(
-	//	(const unsigned char*) pHolder->fSourceBuf, pHolder->fSourceLen);
+    //isHighASCII = GenericEntry::CheckHighASCII(
+    //  (const unsigned char*) pHolder->fSourceBuf, pHolder->fSourceLen);
 
-	ConvertEOL(pHolder->GetSourceBuf(part), pHolder->GetSourceLen(part), true);
+    ConvertEOL(pHolder->GetSourceBuf(part), pHolder->GetSourceLen(part), true);
 
-	SetResultBuffer(pOutput);
-	return 0;
+    SetResultBuffer(pOutput);
+    return 0;
 }

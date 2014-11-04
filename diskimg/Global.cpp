@@ -23,65 +23,65 @@ const char* DiskImgLib::kASPIDev = "ASPI:";
 /*static*/ DIError
 Global::AppInit(void)
 {
-	NuError nerr;
-	long major, minor, bug;
+    NuError nerr;
+    long major, minor, bug;
 
-	if (fAppInitCalled) {
-		WMSG0("DiskImg AppInit already called\n");
-		return kDIErrNone;
-	}
+    if (fAppInitCalled) {
+        WMSG0("DiskImg AppInit already called\n");
+        return kDIErrNone;
+    }
 
-	WMSG3("AppInit for DiskImg library v%d.%d.%d\n",
-		kDiskImgVersionMajor, kDiskImgVersionMinor, kDiskImgVersionBug);
+    WMSG3("AppInit for DiskImg library v%d.%d.%d\n",
+        kDiskImgVersionMajor, kDiskImgVersionMinor, kDiskImgVersionBug);
 
 #ifdef _WIN32
-	HMODULE hModule;
-	char fileNameBuf[256];
-	hModule = ::GetModuleHandle("DiskImg4.dll");
-	if (hModule != nil &&
-		::GetModuleFileName(hModule, fileNameBuf, sizeof(fileNameBuf)) != 0)
-	{
-		// GetModuleHandle does not increase ref count, so no need to release
-		WMSG1("DiskImg DLL loaded from '%s'\n", fileNameBuf);
-	} else {
-		WMSG0("Unable to get DiskImg DLL filename\n");
-	}
+    HMODULE hModule;
+    char fileNameBuf[256];
+    hModule = ::GetModuleHandle("DiskImg4.dll");
+    if (hModule != nil &&
+        ::GetModuleFileName(hModule, fileNameBuf, sizeof(fileNameBuf)) != 0)
+    {
+        // GetModuleHandle does not increase ref count, so no need to release
+        WMSG1("DiskImg DLL loaded from '%s'\n", fileNameBuf);
+    } else {
+        WMSG0("Unable to get DiskImg DLL filename\n");
+    }
 #endif
 
-	/*
-	 * Make sure we're linked against a compatible version of NufxLib.
-	 */
-	nerr = NuGetVersion(&major, &minor, &bug, NULL, NULL);
-	if (nerr != kNuErrNone) {
-		WMSG0("Unable to get version number from NufxLib.");
-		return kDIErrNufxLibInitFailed;
-	}
+    /*
+     * Make sure we're linked against a compatible version of NufxLib.
+     */
+    nerr = NuGetVersion(&major, &minor, &bug, NULL, NULL);
+    if (nerr != kNuErrNone) {
+        WMSG0("Unable to get version number from NufxLib.");
+        return kDIErrNufxLibInitFailed;
+    }
 
-	if (major != kNuVersionMajor || minor < kNuVersionMinor) {
-		WMSG3("Unexpected NufxLib version %ld.%ld.%ld\n",
-				major, minor, bug);
-		return kDIErrNufxLibInitFailed;
-	}
+    if (major != kNuVersionMajor || minor < kNuVersionMinor) {
+        WMSG3("Unexpected NufxLib version %ld.%ld.%ld\n",
+                major, minor, bug);
+        return kDIErrNufxLibInitFailed;
+    }
 
-	/*
-	 * Do one-time init over in the DiskImg class.
-	 */
-	DiskImg::CalcNibbleInvTables();
+    /*
+     * Do one-time init over in the DiskImg class.
+     */
+    DiskImg::CalcNibbleInvTables();
 
 #ifdef HAVE_WINDOWS_CDROM
-	if (kAlwaysTryASPI || IsWin9x()) {
-		fpASPI = new ASPI;
-		if (fpASPI->Init() != kDIErrNone) {
-			delete fpASPI;
-			fpASPI = nil;
-		}
-	}
+    if (kAlwaysTryASPI || IsWin9x()) {
+        fpASPI = new ASPI;
+        if (fpASPI->Init() != kDIErrNone) {
+            delete fpASPI;
+            fpASPI = nil;
+        }
+    }
 #endif
-	WMSG2("DiskImg HasSPTI=%d HasASPI=%d\n", GetHasSPTI(), GetHasASPI());
+    WMSG2("DiskImg HasSPTI=%d HasASPI=%d\n", GetHasSPTI(), GetHasASPI());
 
     fAppInitCalled = true;
 
-	return kDIErrNone;
+    return kDIErrNone;
 }
 
 /*
@@ -90,9 +90,9 @@ Global::AppInit(void)
 /*static*/ DIError
 Global::AppCleanup(void)
 {
-	WMSG0("DiskImgLib cleanup\n");
-	delete fpASPI;
-	return kDIErrNone;
+    WMSG0("DiskImgLib cleanup\n");
+    delete fpASPI;
+    return kDIErrNone;
 }
 
 /*
@@ -106,8 +106,8 @@ Global::AppCleanup(void)
 /*static*/ bool Global::GetHasSPTI(void) { return !IsWin9x() && fpASPI == nil; }
 /*static*/ bool Global::GetHasASPI(void) { return fpASPI != nil; }
 /*static*/ unsigned long Global::GetASPIVersion(void) {
-	assert(fpASPI != nil);
-	return fpASPI->GetVersion();
+    assert(fpASPI != nil);
+    return fpASPI->GetVersion();
 }
 #else
 /*static*/ bool Global::GetHasSPTI(void) { return false; }
@@ -122,12 +122,12 @@ Global::AppCleanup(void)
 /*static*/ void
 Global::GetVersion(long* pMajor, long* pMinor, long* pBug)
 {
-	if (pMajor != nil)
-		*pMajor = kDiskImgVersionMajor;
-	if (pMinor != nil)
-		*pMinor = kDiskImgVersionMinor;
-	if (pBug != nil)
-		*pBug = kDiskImgVersionBug;
+    if (pMajor != nil)
+        *pMajor = kDiskImgVersionMajor;
+    if (pMinor != nil)
+        *pMinor = kDiskImgVersionMinor;
+    if (pBug != nil)
+        *pBug = kDiskImgVersionBug;
 }
 
 
@@ -142,11 +142,11 @@ Global::GetVersion(long* pMajor, long* pMinor, long* pBug)
 Global::DebugMsgHandler
 Global::SetDebugMsgHandler(DebugMsgHandler handler)
 {
-	DebugMsgHandler oldHandler;
+    DebugMsgHandler oldHandler;
 
-	oldHandler = gDebugMsgHandler;
-	gDebugMsgHandler = handler;
-	return oldHandler;
+    oldHandler = gDebugMsgHandler;
+    gDebugMsgHandler = handler;
+    return oldHandler;
 }
 
 /*
@@ -158,32 +158,32 @@ Global::SetDebugMsgHandler(DebugMsgHandler handler)
 /*static*/ void
 Global::PrintDebugMsg(const char* file, int line, const char* fmt, ...)
 {
-	if (gDebugMsgHandler == nil) {
-		/*
-		 * This can happen if the app decides to bail with an exit()
-		 * call.  I'm not sure what's zapping the pointer.
-		 *
-		 * We get here on "-install" or "-uninstall", which really
-		 * should be using a more Windows-friendly exit strategy.
-		 */
-		DebugBreak();
-		return;
-	}
+    if (gDebugMsgHandler == nil) {
+        /*
+         * This can happen if the app decides to bail with an exit()
+         * call.  I'm not sure what's zapping the pointer.
+         *
+         * We get here on "-install" or "-uninstall", which really
+         * should be using a more Windows-friendly exit strategy.
+         */
+        DebugBreak();
+        return;
+    }
 
-	char buf[512];
+    char buf[512];
     va_list args;
 
     va_start(args, fmt);
 #if defined(HAVE_VSNPRINTF)
-	(void) vsnprintf(buf, sizeof(buf), fmt, args);
+    (void) vsnprintf(buf, sizeof(buf), fmt, args);
 #elif defined(HAVE__VSNPRINTF)
-	(void) _vsnprintf(buf, sizeof(buf), fmt, args);
+    (void) _vsnprintf(buf, sizeof(buf), fmt, args);
 #else
 # error "hosed"
 #endif
     va_end(args);
 
-	buf[sizeof(buf)-1] = '\0';
+    buf[sizeof(buf)-1] = '\0';
 
-	(*gDebugMsgHandler)(file, line, buf);
+    (*gDebugMsgHandler)(file, line, buf);
 }

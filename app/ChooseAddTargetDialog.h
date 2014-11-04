@@ -19,29 +19,29 @@
  */
 class ChooseAddTargetDialog : public CDialog {
 public:
-	ChooseAddTargetDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_CHOOSE_ADD_TARGET, pParentWnd)
-	{
-		fpDiskFS = fpChosenDiskFS = nil;
-		fpChosenSubdir = nil;
-	}
-	virtual ~ChooseAddTargetDialog(void) {}
+    ChooseAddTargetDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_CHOOSE_ADD_TARGET, pParentWnd)
+    {
+        fpDiskFS = fpChosenDiskFS = nil;
+        fpChosenSubdir = nil;
+    }
+    virtual ~ChooseAddTargetDialog(void) {}
 
-	/* set this before calling DoModal */
-	DiskImgLib::DiskFS* fpDiskFS;
+    /* set this before calling DoModal */
+    DiskImgLib::DiskFS* fpDiskFS;
 
-	/* results; fpChosenSubdir will be nil if root vol selected */
-	DiskImgLib::DiskFS* fpChosenDiskFS;
-	DiskImgLib::A2File* fpChosenSubdir;
+    /* results; fpChosenSubdir will be nil if root vol selected */
+    DiskImgLib::DiskFS* fpChosenDiskFS;
+    DiskImgLib::A2File* fpChosenSubdir;
 
 private:
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
-	afx_msg void OnHelp(void);
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
+    afx_msg void OnHelp(void);
 
-	DiskFSTree		fDiskFSTree;
+    DiskFSTree      fDiskFSTree;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__CHOOSE_ADD_TARGET_DIALOG__*/

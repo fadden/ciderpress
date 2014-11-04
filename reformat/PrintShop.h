@@ -17,19 +17,19 @@
  */
 class ReformatPrintShop : public ReformatGraphics {
 public:
-	ReformatPrintShop(void) {}
-	virtual ~ReformatPrintShop(void) {}
+    ReformatPrintShop(void) {}
+    virtual ~ReformatPrintShop(void) {}
 
-	virtual void Examine(ReformatHolder* pHolder);
-	virtual int Process(const ReformatHolder* pHolder,
-		ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-		ReformatOutput* pOutput);
+    virtual void Examine(ReformatHolder* pHolder);
+    virtual int Process(const ReformatHolder* pHolder,
+        ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
+        ReformatOutput* pOutput);
 
 private:
-	enum { kWidth=88, kHeight=52 };
+    enum { kWidth=88, kHeight=52 };
 
-	MyDIBitmap* ConvertBW(const unsigned char* srcBuf);
-	MyDIBitmap* ConvertColor(const unsigned char* srcBuf);
+    MyDIBitmap* ConvertBW(const unsigned char* srcBuf);
+    MyDIBitmap* ConvertColor(const unsigned char* srcBuf);
 };
 
 #endif /*__LR_PRINTSHOP__*/

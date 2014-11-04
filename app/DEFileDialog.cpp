@@ -11,8 +11,8 @@
 
 
 BEGIN_MESSAGE_MAP(DEFileDialog, CDialog)
-	ON_EN_CHANGE(IDC_DEFILE_FILENAME, OnChange)
-	ON_WM_HELPINFO()
+    ON_EN_CHANGE(IDC_DEFILE_FILENAME, OnChange)
+    ON_WM_HELPINFO()
 END_MESSAGE_MAP()
 
 /*
@@ -22,11 +22,11 @@ END_MESSAGE_MAP()
 BOOL
 DEFileDialog::OnInitDialog(void)
 {
-	CWnd* pWnd = GetDlgItem(IDOK);
-	ASSERT(pWnd != nil);
-	pWnd->EnableWindow(FALSE);
+    CWnd* pWnd = GetDlgItem(IDOK);
+    ASSERT(pWnd != nil);
+    pWnd->EnableWindow(FALSE);
 
-	return CDialog::OnInitDialog();
+    return CDialog::OnInitDialog();
 }
 
 /*
@@ -35,8 +35,8 @@ DEFileDialog::OnInitDialog(void)
 void
 DEFileDialog::DoDataExchange(CDataExchange* pDX)
 {
-	DDX_Text(pDX, IDC_DEFILE_FILENAME, fName);
-	DDX_Check(pDX, IDC_DEFILE_RSRC, fOpenRsrcFork);
+    DDX_Text(pDX, IDC_DEFILE_FILENAME, fName);
+    DDX_Check(pDX, IDC_DEFILE_RSRC, fOpenRsrcFork);
 }
 
 /*
@@ -46,16 +46,16 @@ DEFileDialog::DoDataExchange(CDataExchange* pDX)
 void
 DEFileDialog::OnChange(void)
 {
-	CEdit* pEdit = (CEdit*) GetDlgItem(IDC_DEFILE_FILENAME);
-	ASSERT(pEdit != nil);
+    CEdit* pEdit = (CEdit*) GetDlgItem(IDC_DEFILE_FILENAME);
+    ASSERT(pEdit != nil);
 
-	CString str;
-	pEdit->GetWindowText(str);
-	//WMSG2("STR is '%s' (%d)\n", str, str.GetLength());
+    CString str;
+    pEdit->GetWindowText(str);
+    //WMSG2("STR is '%s' (%d)\n", str, str.GetLength());
 
-	CWnd* pWnd = GetDlgItem(IDOK);
-	ASSERT(pWnd != nil);
-	pWnd->EnableWindow(!str.IsEmpty());
+    CWnd* pWnd = GetDlgItem(IDOK);
+    ASSERT(pWnd != nil);
+    pWnd->EnableWindow(!str.IsEmpty());
 }
 
 /*
@@ -64,6 +64,6 @@ DEFileDialog::OnChange(void)
 BOOL
 DEFileDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
-	WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }

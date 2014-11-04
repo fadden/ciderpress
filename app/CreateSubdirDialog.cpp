@@ -13,7 +13,7 @@
 #include "CreateSubdirDialog.h"
 
 BEGIN_MESSAGE_MAP(CreateSubdirDialog, CDialog)
-	ON_WM_HELPINFO()
+    ON_WM_HELPINFO()
 END_MESSAGE_MAP()
 
 /*
@@ -22,16 +22,16 @@ END_MESSAGE_MAP()
 BOOL
 CreateSubdirDialog::OnInitDialog(void)
 {
-	/* do the DoDataExchange stuff */
-	CDialog::OnInitDialog();
+    /* do the DoDataExchange stuff */
+    CDialog::OnInitDialog();
 
-	/* select the default text and set the focus */
-	CEdit* pEdit = (CEdit*) GetDlgItem(IDC_CREATESUBDIR_NEW);
-	ASSERT(pEdit != nil);
-	pEdit->SetSel(0, -1);
-	pEdit->SetFocus();
+    /* select the default text and set the focus */
+    CEdit* pEdit = (CEdit*) GetDlgItem(IDC_CREATESUBDIR_NEW);
+    ASSERT(pEdit != nil);
+    pEdit->SetSel(0, -1);
+    pEdit->SetFocus();
 
-	return FALSE;	// we set the focus
+    return FALSE;   // we set the focus
 }
 
 /*
@@ -40,35 +40,35 @@ CreateSubdirDialog::OnInitDialog(void)
 void
 CreateSubdirDialog::DoDataExchange(CDataExchange* pDX)
 {
-	CString msg, failed;
+    CString msg, failed;
 
-	msg = "";
-	failed.LoadString(IDS_MB_APP_NAME);
+    msg = "";
+    failed.LoadString(IDS_MB_APP_NAME);
 
-	/* put fNewName last so it gets the focus after failure */
-	DDX_Text(pDX, IDC_CREATESUBDIR_BASE, fBasePath);
-	DDX_Text(pDX, IDC_CREATESUBDIR_NEW, fNewName);
+    /* put fNewName last so it gets the focus after failure */
+    DDX_Text(pDX, IDC_CREATESUBDIR_BASE, fBasePath);
+    DDX_Text(pDX, IDC_CREATESUBDIR_NEW, fNewName);
 
-	/* validate the path field */
-	if (pDX->m_bSaveAndValidate) {
-		if (fNewName.IsEmpty()) {
-			msg = "You must specify a new name.";
-			goto fail;
-		}
+    /* validate the path field */
+    if (pDX->m_bSaveAndValidate) {
+        if (fNewName.IsEmpty()) {
+            msg = "You must specify a new name.";
+            goto fail;
+        }
 
-		msg = fpArchive->TestPathName(fpParentEntry, fBasePath, fNewName,
-				'\0');
-		if (!msg.IsEmpty())
-			goto fail;
-	}
+        msg = fpArchive->TestPathName(fpParentEntry, fBasePath, fNewName,
+                '\0');
+        if (!msg.IsEmpty())
+            goto fail;
+    }
 
-	return;
+    return;
 
 fail:
-	ASSERT(!msg.IsEmpty());
-	MessageBox(msg, failed, MB_OK);
-	pDX->Fail();
-	return;
+    ASSERT(!msg.IsEmpty());
+    MessageBox(msg, failed, MB_OK);
+    pDX->Fail();
+    return;
 }
 
 /*
@@ -77,6 +77,6 @@ fail:
 BOOL
 CreateSubdirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
-	WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-	return TRUE;	// yes, we handled it
+    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
+    return TRUE;    // yes, we handled it
 }

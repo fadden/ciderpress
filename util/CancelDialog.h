@@ -23,25 +23,25 @@
  */
 class CancelDialog : public ModelessDialog {
 public:
-	CancelDialog(void) {}
-	virtual ~CancelDialog(void) {}
+    CancelDialog(void) {}
+    virtual ~CancelDialog(void) {}
 
-	BOOL Create(bool* pCancelFlag, int dialogID, CWnd* pParentWnd = NULL) {
-		fpCancelFlag = pCancelFlag;
-		*fpCancelFlag = false;
-		return ModelessDialog::Create(dialogID, pParentWnd);
-	}
+    BOOL Create(bool* pCancelFlag, int dialogID, CWnd* pParentWnd = NULL) {
+        fpCancelFlag = pCancelFlag;
+        *fpCancelFlag = false;
+        return ModelessDialog::Create(dialogID, pParentWnd);
+    }
 
 protected:
-	bool*	fpCancelFlag;
+    bool*   fpCancelFlag;
 
 private:
-	/* override Cancel button to just raise the flag */
-	virtual void OnCancel(void) {
-		/* "cancel" button or escape hit */
-		*fpCancelFlag = true;
-	}
-	//void PostNcDestroy(void) { delete this; }
+    /* override Cancel button to just raise the flag */
+    virtual void OnCancel(void) {
+        /* "cancel" button or escape hit */
+        *fpCancelFlag = true;
+    }
+    //void PostNcDestroy(void) { delete this; }
 
 };
 

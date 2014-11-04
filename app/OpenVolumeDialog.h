@@ -18,53 +18,53 @@
  */
 class OpenVolumeDialog : public CDialog {
 public:
-	OpenVolumeDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_OPENVOLUMEDLG, pParentWnd),
-		fChosenDrive(""),
-		fAllowROChange(true)
-	{
-		Preferences* pPreferences = GET_PREFERENCES_WR();
-		fReadOnly = pPreferences->GetPrefBool(kPrOpenVolumeRO);
-	}
+    OpenVolumeDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_OPENVOLUMEDLG, pParentWnd),
+        fChosenDrive(""),
+        fAllowROChange(true)
+    {
+        Preferences* pPreferences = GET_PREFERENCES_WR();
+        fReadOnly = pPreferences->GetPrefBool(kPrOpenVolumeRO);
+    }
 
-	// Result: drive to open (e.g. "A:\" or "80:\")
-	CString fChosenDrive;
+    // Result: drive to open (e.g. "A:\" or "80:\")
+    CString fChosenDrive;
 
-	// Did the user check "read only"? (sets default and holds return val)
-	BOOL fReadOnly;
-	// Set before calling DoModal to disable "read only" checkbox
-	bool fAllowROChange;
+    // Did the user check "read only"? (sets default and holds return val)
+    BOOL fReadOnly;
+    // Set before calling DoModal to disable "read only" checkbox
+    bool fAllowROChange;
 
 protected:
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
-	virtual void OnOK(void);
-	
-	afx_msg void OnHelp(void);
-	afx_msg void OnListChange(NMHDR* pNotifyStruct, LRESULT* pResult);
-	afx_msg void OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult);
-	afx_msg void OnVolumeFilterSelChange(void);
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void OnOK(void);
+    
+    afx_msg void OnHelp(void);
+    afx_msg void OnListChange(NMHDR* pNotifyStruct, LRESULT* pResult);
+    afx_msg void OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult);
+    afx_msg void OnVolumeFilterSelChange(void);
 
-	// 0 is default; numbers must match up with pop-up menu order
-	// order also matters for range test in OnInitDialog
-	enum { kBoth=0, kLogical=1, kPhysical=2 };
-	// common constants
-	enum { kMaxLogicalDrives = 26, kMaxPhysicalDrives = 8 };
+    // 0 is default; numbers must match up with pop-up menu order
+    // order also matters for range test in OnInitDialog
+    enum { kBoth=0, kLogical=1, kPhysical=2 };
+    // common constants
+    enum { kMaxLogicalDrives = 26, kMaxPhysicalDrives = 8 };
 
-	void LoadDriveList(void);
-	bool LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex);
-	bool LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex);
-	bool HasPhysicalDriveWin9x(int unit, CString* pRemark);
-	bool HasPhysicalDriveWin2K(int unit, CString* pRemark);
+    void LoadDriveList(void);
+    bool LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex);
+    bool LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex);
+    bool HasPhysicalDriveWin9x(int unit, CString* pRemark);
+    bool HasPhysicalDriveWin2K(int unit, CString* pRemark);
 
-	void ForceReadOnly(bool readOnly) const;
+    void ForceReadOnly(bool readOnly) const;
 
-	struct {
-		unsigned int driveType;
-	} fVolumeInfo[kMaxLogicalDrives];
+    struct {
+        unsigned int driveType;
+    } fVolumeInfo[kMaxLogicalDrives];
 
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__OPEN_VOLUME_DIALOG__*/

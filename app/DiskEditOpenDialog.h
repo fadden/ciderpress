@@ -19,31 +19,31 @@
  */
 class DiskEditOpenDialog : public CDialog {
 public:
-	typedef enum {
-		kOpenUnknown = 0,
-		kOpenFile,
-		kOpenVolume,
-		kOpenCurrent,
-	} OpenWhat;
+    typedef enum {
+        kOpenUnknown = 0,
+        kOpenFile,
+        kOpenVolume,
+        kOpenCurrent,
+    } OpenWhat;
 
-	DiskEditOpenDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_DISKEDIT_OPENWHICH, pParentWnd),
-		fArchiveOpen(false), fOpenWhat(kOpenUnknown)
-	{}
+    DiskEditOpenDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_DISKEDIT_OPENWHICH, pParentWnd),
+        fArchiveOpen(false), fOpenWhat(kOpenUnknown)
+    {}
 
-	// set this if the main content list has a file open
-	bool fArchiveOpen;
-	// return value -- which button was hit
-	OpenWhat fOpenWhat;
+    // set this if the main content list has a file open
+    bool fArchiveOpen;
+    // return value -- which button was hit
+    OpenWhat fOpenWhat;
 
 private:
-	virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void);
 
-	afx_msg void OnButtonFile(void);
-	afx_msg void OnButtonVolume(void);
-	afx_msg void OnButtonCurrent(void);
+    afx_msg void OnButtonFile(void);
+    afx_msg void OnButtonVolume(void);
+    afx_msg void OnButtonCurrent(void);
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__DISKEDITOPENDIALOG__*/

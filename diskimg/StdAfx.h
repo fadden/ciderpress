@@ -36,11 +36,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define HAVE_WINDOWS_CDROM		// enable CD-ROM access under Windows
+#define HAVE_WINDOWS_CDROM      // enable CD-ROM access under Windows
 #define HAVE_CHSIZE
 
 // Insert your headers here
-# define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+# define WIN32_LEAN_AND_MEAN        // Exclude rarely-used stuff from Windows headers
 
 #include <windows.h>
 #include <stdio.h>

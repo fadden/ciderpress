@@ -18,30 +18,30 @@
  */
 class EditCommentDialog : public CDialog {
 public:
-	EditCommentDialog(CWnd* pParentWnd = NULL) :
-		CDialog(IDD_COMMENT_EDIT, pParentWnd)
-	{
-		//fComment = "";
-		fNewComment = false;
-	}
-	virtual ~EditCommentDialog(void) {}
+    EditCommentDialog(CWnd* pParentWnd = NULL) :
+        CDialog(IDD_COMMENT_EDIT, pParentWnd)
+    {
+        //fComment = "";
+        fNewComment = false;
+    }
+    virtual ~EditCommentDialog(void) {}
 
-	enum { kDeleteCommentID = IDC_COMMENT_DELETE };
+    enum { kDeleteCommentID = IDC_COMMENT_DELETE };
 
-	CString		fComment;
-	bool		fNewComment;	// entry doesn't already have one
+    CString     fComment;
+    bool        fNewComment;    // entry doesn't already have one
 
 protected:
-	// overrides
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    // overrides
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-	afx_msg void OnHelp(void);
-	afx_msg void OnDelete(void);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg void OnHelp(void);
+    afx_msg void OnDelete(void);
 
 private:
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__EDITCOMMENTDIALOG__*/

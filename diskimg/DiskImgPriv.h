@@ -16,12 +16,12 @@
 #include <assert.h>
 // "GenericFD.h" included at end
 
-using namespace DiskImgLib;		// make life easy for all internal code
+using namespace DiskImgLib;     // make life easy for all internal code
 
 namespace DiskImgLib {
 
 #ifndef _DEBUG_LOG
-//# define _DEBUG_LOG		/* define this to force log msgs in non-debug build */
+//# define _DEBUG_LOG       /* define this to force log msgs in non-debug build */
 #endif
 
 #if defined(_DEBUG) || defined(_DEBUG_LOG)
@@ -33,17 +33,17 @@ namespace DiskImgLib {
  */
 #ifdef _DEBUG_MSGS
 #define WMSG0(fmt) \
-	Global::PrintDebugMsg(__FILE__, __LINE__, fmt)
+    Global::PrintDebugMsg(__FILE__, __LINE__, fmt)
 #define WMSG1(fmt, arg0) \
-	Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0)
+    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0)
 #define WMSG2(fmt, arg0, arg1) \
-	Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1)
+    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1)
 #define WMSG3(fmt, arg0, arg1, arg2) \
-	Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2)
+    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2)
 #define WMSG4(fmt, arg0, arg1, arg2, arg3) \
-	Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2, arg3)
+    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2, arg3)
 #define WMSG5(fmt, arg0, arg1, arg2, arg3, arg4) \
-	Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2, arg3, arg4)
+    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2, arg3, arg4)
 #else
 #define WMSG0(fmt) ((void) 0)
 #define WMSG1(fmt, arg0) ((void) 0)
@@ -114,10 +114,10 @@ class CircularBufferAccess {
 public:
     CircularBufferAccess(unsigned char* buf, long len) :
         fBuf(buf), fLen(len)
-		{ assert(fLen > 0); assert(fBuf != nil); }
+        { assert(fLen > 0); assert(fBuf != nil); }
     CircularBufferAccess(const unsigned char* buf, long len) :
         fBuf(const_cast<unsigned char*>(buf)), fLen(len)
-		{ assert(fLen > 0); assert(fBuf != nil); }
+        { assert(fLen > 0); assert(fBuf != nil); }
     ~CircularBufferAccess(void) {}
 
     /*
@@ -160,72 +160,72 @@ private:
  * Bits fill in from the MSB to the LSB.  If we write 10 bits, the
  * output buffer will look like this:
  *
- *	xxxxxxxx xx000000
+ *  xxxxxxxx xx000000
  *
  * Call WriteBit() repeatedly.  When done, call Finish() to write any pending
  * data and return the number of bits in the buffer.
  */
 class BitOutputBuffer {
 public:
-	/* pass in the output buffer and the output buffer's size */
-	BitOutputBuffer(unsigned char* buf, int size) {
-		fBufStart = fBuf = buf;
-		fBufSize = size;
-		fBitMask = 0x80;
-		fByte = 0;
-		fOverflow = false;
-	}
-	virtual ~BitOutputBuffer(void) {}
+    /* pass in the output buffer and the output buffer's size */
+    BitOutputBuffer(unsigned char* buf, int size) {
+        fBufStart = fBuf = buf;
+        fBufSize = size;
+        fBitMask = 0x80;
+        fByte = 0;
+        fOverflow = false;
+    }
+    virtual ~BitOutputBuffer(void) {}
 
-	/* write a single bit */
-	void WriteBit(int val) {
-		if (fBuf - fBufStart >= fBufSize) {
-			if (!fOverflow) {
-				WMSG0("Overran bit output buffer\n");
-				DebugBreak();
-				fOverflow = true;
-			}
-			return;
-		}
+    /* write a single bit */
+    void WriteBit(int val) {
+        if (fBuf - fBufStart >= fBufSize) {
+            if (!fOverflow) {
+                WMSG0("Overran bit output buffer\n");
+                DebugBreak();
+                fOverflow = true;
+            }
+            return;
+        }
 
-		if (val)
-			fByte |= fBitMask;
-		fBitMask >>= 1;
-		if (fBitMask == 0) {
-			*fBuf++ = fByte;
-			fBitMask = 0x80;
-			fByte = 0;
-		}
-	}
+        if (val)
+            fByte |= fBitMask;
+        fBitMask >>= 1;
+        if (fBitMask == 0) {
+            *fBuf++ = fByte;
+            fBitMask = 0x80;
+            fByte = 0;
+        }
+    }
 
-	/* flush pending bits; returns length in bits (or -1 on overrun) */
-	int Finish(void) {
-		int outputBits;
+    /* flush pending bits; returns length in bits (or -1 on overrun) */
+    int Finish(void) {
+        int outputBits;
 
-		if (fOverflow)
-			return -1;
+        if (fOverflow)
+            return -1;
 
-		outputBits = (fBuf - fBufStart) * 8;
+        outputBits = (fBuf - fBufStart) * 8;
 
-		if (fBitMask != 0x80) {
-			*fBuf++ = fByte;
+        if (fBitMask != 0x80) {
+            *fBuf++ = fByte;
 
-			assert(fBitMask != 0);
-			while (fBitMask != 0x80) {
-				outputBits++;
-				fBitMask <<= 1;
-			}
-		}
-		return outputBits;
-	}
+            assert(fBitMask != 0);
+            while (fBitMask != 0x80) {
+                outputBits++;
+                fBitMask <<= 1;
+            }
+        }
+        return outputBits;
+    }
 
 private:
-	unsigned char*	fBufStart;
-	unsigned char*	fBuf;
-	int				fBufSize;
-	unsigned char	fBitMask;
-	unsigned char	fByte;
-	bool			fOverflow;
+    unsigned char*  fBufStart;
+    unsigned char*  fBuf;
+    int             fBufSize;
+    unsigned char   fBitMask;
+    unsigned char   fByte;
+    bool            fOverflow;
 };
 
 /*
@@ -233,92 +233,92 @@ private:
  */
 class BitInputBuffer {
 public:
-	BitInputBuffer(const unsigned char* buf, int bitCount) {
-		fBufStart = fBuf = buf;
-		fBitCount = bitCount;
-		fCurrentBit = 0;
-		fBitPosn = 7;
-		fBitsConsumed = 0;
-	}
-	virtual ~BitInputBuffer(void) {}
+    BitInputBuffer(const unsigned char* buf, int bitCount) {
+        fBufStart = fBuf = buf;
+        fBitCount = bitCount;
+        fCurrentBit = 0;
+        fBitPosn = 7;
+        fBitsConsumed = 0;
+    }
+    virtual ~BitInputBuffer(void) {}
 
-	/*
-	 * Get the next bit.  Returns 0 or 1.
-	 *
-	 * If we wrapped around to the start of the buffer, and "pWrap" is
-	 * non-null, set "*pWrap". (This does *not* set it to "false" if we
-	 * don't wrap.)
-	 */
-	unsigned char GetBit(bool* pWrap) {
-		unsigned char val;
+    /*
+     * Get the next bit.  Returns 0 or 1.
+     *
+     * If we wrapped around to the start of the buffer, and "pWrap" is
+     * non-null, set "*pWrap". (This does *not* set it to "false" if we
+     * don't wrap.)
+     */
+    unsigned char GetBit(bool* pWrap) {
+        unsigned char val;
 
-		//assert(fBitPosn == 7 - (fCurrentBit & 0x07));
+        //assert(fBitPosn == 7 - (fCurrentBit & 0x07));
 
-		if (fCurrentBit == fBitCount) {
-			/* end reached, wrap to start */
-			fCurrentBit = 0;
-			fBitPosn = 7;
-			fBuf = fBufStart;
-			//fByte = *fBuf++;
-			if (pWrap != nil)
-				*pWrap = true;
-		}
+        if (fCurrentBit == fBitCount) {
+            /* end reached, wrap to start */
+            fCurrentBit = 0;
+            fBitPosn = 7;
+            fBuf = fBufStart;
+            //fByte = *fBuf++;
+            if (pWrap != nil)
+                *pWrap = true;
+        }
 
-		val = (*fBuf >> fBitPosn) & 0x01;
+        val = (*fBuf >> fBitPosn) & 0x01;
 
-		fCurrentBit++;
-		fBitPosn--;
-		if (fBitPosn < 0) {
-			fBitPosn = 7;
-			fBuf++;
-		}
+        fCurrentBit++;
+        fBitPosn--;
+        if (fBitPosn < 0) {
+            fBitPosn = 7;
+            fBuf++;
+        }
 
-		fBitsConsumed++;
-		return val;
-	}
+        fBitsConsumed++;
+        return val;
+    }
 
-	/*
-	 * Get the next 8 bits.
-	 */
-	unsigned char GetByte(bool* pWrap) {
-		unsigned char val;
-		int i;
+    /*
+     * Get the next 8 bits.
+     */
+    unsigned char GetByte(bool* pWrap) {
+        unsigned char val;
+        int i;
 
-		if (true || fCurrentBit > fBitCount-8) {
-			/* near end, use single-bit function iteratively */
-			val = 0;
-			for (i = 0; i < 8; i++)
-				val = (val << 1) | GetBit(pWrap);
-		} else {
-			/* room to spare, grab it in one or two chunks */
-			assert(false);
-		}
-		return val;
-	}
+        if (true || fCurrentBit > fBitCount-8) {
+            /* near end, use single-bit function iteratively */
+            val = 0;
+            for (i = 0; i < 8; i++)
+                val = (val << 1) | GetBit(pWrap);
+        } else {
+            /* room to spare, grab it in one or two chunks */
+            assert(false);
+        }
+        return val;
+    }
 
-	/*
-	 * Set the start position.
-	 */
-	void SetStartPosition(int bitOffset) {
-		assert(bitOffset >= 0 && bitOffset < fBitCount);
-		fCurrentBit = bitOffset;
-		fBitPosn = 7 - (bitOffset & 0x07);		// mod 8, 0 to MSB
-		fBuf = fBufStart + (bitOffset >> 3);	// div 8
-	}
+    /*
+     * Set the start position.
+     */
+    void SetStartPosition(int bitOffset) {
+        assert(bitOffset >= 0 && bitOffset < fBitCount);
+        fCurrentBit = bitOffset;
+        fBitPosn = 7 - (bitOffset & 0x07);      // mod 8, 0 to MSB
+        fBuf = fBufStart + (bitOffset >> 3);    // div 8
+    }
 
-	/* used to ensure we consume exactly 100% of bits */
-	void ResetBitsConsumed(void) { fBitsConsumed = 0; }
-	int GetBitsConsumed(void) const { return fBitsConsumed; }
+    /* used to ensure we consume exactly 100% of bits */
+    void ResetBitsConsumed(void) { fBitsConsumed = 0; }
+    int GetBitsConsumed(void) const { return fBitsConsumed; }
 
 private:
-	const unsigned char*	fBufStart;
-	const unsigned char*	fBuf;
-	int				fBitCount;			// #of bits in buffer
-	int				fCurrentBit;		// where we are in buffer
-	int				fBitPosn;			// which bit to access within byte
-	//unsigned char	fByte;
+    const unsigned char*    fBufStart;
+    const unsigned char*    fBuf;
+    int             fBitCount;          // #of bits in buffer
+    int             fCurrentBit;        // where we are in buffer
+    int             fBitPosn;           // which bit to access within byte
+    //unsigned char fByte;
 
-	int				fBitsConsumed;		// sanity check - all bits used?
+    int             fBitsConsumed;      // sanity check - all bits used?
 };
 
 /*
@@ -326,35 +326,35 @@ private:
  */
 class LinearBitmap {
 public:
-	LinearBitmap(int numBits) {
-		assert(numBits > 0);
-		fBits = new unsigned char[(numBits + 7) / 8];
-		memset(fBits, 0, (numBits + 7) / 8);
-		fNumBits = numBits;
-	}
-	~LinearBitmap(void) {
-		delete[] fBits;
-	}
+    LinearBitmap(int numBits) {
+        assert(numBits > 0);
+        fBits = new unsigned char[(numBits + 7) / 8];
+        memset(fBits, 0, (numBits + 7) / 8);
+        fNumBits = numBits;
+    }
+    ~LinearBitmap(void) {
+        delete[] fBits;
+    }
 
-	/*
-	 * Set or get the status of bit N.
-	 */
-	bool IsSet(int bit) const {
-		assert(bit >= 0 && bit < fNumBits);
-		return ((fBits[bit >> 3] >> (bit & 0x07)) & 0x01) != 0;
-	}
-	void Set(int bit) {
-		assert(bit >= 0 && bit < fNumBits);
-		fBits[bit >> 3] |= 1 << (bit & 0x07);
-	}
+    /*
+     * Set or get the status of bit N.
+     */
+    bool IsSet(int bit) const {
+        assert(bit >= 0 && bit < fNumBits);
+        return ((fBits[bit >> 3] >> (bit & 0x07)) & 0x01) != 0;
+    }
+    void Set(int bit) {
+        assert(bit >= 0 && bit < fNumBits);
+        fBits[bit >> 3] |= 1 << (bit & 0x07);
+    }
 
 private:
-	unsigned char*	fBits;
-	int				fNumBits;
+    unsigned char*  fBits;
+    int             fNumBits;
 };
 
 
-};	// namespace DiskImgLib
+};  // namespace DiskImgLib
 
 /*
  * Most of the code needs these.

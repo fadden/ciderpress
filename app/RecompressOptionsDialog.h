@@ -19,25 +19,25 @@
  */
 class RecompressOptionsDialog : public UseSelectionDialog {
 public:
-	RecompressOptionsDialog(int selCount, CWnd* pParentWnd = NULL) :
-		UseSelectionDialog(selCount, pParentWnd, IDD_RECOMPRESS_OPTS)
-	{
-		fCompressionType = 0;
-	}
-	virtual ~RecompressOptionsDialog(void) {}
+    RecompressOptionsDialog(int selCount, CWnd* pParentWnd = NULL) :
+        UseSelectionDialog(selCount, pParentWnd, IDD_RECOMPRESS_OPTS)
+    {
+        fCompressionType = 0;
+    }
+    virtual ~RecompressOptionsDialog(void) {}
 
-	// maps directly to NuThreadFormat enum
-	int		fCompressionType;
+    // maps directly to NuThreadFormat enum
+    int     fCompressionType;
 
 private:
-	virtual BOOL OnInitDialog(void);
-	virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	int LoadComboBox(NuThreadFormat fmt);
+    int LoadComboBox(NuThreadFormat fmt);
 
-	int		fCompressionIdx;		// drop list index
+    int     fCompressionIdx;        // drop list index
 
-	//DECLARE_MESSAGE_MAP()
+    //DECLARE_MESSAGE_MAP()
 };
 
 #endif /*__RECOMPRESS_OPTIONS_DIALOG__*/
