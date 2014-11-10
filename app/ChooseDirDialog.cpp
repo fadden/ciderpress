@@ -53,8 +53,8 @@ ChooseDirDialog::OnInitDialog(void)
         fShellTree.TunnelTree(fPathName, &msg);
         if (!msg.IsEmpty()) {
             /* failed */
-            WMSG2("TunnelTree failed on '%s' (%s), using MyComputer instead\n",
-                fPathName, msg);
+            WMSG2("TunnelTree failed on '%ls' (%ls), using MyComputer instead\n",
+                (LPCWSTR) fPathName, (LPCWSTR) msg);
             fShellTree.ExpandMyComputer();
         }
     }
@@ -117,7 +117,7 @@ ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
     if (fShellTree.GetFolderPath(&path))
         fPathName = path;
     else
-        fPathName = "";
+        fPathName = L"";
     pWnd->SetWindowText(fPathName);
 
     // disable the "Select" button when there's no path ready
@@ -128,7 +128,7 @@ ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
     // It's confusing to have two different paths showing, so wipe out the
     // free entry field when the selection changes.
     pWnd = GetDlgItem(IDC_CHOOSEDIR_PATHEDIT);
-    pWnd->SetWindowText("");
+    pWnd->SetWindowText(L"");
 
     *pResult = 0;
 }
@@ -164,8 +164,8 @@ void
 ChooseDirDialog::OnNewFolder(void)
 {
     if (fPathName.IsEmpty()) {
-        MessageBox("You can't create a folder in this part of the tree.",
-            "Bad Location", MB_OK | MB_ICONERROR);
+        MessageBox(L"You can't create a folder in this part of the tree.",
+            L"Bad Location", MB_OK | MB_ICONERROR);
         return;
     }
 
@@ -182,11 +182,11 @@ ChooseDirDialog::OnNewFolder(void)
              */
             if (fShellTree.AddFolderAtSelection(newFolderDlg.fNewFolder)) {
                 CString msg;
-                WMSG1("Success, tunneling to '%s'\n",
-                    newFolderDlg.fNewFullPath);
+                WMSG1("Success, tunneling to '%ls'\n",
+                    (LPCWSTR) newFolderDlg.fNewFullPath);
                 fShellTree.TunnelTree(newFolderDlg.fNewFullPath, &msg);
                 if (!msg.IsEmpty()) {
-                    WMSG1("TunnelTree failed: %s\n", (LPCTSTR) msg);
+                    WMSG1("TunnelTree failed: %ls\n", (LPCWSTR) msg);
                 }
             } else {
                 WMSG0("AddFolderAtSelection FAILED\n");

@@ -6,8 +6,8 @@
 /*
  * Disk image "archive" support.
  */
-#ifndef __DISK_ARCHIVE__
-#define __DISK_ARCHIVE__
+#ifndef APP_DISKARCHIVE_H
+#define APP_DISKARCHIVE_H
 
 #include "GenericArchive.h"
 #include "../diskimg/DiskImg.h"
@@ -74,17 +74,17 @@ public:
         } blank;
         struct {
             NewOptionsBase  base;
-            const char*     volName;
+            const WCHAR*    volName;
             long            numBlocks;
         } prodos;
         struct {
             NewOptionsBase  base;
-            const char*     volName;
+            const WCHAR*    volName;
             long            numBlocks;
         } pascalfs;     // "pascal" is reserved token in MSVC++
         struct {
             NewOptionsBase  base;
-            const char*     volName;
+            const WCHAR*    volName;
             long            numBlocks;
         } hfs;
         struct {
@@ -101,8 +101,8 @@ public:
     // one-time cleanup at app shutdown time
     static void AppCleanup(void);
 
-    virtual OpenResult Open(const char* filename, bool readOnly, CString* pErrMsg);
-    virtual CString New(const char* filename, const void* options);
+    virtual OpenResult Open(const WCHAR* filename, bool readOnly, CString* pErrMsg);
+    virtual CString New(const WCHAR* filename, const void* options);
     virtual CString Flush(void);
     virtual CString Reload(void);
     virtual bool IsReadOnly(void) const { return fIsReadOnly; };
@@ -114,7 +114,7 @@ public:
         const AddFilesDialog* pAddOpts)
         { ASSERT(false); return false; }
     virtual bool CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
-        const char* newName);
+        const WCHAR* newName);
     virtual bool TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         { ASSERT(false); return false; }
     virtual bool DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet);
@@ -122,9 +122,9 @@ public:
     virtual CString TestPathName(const GenericEntry* pGenericEntry,
         const CString& basePath, const CString& newName, char newFssep) const;
     virtual bool RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
-        const char* newName);
+        const WCHAR* newName);
     virtual CString TestVolumeName(const DiskFS* pDiskFS,
-        const char* newName) const;
+        const WCHAR* newName) const;
     virtual bool RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         const RecompressOptionsDialog* pRecompOpts)
         { ASSERT(false); return false; }
@@ -153,12 +153,12 @@ public:
 private:
     virtual CString Close(void);
     virtual void XferPrepare(const XferFileOptions* pXferOpts);
-    virtual CString XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
-        long dataLen, unsigned char** pRsrcBuf, long rsrcLen);
+    virtual CString XferFile(FileDetails* pDetails, BYTE** pDataBuf,
+        long dataLen, BYTE** pRsrcBuf, long rsrcLen);
     virtual void XferAbort(CWnd* pMsgWnd);
     virtual void XferFinish(CWnd* pMsgWnd);
 
-    /* internal function, used during initial scan of volume */
+    /* DiskImg callback, used during initial scan of volume */
     static bool ScanProgressCallback(void* cookie, const char* str,
         int count);
 
@@ -168,7 +168,7 @@ private:
      */
     class FileAddData {
     public:
-        FileAddData(const FileDetails* pDetails, const char* fsNormalPath) {
+        FileAddData(const FileDetails* pDetails, char* fsNormalPath) {
             fDetails = *pDetails;
 
             fFSNormalPath = fsNormalPath;
@@ -183,15 +183,24 @@ private:
         void SetOtherFork(FileAddData* pData) { fpOtherFork = pData; }
 
         const FileDetails* GetDetails(void) const { return &fDetails; }
+
+        /*
+         * Get the "FS-normal" path, i.e. exactly what we want to appear
+         * on the disk image.  This has the result of any conversions, so
+         * we need to store it as a narrow string.
+         */
         const char* GetFSNormalPath(void) const { return fFSNormalPath; }
 
     private:
-        // Three filenames stored here:
+        // Three filenames stored inside FileDetails:
         //  fDetails.origName -- the name of the Windows file
-        //  fDetails.storageName -- the normalized Windows name
-        //  fFSNormalPath -- the FS-normalized version of "storageName"
+        //  fDetails.storageName -- origName with type-preservation goodies
+        //    stripped out
+        //  fFSNormalPath -- the FS-normalized version of "storageName", i.e.
+        //    the name as it will appear on the Apple II disk image
+
         FileDetails     fDetails;
-        CString         fFSNormalPath;
+        CStringA        fFSNormalPath;
 
         FileAddData*    fpOtherFork;
         FileAddData*    fpNext;
@@ -205,7 +214,7 @@ private:
     static int CompareDisplayNamesDesc(const void* ventry1, const void* ventry2);
 
     int LoadContents(void);
-    int LoadDiskFSContents(DiskFS* pDiskFS, const char* volName);
+    int LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName);
     void DowncaseSubstring(CString* pStr, int startPos, int endPos,
         bool prevWasSpace);
     static void DebugMsgHandler(const char* file, int line, const char* msg);
@@ -213,11 +222,11 @@ private:
     NuResult HandleReplaceExisting(const A2File* pExisting,
         FileDetails* pDetails);
     CString ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL);
-    CString LoadFile(const char* pathName, unsigned char** pBuf, long* pLen,
+    CString LoadFile(const WCHAR* pathName, BYTE** pBuf, long* pLen,
         GenericEntry::ConvertEOL conv, GenericEntry::ConvertHighASCII convHA) const;
     DIError AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
-        const unsigned char* dataBuf, long dataLen,
-        const unsigned char* rsrcBuf, long rsrcLen) const;
+        const BYTE* dataBuf, long dataLen,
+        const BYTE* rsrcBuf, long rsrcLen) const;
     void AddToAddDataList(FileAddData* pData);
     void FreeAddDataList(void);
     void ConvertFDToCP(const FileDetails* pDetails,
@@ -241,4 +250,4 @@ private:
     DiskFS*         fpXferTargetFS;
 };
 
-#endif /*__DISK_ARCHIVE__*/
+#endif /*APP_DISKARCHIVE_H*/

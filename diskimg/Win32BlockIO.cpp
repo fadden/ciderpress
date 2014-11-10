@@ -44,7 +44,7 @@
  * Open a logical volume.
  */
 DIError
-Win32VolumeAccess::Open(const char* deviceName, bool readOnly)
+Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
@@ -55,6 +55,7 @@ Win32VolumeAccess::Open(const char* deviceName, bool readOnly)
         return kDIErrAlreadyOpen;
     }
 
+#ifdef WANT_ASPI
     if (strncmp(deviceName, kASPIDev, strlen(kASPIDev)) == 0) {
         fpBlockAccess = new ASPIBlockAccess;
         if (fpBlockAccess == nil) {
@@ -64,7 +65,9 @@ Win32VolumeAccess::Open(const char* deviceName, bool readOnly)
         dierr = fpBlockAccess->Open(deviceName, readOnly);
         if (dierr != kDIErrNone)
             goto bail;
-    } else if (deviceName[0] >= 'A' && deviceName[0] <= 'Z') {
+    } else
+#endif
+    if (deviceName[0] >= 'A' && deviceName[0] <= 'Z') {
         fpBlockAccess = new LogicalBlockAccess;
         if (fpBlockAccess == nil) {
             dierr = kDIErrMalloc;
@@ -1163,7 +1166,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
  * Open a logical device.  The device name should be of the form "A:\".
  */
 DIError
-Win32VolumeAccess::LogicalBlockAccess::Open(const char* deviceName, bool readOnly)
+Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOnly)
 {
     DIError dierr = kDIErrNone;
     const bool kPreferASPI = true;
@@ -1209,7 +1212,7 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const char* deviceName, bool readOnl
         if (fIsCDROM)
             return kDIErrCDROMNotSupported;
 
-        fHandle = CreateFile("\\\\.\\vwin32", 0, 0, NULL,
+        fHandle = CreateFile(_T("\\\\.\\vwin32"), 0, 0, NULL,
                     OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
         if (fHandle == INVALID_HANDLE_VALUE) {
             DWORD lastError = GetLastError();
@@ -1233,7 +1236,7 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const char* deviceName, bool readOnl
         }
 #endif
     } else {
-        char device[7] = "\\\\.\\_:";
+        WCHAR device[7] = _T("\\\\.\\_:");
         device[4] = deviceName[0];
         WMSG1("Opening '%s'\n", device);
 
@@ -1423,7 +1426,7 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
  * Open a physical device.  The device name should be of the form "80:\".
  */
 DIError
-Win32VolumeAccess::PhysicalBlockAccess::Open(const char* deviceName, bool readOnly)
+Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
@@ -1480,7 +1483,7 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const char* deviceName, bool readOn
         access = GENERIC_READ | GENERIC_WRITE;
 
     if (fIsWin9x) {
-        fHandle = CreateFile("\\\\.\\vwin32", 0, 0, NULL,
+        fHandle = CreateFile(_T("\\\\.\\vwin32"), 0, 0, NULL,
                     OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
         if (fHandle == INVALID_HANDLE_VALUE) {
             DWORD lastError = GetLastError();
@@ -1495,7 +1498,7 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const char* deviceName, bool readOn
         if (dierr != kDIErrNone)
             goto bail;
     } else {
-        char device[19] = "\\\\.\\PhysicalDrive_";
+        WCHAR device[19] = _T("\\\\.\\PhysicalDrive_");
         assert(fInt13Unit >= 0x80 && fInt13Unit <= 0x89);
         device[17] = fInt13Unit - 0x80 + '0';
         WMSG2("Opening '%s' (access=0x%02x)\n", device, access);
@@ -1554,7 +1557,8 @@ Win32VolumeAccess::PhysicalBlockAccess::DetectFloppyGeometry(void)
     int status;
 
     /* verify that we can directly index the table with the enum */
-    for (int chk = 0; chk < NELEM(floppyGeometry); chk++) {
+    int chk;
+    for (chk = 0; chk < NELEM(floppyGeometry); chk++) {
         assert(floppyGeometry[chk].kind == chk);
     }
     assert(chk == kFloppyMax);
@@ -1661,6 +1665,7 @@ Win32VolumeAccess::PhysicalBlockAccess::Close(void)
  *      ASPIBlockAccess
  * ===========================================================================
  */
+#ifdef WANT_ASPI
 
 /*
  * Unpack device name and verify that the device is a CD-ROM drive or
@@ -1971,6 +1976,7 @@ Win32VolumeAccess::ASPIBlockAccess::Close(void)
     fpASPI = nil;
     return kDIErrNone;
 }
+#endif
 
 
 /*

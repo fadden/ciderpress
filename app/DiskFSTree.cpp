@@ -51,7 +51,8 @@ DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     pTarget->pDiskFS = pDiskFS;
     pTarget->pFile = nil;   // could also use volume dir for ProDOS
     tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-    tvi.pszText = const_cast<char*>(pDiskFS->GetVolumeID());
+    // TODO(xyzzy): need storage for wide-char version
+    tvi.pszText = L"XYZZY-DiskFSTree1"; // pDiskFS->GetVolumeID();
     tvi.cchTextMax = 0;     // not needed for insertitem
 //  tvi.iImage = kTreeImageFolderClosed;
 //  tvi.iSelectedImage = kTreeImageFolderOpen;
@@ -170,7 +171,8 @@ DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
         pTarget->pDiskFS = pDiskFS;
         pTarget->pFile = pParentFile;
         tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-        tvi.pszText = const_cast<char*>(pParentFile->GetFileName());
+        // TODO(xyzzy): need storage for wide-char version
+        tvi.pszText = L"XYZZY-DiskFSTree2"; // pParentFile->GetFileName();
         tvi.cchTextMax = 0;     // not needed for insertitem
         tvi.iImage = kTreeImageFolderClosed;
         tvi.iSelectedImage = kTreeImageFolderOpen;
@@ -180,7 +182,7 @@ DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
         tvins.hParent = parent;
         hLocalRoot = pTree->InsertItem(&tvins);
         if (hLocalRoot == nil) {
-            WMSG1("Tree insert '%s' failed\n", tvi.pszText);
+            WMSG1("Tree insert '%ls' failed\n", tvi.pszText);
             return nil;
         }
     }

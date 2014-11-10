@@ -8,11 +8,14 @@
  *
  * This may be included directly by an application.  It must not be necessary
  * to include the lower-level headers, e.g. wnaspi32.h.
+ *
+ * TODO: this was only necessary for older versions of Windows, e.g. Win98,
+ * as a way to access SCSI drives.  It's no longer needed.
  */
 #ifndef __ASPI__
 #define __ASPI__
 
-#ifndef _WIN32
+#if !defined(_WIN32) || !defined(WANT_ASPI)
 /*
  * Placeholder definition to keep Linux build happy.
  */

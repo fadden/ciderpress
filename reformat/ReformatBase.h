@@ -11,8 +11,8 @@
  * that, but we'd have to figure out what that means when extracting a file
  * (i.e. figure out the RTF embedded bitmap format).
  */
-#ifndef __LR_REFORMAT_BASE__
-#define __LR_REFORMAT_BASE__
+#ifndef REFORMAT_REFORMATBASE
+#define REFORMAT_REFORMATBASE
 
 #include "Reformat.h"
 
@@ -387,4 +387,4 @@ private:
     TextColor   fTextColor;
 };
 
-#endif /*__LR_REFORMAT_BASE__*/
+#endif /*REFORMAT_REFORMATBASE*/

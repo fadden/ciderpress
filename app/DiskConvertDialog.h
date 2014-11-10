@@ -6,8 +6,8 @@
 /*
  * Let the user choose how they want to convert a disk image.
  */
-#ifndef __DISKCONVERTDIALOG__
-#define __DISKCONVERTDIALOG__
+#ifndef APP_DISKCONVERTDIALOG_H
+#define APP_DISKCONVERTDIALOG_H
 
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
@@ -82,4 +82,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__DISKCONVERTDIALOG__*/
+#endif /*APP_DISKCONVERTDIALOG_H*/

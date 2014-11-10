@@ -51,7 +51,7 @@
  * Load the NiftyList data file.
  */
 /*static*/ bool
-NiftyList::AppInit(const char* fileName)
+NiftyList::AppInit(const WCHAR* fileName)
 {
     FILE* fp = nil;
     long fileLen;
@@ -61,12 +61,12 @@ NiftyList::AppInit(const char* fileName)
     /*
      * Open the NList.Data file and load the contents into memory.
      */
-    fp = fopen(fileName, "rb");
+    fp = _wfopen(fileName, L"rb");
     if (fp == nil) {
-        WMSG1("NL Unable to open '%s'\n", fileName);
+        WMSG1("NL Unable to open '%ls'\n", fileName);
         goto bail;
     } else {
-        WMSG1("NL Reading '%s'\n", fileName);
+        WMSG1("NL Reading '%ls'\n", fileName);
     }
 
     if (fseek(fp, 0, SEEK_END) < 0) {
@@ -225,7 +225,7 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
         }
 
         if (lineLen < 6 || pData[4] != ' ') {
-            WMSG1("Found garbled line '%.80s'\n", pData);
+            WMSG1("Found garbled line '%.80hs'\n", pData);
             return false;
         }
         if (pData[lineLen-2] == '\r' || pData[lineLen-2] == '\n')
@@ -233,7 +233,7 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
         else if (pData[lineLen-1] == '\r' || pData[lineLen-1] == '\n')
             pData[lineLen-1] = '\0';
         else {
-            WMSG2("No EOL found on '%.80s' (%d)\n", pData, lineLen);
+            WMSG2("No EOL found on '%.80hs' (%d)\n", pData, lineLen);
         }
 
         assert(entry < numLines);
@@ -341,7 +341,7 @@ NiftyList::DumpSection(const DataSet& dataSet)
     WMSG1("Dumping section (count=%ld)\n", dataSet.numEntries);
 
     for (ent = 0; ent < dataSet.numEntries; ent++) {
-        WMSG3("%4d: %04x '%s'\n",
+        WMSG3("%4d: %04x '%hs'\n",
             ent, dataSet.pEntries[ent].value, dataSet.pEntries[ent].name);
     }
 }

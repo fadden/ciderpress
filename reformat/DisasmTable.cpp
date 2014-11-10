@@ -771,7 +771,7 @@ ReformatDisasm65xxx::ValidateOpCodeDetails(void)
             if (strcasecmp(kOpCodeDetails[i].mnemonic,
                            kOpCodeDetails[j].mnemonic) == 0)
             {
-                WMSG3("OpCodeDetails GLITCH: entries %d and %d match (%s)\n",
+                WMSG3("OpCodeDetails GLITCH: entries %d and %d match (%hs)\n",
                     i, j, kOpCodeDetails[i].mnemonic);
                 assert(false);
                 return false;

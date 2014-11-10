@@ -6,8 +6,8 @@
 /*
  * Options for creating a blank disk image.
  */
-#ifndef __CREATE_IMAGE_DIALOG__
-#define __CREATE_IMAGE_DIALOG__
+#ifndef APP_CREATEIMAGEDIALOG_H
+#define APP_CREATEIMAGEDIALOG_H
 
 #include "resource.h"
 
@@ -33,9 +33,9 @@ public:
         fDiskFormatIdx = kFmtProDOS;
         fAllocTracks_DOS = TRUE;
         fDOSVolumeNum = 254;
-        fVolName_ProDOS = "NEW.DISK";
-        fVolName_Pascal = "BLANK";
-        fVolName_HFS = "New Disk";
+        fVolName_ProDOS = L"NEW.DISK";
+        fVolName_Pascal = L"BLANK";
+        fVolName_HFS = L"New Disk";
         fNumBlocks = -2;        // -1 has special meaning
         fExtendedOpts = false;
     }
@@ -62,14 +62,14 @@ private:
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
     afx_msg void OnHelp(void);
 
-    bool IsValidVolumeName_DOS(const char* name);
-    bool IsValidVolumeName_ProDOS(const char* name);
-    bool IsValidVolumeName_Pascal(const char* name);
-    bool IsValidVolumeName_HFS(const char* name);
+    bool IsValidVolumeName_DOS(const WCHAR* name);
+    bool IsValidVolumeName_ProDOS(const WCHAR* name);
+    bool IsValidVolumeName_Pascal(const WCHAR* name);
+    bool IsValidVolumeName_HFS(const WCHAR* name);
 
     bool    fExtendedOpts;
 
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CREATE_IMAGE_DIALOG__*/
+#endif /*APP_CREATEIMAGEDIALOG_H*/

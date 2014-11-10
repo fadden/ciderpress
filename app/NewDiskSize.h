@@ -6,8 +6,8 @@
 /*
  * Functions to manage the "new disk size" radio button set in dialogs.
  */
-#ifndef __NEWDISKSIZE__
-#define __NEWDISKSIZE__
+#ifndef APP_NEWDISKSIZE_H
+#define APP_NEWDISKSIZE_H
 
 /*
  * All members are static.  Don't instantiate the class.
@@ -35,4 +35,4 @@ private:
     static const RadioCtrlMap kCtrlMap[];
 };
 
-#endif /*__NEWDISKSIZE__*/
+#endif /*APP_NEWDISKSIZE_H*/

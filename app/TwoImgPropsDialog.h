@@ -6,8 +6,8 @@
 /*
  * Class definition for TwoImg properties edit dialog.
  */
-#ifndef __TWOIMG_PROPS_DIALOG__
-#define __TWOIMG_PROPS_DIALOG__
+#ifndef APP_TWOIMGPROPSDIALOG_H
+#define APP_TWOIMGPROPSDIALOG_H
 
 #include "resource.h"
 #include "../diskimg/TwoImg.h"
@@ -46,4 +46,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__TWOIMG_PROPS_DIALOG__*/
+#endif /*APP_TWOIMGPROPSDIALOG_H*/

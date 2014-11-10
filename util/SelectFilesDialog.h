@@ -7,8 +7,8 @@
  * File selection dialog, a sub-class of "Open" that allows multiple selection
  * of both files and directories.
  */
-#ifndef __SELECTFILESDIALOG__
-#define __SELECTFILESDIALOG__
+#ifndef UTIL_SELECTFILESDIALOG_H
+#define UTIL_SELECTFILESDIALOG_H
 
 /*
  * File selection, based on an "open" file dialog.
@@ -22,14 +22,14 @@
 class SelectFilesDialog : public CFileDialog {
 public:
     enum { kFileNameBufSize = 32768 };
-    SelectFilesDialog(const char* rctmpl, CWnd* pParentWnd = NULL) :
+    SelectFilesDialog(const WCHAR* rctmpl, CWnd* pParentWnd = NULL) :
         CFileDialog(true, NULL, NULL, OFN_HIDEREADONLY, NULL, pParentWnd)
     {
         m_ofn.Flags |= OFN_ENABLETEMPLATE | OFN_ALLOWMULTISELECT |
             OFN_HIDEREADONLY | OFN_FILEMUSTEXIST;
         m_ofn.lpTemplateName = rctmpl;
         m_ofn.hInstance = AfxGetInstanceHandle();
-        m_ofn.lpstrFile = new char[kFileNameBufSize];
+        m_ofn.lpstrFile = new WCHAR[kFileNameBufSize];
         m_ofn.lpstrFile[0] = m_ofn.lpstrFile[1] = '\0';
         m_ofn.nMaxFile = kFileNameBufSize;
         m_ofn.Flags |= OFN_ENABLEHOOK;
@@ -37,7 +37,7 @@ public:
         m_ofn.lCustData = (long)this;
 
         fExitStatus = IDABORT;
-        fFileNames = new char[2];
+        fFileNames = new WCHAR[2];
         fFileNames[0] = fFileNames[1] = '\0';
         fFileNameOffset = 0;
 
@@ -51,23 +51,22 @@ public:
     }
 
     int GetExitStatus(void) const { return fExitStatus; }
-    const char* GetFileNames(void) const { return fFileNames; }
+    const WCHAR* GetFileNames(void) const { return fFileNames; }
     int GetFileNameOffset(void) const { return fFileNameOffset; }
 
     // set the window title; must be called before DoModal
-    void SetWindowTitle(const char* title) {
+    void SetWindowTitle(const WCHAR* title) {
         m_ofn.lpstrTitle = title;
     }
 
     // stuff values into our filename holder
-    void SetFileNames(const char* fileNames, int len, int fileNameOffset) {
-        ASSERT(len > (int)strlen(fileNames));
+    void SetFileNames(const WCHAR* fileNames, size_t len, int fileNameOffset) {
+        ASSERT(len > wcslen(fileNames));
         ASSERT(fileNames[len] == '\0');
         ASSERT(fileNames[len-1] == '\0');
-        WMSG3("SetFileNames '%s' %d %d\n", fileNames, len, fileNameOffset);
+        WMSG3("SetFileNames '%ls' %d %d\n", fileNames, len, fileNameOffset);
         delete[] fFileNames;
-        fFileNames = new char[len];
-        memcpy(fFileNames, fileNames, len);
+        fFileNames = wcsdup(fileNames);
         fFileNameOffset = fileNameOffset;
     }
 
@@ -119,11 +118,11 @@ private:
     bool    fReady;
     int     fExitStatus;
     int     fFileNameOffset;
-    char*   fFileNames;
+    WCHAR*  fFileNames;
     CRect   fLastWinSize;
 
 
     //DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__SELECTFILESDIALOG__*/
+#endif /*UTIL_SELECTFILESDIALOG_H*/

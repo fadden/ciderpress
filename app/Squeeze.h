@@ -6,10 +6,10 @@
 /*
  * Implementation of SQueeze compression.
  */
-#ifndef __SQUEEZE__
-#define __SQUEEZE__
+#ifndef APP_SQUEEZE_H
+#define APP_SQUEEZE_H
 
 NuError UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
     bool fullSqHeader, int blockSize);
 
-#endif /*__SQUEEZE__*/
+#endif /*APP_SQUEEZE_H*/

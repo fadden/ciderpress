@@ -639,8 +639,8 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
 
         dataLen = blockLen - (nameLen+1 + 4);
 
-        WMSG4(" APFSHR block='%s' blockLen=%ld (dataLen=%ld) start=0x%08lx\n",
-            (LPCSTR) blockName, blockLen, dataLen, srcPtr);
+        WMSG4(" APFSHR block='%ls' blockLen=%ld (dataLen=%ld) start=0x%08lx\n",
+            (LPCWSTR) blockName, blockLen, dataLen, srcPtr);
 
         if (blockName == "MAIN") {
             if (UnpackMain(srcPtr, dataLen) != 0)
@@ -652,7 +652,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
         } else if (blockName == "NOTE") {
             UnpackNote(srcPtr, dataLen);
         } else {
-            WMSG1(" APFSHR  (ignoring segment '%s')\n", blockName);
+            WMSG1(" APFSHR  (ignoring segment '%ls')\n", (LPCWSTR) blockName);
         }
 
         srcPtr = nextBlock;
@@ -949,10 +949,11 @@ ReformatAPFSHR::UnpackNote(const unsigned char* srcPtr, long srcLen)
     }
 
     CString str;
-    while (srcLen--)
+    while (srcLen--) {
         str += *srcPtr++;
+    }
 
-    WMSG1(" APFSHR   note: '%s'\n", str);
+    WMSG1(" APFSHR   note: '%ls'\n", (LPCWSTR) str);
 }
 
 

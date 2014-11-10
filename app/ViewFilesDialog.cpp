@@ -314,9 +314,11 @@ DumpBitmapInfo(HBITMAP hBitmap)
  *
  * The RichEdit dialog will hold its own copy of the data, so "pHolder" can
  * be safely destroyed after this returns.
+ *
+ * "fileName" is for display only.
  */
 void
-ViewFilesDialog::DisplayText(const char* fileName)
+ViewFilesDialog::DisplayText(const WCHAR* fileName)
 {
     CWaitCursor wait;   // streaming of big files can take a little while
     bool errFlg;
@@ -418,14 +420,14 @@ ViewFilesDialog::DisplayText(const char* fileName)
         hBitmap = fpOutput->GetDIB()->ConvertToDDB(dcScreen.m_hDC);
         if (hBitmap == nil) {
             WMSG0("ConvertToDDB failed!\n");
-            pEdit->SetWindowText("Internal error.");
+            pEdit->SetWindowText(L"Internal error.");
             errFlg = true;
         } else {
             //DumpBitmapInfo(hBitmap);
             //DumpBitmapInfo(pDib->GetHandle());
 
             WMSG0("Inserting bitmap\n");
-            pEdit->SetWindowText("");
+            pEdit->SetWindowText(L"");
             CImageDataObject::InsertBitmap(fpRichEditOle, hBitmap);
 
             /* RichEditCtrl has it now */
@@ -451,7 +453,7 @@ ViewFilesDialog::DisplayText(const char* fileName)
         if (fpOutput->GetOutputKind() == ReformatOutput::kOutputRTF)
             streamFormat = SF_RTF;
         if (fpOutput->GetTextLen() == 0) {
-            textBuf = _T("(file is empty)");
+            textBuf = "(file is empty)";
             textLen = strlen(textBuf);
             emptyFlg = true;
             EnableFormatSelection(FALSE);
@@ -846,7 +848,7 @@ ViewFilesDialog::ReformatPrep(GenericEntry* pEntry)
         pEntry->GetFileType(),
         pEntry->GetAuxType(),
         MainWindow::ReformatterSourceFormat(pEntry->GetSourceFS()),
-        pEntry->GetFileNameExtension());
+        pEntry->GetFileNameExtensionA());
 
     /* figure out which reformatters apply to this file */
     WMSG0("Testing reformatters\n");
@@ -895,7 +897,7 @@ ViewFilesDialog::Reformat(const GenericEntry* pEntry,
         return 0;
     } else {
         /* shouldn't get here; handle it if we do */
-        static const char* kFailMsg = _T("Internal error\r\n");
+        static const char* kFailMsg = "Internal error\r\n";
         fpOutput = new ReformatOutput;
         fpOutput->SetTextBuf((char*) kFailMsg, strlen(kFailMsg), false);
         fpOutput->SetOutputKind(ReformatOutput::kOutputErrorMsg);
@@ -970,8 +972,8 @@ ViewFilesDialog::ConfigureFormatSel(ReformatHolder::ReformatPart part)
                 /* match! */
                 CString str;
                 //WMSG2("MATCH at %d (0x%02x)\n", idIdx, testApplies);
-                str.Format("%s",
-                    ReformatHolder::GetReformatName((ReformatHolder::ReformatID) idIdx));
+                str.Format(L"%ls", ReformatHolder::GetReformatName(
+                                        (ReformatHolder::ReformatID) idIdx));
                 comboIdx = pCombo->AddString(str);
                 pCombo->SetItemData(comboIdx, idIdx);
 
@@ -1160,7 +1162,7 @@ ViewFilesDialog::OnFviewFont(void)
         //fontDlg.GetCurrentFont(&logFont);
         fTypeFace = fontDlg.GetFaceName();
         fPointSize = fontDlg.GetSize() / 10;
-        WMSG2("Now using %d-point '%s'\n", fPointSize, (const char*)fTypeFace);
+        WMSG2("Now using %d-point '%ls'\n", fPointSize, (LPCWSTR) fTypeFace);
 
         NewFontSelected(false);
     }
@@ -1347,10 +1349,10 @@ ViewFilesDialog::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
  * Find the next ocurrence of the specified string.
  */
 void
-ViewFilesDialog::FindNext(const char* str, bool down, bool matchCase,
+ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
     bool wholeWord)
 {
-    WMSG4("FindText '%s' d=%d c=%d w=%d\n", str, down, matchCase, wholeWord);
+    WMSG4("FindText '%ls' d=%d c=%d w=%d\n", str, down, matchCase, wholeWord);
 
     FINDTEXTEX findTextEx = { 0 };
     CHARRANGE selChrg;
@@ -1372,7 +1374,7 @@ ViewFilesDialog::FindNext(const char* str, bool down, bool matchCase,
 
     findTextEx.chrg.cpMin = start;
     findTextEx.chrg.cpMax = -1;
-    findTextEx.lpstrText = const_cast<char*>(str);
+    findTextEx.lpstrText = str;
 
     /* MSVC++6 claims FindText doesn't exist, even though it's in the header */
     //result = fEditCtrl.FindText(flags, &findTextEx);
@@ -1383,7 +1385,7 @@ ViewFilesDialog::FindNext(const char* str, bool down, bool matchCase,
         /* didn't find it, wrap around to start */
         findTextEx.chrg.cpMin = 0;
         findTextEx.chrg.cpMax = -1;
-        findTextEx.lpstrText = const_cast<char*>(str);
+        findTextEx.lpstrText = str;
         result = fEditCtrl.SendMessage(EM_FINDTEXTEX, (WPARAM) flags,
             (LPARAM) &findTextEx);
     }

@@ -6,8 +6,8 @@
 /*
  * Create a subdirectory (e.g. on a ProDOS disk image).
  */
-#ifndef __CREATESUBDIRDIALOG__
-#define __CREATESUBDIRDIALOG__
+#ifndef APP_CREATESUBDIRDIALOG_H
+#define APP_CREATESUBDIRDIALOG_H
 
 #include "GenericArchive.h"
 #include "resource.h"
@@ -42,4 +42,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CREATESUBDIRDIALOG__*/
+#endif /*APP_CREATESUBDIRDIALOG_H*/

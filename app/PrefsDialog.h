@@ -6,8 +6,8 @@
 /*
  * Classes to support the Preferences property pages.
  */
-#ifndef __PREFSDIALOG__
-#define __PREFSDIALOG__
+#ifndef APP_PREFSDIALOG_H
+#define APP_PREFSDIALOG_H
 
 #include "Preferences.h"
 #include "../util/UtilLib.h"
@@ -239,4 +239,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__PREFSDIALOG__*/
+#endif /*APP_PREFSDIALOG_H*/

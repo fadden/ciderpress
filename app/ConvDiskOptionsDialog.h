@@ -6,8 +6,8 @@
 /*
  * Options for converting a disk image to a file archive.
  */
-#ifndef __CONVDISK_OPTIONS_DIALOG__
-#define __CONVDISK_OPTIONS_DIALOG__
+#ifndef APP_CONVDISKOPTIONSDIALOG_H
+#define APP_CONVDISKOPTIONSDIALOG_H
 
 #include "UseSelectionDialog.h"
 #include "resource.h"
@@ -22,7 +22,7 @@ public:
     {
         fDiskSizeIdx = 0;
         //fAllowLower = fSparseAlloc = FALSE;
-        fVolName = "NEW.DISK";
+        fVolName = L"NEW.DISK";
         fNumBlocks = -1;
     }
     virtual ~ConvDiskOptionsDialog(void) {}
@@ -45,9 +45,9 @@ private:
     afx_msg void OnRadioChangeRange(UINT nID);
 
     void LimitSizeControls(long totalBlocks, long blocksUsed);
-    bool IsValidVolumeName_ProDOS(const char* name);
+    bool IsValidVolumeName_ProDOS(const WCHAR* name);
 
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CONVDISK_OPTIONS_DIALOG__*/
+#endif /*APP_CONVDISKOPTIONSDIALOG_H*/

@@ -82,9 +82,9 @@ EditAssocDialog::Setup(bool loadAssoc)
     pListView->GetClientRect(&rect);
     int width;
 
-    width = pListView->GetStringWidth("XXExtensionXX");
-    pListView->InsertColumn(0, "Extension", LVCFMT_LEFT, width);
-    pListView->InsertColumn(1, "Association", LVCFMT_LEFT,
+    width = pListView->GetStringWidth(L"XXExtensionXX");
+    pListView->InsertColumn(0, L"Extension", LVCFMT_LEFT, width);
+    pListView->InsertColumn(1, L"Association", LVCFMT_LEFT,
         rect.Width() - width);
 
     int num = gMyApp.fRegistry.GetNumFileAssocs();

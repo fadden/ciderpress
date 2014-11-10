@@ -9,8 +9,8 @@
  * Lots of credit to the classic "Programming the 65816" book by David Eyes
  * and Ron Lichty.
  */
-#ifndef __LR_DISASM__
-#define __LR_DISASM__
+#ifndef REFORMAT_DISASM_H
+#define REFORMAT_DISASM_H
 
 #include "ReformatBase.h"
 
@@ -450,4 +450,4 @@ private:
         const unsigned char* srcBuf, long srcLen, bool shortRegs);
 };
 
-#endif /*__LR_DISASM__*/
+#endif /*REFORMAT_DISASM_H*/

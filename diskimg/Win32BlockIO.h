@@ -47,8 +47,8 @@
  *  Win2K/XP logical drive: CreateFile("\\.\X")
  *  Win2K/XP SCSI drive or CD-ROM drive: SPTI
  */
-#ifndef __WIN32BLOCKIO__
-#define __WIN32BLOCKIO__
+#ifndef DISKIMG_WIN32BLOCKIO_H
+#define DISKIMG_WIN32BLOCKIO_H
 
 
 namespace DiskImgLib {
@@ -130,7 +130,7 @@ public:
 
     // "deviceName" has the form "X:\" (logical), "81:\" (physical), or
     //  "ASPI:x:y:z\" (ASPI)
-    DIError Open(const char* deviceName, bool readOnly);
+    DIError Open(const WCHAR* deviceName, bool readOnly);
     // close the device
     void Close(void);
     // is the device open and working?
@@ -165,7 +165,7 @@ private:
         } DiskGeometry;
 
         // generic interfaces
-        virtual DIError Open(const char* deviceName, bool readOnly) = 0;
+        virtual DIError Open(const WCHAR* deviceName, bool readOnly) = 0;
         virtual DIError DetectCapacity(long* pNumBlocks) = 0;
         virtual DIError ReadBlocks(long startBlock, short blockCount,
             void* buf) = 0;
@@ -248,7 +248,7 @@ private:
             delete[] fLastSectorCache;
         }
 
-        virtual DIError Open(const char* deviceName, bool readOnly);
+        virtual DIError Open(const WCHAR* deviceName, bool readOnly);
         virtual DIError DetectCapacity(long* pNumBlocks) {
             /* use SCSI length value if at all possible */
             DIError dierr;
@@ -308,7 +308,7 @@ private:
         PhysicalBlockAccess(void) : fHandle(NULL), fInt13Unit(-1) {}
         virtual ~PhysicalBlockAccess(void) {}
 
-        virtual DIError Open(const char* deviceName, bool readOnly);
+        virtual DIError Open(const WCHAR* deviceName, bool readOnly);
         virtual DIError DetectCapacity(long* pNumBlocks) {
             /* try SPTI in case it happens to work */
             DIError dierr;
@@ -351,6 +351,7 @@ private:
         DiskGeometry    fGeometry;
     };
 
+#ifdef WANT_ASPI
     /*
      * Access to a SCSI volume via the ASPI interface.
      */
@@ -385,7 +386,7 @@ private:
         long            fLastChunkNum;
         long            fChunkSize;     // set by DetectCapacity
     };
-
+#endif /*WANT_ASPI*/
 
     // write a series of blocks to the volume
     DIError DoWriteBlocks(long startBlock, short blockCount, const void* buf)
@@ -398,8 +399,9 @@ private:
     CBCache         fBlockCache;
 };
 
+
 }; // namespace DiskImgLib
 
-#endif /*WIN32BLOCKIO*/
+#endif /*DISKIMG_WIN32BLOCKIO_H*/
 
 #endif /*_WIN32*/

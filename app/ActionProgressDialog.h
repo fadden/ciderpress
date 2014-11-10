@@ -6,8 +6,8 @@
 /*
  * Show the progress of an action like "add" or "extract".
  */
-#ifndef __ACTIONPROGRESSDIALOG__
-#define __ACTIONPROGRESSDIALOG__
+#ifndef APP_ACTIONPROGRESSDIALOG_H
+#define APP_ACTIONPROGRESSDIALOG_H
 
 #include "resource.h"
 
@@ -48,8 +48,8 @@ public:
         DestroyWindow();
     }
 
-    void SetArcName(const char* str);
-    void SetFileName(const char* str);
+    void SetArcName(const WCHAR* str);
+    void SetFileName(const WCHAR* str);
     const CString GetFileName(void);
     int SetProgress(int perc);
 
@@ -62,4 +62,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__ACTIONPROGRESSDIALOG__*/
+#endif /*APP_ACTIONPROGRESSDIALOG_H*/

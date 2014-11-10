@@ -870,7 +870,7 @@ void
 DiskFSPascal::DoNormalizePath(const char* name, char fssep, char* outBuf)
 {
     char* outp = outBuf;
-    char* cp;
+    const char* cp;
 
     /* throw out leading pathname, if any */
     if (fssep != '\0') {

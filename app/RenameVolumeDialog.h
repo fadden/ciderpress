@@ -6,8 +6,8 @@
 /*
  * Declarations for "rename volume" dialog.
  */
-#ifndef __RENAMEVOLUME__
-#define __RENAMEVOLUME__
+#ifndef APP_RENAMEVOLUME_H
+#define APP_RENAMEVOLUME_H
 
 #include "DiskFSTree.h"
 #include "resource.h"
@@ -47,4 +47,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__RENAMEVOLUME__*/
+#endif /*APP_RENAMEVOLUME_H*/

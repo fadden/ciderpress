@@ -49,8 +49,8 @@ RenameOverwriteDialog::DoDataExchange(CDataExchange* pDX)
     /* validate the path field */
     if (pDX->m_bSaveAndValidate) {
         if (fNewName.IsEmpty()) {
-            MessageBox("You must specify a new name.",
-                "CiderPress", MB_OK);
+            MessageBox(L"You must specify a new name.",
+                L"CiderPress", MB_OK);
             pDX->Fail();
         }
 
@@ -98,7 +98,7 @@ ConfirmOverwriteDialog::OnInitDialog(void)
     pWnd = GetDlgItem(IDC_OVWR_EXIST_INFO);
     ASSERT(pWnd != nil);
     FormatDate(fExistingFileModWhen, &dateStr);
-    tmpStr.Format("Modified %s", dateStr);
+    tmpStr.Format(L"Modified %ls", dateStr);
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_OVWR_NEW_NAME);
@@ -108,7 +108,7 @@ ConfirmOverwriteDialog::OnInitDialog(void)
     pWnd = GetDlgItem(IDC_OVWR_NEW_INFO);
     ASSERT(pWnd != nil);
     FormatDate(fNewFileModWhen, &dateStr);
-    tmpStr.Format("Modified %s", dateStr);
+    tmpStr.Format(L"Modified %ls", dateStr);
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_OVWR_RENAME);

@@ -6,8 +6,8 @@
 /*
  * Edit a comment.
  */
-#ifndef __EDITCOMMENTDIALOG__
-#define __EDITCOMMENTDIALOG__
+#ifndef APP_EDITCOMMENTDIALOG_H
+#define APP_EDITCOMMENTDIALOG_H
 
 #include "GenericArchive.h"
 #include "resource.h"
@@ -44,4 +44,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__EDITCOMMENTDIALOG__*/
+#endif /*APP_EDITCOMMENTDIALOG_H*/

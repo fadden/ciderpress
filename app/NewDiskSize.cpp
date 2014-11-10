@@ -25,7 +25,7 @@
     { IDC_CONVDISK_32MB,        65535 },
     { IDC_CONVDISK_SPECIFY,     kSpecified },
 };
-static const kEditBoxID = IDC_CONVDISK_SPECIFY_EDIT;
+static const int kEditBoxID = IDC_CONVDISK_SPECIFY_EDIT;
 
 /*
  * Return the #of entries in the table.
@@ -161,6 +161,6 @@ NewDiskSize::UpdateSpecifyEdit(CDialog* pDialog)
     }
 
     CString fmt;
-    fmt.Format("%ld", kCtrlMap[i].blocks);
+    fmt.Format(L"%ld", kCtrlMap[i].blocks);
     pEdit->SetWindowText(fmt);
 }

@@ -7,8 +7,8 @@
  * Fill out a CTreeCtrl with the results of a tree search through a DiskFS and
  * its sub-volumes.
  */
-#ifndef __DISKFSTREE__
-#define __DISKFSTREE__
+#ifndef APP_DISKFSTREE_H
+#define APP_DISKFSTREE_H
 
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
@@ -78,4 +78,4 @@ private:
     TargetData*     fpTargetData;
 };
 
-#endif /*__DISKFSTREE__*/
+#endif /*APP_DISKFSTREE_H*/

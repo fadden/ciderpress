@@ -6,8 +6,8 @@
 /*
  * Reformat double-hi-res graphics.
  */
-#ifndef __LR_DOUBLEHIRES__
-#define __LR_DOUBLEHIRES__
+#ifndef REFORMAT_DOUBLEHIRES_H
+#define REFORMAT_DOUBLEHIRES_H
 
 #include "ReformatBase.h"
 
@@ -51,4 +51,4 @@ public:
     unsigned int fColorLookup[4][kNumDHRColors];
 };
 
-#endif /*__LR_DOUBLEHIRES__*/
+#endif /*REFORMAT_DOUBLEHIRES_H*/

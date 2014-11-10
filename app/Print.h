@@ -6,8 +6,8 @@
 /*
  * Goodies needed for printing.
  */
-#ifndef __PRINT__
-#define __PRINT__
+#ifndef APP_PRINT_H
+#define APP_PRINT_H
 
 #include "ContentList.h"
 #include "resource.h"
@@ -33,8 +33,8 @@ protected:
 
     int StringWidth(const CString& str);
 
-    static const char* kCourierNew;
-    static const char* kTimesNewRoman;
+    static const WCHAR kCourierNew[];
+    static const WCHAR kTimesNewRoman[];
 
     enum {
         kTwipsPerInch = 1440
@@ -113,18 +113,18 @@ public:
      * Commence printing.
      */
     int PrintPreflight(CRichEditCtrl* pREC, int* pNumPages);
-    int PrintAll(CRichEditCtrl* pREC, const char* title);
-    int PrintPages(CRichEditCtrl* pREC, const char* title, int startPage,
+    int PrintAll(CRichEditCtrl* pREC, const WCHAR* title);
+    int PrintPages(CRichEditCtrl* pREC, const WCHAR* title, int startPage,
         int endPage);
-    int PrintSelection(CRichEditCtrl* pREC, const char* title, long startChar,
+    int PrintSelection(CRichEditCtrl* pREC, const WCHAR* title, long startChar,
         long endChar);
 
 private:
-    int StartPrint(CRichEditCtrl* pREC, const char* title,
+    int StartPrint(CRichEditCtrl* pREC, const WCHAR* title,
         int* pNumPages, bool doPrint);
     void PrintPrep(FORMATRANGE* pFR);
     void ComputeMargins(void);
-    int DoPrint(CRichEditCtrl* pREC, const char* title, int* pNumPages,
+    int DoPrint(CRichEditCtrl* pREC, const WCHAR* title, int* pNumPages,
         bool doPrint);
 
     bool        fInitialized;
@@ -140,4 +140,4 @@ private:
     int         fEndPage;
 };
 
-#endif /*__PRINT__*/
+#endif /*APP_PRINT_H*/

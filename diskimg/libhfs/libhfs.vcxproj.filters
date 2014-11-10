@@ -11,44 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="block.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="btree.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="data.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="file.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="hfs.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="low.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="medium.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="node.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="os.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="record.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="version.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="volume.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="apple.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -94,5 +56,43 @@
     <ClInclude Include="volume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="block.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="btree.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="data.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hfs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="low.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="medium.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="node.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="os.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="record.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="volume.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

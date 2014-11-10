@@ -38,7 +38,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
     fprintf(gLog, "\n");
 #endif
 
-    WMSG1("MDC started at %.24s\n", ctime(&now));
+    WMSG1("MDC started at %.24hs\n", ctime(&now));
 
     int tmpDbgFlag;
     // enable memory leak detection

@@ -90,13 +90,13 @@ DiskEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
         goto bail;
     } else if (len < 0) {
         assert(rsrcFork);   // forked files always have a data fork
-        *pErrMsg = "That fork doesn't exist";
+        *pErrMsg = L"That fork doesn't exist";
         goto bail;
     }
 
     dierr = fpFile->Open(&pOpenFile, true, rsrcFork);
     if (dierr != kDIErrNone) {
-        *pErrMsg = "File open failed";
+        *pErrMsg = L"File open failed";
         goto bail;
     }
 
@@ -106,12 +106,12 @@ DiskEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
     if (needAlloc) {
         dataBuf = new char[(int) len];
         if (dataBuf == nil) {
-            pErrMsg->Format("ERROR: allocation of %ld bytes failed", len);
+            pErrMsg->Format(L"ERROR: allocation of %ld bytes failed", len);
             goto bail;
         }
     } else {
         if (*pLength < (long) len) {
-            pErrMsg->Format("ERROR: buf size %ld too short (%ld)",
+            pErrMsg->Format(L"ERROR: buf size %ld too short (%ld)",
                 *pLength, (long) len);
             goto bail;
         }
@@ -123,7 +123,7 @@ DiskEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
         if (dierr == kDIErrCancelled) {
             result = IDCANCEL;
         } else {
-            pErrMsg->Format("File read failed: %s",
+            pErrMsg->Format(L"File read failed: %hs",
                 DiskImgLib::DIStrError(dierr));
         }
         goto bail;
@@ -175,7 +175,7 @@ DiskEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         rsrcFork = true;
     else {
         /* if we handle disk images, make sure we disable "conv" */
-        *pErrMsg = "No such fork";
+        *pErrMsg = L"No such fork";
         goto bail;
     }
 
@@ -191,21 +191,21 @@ DiskEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         goto bail;
     } else if (len < 0) {
         assert(rsrcFork);   // forked files always have a data fork
-        *pErrMsg = "That fork doesn't exist";
+        *pErrMsg = L"That fork doesn't exist";
         goto bail;
     }
 
     DIError dierr;
     dierr = fpFile->Open(&pOpenFile, true, rsrcFork);
     if (dierr != kDIErrNone) {
-        *pErrMsg = "Unable to open file on disk image";
+        *pErrMsg = L"Unable to open file on disk image";
         goto bail;
     }
 
     dierr = CopyData(pOpenFile, outfp, conv, convHA, pErrMsg);
     if (dierr != kDIErrNone) {
         if (pErrMsg->IsEmpty()) {
-            pErrMsg->Format("Failed while copying data: %s\n",
+            pErrMsg->Format(L"Failed while copying data: %hs\n",
                 DiskImgLib::DIStrError(dierr));
         }
         goto bail;
@@ -263,7 +263,7 @@ DiskEntry::CopyData(A2FileDescr* pOpenFile, FILE* outfp, ConvertEOL conv,
         /* read a chunk from the source file */
         dierr = pOpenFile->Read(buf, chunkLen);
         if (dierr != kDIErrNone) {
-            pMsg->Format("File read failed: %s",
+            pMsg->Format(L"File read failed: %hs",
                 DiskImgLib::DIStrError(dierr));
             goto bail;
         }
@@ -272,7 +272,7 @@ DiskEntry::CopyData(A2FileDescr* pOpenFile, FILE* outfp, ConvertEOL conv,
         int err = GenericEntry::WriteConvert(outfp, buf, chunkLen, &conv,
                     &convHA, &lastCR);
         if (err != 0) {
-            pMsg->Format("File write failed: %s", strerror(err));
+            pMsg->Format(L"File write failed: %hs", strerror(err));
             dierr = kDIErrGeneric;
             goto bail;
         }
@@ -409,15 +409,15 @@ DiskArchive::AppInit(void)
 
     dierr = DiskImgLib::Global::AppInit();
     if (dierr != kDIErrNone) {
-        result.Format("DiskImg DLL failed to initialize: %s\n",
+        result.Format(L"DiskImg DLL failed to initialize: %hs\n",
             DiskImgLib::DIStrError(dierr));
         goto bail;
     }
 
     DiskImgLib::Global::GetVersion(&major, &minor, &bug);
     if (major != kDiskImgVersionMajor || minor < kDiskImgVersionMinor) {
-        result.Format("Older or incompatible version of DiskImg DLL found.\r\r"
-                        "Wanted v%d.%d.x, found %ld.%ld.%ld.",
+        result.Format(L"Older or incompatible version of DiskImg DLL found.\r\r"
+                      L"Wanted v%d.%d.x, found %ld.%ld.%ld.",
                 kDiskImgVersionMajor, kDiskImgVersionMinor,
                 major, minor, bug);
         goto bail;
@@ -482,7 +482,9 @@ DiskArchive::ProgressCallback(DiskImgLib::A2FileDescr* pFile,
  * Progress update callback, called from DiskImgLib while scanning a volume
  * during Open().
  *
- * Returns "true" if we should continue;
+ * "str" must not contain a '%'.  (TODO: fix that)
+ *
+ * Returns "true" if we should continue.
  */
 /*static*/ bool
 DiskArchive::ScanProgressCallback(void* cookie, const char* str, int count)
@@ -493,7 +495,7 @@ DiskArchive::ScanProgressCallback(void* cookie, const char* str, int count)
     if (count == 0)
         fmt = str;
     else
-        fmt.Format("%s (%%d)", str);
+        fmt.Format(L"%hs (%%d)", str);
     cont = SET_PROGRESS_COUNTER_2(fmt, count);
 
     if (!cont) {
@@ -508,7 +510,7 @@ DiskArchive::ScanProgressCallback(void* cookie, const char* str, int count)
  * Finish instantiating a DiskArchive object by opening an existing file.
  */
 GenericArchive::OpenResult
-DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
+DiskArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
 {
     DIError dierr;
     CString errMsg;
@@ -552,7 +554,7 @@ DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
                 result = kResultFileArchive;
             else {
                 result = kResultFailure;
-                errMsg.Format("Unable to open '%s': %s.", filename,
+                errMsg.Format(L"Unable to open '%ls': %hs.", filename,
                     DiskImgLib::DIStrError(dierr));
             }
             goto bail;
@@ -562,7 +564,7 @@ DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
     dierr = fDiskImg.AnalyzeImage();
     if (dierr != kDIErrNone) {
         result = kResultFailure;
-        errMsg.Format("Analysis of '%s' failed: %s", filename,
+        errMsg.Format(L"Analysis of '%ls' failed: %hs", filename,
             DiskImgLib::DIStrError(dierr));
         goto bail;
     }
@@ -590,8 +592,8 @@ DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
                         imf.fFSFormat, imf.fSectorOrder);
             if (dierr != kDIErrNone) {
                 result = kResultFailure;
-                errMsg.Format("Unable to access disk image using selected"
-                           " parameters.  Error: %s.",
+                errMsg.Format(L"Unable to access disk image using selected"
+                              L" parameters.  Error: %hs.",
                            DiskImgLib::DIStrError(dierr));
                 goto bail;
             }
@@ -602,7 +604,7 @@ DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
         fDiskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
         result = kResultFailure;
-        errMsg.Format("Unable to identify filesystem on '%s'", filename);
+        errMsg.Format(L"Unable to identify filesystem on '%ls'", filename);
         goto bail;
     }
 
@@ -612,7 +614,7 @@ DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
         /* unknown FS should've been caught above! */
         ASSERT(false);
         result = kResultFailure;
-        errMsg.Format("Format of '%s' not recognized.", filename);
+        errMsg.Format(L"Format of '%ls' not recognized.", filename);
         goto bail;
     }
 
@@ -633,8 +635,8 @@ DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
         ProgressCounterDialog* pProgress;
 
         pProgress = new ProgressCounterDialog;
-        pProgress->Create(_T("Examining contents, please wait..."), pMain);
-        pProgress->SetCounterFormat("Scanning...");
+        pProgress->Create(L"Examining contents, please wait...", pMain);
+        pProgress->SetCounterFormat(L"Scanning...");
         pProgress->CenterWindow();
         //pMain->PeekAndPump(); // redraw
         CWaitCursor waitc;
@@ -654,7 +656,7 @@ DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
                 result = kResultCancel;
             } else {
                 result = kResultFailure;
-                errMsg.Format("Error reading list of files from disk: %s",
+                errMsg.Format(L"Error reading list of files from disk: %hs",
                     DiskImgLib::DIStrError(dierr));
             }
             goto bail;
@@ -663,7 +665,7 @@ DiskArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
 
     if (LoadContents() != 0) {
         result = kResultFailure;
-        errMsg.Format("Failed while loading contents of disk image.");
+        errMsg = L"Failed while loading contents of disk image.";
         goto bail;
     }
 
@@ -727,11 +729,12 @@ bail:
  * Returns an error string on failure, or "" on success.
  */
 CString
-DiskArchive::New(const char* fileName, const void* vOptions)
+DiskArchive::New(const WCHAR* fileName, const void* vOptions)
 {
     const Preferences* pPreferences = GET_PREFERENCES();
     NewOptions* pOptions = (NewOptions*) vOptions;
     CString volName;
+    CStringA volNameA, fileNameA;
     long numBlocks = -1;
     long numTracks = -1;
     int numSectors;
@@ -767,15 +770,15 @@ DiskArchive::New(const char* fileName, const void* vOptions)
         if (numTracks < DiskFSDOS33::kMinTracks ||
             numTracks > DiskFSDOS33::kMaxTracks)
         {
-            retmsg.Format("Invalid DOS32 track count");
+            retmsg = L"Invalid DOS32 track count";
             goto bail;
         }
         if (numSectors != 13) {
-            retmsg.Format("Invalid DOS32 sector count");
+            retmsg = L"Invalid DOS32 sector count";
             goto bail;
         }
         if (pOptions->dos.allocDOSTracks)
-            volName = "DOS";
+            volName = L"DOS";
         break;
     case DiskImg::kFormatDOS33:
         numTracks = pOptions->dos.numTracks;
@@ -784,23 +787,23 @@ DiskArchive::New(const char* fileName, const void* vOptions)
         if (numTracks < DiskFSDOS33::kMinTracks ||
             numTracks > DiskFSDOS33::kMaxTracks)
         {
-            retmsg.Format("Invalid DOS33 track count");
+            retmsg = L"Invalid DOS33 track count";
             goto bail;
         }
         if (numSectors != 16 && numSectors != 32) {     // no 13-sector (yet)
-            retmsg.Format("Invalid DOS33 sector count");
+            retmsg = L"Invalid DOS33 sector count";
             goto bail;
         }
         if (pOptions->dos.allocDOSTracks)
-            volName = "DOS";
+            volName = L"DOS";
         break;
     default:
-        retmsg.Format("Unsupported disk format");
+        retmsg = L"Unsupported disk format";
         goto bail;
     }
 
-    WMSG4("DiskArchive: new '%s' %ld %s in '%s'\n",
-        (const char*)volName, numBlocks,
+    WMSG4("DiskArchive: new '%ls' %ld %hs in '%ls'\n",
+        (LPCWSTR) volName, numBlocks,
         DiskImg::ToString(pOptions->base.format), fileName);
 
     bool canSkipFormat;
@@ -819,8 +822,9 @@ DiskArchive::New(const char* fileName, const void* vOptions)
      * want to do it under Win2K/XP because it can be slow for larger
      * volumes.
      */
+    fileNameA = fileName;
     if (numBlocks > 0) {
-        dierr = fDiskImg.CreateImage(fileName, nil,
+        dierr = fDiskImg.CreateImage(fileNameA, nil,
                     DiskImg::kOuterFormatNone,
                     DiskImg::kFileFormatUnadorned,
                     DiskImg::kPhysicalFormatSectors,
@@ -831,7 +835,7 @@ DiskArchive::New(const char* fileName, const void* vOptions)
                     canSkipFormat);
     } else {
         ASSERT(numTracks > 0);
-        dierr = fDiskImg.CreateImage(fileName, nil,
+        dierr = fDiskImg.CreateImage(fileNameA, nil,
                     DiskImg::kOuterFormatNone,
                     DiskImg::kFileFormatUnadorned,
                     DiskImg::kPhysicalFormatSectors,
@@ -842,7 +846,7 @@ DiskArchive::New(const char* fileName, const void* vOptions)
                     canSkipFormat);
     }
     if (dierr != kDIErrNone) {
-        retmsg.Format("Unable to create disk image: %s.",
+        retmsg.Format(L"Unable to create disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
         goto bail;
     }
@@ -867,29 +871,30 @@ DiskArchive::New(const char* fileName, const void* vOptions)
         volName.MakeUpper();
 
     /* format it */
-    dierr = fDiskImg.FormatImage(pOptions->base.format, volName);
+    volNameA = volName;
+    dierr = fDiskImg.FormatImage(pOptions->base.format, volNameA);
     if (dierr != kDIErrNone) {
-        retmsg.Format("Unable to format disk image: %s.",
+        retmsg.Format(L"Unable to format disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
         goto bail;
     }
     fpPrimaryDiskFS = fDiskImg.OpenAppropriateDiskFS(false);
     if (fpPrimaryDiskFS == nil) {
-        retmsg.Format("Unable to create DiskFS.");
+        retmsg = L"Unable to create DiskFS.";
         goto bail;
     }
 
     /* prep it */
     dierr = fpPrimaryDiskFS->Initialize(&fDiskImg, DiskFS::kInitFull);
     if (dierr != kDIErrNone) {
-        retmsg.Format("Error reading list of files from disk: %s",
+        retmsg.Format(L"Error reading list of files from disk: %hs",
             DiskImgLib::DIStrError(dierr));
         goto bail;
     }
 
     /* this is pretty meaningless, but do it to ensure we're initialized */
     if (LoadContents() != 0) {
-        retmsg.Format("Failed while loading contents of disk image.");
+        retmsg = L"Failed while loading contents of disk image.";
         goto bail;
     }
 
@@ -921,15 +926,15 @@ DiskArchive::Close(void)
         MainWindow* pMainWin = (MainWindow*)::AfxGetMainWnd();
         CString msg, failed;
 
-        msg.Format("Failed while closing disk image: %s.",
+        msg.Format(L"Failed while closing disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
         failed.LoadString(IDS_FAILED);
-        WMSG1("During close: %s\n", (const char*) msg);
+        WMSG1("During close: %ls\n", msg);
 
         pMainWin->MessageBox(msg, failed, MB_OK);
     }
 
-    return "";
+    return L"";
 }
 
 /*
@@ -953,12 +958,12 @@ DiskArchive::Flush(void)
     if (dierr != kDIErrNone) {
         CString errMsg;
 
-        errMsg.Format("Attempt to flush the current archive failed: %s.",
+        errMsg.Format(L"Attempt to flush the current archive failed: %hs.",
             DiskImgLib::DIStrError(dierr));
         return errMsg;
     }
 
-    return "";
+    return L"";
 }
 
 /*
@@ -982,8 +987,9 @@ DiskArchive::GetDescription(CString* pStr) const
     if (fpPrimaryDiskFS == nil)
         return;
 
-    if (fpPrimaryDiskFS->GetVolumeID() != nil)
-        pStr->Format("Disk Image - %s", fpPrimaryDiskFS->GetVolumeID());
+    if (fpPrimaryDiskFS->GetVolumeID() != nil) {
+        pStr->Format(L"Disk Image - %hs", fpPrimaryDiskFS->GetVolumeID());
+    }
 }
 
 
@@ -1008,7 +1014,7 @@ DiskArchive::LoadContents(void)
         pMain->PeekAndPump();   // redraw
         CWaitCursor waitc;
 
-        result = LoadDiskFSContents(fpPrimaryDiskFS, "");
+        result = LoadDiskFSContents(fpPrimaryDiskFS, L"");
 
         SET_PROGRESS_COUNTER(-1);
 
@@ -1076,9 +1082,9 @@ DiskArchive::InternalReload(CWnd* pMsgWnd)
  * sub-volume as it should appear in the list.
  */
 int
-DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName)
+DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
 {
-    static const char* kBlankFileName = "<blank filename>";
+    static const WCHAR* kBlankFileName = L"<blank filename>";
     A2File* pFile;
     DiskEntry* pNewEntry;
     DiskFS::SubVolume* pSubVol;
@@ -1088,7 +1094,7 @@ DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName)
 
     wantCoerceDOSFilenames = pPreferences->GetPrefBool(kPrCoerceDOSFilenames);
 
-    WMSG2("Notes for disk image '%s':\n%s",
+    WMSG2("Notes for disk image '%ls':\n%hs",
         volName, pDiskFS->GetDiskImg()->GetNotes());
 
     ASSERT(pDiskFS != nil);
@@ -1160,30 +1166,30 @@ DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName)
         case DiskImg::kFormatDOS32:
         case DiskImg::kFormatUNIDOS:
         case DiskImg::kFormatGutenberg:
-            pNewEntry->SetFormatStr("DOS");
+            pNewEntry->SetFormatStr(L"DOS");
             break;
         case DiskImg::kFormatProDOS:
-            pNewEntry->SetFormatStr("ProDOS");
+            pNewEntry->SetFormatStr(L"ProDOS");
             break;
         case DiskImg::kFormatPascal:
-            pNewEntry->SetFormatStr("Pascal");
+            pNewEntry->SetFormatStr(L"Pascal");
             break;
         case DiskImg::kFormatCPM:
-            pNewEntry->SetFormatStr("CP/M");
+            pNewEntry->SetFormatStr(L"CP/M");
             break;
         case DiskImg::kFormatMSDOS:
-            pNewEntry->SetFormatStr("MS-DOS");
+            pNewEntry->SetFormatStr(L"MS-DOS");
             break;
         case DiskImg::kFormatRDOS33:
         case DiskImg::kFormatRDOS32:
         case DiskImg::kFormatRDOS3:
-            pNewEntry->SetFormatStr("RDOS");
+            pNewEntry->SetFormatStr(L"RDOS");
             break;
         case DiskImg::kFormatMacHFS:
-            pNewEntry->SetFormatStr("HFS");
+            pNewEntry->SetFormatStr(L"HFS");
             break;
         default:
-            pNewEntry->SetFormatStr("???");
+            pNewEntry->SetFormatStr(L"???");
             break;
         }
 
@@ -1220,9 +1226,9 @@ DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName)
             subVolName = "+++";     // call it *something*
 
         if (volName[0] == '\0')
-            concatSubVolName.Format("_%s", subVolName);
+            concatSubVolName.Format(L"_%hs", subVolName);
         else
-            concatSubVolName.Format("%s_%s", volName, subVolName);
+            concatSubVolName.Format(L"%ls_%hs", volName, subVolName);
         ret = LoadDiskFSContents(pSubVol->GetDiskFS(), concatSubVolName);
         if (ret != 0)
             return ret;
@@ -1309,11 +1315,11 @@ DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
 {
     NuError nerr;
     CString errMsg;
-    char curDir[MAX_PATH] = "";
+    WCHAR curDir[MAX_PATH] = L"";
     bool retVal = false;
 
-    WMSG2("Opts: '%s' typePres=%d\n",
-        pAddOpts->fStoragePrefix, pAddOpts->fTypePreservation);
+    WMSG2("Opts: '%ls' typePres=%d\n", (LPCWSTR) pAddOpts->fStoragePrefix,
+        pAddOpts->fTypePreservation);
     WMSG3("      sub=%d strip=%d ovwr=%d\n",
         pAddOpts->fIncludeSubfolders, pAddOpts->fStripFolderNames,
         pAddOpts->fOverwriteExisting);
@@ -1331,44 +1337,44 @@ DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     /*
      * Save the current directory and change to the one from the file dialog.
      */
-    const char* buf = pAddOpts->GetFileNames();
-    WMSG2("Selected path = '%s' (offset=%d)\n", buf,
+    const WCHAR* buf = pAddOpts->GetFileNames();
+    WMSG2("Selected path = '%ls' (offset=%d)\n", buf,
         pAddOpts->GetFileNameOffset());
 
-    if (GetCurrentDirectory(sizeof(curDir), curDir) == 0) {
-        errMsg = "Unable to get current directory.\n";
+    if (GetCurrentDirectory(NELEM(curDir), curDir) == 0) {
+        errMsg = L"Unable to get current directory.\n";
         ShowFailureMsg(pActionProgress, errMsg, IDS_FAILED);
         goto bail;
     }
     if (SetCurrentDirectory(buf) == false) {
-        errMsg.Format("Unable to set current directory to '%s'.\n", buf);
+        errMsg.Format(L"Unable to set current directory to '%ls'.\n", buf);
         ShowFailureMsg(pActionProgress, errMsg, IDS_FAILED);
         goto bail;
     }
 
     buf += pAddOpts->GetFileNameOffset();
     while (*buf != '\0') {
-        WMSG1("  file '%s'\n", buf);
+        WMSG1("  file '%ls'\n", buf);
 
         /* add the file, calling DoAddFile via the generic AddFile */
         nerr = AddFile(pAddOpts, buf, &errMsg);
         if (nerr != kNuErrNone) {
             if (errMsg.IsEmpty())
-                errMsg.Format("Failed while adding file '%s': %s.",
-                    (LPCTSTR) buf, NuStrError(nerr));
+                errMsg.Format(L"Failed while adding file '%ls': %hs.",
+                    (LPCWSTR) buf, NuStrError(nerr));
             if (nerr != kNuErrAborted) {
                 ShowFailureMsg(pActionProgress, errMsg, IDS_FAILED);
             }
             goto bail;
         }
 
-        buf += strlen(buf)+1;
+        buf += wcslen(buf)+1;
     }
 
     if (fpAddDataHead == nil) {
         CString title;
         title.LoadString(IDS_MB_APP_NAME);
-        errMsg = "No files added.\n";
+        errMsg = L"No files added.\n";
         pActionProgress->MessageBox(errMsg, title, MB_OK | MB_ICONWARNING);
     } else {
         /* add all pending files */
@@ -1390,7 +1396,7 @@ DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
 bail:
     FreeAddDataList();
     if (SetCurrentDirectory(curDir) == false) {
-        errMsg.Format("Unable to reset current directory to '%s'.\n", buf);
+        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", buf);
         ShowFailureMsg(pActionProgress, errMsg, IDS_FAILED);
         // bummer, but don't signal failure
     }
@@ -1439,10 +1445,10 @@ DiskArchive::DoAddFile(const AddFilesDialog* pAddOpts,
 
     DIError dierr;
     int neededLen = 64;     // reasonable guess
-    char* fsNormalBuf = nil;
+    char* fsNormalBuf = nil;    // name as it will appear on disk image
 
-    WMSG2("  +++ ADD file: orig='%s' stor='%s'\n",
-        pDetails->origName, pDetails->storageName);
+    WMSG2("  +++ ADD file: orig='%ls' stor='%ls'\n",
+        (LPCWSTR) pDetails->origName, (LPCWSTR) pDetails->storageName);
 
 retry:
     /*
@@ -1450,13 +1456,14 @@ retry:
      */
     delete[] fsNormalBuf;
     fsNormalBuf = new char[neededLen];
-    dierr = pDiskFS->NormalizePath(pDetails->storageName,
+    CStringA storageNameA(pDetails->storageName);
+    dierr = pDiskFS->NormalizePath(storageNameA,
                 PathProposal::kDefaultStoredFssep, fsNormalBuf, &neededLen);
     if (dierr == kDIErrDataOverrun) {
         /* not long enough, try again *once* */
         delete[] fsNormalBuf;
         fsNormalBuf = new char[neededLen];
-        dierr = pDiskFS->NormalizePath(pDetails->storageName,
+        dierr = pDiskFS->NormalizePath(storageNameA,
                     PathProposal::kDefaultStoredFssep, fsNormalBuf, &neededLen);
     }
     if (dierr != kDIErrNone) {
@@ -1491,7 +1498,7 @@ retry:
             goto retry;
         } else if (result == kNuOverwrite) {
             /* delete the existing file immediately */
-            WMSG1(" Deleting existing file '%s'\n", fsNormalBuf);
+            WMSG1(" Deleting existing file '%hs'\n", fsNormalBuf);
             dierr = pDiskFS->DeleteFile(pExisting);
             if (dierr != kDIErrNone) {
                 // Would be nice to show a dialog and explain *why*, but
@@ -1518,7 +1525,7 @@ retry:
         goto bail;
     }
 
-    WMSG1("FSNormalized is '%s'\n", pAddData->GetFSNormalPath());
+    WMSG1("FSNormalized is '%hs'\n", pAddData->GetFSNormalPath());
 
     AddToAddDataList(pAddData);
 
@@ -1583,7 +1590,7 @@ DiskArchive::HandleReplaceExisting(const A2File* pExisting,
          * allow the FS normalizer to force the filename to be valid.
          */
         pDetails->storageName = confOvwr.fExistingFile;
-        WMSG1("Trying rename to '%s'\n", pDetails->storageName);
+        WMSG1("Trying rename to '%ls'\n", (LPCWSTR) pDetails->storageName);
         return kNuRename;
     }
 
@@ -1649,7 +1656,7 @@ DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
         const FileDetails* pDataDetails = nil;
         const FileDetails* pRsrcDetails = nil;
         const FileDetails* pDetails = pData->GetDetails();
-        const char* typeStr = "????";
+        const char* typeStr = "????";   // for debug msg only
 
         switch (pDetails->entryKind) {
         case FileDetails::kFileKindDataFork:
@@ -1668,7 +1675,7 @@ DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
         case FileDetails::kFileKindDirectory:
         default:
             assert(false);
-            return "internal error";
+            return L"internal error";
         }
 
         if (pData->GetOtherFork() != nil) {
@@ -1686,17 +1693,17 @@ DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
                 break;
             case FileDetails::kFileKindDiskImage:
                 assert(false);
-                return "(internal) add other disk error";
+                return L"(internal) add other disk error";
             case FileDetails::kFileKindBothForks:
             case FileDetails::kFileKindDirectory:
             default:
                 assert(false);
-                return "internal error";
+                return L"internal error";
             }
         }
 
-        WMSG2("Adding file '%s' (%s)\n",
-            pDetails->storageName, typeStr);
+        WMSG2("Adding file '%ls' (%hs)\n",
+            (LPCWSTR) pDetails->storageName, typeStr);
         ASSERT(pDataDetails != nil || pRsrcDetails != nil);
 
         /*
@@ -1712,6 +1719,7 @@ DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
         else
             parms.storageType = kNuStorageSeedling;
         /* use the FS-normalized path here */
+        /* (do we have to? do we want to?) */
         parms.pathName = pData->GetFSNormalPath();
 
         dataLen = rsrcLen = -1;
@@ -1749,15 +1757,15 @@ DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
 
         /* really ought to do this separately for each thread */
         SET_PROGRESS_BEGIN();
-        SET_PROGRESS_UPDATE2(0, pDetails->origName,
-            parms.pathName);
+        CString pathNameW(parms.pathName);
+        SET_PROGRESS_UPDATE2(0, pDetails->origName, pathNameW);
 
         DIError dierr;
         dierr = AddForksToDisk(pDiskFS, &parms, dataBuf, dataLen,
                     rsrcBuf, rsrcLen);
         SET_PROGRESS_END();
         if (dierr != kDIErrNone) {
-            errMsg.Format("Unable to add '%s' to image: %s.",
+            errMsg.Format(L"Unable to add '%hs' to image: %hs.",
                 parms.pathName, DiskImgLib::DIStrError(dierr));
             goto bail;
         }
@@ -1790,7 +1798,7 @@ bail:
  * really large files.
  */
 CString
-DiskArchive::LoadFile(const char* pathName, unsigned char** pBuf, long* pLen,
+DiskArchive::LoadFile(const WCHAR* pathName, BYTE** pBuf, long* pLen,
     GenericEntry::ConvertEOL conv, GenericEntry::ConvertHighASCII convHA) const
 {
     CString errMsg;
@@ -1806,21 +1814,21 @@ DiskArchive::LoadFile(const char* pathName, unsigned char** pBuf, long* pLen,
     ASSERT(pBuf != nil);
     ASSERT(pLen != nil);
 
-    fp = fopen(pathName, "rb");
+    fp = _wfopen(pathName, L"rb");
     if (fp == nil) {
-        errMsg.Format("Unable to open '%s': %s.", pathName,
+        errMsg.Format(L"Unable to open '%ls': %hs.", pathName,
             strerror(errno));
         goto bail;
     }
 
     if (fseek(fp, 0, SEEK_END) != 0) {
-        errMsg.Format("Unable to seek to end of '%s': %s", pathName,
+        errMsg.Format(L"Unable to seek to end of '%ls': %hs", pathName,
             strerror(errno));
         goto bail;
     }
     fileLen = ftell(fp);
     if (fileLen < 0) {
-        errMsg.Format("Unable to determine length of '%s': %s", pathName,
+        errMsg.Format(L"Unable to determine length of '%ls': %hs", pathName,
             strerror(errno));
         goto bail;
     }
@@ -1831,13 +1839,13 @@ DiskArchive::LoadFile(const char* pathName, unsigned char** pBuf, long* pLen,
         *pLen = 0;
         goto bail;
     } else if (fileLen > 0x00ffffff) {
-        errMsg = "Cannot add files larger than 16MB to a disk image.";
+        errMsg = L"Cannot add files larger than 16MB to a disk image.";
         goto bail;
     }
 
-    *pBuf = new unsigned char[fileLen];
+    *pBuf = new BYTE[fileLen];
     if (*pBuf == nil) {
-        errMsg.Format("Unable to allocate %ld bytes for '%s'.",
+        errMsg.Format(L"Unable to allocate %ld bytes for '%ls'.",
             fileLen, pathName);
         goto bail;
     }
@@ -1860,7 +1868,7 @@ DiskArchive::LoadFile(const char* pathName, unsigned char** pBuf, long* pLen,
             chunkLen = fileLen;
 
         if (fread(*pBuf, chunkLen, 1, fp) != 1) {
-            errMsg.Format("Unable to read initial chunk of '%s': %s.",
+            errMsg.Format(L"Unable to read initial chunk of '%ls': %hs.",
                 pathName, strerror(errno));
             delete[] *pBuf;
             *pBuf = nil;
@@ -1890,9 +1898,9 @@ DiskArchive::LoadFile(const char* pathName, unsigned char** pBuf, long* pLen,
      */
     if (conv == GenericEntry::kConvertEOLOff) {
         /* fast path */
-        WMSG1("  +++ NOT converting text '%s'\n", pathName);
+        WMSG1("  +++ NOT converting text '%ls'\n", pathName);
         if (fread(*pBuf, fileLen, 1, fp) != 1) {
-            errMsg.Format("Unable to read '%s': %s.", pathName, strerror(errno));
+            errMsg.Format(L"Unable to read '%ls': %hs.", pathName, strerror(errno));
             delete[] *pBuf;
             *pBuf = nil;
             goto bail;
@@ -1918,7 +1926,7 @@ DiskArchive::LoadFile(const char* pathName, unsigned char** pBuf, long* pLen,
         else
             mask = 0x00;
 
-        WMSG2("  +++ Converting text '%s', mask=0x%02x\n", pathName, mask);
+        WMSG2("  +++ Converting text '%ls', mask=0x%02x\n", pathName, mask);
 
         while (count--) {
             ic = getc(fp);
@@ -1963,7 +1971,6 @@ DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
     const unsigned char* rsrcBuf, long rsrcLen) const
 {
     DIError dierr = kDIErrNone;
-    CString replacementFileName;
     const int kFileTypeBIN = 0x06;
     const int kFileTypeINT = 0xfa;
     const int kFileTypeBAS = 0xfc;
@@ -2002,7 +2009,7 @@ DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
             if (strcmp(cp+1, kEmptyFolderMarker) == 0 && dataLen == 0) {
                 /* drop the junk on the end */
                 parmCopy.storageType = kNuStorageDirectory;
-                replacementFileName = parmCopy.pathName;
+                CStringA replacementFileName(parmCopy.pathName);;
                 replacementFileName =
                     replacementFileName.Left(cp - parmCopy.pathName -1);
                 parmCopy.pathName = replacementFileName;
@@ -2041,7 +2048,7 @@ DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
 
             if (dataLen < 0) {
                 /* this was a resource-fork-only file */
-                WMSG1("--- nothing left to write for '%s'\n",
+                WMSG1("--- nothing left to write for '%hs'\n",
                     parmCopy.pathName);
                 goto bail;
             }
@@ -2075,7 +2082,7 @@ DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
      */
     dierr = pDiskFS->CreateFile(&parmCopy, &pNewFile);
     if (dierr != kDIErrNone) {
-        WMSG1("  CreateFile failed: %s\n", DiskImgLib::DIStrError(dierr));
+        WMSG1("  CreateFile failed: %hs\n", DiskImgLib::DIStrError(dierr));
         goto bail;
     }
 
@@ -2143,7 +2150,7 @@ bail:
          * erase any subdirectories that were created to contain this file.
          * Not worth worrying about.
          */
-        WMSG1(" Deleting newly-created file '%s'\n", parmCopy.pathName);
+        WMSG1(" Deleting newly-created file '%hs'\n", parmCopy.pathName);
         (void) pDiskFS->DeleteFile(pNewFile);
     }
     return dierr;
@@ -2159,7 +2166,8 @@ void
 DiskArchive::ConvertFDToCP(const FileDetails* pDetails,
     DiskFS::CreateParms* pCreateParms)
 {
-    pCreateParms->pathName = pDetails->storageName;
+    // TODO(xyzzy): need to store 8-bit form
+    pCreateParms->pathName = "XYZZY-DiskArchive"; // pDetails->storageName;
     pCreateParms->fssep = (char) pDetails->fileSysInfo;
     pCreateParms->storageType = pDetails->storageType;
     pCreateParms->fileType = pDetails->fileType;
@@ -2173,7 +2181,7 @@ DiskArchive::ConvertFDToCP(const FileDetails* pDetails,
 /*
  * Add an entry to the end of the FileAddData list.
  *
- * If "storeName" (the Windows filename with type goodies stripped, but
+ * If "storageName" (the Windows filename with type goodies stripped, but
  * without filesystem normalization) matches an entry already in the list,
  * we check to see if these are forks of the same file.  If they are
  * different forks and we don't already have both forks, we put the
@@ -2199,7 +2207,7 @@ DiskArchive::AddToAddDataList(FileAddData* pData)
     dataKind = pData->GetDetails()->entryKind;
     while (pSearch != nil) {
         if (pSearch->GetOtherFork() == nil &&
-            strcmp(pSearch->GetDetails()->storageName,
+            wcscmp(pSearch->GetDetails()->storageName,
                    pData->GetDetails()->storageName) == 0)
         {
             //NuThreadID dataID = pData->GetDetails()->threadID;
@@ -2213,7 +2221,7 @@ DiskArchive::AddToAddDataList(FileAddData* pData)
                 (listKind == FileDetails::kFileKindDataFork || listKind == FileDetails::kFileKindRsrcFork))
             {
                 /* looks good, hook it in here instead of the list */
-                WMSG2("--- connecting forks of '%s' and '%s'\n",
+                WMSG2("--- connecting forks of '%ls' and '%ls'\n",
                     pData->GetDetails()->origName,
                     pSearch->GetDetails()->origName);
                 pSearch->SetOtherFork(pData);
@@ -2265,9 +2273,9 @@ DiskArchive::FreeAddDataList(void)
  */
 bool
 DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
-        const char* newName)
+    const WCHAR* newName)
 {
-    ASSERT(newName != nil && strlen(newName) > 0);
+    ASSERT(newName != nil && wcslen(newName) > 0);
     DiskEntry* pEntry = (DiskEntry*) pParentEntry;
     ASSERT(pEntry != nil);
     A2File* pFile = pEntry->GetA2File();
@@ -2283,7 +2291,7 @@ DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
     DIError dierr;
     A2File* pNewFile = nil;
     DiskFS::CreateParms parms;
-    CString pathName;
+    CStringA pathName;
     time_t now = time(nil);
 
     /*
@@ -2296,7 +2304,7 @@ DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
         pathName += pParentEntry->GetFssep();
         pathName += newName;
     }
-    ASSERT(strchr(newName, pParentEntry->GetFssep()) == nil);
+    ASSERT(wcschr(newName, pParentEntry->GetFssep()) == nil);
 
     /* using NufxLib constants; they match with ProDOS */
     memset(&parms, 0, sizeof(parms));
@@ -2312,7 +2320,7 @@ DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
     dierr = pDiskFS->CreateFile(&parms, &pNewFile);
     if (dierr != kDIErrNone) {
         CString errMsg;
-        errMsg.Format("Unable to create subdirectory: %s.\n",
+        errMsg.Format(L"Unable to create subdirectory: %hs.\n",
             DiskImgLib::DIStrError(dierr));
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         return false;
@@ -2340,7 +2348,7 @@ DiskArchive::CompareDisplayNamesDesc(const void* ventry1, const void* ventry2)
     const DiskEntry* pEntry1 = *((const DiskEntry**) ventry1);
     const DiskEntry* pEntry2 = *((const DiskEntry**) ventry2);
 
-    return strcasecmp(pEntry2->GetDisplayName(), pEntry1->GetDisplayName());
+    return wcsicmp(pEntry2->GetDisplayName(), pEntry1->GetDisplayName());
 }
 
 /*
@@ -2383,8 +2391,8 @@ DiskArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         ASSERT(pEntry != nil);
 
         entryArray[idx++] = pEntry;
-        WMSG2("Added 0x%08lx '%s'\n", (long) entryArray[idx-1],
-            entryArray[idx-1]->GetDisplayName());
+        WMSG2("Added 0x%08lx '%ls'\n", (long) entryArray[idx-1],
+            (LPCWSTR) entryArray[idx-1]->GetDisplayName());
 
         pSelEntry = pSelSet->IterNext();
     }
@@ -2411,14 +2419,15 @@ DiskArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
          * support write access to the filesystem).
          */
         if (!pFile->GetDiskFS()->GetReadWriteSupported()) {
-            errMsg.Format("Unable to delete '%s' on '%s': operation not supported.",
-                pEntry->GetDisplayName(), pFile->GetDiskFS()->GetVolumeName());
+            errMsg.Format(L"Unable to delete '%ls' on '%hs': operation not supported.",
+                (LPCWSTR) pEntry->GetDisplayName(),
+                (LPCSTR) pFile->GetDiskFS()->GetVolumeName());
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
 
-        WMSG2("  Deleting '%s' from '%s'\n", pEntry->GetPathName(),
-            pFile->GetDiskFS()->GetVolumeName());
+        WMSG2("  Deleting '%ls' from '%hs'\n", (LPCWSTR) pEntry->GetPathName(),
+            (LPCSTR) pFile->GetDiskFS()->GetVolumeName());
         SET_PROGRESS_UPDATE2(0, pEntry->GetPathName(), nil);
 
         /*
@@ -2427,8 +2436,9 @@ DiskArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
          */
         dierr = pFile->GetDiskFS()->DeleteFile(pFile);
         if (dierr != kDIErrNone) {
-            errMsg.Format("Unable to delete '%s' on '%s': %s.",
-                pEntry->GetDisplayName(), pFile->GetDiskFS()->GetVolumeName(),
+            errMsg.Format(L"Unable to delete '%ls' on '%hs': %hs.",
+                (LPCWSTR) pEntry->GetDisplayName(),
+                (LPCSTR) pFile->GetDiskFS()->GetVolumeName(),
                 DiskImgLib::DIStrError(dierr));
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
@@ -2497,7 +2507,7 @@ DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         RenameEntryDialog renameDlg(pMsgWnd);
         DiskEntry* pEntry = (DiskEntry*) pSelEntry->GetEntry();
 
-        WMSG1("  Renaming '%s'\n", pEntry->GetPathName());
+        WMSG1("  Renaming '%ls'\n", pEntry->GetPathName());
         if (!SetRenameFields(pMsgWnd, pEntry, &renameDlg))
             break;
 
@@ -2513,22 +2523,23 @@ DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 
             pFile = pEntry->GetA2File();
             pDiskFS = pFile->GetDiskFS();
-            dierr = pDiskFS->RenameFile(pFile, renameDlg.fNewName);
+            CStringA newNameA(renameDlg.fNewName);
+            dierr = pDiskFS->RenameFile(pFile, newNameA);
             if (dierr != kDIErrNone) {
-                errMsg.Format("Unable to rename '%s' to '%s': %s.",
+                errMsg.Format(L"Unable to rename '%ls' to '%ls': %hs.",
                     pEntry->GetPathName(), renameDlg.fNewName,
                     DiskImgLib::DIStrError(dierr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 goto bail;
             }
-            WMSG2("Rename of '%s' to '%s' succeeded\n",
+            WMSG2("Rename of '%ls' to '%ls' succeeded\n",
                 pEntry->GetDisplayName(), renameDlg.fNewName);
         } else if (result == IDCANCEL) {
             WMSG0("Canceling out of remaining renames\n");
             break;
         } else {
             /* 3rd possibility is IDIGNORE, i.e. skip this entry */
-            WMSG1("Skipping rename of '%s'\n", pEntry->GetDisplayName());
+            WMSG1("Skipping rename of '%ls'\n", pEntry->GetDisplayName());
         }
 
         pSelEntry = pSelSet->IterNext();
@@ -2572,14 +2583,14 @@ DiskArchive::SetRenameFields(CWnd* pMsgWnd, DiskEntry* pEntry,
      */
     if (!pDiskFS->GetReadWriteSupported()) {
         CString errMsg;
-        errMsg.Format("Unable to rename '%s': operation not supported.",
+        errMsg.Format(L"Unable to rename '%ls': operation not supported.",
             pEntry->GetPathName());
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         return false;
     }
     if (pDiskFS->GetFSDamaged()) {
         CString errMsg;
-        errMsg.Format("Unable to rename '%s': the disk it's on appears to be damaged.",
+        errMsg.Format(L"Unable to rename '%ls': the disk it's on appears to be damaged.",
             pEntry->GetPathName());
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         return false;
@@ -2608,7 +2619,7 @@ DiskArchive::TestPathName(const GenericEntry* pGenericEntry,
 {
     const DiskEntry* pEntry = (DiskEntry*) pGenericEntry;
     DiskImg::FSFormat format;
-    CString pathName, errMsg;
+    CStringA pathName, errMsg, newNameA;
     DiskFS* pDiskFS;
 
     if (basePath.IsEmpty()) {
@@ -2624,32 +2635,34 @@ DiskArchive::TestPathName(const GenericEntry* pGenericEntry,
 
     /* look for an existing file, but don't compare against self */
     A2File* existingFile;
-    existingFile = pDiskFS->GetFileByName(pathName);
+    CStringA pathNameA(pathName);
+    existingFile = pDiskFS->GetFileByName(pathNameA);
     if (existingFile != nil && existingFile != pEntry->GetA2File()) {
         errMsg = "A file with that name already exists.";
         goto bail;
     }
 
+    newNameA = newName;
     switch (format) {
     case DiskImg::kFormatProDOS:
-        if (!DiskFSProDOS::IsValidFileName(newName))
+        if (!DiskFSProDOS::IsValidFileName(newNameA))
             errMsg.LoadString(IDS_VALID_FILENAME_PRODOS);
         break;
     case DiskImg::kFormatDOS33:
     case DiskImg::kFormatDOS32:
-        if (!DiskFSDOS33::IsValidFileName(newName))
+        if (!DiskFSDOS33::IsValidFileName(newNameA))
             errMsg.LoadString(IDS_VALID_FILENAME_DOS);
         break;
     case DiskImg::kFormatPascal:
-        if (!DiskFSPascal::IsValidFileName(newName))
+        if (!DiskFSPascal::IsValidFileName(newNameA))
             errMsg.LoadString(IDS_VALID_FILENAME_PASCAL);
         break;
     case DiskImg::kFormatMacHFS:
-        if (!DiskFSHFS::IsValidFileName(newName))
+        if (!DiskFSHFS::IsValidFileName(newNameA))
             errMsg.LoadString(IDS_VALID_FILENAME_HFS);
         break;
     default:
-        errMsg = "Not supported by TestPathName!";
+        errMsg = L"Not supported by TestPathName!";
     }
 
 bail:
@@ -2670,15 +2683,16 @@ bail:
  */
 bool
 DiskArchive::RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
-    const char* newName)
+    const WCHAR* newName)
 {
     DIError dierr;
     CString errMsg;
     bool retVal = true;
 
-    dierr = pDiskFS->RenameVolume(newName);
+    CStringA newNameA(newName);
+    dierr = pDiskFS->RenameVolume(newNameA);
     if (dierr != kDIErrNone) {
-        errMsg.Format("Unable to rename volume: %s.\n",
+        errMsg.Format(L"Unable to rename volume: %hs.\n",
             DiskImgLib::DIStrError(dierr));
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         retVal = false;
@@ -2697,7 +2711,7 @@ DiskArchive::RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
  */
 CString
 DiskArchive::TestVolumeName(const DiskFS* pDiskFS,
-    const char* newName) const
+    const WCHAR* newName) const
 {
     DiskImg::FSFormat format;
     CString errMsg;
@@ -2707,26 +2721,27 @@ DiskArchive::TestVolumeName(const DiskFS* pDiskFS,
 
     format = pDiskFS->GetDiskImg()->GetFSFormat();
 
+    CStringA newNameA(newName);
     switch (format) {
     case DiskImg::kFormatProDOS:
-        if (!DiskFSProDOS::IsValidVolumeName(newName))
+        if (!DiskFSProDOS::IsValidVolumeName(newNameA))
             errMsg.LoadString(IDS_VALID_VOLNAME_PRODOS);
         break;
     case DiskImg::kFormatDOS33:
     case DiskImg::kFormatDOS32:
-        if (!DiskFSDOS33::IsValidVolumeName(newName))
+        if (!DiskFSDOS33::IsValidVolumeName(newNameA))
             errMsg.LoadString(IDS_VALID_VOLNAME_DOS);
         break;
     case DiskImg::kFormatPascal:
-        if (!DiskFSPascal::IsValidVolumeName(newName))
+        if (!DiskFSPascal::IsValidVolumeName(newNameA))
             errMsg.LoadString(IDS_VALID_VOLNAME_PASCAL);
         break;
     case DiskImg::kFormatMacHFS:
-        if (!DiskFSHFS::IsValidVolumeName(newName))
+        if (!DiskFSHFS::IsValidVolumeName(newNameA))
             errMsg.LoadString(IDS_VALID_VOLNAME_HFS);
         break;
     default:
-        errMsg = "Not supported by TestVolumeName!";
+        errMsg = L"Not supported by TestVolumeName!";
     }
 
     return errMsg;
@@ -2759,7 +2774,7 @@ DiskArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
                 pProps->auxType, pProps->access);
     if (dierr != kDIErrNone) {
         CString errMsg;
-        errMsg.Format("Unable to set file info: %s.\n",
+        errMsg.Format(L"Unable to set file info: %hs.\n",
             DiskImgLib::DIStrError(dierr));
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         return false;
@@ -2828,7 +2843,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         ASSERT(rsrcBuf == nil);
 
         if (pEntry->GetDamaged()) {
-            WMSG1("  XFER skipping damaged entry '%s'\n",
+            WMSG1("  XFER skipping damaged entry '%ls'\n",
                 pEntry->GetDisplayName());
             continue;
         }
@@ -2852,8 +2867,8 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
 
         if (pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir) {
             /* this is the volume dir */
-            WMSG1("  XFER not transferring volume dir '%s'\n",
-                fixedPathName);
+            WMSG1("  XFER not transferring volume dir '%ls'\n",
+                (LPCWSTR) fixedPathName);
             continue;
         } else if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory) {
             if (pXferOpts->fPreserveEmptyFolders) {
@@ -2862,7 +2877,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                 cmpStr += (char)PathProposal::kDefaultStoredFssep;
 
                 if (pSelSet->CountMatchingPrefix(cmpStr) == 0) {
-                    WMSG1("FOUND empty dir '%s'\n", fixedPathName);
+                    WMSG1("FOUND empty dir '%ls'\n", (LPCWSTR) fixedPathName);
                     cmpStr += kEmptyFolderMarker;
                     dataBuf = new unsigned char[1];
                     dataLen = 0;
@@ -2873,17 +2888,17 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                         pEntry->GetAccess() | GenericEntry::kAccessInvisible;
                     goto have_stuff2;
                 } else {
-                    WMSG1("NOT empty dir '%s'\n", fixedPathName);
+                    WMSG1("NOT empty dir '%ls'\n", (LPCWSTR) fixedPathName);
                 }
             }
 
-            WMSG1("  XFER not transferring directory '%s'\n",
-                fixedPathName);
+            WMSG1("  XFER not transferring directory '%ls'\n",
+                (LPCWSTR) fixedPathName);
             continue;
         }
 
-        WMSG3("  Xfer '%s' (data=%d rsrc=%d)\n",
-            fixedPathName, pEntry->GetHasDataFork(),
+        WMSG3("  Xfer '%ls' (data=%d rsrc=%d)\n",
+            (LPCWSTR) fixedPathName, pEntry->GetHasDataFork(),
             pEntry->GetHasRsrcFork());
 
         dataBuf = nil;
@@ -2894,7 +2909,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             WMSG0("Cancelled during data extract!\n");
             goto bail;  /* abort anything that was pending */
         } else if (result != IDOK) {
-            errMsg.Format("Failed while extracting '%s': %s.",
+            errMsg.Format(L"Failed while extracting '%ls': %ls.",
                 fixedPathName, extractErrMsg);
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
@@ -2911,7 +2926,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             long len;
             unsigned char* ucp;
 
-            WMSG1("  Converting DOS text in '%s'\n", fixedPathName);
+            WMSG1("  Converting DOS text in '%ls'\n", fixedPathName);
             for (ucp = dataBuf, len = dataLen; len > 0; len--, ucp++)
                 *ucp = *ucp & 0x7f;
         }
@@ -2922,7 +2937,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             pEntry->GetFSFormat() == DiskImg::kFormatPascal &&
             pEntry->GetFileType() == kFileTypePTX)
         {
-            WMSG1("WOULD CONVERT ptx '%s'\n", fixedPathName);
+            WMSG1("WOULD CONVERT ptx '%ls'\n", fixedPathName);
         }
 #endif
 
@@ -2935,7 +2950,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                 WMSG0("Cancelled during rsrc extract!\n");
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
-                errMsg.Format("Failed while extracting '%s': %s.",
+                errMsg.Format(L"Failed while extracting '%ls': %ls.",
                     fixedPathName, extractErrMsg);
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 goto bail;
@@ -2985,8 +3000,8 @@ have_stuff2:
             &rsrcBuf, rsrcLen);
         if (!errMsg.IsEmpty()) {
             WMSG0("XferFile failed!\n");
-            errMsg.Format("Failed while transferring '%s': %s.",
-                pEntry->GetDisplayName(), (const char*) errMsg);
+            errMsg.Format(L"Failed while transferring '%ls': %ls.",
+                (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) errMsg);
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
@@ -3047,8 +3062,8 @@ DiskArchive::XferPrepare(const XferFileOptions* pXferOpts)
  * version just tucks the pointers into NufxLib structures.)
  */
 CString
-DiskArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
-    long dataLen, unsigned char** pRsrcBuf, long rsrcLen)
+DiskArchive::XferFile(FileDetails* pDetails, BYTE** pDataBuf,
+    long dataLen, BYTE** pRsrcBuf, long rsrcLen)
 {
     //const int kFileTypeTXT = 0x04;
     DiskFS::CreateParms createParms;
@@ -3056,7 +3071,7 @@ DiskArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
     CString errMsg;
     DIError dierr = kDIErrNone;
 
-    WMSG3(" XFER: transfer '%s' (dataLen=%ld rsrcLen=%ld)\n",
+    WMSG3(" XFER: transfer '%ls' (dataLen=%ld rsrcLen=%ld)\n",
         pDetails->storageName, dataLen, rsrcLen);
 
     ASSERT(pDataBuf != nil);
@@ -3089,12 +3104,12 @@ DiskArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
         long len = dataLen;
 
         if (srcIsDOS && !dstIsDOS) {
-            WMSG1(" Stripping high ASCII from '%s'\n", pDetails->storageName);
+            WMSG1(" Stripping high ASCII from '%ls'\n", pDetails->storageName);
 
             while (len--)
                 *ucp++ &= 0x7f;
         } else if (!srcIsDOS && dstIsDOS) {
-            WMSG1(" Adding high ASCII to '%s'\n", pDetails->storageName);
+            WMSG1(" Adding high ASCII to '%ls'\n", pDetails->storageName);
 
             while (len--) {
                 if (*ucp != '\0')
@@ -3102,10 +3117,10 @@ DiskArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
                 ucp++;
             }
         } else if (srcIsDOS && dstIsDOS) {
-            WMSG1(" --- not altering DOS-to-DOS text '%s'\n",
+            WMSG1(" --- not altering DOS-to-DOS text '%ls'\n",
                 pDetails->storageName);
         } else {
-            WMSG1(" --- non-DOS transfer '%s'\n", pDetails->storageName);
+            WMSG1(" --- non-DOS transfer '%ls'\n", pDetails->storageName);
         }
     }
 
@@ -3120,7 +3135,7 @@ DiskArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
     dierr = AddForksToDisk(pDiskFS, &createParms, *pDataBuf, dataLen,
                 *pRsrcBuf, rsrcLen);
     if (dierr != kDIErrNone) {
-        errMsg.Format("%s", DiskImgLib::DIStrError(dierr));
+        errMsg.Format(L"%hs", DiskImgLib::DIStrError(dierr));
         goto bail;
     }
 

@@ -6,8 +6,8 @@
 /*
  * Convert Print Shop graphics.
  */
-#ifndef __LR_PRINTSHOP__
-#define __LR_PRINTSHOP__
+#ifndef REFORMAT_PRINTSHOP_H
+#define REFORMAT_PRINTSHOP_H
 
 #include "ReformatBase.h"
 
@@ -32,4 +32,4 @@ private:
     MyDIBitmap* ConvertColor(const unsigned char* srcBuf);
 };
 
-#endif /*__LR_PRINTSHOP__*/
+#endif /*REFORMAT_PRINTSHOP_H*/

@@ -37,7 +37,8 @@ SubVolumeDialog::OnInitDialog(void)
     DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(nil);
     ASSERT(pSubVol != nil);     // shouldn't be here otherwise
     while (pSubVol != nil) {
-        pListBox->AddString(pSubVol->GetDiskFS()->GetVolumeID());
+        CString volumeIdW(pSubVol->GetDiskFS()->GetVolumeID());
+        pListBox->AddString(volumeIdW); // makes a copy of the string
 
         pSubVol = fpDiskFS->GetNextSubVolume(pSubVol);
     }

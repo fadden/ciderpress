@@ -14,9 +14,9 @@
 #include "ProgressDlg.h"
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
-#include "../prebuilt/zlib.h"
+#include "../zlib/zlib.h"
 
-const char* kWebSiteURL = "http://www.faddensoft.com/";
+const WCHAR* kWebSiteURL = L"http://www.faddensoft.com/";
 
 
 BEGIN_MESSAGE_MAP(MainWindow, CFrameWnd)
@@ -33,7 +33,7 @@ END_MESSAGE_MAP()
  */
 MainWindow::MainWindow()
 {
-    static const char* kAppName = "MDC";
+    static const WCHAR* kAppName = L"MDC";
 
     CString wndClass = AfxRegisterWndClass(
         CS_DBLCLKS /*| CS_HREDRAW | CS_VREDRAW*/,
@@ -92,11 +92,11 @@ MainWindow::OnHelpWebSite(void)
 {
     int err;
 
-    err = (int) ::ShellExecute(m_hWnd, _T("open"), kWebSiteURL, NULL, NULL,
+    err = (int) ::ShellExecute(m_hWnd, L"open", kWebSiteURL, NULL, NULL,
                     SW_SHOWNORMAL);
     if (err <= 32) {
         CString msg;
-        msg.Format("Unable to launch web browser (err=%d).", err);
+        msg.Format(L"Unable to launch web browser (err=%d).", err);
         ShowFailureMsg(this, msg, IDS_FAILED);
     }
 }
@@ -178,9 +178,9 @@ MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
 
 #if defined(_DEBUG_LOG)
     //fprintf(gLog, "%s(%d) : %s", file, line, msg);
-    fprintf(gLog, "%05u %s", gPid, msg);
+    fprintf(gLog, "%05u %hs", gPid, msg);
 #elif defined(_DEBUG)
-    _CrtDbgReport(_CRT_WARN, file, line, NULL, "%s", msg);
+    _CrtDbgReport(_CRT_WARN, file, line, NULL, "%hs", msg);
 #else
     /* do nothing */
 #endif
@@ -195,17 +195,17 @@ MainWindow::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
 
 #if defined(_DEBUG_LOG)
     if (pErrorMessage->isDebug) {
-        fprintf(gLog, "%05u <nufxlib> [D] %s\n", gPid, pErrorMessage->message);
+        fprintf(gLog, "%05u <nufxlib> [D] %hs\n", gPid, pErrorMessage->message);
     } else {
-        fprintf(gLog, "%05u <nufxlib> %s\n", gPid, pErrorMessage->message);
+        fprintf(gLog, "%05u <nufxlib> %hs\n", gPid, pErrorMessage->message);
     }
 #elif defined(_DEBUG)
     if (pErrorMessage->isDebug) {
         _CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
-            NULL, "<nufxlib> [D] %s\n", pErrorMessage->message);
+            NULL, "<nufxlib> [D] %hs\n", pErrorMessage->message);
     } else {
         _CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
-            NULL, "<nufxlib> %s\n", pErrorMessage->message);
+            NULL, "<nufxlib> %hs\n", pErrorMessage->message);
     }
 #else
     /* do nothing */
@@ -229,7 +229,7 @@ MainWindow::ScanFiles(void)
 {
     ChooseFilesDlg chooseFiles;
     ScanOpts scanOpts;
-    char curDir[MAX_PATH] = "";
+    WCHAR curDir[MAX_PATH] = L"";
     CString errMsg;
     CString outPath;
     bool doResetDir = false;
@@ -238,29 +238,30 @@ MainWindow::ScanFiles(void)
 
     /* choose input files */
     chooseFiles.DoModal();
-    if (chooseFiles.GetExitStatus() != IDOK)
+    if (chooseFiles.GetExitStatus() != IDOK) {
         return;
+    }
 
-    const char* buf = chooseFiles.GetFileNames();
-    WMSG2("Selected path = '%s' (offset=%d)\n", buf,
+    const WCHAR* buf = chooseFiles.GetFileNames();
+    WMSG2("Selected path = '%ls' (offset=%d)\n", buf,
         chooseFiles.GetFileNameOffset());
 
     /* choose output file */
-    CFileDialog dlg(FALSE, _T("txt"), NULL,
+    CFileDialog dlg(FALSE, L"txt", NULL,
         OFN_OVERWRITEPROMPT|OFN_NOREADONLYRETURN,
-        "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||", this);
+        L"Text Files (*.txt)|*.txt|All Files (*.*)|*.*||", this);
 
-    dlg.m_ofn.lpstrTitle = "Save Output As...";
-    strcpy(dlg.m_ofn.lpstrFile, "mdc-out.txt");
+    dlg.m_ofn.lpstrTitle = L"Save Output As...";
+    wcscpy(dlg.m_ofn.lpstrFile, L"mdc-out.txt");
 
     if (dlg.DoModal() != IDOK) {
         goto bail;
     }
 
     outPath = dlg.GetPathName();
-    WMSG1("NEW FILE '%s'\n", (LPCTSTR) outPath);
+    WMSG1("NEW FILE '%ls'\n", (LPCWSTR) outPath);
 
-    scanOpts.outfp = fopen(outPath, "w");
+    scanOpts.outfp = _wfopen(outPath, L"w");
     if (scanOpts.outfp == nil) {
         ShowFailureMsg(this, "Unable to open output file", IDS_FAILED);
         goto bail;
@@ -277,18 +278,18 @@ MainWindow::ScanFiles(void)
         "MDC is part of CiderPress, available from http://www.faddensoft.com/.\n");
     NuGetVersion(&major, &minor, &bug, NULL, NULL);
     fprintf(scanOpts.outfp,
-        "Linked against NufxLib v%ld.%ld.%ld and zlib v%s\n",
+        "Linked against NufxLib v%ld.%ld.%ld and zlib v%hs\n",
         major, minor, bug, zlibVersion());
     fprintf(scanOpts.outfp, "\n");
 
     /* change to base directory */
-    if (GetCurrentDirectory(sizeof(curDir), curDir) == 0) {
-        errMsg = "Unable to get current directory.";
+    if (GetCurrentDirectory(NELEM(curDir), curDir) == 0) {
+        errMsg = L"Unable to get current directory.";
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
     if (SetCurrentDirectory(buf) == false) {
-        errMsg.Format("Unable to set current directory to '%s'.", buf);
+        errMsg.Format(L"Unable to set current directory to '%ls'.", buf);
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
@@ -297,7 +298,7 @@ MainWindow::ScanFiles(void)
     time_t now;
     now = time(nil);
     fprintf(scanOpts.outfp,
-        "Run started at %.24s in '%s'\n\n", ctime(&now), buf);
+        "Run started at %.24hs in '%ls'\n\n", ctime(&now), buf);
 
     /* obstruct input to the main window */
     EnableWindow(FALSE);
@@ -323,34 +324,34 @@ MainWindow::ScanFiles(void)
     buf += chooseFiles.GetFileNameOffset();
     while (*buf != '\0') {
         if (Process(buf, &scanOpts, &errMsg) != 0) {
-            WMSG2("Skipping '%s': %s.\n", buf, (LPCTSTR) errMsg);
+            WMSG2("Skipping '%ls': %ls.\n", buf, (LPCWSTR) errMsg);
         }
 
         if (fCancelFlag) {
             WMSG0("CANCELLED by user\n");
-            MessageBox("Cancelled!", "MDC", MB_OK);
+            MessageBox(L"Cancelled!", L"MDC", MB_OK);
             goto bail;
         }
 
-        buf += strlen(buf)+1;
+        buf += wcslen(buf)+1;
     }
     end = time(nil);
     fprintf(scanOpts.outfp, "\nScan completed in %ld seconds.\n",
         end - start);
 
     {
-        SetWindowText(_T("MDC Done!"));
+        SetWindowText(L"MDC Done!");
 
         CString doneMsg;
         CString appName;
 
         appName.LoadString(IDS_APP_TITLE);
 #ifdef _DEBUG_LOG
-        doneMsg.Format("Processing completed.\r\n\r\n"
-                       "Output is in '%s', log messages in '%s'.",
-            outPath, kDebugLog);
+        doneMsg.Format(L"Processing completed.\r\n\r\n"
+                       "Output is in '%ls', log messages in '%ls'.",
+            (LPCWSTR) outPath, kDebugLog);
 #else
-        doneMsg.Format("Processing completed.");
+        doneMsg.Format(L"Processing completed.");
 #endif
         scanOpts.pProgress->MessageBox(doneMsg, appName, MB_OK|MB_ICONINFORMATION);
     }
@@ -360,7 +361,7 @@ bail:
         fclose(scanOpts.outfp);
 
     if (doResetDir && SetCurrentDirectory(curDir) == false) {
-        errMsg.Format("Unable to reset current directory to '%s'.\n", curDir);
+        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", curDir);
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         // bummer
     }
@@ -371,20 +372,20 @@ bail:
     if (scanOpts.pProgress != nil)
         scanOpts.pProgress->DestroyWindow();
 
-    SetWindowText(_T("MDC"));
+    SetWindowText(L"MDC");
 }
 
 /*
- * Directory structure and functions, based on zDIR in Info-Zip sources.
+ * Directory structure and functions, modified from zDIR in Info-Zip sources.
  */
 typedef struct Win32dirent {
-    char    d_attr;
-    char    d_name[MAX_PATH];
+    DWORD   d_attr;
+    WCHAR   d_name[MAX_PATH];
     int     d_first;
     HANDLE  d_hFindFile;
 } Win32dirent;
 
-static const char* kWildMatchAll = "*.*";
+static const WCHAR kWildMatchAll[] = L"*.*";
 
 /*
  * Prepare a directory for reading.
@@ -392,37 +393,38 @@ static const char* kWildMatchAll = "*.*";
  * Allocates a Win32dirent struct that must be freed by the caller.
  */
 Win32dirent*
-MainWindow::OpenDir(const char* name)
+MainWindow::OpenDir(const WCHAR* name)
 {
     Win32dirent* dir = nil;
-    char* tmpStr = nil;
-    char* cp;
+    WCHAR* tmpStr = nil;
+    WCHAR* cp;
     WIN32_FIND_DATA fnd;
 
     dir = (Win32dirent*) malloc(sizeof(*dir));
-    tmpStr = (char*) malloc(strlen(name) + (2 + sizeof(kWildMatchAll)));
+    tmpStr = (WCHAR*) malloc((wcslen(name) + wcslen(kWildMatchAll) + 2)
+        * sizeof(WCHAR));
     if (dir == nil || tmpStr == nil)
         goto failed;
 
-    strcpy(tmpStr, name);
-    cp = tmpStr + strlen(tmpStr);
+    wcscpy(tmpStr, name);
+    cp = tmpStr + wcslen(tmpStr);
 
     /* don't end in a colon (e.g. "C:") */
-    if ((cp - tmpStr) > 0 && strrchr(tmpStr, ':') == (cp - 1))
+    if ((cp - tmpStr) > 0 && wcsrchr(tmpStr, ':') == (cp - 1))
         *cp++ = '.';
     /* must end in a slash */
     if ((cp - tmpStr) > 0 &&
-            strrchr(tmpStr, kLocalFssep) != (cp - 1))
+            wcsrchr(tmpStr, kLocalFssep) != (cp - 1))
         *cp++ = kLocalFssep;
 
-    strcpy(cp, kWildMatchAll);
+    wcscpy(cp, kWildMatchAll);
 
     dir->d_hFindFile = FindFirstFile(tmpStr, &fnd);
     if (dir->d_hFindFile == INVALID_HANDLE_VALUE)
         goto failed;
 
-    strcpy(dir->d_name, fnd.cFileName);
-    dir->d_attr = (unsigned char) fnd.dwFileAttributes;
+    wcscpy(dir->d_name, fnd.cFileName);
+    dir->d_attr = fnd.dwFileAttributes;
     dir->d_first = 1;
 
 bail:
@@ -450,7 +452,7 @@ MainWindow::ReadDir(Win32dirent* dir)
 
         if (!FindNextFile(dir->d_hFindFile, &fnd))
             return nil;
-        strcpy(dir->d_name, fnd.cFileName);
+        wcscpy(dir->d_name, fnd.cFileName);
         dir->d_attr = (unsigned char) fnd.dwFileAttributes;
     }
 
@@ -470,10 +472,6 @@ MainWindow::CloseDir(Win32dirent* dir)
     free(dir);
 }
 
-/* might as well blend in with the UNIX version */
-#define DIR_NAME_LEN(dirent)    ((int)strlen((dirent)->d_name))
-
-
 /*
  * Process a file or directory.  These are expected to be names of files in
  * the current directory.
@@ -481,11 +479,11 @@ MainWindow::CloseDir(Win32dirent* dir)
  * Returns 0 on success, nonzero on error with a message in "*pErrMsg".
  */
 int
-MainWindow::Process(const char* pathname, ScanOpts* pScanOpts,
+MainWindow::Process(const WCHAR* pathname, ScanOpts* pScanOpts,
     CString* pErrMsg)
 {
     bool exists, isDir, isReadable;
-    struct stat sb;
+    struct _stat sb;
     int result = -1;
 
     if (fCancelFlag)
@@ -497,17 +495,17 @@ MainWindow::Process(const char* pathname, ScanOpts* pScanOpts,
     PathName checkPath(pathname);
     int ierr = checkPath.CheckFileStatus(&sb, &exists, &isReadable, &isDir);
     if (ierr != 0) {
-        pErrMsg->Format("Unexpected error while examining '%s': %s", pathname,
+        pErrMsg->Format(L"Unexpected error while examining '%ls': %hs", pathname,
             strerror(ierr));
         goto bail;
     }
 
     if (!exists) {
-        pErrMsg->Format("Couldn't find '%s'", pathname);
+        pErrMsg->Format(L"Couldn't find '%ls'", pathname);
         goto bail;
     }
     if (!isReadable) {
-        pErrMsg->Format("File '%s' isn't readable", pathname);
+        pErrMsg->Format(L"File '%ls' isn't readable", pathname);
         goto bail;
     }
     if (isDir) {
@@ -521,7 +519,7 @@ MainWindow::Process(const char* pathname, ScanOpts* pScanOpts,
 
 bail:
     if (result != 0 && pErrMsg->IsEmpty()) {
-        pErrMsg->Format("Unable to add file '%s'", pathname);
+        pErrMsg->Format(L"Unable to add file '%ls'", pathname);
     }
     return result;
 }
@@ -532,24 +530,24 @@ bail:
  * add the file.
  */
 int
-MainWindow::ProcessDirectory(const char* dirName, ScanOpts* pScanOpts,
+MainWindow::ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
     CString* pErrMsg)
 {
     Win32dirent* dirp = nil;
     Win32dirent* entry;
-    char nbuf[MAX_PATH];    /* malloc might be better; this soaks stack */
-    char fssep;
+    WCHAR nbuf[MAX_PATH];   /* malloc might be better; this soaks stack */
+    WCHAR fssep;
     int len;
     int result = -1;
 
     ASSERT(dirName != nil);
     ASSERT(pErrMsg != nil);
 
-    WMSG1("+++ DESCEND: '%s'\n", dirName);
+    WMSG1("+++ DESCEND: '%ls'\n", (LPCWSTR) dirName);
 
     dirp = OpenDir(dirName);
     if (dirp == nil) {
-        pErrMsg->Format("Failed on '%s': %s", dirName, strerror(errno));
+        pErrMsg->Format(L"Failed on '%ls': %hs", dirName, strerror(errno));
         goto bail;
     }
 
@@ -558,21 +556,22 @@ MainWindow::ProcessDirectory(const char* dirName, ScanOpts* pScanOpts,
     /* could use readdir_r, but we don't care about reentrancy here */
     while ((entry = ReadDir(dirp)) != nil) {
         /* skip the dotsies */
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+        if (wcscmp(entry->d_name, L".") == 0 || wcscmp(entry->d_name, L"..") == 0)
             continue;
 
-        len = strlen(dirName);
-        if (len + DIR_NAME_LEN(entry) +2 > MAX_PATH) {
-            WMSG4("ERROR: Filename exceeds %d bytes: %s%c%s",
+        len = wcslen(dirName);
+        if (len + wcslen(entry->d_name) + 2 > MAX_PATH) {
+            WMSG4("ERROR: Filename exceeds %d bytes: %ls%c%ls",
                 MAX_PATH, dirName, fssep, entry->d_name);
             goto bail;
         }
 
         /* form the new name, inserting an fssep if needed */
-        strcpy(nbuf, dirName);
-        if (dirName[len-1] != fssep)
+        wcscpy(nbuf, dirName);
+        if (dirName[len - 1] != fssep) {
             nbuf[len++] = fssep;
-        strcpy(nbuf+len, entry->d_name);
+        }
+        wcscpy(nbuf+len, entry->d_name);
 
         result = Process(nbuf, pScanOpts, pErrMsg);
         if (result != 0)
@@ -594,7 +593,7 @@ bail:
  * Returns 0 on success, nonzero on failure.
  */
 int
-MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
+MainWindow::ScanDiskImage(const WCHAR* pathName, ScanOpts* pScanOpts)
 {
     ASSERT(pathName != nil);
     ASSERT(pScanOpts != nil);
@@ -614,11 +613,11 @@ MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
         return -1;
 
     CString title;
-    title = _T("MDC ");
-    title += FilenameOnly(pathName, '\\');
+    title = L"MDC ";
+    title += PathName::FilenameOnly(pathName, '\\');
     SetWindowText(title);
 
-    fprintf(pScanOpts->outfp, "File: %s\n", pathName);
+    fprintf(pScanOpts->outfp, "File: %ls\n", pathName);
     fflush(pScanOpts->outfp);       // in case we crash
 
     if (!ext.IsEmpty()) {
@@ -628,14 +627,14 @@ MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
 
     dierr = diskImg.OpenImage(pathName, '\\', true);
     if (dierr != kDIErrNone) {
-        errMsg.Format("Unable to open '%s': %s", pathName,
+        errMsg.Format(L"Unable to open '%ls': %hs", pathName,
             DiskImgLib::DIStrError(dierr));
         goto bail;
     }
 
     dierr = diskImg.AnalyzeImage();
     if (dierr != kDIErrNone) {
-        errMsg.Format("Analysis of '%s' failed: %s", pathName,
+        errMsg.Format(L"Analysis of '%ls' failed: %hs", pathName,
             DiskImgLib::DIStrError(dierr));
         goto bail;
     }
@@ -643,7 +642,7 @@ MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
     if (diskImg.GetFSFormat() == DiskImg::kFormatUnknown ||
         diskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
-        errMsg.Format("Unable to identify filesystem on '%s'", pathName);
+        errMsg.Format(L"Unable to identify filesystem on '%ls'", pathName);
         goto bail;
     }
 
@@ -652,7 +651,7 @@ MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
     if (pDiskFS == nil) {
         /* unknown FS should've been caught above! */
         ASSERT(false);
-        errMsg.Format("Format of '%s' not recognized.", pathName);
+        errMsg.Format(L"Format of '%ls' not recognized.", pathName);
         goto bail;
     }
 
@@ -661,7 +660,7 @@ MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
     /* object created; prep it */
     dierr = pDiskFS->Initialize(&diskImg, DiskFS::kInitFull);
     if (dierr != kDIErrNone) {
-        errMsg.Format("Error reading list of files from disk: %s",
+        errMsg.Format(L"Error reading list of files from disk: %hs",
             DiskImgLib::DIStrError(dierr));
         goto bail;
     }
@@ -674,7 +673,7 @@ MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
                 pDiskFS->GetDiskImg()->GetNumSectPerTrack()) / 4;
     else
         kbytes = 0;
-    fprintf(pScanOpts->outfp, "Disk: %s%s (%dKB)\n", pDiskFS->GetVolumeID(),
+    fprintf(pScanOpts->outfp, "Disk: %hs%hs (%dKB)\n", pDiskFS->GetVolumeID(),
         pDiskFS->GetFSDamaged() ? " [*]" : "", kbytes);
     fprintf(pScanOpts->outfp,
         " Name                             Type Auxtyp Modified"
@@ -683,7 +682,7 @@ MainWindow::ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
         "------------------------------------------------------"
         "------------------------\n");
     if (LoadDiskFSContents(pDiskFS, "", pScanOpts) != 0) {
-        errMsg.Format("Failed while loading contents of '%s'.", pathName);
+        errMsg.Format(L"Failed while loading contents of '%ls'.", pathName);
         goto bail;
     }
     fprintf(pScanOpts->outfp,
@@ -696,7 +695,7 @@ bail:
     //PeekAndPump();
 
     if (!errMsg.IsEmpty()) {
-        fprintf(pScanOpts->outfp, "Failed: %s\n\n", (LPCTSTR) errMsg);
+        fprintf(pScanOpts->outfp, "Failed: %ls\n\n", (LPCWSTR) errMsg);
         return -1;
     } else {
         return 0;
@@ -830,7 +829,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
     ASSERT(pDiskFS != nil);
     pFile = pDiskFS->GetNextFile(nil);
     for ( ; pFile != nil; pFile = pDiskFS->GetNextFile(pFile)) {
-        CString subVolName, dispName;
+        CStringA subVolName, dispName;
         RecordKind recordKind;
         LONGLONG totalLen, totalCompLen;
         char tmpbuf[16];
@@ -839,13 +838,13 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
 
         if (recordKind == kRecordKindVolumeDir) {
             /* this is a volume directory */
-            WMSG1("Not displaying volume dir '%s'\n", pFile->GetPathName());
+            WMSG1("Not displaying volume dir '%ls'\n", pFile->GetPathName());
             continue;
         }
 
         /* prepend volName for sub-volumes; must be valid Win32 dirname */
         if (volName[0] != '\0')
-            subVolName.Format("_%s", volName);
+            subVolName.Format("_%hs", volName);
 
         const char* ccp = pFile->GetPathName();
         ASSERT(ccp != nil);
@@ -867,6 +866,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         }
 
         /* strip out ctrl chars and high ASCII in HFS names */
+        // TODO: consider having a Unicode output mode
         MacSanitize(dispName.GetBuffer(0));
         dispName.ReleaseBuffer();
 
@@ -884,13 +884,13 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         }
         switch (recordKind) {
         case kRecordKindUnknown:
-            fprintf(pScanOpts->outfp, "%s- $%04lX  ",
+            fprintf(pScanOpts->outfp, "%hs- $%04lX  ",
                 GetFileTypeString(pFile->GetFileType()),
                 pFile->GetAuxType());
             break;
         case kRecordKindDisk:
             sprintf(tmpbuf, "%ldk", totalLen / 1024);
-            fprintf(pScanOpts->outfp, "Disk %-6s ", tmpbuf);
+            fprintf(pScanOpts->outfp, "Disk %-6hs ", tmpbuf);
             break;
         case kRecordKindFile:
         case kRecordKindForkedFile:
@@ -902,7 +902,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
                     pFile->GetAuxType() >= 0 && pFile->GetAuxType() <= 0xffff)
                 {
                     /* ProDOS type embedded in HFS */
-                    fprintf(pScanOpts->outfp, "%s%c $%04lX  ",
+                    fprintf(pScanOpts->outfp, "%hs%c $%04lX  ",
                         GetFileTypeString(pFile->GetFileType()),
                         recordKind == kRecordKindForkedFile ? '+' : ' ',
                         pFile->GetAuxType());
@@ -938,7 +938,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
                     }
                 }
             } else {
-                fprintf(pScanOpts->outfp, "%s%c $%04lX  ",
+                fprintf(pScanOpts->outfp, "%hs%c $%04lX  ",
                     GetFileTypeString(pFile->GetFileType()),
                     recordKind == kRecordKindForkedFile ? '+' : ' ',
                     pFile->GetAuxType());
@@ -999,7 +999,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         else if (pFile->GetQuality() == A2File::kQualitySuspicious)
             fmtStr = "BAD?  ";
 
-        fprintf(pScanOpts->outfp, "%s ", fmtStr);
+        fprintf(pScanOpts->outfp, "%hs ", fmtStr);
 
 
 #if 0

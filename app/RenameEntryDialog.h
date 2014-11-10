@@ -6,8 +6,8 @@
 /*
  * Rename an archive entry.
  */
-#ifndef __RENAMEENTRYDIALOG__
-#define __RENAMEENTRYDIALOG__
+#ifndef APP_RENAMEENTRYDIALOG_H
+#define APP_RENAMEENTRYDIALOG_H
 
 #include "GenericArchive.h"
 #include "resource.h"
@@ -67,4 +67,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__RENAMEENTRYDIALOG__*/
+#endif /*APP_RENAMEENTRYDIALOG_H*/

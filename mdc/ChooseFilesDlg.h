@@ -6,8 +6,8 @@
 /*
  * Choose files and directories.
  */
-#ifndef __CHOOSEFILESDIALOG__
-#define __CHOOSEFILESDIALOG__
+#ifndef MDC_CHOOSEFILESDLG_H
+#define MDC_CHOOSEFILESDLG_H
 
 #include "../util/UtilLib.h"
 #include "resource.h"
@@ -15,9 +15,9 @@
 class ChooseFilesDlg : public SelectFilesDialog {
 public:
     ChooseFilesDlg(CWnd* pParentWnd = NULL) :
-        SelectFilesDialog("IDD_CHOOSE_FILES", pParentWnd)
+        SelectFilesDialog(L"IDD_CHOOSE_FILES", pParentWnd)
     {
-        SetWindowTitle(_T("Choose Files..."));
+        SetWindowTitle(L"Choose Files...");
 
         fAcceptButtonID = IDC_SELECT_ACCEPT;
     }
@@ -36,4 +36,4 @@ private:
     //DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CHOOSEFILESDIALOG__*/
+#endif /*MDC_CHOOSEFILESDLG_H*/

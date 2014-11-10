@@ -6,8 +6,8 @@
 /*
  * AWGS file handling.
  */
-#ifndef __LR_AWGS__
-#define __LR_AWGS__
+#ifndef REFORMAT_AWGS_H
+#define REFORMAT_AWGS_H
 
 #include "ReformatBase.h"
 
@@ -89,4 +89,4 @@ private:
         long* pSrcLen, int blockCount);
 };
 
-#endif /*__LR_AWGS__*/
+#endif /*REFORMAT_AWGS_H*/

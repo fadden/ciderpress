@@ -11,8 +11,8 @@
  * Currently missing: a way to provide progress updates when reformatting
  * a large file.
  */
-#ifndef __LR_REFORMAT__
-#define __LR_REFORMAT__
+#ifndef REFORMAT_REFORMAT_H
+#define REFORMAT_REFORMAT_H
 
 #include "../util/UtilLib.h"
 
@@ -230,7 +230,10 @@ public:
         delete[] fNameExt;
     }
 
-    /* set attributes before calling TestApplicability */
+    /**
+     * Set attributes before calling TestApplicability.  We want the
+     * Apple II filename, so the name extension is passed as a narrow string.
+     */
     void SetSourceAttributes(long fileType, long auxType,
         SourceFormat sourceFormat, const char* nameExt);
     /* run through the list of reformatters, testing each against the data */
@@ -257,12 +260,13 @@ public:
 
     /* use this to force "reformatted" output to show an error instead */
     void SetErrorMsg(ReformatPart part, const char* msg);
+    void SetErrorMsg(ReformatPart part, const CString& str);
 
     /* give a pointer (allocated with new[]) for one of the inputs */
     void SetSourceBuf(ReformatPart part, unsigned char* buf,
         long len);
 
-    static const char* GetReformatName(ReformatID id);
+    static const WCHAR* GetReformatName(ReformatID id);
 
 
     /* make these friends so they can call the "protected" stuff below */
@@ -374,7 +378,7 @@ public:
     ReformatOutput(void) :
         fOutputKind(kOutputUnknown),
         //fOutputID
-        fOutputFormatDescr(_T("(none)")),
+        fOutputFormatDescr(L"(none)"),
         fMultipleFonts(false),
         fTextBuf(nil),
         fTextLen(-1),
@@ -394,7 +398,7 @@ public:
     const char* GetTextBuf(void) const { return fTextBuf; }
     long GetTextLen(void) const { return fTextLen; }
     const MyDIBitmap* GetDIB(void) const { return fpDIB; }
-    const char* GetFormatDescr(void) const { return fOutputFormatDescr; }
+    const WCHAR* GetFormatDescr(void) const { return fOutputFormatDescr; }
     // multiple-font flag currently not used
     bool GetMultipleFontsFlag(void) const { return fMultipleFonts; }
 
@@ -402,12 +406,14 @@ public:
      * Setters, used by reformatters.
      */
     /* set the format description; string must be persistent (static) */
-    void SetFormatDescr(const char* str) { fOutputFormatDescr = str; }
+    void SetFormatDescr(const WCHAR* str) { fOutputFormatDescr = str; }
     /* set the kind of output we're providing */
     void SetOutputKind(OutputKind kind) { fOutputKind = kind; }
     void SetMultipleFontsFlag(bool val) { fMultipleFonts = val; }
 
     /* set the output */
+    // TODO: split into two different functions, one takes const char* and
+    //  doesn't delete, the other char* and does delete
     void SetTextBuf(char* buf, long len, bool doDelete) {
         assert(fTextBuf == nil);
         fTextBuf = buf;
@@ -424,7 +430,7 @@ private:
     /* what we're holding */
     OutputKind      fOutputKind;
     //ReformatID        fOutputID;
-    const char*     fOutputFormatDescr;
+    const WCHAR*    fOutputFormatDescr;
 
     /* output RTF uses multiple fonts, so ignore font change request */
     bool            fMultipleFonts;
@@ -447,7 +453,7 @@ private:
 class NiftyList {
 public:
     // one-time initialization
-    static bool AppInit(const char* fileName);
+    static bool AppInit(const WCHAR* fileName);
     // one-time cleanup
     static bool AppCleanup(void);
 
@@ -521,4 +527,4 @@ private:
     static bool     fDataReady;
 };
 
-#endif /*__LR_REFORMAT__*/
+#endif /*REFORMAT_REFORMAT_H*/

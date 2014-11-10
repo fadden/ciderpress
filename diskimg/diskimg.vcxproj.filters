@@ -15,6 +15,44 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CP_ntddscsi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CP_wnaspi32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DiskImg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DiskImgDetail.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DiskImgPriv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericFD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SCSIDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SPTI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TwoImg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Win32BlockIO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Win32Extra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="ASPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,6 +98,9 @@
     <ClCompile Include="Global.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Gutenberg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="HFS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,9 +137,6 @@
     <ClCompile Include="SPTI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TwoImg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -111,46 +149,8 @@
     <ClCompile Include="Win32BlockIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ASPI.h">
+    <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CP_ntddscsi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CP_wnaspi32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DiskImg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DiskImgDetail.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DiskImgPriv.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GenericFD.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SCSIDefs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SPTI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TwoImg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Win32BlockIO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Win32Extra.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>

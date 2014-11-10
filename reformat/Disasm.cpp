@@ -1221,13 +1221,13 @@ OMFSegmentHeader::Unpack(const unsigned char* srcBuf, long srcLen,
         segLabelLen = *segName++;
         memcpy(fSegName, segName, segLabelLen);
         fSegName[segLabelLen] = '\0';
-        WMSG1(" OMF: Pascal segment label '%s'\n", fSegName);
+        WMSG1(" OMF: Pascal segment label '%hs'\n", fSegName);
     } else {
         /* C-style or non-terminated string */
         segLabelLen = fLabLen;
         memcpy(fSegName, segName, segLabelLen);
         fSegName[segLabelLen] = '\0';
-        WMSG1(" OMF: Std segment label '%s'\n", fSegName);
+        WMSG1(" OMF: Std segment label '%hs'\n", fSegName);
     }
 
     fReady = true;
@@ -1299,7 +1299,7 @@ void
 OMFSegmentHeader::Dump(void) const
 {
     WMSG0("OMF segment header:\n");
-    WMSG3("  segNum=%d loadName='%s' segName='%s'\n",
+    WMSG3("  segNum=%d loadName='%hs' segName='%hs'\n",
         fSegNum, fLoadName, fSegName);
     WMSG4("  blockCnt=%ld byteCnt=%ld resSpc=%ld length=%ld\n",
         fBlockCnt, fByteCnt, fResSpc, fLength);

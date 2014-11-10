@@ -6,8 +6,8 @@
 /*
  * Include this to get headers for all contents of utility library.
  */
-#ifndef __UTIL_LIB__
-#define __UTIL_LIB__
+#ifndef UTIL_LIB_H
+#define UTIL_LIB_H
 
 #include "FaddenStd.h"
 #include "MyDebug.h"
@@ -28,4 +28,4 @@
 #include "CancelDialog.h"
 #include "ProgressCancelDialog.h"
 
-#endif /*__UTIL_LIB__*/
+#endif /*UTIL_LIB_H*/

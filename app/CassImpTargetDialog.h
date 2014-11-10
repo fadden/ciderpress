@@ -7,8 +7,8 @@
  * Choose file name and characteristics for a file imported from an audio
  * cassette tape.
  */
-#ifndef __CASSIMPTARGETDIALOG__
-#define __CASSIMPTARGETDIALOG__
+#ifndef APP_CASSIMPTARGETDIALOG_H
+#define APP_CASSIMPTARGETDIALOG_H
 
 #include "resource.h"
 
@@ -49,4 +49,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CASSIMPTARGETDIALOG__*/
+#endif /*APP_CASSIMPTARGETDIALOG_H*/

@@ -6,15 +6,15 @@
 /*
  * Miscellaneous utility classes.
  */
-#ifndef __UTIL__
-#define __UTIL__
+#ifndef UTIL_UTIL_H
+#define UTIL_UTIL_H
 
 /*
  * Gripper for a resizable window.
  */
 class CGripper: public CScrollBar {
 protected:
-    afx_msg UINT OnNcHitTest(CPoint point);
+    afx_msg LRESULT OnNcHitTest(CPoint point);
 
     DECLARE_MESSAGE_MAP()
 };
@@ -42,7 +42,7 @@ public:
 class ExpandBuffer {
 public:
     ExpandBuffer(long initialSize = 65536) {
-        assert(initialSize > 0);
+        ASSERT(initialSize > 0);
         fInitialSize = initialSize;
         fWorkBuf = nil;
         fWorkCount = fWorkMax = 0;
@@ -106,7 +106,7 @@ HDWP MoveStretchControl(HDWP hdwp, CDialog* pDlg, int id, int moveX, int moveY,
     int stretchX, int stretchY, bool redraw = true);
 int GetDlgButtonCheck(CWnd* pWnd, int id);
 void SetDlgButtonCheck(CWnd* pWnd, int id, int checkVal);
-void CreateSimpleFont(CFont* pFont, CWnd* pWnd, const char* typeFace,
+void CreateSimpleFont(CFont* pFont, CWnd* pWnd, const WCHAR* typeFace,
         int pointSize);
 void GetWin32ErrorString(DWORD err, CString* pStr);
 void ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID);
@@ -120,8 +120,8 @@ int GetPascalString(const char* buf, long maxLen, CString* pStr);
 void LogHexDump(const void* buf, long len);
 int ComputePercent(LONGLONG part, LONGLONG full);
 void FormatDate(time_t when, CString* pStr);
-char* stristr(const char* string1, const char* string2);
-void VectorizeString(char* mangle, char** argv, int* pArgc);
+const WCHAR* Stristr(const WCHAR* string1, const WCHAR* string2);
+void VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc);
 void InjectLowercase(CString* pStr);
 bool MatchSemicolonList(const CString set, const CString match);
 char* StrcpyNew(const char* str);
@@ -130,4 +130,4 @@ char* StrcpyNew(const char* str);
 #define kDateNone       ((time_t) -2)
 #define kDateInvalid    ((time_t) -1)       // should match return from mktime()
 
-#endif /*__UTIL__*/
+#endif /*UTIL_UTIL_H*/

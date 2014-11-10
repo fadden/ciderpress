@@ -6,8 +6,8 @@
 /*
  * Reformat hi-res images.
  */
-#ifndef __LR_HIRES__
-#define __LR_HIRES__
+#ifndef REFORMAT_HIRES_H
+#define REFORMAT_HIRES_H
 
 #include "ReformatBase.h"
 
@@ -41,4 +41,4 @@ public:
     bool    fBlackWhite;
 };
 
-#endif /*__LR_HIRES__*/
+#endif /*REFORMAT_HIRES_H*/

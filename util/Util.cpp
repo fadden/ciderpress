@@ -25,7 +25,7 @@ BEGIN_MESSAGE_MAP(CGripper, CScrollBar)
     ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
 
-UINT
+LRESULT
 CGripper::OnNcHitTest(CPoint point) 
 {
     UINT ht = CScrollBar::OnNcHitTest(point);
@@ -414,7 +414,7 @@ SetDlgButtonCheck(CWnd* pWnd, int id, int checkVal)
  * Create a font, using defaults for most things.
  */
 void
-CreateSimpleFont(CFont* pFont, CWnd* pWnd, const char* typeFace,
+CreateSimpleFont(CFont* pFont, CWnd* pWnd, const WCHAR* typeFace,
         int pointSize)
 {
     CClientDC dc(pWnd);
@@ -449,7 +449,7 @@ GetWin32ErrorString(DWORD err, CString* pStr)
 
     if (!count) {
         WMSG1("FormatMessage on err=0x%08lx failed\n", err);
-        pStr->Format("system error 0x%08lx.\n", err);
+        pStr->Format(L"system error 0x%08lx.\n", err);
     } else {
         *pStr = (LPCTSTR)lpMsgBuf;
         //MessageBox( NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
@@ -571,7 +571,7 @@ LogHexDump(const void* vbuf, long len)
             if (skipFirst) {
                 skipFirst = false;
             } else {
-                WMSG1("  %s\n", outBuf);
+                WMSG1("  %hs\n", outBuf);
                 addr += 16;
             }
             sprintf(outBuf, "%08lx: ", addr);
@@ -583,7 +583,7 @@ LogHexDump(const void* vbuf, long len)
     }
 
     /* output whatever is left */
-    WMSG1("  %s\n", outBuf);
+    WMSG1("  %hs\n", outBuf);
 }
 
 /*
@@ -619,12 +619,12 @@ void
 FormatDate(time_t when, CString* pStr)
 {
     if (when == kDateNone) {
-        *pStr = "[No Date]";
+        *pStr = L"[No Date]";
     } else if (when == kDateInvalid) {
-        *pStr = "<invalid>";
+        *pStr = L"<invalid>";
     } else {
         CTime modWhen(when);
-        *pStr = modWhen.Format("%d-%b-%y %H:%M");
+        *pStr = modWhen.Format(L"%d-%b-%y %H:%M");
     }
 }
 
@@ -635,25 +635,25 @@ FormatDate(time_t when, CString* pStr)
  * The isalpha() stuff is an optimization, so they can skip the tolower()
  * in the outer loop comparison.
  */
-char*
-stristr(const char* string1, const char* string2)
+const WCHAR*
+Stristr(const WCHAR* string1, const WCHAR* string2)
 {
-    char *cp1 = (char*) string1, *cp2, *cp1a;
-    char first;              // get the first char in string to find
+    WCHAR *cp1 = (WCHAR*)string1, *cp2, *cp1a;
+    WCHAR first;              // get the first char in string to find
 
     first = string2[0];      // first char often won't be alpha
-    if (isalpha(first))     {
-        first = tolower(first);
+    if (iswalpha(first))     {
+        first = towlower(first);
         for ( ; *cp1  != '\0'; cp1++)
         {
-            if (tolower(*cp1) == first)
+            if (towlower(*cp1) == first)
             {
-                for (cp1a = &cp1[1], cp2 = (char*) &string2[1]; ;
+                for (cp1a = &cp1[1], cp2 = (WCHAR*) &string2[1];;
                 cp1a++, cp2++)
                 { 
                     if (*cp2 == '\0')
                         return cp1;
-                    if (tolower(*cp1a) != tolower(*cp2))
+                    if (towlower(*cp1a) != towlower(*cp2))
                         break;
                 }
             }
@@ -665,12 +665,12 @@ stristr(const char* string1, const char* string2)
         {
             if (*cp1 == first)
             {
-                for (cp1a = &cp1[1], cp2 = (char*) &string2[1]; ;
+                for (cp1a = &cp1[1], cp2 = (WCHAR*) &string2[1];;
                 cp1a++, cp2++)
                 {
                     if (*cp2 == '\0')
                         return cp1;
-                    if (tolower(*cp1a) != tolower(*cp2))
+                    if (towlower(*cp1a) != towlower(*cp2))
                         break;
                 }
             }
@@ -692,11 +692,11 @@ stristr(const char* string1, const char* string2)
  * allocated.
  */
 void
-VectorizeString(char* mangle, char** argv, int* pArgc)
+VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc)
 {
     bool inWhiteSpace = true;
     bool inQuote = false;
-    char* cp = mangle;
+    WCHAR* cp = mangle;
     int idx = 0;
 
     while (*cp != '\0') {
@@ -711,7 +711,7 @@ VectorizeString(char* mangle, char** argv, int* pArgc)
             if (inWhiteSpace) {
                 /* start of token */
                 if (idx >= *pArgc) {
-                    //WMSG2("Max #of args (%d) exceeded, ignoring '%s'\n",
+                    //WMSG2("Max #of args (%d) exceeded, ignoring '%ls'\n",
                     //  *pArgc, cp);
                     break;
                 }
@@ -719,8 +719,8 @@ VectorizeString(char* mangle, char** argv, int* pArgc)
             }
 
             if (*cp == '"') {
-                /* consume the quote */
-                memmove(cp, cp+1, strlen(cp));  // move the last '\0' down too
+                /* consume the quote; move the last '\0' down too */
+                memmove(cp, cp+1, wcslen(cp) * sizeof(WCHAR));
                 cp--;
                 inQuote = !inQuote;
             }
@@ -746,26 +746,26 @@ static void
 DowncaseSubstring(CString* pStr, int startPos, int endPos,
     bool prevWasSpace)
 {
-    static const char* shortWords[] = {
-        "of", "the", "a", "an", "and", "to", "in"
+    static const WCHAR* shortWords[] = {
+        L"of", L"the", L"a", L"an", L"and", L"to", L"in"
     };
-    static const char* leaveAlone[] = {
-        "BBS", "3D"
+    static const WCHAR* leaveAlone[] = {
+        L"BBS", L"3D"
     };
-    static const char* justLikeThis[] = {
-        "ProDOS", "IIe", "IIc", "IIgs"
+    static const WCHAR* justLikeThis[] = {
+        L"ProDOS", L"IIe", L"IIc", L"IIgs"
     };
     CString token;
     bool firstCap = true;
     int i;
 
     token = pStr->Mid(startPos, endPos - startPos);
-    //WMSG1("  TOKEN: '%s'\n", token);
+    //WMSG1("  TOKEN: '%ls'\n", (LPCWSTR) token);
 
     /* these words are left alone */
     for (i = 0; i < NELEM(leaveAlone); i++) {
         if (token.CompareNoCase(leaveAlone[i]) == 0) {
-            //WMSG1("    Leaving alone '%s'\n", token);
+            //WMSG1("    Leaving alone '%ls'\n", (LPCWSTR) token);
             return;
         }
     }
@@ -773,7 +773,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     /* words with specific capitalization */
     for (i = 0; i < NELEM(justLikeThis); i++) {
         if (token.CompareNoCase(justLikeThis[i]) == 0) {
-            WMSG2("    Setting '%s' to '%s'\n", token, justLikeThis[i]);
+            WMSG2("    Setting '%ls' to '%ls'\n", token, justLikeThis[i]);
             for (int j = startPos; j < endPos; j++)
                 pStr->SetAt(j, justLikeThis[i][j - startPos]);
             return;
@@ -784,7 +784,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     if (prevWasSpace) {
         for (i = 0; i < NELEM(shortWords); i++) {
             if (token.CompareNoCase(shortWords[i]) == 0) {
-                //WMSG1("    No leading cap for '%s'\n", token);
+                //WMSG1("    No leading cap for '%ls'\n", token);
                 firstCap = false;
                 break;
             }
@@ -792,9 +792,9 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     }
 
     /* check for roman numerals; we leave those capitalized */
-    CString romanTest = token.SpanIncluding("IVX");
+    CString romanTest = token.SpanIncluding(L"IVX");
     if (romanTest.GetLength() == token.GetLength()) {
-        //WMSG1("    Looks like roman numerals '%s'\n", token);
+        //WMSG1("    Looks like roman numerals '%ls'\n", token);
         return;
     }
 
@@ -815,17 +815,17 @@ void
 InjectLowercase(CString* pStr)
 {
     int len = pStr->GetLength();
-    static const char* kGapChars = " .:&-+/\\()<>@*";
+    static const WCHAR* kGapChars = L" .:&-+/\\()<>@*";
     int startPos, endPos;
 
     //*pStr = "AND PRODOS FOR THE IIGS";
     //len = pStr->GetLength();
-    //WMSG1("InjectLowercase: '%s'\n", *pStr);
+    //WMSG1("InjectLowercase: '%ls'\n", (LPCWSTR) *pStr);
 
     for (int i = 0; i < len; i++) {
-        char ch = pStr->GetAt(i);
+        WCHAR ch = pStr->GetAt(i);
         if (ch >= 'a' && ch <= 'z') {
-            WMSG1("Found lowercase 0x%02x, skipping InjectLower\n", ch);
+            WMSG1("Found lowercase 0x%04x, skipping InjectLower\n", ch);
             return;
         }
     }
@@ -833,10 +833,10 @@ InjectLowercase(CString* pStr)
     startPos = 0;
     while (startPos < len) {
         /* find start of token */
-        char ch;
+        WCHAR ch;
         do {
             ch = pStr->GetAt(startPos);
-            if (strchr(kGapChars, ch) == nil)
+            if (wcschr(kGapChars, ch) == nil)
                 break;
             startPos++;
         } while (startPos < len);
@@ -847,7 +847,7 @@ InjectLowercase(CString* pStr)
         endPos = startPos + 1;
         while (endPos < len) {
             ch = pStr->GetAt(endPos);
-            if (strchr(kGapChars, ch) != nil)
+            if (wcschr(kGapChars, ch) != nil)
                 break;
             endPos++;
         }
@@ -873,7 +873,7 @@ InjectLowercase(CString* pStr)
 bool
 MatchSemicolonList(const CString set, const CString match)
 {
-    const char* cp;
+    const WCHAR* cp;
     CString mangle(set);
     int matchLen = match.GetLength();
 
@@ -882,10 +882,10 @@ MatchSemicolonList(const CString set, const CString match)
 
     mangle.Remove(' ');
     for (cp = mangle; *cp != '\0'; ) {
-        if (strncasecmp(cp, match, matchLen) == 0 &&
+        if (wcsnicmp(cp, match, matchLen) == 0 &&
             (cp[matchLen] == ';' || cp[matchLen] == '\0'))
         {
-            WMSG2("+++ Found '%s' at '%s'\n", (LPCTSTR) match, cp);
+            WMSG2("+++ Found '%ls' at '%ls'\n", (LPCWSTR) match, cp);
             return true;
         }
 
@@ -895,7 +895,7 @@ MatchSemicolonList(const CString set, const CString match)
             cp++;
     }
 
-    WMSG2("--- No match for '%s' in '%s'\n", (LPCTSTR) match, (LPCTSTR) set);
+    WMSG2("--- No match for '%ls' in '%ls'\n", (LPCWSTR) match, (LPCWSTR) set);
     return false;
 }
 

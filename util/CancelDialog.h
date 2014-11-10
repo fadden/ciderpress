@@ -9,8 +9,8 @@
  * The user of this class must define a dialog with at least an IDCANCEL
  * button.
  */
-#ifndef __CANCELDIALOG__
-#define __CANCELDIALOG__
+#ifndef UTIL_CANCELDIALOG_H
+#define UTIL_CANCELDIALOG_H
 
 /*
  * This class must be allocated on the heap.
@@ -45,4 +45,4 @@ private:
 
 };
 
-#endif /*__CANCELDIALOG__*/
+#endif /*UTIL_CANCELDIALOG_H*/

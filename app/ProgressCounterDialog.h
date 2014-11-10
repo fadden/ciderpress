@@ -7,8 +7,8 @@
  * Show the progress of something that has no definite bound.  Because we
  * don't know when we need to stop, we just count upward.
  */
-#ifndef __PROGRESSCOUNTERDIALOG__
-#define __PROGRESSCOUNTERDIALOG__
+#ifndef APP_PROGRESSCOUNTERDIALOG_H
+#define APP_PROGRESSCOUNTERDIALOG_H
 
 #include "resource.h"
 
@@ -20,7 +20,7 @@ public:
     BOOL Create(const CString& descr, CWnd* pParentWnd = NULL) {
         fpParentWnd = pParentWnd;
         fDescr = descr;
-        fCountFormat = "%d";
+        fCountFormat = L"%d";
         fCancel = false;
 
         /* disable the parent window before we're created */
@@ -56,7 +56,7 @@ private:
         CWnd* pWnd = GetDlgItem(IDC_PROGRESS_COUNTER_DESC);
         pWnd->SetWindowText(fDescr);
         pWnd = GetDlgItem(IDC_PROGRESS_COUNTER_COUNT);
-        pWnd->SetWindowText("");
+        pWnd->SetWindowText(L"");
         pWnd->SetFocus();           // get focus off of the Cancel button
         return FALSE;               // accept our focus
     }
@@ -67,4 +67,4 @@ private:
     bool            fCancel;
 };
 
-#endif /*__PROGRESSCOUNTERDIALOG__*/
+#endif /*APP_PROGRESSCOUNTERDIALOG_H*/

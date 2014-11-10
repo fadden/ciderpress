@@ -1,0 +1,122 @@
+#
+# NuFX archive manipulation library
+# Copyright (C) 2000-2007 by Andy McFadden, All Rights Reserved.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the BSD License, see the file COPYING-LIB.
+#
+# Makefile for nufxlib (should work with non-GNU "make").
+#
+# You can use:
+#	make (builds library and sample applications)
+#	make shared (builds shared library if you're using GNU ld or similar)
+#
+# The shared library support currently leaves much to be desired.
+#
+
+# NufxLib install location.
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+includedir	= @includedir@
+libdir		= @libdir@
+srcdir		= @srcdir@
+
+SHELL		= @SHELL@
+INSTALL		= @INSTALL@
+INSTALL_PROGRAM	= @INSTALL_PROGRAM@
+INSTALL_DATA	= @INSTALL_DATA@
+CC			= @CC@
+AR			= ar rcv
+#OPT 		= @CFLAGS@ -DNDEBUG
+OPT			= @CFLAGS@
+#OPT 		= @CFLAGS@ -DDEBUG_MSGS
+#OPT 		= @CFLAGS@ -DDEBUG_VERBOSE
+GCC_FLAGS	= -Wall -Wwrite-strings -Wstrict-prototypes -Wpointer-arith -Wshadow
+CFLAGS		= @BUILD_FLAGS@ -I. @DEFS@ -DOPTFLAGSTR="\"$(OPT)\""
+
+SRCS		= Archive.c ArchiveIO.c Bzip2.c Compress.c Crc16.c Debug.c \
+			  Deferred.c Deflate.c Entry.c Expand.c FileIO.c Funnel.c \
+			  Lzc.c Lzw.c MiscStuff.c MiscUtils.c Record.c SourceSink.c \
+			  Squeeze.c Thread.c Value.c Version.c
+OBJS		= Archive.o ArchiveIO.o Bzip2.o Compress.o Crc16.o Debug.o \
+			  Deferred.o Deflate.o Entry.o Expand.o FileIO.o Funnel.o \
+			  Lzc.o Lzw.o MiscStuff.o MiscUtils.o Record.o SourceSink.o \
+			  Squeeze.o Thread.o Value.o Version.o
+
+STATIC_PRODUCT	= libnufx.a
+SHARED_PRODUCT	= libnufx.so
+PRODUCT	= $(STATIC_PRODUCT)
+
+
+#
+# Build stuff
+#
+
+all: $(PRODUCT) samples
+	@true
+
+install: $(STATIC_PRODUCT)
+	$(srcdir)/mkinstalldirs $(libdir)
+	$(INSTALL_DATA) $(STATIC_PRODUCT) $(libdir)
+	$(srcdir)/mkinstalldirs $(includedir)
+	$(INSTALL_DATA) NufxLib.h $(includedir)
+
+install-shared: $(SHARED_PRODUCT)
+	$(srcdir)/mkinstalldirs $(libdir)
+	$(INSTALL_DATA) $(SHARED_PRODUCT) $(libdir)
+	$(srcdir)/mkinstalldirs $(includedir)
+	$(INSTALL_DATA) NufxLib.h $(includedir)
+
+samples::
+	@echo "Building samples..."
+	@(cd samples; set +e; unset CFLAGS OBJS; set -e; \
+		@SET_MAKE@ LIB_PRODUCT="../$(PRODUCT)" $(MAKE))
+
+shared::
+	PRODUCT="$(SHARED_PRODUCT)" $(MAKE) -e
+
+$(STATIC_PRODUCT): $(OBJS)
+	-rm -f $(STATIC_PRODUCT) $(SHARED_PRODUCT)
+	$(AR) $@ $(OBJS)
+	@RANLIB@ $@
+
+# BUG: we probably want -fPIC -D_REENTRANT on the compile lines for this.
+# BUG: for Linux we may want -Wl,-soname,libnufx.so.1 on the link line.
+$(SHARED_PRODUCT): $(OBJS)
+	-rm -f $(STATIC_PRODUCT) $(SHARED_PRODUCT)
+	$(CC) @SHARE_FLAGS@ -o $@ $(OBJS) @LIBS@
+
+clean:
+	(cd samples; make clean)
+	-rm -f *.o core
+	-rm -f $(SHARED_PRODUCT) $(STATIC_PRODUCT)
+
+# build tags; assumes fancy GNU tag generation
+tags::
+	@ctags -R --totals *
+	@#ctags *.[ch]
+
+distclean: clean
+	(cd samples; make distclean)
+	-rm -f Version.c
+	-rm -f Makefile Makefile.bak
+	-rm -f config.log config.cache config.status config.h
+	-rm -f tags
+
+# Make a tarfile with a backup of the essential files.  We include "Makefile" 
+# so that we can do a "make distclean" during packaging.
+baktar:
+	@tar cvf nufxlib.tar *.txt COPYING-LIB INSTALL configure *.in Makefile \
+		Makefile.msc Makefile.dll install-sh config.guess config.sub \
+		mkinstalldirs *.[ch] samples/*.txt samples/Makefile* samples/*.[ch]
+	@gzip -9 nufxlib.tar
+	@mv -i nufxlib.tar.gz /home/fadden/BAK/
+
+depend:
+	makedepend -- $(CFLAGS) -I/usr/local/include -- $(SRCS)
+	@(cd samples; unset CFLAGS OBJS; @SET_MAKE@ $(MAKE) depend)
+
+# catch OPTFLAGSTR updates
+Version.o: Makefile
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+

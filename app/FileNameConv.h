@@ -6,12 +6,12 @@
 /*
  * File name conversion.
  */
-#ifndef __FILENAMECONV__
-#define __FILENAMECONV__
+#ifndef APP_FILENAMECONV_H
+#define APP_FILENAMECONV_H
 
 #include "GenericArchive.h"
 
-#define kUnknownTypeStr "???"
+#define kUnknownTypeStr L"???"
 
 /*
  * Proposal for an output pathname, based on the contents of a GenericEntry.
@@ -26,13 +26,13 @@ public:
     };
 
     PathProposal(void) {
-        fStoredPathName = ":BOGUS:";
+        fStoredPathName = L":BOGUS:";
         fStoredFssep = '[';
         fFileType = 256;
         fAuxType = 65536;
         fThreadKind = 0;
 
-        fLocalPathName = ":HOSED:";
+        fLocalPathName = L":HOSED:";
         fLocalFssep = ']';
 
         fPreservation = false;
@@ -52,7 +52,7 @@ public:
         fAuxType = pEntry->GetAuxType();
         //fThreadKind set from SelectionEntry
         // reset the "output" fields
-        fLocalPathName = ":HOSED:";
+        fLocalPathName = L":HOSED:";
         fLocalFssep = ']';
         // I expect these to be as-yet unset; check it
         ASSERT(!fPreservation);
@@ -61,13 +61,13 @@ public:
     }
 
     // init the "add to archive" side
-    void Init(const char* localPathName) {
+    void Init(const WCHAR* localPathName) {
         //ASSERT(basePathName[strlen(basePathName)-1] != kLocalFssep);
         //fLocalPathName = localPathName + strlen(basePathName)+1;
         fLocalPathName = localPathName;
         fLocalFssep = kLocalFssep;
         // reset the "output" fields
-        fStoredPathName = ":HOSED:";
+        fStoredPathName = L":HOSED:";
         fStoredFssep = '[';
         fFileType = 0;
         fAuxType = 0;
@@ -115,25 +115,25 @@ public:
     /*
      * Misc utility functions.
      */
-    static const char* FileTypeString(unsigned long fileType);
-    static const char* FileTypeDescription(long fileType, long auxType);
+    static const WCHAR* FileTypeString(unsigned long fileType);
+    static const WCHAR* FileTypeDescription(long fileType, long auxType);
 
 private:
-    void Win32NormalizeFileName(const char* srcp, long srcLen,
-        char fssep, char** pDstp, long dstLen);
-    void NormalizeFileName(const char* srcp, long srcLen,
-        char fssep, char** pDstp, long dstLen);
-    void NormalizeDirectoryName(const char* srcp, long srcLen,
-        char fssep, char** pDstp, long dstLen);
-    void AddPreservationString(const char* pathBuf, char* extBuf);
-    void AddTypeExtension(const char* pathBuf, char* extBuf);
+    void Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
+        char fssep, WCHAR** pDstp, long dstLen);
+    void NormalizeFileName(const WCHAR* srcp, long srcLen,
+        char fssep, WCHAR** pDstp, long dstLen);
+    void NormalizeDirectoryName(const WCHAR* srcp, long srcLen,
+        char fssep, WCHAR** pDstp, long dstLen);
+    void AddPreservationString(const WCHAR* pathBuf, WCHAR* extBuf);
+    void AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf);
 
-    void ReplaceFssep(char* str, char oldc, char newc, char newSubst);
-    void LookupExtension(const char* ext);
-    bool ExtractPreservationString(char* pathName);
-    void InterpretExtension(const char* pathName);
-    void DenormalizePath(char* pathBuf);
-    void StripDiskImageSuffix(char* pathName);
+    void ReplaceFssep(WCHAR* str, char oldc, char newc, char newSubst);
+    void LookupExtension(const WCHAR* ext);
+    bool ExtractPreservationString(WCHAR* pathName);
+    void InterpretExtension(const WCHAR* pathName);
+    void DenormalizePath(WCHAR* pathBuf);
+    void StripDiskImageSuffix(WCHAR* pathName);
 };
 
-#endif /*__FILENAMECONV__*/
+#endif /*APP_FILENAMECONV_H*/

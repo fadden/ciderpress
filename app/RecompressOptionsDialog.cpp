@@ -39,16 +39,16 @@ RecompressOptionsDialog::LoadComboBox(NuThreadFormat fmt)
 {
     static const struct {
         NuThreadFormat  format;
-        const char*     name;
+        const WCHAR*    name;
     } kComboStrings[] = {
-        { kNuThreadFormatUncompressed,  "No compression" },
-        { kNuThreadFormatHuffmanSQ,     "Squeeze" },
-        { kNuThreadFormatLZW1,          "Dynamic LZW/1" },
-        { kNuThreadFormatLZW2,          "Dynamic LZW/2" },
-        { kNuThreadFormatLZC12,         "12-bit LZC" },
-        { kNuThreadFormatLZC16,         "16-bit LZC" },
-        { kNuThreadFormatDeflate,       "Deflate" },
-        { kNuThreadFormatBzip2,         "Bzip2" },
+        { kNuThreadFormatUncompressed,  L"No compression" },
+        { kNuThreadFormatHuffmanSQ,     L"Squeeze" },
+        { kNuThreadFormatLZW1,          L"Dynamic LZW/1" },
+        { kNuThreadFormatLZW2,          L"Dynamic LZW/2" },
+        { kNuThreadFormatLZC12,         L"12-bit LZC" },
+        { kNuThreadFormatLZC16,         L"16-bit LZC" },
+        { kNuThreadFormatDeflate,       L"Deflate" },
+        { kNuThreadFormatBzip2,         L"Bzip2" },
     };
 
     CComboBox* pCombo;

@@ -6,8 +6,8 @@
 /*
  * Reformat a resource fork.
  */
-#ifndef __LR_RESOURCEFORK__
-#define __LR_RESOURCEFORK__
+#ifndef REFORMAT_RESOURCEFORK_H
+#define REFORMAT_RESOURCEFORK_H
 
 #include "ReformatBase.h"
 
@@ -36,4 +36,4 @@ private:
         bool* pLittleEndian);
 };
 
-#endif /*__LR_RESOURCEFORK__*/
+#endif /*REFORMAT_RESOURCEFORK_H*/

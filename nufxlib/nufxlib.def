@@ -1,0 +1,67 @@
+; NufxLib library exported symbols
+;
+; This is redundant with the __declspec(dllexport) declarations enabled
+; with the NUFXLIB_EXPORTS symbol.  If we're just building a DLL, there's
+; no need for this file.  However, the objects we're building are used for
+; both the static library and the dynamic library, and we don't want to
+; have exports in the static library.  If we do, the linker will create
+; .lib and .exp files for every executable we link against it.  This is
+; mostly harmless, but a tad messy.  I don't expect the interface to change,
+; so there's not much of a maintenance burden here.
+;
+EXPORTS
+    NuAbort
+    NuAddFile
+    NuAddRecord
+    NuAddThread
+    NuClose
+    NuContents
+    NuCreateDataSinkForBuffer
+    NuCreateDataSinkForFP
+    NuCreateDataSinkForFile
+    NuCreateDataSourceForBuffer
+    NuCreateDataSourceForFP
+    NuCreateDataSourceForFile
+    NuDataSinkGetOutCount
+    NuDataSourceSetRawCrc
+    NuDebugDumpArchive
+    NuDelete
+    NuDeleteRecord
+    NuDeleteThread
+    NuExtract
+    NuExtractRecord
+    NuExtractThread
+    NuFlush
+    NuFreeDataSink
+    NuFreeDataSource
+    NuGetAttr
+    NuGetExtraData
+    NuGetMasterHeader
+    NuGetRecord
+    NuGetRecordIdxByName
+    NuGetRecordIdxByPosition
+    NuGetValue
+    NuGetVersion
+    NuIsPresizedThreadID
+    NuOpenRO
+    NuOpenRW
+    NuRecordCopyAttr
+    NuRecordCopyThreads
+    NuRecordGetNumThreads
+    NuRename
+    NuSetErrorHandler
+    NuSetErrorMessageHandler
+    NuSetExtraData
+    NuSetGlobalErrorMessageHandler
+    NuSetOutputPathnameFilter
+    NuSetProgressUpdater
+    NuSetRecordAttr
+    NuSetSelectionFilter
+    NuSetValue
+    NuStrError
+    NuStreamOpenRO
+    NuTest
+    NuTestFeature
+    NuTestRecord
+    NuThreadGetByIdx
+    NuUpdatePresizedThread

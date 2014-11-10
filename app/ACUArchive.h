@@ -6,8 +6,8 @@
 /*
  * AppleLink Compression Utility archive support.
  */
-#ifndef __ACU_ARCHIVE__
-#define __ACU_ARCHIVE__
+#ifndef APP_ACUARCHIVE_H
+#define APP_ACUARCHIVE_H
 
 #include "GenericArchive.h"
 
@@ -69,9 +69,9 @@ public:
     // One-time initialization; returns an error string.
     static CString AppInit(void);
 
-    virtual OpenResult Open(const char* filename, bool readOnly,
+    virtual OpenResult Open(const WCHAR* filename, bool readOnly,
         CString* pErrMsg);
-    virtual CString New(const char* filename, const void* options);
+    virtual CString New(const WCHAR* filename, const void* options);
     virtual CString Flush(void) { return ""; }
     virtual CString Reload(void);
     virtual bool IsReadOnly(void) const { return fIsReadOnly; };
@@ -84,7 +84,7 @@ public:
         const AddFilesDialog* pAddOpts)
         { ASSERT(false); return false; }
     virtual bool CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
-        const char* newName)
+        const WCHAR* newName)
         { ASSERT(false); return false; }
     virtual bool TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet);
     virtual bool DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
@@ -92,10 +92,10 @@ public:
     virtual bool RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         { ASSERT(false); return false; }
     virtual bool RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
-        const char* newName)
+        const WCHAR* newName)
         { ASSERT(false); return false; }
     virtual CString TestVolumeName(const DiskFS* pDiskFS,
-        const char* newName) const
+        const WCHAR* newName) const
         { ASSERT(false); return "!"; }
     virtual CString TestPathName(const GenericEntry* pGenericEntry,
         const CString& basePath, const CString& newName, char newFssep) const
@@ -219,4 +219,4 @@ private:
     bool        fIsReadOnly;
 };
 
-#endif /*__ACU_ARCHIVE__*/
+#endif /*APP_ACUARCHIVE_H*/

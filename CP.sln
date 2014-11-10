@@ -1,18 +1,31 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app", "app\app.vcxproj", "{B023611B-7086-46E1-847B-3B21C4732384}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B66109F4-217B-43C0-86AA-EB55657E5AC0} = {B66109F4-217B-43C0-86AA-EB55657E5AC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "diskimg", "diskimg\diskimg.vcxproj", "{0CFE6FAD-0126-4E99-8625-C807D1D2AAF4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B66109F4-217B-43C0-86AA-EB55657E5AC0} = {B66109F4-217B-43C0-86AA-EB55657E5AC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mdc", "mdc\mdc.vcxproj", "{7DF41D71-C8DC-48AA-B372-4613210310A4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B66109F4-217B-43C0-86AA-EB55657E5AC0} = {B66109F4-217B-43C0-86AA-EB55657E5AC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "util", "util\util.vcxproj", "{04BFAE2A-7AB3-4B63-B4AB-42FF1D6AD3C5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libhfs", "diskimg\libhfs\libhfs.vcxproj", "{0FA742E9-8C07-43DD-AFF8-CE31FAF70821}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reformat", "reformat\reformat.vcxproj", "{18BCF397-397E-460C-A1DC-3E26798966E4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib\zlib.vcxproj", "{B66109F4-217B-43C0-86AA-EB55657E5AC0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nufxlib", "nufxlib\nufxlib.vcxproj", "{C48AE53B-3DCB-43B1-9207-B7C5B6BB78AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +57,14 @@ Global
 		{18BCF397-397E-460C-A1DC-3E26798966E4}.Debug|Win32.Build.0 = Debug|Win32
 		{18BCF397-397E-460C-A1DC-3E26798966E4}.Release|Win32.ActiveCfg = Release|Win32
 		{18BCF397-397E-460C-A1DC-3E26798966E4}.Release|Win32.Build.0 = Release|Win32
+		{B66109F4-217B-43C0-86AA-EB55657E5AC0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B66109F4-217B-43C0-86AA-EB55657E5AC0}.Debug|Win32.Build.0 = Debug|Win32
+		{B66109F4-217B-43C0-86AA-EB55657E5AC0}.Release|Win32.ActiveCfg = Release|Win32
+		{B66109F4-217B-43C0-86AA-EB55657E5AC0}.Release|Win32.Build.0 = Release|Win32
+		{C48AE53B-3DCB-43B1-9207-B7C5B6BB78AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C48AE53B-3DCB-43B1-9207-B7C5B6BB78AF}.Debug|Win32.Build.0 = Debug|Win32
+		{C48AE53B-3DCB-43B1-9207-B7C5B6BB78AF}.Release|Win32.ActiveCfg = Release|Win32
+		{C48AE53B-3DCB-43B1-9207-B7C5B6BB78AF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

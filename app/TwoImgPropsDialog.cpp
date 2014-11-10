@@ -34,24 +34,24 @@ TwoImgPropsDialog::OnInitDialog(void)
      * Set up the static fields.
      */
     pWnd = GetDlgItem(IDC_TWOIMG_CREATOR);
-    tmpStr.Format("'%s'", fpHeader->GetCreatorStr());
+    tmpStr.Format(L"'%hs'", fpHeader->GetCreatorStr());
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_TWOIMG_VERSION);
-    tmpStr.Format("%d", fpHeader->fVersion);
+    tmpStr.Format(L"%d", fpHeader->fVersion);
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_TWOIMG_FORMAT);
     switch (fpHeader->fImageFormat) {
-    case TwoImgHeader::kImageFormatDOS:     tmpStr = "DOS order sectors";       break;
-    case TwoImgHeader::kImageFormatProDOS:  tmpStr = "ProDOS order sectors";    break;
-    case TwoImgHeader::kImageFormatNibble:  tmpStr = "Raw nibbles";             break;
-    default:                                tmpStr = "Unknown";                 break;
+    case TwoImgHeader::kImageFormatDOS:     tmpStr = L"DOS order sectors";      break;
+    case TwoImgHeader::kImageFormatProDOS:  tmpStr = L"ProDOS order sectors";   break;
+    case TwoImgHeader::kImageFormatNibble:  tmpStr = L"Raw nibbles";            break;
+    default:                                tmpStr = L"Unknown";                break;
     }
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_TWOIMG_BLOCKS);
-    tmpStr.Format("%d", fpHeader->fNumBlocks);
+    tmpStr.Format(L"%d", fpHeader->fNumBlocks);
     pWnd->SetWindowText(tmpStr);
 
     /*
@@ -121,10 +121,12 @@ TwoImgPropsDialog::DoDataExchange(CDataExchange* pDX)
         }
 
 
-        if (!comment.IsEmpty())
-            fpHeader->SetComment(comment);
-        else
+        if (!comment.IsEmpty()) {
+            CStringA commentA(comment);
+            fpHeader->SetComment(commentA);
+        } else {
             fpHeader->SetComment(nil);
+        }
     } else {
         CWnd* pWnd;
 

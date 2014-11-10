@@ -6,8 +6,8 @@
 /*
  * Edit file properties.
  */
-#ifndef __EDITPROPSDIALOG__
-#define __EDITPROPSDIALOG__
+#ifndef APP_EDITPROPSDIALOG_H
+#define APP_EDITPROPSDIALOG_H
 
 #include "GenericArchive.h"
 #include "resource.h"
@@ -85,4 +85,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__EDITPROPSDIALOG__*/
+#endif /*APP_EDITPROPSDIALOG_H*/

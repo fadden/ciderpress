@@ -6,8 +6,8 @@
 /*
  * Reformat CP/M files.
  */
-#ifndef __LR_CPMFILES__
-#define __LR_CPMFILES__
+#ifndef REFORMAT_CPMFILES_H
+#define REFORMAT_CPMFILES_H
 
 #include "ReformatBase.h"
 
@@ -25,4 +25,4 @@ public:
         ReformatOutput* pOutput);
 };
 
-#endif /*__LR_CPMFILES__*/
+#endif /*REFORMAT_CPMFILES_H*/

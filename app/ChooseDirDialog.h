@@ -6,8 +6,8 @@
 /*
  * Dialog for choosing a directory.
  */
-#ifndef __CHOOSEDIRDIALOG__
-#define __CHOOSEDIRDIALOG__
+#ifndef APP_CHOOSEDIRDIALOG
+#define APP_CHOOSEDIRDIALOG
 
 #include "../util/UtilLib.h"
 #include "resource.h"
@@ -22,14 +22,14 @@ public:
     ChooseDirDialog(CWnd* pParent = NULL, int dialogID = IDD_CHOOSEDIR) :
         CDialog(dialogID, pParent)
     {
-        fPathName = "";
+        fPathName = L"";
     }
     virtual ~ChooseDirDialog(void) {}
 
-    const char* GetPathName(void) const { return fPathName; }
+    const WCHAR* GetPathName(void) const { return fPathName; }
 
     // set the pathname; when DoModal is called this will tunnel in
-    void SetPathName(const char* str) { fPathName = str; }
+    void SetPathName(const WCHAR* str) { fPathName = str; }
 
 protected:
     virtual BOOL OnInitDialog(void);
@@ -50,4 +50,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CHOOSEDIRDIALOG__*/
+#endif /*APP_CHOOSEDIRDIALOG*/

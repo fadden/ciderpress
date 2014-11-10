@@ -17,6 +17,7 @@
 
 #define WIN32_LEAN_AND_MEAN     // Exclude rarely-used stuff from Windows headers
 
+#include "../app/targetver.h"
 
 // Windows Header Files:
 //#include <windows.h>

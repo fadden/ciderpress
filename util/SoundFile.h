@@ -9,8 +9,8 @@
  *
  * [ Copied from libfadden. ]
  */
-#ifndef __LF_SOUND_FILE__
-#define __LF_SOUND_FILE__
+#ifndef UTIL_SOUNDFILE_H
+#define UTIL_SOUNDFILE_H
 
 #include <mmsystem.h>
 
@@ -42,7 +42,7 @@ public:
     }
 
     /* create the object from a file on disk; returns 0 on success */
-    int Create(const char* fileName, CString* pErrMsg);
+    int Create(const WCHAR* fileName, CString* pErrMsg);
     /* create from FILE*; if doClose==true, file will be closed on error */
     int Create(FILE* fp, long len, bool doClose, CString* pErrMsg);
 
@@ -61,7 +61,7 @@ public:
 
     /* returns the #of bytes per sample (all channels) */
     int GetBPS(void) const {
-        assert(mFP != nil);
+        ASSERT(mFP != nil);
         return ((mFormat.wBitsPerSample+7)/8) * mFormat.nChannels;
     }
 
@@ -95,4 +95,4 @@ typedef struct tWAVEFORMATEX
 } WAVEFORMATEX;
 #endif
 
-#endif /*__LF_SOUND_FILE__*/
+#endif /*UTIL_SOUNDFILE_H*/

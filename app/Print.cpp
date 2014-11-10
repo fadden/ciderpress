@@ -18,8 +18,8 @@
  * ==========================================================================
  */
 
-/*static*/ const char* PrintStuff::kCourierNew = _T("Courier New");
-/*static*/ const char* PrintStuff::kTimesNewRoman = _T("Times New Roman");
+/*static*/ const WCHAR PrintStuff::kCourierNew[] = L"Courier New";
+/*static*/ const WCHAR PrintStuff::kTimesNewRoman[] = L"Times New Roman";
 
 /*
  * Set up various values.
@@ -122,7 +122,7 @@ PrintStuff::TrimString(CString* pStr, int width, bool addOnLeft)
         }
 
         if (!addOnLeft) {
-            WMSG1("Now trying '%s'\n", (LPCTSTR) newStr);
+            WMSG1("Now trying '%ls'\n", (LPCWSTR) newStr);
         }
         strWidth = StringWidth(newStr);
     }
@@ -367,7 +367,7 @@ PrintContentList::DoPrintPage(int page)
      */
     fpDC->TextOut(0, 1 * fCharHeight, fDocTitle);
     CString pageNum;
-    pageNum.Format("Page %d/%d", page, fNumPages);
+    pageNum.Format(L"Page %d/%d", page, fNumPages);
     int pageNumWidth = StringWidth(pageNum);
     fpDC->TextOut(fHorzRes - pageNumWidth, 1 * fCharHeight, pageNum);
 
@@ -472,14 +472,14 @@ PrintRichEdit::PrintPreflight(CRichEditCtrl* pREC, int* pNumPages)
     fEndChar = -1;
     fStartPage = 0;
     fEndPage = -1;
-    return StartPrint(pREC, "(test)", pNumPages, false);
+    return StartPrint(pREC, L"(test)", pNumPages, false);
 }
 
 /*
  * Print all pages.
  */
 int
-PrintRichEdit::PrintAll(CRichEditCtrl* pREC, const char* title)
+PrintRichEdit::PrintAll(CRichEditCtrl* pREC, const WCHAR* title)
 {
     fStartChar = 0;
     fEndChar = -1;
@@ -492,7 +492,7 @@ PrintRichEdit::PrintAll(CRichEditCtrl* pREC, const char* title)
  * Print a range of pages.
  */
 int
-PrintRichEdit::PrintPages(CRichEditCtrl* pREC, const char* title,
+PrintRichEdit::PrintPages(CRichEditCtrl* pREC, const WCHAR* title,
     int startPage, int endPage)
 {
     fStartChar = 0;
@@ -506,7 +506,7 @@ PrintRichEdit::PrintPages(CRichEditCtrl* pREC, const char* title,
  * Print the selected area.
  */
 int
-PrintRichEdit::PrintSelection(CRichEditCtrl* pREC, const char* title,
+PrintRichEdit::PrintSelection(CRichEditCtrl* pREC, const WCHAR* title,
     long startChar, long endChar)
 {
     fStartChar = startChar;
@@ -520,7 +520,7 @@ PrintRichEdit::PrintSelection(CRichEditCtrl* pREC, const char* title,
  * Start the printing process by posting a print-cancel dialog.
  */
 int
-PrintRichEdit::StartPrint(CRichEditCtrl* pREC, const char* title,
+PrintRichEdit::StartPrint(CRichEditCtrl* pREC, const WCHAR* title,
     int* pNumPages, bool doPrint)
 {
     CancelDialog* pPCD = nil;
@@ -630,10 +630,10 @@ PrintRichEdit::ComputeMargins(void)
 
     pOldFont = fpDC->SelectObject(&tmpFont);
     // in theory we could compute one 'X' * 80; this seems more reliable
-    char str[81];
+    WCHAR str[81];
     for (int i = 0; i < 80; i++)
         str[i] = 'X';
-    str[i] = '\0';
+    str[80] = '\0';
     char80width = StringWidth(str);
     fpDC->SelectObject(pOldFont);
 
@@ -668,7 +668,7 @@ PrintRichEdit::ComputeMargins(void)
  * This was derived from Microsft KB article 129860.
  */
 int
-PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const char* title,
+PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
     int* pNumPages, bool doPrint)
 {
     FORMATRANGE fr;
@@ -676,7 +676,7 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const char* title,
     long textLength, textPrinted, lastTextPrinted;
     int pageNum;
 
-    WMSG2("DoPrint: title='%s' doPrint=%d\n", title, doPrint);
+    WMSG2("DoPrint: title='%ls' doPrint=%d\n", title, doPrint);
     WMSG4("         startChar=%d endChar=%d startPage=%d endPage=%d\n",
         fStartChar, fEndChar, fStartPage, fEndPage);
 
@@ -712,14 +712,15 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const char* title,
      * GetTextLengthEx is part of "riched20.dll".  Win9x uses "riched32.dll",
      * which doesn't support the call.
      */
-#ifdef _UNICODE
-# error "should be code page 1200, not CP_ACP"
-#endif
     GETTEXTLENGTHEX exLenReq;
     long basicTextLength, extdTextLength;
     basicTextLength = pREC->GetTextLength();
     exLenReq.flags = GTL_PRECISE | GTL_NUMCHARS;
+#ifdef _UNICODE
+    exLenReq.codepage = 1200;   // UTF-16 little-endian
+#else
     exLenReq.codepage = CP_ACP;
+#endif
     extdTextLength = (long)::SendMessage(pREC->m_hWnd, EM_GETTEXTLENGTHEX,
         (WPARAM) &exLenReq, (LPARAM) NULL);
     WMSG2("RichEdit text length: std=%ld extd=%ld\n",
@@ -754,7 +755,7 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const char* title,
             CFont* pOldFont = fpDC->SelectObject(&fTitleFont);
             fpDC->TextOut(0, 0 * fCharHeight, title);
             CString pageNumStr;
-            pageNumStr.Format("Page %d", pageNum);
+            pageNumStr.Format(L"Page %d", pageNum);
             int pageNumWidth = StringWidth(pageNumStr);
             fpDC->TextOut(fHorzRes - pageNumWidth, 0 * fCharHeight, pageNumStr);
             fpDC->SelectObject(pOldFont);

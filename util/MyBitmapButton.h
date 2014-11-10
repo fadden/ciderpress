@@ -9,8 +9,8 @@
  * An extension of CBitmap that updates the button's bitmap automatically when
  * the system colors change.  Also handles installing itself into a dialog.
  */
-#ifndef __MYBITMAPBUTTON__
-#define __MYBITMAPBUTTON__
+#ifndef UTIL_MYBITMAPBUTTON_H
+#define UTIL_MYBITMAPBUTTON_H
 
 class MyBitmapButton : public CButton {
 public:
@@ -48,4 +48,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__MYBITMAPBUTTON__*/
+#endif /*UTIL_MYBITMAPBUTTON_H*/

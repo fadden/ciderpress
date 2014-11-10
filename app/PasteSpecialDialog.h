@@ -6,8 +6,8 @@
 /*
  * Paste Special dialog.
  */
-#ifndef __PASTESPECIALDIALOG__
-#define __PASTESPECIALDIALOG__
+#ifndef APP_PASTESPECIALDIALOG_H
+#define APP_PASTESPECIALDIALOG_H
 
 #include "resource.h"
 
@@ -38,4 +38,4 @@ protected:
     //DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__PASTESPECIALDIALOG__*/
+#endif /*APP_PASTESPECIALDIALOG_H*/

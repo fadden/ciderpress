@@ -6,11 +6,11 @@
 /*
  * Main frame window declarations.
  */
-#ifndef __MAIN__
-#define __MAIN__
+#ifndef MDC_MAIN_H
+#define MDC_MAIN_H
 
 #include "../diskimg/DiskImg.h"
-#include "../prebuilt/NufxLib.h"
+#include "../nufxlib/NufxLib.h"
 using namespace DiskImgLib;
 
 struct Win32dirent;
@@ -48,14 +48,14 @@ private:
         void* vErrorMessage);
 
     void ScanFiles(void);
-    Win32dirent* OpenDir(const char* name);
+    Win32dirent* OpenDir(const WCHAR* name);
     Win32dirent* ReadDir(Win32dirent* dir);
     void CloseDir(Win32dirent* dir);
-    int Process(const char* pathname, ScanOpts* pScanOpts,
+    int Process(const WCHAR* pathname, ScanOpts* pScanOpts,
         CString* pErrMsg);
-    int ProcessDirectory(const char* dirName, ScanOpts* pScanOpts,
+    int ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
         CString* pErrMsg);
-    int ScanDiskImage(const char* pathName, ScanOpts* pScanOpts);
+    int ScanDiskImage(const WCHAR* pathName, ScanOpts* pScanOpts);
     int LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         ScanOpts* pScanOpts);
     void AnalyzeFile(const A2File* pFile, RecordKind* pRecordKind,
@@ -69,4 +69,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__MAIN__*/
+#endif /*MDC_MAIN_H*/

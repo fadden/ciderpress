@@ -6,8 +6,8 @@
 /*
  * Allow the user to create a new folder.
  */
-#ifndef __NEWFOLDERDIALOG__
-#define __NEWFOLDERDIALOG__
+#ifndef APP_NEWFOLDERDIALOG_H
+#define APP_NEWFOLDERDIALOG_H
 
 #include "resource.h"
 
@@ -20,8 +20,8 @@
 class NewFolderDialog : public CDialog {
 public:
     NewFolderDialog(CWnd* pParent = NULL) : CDialog(IDD_NEWFOLDER, pParent) {
-        fCurrentFolder = "";
-        fNewFolder = "";
+        fCurrentFolder = L"";
+        fNewFolder = L"";
         fFolderCreated = false;
     }
     virtual ~NewFolderDialog(void) {}
@@ -47,4 +47,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__NEWFOLDERDIALOG__*/
+#endif /*APP_NEWFOLDERDIALOG_H*/

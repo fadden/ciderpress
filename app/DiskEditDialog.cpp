@@ -83,7 +83,7 @@ DiskEditDialog::OnInitDialog(void)
     CHARFORMAT cf;
     cf.cbSize = sizeof(CHARFORMAT);
     cf.dwMask = CFM_FACE | CFM_SIZE;
-    ::lstrcpy(cf.szFaceName, "Courier New");
+    wcscpy(cf.szFaceName, L"Courier New");
     cf.yHeight = 10 * 20;       // point size in twips
     BOOL cc = pEdit->SetDefaultCharFormat(cf);
     if (cc == FALSE) {
@@ -188,16 +188,17 @@ DiskEditDialog::InitNibbleParmList(void)
         }
 
         for (i = 0; i < count; i++) {
-            if (pTable[i].numSectors > 0)
-                pCombo->AddString(pTable[i].description);
-            else {
+            if (pTable[i].numSectors > 0) {
+                CString description(pTable[i].description);
+                pCombo->AddString(description);
+            } else {
                 /* only expecting this on the last, "custom" entry */
                 ASSERT(i == count-1);
             }
         }
         pCombo->SetCurSel(dflt);
     } else {
-        pCombo->AddString("Nibble Parms");
+        pCombo->AddString(L"Nibble Parms");
         pCombo->SetCurSel(0);
         pCombo->EnableWindow(FALSE);
     }
@@ -345,7 +346,8 @@ DiskEditDialog::OnSubVolume(void)
             pEditDialog = &blockEdit;
         else
             pEditDialog = &sectorEdit;
-        pEditDialog->Setup(pSubVol->GetDiskFS(), fpDiskFS->GetVolumeID());
+        CString volumeID(fpDiskFS->GetVolumeID());
+        pEditDialog->Setup(pSubVol->GetDiskFS(), volumeID);
         pEditDialog->SetPositionShift(8);
         (void) pEditDialog->DoModal();
     }
@@ -378,9 +380,9 @@ DiskEditDialog::SetSpinMode(int id, int base)
     }
 
     if (base == 10)
-        valStr.Format("%d", val);
+        valStr.Format(L"%d", val);
     else
-        valStr.Format("%X", val);
+        valStr.Format(L"%X", val);
 
     pSpin->SetBase(base);
     pSpin->GetBuddy()->SetWindowText(valStr);
@@ -407,7 +409,7 @@ DiskEditDialog::ReadSpinner(int id, long* pVal)
         err.LoadString(IDS_ERROR);
         int lower, upper;
         pSpin->GetRange32(lower, upper);
-        msg.Format("Please enter a value between %d and %d (0x%x and 0x%x).",
+        msg.Format(L"Please enter a value between %d and %d (0x%x and 0x%x).",
             lower, upper, lower, upper);
         MessageBox(msg, err, MB_OK|MB_ICONEXCLAMATION);
         return -1;
@@ -438,10 +440,10 @@ DiskEditDialog::SetSpinner(int id, long val)
  * Convert a chunk of data into a hex dump, and stuff it into the edit control.
  */
 void
-DiskEditDialog::DisplayData(const unsigned char* srcBuf, int size)
+DiskEditDialog::DisplayData(const BYTE* srcBuf, int size)
 {
-    char textBuf[80 * 16 * 2];
-    char* cp;
+    WCHAR textBuf[80 * 16 * 2];
+    WCHAR* cp;
     int i, j;
 
     ASSERT(srcBuf != nil);
@@ -459,8 +461,8 @@ DiskEditDialog::DisplayData(const unsigned char* srcBuf, int size)
         if (indent < 0)
             indent = 0;
 
-        CString msg = "                                    "
-                      "                                    ";
+        CString msg = L"                                    "
+                      L"                                    ";
         ASSERT(msg.GetLength() == kWidth);
         msg = msg.Left(indent);
         msg += fAlertMsg;
@@ -468,7 +470,7 @@ DiskEditDialog::DisplayData(const unsigned char* srcBuf, int size)
             textBuf[i] = '\r';
             textBuf[i+1] = '\n';
         }
-        strcpy(&textBuf[i], msg);
+        wcscpy(&textBuf[i], msg);
         pEdit->SetWindowText(textBuf);
 
         return;
@@ -481,8 +483,8 @@ DiskEditDialog::DisplayData(const unsigned char* srcBuf, int size)
     for (i = 0; i < size/16; i++) {
         if (size == kSectorSize) {
             /* two-nybble addr */
-            sprintf(cp, " %02x: %02x %02x %02x %02x %02x %02x %02x %02x "
-                        "%02x %02x %02x %02x %02x %02x %02x %02x  ",
+            wsprintf(cp, L" %02x: %02x %02x %02x %02x %02x %02x %02x %02x "
+                         L"%02x %02x %02x %02x %02x %02x %02x %02x  ",
                 i * 16,
                 srcBuf[0], srcBuf[1], srcBuf[2], srcBuf[3],
                 srcBuf[4], srcBuf[5], srcBuf[6], srcBuf[7],
@@ -490,15 +492,15 @@ DiskEditDialog::DisplayData(const unsigned char* srcBuf, int size)
                 srcBuf[12], srcBuf[13], srcBuf[14], srcBuf[15]);
         } else {
             /* three-nybble addr */
-            sprintf(cp, "%03x: %02x %02x %02x %02x %02x %02x %02x %02x "
-                        "%02x %02x %02x %02x %02x %02x %02x %02x  ",
+            wsprintf(cp, L"%03x: %02x %02x %02x %02x %02x %02x %02x %02x "
+                         L"%02x %02x %02x %02x %02x %02x %02x %02x  ",
                 i * 16,
                 srcBuf[0], srcBuf[1], srcBuf[2], srcBuf[3],
                 srcBuf[4], srcBuf[5], srcBuf[6], srcBuf[7],
                 srcBuf[8], srcBuf[9], srcBuf[10], srcBuf[11],
                 srcBuf[12], srcBuf[13], srcBuf[14], srcBuf[15]);
         }
-        ASSERT(strlen(cp) == 54);
+        ASSERT(wcslen(cp) == 54);
         cp += 54;       // strlen(cp)
         for (j = 0; j < 16; j++)
             *cp++ = PrintableChar(srcBuf[j]);
@@ -526,8 +528,8 @@ DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
     ASSERT(fAlertMsg.IsEmpty());
 
     int bufSize = ((size+15) / 16) * 80;
-    char* textBuf = new char[bufSize];
-    char* cp;
+    WCHAR* textBuf = new WCHAR[bufSize];
+    WCHAR* cp;
     int i;
 
     if (textBuf == nil)
@@ -536,20 +538,20 @@ DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
     cp = textBuf;
     for (i = 0; size > 0; i++) {
         if (size >= 16) {
-            sprintf(cp, "%04x: %02x %02x %02x %02x %02x %02x %02x %02x "
-                        "%02x %02x %02x %02x %02x %02x %02x %02x",
+            wsprintf(cp, L"%04x: %02x %02x %02x %02x %02x %02x %02x %02x "
+                         L"%02x %02x %02x %02x %02x %02x %02x %02x",
                 i * 16,
                 srcBuf[0], srcBuf[1], srcBuf[2], srcBuf[3],
                 srcBuf[4], srcBuf[5], srcBuf[6], srcBuf[7],
                 srcBuf[8], srcBuf[9], srcBuf[10], srcBuf[11],
                 srcBuf[12], srcBuf[13], srcBuf[14], srcBuf[15]);
-            ASSERT(strlen(cp) == 53);
+            ASSERT(wcslen(cp) == 53);
             cp += 53;       // strlen(cp)
         } else {
-            sprintf(cp, "%04x:", i * 16);
+            wsprintf(cp, L"%04x:", i * 16);
             cp += 5;
             for (int j = 0; j < size; j++) {
-                sprintf(cp, " %02x", srcBuf[j]);
+                wsprintf(cp, L" %02x", srcBuf[j]);
                 cp += 3;
             }
         }
@@ -602,14 +604,15 @@ DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
  * its Close function.
  */
 DIError
-DiskEditDialog::OpenFile(const char* fileName, bool openRsrc, A2File** ppFile,
+DiskEditDialog::OpenFile(const WCHAR* fileName, bool openRsrc, A2File** ppFile,
     A2FileDescr** ppOpenFile)
 {
     A2File* pFile;
     A2FileDescr* pOpenFile = nil;
 
-    WMSG2(" OpenFile '%s' rsrc=%d\n", fileName, openRsrc);
-    pFile = fpDiskFS->GetFileByName(fileName);
+    WMSG2(" OpenFile '%ls' rsrc=%d\n", fileName, openRsrc);
+    CStringA fileNameA(fileName);
+    pFile = fpDiskFS->GetFileByName(fileNameA);
     if (pFile == nil) {
         CString msg, failed;
 
@@ -716,11 +719,11 @@ SectorEditDialog::OnInitDialog(void)
      */
     CString trackStr;
     CWnd* pWnd;
-    trackStr.Format("Track (%d):", fpDiskFS->GetDiskImg()->GetNumTracks());
+    trackStr.Format(L"Track (%d):", fpDiskFS->GetDiskImg()->GetNumTracks());
     pWnd = GetDlgItem(IDC_STEXT_TRACK);
     ASSERT(pWnd != nil);
     pWnd->SetWindowText(trackStr);
-    trackStr.Format("Sector (%d):", fpDiskFS->GetDiskImg()->GetNumSectPerTrack());
+    trackStr.Format(L"Sector (%d):", fpDiskFS->GetDiskImg()->GetNumSectPerTrack());
     pWnd = GetDlgItem(IDC_STEXT_SECTOR);
     ASSERT(pWnd != nil);
     pWnd->SetWindowText(trackStr);
@@ -767,7 +770,7 @@ SectorEditDialog::LoadData(void)
     DIError dierr;
     dierr = fpDiskFS->GetDiskImg()->ReadTrackSector(fTrack, fSector, fSectorData);
     if (dierr != kDIErrNone) {
-        WMSG1("SED sector read failed: %s\n", DiskImgLib::DIStrError(dierr));
+        WMSG1("SED sector read failed: %hs\n", DiskImgLib::DIStrError(dierr));
         //CString msg;
         //CString err;
         //err.LoadString(IDS_ERROR);
@@ -797,7 +800,7 @@ SectorEditDialog::OnDoRead(void)
 void
 SectorEditDialog::OnDoWrite(void)
 {
-    MessageBox("Write!");
+    MessageBox(L"Write!");
 }
 
 /*
@@ -922,9 +925,9 @@ SectorFileEditDialog::OnInitDialog(void)
     CString title;
     CString rsrcIndic;
     rsrcIndic.LoadString(IDS_INDIC_RSRC);
-    title.Format("Disk Viewer - %s%s (%ld bytes)",
-        fpFile->GetPathName(),  // use fpFile version to get case
-        fOpenRsrcFork ? (LPCTSTR)rsrcIndic : "", fLength);
+    title.Format(L"Disk Viewer - %hs%ls (%ld bytes)",
+        (LPCSTR) fpFile->GetPathName(),  // use fpFile version to get case
+        fOpenRsrcFork ? (LPCWSTR)rsrcIndic : L"", fLength);
     SetWindowText(title);
 
     return retval;
@@ -1091,7 +1094,7 @@ BlockEditDialog::OnInitDialog(void)
 
     CString blockStr;
     //blockStr.LoadString(IDS_BLOCK);
-    blockStr.Format("Block (%d):", fpDiskFS->GetDiskImg()->GetNumBlocks());
+    blockStr.Format(L"Block (%d):", fpDiskFS->GetDiskImg()->GetNumBlocks());
     pWnd = GetDlgItem(IDC_STEXT_TRACK);
     ASSERT(pWnd != nil);
     pWnd->SetWindowText(blockStr);
@@ -1189,7 +1192,7 @@ BlockEditDialog::LoadData(void)
     DIError dierr;
     dierr = fpDiskFS->GetDiskImg()->ReadBlock(fBlock, fBlockData);
     if (dierr != kDIErrNone) {
-        WMSG1("BED block read failed: %s\n", DiskImgLib::DIStrError(dierr));
+        WMSG1("BED block read failed: %hs\n", DiskImgLib::DIStrError(dierr));
         //CString msg;
         //CString err;
         //err.LoadString(IDS_ERROR);
@@ -1219,7 +1222,7 @@ BlockEditDialog::OnDoRead(void)
 void
 BlockEditDialog::OnDoWrite(void)
 {
-    MessageBox("Write!");
+    MessageBox(L"Write!");
 }
 
 /*
@@ -1320,9 +1323,9 @@ BlockFileEditDialog::OnInitDialog(void)
     CString title;
     CString rsrcIndic;
     rsrcIndic.LoadString(IDS_INDIC_RSRC);
-    title.Format("Disk Viewer - %s%s (%ld bytes)",
-        fpFile->GetPathName(),  // use fpFile version to get case
-        fOpenRsrcFork ? (LPCTSTR)rsrcIndic : "", fLength);
+    title.Format(L"Disk Viewer - %hs%ls (%ld bytes)",
+        (LPCSTR) fpFile->GetPathName(),  // use fpFile version to get case
+        fOpenRsrcFork ? (LPCWSTR)rsrcIndic : L"", fLength);
     SetWindowText(title);
 
     return retval;
@@ -1484,7 +1487,7 @@ NibbleEditDialog::OnInitDialog(void)
     pWnd->DestroyWindow();
 
     CString trackStr;
-    trackStr.Format("Track (%d):", fpDiskFS->GetDiskImg()->GetNumTracks());
+    trackStr.Format(L"Track (%d):", fpDiskFS->GetDiskImg()->GetNumTracks());
     pWnd = GetDlgItem(IDC_STEXT_TRACK);
     ASSERT(pWnd != nil);
     pWnd->SetWindowText(trackStr);
@@ -1583,7 +1586,7 @@ NibbleEditDialog::LoadData(void)
     dierr = fpDiskFS->GetDiskImg()->ReadNibbleTrack(fTrack, fNibbleData,
                 &fNibbleDataLen);
     if (dierr != kDIErrNone) {
-        WMSG1("NED track read failed: %s\n", DiskImgLib::DIStrError(dierr));
+        WMSG1("NED track read failed: %hs\n", DiskImgLib::DIStrError(dierr));
         fAlertMsg.LoadString(IDS_DISKEDITMSG_BADTRACK);
     }
 
@@ -1607,7 +1610,7 @@ NibbleEditDialog::OnDoRead(void)
 void
 NibbleEditDialog::OnDoWrite(void)
 {
-    MessageBox("Write!");
+    MessageBox(L"Write!");
 }
 
 /*

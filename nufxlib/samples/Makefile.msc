@@ -1,0 +1,113 @@
+#
+# Makefile for Microsoft C compilers.  Tested against Visual C++ 6.0.
+# Not pretty but it seems to work.
+#
+# Run with "nmake /f Makefile.msc".  Expects NufxLib to have been built
+# in "..".
+#
+# To build without debugging info, use "nmake nodebug=1".
+# To build with libz, use "nmake libz=1".
+# To build with libbz2, use "nmake libbz2=1".
+# If you're linking against nufxlib as a DLL, you don't need to specify
+#   libraries.  You probably need to specify DLL=1 and the same setting
+#   of the NODEBUG flag as you used when building the DLL.  If you don't,
+#   "test-extract" will fail in the fwrite() call in Nu_FWrite, because
+#   the non-debug /MD libc does something peculiar with FILE*.
+#
+# For libz/libbz2, you need to have the appropriate library either
+# in this directory or in a standard location that the linker can find.
+#
+
+# Windows magic
+TARGETOS = BOTH
+!include <ntwin32.mak>
+
+NUFXSRCDIR = ..
+LIB_PRODUCT = $(NUFXSRCDIR)\nufxlib2.lib
+
+!ifdef DLL
+### build using the same libc as the DLL
+!ifdef NODEBUG
+#OPT = /D NUFXLIB_DLL /D NDEBUG /MD /Ogityb2
+OPT = /D NUFXLIB_DLL /MD /Ogityb2
+LIB_FLAGS = /nodefaultlib:libcd.lib /nologo setargv.obj
+!else
+#OPT = /D NUFXLIB_DLL /MDd /Od
+OPT = /D NUFXLIB_DLL /D DEBUG_MSGS /MDd /Od
+LIB_FLAGS = /nodefaultlib:libc.lib /nologo setargv.obj
+!endif
+!else
+
+### build against static lib
+!ifdef NODEBUG
+#OPT = /D NDEBUG /ML /Ogityb2
+OPT = /ML /Ogityb2
+LIB_FLAGS = /nodefaultlib:libcd.lib /nologo libc.lib setargv.obj
+!else
+#OPT = /MLd /Od
+OPT = /D DEBUG_MSGS /MLd /Od
+LIB_FLAGS = /nodefaultlib:libc.lib /nologo libcd.lib setargv.obj
+!endif
+!endif
+
+BUILD_FLAGS = /W3 /GX /D "WIN32" /D "_CONSOLE" /I "$(NUFXSRCDIR)"
+!MESSAGE Using OPT = $(OPT)
+
+!ifdef LIBZ
+LIB_FLAGS = zlib.lib $(LIB_FLAGS)
+!endif
+!ifdef LIBBZ2
+LIB_FLAGS = libbz2.lib $(LIB_FLAGS)
+!endif
+
+# how to compile sources
+.c.obj:
+	@$(cc) $(cdebug) $(OPT) $(BUILD_FLAGS) $(cflags) $(cvars) -o $@ $<
+
+
+PRODUCTS = exerciser.exe imgconv.exe launder.exe test-basic.exe test-extract.exe test-simple.exe test-twirl.exe
+
+all: $(PRODUCTS)
+
+exerciser.exe: Exerciser.obj $(LIB_PRODUCT)
+	$(link) $(ldebug) Exerciser.obj -out:$@ $(NUFXSRCDIR)\nufxlib2.lib $(LIB_FLAGS)
+
+imgconv.exe: ImgConv.obj $(LIB_PRODUCT)
+	$(link) $(ldebug) ImgConv.obj -out:$@ $(NUFXSRCDIR)\nufxlib2.lib $(LIB_FLAGS)
+
+launder.exe: Launder.obj $(LIB_PRODUCT)
+	$(link) $(ldebug) Launder.obj -out:$@ $(NUFXSRCDIR)\nufxlib2.lib $(LIB_FLAGS)
+
+test-basic.exe: TestBasic.obj $(LIB_PRODUCT)
+	$(link) $(ldebug) TestBasic.obj -out:$@ $(NUFXSRCDIR)\nufxlib2.lib $(LIB_FLAGS)
+
+test-simple.exe: TestSimple.obj $(LIB_PRODUCT)
+	$(link) $(ldebug) TestSimple.obj -out:$@ $(NUFXSRCDIR)\nufxlib2.lib $(LIB_FLAGS)
+
+test-extract.exe: TestExtract.obj $(LIB_PRODUCT)
+	$(link) $(ldebug) TestExtract.obj -out:$@ $(NUFXSRCDIR)\nufxlib2.lib $(LIB_FLAGS)
+
+test-twirl.exe: TestTwirl.obj $(LIB_PRODUCT)
+	$(link) $(ldebug) TestTwirl.obj -out:$@ $(NUFXSRCDIR)\nufxlib2.lib $(LIB_FLAGS)
+
+clean:
+	-del *.obj
+	-del *.pdb
+	-del *.ilk
+	-del *.exp
+	-del exerciser.exe
+	-del imgconv.exe
+	-del launder.exe
+	-del test-basic.exe
+	-del test-simple.exe
+	-del test-extract.exe
+	-del test-twirl.exe
+
+Exerciser.obj: Exerciser.c Common.h $(NUFXSRCDIR)\NufxLib.h $(NUFXSRCDIR)\SysDefs.h
+ImgConv.obj: ImgConv.c Common.h $(NUFXSRCDIR)\NufxLib.h $(NUFXSRCDIR)\SysDefs.h
+Launder.obj: Launder.c Common.h $(NUFXSRCDIR)\NufxLib.h $(NUFXSRCDIR)\SysDefs.h
+TestBasic.obj: TestBasic.c Common.h $(NUFXSRCDIR)\NufxLib.h $(NUFXSRCDIR)\SysDefs.h
+TestSimple.obj: TestSimple.c Common.h $(NUFXSRCDIR)\NufxLib.h $(NUFXSRCDIR)\SysDefs.h
+TestExtract.obj: TestExtract.c Common.h $(NUFXSRCDIR)\NufxLib.h $(NUFXSRCDIR)\SysDefs.h
+TestTwirl.obj: TestTwirl.c Common.h $(NUFXSRCDIR)\NufxLib.h $(NUFXSRCDIR)\SysDefs.h
+

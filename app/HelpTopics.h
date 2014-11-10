@@ -6,8 +6,8 @@
 /*
  * Constants for help topics.
  */
-#ifndef __HELP_TOPICS__
-#define __HELP_TOPICS__
+#ifndef APP_HELP_TOPICS_H
+#define APP_HELP_TOPICS_H
 
 #define HELP_TOPIC_WELCOME              10
 #define HELP_TOPIC_DISKEDIT             13
@@ -40,4 +40,4 @@
 #define HELP_TOPIC_RENAME_VOLUME        268
 #define HELP_TOPIC_EOL_SCAN             272
 
-#endif /*__HELP_TOPICS__*/
+#endif /*APP_HELP_TOPICS_H*/

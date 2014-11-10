@@ -6,8 +6,8 @@
 /*
  * Resolve a filename clash when adding files.
  */
-#ifndef __ADDCLASHDIALOG__
-#define __ADDCLASHDIALOG__
+#ifndef APP_ADDCLASHDIALOG_H
+#define APP_ADDCLASHDIALOG_H
 
 /*
  *
@@ -36,4 +36,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__ADDCLASHDIALOG__*/
+#endif /*APP_ADDCLASHDIALOG_H*/

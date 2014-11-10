@@ -12,12 +12,11 @@
  * examine the actual directory structure of a file, it can do so through
  * these declarations.
  */
-#ifndef __DISKIMGDETAIL__
-#define __DISKIMGDETAIL__
+#ifndef DISKIMG_DISKIMGDETAIL_H
+#define DISKIMG_DISKIMGDETAIL_H
 
-#include "../prebuilt/NufxLib.h"
-#define ZLIB_DLL
-#include "../prebuilt/zlib.h"
+#include "../nufxlib/NufxLib.h"
+#include "../zlib/zlib.h"
 
 #include "DiskImg.h"
 
@@ -3215,6 +3214,6 @@ private:
     A2FileDescr*    fpOpenFile;
 };
 
-};  // namespace DiskImgLib
+}  // namespace DiskImgLib
 
-#endif /*__DISKIMGDETAIL__*/
+#endif /*DISKIMG_DISKIMGDETAIL_H*/

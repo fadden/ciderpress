@@ -39,28 +39,28 @@ NewFolderDialog::DoDataExchange(CDataExchange* pDX)
     /* validate the new folder by creating it */
     if (pDX->m_bSaveAndValidate) {
         if (fNewFolder.IsEmpty()) {
-            MessageBox("No name entered, not creating new folder.",
-                "CiderPress", MB_OK);
+            MessageBox(L"No name entered, not creating new folder.",
+                L"CiderPress", MB_OK);
             // fall out of DoModal with fFolderCreated==false
         } else if (fNewFolder.Find('\\') >= 0 ||
                    fNewFolder.Find('/') >= 0)
         {
-            MessageBox("Folder names may not contain '/' or '\\'.",
-                "CiderPress", MB_OK);
+            MessageBox(L"Folder names may not contain '/' or '\\'.",
+                L"CiderPress", MB_OK);
             pDX->Fail();
         } else {
             fNewFullPath = fCurrentFolder;
             if (fNewFullPath.Right(1) != "\\")
                 fNewFullPath += "\\";
             fNewFullPath += fNewFolder;
-            WMSG1("CREATING '%s'\n", fNewFullPath);
+            WMSG1("CREATING '%ls'\n", (LPCWSTR) fNewFullPath);
             if (!::CreateDirectory(fNewFullPath, nil)) {
                 /* show the sometimes-bizarre Windows error string */
                 CString msg, errStr, failed;
                 DWORD dwerr = ::GetLastError();
                 GetWin32ErrorString(dwerr, &errStr);
-                msg.Format("Unable to create folder '%s': %s",
-                    fNewFolder, errStr);
+                msg.Format(L"Unable to create folder '%ls': %ls",
+                    (LPCWSTR) fNewFolder, (LPCWSTR) errStr);
                 failed.LoadString(IDS_FAILED);
                 MessageBox(msg, failed, MB_OK | MB_ICONERROR);
                 pDX->Fail();

@@ -26,59 +26,58 @@
 /* use MFC's fancy version of new for debugging */
 //#define new DEBUG_NEW
 
-static const char* kWebSiteURL = "http://www.faddensoft.com/";
+static const WCHAR kWebSiteURL[] = L"http://www.faddensoft.com/";
 
 /*
  * Filters for the "open file" command.  In some cases a file may be opened
  * in more than one format, so it's necessary to keep track of what the
  * file filter was set to when the file was opened.
  */
-const char MainWindow::kOpenNuFX[] =
-    "ShrinkIt Archives (.shk .sdk .bxy .sea .bse)|*.shk;*.sdk;*.bxy;*.sea;*.bse|";
-const char MainWindow::kOpenBinaryII[] =
-    "Binary II Archives (.bny .bqy .bxy)|*.bny;*.bqy;*.bxy|";
-const char MainWindow::kOpenACU[] =
-    "ACU Archives (.acu)|*.acu|";
-const char MainWindow::kOpenDiskImage[] =
-    "Disk Images (.shk .sdk .dsk .po .do .d13 .2mg .img .nib .nb2 .raw .hdv .dc .dc6 .ddd .app .fdi .iso .gz .zip)|"
-        "*.shk;*.sdk;*.dsk;*.po;*.do;*.d13;*.2mg;*.img;*.nib;*.nb2;*.raw;*.hdv;*.dc;*.dc6;*.ddd;*.app;*.fdi;*.iso;*.gz;*.zip|";
-const char MainWindow::kOpenAll[] =
-    "All Files (*.*)|*.*|";
-const char MainWindow::kOpenEnd[] =
-    "|";
+const WCHAR MainWindow::kOpenNuFX[] =
+    L"ShrinkIt Archives (.shk .sdk .bxy .sea .bse)|*.shk;*.sdk;*.bxy;*.sea;*.bse|";
+const WCHAR MainWindow::kOpenBinaryII[] =
+    L"Binary II Archives (.bny .bqy .bxy)|*.bny;*.bqy;*.bxy|";
+const WCHAR MainWindow::kOpenACU[] =
+    L"ACU Archives (.acu)|*.acu|";
+const WCHAR MainWindow::kOpenDiskImage[] =
+    L"Disk Images (.shk .sdk .dsk .po .do .d13 .2mg .img .nib .nb2 .raw .hdv .dc .dc6 .ddd .app .fdi .iso .gz .zip)|"
+        L"*.shk;*.sdk;*.dsk;*.po;*.do;*.d13;*.2mg;*.img;*.nib;*.nb2;*.raw;*.hdv;*.dc;*.dc6;*.ddd;*.app;*.fdi;*.iso;*.gz;*.zip|";
+const WCHAR MainWindow::kOpenAll[] =
+    L"All Files (*.*)|*.*|";
+const WCHAR MainWindow::kOpenEnd[] =
+    L"|";
 
 static const struct {
-    //const char* extension;
-    char extension[4];
+    WCHAR extension[4];
     FilterIndex idx;
 } gExtensionToIndex[] = {
-    { "shk",    kFilterIndexNuFX },
-    { "bxy",    kFilterIndexNuFX },
-    { "bse",    kFilterIndexNuFX },
-    { "sea",    kFilterIndexNuFX },
-    { "bny",    kFilterIndexBinaryII },
-    { "bqy",    kFilterIndexBinaryII },
-    { "acu",    kFilterIndexACU },
-    { "dsk",    kFilterIndexDiskImage },
-    { "po",     kFilterIndexDiskImage },
-    { "do",     kFilterIndexDiskImage },
-    { "d13",    kFilterIndexDiskImage },
-    { "2mg",    kFilterIndexDiskImage },
-    { "img",    kFilterIndexDiskImage },
-    { "sdk",    kFilterIndexDiskImage },
-    { "raw",    kFilterIndexDiskImage },
-    { "ddd",    kFilterIndexDiskImage },
-    { "app",    kFilterIndexDiskImage },
-    { "fdi",    kFilterIndexDiskImage },
-    { "iso",    kFilterIndexDiskImage },
-    { "gz",     kFilterIndexDiskImage },    // assume disk image inside
-    { "zip",    kFilterIndexDiskImage },    // assume disk image inside
+    { L"shk",   kFilterIndexNuFX },
+    { L"bxy",   kFilterIndexNuFX },
+    { L"bse",   kFilterIndexNuFX },
+    { L"sea",   kFilterIndexNuFX },
+    { L"bny",   kFilterIndexBinaryII },
+    { L"bqy",   kFilterIndexBinaryII },
+    { L"acu",   kFilterIndexACU },
+    { L"dsk",   kFilterIndexDiskImage },
+    { L"po",    kFilterIndexDiskImage },
+    { L"do",    kFilterIndexDiskImage },
+    { L"d13",   kFilterIndexDiskImage },
+    { L"2mg",   kFilterIndexDiskImage },
+    { L"img",   kFilterIndexDiskImage },
+    { L"sdk",   kFilterIndexDiskImage },
+    { L"raw",   kFilterIndexDiskImage },
+    { L"ddd",   kFilterIndexDiskImage },
+    { L"app",   kFilterIndexDiskImage },
+    { L"fdi",   kFilterIndexDiskImage },
+    { L"iso",   kFilterIndexDiskImage },
+    { L"gz",    kFilterIndexDiskImage },    // assume disk image inside
+    { L"zip",   kFilterIndexDiskImage },    // assume disk image inside
 };
 
-const char* MainWindow::kModeNuFX = _T("nufx");
-const char* MainWindow::kModeBinaryII = _T("bin2");
-const char* MainWindow::kModeACU = _T("acu");
-const char* MainWindow::kModeDiskImage = _T("disk");
+const WCHAR MainWindow::kModeNuFX[] = L"nufx";
+const WCHAR MainWindow::kModeBinaryII[] = L"bin2";
+const WCHAR MainWindow::kModeACU[] = L"acu";
+const WCHAR MainWindow::kModeDiskImage[] = L"disk";
 
 
 /*
@@ -198,7 +197,7 @@ END_MESSAGE_MAP()
  */
 MainWindow::MainWindow()
 {
-    static const char* kAppName = _T("CiderPress");
+    static const WCHAR kAppName[] = L"CiderPress";
 
     fpContentList = nil;
     fpOpenArchive = nil;
@@ -368,71 +367,71 @@ MainWindow::ProcessCommandLine(void)
     /*
      * Get the command line and break it down into an argument vector.
      */
-    const char* cmdLine = ::GetCommandLine();
-    if (cmdLine == nil || strlen(cmdLine) == 0)
+    const WCHAR* cmdLine = ::GetCommandLine();
+    if (cmdLine == nil || wcslen(cmdLine) == 0)
         return;
 
-    char* mangle = strdup(cmdLine);
+    WCHAR* mangle = wcsdup(cmdLine);
     if (mangle == nil)
         return;
 
-    WMSG1("Mangling '%s'\n", mangle);
-    char* argv[8];
+    WMSG1("Mangling '%ls'\n", mangle);
+    WCHAR* argv[8];
     int argc = 8;
     VectorizeString(mangle, argv, &argc);
 
     WMSG0("Args:\n");
     for (int i = 0; i < argc; i++) {
-        WMSG2("  %d '%s'\n", i, argv[i]);
+        WMSG2("  %d '%ls'\n", i, argv[i]);
     }
 
     /*
      * Figure out what the arguments are.
      */
-    const char* filename = nil;
-    const char* dispName = nil;
+    const WCHAR* filename = nil;
+    const WCHAR* dispName = nil;
     int filterIndex = kFilterIndexGeneric;
     bool temp = false;
 
-    for (i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
-            if (strcasecmp(argv[i], "-mode") == 0) {
+            if (wcsicmp(argv[i], L"-mode") == 0) {
                 if (i == argc-1) {
                     WMSG0("WARNING: -mode specified without mode\n");
                 } else
                     i++;
-                if (strcasecmp(argv[i], kModeNuFX) == 0)
+                if (wcsicmp(argv[i], kModeNuFX) == 0)
                     filterIndex = kFilterIndexNuFX;
-                else if (strcasecmp(argv[i], kModeBinaryII) == 0)
+                else if (wcsicmp(argv[i], kModeBinaryII) == 0)
                     filterIndex = kFilterIndexBinaryII;
-                else if (strcasecmp(argv[i], kModeACU) == 0)
+                else if (wcsicmp(argv[i], kModeACU) == 0)
                     filterIndex = kFilterIndexACU;
-                else if (strcasecmp(argv[i], kModeDiskImage) == 0)
+                else if (wcsicmp(argv[i], kModeDiskImage) == 0)
                     filterIndex = kFilterIndexDiskImage;
                 else {
-                    WMSG1("WARNING: unrecognized mode '%s'\n", argv[i]);
+                    WMSG1("WARNING: unrecognized mode '%ls'\n", argv[i]);
                 }
-            } else if (strcasecmp(argv[i], "-dispname") == 0) {
+            } else if (wcsicmp(argv[i], L"-dispname") == 0) {
                 if (i == argc-1) {
                     WMSG0("WARNING: -dispname specified without name\n");
                 } else
                     i++;
                 dispName = argv[i];
-            } else if (strcasecmp(argv[i], "-temparc") == 0) {
+            } else if (wcsicmp(argv[i], L"-temparc") == 0) {
                 temp = true;
-            } else if (strcasecmp(argv[i], "-install") == 0) {
+            } else if (wcsicmp(argv[i], L"-install") == 0) {
                 // see MyApp::InitInstance
                 WMSG0("Got '-install' flag, doing nothing\n");
-            } else if (strcasecmp(argv[i], "-uninstall") == 0) {
+            } else if (wcsicmp(argv[i], L"-uninstall") == 0) {
                 // see MyApp::InitInstance
                 WMSG0("Got '-uninstall' flag, doing nothing\n");
             } else {
-                WMSG1("WARNING: unrecognized flag '%s'\n", argv[i]);
+                WMSG1("WARNING: unrecognized flag '%ls'\n", argv[i]);
             }
         } else {
             /* must be the filename */
             if (i != argc-1) {
-                WMSG1("WARNING: ignoring extra arguments (e.g. '%s')\n",
+                WMSG1("WARNING: ignoring extra arguments (e.g. '%ls')\n",
                     argv[i+1]);
             }
             filename = argv[i];
@@ -444,8 +443,8 @@ MainWindow::ProcessCommandLine(void)
     }
 
     WMSG0("Argument handling:\n");
-    WMSG3(" index=%d temp=%d filename='%s'\n",
-        filterIndex, temp, filename == nil ? "(nil)" : filename);
+    WMSG3(" index=%d temp=%d filename='%ls'\n",
+        filterIndex, temp, filename == nil ? L"(null)" : filename);
 
     if (filename != nil) {
         PathName path(filename);
@@ -469,12 +468,12 @@ MainWindow::ProcessCommandLine(void)
 
         /* if it's a temporary file, arrange to have it deleted before exit */
         if (temp) {
-            int len = strlen(filename);
+            int len = wcslen(filename);
 
-            if (len > 4 && strcasecmp(filename + (len-4), ".tmp") == 0) {
+            if (len > 4 && wcsicmp(filename + (len-4), L".tmp") == 0) {
                 fDeleteList.Add(filename);
             } else {
-                WMSG1("NOT adding '%s' to DeleteList -- does not end in '.tmp'\n",
+                WMSG1("NOT adding '%ls' to DeleteList -- does not end in '.tmp'\n",
                     filename);
             }
         }
@@ -525,7 +524,7 @@ MainWindow::OnCreate(LPCREATESTRUCT lpcs)
     fStatusBar.SetIndicators(indicators, NELEM(indicators));
     //fStatusBar.SetPaneInfo(0, ID_SEPARATOR, SBPS_NOBORDERS | SBPS_STRETCH, 0);
 
-    fStatusBar.SetPaneText(kProgressPane, "");
+    fStatusBar.SetPaneText(kProgressPane, L"");
 
     return 0;
 }
@@ -618,7 +617,7 @@ MainWindow::OnLateInit(UINT, LONG)
     default:
         ASSERT(false);
         CString confused;
-        confused.Format("Registration check failed. %s", (LPCTSTR) result);
+        confused.Format(L"Registration check failed. %ls", (LPCWSTR) result);
         result = confused;
         goto fail;
     }
@@ -992,7 +991,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
     fPreferences.SetPrefBool(kPrConvResources, pPS->fFviewPage.fConvResources != 0);
 
     fPreferences.SetPrefString(kPrTempPath, pPS->fFilesPage.fTempPath);
-    WMSG1("--- Temp path now '%s'\n", fPreferences.GetPrefString(kPrTempPath));
+    WMSG1("--- Temp path now '%ls'\n", fPreferences.GetPrefString(kPrTempPath));
     fPreferences.SetPrefString(kPrExtViewerExts, pPS->fFilesPage.fExtViewerExts);
 
 
@@ -1122,17 +1121,17 @@ MainWindow::OnHelpWebSite(void)
 {
     int err;
 
-    err = (int) ::ShellExecute(m_hWnd, _T("open"), kWebSiteURL, NULL, NULL,
+    err = (int) ::ShellExecute(m_hWnd, L"open", kWebSiteURL, NULL, NULL,
                     SW_SHOWNORMAL);
     if (err <= 32) {
         CString msg;
         if (err == ERROR_FILE_NOT_FOUND) {
-            msg =   "Windows call failed: web browser not found.  (Sometimes"
-                    " it mistakenly reports this when IE is not the default"
-                    " browser.)";
+            msg = L"Windows call failed: web browser not found.  (Sometimes"
+                  L" it mistakenly reports this when IE is not the default"
+                  L" browser.)";
             ShowFailureMsg(this, msg, IDS_FAILED);
         } else {
-            msg.Format("Unable to launch web browser (err=%d).", err);
+            msg.Format(L"Unable to launch web browser (err=%d).", err);
             ShowFailureMsg(this, msg, IDS_FAILED);
         }
     }
@@ -1178,11 +1177,11 @@ MainWindow::OnFileNewArchive(void)
     GenericArchive* pOpenArchive;
     CString errMsg;
 
-    CFileDialog dlg(FALSE, _T("shk"), NULL,
+    CFileDialog dlg(FALSE, L"shk", NULL,
         OFN_OVERWRITEPROMPT|OFN_NOREADONLYRETURN|OFN_HIDEREADONLY,
-        "ShrinkIt Archives (*.shk)|*.shk||", this);
+        L"ShrinkIt Archives (*.shk)|*.shk||", this);
 
-    dlg.m_ofn.lpstrTitle = "New Archive";
+    dlg.m_ofn.lpstrTitle = L"New Archive";
     dlg.m_ofn.lpstrInitialDir = fPreferences.GetPrefString(kPrOpenArchiveFolder);
 
     if (dlg.DoModal() != IDOK)
@@ -1193,7 +1192,7 @@ MainWindow::OnFileNewArchive(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     filename = dlg.GetPathName();
-    WMSG1("NEW FILE '%s'\n", filename);
+    WMSG1("NEW FILE '%ls'\n", (LPCWSTR) filename);
 
     /* remove file if it already exists */
     errMsg = RemoveFile(filename);
@@ -1237,7 +1236,7 @@ MainWindow::OnFileOpen(void)
     openFilters += kOpenDiskImage;
     openFilters += kOpenAll;
     openFilters += kOpenEnd;
-    CFileDialog dlg(TRUE, "shk", NULL,
+    CFileDialog dlg(TRUE, L"shk", NULL,
         OFN_FILEMUSTEXIST, openFilters, this);
 
     dlg.m_ofn.nFilterIndex = fPreferences.GetPrefLong(kPrLastOpenFilterIndex);
@@ -1291,7 +1290,7 @@ MainWindow::OnUpdateFileOpenVolume(CCmdUI* pCmdUI)
  * Open an archive.
  */
 void
-MainWindow::DoOpenArchive(const char* pathName, const char* ext,
+MainWindow::DoOpenArchive(const WCHAR* pathName, const WCHAR* ext,
     int filterIndex, bool readOnly)
 {
     if (LoadArchive(pathName, ext, filterIndex, readOnly, false) == 0) {
@@ -1564,11 +1563,11 @@ MainWindow::HandleDoubleClick(void)
     if (pEntry == nil)
         return;
 
-    WMSG1(" Double-click GOT '%s'\n", pEntry->GetPathName());
-    const char* ext;
+    WMSG1(" Double-click GOT '%ls'\n", pEntry->GetPathName());
+    const WCHAR* ext;
     long fileType, auxType;
 
-    ext = FindExtension(pEntry->GetPathName(), pEntry->GetFssep());
+    ext = PathName::FindExtension(pEntry->GetPathName(), pEntry->GetFssep());
     fileType = pEntry->GetFileType();
     auxType = pEntry->GetAuxType();
 
@@ -1595,14 +1594,14 @@ MainWindow::HandleDoubleClick(void)
     CString extViewerExts;
     extViewerExts = fPreferences.GetPrefString(kPrExtViewerExts);
     if (ext != nil && MatchSemicolonList(extViewerExts, ext+1)) {
-        WMSG1(" Launching external viewer for '%s'\n", ext);
+        WMSG1(" Launching external viewer for '%ls'\n", ext);
         TmpExtractForExternal(pEntry);
         handled = true;
     } else if (pEntry->GetRecordKind() == GenericEntry::kRecordKindFile) {
         if ((ext != nil && (
-                stricmp(ext, ".shk") == 0 ||
-                stricmp(ext, ".sdk") == 0 ||
-                stricmp(ext, ".bxy") == 0   )) ||
+                wcsicmp(ext, L".shk") == 0 ||
+                wcsicmp(ext, L".sdk") == 0 ||
+                wcsicmp(ext, L".bxy") == 0)) ||
             (fileType == 0xe0 && auxType == 0x8002))
         {
             WMSG0(" Guessing NuFX\n");
@@ -1610,8 +1609,8 @@ MainWindow::HandleDoubleClick(void)
             handled = true;
         } else
         if ((ext != nil && (
-                stricmp(ext, ".bny") == 0 ||
-                stricmp(ext, ".bqy") == 0   )) ||
+                wcsicmp(ext, L".bny") == 0 ||
+                wcsicmp(ext, L".bqy") == 0)) ||
             (fileType == 0xe0 && auxType == 0x8000))
         {
             WMSG0(" Guessing Binary II\n");
@@ -1619,7 +1618,7 @@ MainWindow::HandleDoubleClick(void)
             handled = true;
         } else
         if ((ext != nil && (
-                stricmp(ext, ".acu") == 0   )) ||
+                wcsicmp(ext, L".acu") == 0)) ||
             (fileType == 0xe0 && auxType == 0x8001))
         {
             WMSG0(" Guessing ACU\n");
@@ -1661,7 +1660,7 @@ MainWindow::HandleDoubleClick(void)
  */
 int
 MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
-    const char* modeStr)
+    const WCHAR* modeStr)
 {
     CString dispName;
     bool mustDelete = false;
@@ -1674,13 +1673,13 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
     dispName = pEntry->GetFileName();
     dispName.Replace('"', '_');
 
-    char nameBuf[MAX_PATH];
+    WCHAR nameBuf[MAX_PATH];
     UINT unique;
     unique = GetTempFileName(fPreferences.GetPrefString(kPrTempPath),
-                "CPfile", 0, nameBuf);
+                L"CPfile", 0, nameBuf);
     if (unique == 0) {
         DWORD dwerr = ::GetLastError();
-        WMSG2("GetTempFileName failed on '%s' (err=%ld)\n",
+        WMSG2("GetTempFileName failed on '%ls' (err=%ld)\n",
             fPreferences.GetPrefString(kPrTempPath), dwerr);
         return dwerr;
     }
@@ -1693,9 +1692,9 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
     int result;
     FILE* fp;
 
-    fp = fopen(nameBuf, "wb");
+    fp = _wfopen(nameBuf, L"wb");
     if (fp != nil) {
-        WMSG2("Extracting to '%s' (unique=%d)\n", nameBuf, unique);
+        WMSG2("Extracting to '%ls' (unique=%d)\n", nameBuf, unique);
         result = pEntry->ExtractThreadToFile(threadKind, fp,
                     GenericEntry::kConvertEOLOff, GenericEntry::kConvertHAOff,
                     &errMsg);
@@ -1704,16 +1703,16 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
             /* success */
             CString parameters;
 
-            parameters.Format("-mode %s -dispname \"%s\" -temparc \"%s\"",
+            parameters.Format(L"-mode %ls -dispname \"%ls\" -temparc \"%ls\"",
                 modeStr, dispName, nameBuf);
             int err;
 
-            err = (int) ::ShellExecute(m_hWnd, _T("open"),
+            err = (int) ::ShellExecute(m_hWnd, L"open",
                     gMyApp.GetExeFileName(), parameters, NULL,
                             SW_SHOWNORMAL);
             if (err <= 32) {
                 CString msg;
-                msg.Format("Unable to launch CiderPress (err=%d).", err);
+                msg.Format(L"Unable to launch CiderPress (err=%d).", err);
                 ShowFailureMsg(this, msg, IDS_FAILED);
             } else {
                 /* during dev, "missing DLL" causes false-positive success */
@@ -1725,13 +1724,13 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
         }
     } else {
         CString msg;
-        msg.Format("Unable to open temp file '%s'.", nameBuf);
+        msg.Format(L"Unable to open temp file '%ls'.", nameBuf);
         ::ShowFailureMsg(this, msg, IDS_FAILED);
     }
 
     if (mustDelete) {
-        WMSG1("Deleting '%s'\n", nameBuf);
-        unlink(nameBuf);
+        WMSG1("Deleting '%ls'\n", nameBuf);
+        _wunlink(nameBuf);
     }
 
     return 0;
@@ -1758,23 +1757,23 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
 int
 MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
 {
-    const char* ext;
+    const WCHAR* ext;
 
-    ext = FindExtension(pEntry->GetPathName(), pEntry->GetFssep());
+    ext = PathName::FindExtension(pEntry->GetPathName(), pEntry->GetFssep());
 
-    char nameBuf[MAX_PATH];
+    WCHAR nameBuf[MAX_PATH];
     UINT unique;
     unique = GetTempFileName(fPreferences.GetPrefString(kPrTempPath),
-                "CPfile", 0, nameBuf);
+                L"CPfile", 0, nameBuf);
     if (unique == 0) {
         DWORD dwerr = ::GetLastError();
-        WMSG2("GetTempFileName failed on '%s' (err=%ld)\n",
+        WMSG2("GetTempFileName failed on '%ls' (err=%ld)\n",
             fPreferences.GetPrefString(kPrTempPath), dwerr);
         return dwerr;
     }
     fDeleteList.Add(nameBuf);       // file is created by GetTempFileName
 
-    strcat(nameBuf, ext);
+    wcscat(nameBuf, ext);
 
     /*
      * Open the temp file and extract the data into it.
@@ -1783,10 +1782,10 @@ MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
     int result;
     FILE* fp;
 
-    fp = fopen(nameBuf, "wb");
+    fp = _wfopen(nameBuf, L"wb");
     if (fp != nil) {
         fDeleteList.Add(nameBuf);   // second file created by fopen
-        WMSG2("Extracting to '%s' (unique=%d)\n", nameBuf, unique);
+        WMSG2("Extracting to '%ls' (unique=%d)\n", nameBuf, unique);
         result = pEntry->ExtractThreadToFile(GenericEntry::kDataThread, fp,
                     GenericEntry::kConvertEOLOff, GenericEntry::kConvertHAOff,
                     &errMsg);
@@ -1795,11 +1794,11 @@ MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
             /* success */
             int err;
 
-            err = (int) ::ShellExecute(m_hWnd, _T("open"), nameBuf, NULL,
+            err = (int) ::ShellExecute(m_hWnd, L"open", nameBuf, NULL,
                             NULL, SW_SHOWNORMAL);
             if (err <= 32) {
                 CString msg;
-                msg.Format("Unable to launch external viewer (err=%d).", err);
+                msg.Format(L"Unable to launch external viewer (err=%d).", err);
                 ShowFailureMsg(this, msg, IDS_FAILED);
             } else {
                 WMSG0("Successfully launched external viewer\n");
@@ -1809,7 +1808,7 @@ MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
         }
     } else {
         CString msg;
-        msg.Format("Unable to open temp file '%s'.", nameBuf);
+        msg.Format(L"Unable to open temp file '%ls'.", nameBuf);
         ShowFailureMsg(this, msg, IDS_FAILED);
     }
 
@@ -1858,7 +1857,7 @@ MainWindow::SetProgressBegin(void)
     if (fpActionProgress != nil)
         fpActionProgress->SetProgress(0);
     else
-        fStatusBar.SetPaneText(kProgressPane, "--%");
+        fStatusBar.SetPaneText(kProgressPane, L"--%");
     //WMSG0("  Complete: BEGIN\n");
 
     /* redraw stuff with the changes */
@@ -1866,8 +1865,8 @@ MainWindow::SetProgressBegin(void)
 }
 
 int
-MainWindow::SetProgressUpdate(int percent, const char* oldName,
-    const char* newName)
+MainWindow::SetProgressUpdate(int percent, const WCHAR* oldName,
+    const WCHAR* newName)
 {
     int status = IDOK;
 
@@ -1878,10 +1877,10 @@ MainWindow::SetProgressUpdate(int percent, const char* oldName,
         if (newName != nil)
             fpActionProgress->SetFileName(newName);
     } else {
-        char buf[8];
-        sprintf(buf, "%d%%", percent);
+        WCHAR buf[8];
+        wsprintf(buf, L"%d%%", percent);
         fStatusBar.SetPaneText(kProgressPane, buf);
-        //WMSG1("  Complete: %s\n", buf);
+        //WMSG1("  Complete: %ls\n", buf);
     }
 
     if (!PeekAndPump()) {
@@ -1898,7 +1897,7 @@ MainWindow::SetProgressEnd(void)
     if (fpActionProgress != nil)
         fpActionProgress->SetProgress(100);
     else
-        fStatusBar.SetPaneText(kProgressPane, "");
+        fStatusBar.SetPaneText(kProgressPane, L"");
 //  EventPause(100);        // DEBUG DEBUG
     //WMSG0("  Complete: END\n");
 }
@@ -1914,13 +1913,13 @@ MainWindow::SetProgressEnd(void)
  * Returns "true" if we'd like things to continue.
  */
 bool
-MainWindow::SetProgressCounter(const char* str, long val)
+MainWindow::SetProgressCounter(const WCHAR* str, long val)
 {
     /* if the main window is enabled, user could activate menus */
     ASSERT(!IsWindowEnabled());
 
     if (fpProgressCounter != nil) {
-        //WMSG2("SetProgressCounter '%s' %d\n", str, val);
+        //WMSG2("SetProgressCounter '%ls' %d\n", str, val);
         CString msg;
 
         if (str != nil)
@@ -1928,10 +1927,10 @@ MainWindow::SetProgressCounter(const char* str, long val)
         fpProgressCounter->SetCount((int) val);
     } else {
         if (val < 0) {
-            fStatusBar.SetPaneText(kProgressPane, "");
+            fStatusBar.SetPaneText(kProgressPane, L"");
         } else {
             CString tmpStr;
-            tmpStr.Format("%ld", val);
+            tmpStr.Format(L"%ld", val);
             fStatusBar.SetPaneText(kProgressPane, tmpStr);
         }
     }
@@ -2073,7 +2072,7 @@ MainWindow::DrawEmptyClientArea(CDC* pDC, const CRect& clientRect)
  * Returns 0 on success, nonzero on failure.
  */
 int
-MainWindow::LoadArchive(const char* fileName, const char* extension,
+MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
     int filterIndex, bool readOnly, bool createFile)
 {
     GenericArchive::OpenResult openResult;
@@ -2084,7 +2083,7 @@ MainWindow::LoadArchive(const char* fileName, const char* extension,
 
     appName.LoadString(IDS_MB_APP_NAME);
 
-    WMSG3("LoadArchive: '%s' ro=%d idx=%d\n", fileName, readOnly, filterIndex);
+    WMSG3("LoadArchive: '%ls' ro=%d idx=%d\n", fileName, readOnly, filterIndex);
 
     /* close any existing archive to avoid weirdness from re-open */
     CloseArchive();
@@ -2104,7 +2103,7 @@ MainWindow::LoadArchive(const char* fileName, const char* extension,
         int i;
 
         for (i = 0; i < NELEM(gExtensionToIndex); i++) {
-            if (strcasecmp(extension, gExtensionToIndex[i].extension) == 0) {
+            if (wcsicmp(extension, gExtensionToIndex[i].extension) == 0) {
                 filterIndex = gExtensionToIndex[i].idx;
                 break;
             }
@@ -2155,7 +2154,7 @@ try_again:
             delete pOpenArchive;
             pOpenArchive = nil;
 
-            if (strcasecmp(extension, "zip") == 0) {
+            if (wcsicmp(extension, L"zip") == 0) {
                 errStr = "ZIP archives with multiple files are not supported.";
                 MessageBox(errStr, appName, MB_OK|MB_ICONINFORMATION);
                 result = -1;
@@ -2172,8 +2171,8 @@ try_again:
                 /*
                  * Kluge: assume we guessed disk image and were wrong.
                  */
-                errStr = "File doesn't appear to be a valid archive"
-                         " or disk image.";
+                errStr = L"File doesn't appear to be a valid archive"
+                         L" or disk image.";
             }
             if (!errStr.IsEmpty())
                 ShowFailureMsg(this, errStr, IDS_FAILED);
@@ -2234,7 +2233,7 @@ MainWindow::DoOpenVolume(CString drive, bool readOnly)
     //char filename[4] = "_:\\";
     //filename[0] = driveLetter;
 
-    WMSG2("FileOpenVolume '%s' %d\n", (const char*)drive, readOnly);
+    WMSG2("FileOpenVolume '%ls' %d\n", (LPCWSTR)drive, readOnly);
 
     /* close existing archive */
     CloseArchive();
@@ -2296,7 +2295,8 @@ MainWindow::ReopenArchive(void)
     CString errStr;
 
     /* if the open fails we *don't* want to leave the previous content up */
-    WMSG3("Reopening '%s' ro=%d kind=%d\n", pathName, readOnly, archiveKind);
+    WMSG3("Reopening '%ls' ro=%d kind=%d\n",
+        (LPCWSTR) pathName, readOnly, archiveKind);
     CloseArchive();
 
     switch (archiveKind) {
@@ -2337,12 +2337,12 @@ bail:
  * Determine whether "path" matches the pathname of the currently open archive.
  */
 bool
-MainWindow::IsOpenPathName(const char* path)
+MainWindow::IsOpenPathName(const WCHAR* path)
 {
     if (fpOpenArchive == nil)
         return false;
 
-    if (stricmp(path, fpOpenArchive->GetPathName()) == 0)
+    if (wcsicmp(path, fpOpenArchive->GetPathName()) == 0)
         return true;
 
     return false;
@@ -2450,22 +2450,23 @@ MainWindow::CloseArchive(void)
  * temp file whose name we're trying to conceal.
  */
 void
-MainWindow::SetCPTitle(const char* pathname, GenericArchive* pOpenArchive)
+MainWindow::SetCPTitle(const WCHAR* pathname, GenericArchive* pOpenArchive)
 {
     ASSERT(pathname != nil);
     CString title;
-    CString archiveDescription;
     CString appName;
+    CString archiveDescription;
 
     appName.LoadString(IDS_MB_APP_NAME);
 
     pOpenArchive->GetDescription(&archiveDescription);
-    title.Format(_T("%s - %s (%s)"), appName, pathname, archiveDescription);
+    title.Format(L"%ls - %ls (%ls)", (LPCWSTR) appName, pathname,
+        (LPCWSTR) archiveDescription);
 
     if (fpOpenArchive->IsReadOnly()) {
         CString readOnly;
         readOnly.LoadString(IDS_READONLY);
-        title += _T(" ");
+        title += L" ";
         title += readOnly;
     }
 
@@ -2520,8 +2521,8 @@ MainWindow::GetPrintTitle(void)
     appName.LoadString(IDS_MB_APP_NAME);
 
     fpOpenArchive->GetDescription(&archiveDescription);
-    title.Format(_T("%s - %s (%s)"),
-        appName, fOpenArchivePathName, archiveDescription);
+    title.Format(L"%ls - %ls (%ls)", (LPCWSTR) appName,
+        (LPCWSTR) fOpenArchivePathName, (LPCWSTR) archiveDescription);
 
     return title;
 }
@@ -2562,19 +2563,19 @@ MainWindow::FailureBeep(void)
  * The absence of the file is not considered an error.
  */
 CString
-MainWindow::RemoveFile(const char* fileName)
+MainWindow::RemoveFile(const WCHAR* fileName)
 {
     CString errMsg;
 
     int cc;
-    cc = unlink(fileName);
+    cc = _wunlink(fileName);
     if (cc < 0 && errno != ENOENT) {
         int err = errno;
-        WMSG2("Failed removing file '%s', errno=%d\n", fileName, err);
-        errMsg.Format("Unable to remove '%s': %s.",
+        WMSG2("Failed removing file '%ls', errno=%d\n", fileName, err);
+        errMsg.Format(L"Unable to remove '%ls': %hs.",
             fileName, strerror(err));
         if (err == EACCES)
-            errMsg += "\n\n(Make sure the file isn't open.)";
+            errMsg += L"\n\n(Make sure the file isn't open.)";
     }
 
     return errMsg;

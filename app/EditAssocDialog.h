@@ -6,8 +6,8 @@
 /*
  * File associations edit dialog.
  */
-#ifndef __EDITASSOCDIALOG__
-#define __EDITASSOCDIALOG__
+#ifndef APP_EDITASSOCDIALOG_H
+#define APP_EDITASSOCDIALOG_H
 
 #include "resource.h"
 
@@ -42,4 +42,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__EDITASSOCDIALOG__*/
+#endif /*APP_EDITASSOCDIALOG_H*/

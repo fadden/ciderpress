@@ -234,7 +234,7 @@ DiskFSHFS::LoadVolHeader(void)
             tmWhen = *ptm;  // make a copy -- static buffers in time functions
             tmWhen.tm_isdst = isDst;
 
-            fLocalTimeOffset = when - mktime(&tmWhen);
+            fLocalTimeOffset = (long) (when - mktime(&tmWhen));
         } else
             fLocalTimeOffset = 0;
 

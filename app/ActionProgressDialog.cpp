@@ -100,7 +100,7 @@ ActionProgressDialog::OnInitDialog(void)
  * Set the name of the file as it appears in the archive.
  */
 void
-ActionProgressDialog::SetArcName(const char* str)
+ActionProgressDialog::SetArcName(const WCHAR* str)
 {
     CString oldStr;
 
@@ -127,7 +127,7 @@ ActionProgressDialog::GetFileName(void)
  * Set the name of the file as it appears under Windows.
  */
 void
-ActionProgressDialog::SetFileName(const char* str)
+ActionProgressDialog::SetFileName(const WCHAR* str)
 {
     CString oldStr;
 

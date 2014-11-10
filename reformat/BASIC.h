@@ -6,8 +6,8 @@
 /*
  * Reformat BASIC programs.
  */
-#ifndef __LR_BASIC__
-#define __LR_BASIC__
+#ifndef REFORMAT_BASIC_H
+#define REFORMAT_BASIC_H
 
 #include "ReformatBase.h"
 
@@ -61,4 +61,4 @@ public:
     static const char* GetBusinessTokens(void);
 };
 
-#endif /*__LR_BASIC__*/
+#endif /*REFORMAT_BASIC_H*/

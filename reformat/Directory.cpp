@@ -108,21 +108,23 @@ ReformatDirectory::PrintDirEntries(const unsigned char* srcBuf,
                 strncpy(fileName, (const char*)&pDirEntry[0x01], kMaxFileName);
                 fileName[nameLen] = '\0';
 
-                CString createStr, modStr;
+                CString createStrW, modStrW;
                 A2FileProDOS::ProDate prodosDateTime;
 
                 prodosDateTime = pDirEntry[0x18] | pDirEntry[0x19] << 8 |
                                 pDirEntry[0x1a] << 16 | pDirEntry[0x1b] << 24;
-                FormatDate(A2FileProDOS::ConvertProDate(prodosDateTime), &createStr);
+                FormatDate(A2FileProDOS::ConvertProDate(prodosDateTime), &createStrW);
+                CStringA createStr(createStrW);
                 prodosDateTime = pDirEntry[0x21] | pDirEntry[0x22] << 8 |
                                 pDirEntry[0x23] << 16 | pDirEntry[0x24] << 24;
-                FormatDate(A2FileProDOS::ConvertProDate(prodosDateTime), &modStr);
+                FormatDate(A2FileProDOS::ConvertProDate(prodosDateTime), &modStrW);
+                CStringA modStr(modStrW);
 
                 char lockedFlag = '*';
                 if (pDirEntry[0x1e] & 0x80)
                     lockedFlag = ' ';
 
-                CString auxTypeStr;
+                CStringA auxTypeStr;
                 unsigned short auxType = pDirEntry[0x1f] | pDirEntry[0x20] << 8;
                 if (pDirEntry[0x10] == 0x06)        // bin
                     auxTypeStr.Format("A=$%04X", auxType);

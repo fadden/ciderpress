@@ -97,8 +97,8 @@ ImportBASDialog::OnInitDialog(void)
     PathName path(fFileName);
     CString fileNameOnly(path.GetFileName());
     CString ext(fileNameOnly.Right(4));
-    if (ext.CompareNoCase(".txt") == 0) {
-        WMSG1("removing extension from '%s'\n", (const char*) fileNameOnly);
+    if (ext.CompareNoCase(L".txt") == 0) {
+        WMSG1("removing extension from '%ls'\n", (LPCWSTR) fileNameOnly);
         fileNameOnly = fileNameOnly.Left(fileNameOnly.GetLength() - 4);
     }
 
@@ -126,7 +126,7 @@ static const char* kSuccess = "success!\r\n\r\n";
  * Import an Applesoft BASIC program from the specified file.
  */
 bool
-ImportBASDialog::ImportBAS(const char* fileName)
+ImportBASDialog::ImportBAS(const WCHAR* fileName)
 {
     FILE* fp = NULL;
     ExpandBuffer msgs(1024);
@@ -135,8 +135,8 @@ ImportBASDialog::ImportBAS(const char* fileName)
     char* outBuf = nil;
     bool result = false;
 
-    msgs.Printf("Importing from '%s'...", fileName);
-    fp = fopen(fileName, "rb");     // EOL unknown, open as binary and deal
+    msgs.Printf("Importing from '%ls'...", fileName);
+    fp = _wfopen(fileName, L"rb");     // EOL unknown, open as binary and deal
     if (fp == NULL) {
         msgs.Printf("%sUnable to open file.", kFailed);
         goto bail;
@@ -190,7 +190,8 @@ bail:
     char* msgBuf = nil;
     long msgLen;
     msgs.SeizeBuffer(&msgBuf, &msgLen);
-    pEdit->SetWindowText(msgBuf);
+    CString msgStr(msgBuf);
+    pEdit->SetWindowText(msgStr);
     delete[] msgBuf;
 
     return result;
@@ -225,7 +226,7 @@ ImportBASDialog::ConvertTextToBAS(const char* buf, long fileLen,
         if (!ProcessBASLine(lineStart, lineEnd - lineStart, &output,
             /*ref*/ msg))
         {
-            pMsgs->Printf("%sLine %d: %s", kFailed, lineNum, (const char*) msg);
+            pMsgs->Printf("%sLine %d: %ls", kFailed, lineNum, (LPCWSTR) msg);
             return false;
         }
 
@@ -380,7 +381,7 @@ ImportBASDialog::ProcessBASLine(const char* buf, int len,
                 return true;        // blank lines with whitespace are okay
             else {
                 // end of line reached while scanning line number is bad
-                msg = "found nothing except line number";
+                msg = L"found nothing except line number";
                 return false;
             }
         }
@@ -389,14 +390,14 @@ ImportBASDialog::ProcessBASLine(const char* buf, int len,
         if (!isdigit(ch))
             break;
         if (tokenLen == 5) {    // theoretical max is "65535"
-            msg = "line number has too many digits";
+            msg = L"line number has too many digits";
             return false;
         }
         tokenBuf[tokenLen++] = ch;
     }
 
     if (!tokenLen) {
-        msg = "line did not start with a line number";
+        msg = L"line did not start with a line number";
         return false;
     }
     tokenBuf[tokenLen] = '\0';
@@ -661,7 +662,7 @@ void ImportBASDialog::OnOK(void)
         CString appName;
         appName.LoadString(IDS_MB_APP_NAME);
 
-        MessageBox("You must specify a filename.",
+        MessageBox(L"You must specify a filename.",
             appName, MB_OK);
     }
 
@@ -671,7 +672,7 @@ void ImportBASDialog::OnOK(void)
     GenericArchive::FileDetails details;
 
     details.entryKind = GenericArchive::FileDetails::kFileKindDataFork;
-    details.origName = "Imported BASIC";
+    details.origName = L"Imported BASIC";
     details.storageName = fileName;
     details.access = 0xe3;  // unlocked, backup bit set
     details.fileType = kFileTypeBAS;
@@ -697,7 +698,7 @@ void ImportBASDialog::OnOK(void)
 bail:
     if (!errMsg.IsEmpty()) {
         CString msg;
-        msg.Format("Unable to import file: %s.", (const char *) errMsg);
+        msg.Format(L"Unable to import file: %ls.", (LPCWSTR) errMsg);
         ShowFailureMsg(this, msg, IDS_FAILED);
         return;
     }

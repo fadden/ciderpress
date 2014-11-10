@@ -6,8 +6,8 @@
 /*
  * Class declaration for a list control showing archive contents.
  */
-#ifndef __CONTENT_LIST__
-#define __CONTENT_LIST__
+#ifndef APP_CONTENTLIST_H
+#define APP_CONTENTLIST_H
 
 #include "GenericArchive.h"
 #include "Preferences.h"
@@ -59,8 +59,8 @@ public:
 
     void SelectSubdirContents(void);
 
-    void FindNext(const char* str, bool down, bool matchCase, bool wholeWord);
-    bool CompareFindString(int num, const char* str, bool matchCase,
+    void FindNext(const WCHAR* str, bool down, bool matchCase, bool wholeWord);
+    bool CompareFindString(int num, const WCHAR* str, bool matchCase,
         bool wholeWord);
 
     //int GetRightClickItem(void) const { return fRightClickItem; }
@@ -68,9 +68,9 @@ public:
 
     enum { kFileTypeBufLen = 5, kAuxTypeBufLen = 6 };
     static void MakeFileTypeDisplayString(const GenericEntry* pEntry,
-        char* buf);
+        WCHAR* buf);
     static void MakeAuxTypeDisplayString(const GenericEntry* pEntry,
-        char* buf);
+        WCHAR* buf);
 
 protected:
     // overridden functions
@@ -111,8 +111,8 @@ private:
 
     int GetDefaultWidth(int col);
 
-    static void MakeMacTypeString(unsigned long val, char* buf);
-    static void MakeRatioDisplayString(const GenericEntry* pEntry, char* buf,
+    static void MakeMacTypeString(unsigned long val, WCHAR* buf);
+    static void MakeRatioDisplayString(const GenericEntry* pEntry, WCHAR* buf,
         int* pPerc);
 
     void SetSortIcon(void);
@@ -121,7 +121,7 @@ private:
 
     void OnDoubleClick(NMHDR* pnmh, LRESULT* pResult);
     void OnRightClick(NMHDR* pnmh, LRESULT* pResult);
-    void SelectSubdir(const char* displayPrefix);
+    void SelectSubdir(const WCHAR* displayPrefix);
 
     CImageList      fHdrImageList;
     CImageList      fListImageList;
@@ -133,4 +133,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CONTENT_LIST__*/
+#endif /*APP_CONTENTLIST_H*/

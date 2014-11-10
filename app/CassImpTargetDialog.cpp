@@ -60,8 +60,8 @@ CassImpTargetDialog::DoDataExchange(CDataExchange* pDX)
 
         if (fFileTypeIndex == kTypeBIN) {
             if (GetStartAddr() < 0) {
-                MessageBox("The address field must be a valid 4-digit "
-                           " hexadecimal number.",
+                MessageBox(L"The address field must be a valid 4-digit "
+                           L" hexadecimal number.",
                     appName, MB_OK);
                 pDX->Fail();
                 return;
@@ -69,7 +69,7 @@ CassImpTargetDialog::DoDataExchange(CDataExchange* pDX)
             fStartAddr = (unsigned short) GetStartAddr();
         }
         if (fFileName.IsEmpty()) {
-            MessageBox("You must enter a filename.", appName, MB_OK);
+            MessageBox(L"You must enter a filename.", appName, MB_OK);
             pDX->Fail();
             return;
         }
@@ -78,7 +78,7 @@ CassImpTargetDialog::DoDataExchange(CDataExchange* pDX)
         CString tmpStr;
 
         pWnd = GetDlgItem(IDC_CASSIMPTARG_BINADDR);
-        tmpStr.Format("%04X", fStartAddr);
+        tmpStr.Format(L"%04X", fStartAddr);
         pWnd->SetWindowText(tmpStr);
     }
 }
@@ -113,7 +113,7 @@ CassImpTargetDialog::OnAddrChange(void)
     if (val < 0)
         val = 0;
 
-    tmpStr.Format(".%04X", val + fFileLength-1);
+    tmpStr.Format(L".%04X", val + fFileLength-1);
 
     pWnd = GetDlgItem(IDC_CASSIMPTARG_RANGE);
     pWnd->SetWindowText(tmpStr);
@@ -134,18 +134,18 @@ CassImpTargetDialog::GetStartAddr(void) const
     CString aux;
     pWnd->GetWindowText(aux);
 
-    const char* str = aux;
-    char* end;
+    const WCHAR* str = aux;
+    WCHAR* end;
     long val;
 
     if (str[0] == '\0') {
         WMSG0(" HEY: blank addr, returning -1\n");
         return -1;
     }
-    val = strtoul(aux, &end, 16);
-    if (end != str + strlen(str)) {
-        WMSG1(" HEY: found some garbage in addr '%s', returning -1\n",
-            (LPCTSTR) aux);
+    val = wcstoul(aux, &end, 16);
+    if (end != str + wcslen(str)) {
+        WMSG1(" HEY: found some garbage in addr '%ls', returning -1\n",
+            (LPCWSTR) aux);
         return -1;
     }
     return val;

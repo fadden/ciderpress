@@ -8,13 +8,13 @@
  *
  * These are abstract base classes.
  */
-#ifndef __GENERIC_ARCHIVE__
-#define __GENERIC_ARCHIVE__
+#ifndef APP_GENERICARCHIVE_H
+#define APP_GENERICARCHIVE_H
 
 #include "Preferences.h"
 #include "../util/UtilLib.h"
 #include "../diskimg/DiskImg.h"
-#include "../prebuilt/NufxLib.h"
+#include "../nufxlib/NufxLib.h"
 #include "../reformat/Reformat.h"
 #include <time.h>
 #include <string.h>
@@ -166,13 +166,14 @@ public:
     long GetIndex(void) const { return fIndex; }
     void SetIndex(long idx) { fIndex = idx; }
 
-    const char* GetPathName(void) const { return fPathName; }
-    void SetPathName(const char* path);
-    const char* GetFileName(void);
-    const char* GetFileNameExtension(void); // returns e.g. ".SHK"
-    void SetSubVolName(const char* name);
-    const char* GetSubVolName(void) const { return fSubVolName; }
-    const char* GetDisplayName(void) const; // not really "const"
+    const WCHAR* GetPathName(void) const { return fPathName; }
+    void SetPathName(const WCHAR* path);
+    const WCHAR* GetFileName(void);
+    const WCHAR* GetFileNameExtension(void); // returns e.g. ".SHK"
+    CStringA GetFileNameExtensionA(void);
+    void SetSubVolName(const WCHAR* name);
+    const WCHAR* GetSubVolName(void) const { return fSubVolName; }
+    const WCHAR* GetDisplayName(void) const; // not really "const"
 
     char GetFssep(void) const { return fFssep; }
     void SetFssep(char fssep) { fFssep = fssep; }
@@ -188,8 +189,8 @@ public:
     void SetModWhen(time_t when) { fModWhen = when; }
     RecordKind GetRecordKind(void) const { return fRecordKind; }
     void SetRecordKind(RecordKind recordKind) { fRecordKind = recordKind; }
-    const char* GetFormatStr(void) const { return fFormatStr; }
-    void SetFormatStr(const char* str) { fFormatStr = str; } // arg not copied, must be static!
+    const WCHAR* GetFormatStr(void) const { return fFormatStr; }
+    void SetFormatStr(const WCHAR* str) { fFormatStr = str; } // arg not copied, must be static!
     LONGLONG GetCompressedLen(void) const { return fCompressedLen; }
     void SetCompressedLen(LONGLONG len) { fCompressedLen = len; }
     LONGLONG GetUncompressedLen(void) const {
@@ -226,33 +227,33 @@ public:
     void SetNext(GenericEntry* pEntry) { fpNext = pEntry; }
 
     // Utility functions.
-    const char* GetFileTypeString(void) const;
-    static bool CheckHighASCII(const unsigned char* buffer,
+    const WCHAR* GetFileTypeString(void) const;
+    static bool CheckHighASCII(const BYTE* buffer,
         unsigned long count);
 
-    static ConvertEOL DetermineConversion(const unsigned char* buffer,
+    static ConvertEOL DetermineConversion(const BYTE* buffer,
         long count, EOLType* pSourceType, ConvertHighASCII* pConvHA);
     static int GenericEntry::WriteConvert(FILE* fp, const char* buf,
         size_t len, ConvertEOL* pConv, ConvertHighASCII* pConvHA,
         bool* pLastCR);
 
 protected:
-    static void SpacesToUnderscores(char* buf);
+    static void SpacesToUnderscores(WCHAR* buf);
 
 private:
-    char*       fPathName;
-    const char* fFileName;          // points within fPathName
-    const char* fFileNameExtension; // points within fPathName
+    WCHAR*       fPathName;
+    const WCHAR* fFileName;         // points within fPathName
+    const WCHAR* fFileNameExtension; // points within fPathName
     char        fFssep;
-    char*       fSubVolName;        // sub-volume prefix, or nil if none
-    char*       fDisplayName;       // combination of sub-vol and path
+    WCHAR*       fSubVolName;       // sub-volume prefix, or nil if none
+    WCHAR*      fDisplayName;       // combination of sub-vol and path
     long        fFileType;
     long        fAuxType;
     long        fAccess;
     time_t      fCreateWhen;
     time_t      fModWhen;
     RecordKind  fRecordKind;        // forked file, disk image, ??
-    const char* fFormatStr;         // static str; compression or fs format
+    const WCHAR* fFormatStr;        // static str; compression or fs format
     //LONGLONG  fUncompressedLen;
     LONGLONG    fDataForkLen;       // also for disk images
     LONGLONG    fRsrcForkLen;       // set to 0 when nonexistent
@@ -318,10 +319,10 @@ public:
     } OpenResult;
 
     // Open an archive and do fun things with the innards.
-    virtual OpenResult Open(const char* filename, bool readOnly,
+    virtual OpenResult Open(const WCHAR* filename, bool readOnly,
         CString* pErrMsg) = 0;
     // Create a new archive with the specified name.
-    virtual CString New(const char* filename, const void* options) = 0;
+    virtual CString New(const WCHAR* filename, const void* options) = 0;
     // Flush any unwritten data to disk
     virtual CString Flush(void) = 0;
     // Force a re-read from the underlying storage.
@@ -357,7 +358,7 @@ public:
         const AddFilesDialog* pAddOpts) = 0;
     // Create a subdirectory.
     virtual bool CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
-        const char* newName) = 0;
+        const WCHAR* newName) = 0;
 
     // Test a set of files.
     virtual bool TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet) = 0;
@@ -372,9 +373,9 @@ public:
 
     // Rename a volume (or sub-volume)
     virtual bool RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
-        const char* newName) = 0;
+        const WCHAR* newName) = 0;
     virtual CString TestVolumeName(const DiskFS* pDiskFS,
-        const char* newName) const = 0;
+        const WCHAR* newName) const = 0;
 
     // Recompress a set of files.
     virtual bool RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
@@ -419,10 +420,10 @@ public:
     virtual long GetCapability(Capability cap) = 0;
 
     // Get the pathname of the file we opened.
-    const char* GetPathName(void) const { return fPathName; }
+    const WCHAR* GetPathName(void) const { return fPathName; }
 
     // Generic utility function.
-    static CString GenDerivedTempName(const char* filename);
+    static CString GenDerivedTempName(const WCHAR* filename);
     static int ComparePaths(const CString& name1, char fssep1,
         const CString& name2, char fssep2);
 
@@ -433,6 +434,9 @@ public:
      *
      * It's based on the NuFileDetails class from NufxLib (which used to be
      * used everywhere).
+     *
+     * TODO: xyzzy: NuFileDetails cast requires us to store pathnames with
+     *  narrow strings.
      */
     class FileDetails {
     public:
@@ -482,11 +486,23 @@ public:
          * Data fields.  While transitioning from general use of NuFileDetails
          * (v1.2.x to v2.0) I'm just going to leave these public.
          */
+
         //NuThreadID          threadID;       /* data, rsrc, disk img? */
         FileKind            entryKind;
+
+        /*
+         * Original full pathname as found on Windows.
+         */
         CString             origName;
 
-        CString             storageName;    /* normalized (NOT FS-normalized) */
+        /*
+         * "Normalized" pathname.  This is the full path with any of our
+         * added bits removed (e.g. file type & fork identifiers).  It has
+         * not been sanitized for any specific target filesystem.  See also
+         * PathProposal::LocalToArchive().
+         */
+        CString             storageName;
+
         //NuFileSysID         fileSysID;
         DiskImg::FSFormat   fileSysFmt;
         unsigned short      fileSysInfo;    /* fssep lurks here */
@@ -504,8 +520,8 @@ public:
 
     // Transfer files, one at a time, into this archive from another.
     virtual void XferPrepare(const XferFileOptions* pXferOpts) = 0;
-    virtual CString XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
-        long dataLen, unsigned char** pRsrcBuf, long rsrcLen) = 0;
+    virtual CString XferFile(FileDetails* pDetails, BYTE** pDataBuf,
+        long dataLen, BYTE** pRsrcBuf, long rsrcLen) = 0;
     virtual void XferAbort(CWnd* pMsgWnd) = 0;
     virtual void XferFinish(CWnd* pMsgWnd) = 0;
     static void UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime);
@@ -514,17 +530,17 @@ protected:
     virtual void DeleteEntries(void);
 
     /* NuLib2-derived recursive directory add functions */
-    void ReplaceFssep(char* str, char oldc, char newc, char newSubst);
-    NuError GetFileDetails(const AddFilesDialog* pAddOpts, const char* pathname,
-        struct stat* psb, FileDetails* pDetails);
-    Win32dirent* OpenDir(const char* name);
+    void ReplaceFssep(WCHAR* str, char oldc, char newc, char newSubst);
+    NuError GetFileDetails(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
+        struct _stat* psb, FileDetails* pDetails);
+    Win32dirent* OpenDir(const WCHAR* name);
     Win32dirent* ReadDir(Win32dirent* dir);
     void CloseDir(Win32dirent* dir);
     NuError Win32AddDirectory(const AddFilesDialog* pAddOpts,
-        const char* dirName, CString* pErrMsg);
+        const WCHAR* dirName, CString* pErrMsg);
     NuError Win32AddFile(const AddFilesDialog* pAddOpts,
-        const char* pathname, CString* pErrMsg);
-    NuError AddFile(const AddFilesDialog* pAddOpts, const char* pathname,
+        const WCHAR* pathname, CString* pErrMsg);
+    NuError AddFile(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
         CString* pErrMsg);
 
     /*
@@ -545,13 +561,13 @@ protected:
     virtual NuError DoAddFile(const AddFilesDialog* pAddOpts,
         FileDetails* pDetails) = 0;
 
-    void SetPathName(const char* pathName) {
-        delete fPathName;
+    void SetPathName(const WCHAR* pathName) {
+        free(fPathName);
         if (pathName != nil) {
-            fPathName = new char[strlen(pathName)+1];
-            strcpy(fPathName, pathName);
-        } else
+            fPathName = _wcsdup(pathName);
+        } else {
             fPathName = nil;
+        }
     }
 
     bool            fReloadFlag;        // set after Reload called
@@ -562,7 +578,7 @@ private:
     //CString       fNewPathHolder;
     //CString       fOrigPathHolder;
 
-    char*           fPathName;
+    WCHAR*          fPathName;
     long            fNumEntries;
     GenericEntry*   fEntryHead;
     GenericEntry*   fEntryTail;
@@ -669,7 +685,7 @@ public:
     int GetNumEntries(void) const { return fNumEntries; }
 
     // count the #of entries whose display name matches "prefix"
-    int CountMatchingPrefix(const char* prefix);
+    int CountMatchingPrefix(const WCHAR* prefix);
 
     // debug dump
     void Dump(void);
@@ -687,4 +703,4 @@ private:
     SelectionEntry* fEntryTail;
 };
 
-#endif /*__GENERIC_ARCHIVE__*/
+#endif /*APP_GENERICARCHIVE_H*/

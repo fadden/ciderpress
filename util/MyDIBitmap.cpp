@@ -101,8 +101,8 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
             DWORD err = ::GetLastError();
             //CString msg;
             //GetWin32ErrorString(err, &msg);
-            //WMSG2(" DIB CreateDIBSection failed (err=%d msg='%s')\n",
-            //  err, msg);
+            //WMSG2(" DIB CreateDIBSection failed (err=%d msg='%ls')\n",
+            //  err, (LPCWSTR) msg);
             WMSG1(" DIB CreateDIBSection failed (err=%d)\n", err);
             LogHexDump(&mBitmapInfoHdr, sizeof(BITMAPINFO));
             WMSG1("&mpPixels = 0x%08lx\n", &mpPixels);
@@ -150,15 +150,16 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
  * Open the file and call the FILE* version.
  */
 int
-MyDIBitmap::CreateFromFile(const char* fileName)
+MyDIBitmap::CreateFromFile(const WCHAR* fileName)
 {
     FILE* fp = nil;
     int err;
 
-    fp = fopen(fileName, "rb");
+    fp = _wfopen(fileName, L"rb");
     if (fp == nil) {
         err = errno ? errno : -1;
-        WMSG2("Unable to read bitmap from file '%s' (err=%d)\n", fileName, err);
+        WMSG2("Unable to read bitmap from file '%ls' (err=%d)\n",
+            fileName, err);
         return err;
     }
 
@@ -483,7 +484,7 @@ MyDIBitmap::ConvertBufToDIBSection(void)
  * Use MAKEINTRESOURCE to load a resource by ordinal.
  */
 void*
-MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const char* rsrc)
+MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
 {
     mhBitmap = (HBITMAP) ::LoadImage(hInstance, rsrc, IMAGE_BITMAP, 0, 0,
                     LR_DEFAULTCOLOR | LR_CREATEDIBSECTION);
@@ -491,8 +492,8 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const char* rsrc)
         DWORD err = ::GetLastError();
         //CString msg;
         //GetWin32ErrorString(err, &msg);
-        //WMSG2(" DIB CreateDIBSection failed (err=%d msg='%s')\n",
-        //  err, msg);
+        //WMSG2(" DIB CreateDIBSection failed (err=%d msg='%ls')\n",
+        //  err, (LPCWSTR) msg);
         WMSG1(" DIB LoadImage failed (err=%d)\n", err);
         return nil;
     }
@@ -538,7 +539,8 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const char* rsrc)
             DWORD err = ::GetLastError();
             CString buf;
             GetWin32ErrorString(err, &buf);
-            WMSG2(" DIB GetDIBColorTable failed (err=0x%x '%s')\n", err, buf);
+            WMSG2(" DIB GetDIBColorTable failed (err=0x%x '%ls')\n",
+                err, (LPCWSTR) buf);
         }
         SelectObject(memDC, oldBits);
         DeleteDC(memDC);
@@ -1056,8 +1058,8 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
 
         CString msg;
         GetWin32ErrorString(err, &msg);
-        WMSG2(" DIB CreateDIBSection failed (err=%d msg='%s')\n",
-            err, msg);
+        WMSG2(" DIB CreateDIBSection failed (err=%d msg='%ls')\n",
+            err, (LPCWSTR) msg);
         //ASSERT(false);        // stop & examine this
         return nil;
     }
@@ -1083,17 +1085,17 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
  * function.
  */
 int
-MyDIBitmap::WriteToFile(const char* fileName) const
+MyDIBitmap::WriteToFile(const WCHAR* fileName) const
 {
     FILE* fp = nil;
     int err;
 
     assert(fileName != nil);
 
-    fp = fopen(fileName, "wb");
+    fp = _wfopen(fileName, L"wb");
     if (fp == nil) {
         err = errno ? errno : -1;
-        WMSG2("Unable to open bitmap file '%s' (err=%d)\n", fileName, err);
+        WMSG2("Unable to open bitmap file '%ls' (err=%d)\n", fileName, err);
         return err;
     }
 

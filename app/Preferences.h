@@ -13,8 +13,8 @@
  *  - Add a default value to Preferences::Preferences.  If not specified,
  *    strings will be nil and numeric values will be zero.
  */
-#ifndef __PREFERENCES__
-#define __PREFERENCES__
+#ifndef APP_PREFERENCES_H
+#define APP_PREFERENCES_H
 
 #include "MyApp.h"
 
@@ -42,8 +42,8 @@ public:
     }
     ~ColumnLayout(void) {}
 
-    void LoadFromRegistry(const char* section);
-    void SaveToRegistry(const char* section);
+    void LoadFromRegistry(const WCHAR* section);
+    void SaveToRegistry(const WCHAR* section);
 
     int GetColumnWidth(int col) const {
         ASSERT(col >= 0 && col < kNumVisibleColumns);
@@ -229,8 +229,8 @@ public:
     void SetPrefBool(PrefNum num, bool val);
     long GetPrefLong(PrefNum num) const;
     void SetPrefLong(PrefNum num, long val);
-    const char* GetPrefString(PrefNum num) const;
-    void SetPrefString(PrefNum num, const char* str);
+    const WCHAR* GetPrefString(PrefNum num) const;
+    void SetPrefString(PrefNum num, const WCHAR* str);
 
 
 private:
@@ -247,8 +247,8 @@ private:
     typedef struct PrefMap {
         PrefNum     num;
         PrefType    type;
-        const char* registrySection;
-        const char* registryKey;
+        const WCHAR* registrySection;
+        const WCHAR* registryKey;
     } PrefMap;
     static const PrefMap fPrefMaps[kPrefNumLastEntry];
     void ScanPrefMaps(void);
@@ -275,26 +275,26 @@ private:
     /*
      * Registry helpers.
      */
-    UINT GetInt(const char* section, const char* key, int dflt) {
+    UINT GetInt(const WCHAR* section, const WCHAR* key, int dflt) {
         return gMyApp.GetProfileInt(section, key, dflt);
     }
-    bool GetBool(const char* section, const char* key, bool dflt) {
+    bool GetBool(const WCHAR* section, const WCHAR* key, bool dflt) {
         return (gMyApp.GetProfileInt(section, key, dflt) != 0);
     }
-    CString GetString(const char* section, const char* key,
-        const char* dflt)
+    CString GetString(const WCHAR* section, const WCHAR* key,
+        const WCHAR* dflt)
     {
         return gMyApp.GetProfileString(section, key, dflt);
     }
-    BOOL WriteInt(const char* section, const char* key, int value) {
+    BOOL WriteInt(const WCHAR* section, const WCHAR* key, int value) {
         return gMyApp.WriteProfileInt(section, key, value);
     }
-    BOOL WriteBool(const char* section, const char* key, bool value) {
+    BOOL WriteBool(const WCHAR* section, const WCHAR* key, bool value) {
         return gMyApp.WriteProfileInt(section, key, value);
     }
-    BOOL WriteString(const char* section, const char* key, const char* value) {
+    BOOL WriteString(const WCHAR* section, const WCHAR* key, const WCHAR* value) {
         return gMyApp.WriteProfileString(section, key, value);
     }
 };
 
-#endif /*__PREFERENCES__*/
+#endif /*APP_PREFERENCES_H*/

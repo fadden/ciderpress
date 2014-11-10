@@ -11,14 +11,6 @@
 #include <math.h>
 
 
-static float roundf(float val)
-{
-    if (val < 0.5f)
-        return ::floorf(val);
-    else
-        return ::ceilf(val);
-}
-
 /*
  * ==========================================================================
  *      ReformatText
@@ -221,7 +213,7 @@ ReformatText::SetResultBuffer(ReformatOutput* pOutput, bool multiFont)
          * worry about nil pointers.
          */
         pOutput->SetOutputKind(ReformatOutput::kOutputRaw);
-        WMSG0("ReformatText returning a nil pointer\n");
+        WMSG0("ReformatText returning a null pointer\n");
     } else {
         if (fUseRTF)
             pOutput->SetOutputKind(ReformatOutput::kOutputRTF);

@@ -79,7 +79,7 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
     }
 
     /* date/time are pascal strings */
-    WMSG2("File saved at '%.26s' '%.10s'\n", srcBuf + 6, srcBuf + 32);
+    WMSG2("File saved at '%.26hs' '%.10s'\n", srcBuf + 6, srcBuf + 32);
 
     srcBuf += kWPGlobalsLen;
     srcLen -= kWPGlobalsLen;

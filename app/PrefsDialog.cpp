@@ -520,7 +520,7 @@ PrefsFilesPage::DoDataExchange(CDataExchange* pDX)
         if (fTempPath.IsEmpty()) {
             CString appName;
             appName.LoadString(IDS_MB_APP_NAME);
-            MessageBox("You must specify a path for temp files",
+            MessageBox(L"You must specify a path for temp files",
                 appName, MB_OK);
             pDX->Fail();
         }
@@ -546,8 +546,8 @@ PrefsFilesPage::OnChooseFolder(void)
 
     chooseDir.SetPathName(editPath);
     if (chooseDir.DoModal() == IDOK) {
-        const char* ccp = chooseDir.GetPathName();
-        WMSG1("New temp path chosen = '%s'\n", ccp);
+        const WCHAR* ccp = chooseDir.GetPathName();
+        WMSG1("New temp path chosen = '%ls'\n", ccp);
 
         pEditWnd->SetWindowText(ccp);
 
@@ -593,7 +593,7 @@ END_MESSAGE_MAP()
  * Construct the preferences dialog from the individual pages.
  */
 PrefsSheet::PrefsSheet(CWnd* pParentWnd) :
-    CPropertySheet("Preferences", pParentWnd)
+    CPropertySheet(L"Preferences", pParentWnd)
 {
     AddPage(&fGeneralPage);
     AddPage(&fDiskImagePage);

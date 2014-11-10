@@ -1,0 +1,91 @@
+#
+# Copyright (C) 2000-2007 by Andy McFadden, All Rights Reserved.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the BSD, see the file COPYING.
+#
+# Makefile for nufxlib tests (should work with non-GNU make).
+#
+# This is normally invoked from the nufxlib makefile.
+#
+# If you invoke this directly, LIB_PRODUCT won't be defined, and it
+# won't automatically detect changes to the library.  However, any
+# changes to the library should cause a re-build in here anyway if
+# you're running "make" from the library directory.
+#
+SHELL		= /bin/sh
+CC			= @CC@
+AR			= ar rcv
+#OPT 		= @CFLAGS@ -DNDEBUG
+OPT			= @CFLAGS@
+#OPT		= @CFLAGS@ -DDEBUG_MSGS
+#OPT 		= @CFLAGS@ -DDEBUG_VERBOSE
+GCC_FLAGS	= -Wall -Wwrite-strings -Wstrict-prototypes -Wpointer-arith -Wshadow
+CFLAGS		= @BUILD_FLAGS@ -I. -I.. @DEFS@
+
+#ALL_SRCS	= $(wildcard *.c *.cpp)
+ALL_SRCS	= Exerciser.c ImgConv.c Launder.c TestBasic.c \
+			  TestExtract.c TestSimple.c TestTwirl.c
+
+NUFXLIB		= -L.. -lnufx
+
+PRODUCTS	= exerciser imgconv launder test-basic test-extract test-simple \
+				test-twirl
+
+#ifdef PURIFY_BUILD
+#  PURIFY	= purify
+#  CFLAGS	+= -DPURIFY
+#endif
+#ifdef QUANTIFY_BUILD
+#  QUANTIFY	= quantify
+#  CFLAGS	+= -DQUANTIFY
+#endif
+
+all: $(PRODUCTS)
+	@true
+
+#quantify:
+#	-rm -f $(PRODUCT)
+#	@$(MAKE) QUANTIFY_BUILD=1
+#
+#purify:
+#	-rm -f $(PRODUCT)
+#	@$(MAKE) PURIFY_BUILD=1
+
+exerciser: Exerciser.o $(LIB_PRODUCT)
+	$(PURIFY) $(QUANTIFY) $(CC) -o $@ Exerciser.o $(NUFXLIB) @LIBS@
+
+imgconv: ImgConv.o $(LIB_PRODUCT)
+	$(PURIFY) $(QUANTIFY) $(CC) -o $@ ImgConv.o $(NUFXLIB) @LIBS@
+
+launder: Launder.o $(LIB_PRODUCT)
+	$(PURIFY) $(QUANTIFY) $(CC) -o $@ Launder.o $(NUFXLIB) @LIBS@
+
+test-basic: TestBasic.o $(LIB_PRODUCT)
+	$(PURIFY) $(QUANTIFY) $(CC) -o $@ TestBasic.o $(NUFXLIB) @LIBS@
+
+test-simple: TestSimple.o $(LIB_PRODUCT)
+	$(PURIFY) $(QUANTIFY) $(CC) -o $@ TestSimple.o $(NUFXLIB) @LIBS@
+
+test-extract: TestExtract.o $(LIB_PRODUCT)
+	$(PURIFY) $(QUANTIFY) $(CC) -o $@ TestExtract.o $(NUFXLIB) @LIBS@
+
+test-twirl: TestTwirl.o $(LIB_PRODUCT)
+	$(PURIFY) $(QUANTIFY) $(CC) -o $@ TestTwirl.o $(NUFXLIB) @LIBS@
+
+tags::
+	ctags --totals -R ../*
+	@#ctags *.cpp ../*.c *.h ../*.h
+
+clean:
+	-rm -f *.o core
+	-rm -f $(PRODUCTS)
+
+distclean: clean
+	-rm -f tags
+	-rm -f Makefile Makefile.bak
+
+depend:
+	makedepend -- $(CFLAGS) -I/usr/local/include -- $(ALL_SRCS)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+

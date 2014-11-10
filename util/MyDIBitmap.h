@@ -10,8 +10,8 @@
  *   want or need, but it's easier to knock the bugs out if everybody is
  *   using roughly the same code. ]
  */
-#ifndef __LF_DIBITMAP__
-#define __LF_DIBITMAP__
+#ifndef UTIL_DIBITMAP_H
+#define UTIL_DIBITMAP_H
 
 
 /*
@@ -73,7 +73,7 @@ public:
     HBITMAP ConvertToDDB(HDC dc) const;
 
     // create a DIB from a file on disk
-    int CreateFromFile(const char* fileName);
+    int CreateFromFile(const WCHAR* fileName);
     int CreateFromFile(FILE* fp, long len);
     // create from memory buffer; set "doDelete" if object should own mem
     // (if "doDelete" is set, memory will be deleted if function fails)
@@ -81,10 +81,10 @@ public:
     int CreateFromBuffer(void* buffer, long len, bool doDelete);
 
     // create a DIB from an embedded resource
-    void* CreateFromResource(HINSTANCE hInstance, const char* rsrc);
+    void* CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc);
 
     // write bitmap to file (for FILE*, make sure it's open in "wb" mode)
-    int WriteToFile(const char* fileName) const;
+    int WriteToFile(const WCHAR* fileName) const;
     int WriteToFile(FILE* fp) const;
 
     // simple getters
@@ -173,4 +173,4 @@ private:
     DWORD               mTransparentColor;  // for single-bit alpha bitmaps
 };
 
-#endif /*__LF_DIBITMAP__*/
+#endif /*UTIL_DIBITMAP_H*/

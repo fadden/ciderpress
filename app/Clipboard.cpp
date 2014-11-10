@@ -11,7 +11,7 @@
 #include "PasteSpecialDialog.h"
 
 
-static const char* kClipboardFmtName = "faddenSoft:CiderPress:v1";
+static const WCHAR kClipboardFmtName[] = L"faddenSoft:CiderPress:v1";
 const int kClipVersion = 1;     // should match "vN" in fmt name
 const unsigned short kEntrySignature = 0x4350;
 
@@ -71,7 +71,7 @@ typedef enum EntryKind {
 typedef struct FileCollectionEntry {
     unsigned short  signature;      // let's be paranoid
     unsigned short  dataOffset;     // offset to start of data
-    unsigned short  fileNameLen;    // len of filename
+    unsigned short  fileNameLen;    // len of (8-bit) filename, in bytes
     unsigned long   dataLen;        // len of data fork
     unsigned long   rsrcLen;        // len of rsrc fork
     unsigned long   cmmtLen;        // len of comments
@@ -138,7 +138,7 @@ MainWindow::OnEditCopy(void)
         GenericEntry::kAnyThread | GenericEntry::kAllowDirectory);
     if (selSet.GetNumEntries() == 0) {
         errStr.LoadString(IDS_CLIPBOARD_NOITEMS);
-        MessageBox(errStr, "No match", MB_OK | MB_ICONEXCLAMATION);
+        MessageBox(errStr, L"No match", MB_OK | MB_ICONEXCLAMATION);
         goto bail;
     }
 
@@ -151,21 +151,21 @@ MainWindow::OnEditCopy(void)
      * Add the string to the clipboard.  The clipboard will own the memory we
      * allocate.
      */
-    hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, fileList.GetLength() +1);
+    size_t neededLen = (fileList.GetLength() + 1) * sizeof(WCHAR);
+    hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, neededLen);
     if (hGlobal == nil) {
-        WMSG1("Failed allocating %ld bytes\n", fileList.GetLength() +1);
+        WMSG1("Failed allocating %d bytes\n", neededLen);
         errStr.LoadString(IDS_CLIPBOARD_ALLOCFAILED);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
-    WMSG1("  Allocated %ld bytes for file list on clipboard\n",
-        fileList.GetLength() +1);
+    WMSG1("  Allocated %ld bytes for file list on clipboard\n", neededLen);
     pGlobal = ::GlobalLock(hGlobal);
     ASSERT(pGlobal != nil);
-    strcpy((char*) pGlobal, fileList);
+    wcscpy((WCHAR*) pGlobal, fileList);
     ::GlobalUnlock(hGlobal);
 
-    SetClipboardData(CF_TEXT, hGlobal);
+    SetClipboardData(CF_UNICODETEXT, hGlobal);
 
     /*
      * Create a (potentially very large) buffer with the contents of the
@@ -201,8 +201,8 @@ MainWindow::CreateFileList(SelectionSet* pSelSet)
     SelectionEntry* pSelEntry;
     GenericEntry* pEntry;
     CString tmpStr, fullStr;
-    char fileTypeBuf[ContentList::kFileTypeBufLen];
-    char auxTypeBuf[ContentList::kAuxTypeBufLen];
+    WCHAR fileTypeBuf[ContentList::kFileTypeBufLen];
+    WCHAR auxTypeBuf[ContentList::kAuxTypeBufLen];
     CString fileName, subVol, fileType, auxType, modDate, format, length;
 
     pSelEntry = pSelSet->IterNext();
@@ -218,9 +218,9 @@ MainWindow::CreateFileList(SelectionSet* pSelSet)
         auxType = DblDblQuote(auxTypeBuf);
         FormatDate(pEntry->GetModWhen(), &modDate);
         format = pEntry->GetFormatStr();
-        length.Format("%I64d", (LONGLONG) pEntry->GetUncompressedLen());
+        length.Format(L"%I64d", (LONGLONG) pEntry->GetUncompressedLen());
 
-        tmpStr.Format("\"%s\"\t%s\t\"%s\"\t\"%s\"\t%s\t%s\t%s\r\n",
+        tmpStr.Format(L"\"%hs\"\t%hs\t\"%hs\"\t\"%hs\"\t%hs\t%hs\t%hs\r\n",
             fileName, subVol, fileType, auxType, modDate, format, length);
         fullStr += tmpStr;
 
@@ -234,12 +234,12 @@ MainWindow::CreateFileList(SelectionSet* pSelSet)
  * Double-up all double quotes.
  */
 /*static*/ CString
-MainWindow::DblDblQuote(const char* str)
+MainWindow::DblDblQuote(const WCHAR* str)
 {
     CString result;
-    char* buf;
+    WCHAR* buf;
 
-    buf = result.GetBuffer(strlen(str) * 2 +1);
+    buf = result.GetBuffer(wcslen(str) * 2 +1);
     while (*str != '\0') {
         if (*str == '"') {
             *buf++ = *str;
@@ -287,7 +287,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     HGLOBAL hGlobal = nil;
     HGLOBAL hResult = nil;
     LPVOID pGlobal;
-    long totalLength, numFiles;
+    size_t totalLength, numFiles;
     long priorLength;
 
     /* get len of text version(s), with kluge to avoid close & reopen */
@@ -311,7 +311,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
 
         if (pEntry->GetRecordKind() != GenericEntry::kRecordKindVolumeDir) {
             totalLength += sizeof(FileCollectionEntry);
-            totalLength += strlen(pEntry->GetPathName()) +1;
+            totalLength += wcslen(pEntry->GetPathName()) +1;
             numFiles++;
             if (pEntry->GetRecordKind() != GenericEntry::kRecordKindDirectory) {
                 totalLength += (long) pEntry->GetDataForkLen();
@@ -355,9 +355,9 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, totalLength);
     if (hGlobal == nil) {
         CString errMsg;
-        errMsg.Format("ERROR: unable to allocate %ld bytes for copy",
+        errMsg.Format(L"ERROR: unable to allocate %ld bytes for copy",
             totalLength);
-        WMSG1("%s\n", (const char*) errMsg);
+        WMSG1("%ls\n", (LPCWSTR) errMsg);
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
@@ -374,7 +374,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     ASSERT(fpActionProgress == nil);
     fpActionProgress = new ActionProgressDialog;
     fpActionProgress->Create(ActionProgressDialog::kActionExtract, this);
-    fpActionProgress->SetFileName("Clipboard");
+    fpActionProgress->SetFileName(L"Clipboard");
 
     /*
      * Extract the data into the buffer.
@@ -392,7 +392,8 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
         pEntry = pSelEntry->GetEntry();
         ASSERT(pEntry != nil);
 
-        fpActionProgress->SetArcName(pEntry->GetDisplayName());
+        CString displayName(pEntry->GetDisplayName());
+        fpActionProgress->SetArcName(displayName);
 
         errStr = CopyToCollection(pEntry, &buf, &remainingLen);
         if (!errStr.IsEmpty()) {
@@ -488,7 +489,7 @@ MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf, long* pBufLen)
     memset(&collEnt, 0x99, sizeof(collEnt));
     collEnt.signature = kEntrySignature;
     collEnt.dataOffset = sizeof(collEnt);
-    collEnt.fileNameLen = strlen(pEntry->GetPathName()) +1;
+    collEnt.fileNameLen = wcslen(pEntry->GetPathName()) +1;
     if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory) {
         collEnt.dataLen = collEnt.rsrcLen = collEnt.cmmtLen = 0;
     } else {
@@ -622,6 +623,7 @@ MainWindow::OnEditPaste(void)
 
     DoPaste(pasteJunkPaths);
 }
+
 void
 MainWindow::OnUpdateEditPaste(CCmdUI* pCmdUI)
 {
@@ -668,6 +670,7 @@ MainWindow::OnEditPasteSpecial(void)
 
     DoPaste(pasteJunkPaths);
 }
+
 void
 MainWindow::OnUpdateEditPasteSpecial(CCmdUI* pCmdUI)
 {
@@ -708,10 +711,10 @@ MainWindow::DoPaste(bool pasteJunkPaths)
     WMSG1("Found %d clipboard formats\n", CountClipboardFormats());
     while ((format = EnumClipboardFormats(format)) != 0) {
         CString tmpStr;
-        tmpStr.Format(" %u", format);
+        tmpStr.Format(L" %u", format);
         buildStr += tmpStr;
     }
-    WMSG1("  %s\n", buildStr);
+    WMSG1("  %ls\n", (LPCWSTR) buildStr);
 
 #if 0
     if (IsClipboardFormatAvailable(CF_HDROP)) {
@@ -820,14 +823,14 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
      */
     if (fpOpenArchive->GetArchiveKind() == GenericArchive::kArchiveDiskImage) {
         if (!ChooseAddTarget(&pTargetSubdir, &xferOpts.fpTargetFS))
-            return "";
+            return L"";
     }
     fpOpenArchive->XferPrepare(&xferOpts);
     xferPrepped = true;
 
     if (pTargetSubdir != nil) {
         storagePrefix = pTargetSubdir->GetPathName();
-        WMSG1("--- using storagePrefix '%s'\n", (const char*) storagePrefix);
+        WMSG1("--- using storagePrefix '%ls'\n", (LPCWSTR) storagePrefix);
     }
 
     /*
@@ -836,7 +839,7 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
     ASSERT(fpActionProgress == nil);
     fpActionProgress = new ActionProgressDialog;
     fpActionProgress->Create(ActionProgressDialog::kActionAdd, this);
-    fpActionProgress->SetArcName("Clipboard data");
+    fpActionProgress->SetArcName(L"Clipboard data");
 
     /*
      * Loop over all files.
@@ -923,8 +926,8 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
          */
         processErrStr = ProcessClipboardEntry(&collEnt, fileName, buf, bufLen);
         if (!processErrStr.IsEmpty()) {
-            errMsg.Format("Unable to paste '%s': %s.",
-                (const char*) fileName, (const char*) processErrStr);
+            errMsg.Format(L"Unable to paste '%ls': %ls.",
+                (LPCWSTR) fileName, (LPCWSTR) processErrStr);
             goto bail;
         }
         
@@ -959,7 +962,7 @@ bail:
  */
 CString
 MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
-    const char* pathName, const unsigned char* buf, long remLen)
+    const WCHAR* pathName, const unsigned char* buf, long remLen)
 {
     GenericArchive::FileDetails::FileKind entryKind;
     GenericArchive::FileDetails details;
@@ -969,10 +972,10 @@ MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
     CString errMsg;
 
     entryKind = (GenericArchive::FileDetails::FileKind) pCollEnt->entryKind;
-    WMSG2(" Processing '%s' (%d)\n", pathName, entryKind);
+    WMSG2(" Processing '%ls' (%d)\n", pathName, entryKind);
 
     details.entryKind = entryKind;
-    details.origName = "Clipboard";
+    details.origName = L"Clipboard";
     details.storageName = pathName;
     details.fileSysFmt = (DiskImg::FSFormat) pCollEnt->sourceFS;
     details.fileSysInfo = pCollEnt->fssep;

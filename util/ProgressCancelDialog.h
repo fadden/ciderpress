@@ -9,8 +9,8 @@
  * The user of this class must define a dialog with at least an IDCANCEL
  * button.
  */
-#ifndef __PROGRESSCANCELDIALOG__
-#define __PROGRESSCANCELDIALOG__
+#ifndef UTIL_PROCESSCANCELDIALOG_H
+#define UTIL_PROCESSCANCELDIALOG_H
 
 /*
  * This class must be allocated on the heap.
@@ -80,4 +80,4 @@ private:
     int     fProgressID;
 };
 
-#endif /*__PROGRESSCANCELDIALOG__*/
+#endif /*UTIL_PROCESSCANCELDIALOG_H*/

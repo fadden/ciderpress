@@ -6,8 +6,8 @@
 /*
  * A simple dialog to display the results of an EOL scan.
  */
-#ifndef __EOLSCANDIALOG__
-#define __EOLSCANDIALOG__
+#ifndef APP_EOLSCANDIALOG_H
+#define APP_EOLSCANDIALOG_H
 
 #include "resource.h"
 
@@ -34,4 +34,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__EOLSCANDIALOG__*/
+#endif /*APP_EOLSCANDIALOG_H*/

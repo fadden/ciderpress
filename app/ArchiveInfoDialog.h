@@ -6,8 +6,8 @@
 /*
  * Definitions for the ArchiveInfo set of dialog classes.
  */
-#ifndef __ARCHIVEINFODIALOG__
-#define __ARCHIVEINFODIALOG__
+#ifndef APP_ARCHIVEINFODIALOG_H
+#define APP_ARCHIVEINFODIALOG_H
 
 #include "resource.h"
 #include "GenericArchive.h"
@@ -69,7 +69,7 @@ private:
     afx_msg void OnSubVolSelChange(void);
 
     void FillInVolumeInfo(const DiskFS* pDiskFS);
-    void AddSubVolumes(const DiskFS* pDiskFS, const char* prefix,
+    void AddSubVolumes(const DiskFS* pDiskFS, const WCHAR* prefix,
         int* pIdx);
     void GetReducedSize(long numUnits, int unitSize,
         CString* pOut) const;
@@ -115,4 +115,4 @@ private:
     AcuArchive* fpArchive;
 };
 
-#endif /*__ARCHIVEINFODIALOG__*/
+#endif /*APP_ARCHIVEINFODIALOG_H*/

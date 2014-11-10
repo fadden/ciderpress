@@ -74,7 +74,7 @@ BnyEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
 
     errno = 0;
     if (fseek(fpArchive->fFp, fOffset, SEEK_SET) < 0) {
-        pErrMsg->Format("Unable to seek to offset %ld: %s",
+        pErrMsg->Format(L"Unable to seek to offset %ld: %hs",
             fOffset, strerror(errno));
         goto bail;
     }
@@ -83,7 +83,7 @@ BnyEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
         nerr = UnSqueeze(fpArchive->fFp, (unsigned long) GetUncompressedLen(),
                     &expBuf, true, kBNYBlockSize);
         if (nerr != kNuErrNone) {
-            pErrMsg->Format("File read failed: %s", NuStrError(nerr));
+            pErrMsg->Format(L"File read failed: %hs", NuStrError(nerr));
             goto bail;
         }
 
@@ -108,7 +108,7 @@ BnyEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
                 *pLength = unsqLen;
             } else {
                 if (*pLength < unsqLen) {
-                    pErrMsg->Format("buf size %ld too short (%ld)",
+                    pErrMsg->Format(L"buf size %ld too short (%ld)",
                         *pLength, unsqLen);
                     delete[] unsqBuf;
                     goto bail;
@@ -124,19 +124,19 @@ BnyEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
         if (needAlloc) {
             dataBuf = new char[len];
             if (dataBuf == nil) {
-                pErrMsg->Format("allocation of %ld bytes failed", len);
+                pErrMsg->Format(L"allocation of %ld bytes failed", len);
                 goto bail;
             }
         } else {
             if (*pLength < (long) len) {
-                pErrMsg->Format("buf size %ld too short (%ld)",
+                pErrMsg->Format(L"buf size %ld too short (%ld)",
                     *pLength, len);
                 goto bail;
             }
             dataBuf = *ppText;
         }
         if (fread(dataBuf, len, 1, fpArchive->fFp) != 1) {
-            pErrMsg->Format("File read failed: %s", strerror(errno));
+            pErrMsg->Format(L"File read failed: %hs", strerror(errno));
             goto bail;
         }
 
@@ -179,7 +179,7 @@ BnyEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
 
     ASSERT(IDOK != -1 && IDCANCEL != -1);
     if (which != kDataThread) {
-        *pErrMsg = "No such fork";
+        *pErrMsg = L"No such fork";
         goto bail;
     }
 
@@ -192,7 +192,7 @@ BnyEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
 
     errno = 0;
     if (fseek(fpArchive->fFp, fOffset, SEEK_SET) < 0) {
-        pErrMsg->Format("Unable to seek to offset %ld: %s",
+        pErrMsg->Format(L"Unable to seek to offset %ld: %hs",
             fOffset, strerror(errno));
         goto bail;
     }
@@ -217,7 +217,7 @@ BnyEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         nerr = UnSqueeze(fpArchive->fFp, (unsigned long) GetUncompressedLen(),
                     &expBuf, true, kBNYBlockSize);
         if (nerr != kNuErrNone) {
-            pErrMsg->Format("File read failed: %s", NuStrError(nerr));
+            pErrMsg->Format(L"File read failed: %hs", NuStrError(nerr));
             goto bail;
         }
 
@@ -235,7 +235,7 @@ BnyEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         int err = GenericEntry::WriteConvert(outfp, buf, uncLen, &conv,
                         &convHA, &lastCR);
         if (err != 0) {
-            pErrMsg->Format("File write failed: %s", strerror(err));
+            pErrMsg->Format(L"File write failed: %hs", strerror(err));
             delete[] buf;
             goto bail;
         }
@@ -245,7 +245,7 @@ BnyEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         nerr = CopyData(outfp, conv, convHA, pErrMsg);
         if (nerr != kNuErrNone) {
             if (pErrMsg->IsEmpty()) {
-                pErrMsg->Format("Failed while copying data: %s\n",
+                pErrMsg->Format(L"Failed while copying data: %hs\n",
                     NuStrError(nerr));
             }
             goto bail;
@@ -291,7 +291,7 @@ BnyEntry::CopyData(FILE* outfp, ConvertEOL conv, ConvertHighASCII convHA,
         /* read a chunk from the source file */
         nerr = fpArchive->BNYRead(buf, chunkLen);
         if (nerr != kNuErrNone) {
-            pMsg->Format("File read failed: %s.", NuStrError(nerr));
+            pMsg->Format(L"File read failed: %hs.", NuStrError(nerr));
             goto bail;
         }
 
@@ -299,7 +299,7 @@ BnyEntry::CopyData(FILE* outfp, ConvertEOL conv, ConvertHighASCII convHA,
         int err = GenericEntry::WriteConvert(outfp, buf, chunkLen, &conv,
                     &convHA, &lastCR);
         if (err != 0) {
-            pMsg->Format("File write failed: %s.", strerror(err));
+            pMsg->Format(L"File write failed: %hs.", strerror(err));
             nerr = kNuErrGeneric;
             goto bail;
         }
@@ -334,7 +334,7 @@ BnyEntry::TestEntry(CWnd* pMsgWnd)
     errno = 0;
     if (fseek(fpArchive->fFp, fOffset, SEEK_SET) < 0) {
         nerr = kNuErrGeneric;
-        errMsg.Format("Unable to seek to offset %ld: %s\n",
+        errMsg.Format(L"Unable to seek to offset %ld: %hs\n",
             fOffset, strerror(errno));
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         goto bail;
@@ -344,7 +344,7 @@ BnyEntry::TestEntry(CWnd* pMsgWnd)
         nerr = UnSqueeze(fpArchive->fFp, (unsigned long) GetUncompressedLen(),
                     nil, true, kBNYBlockSize);
         if (nerr != kNuErrNone) {
-            errMsg.Format("Unsqueeze failed: %s.", NuStrError(nerr));
+            errMsg.Format(L"Unsqueeze failed: %hs.", NuStrError(nerr));
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
@@ -352,7 +352,7 @@ BnyEntry::TestEntry(CWnd* pMsgWnd)
         errno = 0;
         if (fseek(fpArchive->fFp, fOffset + len, SEEK_SET) < 0) {
             nerr = kNuErrGeneric;
-            errMsg.Format("Unable to seek to offset %ld (file truncated?): %s\n",
+            errMsg.Format(L"Unable to seek to offset %ld (file truncated?): %hs\n",
                 fOffset, strerror(errno));
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
@@ -391,16 +391,16 @@ BnyArchive::AppInit(void)
  * Returns an error string on failure, or "" on success.
  */
 GenericArchive::OpenResult
-BnyArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
+BnyArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
 {
     CString errMsg;
 
     fIsReadOnly = true;     // ignore "readOnly"
 
     errno = 0;
-    fFp = fopen(filename, "rb");
+    fFp = _wfopen(filename, L"rb");
     if (fFp == nil) {
-        errMsg.Format("Unable to open %s: %s.", filename, strerror(errno));
+        errMsg.Format(L"Unable to open %ls: %hs.", filename, strerror(errno));
         goto bail;
     }
 
@@ -408,7 +408,7 @@ BnyArchive::Open(const char* filename, bool readOnly, CString* pErrMsg)
         CWaitCursor waitc;
 
         if (LoadContents() != 0) {
-            errMsg.Format("Failed while loading contents of Binary II file.");
+            errMsg.Format(L"Failed while loading contents of Binary II file.");
             goto bail;
         }
     }
@@ -429,9 +429,9 @@ bail:
  * Returns an error string on failure, or "" on success.
  */
 CString
-BnyArchive::New(const char* /*filename*/, const void* /*options*/)
+BnyArchive::New(const WCHAR* /*filename*/, const void* /*options*/)
 {
-    CString retmsg("Sorry, Binary II files can't be created.");
+    CString retmsg(L"Sorry, Binary II files can't be created.");
     return retmsg;
 }
 
@@ -503,7 +503,7 @@ BnyArchive::Reload(void)
 
     DeleteEntries();
     if (LoadContents() != 0) {
-        return "Reload failed.";
+        return L"Reload failed.";
     }
     
     return "";
@@ -546,7 +546,8 @@ BnyArchive::LoadContentsCallback(BnyFileEntry* pEntry)
      * Create the new entry.
      */
     pNewEntry = new BnyEntry(this);
-    pNewEntry->SetPathName(fileName);
+    CString fileNameW(fileName);
+    pNewEntry->SetPathName(fileNameW);
     pNewEntry->SetFssep(kBNYFssep);
     pNewEntry->SetFileType(pEntry->fileType);
     pNewEntry->SetAuxType(pEntry->auxType);
@@ -570,9 +571,9 @@ BnyArchive::LoadContentsCallback(BnyFileEntry* pEntry)
     pNewEntry->SetDataForkLen(pEntry->realEOF);
 
     if (isSqueezed)
-        pNewEntry->SetFormatStr("Squeeze");
+        pNewEntry->SetFormatStr(L"Squeeze");
     else
-        pNewEntry->SetFormatStr("Uncompr");
+        pNewEntry->SetFormatStr(L"Uncompr");
 
     pNewEntry->SetSqueezed(isSqueezed);
     if (pEntry->realEOF != 0)
@@ -962,7 +963,7 @@ BnyArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     while (pSelEntry != nil) {
         pEntry = (BnyEntry*) pSelEntry->GetEntry();
 
-        WMSG2("  Testing '%s' (offset=%ld)\n", pEntry->GetDisplayName(),
+        WMSG2("  Testing '%ls' (offset=%ld)\n", pEntry->GetDisplayName(),
             pEntry->GetOffset());
 
         SET_PROGRESS_UPDATE2(0, pEntry->GetDisplayName(), nil);
@@ -975,7 +976,7 @@ BnyArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
                 errMsg = "Cancelled.";
                 pMsgWnd->MessageBox(errMsg, title, MB_OK);
             } else {
-                errMsg.Format("Failed while testing '%s': %s.",
+                errMsg.Format(L"Failed while testing '%hs': %hs.",
                     pEntry->GetPathName(), NuStrError(nerr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             }
@@ -986,9 +987,9 @@ BnyArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     }
 
     /* show success message */
-    errMsg.Format("Tested %d file%s, no errors found.",
+    errMsg.Format(L"Tested %d file%ls, no errors found.",
         pSelSet->GetNumEntries(),
-        pSelSet->GetNumEntries() == 1 ? "" : "s");
+        pSelSet->GetNumEntries() == 1 ? L"" : L"s");
     pMsgWnd->MessageBox(errMsg);
     retVal = true;
 

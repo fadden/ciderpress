@@ -6,8 +6,8 @@
 /*
  * Application UI classes.
  */
-#ifndef __MAIN__
-#define __MAIN__
+#ifndef APP_MAIN_H
+#define APP_MAIN_H
 
 #include "ContentList.h"
 #include "GenericArchive.h"
@@ -61,12 +61,12 @@ public:
 
     // update the progress meter
     void SetProgressBegin(void);
-    int SetProgressUpdate(int percent, const char* oldName,
-        const char* newName);
+    int SetProgressUpdate(int percent, const WCHAR* oldName,
+        const WCHAR* newName);
     void SetProgressEnd(void);
 
     // update the progress counter
-    bool SetProgressCounter(const char* fmt, long val);
+    bool SetProgressCounter(const WCHAR* fmt, long val);
 
     // handle a double-click in the content view
     void HandleDoubleClick(void);
@@ -115,14 +115,14 @@ public:
     void FailureBeep(void);
 
     // remove a file, returning a helpful message on failure
-    CString RemoveFile(const char* fileName);
+    CString RemoveFile(const WCHAR* fileName);
 
     // choose the place to put a file
     bool ChooseAddTarget(DiskImgLib::A2File** ppTargetSubdir,
         DiskImgLib::DiskFS** ppDiskFS);
 
     // try a disk image override dialog
-    int TryDiskImgOverride(DiskImg* pImg, const char* fileSource,
+    int TryDiskImgOverride(DiskImg* pImg, const WCHAR* fileSource,
         DiskImg::FSFormat defaultFormat, int* pDisplayFormat,
         bool allowUnknown, CString* pErrMsg);
     // copy all blocks from one disk image to another
@@ -130,7 +130,7 @@ public:
         bool partial, ProgressCancelDialog* pPCDialog);
 
     // does the currently open archive pathname match?
-    bool IsOpenPathName(const char* path);
+    bool IsOpenPathName(const WCHAR* path);
     // raise a flag to cause a full reload of the open file
     void SetReopenFlag(void) { fNeedReopen = true; }
 
@@ -139,22 +139,22 @@ public:
 
     // save a buffer of data as a file in a disk image or file archive
     static bool SaveToArchive(GenericArchive::FileDetails* pDetails,
-        const unsigned char* dataBuf, long dataLen,
-        const unsigned char* rsrcBuf, long rsrcLen,
+        const BYTE* dataBuf, long dataLen,
+        const BYTE* rsrcBuf, long rsrcLen,
         CString& errMsg, CWnd* pDialog);
 
-    static const char kOpenNuFX[];
-    static const char kOpenBinaryII[];
-    static const char kOpenACU[];
-    static const char kOpenDiskImage[];
-    static const char kOpenAll[];
-    static const char kOpenEnd[];
+    static const WCHAR kOpenNuFX[];
+    static const WCHAR kOpenBinaryII[];
+    static const WCHAR kOpenACU[];
+    static const WCHAR kOpenDiskImage[];
+    static const WCHAR kOpenAll[];
+    static const WCHAR kOpenEnd[];
 
 private:
-    static const char* kModeNuFX;
-    static const char* kModeBinaryII;
-    static const char* kModeACU;
-    static const char* kModeDiskImage;
+    static const WCHAR kModeNuFX[];
+    static const WCHAR kModeBinaryII[];
+    static const WCHAR kModeACU[];
+    static const WCHAR kModeDiskImage[];
 
     // Command handlers
     afx_msg int OnCreate(LPCREATESTRUCT lpcs);
@@ -255,22 +255,22 @@ private:
     void ResizeClientArea(void);
     void DrawEmptyClientArea(CDC* pDC, const CRect& clientRect);
     int TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
-        const char* modeStr);
+        const WCHAR* modeStr);
     int TmpExtractForExternal(GenericEntry* pEntry);
-    void DoOpenArchive(const char* pathName, const char* ext,
+    void DoOpenArchive(const WCHAR* pathName, const WCHAR* ext,
         int filterIndex, bool readOnly);
-    int LoadArchive(const char* filename, const char* extension,
+    int LoadArchive(const WCHAR* filename, const WCHAR* extension,
             int filterIndex, bool readOnly, bool createFile);
     int DoOpenVolume(CString drive, bool readOnly);
     void SwitchContentList(GenericArchive* pOpenArchive);
     void CloseArchiveWOControls(void);
     void CloseArchive(void);
-    void SetCPTitle(const char* pathname, GenericArchive* pArchive);
+    void SetCPTitle(const WCHAR* pathname, GenericArchive* pArchive);
     void SetCPTitle(void);
     GenericEntry* GetSelectedItem(ContentList* pContentList);
     void HandleView(void);
 
-    void DeleteFileOnExit(const char* name);
+    void DeleteFileOnExit(const WCHAR* name);
 
     void ReopenArchive(void);
 
@@ -280,6 +280,11 @@ private:
     void GetFilePart(const GenericEntry* pEntry, int whichThread,
         ReformatHolder* pHolder) const;
 
+    /**
+    * this is a test
+    * of whatever the hell this does
+    * whee.
+    */
     void DoBulkExtract(SelectionSet* pSelSet,
         const ExtractOptionsDialog* pExtOpts);
     bool ExtractEntry(GenericEntry* pEntry, int thread,
@@ -294,7 +299,7 @@ private:
 
     /* some stuff from Clipboard.cpp */
     CString CreateFileList(SelectionSet* pSelSet);
-    static CString DblDblQuote(const char* str);
+    static CString DblDblQuote(const WCHAR* str);
     long GetClipboardContentLen(void);
     HGLOBAL CreateFileCollection(SelectionSet* pSelSet);
     CString CopyToCollection(GenericEntry* pEntry, void** pBuf, long* pBufLen);
@@ -302,23 +307,23 @@ private:
     CString ProcessClipboard(const void* vbuf, long bufLen,
         bool pasteJunkPaths);
     CString ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
-        const char* pathName, const unsigned char* buf, long remLen);
+        const WCHAR* pathName, const unsigned char* buf, long remLen);
 
     /* some stuff from Tools.cpp */
     int DetermineImageSettings(int convertIdx, bool addGzip,
         DiskImg::OuterFormat* pOuterFormat, DiskImg::FileFormat* pFileFormat,
         DiskImg::PhysicalFormat* pPhysicalFormat,
         DiskImg::SectorOrder* pSectorOrder);
-    void BulkConvertImage(const char* pathName, const char* targetDir,
+    void BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
         const DiskConvertDialog& convDlg, CString* pErrMsg);
     int SSTOpenImage(int seqNum, DiskImg* pDiskImg);
-    int SSTLoadData(int seqNum, DiskImg* pDiskImg, unsigned char* trackBuf,
+    int SSTLoadData(int seqNum, DiskImg* pDiskImg, BYTE* trackBuf,
         long* pBadCount);
     long SSTGetBufOffset(int track);
-    long SSTCountBadBytes(const unsigned char* sctBuf, int count);
-    void SSTProcessTrackData(unsigned char* trackBuf);
+    long SSTCountBadBytes(const BYTE* sctBuf, int count);
+    void SSTProcessTrackData(BYTE* trackBuf);
     void VolumeCopier(bool openFile);
-    bool EditTwoImgProps(const char* fileName);
+    bool EditTwoImgProps(const WCHAR* fileName);
 
 
     void PrintListing(const ContentList* pContentList);
@@ -386,11 +391,11 @@ private:
 
             while (pNode != nil) {
                 pNext = pNode->fNext;
-                if (unlink(pNode->fName) != 0) {
-                    WMSG2(" WARNING: delete of '%s' failed, err=%d\n",
+                if (_wunlink(pNode->fName) != 0) {
+                    WMSG2(" WARNING: delete of '%ls' failed, err=%d\n",
                         pNode->fName, errno);
                 } else {
-                    WMSG1(" Deleted '%s'\n", pNode->fName);
+                    WMSG1(" Deleted '%ls'\n", pNode->fName);
                 }
                 delete pNode;
                 pNode = pNext;
@@ -405,7 +410,7 @@ private:
                 pNode->fNext = fHead;
             }
             fHead = pNode;
-            WMSG1("Delete-on-exit '%s'\n", (LPCTSTR) name);
+            WMSG1("Delete-on-exit '%ls'\n", (LPCWSTR) name);
         }
 
         DeleteListNode* fHead;
@@ -432,4 +437,4 @@ private:
 #define GET_PREFERENCES() ((MainWindow*)::AfxGetMainWnd())->GetPreferences()
 #define GET_PREFERENCES_WR() ((MainWindow*)::AfxGetMainWnd())->GetPreferencesWr()
 
-#endif /*__MAIN__*/
+#endif /*APP_MAIN_H*/

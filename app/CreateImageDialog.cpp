@@ -90,12 +90,12 @@ CreateImageDialog::DoDataExchange(CDataExchange* pDX)
 
         if (fDiskFormatIdx == kFmtDOS32) {
             CString tmpStr;
-            tmpStr.Format("%d", fDOSVolumeNum);
+            tmpStr.Format(L"%d", fDOSVolumeNum);
             if (!IsValidVolumeName_DOS(tmpStr))
                 errMsg.LoadString(IDS_VALID_VOLNAME_DOS);
         } else if (fDiskFormatIdx == kFmtDOS33) {
             CString tmpStr;
-            tmpStr.Format("%d", fDOSVolumeNum);
+            tmpStr.Format(L"%d", fDOSVolumeNum);
             if (!IsValidVolumeName_DOS(tmpStr))
                 errMsg.LoadString(IDS_VALID_VOLNAME_DOS);
 
@@ -105,24 +105,24 @@ CreateImageDialog::DoDataExchange(CDataExchange* pDX)
                 (fNumBlocks <= 400 && (fNumBlocks % 8) != 0) ||
                 (fNumBlocks > 400 && (fNumBlocks % 16) != 0))
             {
-                errMsg = "Specify a size between 144 blocks (18 tracks) and"
-                         " 800 blocks (50 tracks/32 sectors).  The block count"
-                         " must be a multiple of 8 for 16-sector disks, or a"
-                         " multiple of 16 for 32-sector disks.  32 sector"
-                         " formatting starts at 400 blocks.  Disks larger than"
-                         " 400 blocks but less than 800 aren't recognized by"
-                         " CiderPress.";
+                errMsg = L"Specify a size between 144 blocks (18 tracks) and"
+                         L" 800 blocks (50 tracks/32 sectors).  The block count"
+                         L" must be a multiple of 8 for 16-sector disks, or a"
+                         L" multiple of 16 for 32-sector disks.  32 sector"
+                         L" formatting starts at 400 blocks.  Disks larger than"
+                         L" 400 blocks but less than 800 aren't recognized by"
+                         L" CiderPress.";
             }
         } else if (fDiskFormatIdx == kFmtProDOS) {
             // Max is really 65535, but we allow 65536 for creation of volumes
             // that can be copied to CFFA cards.
             if (fNumBlocks < 16 || fNumBlocks > 65536) {
-                errMsg = "Specify a size of at least 16 blocks and no more"
-                          " than 65536 blocks.";
+                errMsg = L"Specify a size of at least 16 blocks and no more"
+                         L" than 65536 blocks.";
             } else if (fVolName_ProDOS.IsEmpty() ||
                 fVolName_ProDOS.GetLength() > kProDOSVolNameMax)
             {
-                errMsg = "You must specify a volume name 1-15 characters long.";
+                errMsg = L"You must specify a volume name 1-15 characters long.";
             } else {
                 if (!IsValidVolumeName_ProDOS(fVolName_ProDOS))
                     errMsg.LoadString(IDS_VALID_VOLNAME_PRODOS);
@@ -131,27 +131,27 @@ CreateImageDialog::DoDataExchange(CDataExchange* pDX)
             if (fVolName_Pascal.IsEmpty() ||
                 fVolName_Pascal.GetLength() > kPascalVolNameMax)
             {
-                errMsg = "You must specify a volume name 1-7 characters long.";
+                errMsg = L"You must specify a volume name 1-7 characters long.";
             } else {
                 if (!IsValidVolumeName_Pascal(fVolName_Pascal))
                     errMsg.LoadString(IDS_VALID_VOLNAME_PASCAL);
             }
         } else if (fDiskFormatIdx == kFmtHFS) {
             if (fNumBlocks < 1600 || fNumBlocks > 4194303) {
-                errMsg = "Specify a size of at least 1600 blocks and no more"
-                          " than 4194303 blocks.";
+                errMsg = L"Specify a size of at least 1600 blocks and no more"
+                         L" than 4194303 blocks.";
             } else if (fVolName_HFS.IsEmpty() ||
                 fVolName_HFS.GetLength() > kHFSVolNameMax)
             {
-                errMsg = "You must specify a volume name 1-27 characters long.";
+                errMsg = L"You must specify a volume name 1-27 characters long.";
             } else {
                 if (!IsValidVolumeName_HFS(fVolName_HFS))
                     errMsg.LoadString(IDS_VALID_VOLNAME_HFS);
             }
         } else if (fDiskFormatIdx == kFmtBlank) {
             if (fNumBlocks < 1 || fNumBlocks > kMaxBlankBlocks)
-                errMsg = "Specify a size of at least 1 block and no more"
-                          " than 16777216 blocks.";
+                errMsg = L"Specify a size of at least 1 block and no more"
+                         L" than 16777216 blocks.";
         } else {
             ASSERT(false);
         }
@@ -294,36 +294,40 @@ CreateImageDialog::OnSizeChangeRange(UINT nID)
  * Test a DOS filename for validity.
  */
 bool
-CreateImageDialog::IsValidVolumeName_DOS(const char* name)
+CreateImageDialog::IsValidVolumeName_DOS(const WCHAR* name)
 {
-    return DiskImgLib::DiskFSDOS33::IsValidVolumeName(name);
+    CStringA nameStr(name);
+    return DiskImgLib::DiskFSDOS33::IsValidVolumeName(nameStr);
 }
 
 /*
  * Test a ProDOS filename for validity.
  */
 bool
-CreateImageDialog::IsValidVolumeName_ProDOS(const char* name)
+CreateImageDialog::IsValidVolumeName_ProDOS(const WCHAR* name)
 {
-    return DiskImgLib::DiskFSProDOS::IsValidVolumeName(name);
+    CStringA nameStr(name);
+    return DiskImgLib::DiskFSProDOS::IsValidVolumeName(nameStr);
 }
 
 /*
  * Test a Pascal filename for validity.
  */
 bool
-CreateImageDialog::IsValidVolumeName_Pascal(const char* name)
+CreateImageDialog::IsValidVolumeName_Pascal(const WCHAR* name)
 {
-    return DiskImgLib::DiskFSPascal::IsValidVolumeName(name);
+    CStringA nameStr(name);
+    return DiskImgLib::DiskFSPascal::IsValidVolumeName(nameStr);
 }
 
 /*
  * Test an HFS filename for validity.
  */
 bool
-CreateImageDialog::IsValidVolumeName_HFS(const char* name)
+CreateImageDialog::IsValidVolumeName_HFS(const WCHAR* name)
 {
-    return DiskImgLib::DiskFSHFS::IsValidVolumeName(name);
+    CStringA nameStr(name);
+    return DiskImgLib::DiskFSHFS::IsValidVolumeName(nameStr);
 }
 
 

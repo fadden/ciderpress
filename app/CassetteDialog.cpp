@@ -314,19 +314,19 @@ CassetteDialog::OnInitDialog(void)
     int width0, width1, width2, width3, width4;
 
     pListView->GetClientRect(&rect);
-    width0 = pListView->GetStringWidth("XXIndexX");
-    width1 = pListView->GetStringWidth("XXFormatXmmmmmmmmmmmmmm");
-    width2 = pListView->GetStringWidth("XXLengthXm");
-    width3 = pListView->GetStringWidth("XXChecksumXm");
-    width4 = pListView->GetStringWidth("XXStart sampleX");
+    width0 = pListView->GetStringWidth(L"XXIndexX");
+    width1 = pListView->GetStringWidth(L"XXFormatXmmmmmmmmmmmmmm");
+    width2 = pListView->GetStringWidth(L"XXLengthXm");
+    width3 = pListView->GetStringWidth(L"XXChecksumXm");
+    width4 = pListView->GetStringWidth(L"XXStart sampleX");
     //width5 = pListView->GetStringWidth("XXEnd sampleX");
 
-    pListView->InsertColumn(0, "Index", LVCFMT_LEFT, width0);
-    pListView->InsertColumn(1, "Format", LVCFMT_LEFT, width1);
-    pListView->InsertColumn(2, "Length", LVCFMT_LEFT, width2);
-    pListView->InsertColumn(3, "Checksum", LVCFMT_LEFT, width3);
-    pListView->InsertColumn(4, "Start sample", LVCFMT_LEFT, width4);
-    pListView->InsertColumn(5, "End sample", LVCFMT_LEFT,
+    pListView->InsertColumn(0, L"Index", LVCFMT_LEFT, width0);
+    pListView->InsertColumn(1, L"Format", LVCFMT_LEFT, width1);
+    pListView->InsertColumn(2, L"Length", LVCFMT_LEFT, width2);
+    pListView->InsertColumn(3, L"Checksum", LVCFMT_LEFT, width3);
+    pListView->InsertColumn(4, L"Start sample", LVCFMT_LEFT, width4);
+    pListView->InsertColumn(5, L"End sample", LVCFMT_LEFT,
         rect.Width() - (width0+width1+width2+width3+width4)
         /*- ::GetSystemMetrics(SM_CXVSCROLL)*/ );
 
@@ -480,7 +480,7 @@ CassetteDialog::OnImport(void)
 bail:
     if (!errMsg.IsEmpty()) {
         CString msg;
-        msg.Format("Unable to import file: %s.", (const char *) errMsg);
+        msg.Format(L"Unable to import file: %ls.", (LPCWSTR) errMsg);
         ShowFailureMsg(this, msg, IDS_FAILED);
         return;
     }
@@ -511,13 +511,13 @@ CassetteDialog::AnalyzeWAV(void)
     if (pFormat->nChannels < 1 || pFormat->nChannels > 2 ||
         (pFormat->wBitsPerSample != 8 && pFormat->wBitsPerSample != 16))
     {
-        errMsg.Format("Unexpected PCM format (%d channels, %d bits/sample)",
+        errMsg.Format(L"Unexpected PCM format (%d channels, %d bits/sample)",
             pFormat->nChannels, pFormat->wBitsPerSample);
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         return false;
     }
     if (soundFile.GetDataLen() % soundFile.GetBPS() != 0) {
-        errMsg.Format("Unexpected sound data length (%ld, samples are %d bytes)",
+        errMsg.Format(L"Unexpected sound data length (%ld, samples are %d bytes)",
             soundFile.GetDataLen(), soundFile.GetBPS());
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         return false;
@@ -560,41 +560,41 @@ CassetteDialog::AddEntry(int idx, CListCtrl* pListCtrl, long* pFileType)
 
     ASSERT(pDataBuf != nil);
 
-    tmpStr.Format("%d", idx);
+    tmpStr.Format(L"%d", idx);
     pListCtrl->InsertItem(idx, tmpStr);
 
     *pFileType = kFileTypeBIN;
     if (pData->GetDataLen() == 2) {
-        tmpStr.Format("Integer header ($%04X)",
+        tmpStr.Format(L"Integer header ($%04X)",
             pDataBuf[0] | pDataBuf[1] << 8);
     } else if (pData->GetDataLen() == 3) {
-        tmpStr.Format("Applesoft header ($%04X $%02x)",
+        tmpStr.Format(L"Applesoft header ($%04X $%02x)",
             pDataBuf[0] | pDataBuf[1] << 8, pDataBuf[2]);
     } else if (pData->GetDataLen() > 3 && idx > 0 &&
         fDataArray[idx-1].GetDataLen() == 2)
     {
-        tmpStr = "Integer BASIC";
+        tmpStr = L"Integer BASIC";
         *pFileType = kFileTypeINT;
     } else if (pData->GetDataLen() > 3 && idx > 0 &&
         fDataArray[idx-1].GetDataLen() == 3)
     {
-        tmpStr = "Applesoft BASIC";
+        tmpStr = L"Applesoft BASIC";
         *pFileType = kFileTypeBAS;
     } else {
-        tmpStr = "Binary";
+        tmpStr = L"Binary";
     }
     pListCtrl->SetItemText(idx, 1, tmpStr);
     
-    tmpStr.Format("%d", pData->GetDataLen());
+    tmpStr.Format(L"%d", pData->GetDataLen());
     pListCtrl->SetItemText(idx, 2, tmpStr);
     if (pData->GetDataChkGood())
-        tmpStr.Format("Good (0x%02x)", pData->GetDataChecksum());
+        tmpStr.Format(L"Good (0x%02x)", pData->GetDataChecksum());
     else
-        tmpStr.Format("BAD (0x%02x)", pData->GetDataChecksum());
+        tmpStr.Format(L"BAD (0x%02x)", pData->GetDataChecksum());
     pListCtrl->SetItemText(idx, 3, tmpStr);
-    tmpStr.Format("%ld", pData->GetDataOffset());
+    tmpStr.Format(L"%ld", pData->GetDataOffset());
     pListCtrl->SetItemText(idx, 4, tmpStr);
-    tmpStr.Format("%ld", pData->GetDataEndOffset());
+    tmpStr.Format(L"%ld", pData->GetDataEndOffset());
     pListCtrl->SetItemText(idx, 5, tmpStr);
 }
 

@@ -627,7 +627,15 @@ GFDWinVolume::Open(const char* deviceName, bool readOnly)
     fPathName = new char[strlen(deviceName) +1];
     strcpy(fPathName, deviceName);
 
-    dierr = fVolAccess.Open(deviceName, readOnly);
+    // Create a UNICODE representation of the device name.  We may want
+    // to make the argument UNICODE instead, but most of diskimg is 8-bit
+    // character oriented.
+    size_t srcLen = strlen(deviceName) + 1;
+    WCHAR* wdeviceName = new WCHAR[srcLen];
+    size_t convertedChars;
+    mbstowcs_s(&convertedChars, wdeviceName, srcLen, deviceName, _TRUNCATE);
+    dierr = fVolAccess.Open(wdeviceName, readOnly);
+    delete[] wdeviceName;
     if (dierr != kDIErrNone)
         goto bail;
 

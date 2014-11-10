@@ -7,8 +7,8 @@
  * File selection dialog, a sub-class of "Open" that allows multiple selection
  * of both files and directories.
  */
-#ifndef __ADDFILESDIALOG__
-#define __ADDFILESDIALOG__
+#ifndef APP_ADDFILESDIALOG_H
+#define APP_ADDFILESDIALOG_H
 
 #include "../diskimg/DiskImg.h"
 #include "../util/UtilLib.h"
@@ -23,9 +23,9 @@
 class AddFilesDialog : public SelectFilesDialog {
 public:
     AddFilesDialog(CWnd* pParentWnd = NULL) :
-        SelectFilesDialog("IDD_ADD_FILES", pParentWnd)
+        SelectFilesDialog(L"IDD_ADD_FILES", pParentWnd)
     {
-        SetWindowTitle(_T("Add Files..."));
+        SetWindowTitle(L"Add Files...");
         fStoragePrefix = "";
         fStoragePrefixEnable = true;
         fIncludeSubfolders = FALSE;
@@ -77,4 +77,4 @@ private:
     //DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__ADDFILESDIALOG__*/
+#endif /*APP_ADDFILESDIALOG_H*/

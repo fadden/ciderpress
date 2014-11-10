@@ -6,8 +6,8 @@
 /*
  * A class representing the system registry.
  */
-#ifndef __REGISTRY__
-#define __REGISTRY__
+#ifndef APP_REGISTRY_H
+#define APP_REGISTRY_H
 
 
 /*
@@ -42,7 +42,7 @@ public:
     */
 
     // Get the registry key to be used for our application.
-    const char* GetAppRegistryKey(void) const;
+    const WCHAR* GetAppRegistryKey(void) const;
 
     // Fix basic settings, e.g. HKCR AppID classes.
     void FixBasicSettings(void) const;
@@ -56,22 +56,22 @@ public:
 
 private:
     typedef struct FileTypeAssoc {
-        const char* ext;        // e.g. ".SHK"
-        const char* appID;      // e.g. "CiderPress.NuFX"
+        const WCHAR* ext;       // e.g. ".SHK"
+        const WCHAR* appID;     // e.g. "CiderPress.NuFX"
     } FileTypeAssoc;
 
     static const FileTypeAssoc kFileTypeAssoc[];
 
-    bool IsOurAppID(const char* id) const;
-    void ConfigureAppID(const char* appID, const char* descr,
-        const char* exeName, int iconIdx) const;
-    void ConfigureAppIDSubFields(HKEY hAppKey, const char* descr,
-        const char* exeName) const;
+    bool IsOurAppID(const WCHAR* id) const;
+    void ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
+        const WCHAR* exeName, int iconIdx) const;
+    void ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
+        const WCHAR* exeName) const;
     int GetAssocAppName(const CString& appID, CString* pCmd) const;
     void ReduceToToken(CString* pStr) const;
-    bool GetAssocState(const char* ext) const;
-    int DisownExtension(const char* ext) const;
-    int OwnExtension(const char* ext, const char* appID) const;
+    bool GetAssocState(const WCHAR* ext) const;
+    int DisownExtension(const WCHAR* ext) const;
+    int OwnExtension(const WCHAR* ext, const WCHAR* appID) const;
     DWORD RegDeleteKeyNT(HKEY hStartKey, LPCTSTR pKeyName) const;
 
     /* key validation */
@@ -82,4 +82,4 @@ private:
     int VerifyKey(const char* user, const char* company, const char* key);
 };
 
-#endif /*__REGISTRY__*/
+#endif /*APP_REGISTRY_H*/

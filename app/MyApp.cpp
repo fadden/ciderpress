@@ -57,7 +57,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
     }
 #endif
 
-    WMSG5("CiderPress v%d.%d.%d%s started at %.24s\n",
+    WMSG5("CiderPress v%d.%d.%d%s started at %.24hs\n",
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
         kAppDevString, ctime(&now));
 
@@ -105,14 +105,14 @@ MyApp::InitInstance(void)
 
     /* find our .EXE file */
     //HMODULE hModule = ::GetModuleHandle(NULL);
-    char buf[MAX_PATH];
-    if (::GetModuleFileName(nil /*hModule*/, buf, sizeof(buf)) != 0) {
-        WMSG1("Module name is '%s'\n", buf);
+    WCHAR buf[MAX_PATH];
+    if (::GetModuleFileName(nil /*hModule*/, buf, NELEM(buf)) != 0) {
+        WMSG1("Module name is '%ls'\n", buf);
         fExeFileName = buf;
 
-        char* cp = strrchr(buf, '\\');
+        WCHAR* cp = wcsrchr(buf, '\\');
         if (cp == nil)
-            fExeBaseName = "";
+            fExeBaseName = L"";
         else
             fExeBaseName = fExeFileName.Left(cp - buf +1);
     } else {
@@ -120,9 +120,9 @@ MyApp::InitInstance(void)
             ::GetLastError());
     }
 
-    LogModuleLocation("riched.dll");
-    LogModuleLocation("riched20.dll");
-    LogModuleLocation("riched32.dll");
+    LogModuleLocation(L"riched.dll");
+    LogModuleLocation(L"riched20.dll");
+    LogModuleLocation(L"riched32.dll");
 
 #if 0
     /* find our .INI file by tweaking the EXE path */
@@ -137,7 +137,7 @@ MyApp::InitInstance(void)
 
     free((void*)m_pszProfileName);
     m_pszProfileName = strdup(buf);
-    WMSG1("Profile name is '%s'\n", m_pszProfileName);
+    WMSG1("Profile name is '%ls'\n", m_pszProfileName);
 
     if (!WriteProfileString("SectionOne", "MyEntry", "test"))
         WMSG0("WriteProfileString failed\n");
@@ -145,13 +145,13 @@ MyApp::InitInstance(void)
 
     SetRegistryKey(fRegistry.GetAppRegistryKey());
 
-    //WMSG1("Registry key is '%s'\n", m_pszRegistryKey);
-    //WMSG1("Profile name is '%s'\n", m_pszProfileName);
-    WMSG1("Short command line is '%s'\n", m_lpCmdLine);
-    //WMSG1("CP app name is '%s'\n", m_pszAppName);
-    //WMSG1("CP exe name is '%s'\n", m_pszExeName);
-    WMSG1("CP help file is '%s'\n", m_pszHelpFilePath);
-    WMSG1("Command line is '%s'\n", ::GetCommandLine());
+    //WMSG1("Registry key is '%ls'\n", m_pszRegistryKey);
+    //WMSG1("Profile name is '%ls'\n", m_pszProfileName);
+    WMSG1("Short command line is '%ls'\n", m_lpCmdLine);
+    //WMSG1("CP app name is '%ls'\n", m_pszAppName);
+    //WMSG1("CP exe name is '%ls'\n", m_pszExeName);
+    WMSG1("CP help file is '%ls'\n", m_pszHelpFilePath);
+    WMSG1("Command line is '%ls'\n", ::GetCommandLine());
 
     //if (!WriteProfileString("SectionOne", "MyEntry", "test"))
     //  WMSG0("WriteProfileString failed\n");
@@ -161,11 +161,11 @@ MyApp::InitInstance(void)
      * bail immediately.  This will hemorrhage memory, but I'm sure the
      * incredibly robust Windows environment will take it in stride.
      */
-    if (strcmp(m_lpCmdLine, _T("-install")) == 0) {
+    if (wcscmp(m_lpCmdLine, L"-install") == 0) {
         WMSG0("Invoked with INSTALL flag\n");
         fRegistry.OneTimeInstall();
         exit(0);
-    } else if (strcmp(m_lpCmdLine, _T("-uninstall")) == 0) {
+    } else if (wcscmp(m_lpCmdLine, L"-uninstall") == 0) {
         WMSG0("Invoked with UNINSTALL flag\n");
         fRegistry.OneTimeUninstall();
         exit(1);    // tell DeployMaster to continue with uninstall
@@ -182,18 +182,18 @@ MyApp::InitInstance(void)
  * If "name" is nil, we show the EXE info.
  */
 void
-MyApp::LogModuleLocation(const char* name)
+MyApp::LogModuleLocation(const WCHAR* name)
 {
     HMODULE hModule;
-    char fileNameBuf[256];
+    WCHAR fileNameBuf[256];
     hModule = ::GetModuleHandle(name);
     if (hModule != nil &&
-        ::GetModuleFileName(hModule, fileNameBuf, sizeof(fileNameBuf)) != 0)
+        ::GetModuleFileName(hModule, fileNameBuf, NELEM(fileNameBuf)) != 0)
     {
         // GetModuleHandle does not increase ref count, so no need to release
-        WMSG2("Module '%s' loaded from '%s'\n", name, fileNameBuf);
+        WMSG2("Module '%ls' loaded from '%ls'\n", name, fileNameBuf);
     } else {
-        WMSG1("Module '%s' not loaded\n", name);
+        WMSG1("Module '%ls' not loaded\n", name);
     }
 }
 

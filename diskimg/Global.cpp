@@ -17,6 +17,7 @@
 /* global constant */
 const char* DiskImgLib::kASPIDev = "ASPI:";
 
+
 /*
  * Perform one-time DLL initialization.
  */
@@ -36,13 +37,14 @@ Global::AppInit(void)
 
 #ifdef _WIN32
     HMODULE hModule;
-    char fileNameBuf[256];
-    hModule = ::GetModuleHandle("DiskImg4.dll");
+    WCHAR fileNameBuf[256];
+    hModule = ::GetModuleHandle(L"DiskImg4.dll");
     if (hModule != nil &&
-        ::GetModuleFileName(hModule, fileNameBuf, sizeof(fileNameBuf)) != 0)
+        ::GetModuleFileName(hModule, fileNameBuf,
+            sizeof(fileNameBuf) / sizeof(WCHAR)) != 0)
     {
         // GetModuleHandle does not increase ref count, so no need to release
-        WMSG1("DiskImg DLL loaded from '%s'\n", fileNameBuf);
+        WMSG1("DiskImg DLL loaded from '%ls'\n", fileNameBuf);
     } else {
         WMSG0("Unable to get DiskImg DLL filename\n");
     }
@@ -68,7 +70,7 @@ Global::AppInit(void)
      */
     DiskImg::CalcNibbleInvTables();
 
-#ifdef HAVE_WINDOWS_CDROM
+#if defined(HAVE_WINDOWS_CDROM) && defined(WANT_ASPI)
     if (kAlwaysTryASPI || IsWin9x()) {
         fpASPI = new ASPI;
         if (fpASPI->Init() != kDIErrNone) {
@@ -107,7 +109,11 @@ Global::AppCleanup(void)
 /*static*/ bool Global::GetHasASPI(void) { return fpASPI != nil; }
 /*static*/ unsigned long Global::GetASPIVersion(void) {
     assert(fpASPI != nil);
+#ifdef WANT_ASPI
     return fpASPI->GetVersion();
+#else
+    return 123456789;
+#endif
 }
 #else
 /*static*/ bool Global::GetHasSPTI(void) { return false; }

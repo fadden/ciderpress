@@ -43,11 +43,11 @@ void MySpinCtrl::PreSubclassWindow()
  * Returns "true" on success, "false" on error.
  */
 bool
-MySpinCtrl::ConvLong(const char* str, long* pVal) const
+MySpinCtrl::ConvLong(const WCHAR* str, long* pVal) const
 {
-    char* endp;
+    WCHAR* endp;
 
-    *pVal = strtol(str, &endp, GetBase());
+    *pVal = wcstol(str, &endp, GetBase());
     if (endp == str || *endp != '\0')
         return false;
 
@@ -86,9 +86,9 @@ MySpinCtrl::OnDeltaPos(NMHDR* pNMHDR, LRESULT* pResult)
     if (proposedVal != buddyVal) {
         /* set buddy control to new value */
         if (GetBase() == 10)
-            buddyStr.Format("%d", proposedVal);
+            buddyStr.Format(L"%d", proposedVal);
         else
-            buddyStr.Format("%X", proposedVal);
+            buddyStr.Format(L"%X", proposedVal);
         GetBuddy()->SetWindowText(buddyStr);
     }
     
@@ -115,9 +115,9 @@ MySpinCtrl::SetPos(int nPos)
     }
 
     if (GetBase() == 10)
-        buddyStr.Format("%d", nPos);
+        buddyStr.Format(L"%d", nPos);
     else
-        buddyStr.Format("%X", nPos);
+        buddyStr.Format(L"%X", nPos);
 
     GetBuddy()->SetWindowText(buddyStr);
 
@@ -149,9 +149,9 @@ MySpinCtrl::GetPos() const
     // if they typed a "sloppy value" in, make it look nice
     CString reformatStr;
     if (GetBase() == 10)
-        reformatStr.Format("%d", val);
+        reformatStr.Format(L"%d", val);
     else
-        reformatStr.Format("%X", val);
+        reformatStr.Format(L"%X", val);
     if (buddyStr != reformatStr)
         GetBuddy()->SetWindowText(reformatStr);
 

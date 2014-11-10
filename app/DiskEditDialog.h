@@ -6,8 +6,8 @@
 /*
  * Class definition for DiskEdit dialog.
  */
-#ifndef __DISK_EDIT_DIALOG__
-#define __DISK_EDIT_DIALOG__
+#ifndef APP_DISKEDITDIALOG_H
+#define APP_DISKEDITDIALOG_H
 
 #include "../diskimg/DiskImg.h"
 #include "../util/UtilLib.h"
@@ -37,7 +37,7 @@ public:
     }
     virtual ~DiskEditDialog() {}
 
-    void Setup(DiskFS* pDiskFS, const char* fileName) {
+    void Setup(DiskFS* pDiskFS, const WCHAR* fileName) {
         ASSERT(pDiskFS != nil);
         ASSERT(fileName != nil);
         fpDiskFS = pDiskFS;
@@ -49,15 +49,15 @@ public:
     virtual int LoadData(void) = 0;
 
     virtual void DisplayData(void) = 0;
-    virtual void DisplayData(const unsigned char* buf, int size);
-    virtual void DisplayNibbleData(const unsigned char* srcBuf, int size);
+    virtual void DisplayData(const BYTE* buf, int size);
+    virtual void DisplayNibbleData(const BYTE* srcBuf, int size);
 
     bool GetReadOnly(void) const { return fReadOnly; }
     void SetReadOnly(bool val) { fReadOnly = val; }
     int GetPositionShift(void) const { return fPositionShift; }
     void SetPositionShift(int val) { fPositionShift = val; }
     DiskFS* GetDiskFS(void) const { return fpDiskFS; }
-    const char* GetFileName(void) const { return fFileName; }
+    const WCHAR* GetFileName(void) const { return fFileName; }
 
 protected:
     // return a low-ASCII character so we can read high-ASCII files
@@ -94,7 +94,7 @@ protected:
     void SetSpinner(int id, long val);
 
     //void FillWithPattern(unsigned char* buf, int size, const char* pattern);
-    DIError OpenFile(const char* fileName, bool openRsrc, A2File** ppFile,
+    DIError OpenFile(const WCHAR* fileName, bool openRsrc, A2File** ppFile,
         A2FileDescr** ppOpenFile);
 
     DiskFS*     fpDiskFS;
@@ -149,7 +149,7 @@ protected:
 
     long        fTrack;
     long        fSector;
-    unsigned char fSectorData[kSectorSize];
+    BYTE        fSectorData[kSectorSize];
 };
 
 /*
@@ -167,7 +167,7 @@ public:
     virtual ~SectorFileEditDialog() {}
 
     /* we do NOT own pOpenFile, and should not delete it */
-    void SetupFile(const char* fileName, bool rsrcFork, A2File* pFile,
+    void SetupFile(const WCHAR* fileName, bool rsrcFork, A2File* pFile,
         A2FileDescr* pOpenFile)
     {
         fOpenFileName = fileName;
@@ -229,7 +229,7 @@ protected:
     afx_msg virtual void OnOpenFile(void);
 
     long        fBlock;
-    unsigned char fBlockData[kBlockSize];
+    BYTE        fBlockData[kBlockSize];
 };
 
 
@@ -248,7 +248,7 @@ public:
     virtual ~BlockFileEditDialog() {}
 
     /* we do NOT own pOpenFile, and should not delete it */
-    void SetupFile(const char* fileName, bool rsrcFork, A2File* pFile,
+    void SetupFile(const WCHAR* fileName, bool rsrcFork, A2File* pFile,
         A2FileDescr* pOpenFile)
     {
         fOpenFileName = fileName;
@@ -308,8 +308,8 @@ protected:
     afx_msg virtual void OnNibbleParms(void) { ASSERT(false); }
 
     long        fTrack;
-    unsigned char fNibbleData[DiskImgLib::kTrackAllocSize];
+    BYTE        fNibbleData[DiskImgLib::kTrackAllocSize];
     long        fNibbleDataLen;
 };
 
-#endif /*__DISK_EDIT_DIALOG__*/
+#endif /*APP_DISKEDITDIALOG_H*/

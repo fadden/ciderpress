@@ -110,7 +110,7 @@ ContentList::OnCreate(LPCREATESTRUCT lpcs)
 
     /* load the data and sort it */
     if (LoadData() != 0) {
-        MessageBox("Not all entries were loaded.", "Error",
+        MessageBox(L"Not all entries were loaded.", L"Error",
             MB_OK | MB_ICONSTOP);
         /* keep going with what we've got; the error only affects display */
     }
@@ -368,7 +368,7 @@ ContentList::NewSortOrder(void)
  * Use kFileTypeBufLen.
  */
 /*static*/ void
-ContentList::MakeFileTypeDisplayString(const GenericEntry* pEntry, char* buf)
+ContentList::MakeFileTypeDisplayString(const GenericEntry* pEntry, WCHAR* buf)
 {
     bool isDir =
         pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir ||
@@ -376,30 +376,30 @@ ContentList::MakeFileTypeDisplayString(const GenericEntry* pEntry, char* buf)
 
     if (pEntry->GetSourceFS() == DiskImg::kFormatMacHFS && isDir) {
         /* HFS directories don't have types; fake it */
-        ::lstrcpy(buf, "DIR/");
+        wcscpy(buf, L"DIR/");
     } else if (!(pEntry->GetFileType() >= 0 && pEntry->GetFileType() <= 0xff))
     {
         /* oversized type; assume it's HFS */
-        char typeBuf[kFileTypeBufLen];
+        WCHAR typeBuf[kFileTypeBufLen];
         MakeMacTypeString(pEntry->GetFileType(), typeBuf);
 
         switch (pEntry->GetRecordKind()) {
         case GenericEntry::kRecordKindFile:
-            ::lstrcpy(buf, typeBuf);
+            wcscpy(buf, typeBuf);
             break;
         case GenericEntry::kRecordKindForkedFile:
-            ::sprintf(buf, "%s+", typeBuf);
+            wsprintf(buf, L"%ls+", typeBuf);
             break;
         case GenericEntry::kRecordKindUnknown:
             // shouldn't happen
-            ::sprintf(buf, "%s-", typeBuf);
+            wsprintf(buf, L"%ls-", typeBuf);
             break;
         case GenericEntry::kRecordKindVolumeDir:
         case GenericEntry::kRecordKindDirectory:
         case GenericEntry::kRecordKindDisk:
         default:
             ASSERT(FALSE);
-            ::lstrcpy(buf, "!!!");
+            wcscpy(buf, L"!!!");
             break;
         }
     } else {
@@ -407,24 +407,24 @@ ContentList::MakeFileTypeDisplayString(const GenericEntry* pEntry, char* buf)
         switch (pEntry->GetRecordKind()) {
         case GenericEntry::kRecordKindVolumeDir:
         case GenericEntry::kRecordKindDirectory:
-            ::sprintf(buf, "%s/", pEntry->GetFileTypeString());
+            wsprintf(buf, L"%ls/", pEntry->GetFileTypeString());
             break;
         case GenericEntry::kRecordKindFile:
-            ::sprintf(buf, "%s", pEntry->GetFileTypeString());
+            wsprintf(buf, L"%ls", pEntry->GetFileTypeString());
             break;
         case GenericEntry::kRecordKindForkedFile:
-            ::sprintf(buf, "%s+", pEntry->GetFileTypeString());
+            wsprintf(buf, L"%ls+", pEntry->GetFileTypeString());
             break;
         case GenericEntry::kRecordKindDisk:
-            ::lstrcpy(buf, "Disk");
+            wcscpy(buf, L"Disk");
             break;
         case GenericEntry::kRecordKindUnknown:
             // usually a GSHK-archived empty data file does this
-            ::sprintf(buf, "%s-", pEntry->GetFileTypeString());
+            wsprintf(buf, L"%ls-", pEntry->GetFileTypeString());
             break;
         default:
             ASSERT(FALSE);
-            ::lstrcpy(buf, "!!!");
+            wcscpy(buf, L"!!!");
             break;
         }
     }
@@ -437,7 +437,7 @@ ContentList::MakeFileTypeDisplayString(const GenericEntry* pEntry, char* buf)
  * kFileTypeBufLen.
  */
 /*static*/ void
-ContentList::MakeMacTypeString(unsigned long val, char* buf)
+ContentList::MakeMacTypeString(unsigned long val, WCHAR* buf)
 {
     /* expand longword with ASCII type bytes */
     buf[0] = (unsigned char) (val >> 24);
@@ -460,7 +460,7 @@ ContentList::MakeMacTypeString(unsigned long val, char* buf)
  * Use kFileTypeBufLen.
  */
 /*static*/ void
-ContentList::MakeAuxTypeDisplayString(const GenericEntry* pEntry, char* buf)
+ContentList::MakeAuxTypeDisplayString(const GenericEntry* pEntry, WCHAR* buf)
 {
     bool isDir =
         pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir ||
@@ -468,16 +468,16 @@ ContentList::MakeAuxTypeDisplayString(const GenericEntry* pEntry, char* buf)
 
     if (pEntry->GetSourceFS() == DiskImg::kFormatMacHFS && isDir) {
         /* HFS directories don't have types; fake it */
-        ::lstrcpy(buf, "    ");
+        wcscpy(buf, L"    ");
     } else if (!(pEntry->GetFileType() >= 0 && pEntry->GetFileType() <= 0xff))
     {
         /* oversized type; assume it's HFS */
         MakeMacTypeString(pEntry->GetAuxType(), buf);
     } else {
         if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDisk)
-            ::sprintf(buf, "%dk", pEntry->GetUncompressedLen() / 1024);
+            wsprintf(buf, L"%dk", pEntry->GetUncompressedLen() / 1024);
         else
-            ::sprintf(buf, "$%04lX", pEntry->GetAuxType());
+            wsprintf(buf, L"$%04lX", pEntry->GetAuxType());
     }
 }
 
@@ -489,7 +489,7 @@ ContentList::MakeAuxTypeDisplayString(const GenericEntry* pEntry, char* buf)
  * "buf" must be able to hold at least 6 chars plus the NULL.
  */
 void
-ContentList::MakeRatioDisplayString(const GenericEntry* pEntry, char* buf,
+ContentList::MakeRatioDisplayString(const GenericEntry* pEntry, WCHAR* buf,
     int* pPerc)
 {
     LONGLONG totalLen, totalCompLen;
@@ -497,14 +497,14 @@ ContentList::MakeRatioDisplayString(const GenericEntry* pEntry, char* buf,
     totalCompLen = pEntry->GetCompressedLen();
 
     if ((!totalLen && totalCompLen) || (totalLen && !totalCompLen)) {
-        ::lstrcpy(buf, "---");   /* weird */
+        wcscpy(buf, L"---");   /* weird */
         *pPerc = -1;
     } else if (totalLen < totalCompLen) {
-        ::lstrcpy(buf, ">100%"); /* compression failed? */
+        wcscpy(buf, L">100%"); /* compression failed? */
         *pPerc = 101;
     } else {
         *pPerc = ComputePercent(totalCompLen, totalLen);
-        ::sprintf(buf, "%d%%", *pPerc);
+        wsprintf(buf, L"%d%%", *pPerc);
     }
 }
 
@@ -518,13 +518,12 @@ ContentList::MakeRatioDisplayString(const GenericEntry* pEntry, char* buf,
 void
 ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
 {
-    //static const char kAccessBits[] = "DNB  IWR";
-    static const char kAccessBits[] = "dnb  iwr";
+    static const WCHAR kAccessBits[] = L"dnb  iwr";
     LV_DISPINFO* plvdi = (LV_DISPINFO*) pnmh;
     CString str;
 
     if (fpArchive->GetReloadFlag()) {
-        ::lstrcpy(plvdi->item.pszText, "");
+        wcscpy(plvdi->item.pszText, L"");
         *pResult = 0;
         return;
     }
@@ -537,13 +536,13 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
 
         switch (plvdi->item.iSubItem) {
         case 0:     // pathname
-            if ((int)strlen(pEntry->GetDisplayName()) > plvdi->item.cchTextMax) {
+            if (wcslen(pEntry->GetDisplayName()) > plvdi->item.cchTextMax) {
                 // looks like current limit is 264 chars, which we could hit
-                ::strncpy(plvdi->item.pszText, pEntry->GetDisplayName(),
+                wcsncpy(plvdi->item.pszText, pEntry->GetDisplayName(),
                     plvdi->item.cchTextMax);
                 plvdi->item.pszText[plvdi->item.cchTextMax-1] = '\0';
             } else {
-                ::lstrcpy(plvdi->item.pszText, pEntry->GetDisplayName());
+                wcscpy(plvdi->item.pszText, pEntry->GetDisplayName());
             }
 
             /*
@@ -553,10 +552,10 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
              * it a little.
              */
             {
-                unsigned char* str = (unsigned char*) plvdi->item.pszText;
+                WCHAR* str = plvdi->item.pszText;
 
                 while (*str != '\0') {
-                    *str = DiskImg::MacToASCII(*str);
+                    *str = DiskImg::MacToASCII((unsigned char) (*str));
                     str++;
                 }
             }
@@ -576,20 +575,20 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
             break;
         case 4:     // format
             ASSERT(pEntry->GetFormatStr() != nil);
-            ::lstrcpy(plvdi->item.pszText, pEntry->GetFormatStr());
+            wcscpy(plvdi->item.pszText, pEntry->GetFormatStr());
             break;
         case 5:     // size
-            ::sprintf(plvdi->item.pszText, "%ld", pEntry->GetUncompressedLen());
+            wsprintf(plvdi->item.pszText, L"%ld", pEntry->GetUncompressedLen());
             break;
         case 6:     // ratio
             int crud;
             MakeRatioDisplayString(pEntry, plvdi->item.pszText, &crud);
             break;
         case 7:     // packed
-            ::sprintf(plvdi->item.pszText, "%ld", pEntry->GetCompressedLen());
+            wsprintf(plvdi->item.pszText, L"%ld", pEntry->GetCompressedLen());
             break;
         case 8:     // access
-            char bitLabels[sizeof(kAccessBits)];
+            WCHAR bitLabels[sizeof(kAccessBits)];
             int i, j, mask;
 
             for (i = 0, j = 0, mask = 0x80; i < 8; i++, mask >>= 1) {
@@ -599,7 +598,7 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
             bitLabels[j] = '\0';
             ASSERT(j < sizeof(bitLabels));
             //::sprintf(plvdi->item.pszText, "0x%02x", pEntry->GetAccess());
-            ::lstrcpy(plvdi->item.pszText, bitLabels);
+            wcscpy(plvdi->item.pszText, bitLabels);
             break;
         case 9:     // NuRecordIdx [hidden]
             break;
@@ -621,7 +620,7 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
 /*
  * Helper functions for sort routine.
  */
-static inline
+static inline int
 CompareUnsignedLong(unsigned long u1, unsigned long u2)
 {
     if (u1 < u2)
@@ -631,7 +630,7 @@ CompareUnsignedLong(unsigned long u1, unsigned long u2)
     else
         return 0;
 }
-static inline
+static inline int
 CompareLONGLONG(LONGLONG u1, LONGLONG u2)
 {
     if (u1 < u2)
@@ -650,8 +649,8 @@ ContentList::CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
     const GenericEntry* pEntry1 = (const GenericEntry*) lParam1;
     const GenericEntry* pEntry2 = (const GenericEntry*) lParam2;
-    char tmpBuf1[16];       // needs >= 5 for file type compare, and
-    char tmpBuf2[16];       // >= 7 for ratio string
+    WCHAR tmpBuf1[16];       // needs >= 5 for file type compare, and
+    WCHAR tmpBuf2[16];       // >= 7 for ratio string
     int result;
 
     /* for descending order, flip the parameters */
@@ -665,12 +664,12 @@ ContentList::CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 
     switch (lParamSort) {
     case 0:     // pathname
-        result = ::stricmp(pEntry1->GetDisplayName(), pEntry2->GetDisplayName());
+        result = wcsicmp(pEntry1->GetDisplayName(), pEntry2->GetDisplayName());
         break;
     case 1:     // file type
         MakeFileTypeDisplayString(pEntry1, tmpBuf1);
         MakeFileTypeDisplayString(pEntry2, tmpBuf2);
-        result = ::stricmp(tmpBuf1, tmpBuf2);
+        result = wcsicmp(tmpBuf1, tmpBuf2);
         if (result != 0)
             break;
         /* else fall through to case 2 */
@@ -786,30 +785,28 @@ ContentList::GetDefaultWidth(int col)
         retval = 200;
         break;
     case 1: // type (need "$XY" and long HFS types)
-        //retval = MaxVal(GetStringWidth("XXMMM+"), GetStringWidth("XXType"));
-        retval = MaxVal(GetStringWidth("XXMMMM+"), GetStringWidth("XXType"));
+        retval = MaxVal(GetStringWidth(L"XXMMMM+"), GetStringWidth(L"XXType"));
         break;
     case 2: // auxtype (hex or long HFS type)
-        //retval = MaxVal(GetStringWidth("XX$8888"), GetStringWidth("XXAux"));
-        retval = MaxVal(GetStringWidth("XX$CCCC"), GetStringWidth("XXAux"));
+        retval = MaxVal(GetStringWidth(L"XX$CCCC"), GetStringWidth(L"XXAux"));
         break;
     case 3: // mod date
-        retval = GetStringWidth("XX88-MMM-88 88:88");
+        retval = GetStringWidth(L"XX88-MMM-88 88:88");
         break;
     case 4: // format
-        retval = GetStringWidth("XXUncompr");
+        retval = GetStringWidth(L"XXUncompr");
         break;
     case 5: // uncompressed size
-        retval = GetStringWidth("XX88888888");
+        retval = GetStringWidth(L"XX88888888");
         break;
     case 6: // ratio
-        retval = MaxVal(GetStringWidth("XXRatio"), GetStringWidth("XX100%"));
+        retval = MaxVal(GetStringWidth(L"XXRatio"), GetStringWidth(L"XX100%"));
         break;
     case 7: // packed
-        retval = GetStringWidth("XX88888888");
+        retval = GetStringWidth(L"XX88888888");
         break;
     case 8: // access
-        retval = MaxVal(GetStringWidth("XXAccess"), GetStringWidth("XXdnbiwr"));
+        retval = MaxVal(GetStringWidth(L"XXAccess"), GetStringWidth(L"XXdnbiwr"));
         break;
     default:
         ASSERT(false);
@@ -869,7 +866,7 @@ ContentList::OnDoubleClick(NMHDR*, LRESULT* pResult)
     int idx = HitTest(point);
     if (idx != -1) {
         CString str = GetItemText(idx, 0);
-        WMSG1("%s was double-clicked\n", str);
+        WMSG1("%ls was double-clicked\n", (LPCWSTR) str);
     }
 
     ((MainWindow*) ::AfxGetMainWnd())->HandleDoubleClick();
@@ -898,8 +895,7 @@ ContentList::OnRightClick(NMHDR*, LRESULT* pResult)
     int idx = HitTest(point);
     if (idx != -1) {
         CString str = GetItemText(idx, 0);
-        //TRACE1("%s was right-clicked\n", str);
-        WMSG1("%s was right-clicked\n", str);
+        WMSG1("%ls was right-clicked\n", (LPCWSTR) str);
 
         //fRightClickItem = idx;
 #else
@@ -1016,15 +1012,15 @@ ContentList::SelectSubdirContents(void)
  * Select every entry whose display name has "displayPrefix" as a prefix.
  */
 void
-ContentList::SelectSubdir(const char* displayPrefix)
+ContentList::SelectSubdir(const WCHAR* displayPrefix)
 {
-    WMSG1(" ContentList selecting all in '%s'\n", displayPrefix);
-    int len = strlen(displayPrefix);
+    WMSG1(" ContentList selecting all in '%ls'\n", displayPrefix);
+    int len = wcslen(displayPrefix);
 
     for (int i = GetItemCount()-1; i >= 0; i--) {
         GenericEntry* pEntry = (GenericEntry*) GetItemData(i);
 
-        if (strncasecmp(displayPrefix, pEntry->GetDisplayName(), len) == 0)
+        if (wcsnicmp(displayPrefix, pEntry->GetDisplayName(), len) == 0)
             SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
     }
 }
@@ -1044,14 +1040,14 @@ ContentList::ClearSelection(void)
  * If we find a matching entry, we clear the current selection and select it.
  */
 void
-ContentList::FindNext(const char* str, bool down, bool matchCase,
+ContentList::FindNext(const WCHAR* str, bool down, bool matchCase,
     bool wholeWord)
 {
     POSITION posn;
     int i, num;
     bool found = false;
 
-    WMSG4("FindNext '%s' d=%d c=%d w=%d\n", str, down, matchCase, wholeWord);
+    WMSG4("FindNext '%ls' d=%d c=%d w=%d\n", str, down, matchCase, wholeWord);
 
     posn = GetFirstSelectedItemPosition();
     num = GetNextSelectedItem(/*ref*/ posn);
@@ -1108,26 +1104,26 @@ ContentList::FindNext(const char* str, bool down, bool matchCase,
  * Compare "str" against the contents of entry "num".
  */
 bool
-ContentList::CompareFindString(int num, const char* str, bool matchCase,
+ContentList::CompareFindString(int num, const WCHAR* str, bool matchCase,
     bool wholeWord)
 {
     GenericEntry* pEntry = (GenericEntry*) GetItemData(num);
     char fssep = pEntry->GetFssep();
-    char* (*pSubCompare)(const char* str, const char* subStr) = nil;
+    const WCHAR* (*pSubCompare)(const WCHAR* str, const WCHAR* subStr) = nil;
 
     if (matchCase)
-        pSubCompare = strstr;
+        pSubCompare = wcsstr;
     else
-        pSubCompare = stristr;
+        pSubCompare = Stristr;
 
     if (wholeWord) {
-        const char* src = pEntry->GetDisplayName();
-        const char* start = src;
-        int strLen = strlen(str);
+        const WCHAR* src = pEntry->GetDisplayName();
+        const WCHAR* start = src;
+        size_t strLen = wcslen(str);
 
         /* scan forward, looking for a match that starts & ends on fssep */
         while (*start != '\0') {
-            const char* match;
+            const WCHAR* match;
 
             match = (*pSubCompare)(start, str);
 

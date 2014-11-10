@@ -61,7 +61,7 @@ GenericEntry::GenericEntry(void)
     fModWhen = kDateNone;
     fCreateWhen = kDateNone;
     fRecordKind = kRecordKindUnknown;
-    fFormatStr = "Unknown";
+    fFormatStr = L"Unknown";
     fCompressedLen = 0;
     //fUncompressedLen = 0;
     fDataForkLen = fRsrcForkLen = 0;
@@ -95,13 +95,12 @@ GenericEntry::~GenericEntry(void)
  * Pathname getters and setters.
  */
 void
-GenericEntry::SetPathName(const char* path)
+GenericEntry::SetPathName(const WCHAR* path)
 {
-    ASSERT(path != nil && strlen(path) > 0);
+    ASSERT(path != nil && wcslen(path) > 0);
     if (fPathName != nil)
         delete fPathName;
-    fPathName = new char[strlen(path)+1];
-    strcpy(fPathName, path);
+    fPathName = wcsdup(path);
     // nuke the derived fields
     fFileName = nil;
     fFileNameExtension = nil;
@@ -118,59 +117,65 @@ GenericEntry::SetPathName(const char* path)
     if (pPreferences->GetPrefBool(kPrSpacesToUnder))
         SpacesToUnderscores(fPathName);
 }
-const char*
+const WCHAR*
 GenericEntry::GetFileName(void)
 {
     ASSERT(fPathName != nil);
     if (fFileName == nil)
-        fFileName = FilenameOnly(fPathName, fFssep);
+        fFileName = PathName::FilenameOnly(fPathName, fFssep);
     return fFileName;
 }
-const char*
+const WCHAR*
 GenericEntry::GetFileNameExtension(void)
 {
     ASSERT(fPathName != nil);
     if (fFileNameExtension == nil)
-        fFileNameExtension = FindExtension(fPathName, fFssep);
+        fFileNameExtension = PathName::FindExtension(fPathName, fFssep);
     return fFileNameExtension;
 }
+CStringA
+GenericEntry::GetFileNameExtensionA(void)
+{
+    return GetFileNameExtension();
+}
 void
-GenericEntry::SetSubVolName(const char* name)
+GenericEntry::SetSubVolName(const WCHAR* name)
 {
     delete[] fSubVolName;
     fSubVolName = nil;
     if (name != nil) {
-        fSubVolName = new char[strlen(name)+1];
-        strcpy(fSubVolName, name);
+        fSubVolName = wcsdup(name);
     }
 }
-const char*
+const WCHAR*
 GenericEntry::GetDisplayName(void) const
 {
     ASSERT(fPathName != nil);
     if (fDisplayName != nil)
         return fDisplayName;
 
+    // TODO: hmm...
     GenericEntry* pThis = const_cast<GenericEntry*>(this);
 
-    int len = strlen(fPathName) +1;
+    int len = wcslen(fPathName) +1;
     if (fSubVolName != nil)
-        len += strlen(fSubVolName) +1;
-    pThis->fDisplayName = new char[len];
+        len += wcslen(fSubVolName) +1;
+    pThis->fDisplayName = new WCHAR[len];
     if (fSubVolName != nil) {
-        char xtra[2] = { DiskFS::kDIFssep, '\0' };
-        strcpy(pThis->fDisplayName, fSubVolName);
-        strcat(pThis->fDisplayName, xtra);
-    } else
+        WCHAR xtra[2] = { DiskFS::kDIFssep, '\0' };
+        wcscpy(pThis->fDisplayName, fSubVolName);
+        wcscat(pThis->fDisplayName, xtra);
+    } else {
         pThis->fDisplayName[0] = '\0';
-    strcat(pThis->fDisplayName, fPathName);
+    }
+    wcscat(pThis->fDisplayName, fPathName);
     return pThis->fDisplayName;
 }
 
 /*
  * Get a string for this entry's filetype.
  */
-const char*
+const WCHAR*
 GenericEntry::GetFileTypeString(void) const
 {
     return PathProposal::FileTypeString(fFileType);
@@ -180,7 +185,7 @@ GenericEntry::GetFileTypeString(void) const
  * Convert spaces to underscores.
  */
 /*static*/ void
-GenericEntry::SpacesToUnderscores(char* buf)
+GenericEntry::SpacesToUnderscores(WCHAR* buf)
 {
     while (*buf != '\0') {
         if (*buf == ' ')
@@ -574,9 +579,9 @@ GenericArchive::CreateIndex(void)
  * in which bad things could happen, but it should be okay.
  */
 /*static*/ CString
-GenericArchive::GenDerivedTempName(const char* filename)
+GenericArchive::GenDerivedTempName(const WCHAR* filename)
 {
-    static const char* kTmpTemplate = "CPtmp_XXXXXX";
+    static const WCHAR kTmpTemplate[] = L"CPtmp_XXXXXX";
     CString mangle(filename);
     int idx, len;
 
@@ -592,7 +597,7 @@ GenericArchive::GenDerivedTempName(const char* filename)
         mangle.Delete(idx+1, len-(idx+1));  /* delete out to the end */
         mangle += kTmpTemplate;
     }
-    WMSG2("GenDerived: passed '%s' returned '%s'\n", filename, mangle);
+    WMSG2("GenDerived: passed '%ls' returned '%ls'\n", filename, (LPCWSTR) mangle);
 
     return mangle;
 }
@@ -616,8 +621,8 @@ GenericArchive::GenDerivedTempName(const char* filename)
 GenericArchive::ComparePaths(const CString& name1, char fssep1,
     const CString& name2, char fssep2)
 {
-    const char* cp1 = name1;
-    const char* cp2 = name2;
+    const WCHAR* cp1 = name1;
+    const WCHAR* cp2 = name2;
 
     while (*cp1 != '\0' && *cp2 != '\0') {
         if (*cp1 == fssep1) {
@@ -700,7 +705,7 @@ GenericArchive::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime* pDateTime)
  */
 NuError
 GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
-    const char* pathname, struct stat* psb, FileDetails* pDetails)
+    const WCHAR* pathname, struct _stat* psb, FileDetails* pDetails)
 {
     //char* livePathStr;
     time_t now;
@@ -728,7 +733,7 @@ GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
     if (NState_GetModAddAsDisk(pState)) {
         if ((psb->st_size & 0x1ff) != 0) {
             /* reject anything whose size isn't a multiple of 512 bytes */
-            printf("NOT storing odd-sized (%ld) file as disk image: %s\n",
+            printf("NOT storing odd-sized (%ld) file as disk image: %ls\n",
                 (long)psb->st_size, livePathStr);
         } else {
             /* set fields; note the "preserve" stuff can override this */
@@ -797,12 +802,12 @@ GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
  */
 typedef struct Win32dirent {
     char    d_attr;
-    char    d_name[MAX_PATH];
+    WCHAR   d_name[MAX_PATH];
     int     d_first;
     HANDLE  d_hFindFile;
 } Win32dirent;
 
-static const char* kWildMatchAll = "*.*";
+static const WCHAR kWildMatchAll[] = L"*.*";
 
 /*
  * Prepare a directory for reading.
@@ -810,36 +815,36 @@ static const char* kWildMatchAll = "*.*";
  * Allocates a Win32dirent struct that must be freed by the caller.
  */
 Win32dirent*
-GenericArchive::OpenDir(const char* name)
+GenericArchive::OpenDir(const WCHAR* name)
 {
     Win32dirent* dir = nil;
-    char* tmpStr = nil;
-    char* cp;
+    WCHAR* tmpStr = nil;
+    WCHAR* cp;
     WIN32_FIND_DATA fnd;
 
     dir = (Win32dirent*) malloc(sizeof(*dir));
-    tmpStr = (char*) malloc(strlen(name) + (2 + sizeof(kWildMatchAll)));
+    tmpStr = (WCHAR*) malloc((wcslen(name) + 2 + wcslen(kWildMatchAll)) * sizeof(WCHAR));
     if (dir == nil || tmpStr == nil)
         goto failed;
 
-    strcpy(tmpStr, name);
-    cp = tmpStr + strlen(tmpStr);
+    wcscpy(tmpStr, name);
+    cp = tmpStr + wcslen(tmpStr);
 
     /* don't end in a colon (e.g. "C:") */
-    if ((cp - tmpStr) > 0 && strrchr(tmpStr, ':') == (cp - 1))
+    if ((cp - tmpStr) > 0 && wcsrchr(tmpStr, ':') == (cp - 1))
         *cp++ = '.';
     /* must end in a slash */
     if ((cp - tmpStr) > 0 &&
-            strrchr(tmpStr, PathProposal::kLocalFssep) != (cp - 1))
+            wcsrchr(tmpStr, PathProposal::kLocalFssep) != (cp - 1))
         *cp++ = PathProposal::kLocalFssep;
 
-    strcpy(cp, kWildMatchAll);
+    wcscpy(cp, kWildMatchAll);
 
     dir->d_hFindFile = FindFirstFile(tmpStr, &fnd);
     if (dir->d_hFindFile == INVALID_HANDLE_VALUE)
         goto failed;
 
-    strcpy(dir->d_name, fnd.cFileName);
+    wcscpy(dir->d_name, fnd.cFileName);
     dir->d_attr = (unsigned char) fnd.dwFileAttributes;
     dir->d_first = 1;
 
@@ -868,7 +873,7 @@ GenericArchive::ReadDir(Win32dirent* dir)
 
         if (!FindNextFile(dir->d_hFindFile, &fnd))
             return nil;
-        strcpy(dir->d_name, fnd.cFileName);
+        wcscpy(dir->d_name, fnd.cFileName);
         dir->d_attr = (unsigned char) fnd.dwFileAttributes;
     }
 
@@ -888,14 +893,6 @@ GenericArchive::CloseDir(Win32dirent* dir)
     free(dir);
 }
 
-
-/* might as well blend in with the UNIX version */
-#define DIR_NAME_LEN(dirent)    ((int)strlen((dirent)->d_name))
-
-//static NuError Win32AddFile(NulibState* pState, NuArchive* pArchive,
-//  const char* pathname);
-
-
 /*
  * Win32 recursive directory descent.  Scan the contents of a directory.
  * If a subdirectory is found, follow it; otherwise, call Win32AddFile to
@@ -903,19 +900,19 @@ GenericArchive::CloseDir(Win32dirent* dir)
  */
 NuError
 GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
-    const char* dirName, CString* pErrMsg)
+    const WCHAR* dirName, CString* pErrMsg)
 {
     NuError err = kNuErrNone;
     Win32dirent* dirp = nil;
     Win32dirent* entry;
-    char nbuf[MAX_PATH];    /* malloc might be better; this soaks stack */
+    WCHAR nbuf[MAX_PATH];   /* malloc might be better; this soaks stack */
     char fssep;
     int len;
 
     ASSERT(pAddOpts != nil);
     ASSERT(dirName != nil);
 
-    WMSG1("+++ DESCEND: '%s'\n", dirName);
+    WMSG1("+++ DESCEND: '%ls'\n", dirName);
 
     dirp = OpenDir(dirName);
     if (dirp == nil) {
@@ -924,7 +921,7 @@ GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
         else
             err = errno ? (NuError)errno : kNuErrOpenDir;
         
-        pErrMsg->Format("Failed on '%s': %s.", dirName, NuStrError(err));
+        pErrMsg->Format(L"Failed on '%ls': %hs.", dirName, NuStrError(err));
         goto bail;
     }
 
@@ -933,22 +930,25 @@ GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
     /* could use readdir_r, but we don't care about reentrancy here */
     while ((entry = ReadDir(dirp)) != nil) {
         /* skip the dotsies */
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+        if (wcscmp(entry->d_name, L".") == 0 ||
+            wcscmp(entry->d_name, L"..") == 0)
+        {
             continue;
+        }
 
-        len = strlen(dirName);
-        if (len + DIR_NAME_LEN(entry) +2 > MAX_PATH) {
+        len = wcslen(dirName);
+        if (len + wcslen(entry->d_name) +2 > MAX_PATH) {
             err = kNuErrInternal;
-            WMSG4("ERROR: Filename exceeds %d bytes: %s%c%s",
+            WMSG4("ERROR: Filename exceeds %d bytes: %ls%c%ls",
                 MAX_PATH, dirName, fssep, entry->d_name);
             goto bail;
         }
 
         /* form the new name, inserting an fssep if needed */
-        strcpy(nbuf, dirName);
+        wcscpy(nbuf, dirName);
         if (dirName[len-1] != fssep)
             nbuf[len++] = fssep;
-        strcpy(nbuf+len, entry->d_name);
+        wcscpy(nbuf+len, entry->d_name);
 
         err = Win32AddFile(pAddOpts, nbuf, pErrMsg);
         if (err != kNuErrNone)
@@ -970,12 +970,12 @@ bail:
  */
 NuError
 GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
-    const char* pathname, CString* pErrMsg)
+    const WCHAR* pathname, CString* pErrMsg)
 {
     NuError err = kNuErrNone;
     Boolean exists, isDir, isReadable;
     FileDetails details;
-    struct stat sb;
+    struct _stat sb;
 
     ASSERT(pAddOpts != nil);
     ASSERT(pathname != nil);
@@ -984,19 +984,19 @@ GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
     int ierr = checkPath.CheckFileStatus(&sb, &exists, &isReadable, &isDir);
     if (ierr != 0) {
         err = kNuErrGeneric;
-        pErrMsg->Format("Unexpected error while examining '%s': %s.", pathname,
-            NuStrError((NuError) ierr));
+        pErrMsg->Format(L"Unexpected error while examining '%ls': %hs.",
+            pathname, NuStrError((NuError) ierr));
         goto bail;
     }
 
     if (!exists) {
         err = kNuErrFileNotFound;
-        pErrMsg->Format("Couldn't find '%s'", pathname);
+        pErrMsg->Format(L"Couldn't find '%ls'", pathname);
         goto bail;
     }
     if (!isReadable) {
         err = kNuErrFileNotReadable;
-        pErrMsg->Format("File '%s' isn't readable.", pathname);
+        pErrMsg->Format(L"File '%ls' isn't readable.", pathname);
         goto bail;
     }
     if (isDir) {
@@ -1010,7 +1010,7 @@ GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
      * filetype and auxtype it has, and whether or not it's actually the
      * resource fork of another file.
      */
-    WMSG1("+++ ADD '%s'\n", pathname);
+    WMSG1("+++ ADD '%ls'\n", pathname);
 
     /*
      * Fill out the "details" structure.  The class has an automatic
@@ -1021,7 +1021,7 @@ GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
     if (err != kNuErrNone)
         goto bail;
 
-    assert(strcmp(pathname, details.origName) == 0);
+    assert(wcscmp(pathname, details.origName) == 0);
     err = DoAddFile(pAddOpts, &details);
     if (err == kNuErrSkipped)   // ignore "skipped" result
         err = kNuErrNone;
@@ -1030,7 +1030,7 @@ GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
 
 bail:
     if (err != kNuErrNone && pErrMsg->IsEmpty()) {
-        pErrMsg->Format("Unable to add file '%s': %s.",
+        pErrMsg->Format(L"Unable to add file '%ls': %hs.",
             pathname, NuStrError(err));
     }
     return err;
@@ -1047,7 +1047,7 @@ bail:
  *   GSOSAddFile. ]
  */
 NuError
-GenericArchive::AddFile(const AddFilesDialog* pAddOpts, const char* pathname,
+GenericArchive::AddFile(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
     CString* pErrMsg)
 {
     *pErrMsg = "";
@@ -1106,8 +1106,10 @@ GenericArchive::FileDetails::operator const NuFileDetails() const
         break;
     }
 
-    details.origName = origName;        // CString to char*
-    details.storageName = storageName;  // CString to char*
+    // TODO(xyzzy): need narrow-string versions of origName and storageName
+    //  (probably need to re-think this automatic-cast-conversion stuff)
+    details.origName = "XYZZY-GenericArchive1"; // origName;
+    details.storageName = "XYZZY-GenericArchive2"; // storageName;
     //details.fileSysID = fileSysID;
     details.fileSysInfo = fileSysInfo;
     details.access = access;
@@ -1234,13 +1236,13 @@ SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
 {
     SelectionEntry* pSelEntry;
 
-    //WMSG1("  Sel '%s'\n", pEntry->GetPathName());
+    //WMSG1("  Sel '%ls'\n", pEntry->GetPathName());
 
     if (!(threadMask & GenericEntry::kAllowVolumeDir) &&
          pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir)
     {
         /* only include volume dir if specifically requested */
-        //WMSG1(" Excluding volume dir '%s' from set\n", pEntry->GetPathName());
+        //WMSG1(" Excluding volume dir '%ls' from set\n", pEntry->GetPathName());
         return;
     }
 
@@ -1248,7 +1250,7 @@ SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
         pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory)
     {
         /* only include directories if specifically requested */
-        //WMSG1(" Excluding folder '%s' from set\n", pEntry->GetPathName());
+        //WMSG1(" Excluding folder '%ls' from set\n", pEntry->GetPathName());
         return;
     }
 
@@ -1325,18 +1327,18 @@ SelectionSet::DeleteEntries(void)
  * Count the #of entries whose display name matches the prefix string.
  */
 int
-SelectionSet::CountMatchingPrefix(const char* prefix)
+SelectionSet::CountMatchingPrefix(const WCHAR* prefix)
 {
     SelectionEntry* pEntry;
     int count = 0;
-    int len = strlen(prefix);
+    int len = wcslen(prefix);
     ASSERT(len > 0);
 
     pEntry = GetEntries();
     while (pEntry != nil) {
         GenericEntry* pGeneric = pEntry->GetEntry();
 
-        if (strncasecmp(prefix, pGeneric->GetDisplayName(), len) == 0)
+        if (wcsnicmp(prefix, pGeneric->GetDisplayName(), len) == 0)
             count++;
         pEntry = pEntry->GetNext();
     }
@@ -1356,7 +1358,7 @@ SelectionSet::Dump(void)
 
     pEntry = fEntryHead;
     while (pEntry != nil) {
-        WMSG1("  : name='%s'\n", pEntry->GetEntry()->GetPathName());
+        WMSG1("  : name='%ls'\n", pEntry->GetEntry()->GetPathName());
         pEntry = pEntry->GetNext();
     }
 }

@@ -6,8 +6,8 @@
 /*
  * Trivial implementation of a modeless dialog box.
  */
-#ifndef __MODELESS__
-#define __MODELESS__
+#ifndef UTIL_MODELESS_H
+#define UTIL_MODELESS_H
 
 /*
  * This class must be allocated on the heap, and destroyed by calling
@@ -113,4 +113,4 @@ private:
 
 */
 
-#endif /*__MODELESS__*/
+#endif /*UTIL_MODELESS_H*/

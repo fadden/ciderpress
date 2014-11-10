@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "HelpTopics.h"
 #include "ArchiveInfoDialog.h"
-#include "../prebuilt/NufxLib.h"
+#include "../nufxlib/NufxLib.h"
 
 /*
  * ===========================================================================
@@ -60,12 +60,13 @@ NufxArchiveInfoDialog::OnInitDialog(void)
     ASSERT(pMasterHeader != nil);
 
     pWnd = GetDlgItem(IDC_AI_FILENAME);
-    pWnd->SetWindowText(fpArchive->GetPathName());
+    CString pathName(fpArchive->GetPathName());
+    pWnd->SetWindowText(pathName);
 
     pWnd = GetDlgItem(IDC_AINUFX_RECORDS);
     nerr = NuGetAttr(pNuArchive, kNuAttrNumRecords, &attr);
     if (nerr == kNuErrNone)
-        tmpStr.Format("%ld", attr);
+        tmpStr.Format(L"%ld", attr);
     else
         tmpStr = notAvailable;
     pWnd->SetWindowText(tmpStr);
@@ -73,36 +74,36 @@ NufxArchiveInfoDialog::OnInitDialog(void)
     pWnd = GetDlgItem(IDC_AINUFX_FORMAT);
     nerr = NuGetAttr(pNuArchive, kNuAttrArchiveType, &attr);
     switch (attr) {
-    case kNuArchiveNuFX:            tmpStr = "NuFX";                    break;
-    case kNuArchiveNuFXInBNY:       tmpStr = "NuFX in Binary II";       break;
-    case kNuArchiveNuFXSelfEx:      tmpStr = "Self-extracting NuFX";    break;
-    case kNuArchiveNuFXSelfExInBNY: tmpStr = "Self-extracting NuFX in Binary II";
+    case kNuArchiveNuFX:            tmpStr = L"NuFX";                   break;
+    case kNuArchiveNuFXInBNY:       tmpStr = L"NuFX in Binary II";      break;
+    case kNuArchiveNuFXSelfEx:      tmpStr = L"Self-extracting NuFX";   break;
+    case kNuArchiveNuFXSelfExInBNY: tmpStr = L"Self-extracting NuFX in Binary II";
         break;
-    case kNuArchiveBNY:             tmpStr = "Binary II";               break;
+    case kNuArchiveBNY:             tmpStr = L"Binary II";              break;
     default:
-        tmpStr = "(unknown)";
+        tmpStr = L"(unknown)";
         break;
     };
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_AINUFX_MASTERVERSION);
-    tmpStr.Format("%ld", pMasterHeader->mhMasterVersion);
+    tmpStr.Format(L"%ld", pMasterHeader->mhMasterVersion);
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_AINUFX_CREATEWHEN);
     when = NufxArchive::DateTimeToSeconds(&pMasterHeader->mhArchiveCreateWhen);
-    tmpStr.Format("%.24s", ctime(&when));
+    tmpStr.Format(L"%.24hs", ctime(&when));
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_AINUFX_MODIFYWHEN);
     when = NufxArchive::DateTimeToSeconds(&pMasterHeader->mhArchiveModWhen);
-    tmpStr.Format("%.24s", ctime(&when));
+    tmpStr.Format(L"%.24hs", ctime(&when));
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_AINUFX_JUNKSKIPPED);
     nerr = NuGetAttr(pNuArchive, kNuAttrJunkOffset, &attr);
     if (nerr == kNuErrNone)
-        tmpStr.Format("%ld bytes", attr);
+        tmpStr.Format(L"%ld bytes", attr);
     else
         tmpStr = notAvailable;
     pWnd->SetWindowText(tmpStr);
@@ -146,10 +147,12 @@ DiskArchiveInfoDialog::OnInitDialog(void)
     pWnd->SetWindowText(fpArchive->GetPathName());
 
     pWnd = GetDlgItem(IDC_AIDISK_OUTERFORMAT);
-    pWnd->SetWindowText(DiskImg::ToString(pDiskImg->GetOuterFormat()));
+    CStringW outerFormat(DiskImg::ToString(pDiskImg->GetOuterFormat()));
+    pWnd->SetWindowText(outerFormat);
 
     pWnd = GetDlgItem(IDC_AIDISK_FILEFORMAT);
-    pWnd->SetWindowText(DiskImg::ToString(pDiskImg->GetFileFormat()));
+    CStringW fileFormat(DiskImg::ToString(pDiskImg->GetFileFormat()));
+    pWnd->SetWindowText(fileFormat);
 
     pWnd = GetDlgItem(IDC_AIDISK_PHYSICALFORMAT);
     DiskImg::PhysicalFormat physicalFormat = pDiskImg->GetPhysicalFormat();
@@ -160,13 +163,14 @@ DiskArchiveInfoDialog::OnInitDialog(void)
         CString tmpStr;
         const DiskImg::NibbleDescr* pNibbleDescr = pDiskImg->GetNibbleDescr();
         if (pNibbleDescr != nil)
-            tmpStr.Format("%s, layout is \"%s\"",
+            tmpStr.Format(L"%hs, layout is \"%hs\"",
                 DiskImg::ToString(physicalFormat), pNibbleDescr->description);
         else
             tmpStr = DiskImg::ToString(physicalFormat); // unexpected
         pWnd->SetWindowText(tmpStr);
     } else {
-        pWnd->SetWindowText(DiskImg::ToString(physicalFormat));
+        CString physicalFormat(DiskImg::ToString(physicalFormat));
+        pWnd->SetWindowText(physicalFormat);
     }
 
     FillInVolumeInfo(pDiskFS);
@@ -178,7 +182,7 @@ DiskArchiveInfoDialog::OnInitDialog(void)
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_AIDISK_SUBVOLSEL);
     int idx = 0;
 
-    AddSubVolumes(pDiskFS, "", &idx);
+    AddSubVolumes(pDiskFS, L"", &idx);
     ASSERT(idx > 0);        // must have at least the top-level DiskFS
 
     pCombo->SetCurSel(0);
@@ -192,7 +196,7 @@ DiskArchiveInfoDialog::OnInitDialog(void)
  * Recursively add sub-volumes to the list.
  */
 void
-DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS, const char* prefix,
+DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS, const WCHAR* prefix,
     int* pIdx)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_AIDISK_SUBVOLSEL);
@@ -213,7 +217,7 @@ DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS, const char* prefix,
     DiskFS::SubVolume* pSubVol;
     pSubVol = pDiskFS->GetNextSubVolume(nil);
     tmpStr = prefix;
-    tmpStr += "   ";
+    tmpStr += L"   ";
     while (pSubVol != nil) {
         AddSubVolumes(pSubVol->GetDiskFS(), tmpStr, pIdx);
 
@@ -244,19 +248,21 @@ void
 DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
 {
     const DiskImg* pDiskImg = pDiskFS->GetDiskImg();
-    CString unknown = "(unknown)";
+    CString unknown = L"(unknown)";
     CString tmpStr;
     DIError dierr;
     CWnd* pWnd;
 
     pWnd = GetDlgItem(IDC_AIDISK_SECTORORDER);
-    pWnd->SetWindowText(DiskImg::ToString(pDiskImg->GetSectorOrder()));
+    CStringW sectorOrderW(DiskImg::ToString(pDiskImg->GetSectorOrder()));
+    pWnd->SetWindowText(sectorOrderW);
 
     pWnd = GetDlgItem(IDC_AIDISK_FSFORMAT);
-    pWnd->SetWindowText(DiskImg::ToString(pDiskImg->GetFSFormat()));
+    CStringW fsFormat(DiskImg::ToString(pDiskImg->GetFSFormat()));
+    pWnd->SetWindowText(fsFormat);
 
     pWnd = GetDlgItem(IDC_AIDISK_FILECOUNT);
-    tmpStr.Format("%ld", pDiskFS->GetFileCount());
+    tmpStr.Format(L"%ld", pDiskFS->GetFileCount());
     pWnd->SetWindowText(tmpStr);
 
     long totalUnits, freeUnits;
@@ -270,11 +276,11 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
         if (unitSize == DiskImgLib::kBlockSize) {
             pWnd = GetDlgItem(IDC_AIDISK_CAPACITY);
             GetReducedSize(totalUnits, unitSize, &reducedSize);
-            tmpStr.Format("%ld blocks (%s)",
+            tmpStr.Format(L"%ld blocks (%ls)",
                 totalUnits, reducedSize);
             if (totalUnits != pDiskImg->GetNumBlocks()) {
                 CString tmpStr2;
-                tmpStr2.Format(", image has room for %ld blocks",
+                tmpStr2.Format(L", image has room for %ld blocks",
                     pDiskImg->GetNumBlocks());
                 tmpStr += tmpStr2;
             }
@@ -282,7 +288,7 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
 
             pWnd = GetDlgItem(IDC_AIDISK_FREESPACE);
             GetReducedSize(freeUnits, unitSize, &reducedSize);
-            tmpStr.Format("%ld blocks (%s)",
+            tmpStr.Format(L"%ld blocks (%ls)",
                 freeUnits, reducedSize);
             pWnd->SetWindowText(tmpStr);
         } else {
@@ -290,13 +296,13 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
 
             pWnd = GetDlgItem(IDC_AIDISK_CAPACITY);
             GetReducedSize(totalUnits, unitSize, &reducedSize);
-            tmpStr.Format("%ld sectors (%s)",
+            tmpStr.Format(L"%ld sectors (%ls)",
                 totalUnits, reducedSize);
             pWnd->SetWindowText(tmpStr);
 
             pWnd = GetDlgItem(IDC_AIDISK_FREESPACE);
             GetReducedSize(freeUnits, unitSize, &reducedSize);
-            tmpStr.Format("%ld sectors (%s)",
+            tmpStr.Format(L"%ld sectors (%ls)",
                 freeUnits, reducedSize);
             pWnd->SetWindowText(tmpStr);
         }
@@ -306,10 +312,10 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
         if (pDiskImg->GetHasBlocks()) {
             totalUnits = pDiskImg->GetNumBlocks();
             GetReducedSize(totalUnits, DiskImgLib::kBlockSize, &reducedSize);
-            tmpStr.Format("%ld blocks (%s)",
+            tmpStr.Format(L"%ld blocks (%ls)",
                 totalUnits, reducedSize);
         } else if (pDiskImg->GetHasSectors()) {
-            tmpStr.Format("%ld tracks, %d sectors per track",
+            tmpStr.Format(L"%ld tracks, %d sectors per track",
                 pDiskImg->GetNumTracks(), pDiskImg->GetNumSectPerTrack());
         } else {
             tmpStr = unknown;
@@ -321,18 +327,20 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
     }
 
     pWnd = GetDlgItem(IDC_AIDISK_WRITEABLE);
-    tmpStr = pDiskFS->GetReadWriteSupported() ? "Yes" : "No";
+    tmpStr = pDiskFS->GetReadWriteSupported() ? L"Yes" : L"No";
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_AIDISK_DAMAGED);
-    tmpStr = pDiskFS->GetFSDamaged() ? "Yes" : "No";
+    tmpStr = pDiskFS->GetFSDamaged() ? L"Yes" : L"No";
     pWnd->SetWindowText(tmpStr);
 
     const char* cp;
-    char* outp;
+    WCHAR* outp;
 
     pWnd = GetDlgItem(IDC_AIDISK_NOTES);
     cp = pDiskImg->GetNotes();
+    // GetBuffer wants length in code units, which will be 2x since it's
+    // wide chars.  The 2x mult below is for worst-case linefeed conversion.
     outp = tmpStr.GetBuffer(strlen(cp) * 2 +1);
     /* convert '\n' to '\r\n' */
     while (*cp != '\0') {
@@ -361,18 +369,18 @@ DiskArchiveInfoDialog::GetReducedSize(long numUnits, int unitSize,
 
     if (sizeInBytes < 0) {
         ASSERT(false);
-        pOut->Format("<bogus>");
+        pOut->Format(L"<bogus>");
         return;
     }
 
     if (sizeInBytes >= 1024*1024*1024) {
         reducedSize = (long) (sizeInBytes / (1024*1024));
-        pOut->Format("%.2fGB", reducedSize / 1024.0);
+        pOut->Format(L"%.2fGB", reducedSize / 1024.0);
     } else if (sizeInBytes >= 1024*1024) {
         reducedSize = (long) (sizeInBytes / 1024);
-        pOut->Format("%.2fMB", reducedSize / 1024.0);
+        pOut->Format(L"%.2fMB", reducedSize / 1024.0);
     } else {
-        pOut->Format("%.2fKB", ((long) sizeInBytes) / 1024.0);
+        pOut->Format(L"%.2fKB", ((long) sizeInBytes) / 1024.0);
     }
 }
 
@@ -398,7 +406,7 @@ BnyArchiveInfoDialog::OnInitDialog(void)
 
     pWnd = GetDlgItem(IDC_AI_FILENAME);
     pWnd->SetWindowText(fpArchive->GetPathName());
-    tmpStr.Format("%ld", fpArchive->GetNumEntries());
+    tmpStr.Format(L"%ld", fpArchive->GetNumEntries());
     pWnd = GetDlgItem(IDC_AIBNY_RECORDS);
     pWnd->SetWindowText(tmpStr);
 
@@ -425,7 +433,7 @@ AcuArchiveInfoDialog::OnInitDialog(void)
 
     pWnd = GetDlgItem(IDC_AI_FILENAME);
     pWnd->SetWindowText(fpArchive->GetPathName());
-    tmpStr.Format("%ld", fpArchive->GetNumEntries());
+    tmpStr.Format(L"%ld", fpArchive->GetNumEntries());
     pWnd = GetDlgItem(IDC_AIBNY_RECORDS);
     pWnd->SetWindowText(tmpStr);
 

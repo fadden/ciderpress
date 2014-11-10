@@ -861,7 +861,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
         OutputStart();
         PrintSymEntry(ii);
         OutputFinish();
-        WMSG2("%d: %s\n", ii, GetOutBuf());
+        WMSG2("%d: %hs\n", ii, GetOutBuf());
     }
 #endif
 

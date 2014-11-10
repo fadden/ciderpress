@@ -6,8 +6,8 @@
 /*
  * A collection of functions for manipulating Pointers to ID Lists (PIDLs).
  */
-#ifndef __PIDL__
-#define __PIDL__
+#ifndef UTIL_PIDL_H
+#define UTIL_PIDL_H
 
 /*
  * All functions are static; the class is more about namespace protection than
@@ -20,7 +20,7 @@ public:
     static LPITEMIDLIST GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi);
     static LPITEMIDLIST CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi);
     static BOOL GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, DWORD dwFlags,
-        LPSTR lpFriendlyName);
+        CString* pFriendlyName);
     static LPITEMIDLIST CreatePidl(UINT cbSize);
     static UINT GetSize(LPCITEMIDLIST pidl);
     static LPITEMIDLIST Next(LPCITEMIDLIST pidl);
@@ -32,4 +32,4 @@ public:
     static int GetItemIcon(LPITEMIDLIST lpi, UINT uFlags);
 };
 
-#endif /*__PIDL__*/
+#endif /*UTIL_PIDL_H*/

@@ -9,8 +9,8 @@
  *
  * (Do we want IOCTL_DISK_GET_DRIVE_LAYOUT_EX too?)
  */
-#ifndef __WIN32EXTRA__
-#define __WIN32EXTRA__
+#ifndef DISKIMG_WIN32EXTRA_H
+#define DISKIMG_WIN32EXTRA_H
 
 #include <winioctl.h>   // base definitions
 
@@ -57,4 +57,4 @@ PDISK_PARTITION_INFO DiskGeometryGetPartition(PDISK_GEOMETRY_EX Geometry);
 
 #endif /*IOCTL_DISK_GET_DRIVE_GEOMETRY_EX*/
 
-#endif /*__WIN32EXTRA__*/
+#endif /*DISKIMG_WIN32EXTRA_H*/

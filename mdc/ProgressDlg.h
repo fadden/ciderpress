@@ -42,7 +42,7 @@ public:
     BOOL Create(CWnd* pParentWnd = NULL) {
         return CDialog::Create(IDD_PROGRESS, pParentWnd);
     }
-    void SetCurrentFile(const char* fileName);
+    void SetCurrentFile(const WCHAR* fileName);
 
 // Implementation
 protected:

@@ -36,15 +36,15 @@ MakeFourCC(unsigned char c0, unsigned char c1, unsigned char c2,
  * Returns 0 on success.
  */
 int
-SoundFile::Create(const char* fileName, CString* pErrMsg)
+SoundFile::Create(const WCHAR* fileName, CString* pErrMsg)
 {
     FILE* fp = nil;
     long fileLen;
 
-    fp = fopen(fileName, "rb");
+    fp = _wfopen(fileName, L"rb");
     if (fp == nil) {
         int err = errno;
-        pErrMsg->Format("Unable to open '%s'", fileName);
+        pErrMsg->Format(L"Unable to open '%ls'", fileName);
         return err;
     }
 
@@ -80,7 +80,7 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
     if (fp == nil)
         return -1;
     if (len < kWAVMinSize) {
-        *pErrMsg = "File is too short to be WAV";
+        *pErrMsg = L"File is too short to be WAV";
         return -1;
     }
 
@@ -94,14 +94,14 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
      */
     if (fread(&fileHeader, sizeof(fileHeader), 1, mFP) != 1) {
         err = errno ? errno : -1;
-        *pErrMsg = "Failed reading file header";
+        *pErrMsg = L"Failed reading file header";
         goto bail;
     }
     if (fileHeader.riff != MakeFourCC('R','I','F','F') ||
         fileHeader.wav != MakeFourCC('W','A','V','E') ||
         fileHeader.fileLen > (unsigned long) len)
     {
-        *pErrMsg = "File is not a WAV file";
+        *pErrMsg = L"File is not a WAV file";
         WMSG3("Not a valid WAV header (0x%08lx %d 0x%08lx)\n",
             fileHeader.riff, fileHeader.fileLen, fileHeader.wav);
         err = -1;
@@ -125,7 +125,7 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
      * than the structure size.
      */
     if (chunkLen > sizeof(WAVEFORMATEX)) {
-        pErrMsg->Format("Bad WAV file: 'fmt ' size is %d, struct is %d",
+        pErrMsg->Format(L"Bad WAV file: 'fmt ' size is %d, struct is %d",
             chunkLen, sizeof(WAVEFORMATEX));
         err = -1;
         goto bail;
@@ -133,13 +133,13 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
     //memset(&mFormat, 0, sizeof(mFormat));     // done in constructor
     if (fread(&mFormat, chunkLen, 1, mFP) != 1) {
         err = errno ? errno : -1;
-        *pErrMsg = "Failed reading WAVEFORMATEX";
+        *pErrMsg = L"Failed reading WAVEFORMATEX";
         goto bail;
     }
 
     /* check the format for compatibility */
     if (mFormat.wFormatTag != WAVE_FORMAT_PCM) {
-        *pErrMsg = "WAV file is not PCM format";
+        *pErrMsg = L"WAV file is not PCM format";
         err = -1;
         goto bail;
     }
@@ -201,7 +201,6 @@ SoundFile::SkipToHeader(unsigned long hdrID, unsigned long* pChunkLen)
 
     return err;
 }
-
 
 /*
  * Read a block of data from the specified offset.

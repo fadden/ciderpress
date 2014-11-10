@@ -71,9 +71,9 @@ OpenVolumeDialog::OnInitDialog(void)
     pListView->GetClientRect(&rect);
     int width;
 
-    width = pListView->GetStringWidth("XXVolume or Device NameXXmmmmmm");
-    pListView->InsertColumn(0, "Volume or Device Name", LVCFMT_LEFT, width);
-    pListView->InsertColumn(1, "Remarks", LVCFMT_LEFT,
+    width = pListView->GetStringWidth(L"XXVolume or Device NameXXmmmmmm");
+    pListView->InsertColumn(0, L"Volume or Device Name", LVCFMT_LEFT, width);
+    pListView->InsertColumn(1, L"Remarks", LVCFMT_LEFT,
         rect.Width() - width - ::GetSystemMetrics(SM_CXVSCROLL));
 
     // Load the drive list.
@@ -153,11 +153,11 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
         fVolumeInfo[i].driveType = DRIVE_UNKNOWN;
 
         if ((drivesAvailable >> i) & 0x01) {
-            char driveName[] = "_:\\";
+            WCHAR driveName[] = L"_:\\";
             driveName[0] = 'A' + i;
 
             unsigned int driveType;
-            const char* driveTypeComment = nil;
+            const WCHAR* driveTypeComment = nil;
             BOOL result;
 
             driveType = fVolumeInfo[i].driveType = GetDriveType(driveName);
@@ -170,19 +170,19 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
                 break;
             case DRIVE_REMOVABLE:
                 // The disk can be removed from the drive.
-                driveTypeComment = "Removable";
+                driveTypeComment = L"Removable";
                 break;
             case DRIVE_FIXED:
                 // The disk cannot be removed from the drive.
-                driveTypeComment = "Local Disk";
+                driveTypeComment = L"Local Disk";
                 break;
             case DRIVE_REMOTE:
                 // The drive is a remote (network) drive.
-                driveTypeComment = "Network";
+                driveTypeComment = L"Network";
                 break;
             case DRIVE_CDROM:
                 // The drive is a CD-ROM drive.
-                driveTypeComment = "CD-ROM";
+                driveTypeComment = L"CD-ROM";
                 break;
             case DRIVE_RAMDISK:
                 // The drive is a RAM disk.
@@ -194,79 +194,79 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
 
             if (driveType == DRIVE_CDROM && !DiskImgLib::Global::GetHasSPTI()) {
                 /* use "physical" device via ASPI instead */
-                WMSG1("Not including CD-ROM '%s' in logical drive list\n",
+                WMSG1("Not including CD-ROM '%ls' in logical drive list\n",
                     driveName);
                 continue;
             }
 
-            char volNameBuf[256];
-            char fsNameBuf[64];
-            const char* errorComment = nil;
+            WCHAR volNameBuf[256];
+            WCHAR fsNameBuf[64];
+            const WCHAR* errorComment = nil;
             //DWORD fsFlags;
             CString entryName, entryRemarks;
 
             result = ::GetVolumeInformation(driveName, volNameBuf,
-                sizeof(volNameBuf), NULL, NULL, NULL /*&fsFlags*/, fsNameBuf,
-                sizeof(fsNameBuf));
+                NELEM(volNameBuf), NULL, NULL, NULL /*&fsFlags*/, fsNameBuf,
+                NELEM(fsNameBuf));
             if (result == FALSE) {
                 DWORD err = GetLastError();
                 if (err == ERROR_UNRECOGNIZED_VOLUME) {
                     // Win2K: media exists but format not recognized
-                    errorComment = "Non-Windows format";
+                    errorComment = L"Non-Windows format";
                 } else if (err == ERROR_NOT_READY) {
                     // Win2K: device exists but no media loaded
                     if (isWin9x) {
-                        WMSG1("Not showing drive '%s': not ready\n",
+                        WMSG1("Not showing drive '%ls': not ready\n",
                             driveName);
                         continue;   // safer not to show it
                     } else
-                        errorComment = "Not ready";
+                        errorComment = L"Not ready";
                 } else if (err == ERROR_PATH_NOT_FOUND /*Win2K*/ ||
                            err == ERROR_INVALID_DATA /*Win98*/)
                 {
                     // Win2K/Win98: device letter not in use
-                    WMSG1("GetVolumeInformation '%s': nothing there\n",
+                    WMSG1("GetVolumeInformation '%ls': nothing there\n",
                         driveName);
                     continue;
                 } else if (err == ERROR_INVALID_PARAMETER) {
                     // Win2K: device is already open
-                    //WMSG1("GetVolumeInformation '%s': currently open??\n",
+                    //WMSG1("GetVolumeInformation '%ls': currently open??\n",
                     //  driveName);
-                    errorComment = "(currently open?)";
+                    errorComment = L"(currently open?)";
                     //continue;
                 } else if (err == ERROR_ACCESS_DENIED) {
                     // Win2K: disk is open no-read-sharing elsewhere
-                    errorComment = "(already open read-write)";
+                    errorComment = L"(already open read-write)";
                 } else if (err == ERROR_GEN_FAILURE) {
                     // Win98: floppy format not recognzied
                     // --> we don't want to access ProDOS floppies via A: in
                     //     Win98, so we skip it here
-                    WMSG1("GetVolumeInformation '%s': general failure\n",
+                    WMSG1("GetVolumeInformation '%ls': general failure\n",
                         driveName);
                     continue;
                 } else if (err == ERROR_INVALID_FUNCTION) {
                     // Win2K: CD-ROM with HFS
                     if (driveType == DRIVE_CDROM)
-                        errorComment = "Non-Windows format";
+                        errorComment = L"Non-Windows format";
                     else
-                        errorComment = "(invalid disc?)";
+                        errorComment = L"(invalid disc?)";
                 } else {
-                    WMSG2("GetVolumeInformation '%s' failed: %ld\n",
+                    WMSG2("GetVolumeInformation '%ls' failed: %ld\n",
                         driveName, GetLastError());
                     continue;
                 }
                 ASSERT(errorComment != nil);
 
-                entryName.Format("(%c:)", 'A' + i);
+                entryName.Format(L"(%c:)", 'A' + i);
                 if (driveTypeComment != nil)
-                    entryRemarks.Format("%s - %s", driveTypeComment,
+                    entryRemarks.Format(L"%ls - %ls", driveTypeComment,
                         errorComment);
                 else
-                    entryRemarks.Format("%s", errorComment);
+                    entryRemarks.Format(L"%ls", errorComment);
             } else {
-                entryName.Format("%s (%c:)", volNameBuf, 'A' + i);
+                entryName.Format(L"%ls (%c:)", volNameBuf, 'A' + i);
                 if (driveTypeComment != nil)
-                    entryRemarks.Format("%s", driveTypeComment);
+                    entryRemarks.Format(L"%ls", driveTypeComment);
                 else
                     entryRemarks = "";
             }
@@ -313,7 +313,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
 
             result = HasPhysicalDriveWin9x(i, &remark);
             if (result) {
-                driveName.Format("Floppy disk %d", i);
+                driveName.Format(L"Floppy disk %d", i);
                 pListView->InsertItem(itemIndex, driveName);
                 pListView->SetItemText(itemIndex, 1, remark);
                 pListView->SetItemData(itemIndex, (DWORD) i);
@@ -327,7 +327,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
 
             result = HasPhysicalDriveWin9x(i + 128, &remark);
             if (result) {
-                driveName.Format("Hard drive %d", i);
+                driveName.Format(L"Hard drive %d", i);
                 pListView->InsertItem(itemIndex, driveName);
                 pListView->SetItemText(itemIndex, 1, remark);
                 pListView->SetItemData(itemIndex, (DWORD) i + 128);
@@ -342,7 +342,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
 
             result = HasPhysicalDriveWin2K(i + 128, &remark);
             if (result) {
-                driveName.Format("Physical disk %d", i);
+                driveName.Format(L"Physical disk %d", i);
                 pListView->InsertItem(itemIndex, driveName);
                 pListView->SetItemText(itemIndex, 1, remark);
                 pListView->SetItemData(itemIndex, (DWORD) i + 128); // HD volume
@@ -352,6 +352,8 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
     }
 
     if (DiskImgLib::Global::GetHasASPI()) {
+        WMSG0("IGNORING ASPI");
+#if 0   // can we remove this?
         DIError dierr;
         DiskImgLib::ASPI* pASPI = DiskImgLib::Global::GetASPI();
         ASPIDevice* deviceArray = nil;
@@ -399,6 +401,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
         }
 
         delete[] deviceArray;
+#endif
     }
 
     *pItemIndex = itemIndex;
@@ -410,6 +413,8 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
  *
  * Pass in the Int13 unit number, i.e. 0x00 for the first floppy drive.  Win9x
  * makes direct access to the hard drive very difficult, so we don't even try.
+ *
+ * TODO: remove this entirely?
  */
 bool
 OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
@@ -434,7 +439,7 @@ OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
     if (unit > 4)
         return false;   // floppy drives only
 
-    handle = CreateFile("\\\\.\\vwin32", 0, 0, NULL,
+    handle = CreateFile(L"\\\\.\\vwin32", 0, 0, NULL,
                 OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
     if (handle == INVALID_HANDLE_VALUE) {
         WMSG1(" Unable to open vwin32: %ld\n", ::GetLastError());
@@ -456,7 +461,7 @@ OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
     reg.reg_EDX = MAKEWORD(unit, 0);    // head
 
     result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
-                sizeof(reg), &reg, sizeof(reg), &cb, 0);
+                sizeof(reg) /*bytes*/, &reg, sizeof(reg) /*bytes*/, &cb, 0);
     lastError = GetLastError();
     ::CloseHandle(handle);
 
@@ -501,9 +506,9 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
      * See if the drive is there.
      */
     ASSERT(unit >= 128 && unit < 160);      // arbitrary max
-    fileName.Format("\\\\.\\PhysicalDrive%d", unit - 128);
+    fileName.Format(L"\\\\.\\PhysicalDrive%d", unit - 128);
 
-    hDevice = ::CreateFile((const char*) fileName,  // drive to open
+    hDevice = ::CreateFile(fileName,  // drive to open
                 0,                  // no access to the drive
                 FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                 NULL,               // default security attributes
@@ -521,7 +526,7 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
     result = ::DeviceIoControl(hDevice,
                 IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,
                 NULL, 0,                // input buffer
-                &dge, sizeof(dge),      // output buffer
+                &dge, sizeof(dge),      // output buffer + size in bytes
                 &junk,                  // # bytes returned
                 (LPOVERLAPPED) NULL);   // synchronous I/O
     if (result) {
@@ -530,10 +535,10 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
         WMSG2("  Disk size = %I64d (bytes) = %I64d (MB)\n",
             diskSize, diskSize / (1024*1024));
         if (diskSize > 1024*1024*1024)
-            pRemark->Format("Size is %.2fGB",
+            pRemark->Format(L"Size is %.2fGB",
                 (double) diskSize / (1024.0 * 1024.0 * 1024.0));
         else
-            pRemark->Format("Size is %.2fMB",
+            pRemark->Format(L"Size is %.2fMB",
                 (double) diskSize / (1024.0 * 1024.0));
     } else {
         // Win2K shows ERROR_INVALID_FUNCTION or ERROR_NOT_SUPPORTED
@@ -542,7 +547,7 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
         result = ::DeviceIoControl(hDevice, // device to be queried
                     IOCTL_DISK_GET_DRIVE_GEOMETRY,  // operation to perform
                     NULL, 0,                // no input buffer
-                    &dg, sizeof(dg),        // output buffer
+                    &dg, sizeof(dg),        // output buffer + size in bytes
                     &junk,                  // # bytes returned
                     (LPOVERLAPPED) NULL);   // synchronous I/O
 
@@ -558,10 +563,10 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
             WMSG2("Disk size = %I64d (bytes) = %I64d (MB)\n", diskSize,
                     diskSize / (1024 * 1024));
             if (diskSize > 1024*1024*1024)
-                pRemark->Format("Size is %.2fGB",
+                pRemark->Format(L"Size is %.2fGB",
                     (double) diskSize / (1024.0 * 1024.0 * 1024.0));
             else
-                pRemark->Format("Size is %.2fMB",
+                pRemark->Format(L"Size is %.2fMB",
                     (double) diskSize / (1024.0 * 1024.0));
         } else {
             err = GetLastError();
@@ -654,7 +659,8 @@ OpenVolumeDialog::OnOK(void)
     UINT formatID = 0;
 
     if (HIBYTE(HIWORD(driveID)) == 0xaa) {
-        fChosenDrive.Format("%s%d:%d:%d\\",
+        // TODO: remove this?
+        fChosenDrive.Format(L"%hs%d:%d:%d\\",
             DiskImgLib::kASPIDev,
             LOBYTE(HIWORD(driveID)),
             HIBYTE(LOWORD(driveID)),
@@ -682,11 +688,11 @@ OpenVolumeDialog::OnOK(void)
             break;
         }
 
-        fChosenDrive.Format("%c:\\", driveID);
+        fChosenDrive.Format(L"%c:\\", driveID);
     } else if ((driveID >= 0 && driveID < 4) ||
                (driveID >= 0x80 && driveID < 0x88))
     {
-        fChosenDrive.Format("%02x:\\", driveID);
+        fChosenDrive.Format(L"%02x:\\", driveID);
     } else {
         ASSERT(false);
         return;

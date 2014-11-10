@@ -12,8 +12,8 @@
  * neglected to "poke 33,33").  Have an optional "check syntax" box if we
  * want to get really fancy.
  */
-#ifndef __BASICIMPORT__
-#define __BASICIMPORT__
+#ifndef APP_BASICIMPORT_H
+#define APP_BASICIMPORT_H
 
 /*
  * This is a helper class to scan for a token in the list.
@@ -76,7 +76,7 @@ private:
 
     afx_msg void OnHelp(void);
 
-    bool ImportBAS(const char* fileName);
+    bool ImportBAS(const WCHAR* fileName);
     bool ConvertTextToBAS(const char* buf, long fileLen,
         char** pOutBuf, long* pOutLen, ExpandBuffer* pMsgs);
     bool ProcessBASLine(const char* buf, int len,
@@ -101,4 +101,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__BASICIMPORT__*/
+#endif /*APP_BASICIMPORT_H*/

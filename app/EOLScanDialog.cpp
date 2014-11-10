@@ -26,23 +26,23 @@ EOLScanDialog::OnInitDialog(void)
     CWnd* pWnd;
     CString fmt;
 
-    fmt.Format("%ld", fCountChars);
+    fmt.Format(L"%ld", fCountChars);
     pWnd = GetDlgItem(IDC_EOLSCAN_CHARS);
     pWnd->SetWindowText(fmt);
 
-    fmt.Format("%ld", fCountCR);
+    fmt.Format(L"%ld", fCountCR);
     pWnd = GetDlgItem(IDC_EOLSCAN_CR);
     pWnd->SetWindowText(fmt);
 
-    fmt.Format("%ld", fCountLF);
+    fmt.Format(L"%ld", fCountLF);
     pWnd = GetDlgItem(IDC_EOLSCAN_LF);
     pWnd->SetWindowText(fmt);
 
-    fmt.Format("%ld", fCountCRLF);
+    fmt.Format(L"%ld", fCountCRLF);
     pWnd = GetDlgItem(IDC_EOLSCAN_CRLF);
     pWnd->SetWindowText(fmt);
 
-    fmt.Format("%ld", fCountHighASCII);
+    fmt.Format(L"%ld", fCountHighASCII);
     pWnd = GetDlgItem(IDC_EOLSCAN_HIGHASCII);
     pWnd->SetWindowText(fmt);
 

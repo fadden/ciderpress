@@ -12,10 +12,9 @@
 #include "HelpTopics.h"
 #include "MyApp.h"
 #include "resource.h"
-#include "../prebuilt/NufxLib.h"
+#include "../nufxlib/NufxLib.h"
 #include "../diskimg/DiskImg.h"
-#define ZLIB_DLL
-#include "../prebuilt/zlib.h"
+#include "../zlib/zlib.h"
 
 
 BEGIN_MESSAGE_MAP(AboutDialog, CDialog)
@@ -23,16 +22,16 @@ BEGIN_MESSAGE_MAP(AboutDialog, CDialog)
     //ON_BN_CLICKED(IDC_ABOUT_ENTER_REG, OnEnterReg)
 END_MESSAGE_MAP()
 
-static const char* kVersionExtra =
+static const WCHAR kVersionExtra[] =
 #ifdef _DEBUG
-        " _DEBUG"
+        L" _DEBUG"
 #else
-        ""
+        L""
 #endif
 #ifdef _DEBUG_LOG
-        " _LOG"
+        L" _LOG"
 #else
-        ""
+        L""
 #endif
         ;
 
@@ -80,7 +79,8 @@ AboutDialog::OnInitDialog(void)
     pStatic = (CStatic*) GetDlgItem(IDC_ZLIB_VERS_TEXT);
     ASSERT(pStatic != nil);
     pStatic->GetWindowText(tmpStr);
-    newVersion.Format(tmpStr, zlibVersion());
+    CString zlibVersionStr(zlibVersion());
+    newVersion.Format(tmpStr, zlibVersionStr);
     pStatic->SetWindowText(newVersion);
 
     /* and, finally, the ASPI version */
@@ -89,7 +89,7 @@ AboutDialog::OnInitDialog(void)
     if (DiskImgLib::Global::GetHasASPI()) {
         CString versionStr;
         DWORD version = DiskImgLib::Global::GetASPIVersion();
-        versionStr.Format("%d.%d.%d.%d",
+        versionStr.Format(L"%d.%d.%d.%d",
             version & 0x0ff,
             (version >> 8) & 0xff,
             (version >> 16) & 0xff,

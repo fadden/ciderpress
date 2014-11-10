@@ -6,8 +6,8 @@
 /*
  * Decide how to open the disk editor.
  */
-#ifndef __DISKEDITOPENDIALOG__
-#define __DISKEDITOPENDIALOG__
+#ifndef APP_DISKEDITOPENDIALOG_H
+#define APP_DISKEDITOPENDIALOG_H
 
 #include <afxwin.h>
 #include "resource.h"
@@ -46,4 +46,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__DISKEDITOPENDIALOG__*/
+#endif /*APP_DISKEDITOPENDIALOG_H*/

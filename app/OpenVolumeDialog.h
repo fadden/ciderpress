@@ -6,8 +6,8 @@
 /*
  * Class definition for Open Volume dialog.
  */
-#ifndef __OPEN_VOLUME_DIALOG__
-#define __OPEN_VOLUME_DIALOG__
+#ifndef APP_OPENVOLUMEDIALOG_H
+#define APP_OPENVOLUMEDIALOG_H
 
 #include <afxwin.h>
 #include "resource.h"
@@ -20,7 +20,7 @@ class OpenVolumeDialog : public CDialog {
 public:
     OpenVolumeDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_OPENVOLUMEDLG, pParentWnd),
-        fChosenDrive(""),
+        fChosenDrive(L""),
         fAllowROChange(true)
     {
         Preferences* pPreferences = GET_PREFERENCES_WR();
@@ -67,4 +67,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__OPEN_VOLUME_DIALOG__*/
+#endif /*APP_OPENVOLUMEDIALOG_H*/

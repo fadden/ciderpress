@@ -7,8 +7,8 @@
  * Dialog that allows copying volumes or sub-volumes to and from files on
  * disk.  Handy for backing up and restoring floppy disks and CFFA partitions.
  */
-#ifndef __VOLUMECOPYDIALOG__
-#define __VOLUMECOPYDIALOG__
+#ifndef APP_VOLUMECOPYDIALOG_H
+#define APP_VOLUMECOPYDIALOG_H
 
 #include <afxwin.h>
 #include "../diskimg/DiskImg.h"
@@ -77,4 +77,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__VOLUMECOPYDIALOG*/
+#endif /*APP_VOLUMECOPYDIALOG_H*/

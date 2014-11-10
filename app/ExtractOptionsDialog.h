@@ -6,8 +6,8 @@
 /*
  * Choose options related to file extraction.
  */
-#ifndef __EXTRACT_OPTIONS_DIALOG__
-#define __EXTRACT_OPTIONS_DIALOG__
+#ifndef APP_EXTRACTOPTIONSDIALOG_H
+#define APP_EXTRACTOPTIONSDIALOG_H
 
 #include "../util/UtilLib.h"
 #include "resource.h"
@@ -84,4 +84,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__EXTRACT_OPTIONS_DIALOG__*/
+#endif /*APP_EXTRACTOPTIONSDIALOG_H*/

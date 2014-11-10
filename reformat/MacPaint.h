@@ -6,8 +6,8 @@
 /*
  * Convert MacPaint files.
  */
-#ifndef __LR_MACPAINT__
-#define __LR_MACPAINT__
+#ifndef REFORMAT_MACPAINT_H
+#define REFORMAT_MACPAINT_H
 
 #include "ReformatBase.h"
 
@@ -38,4 +38,4 @@ private:
     };
 };
 
-#endif /*__LR_MACPAINT__*/
+#endif /*REFORMAT_MACPAINT_H*/

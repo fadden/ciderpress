@@ -6,8 +6,8 @@
 /*
  * Dialog allowing the user to enter registration data.
  */
-#ifndef __ENTERREGDIALOG__
-#define __ENTERREGDIALOG__
+#ifndef APP_ENTERREGDIALOG_H
+#define APP_ENTERREGDIALOG_H
 
 #include "../util/UtilLib.h"
 #include "resource.h"
@@ -47,4 +47,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__ENTERREGDIALOG__*/
+#endif /*APP_ENTERREGDIALOG_H*/

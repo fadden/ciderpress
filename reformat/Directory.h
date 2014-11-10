@@ -6,8 +6,8 @@
 /*
  * Reformat subdirectories.
  */
-#ifndef __LR_DIRECTORY__
-#define __LR_DIRECTORY__
+#ifndef REFORMAT_DIRECTORY_H
+#define REFORMAT_DIRECTORY_H
 
 #include "ReformatBase.h"
 
@@ -29,4 +29,4 @@ private:
         long srcLen, bool showDeleted);
 };
 
-#endif /*__LR_DIRECTORY__*/
+#endif /*REFORMAT_DIRECTORY_H*/

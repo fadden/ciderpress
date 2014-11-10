@@ -88,19 +88,21 @@ EditPropsDialog::OnInitDialog(void)
     pCombo->InitStorage(256, 256 * 8);
 
     for (int type = 0; type < 256; type++) {
-        const char* str;
-        char buf[10];
+        const WCHAR* str;
+        WCHAR buf[10];
 
         if (fAllowedTypes == kAllowedPascal) {
             /* not the most efficient way, but it'll do */
-            for (int j = 0; j < NELEM(kPascalTypes); j++) {
+            int j;
+            for (j = 0; j < NELEM(kPascalTypes); j++) {
                 if (kPascalTypes[j] == type)
                     break;
             }
             if (j == NELEM(kPascalTypes))
                 continue;
         } else if (fAllowedTypes == kAllowedDOS) {
-            for (int j = 0; j < NELEM(kDOSTypes); j++) {
+            int j;
+            for (j = 0; j < NELEM(kDOSTypes); j++) {
                 if (kDOSTypes[j] == type)
                     break;
             }
@@ -110,9 +112,9 @@ EditPropsDialog::OnInitDialog(void)
 
         str = PathProposal::FileTypeString(type);
         if (str[0] == '$')
-            sprintf(buf, "??? $%02X", type);
+            wsprintf(buf, L"??? $%02X", type);
         else
-            sprintf(buf, "%s $%02X", str, type);
+            wsprintf(buf, L"%ls $%02X", str, type);
         comboIdx = pCombo->AddString(buf);
         pCombo->SetItemData(comboIdx, type);
 
@@ -124,7 +126,7 @@ EditPropsDialog::OnInitDialog(void)
             pCombo->SetCurSel(0);
         } else {
             // unexpected -- bogus data out of DiskFS?
-            comboIdx = pCombo->AddString("???");
+            comboIdx = pCombo->AddString(L"???");
             pCombo->SetCurSel(comboIdx);
             pCombo->SetItemData(comboIdx, 256);
         }
@@ -140,7 +142,7 @@ EditPropsDialog::OnInitDialog(void)
     ASSERT(pWnd != nil);
     FormatDate(fProps.modWhen, &dateStr);
     pWnd->SetWindowText(dateStr);
-    //WMSG2("USING DATE '%s' from 0x%08lx\n", dateStr, fProps.modWhen);
+    //WMSG2("USING DATE '%ls' from 0x%08lx\n", dateStr, fProps.modWhen);
 
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_PROPS_AUXTYPE);
     ASSERT(pEdit != nil);
@@ -219,8 +221,8 @@ EditPropsDialog::DoDataExchange(CDataExchange* pDX)
             DDX_Text(pDX, IDC_PROPS_HFS_FILETYPE, type);
             DDX_Text(pDX, IDC_PROPS_HFS_AUXTYPE, creator);
             if (type.GetLength() != 4 || creator.GetLength() != 4) {
-                MessageBox("The file and creator types must be exactly"
-                           " 4 characters each.",
+                MessageBox(L"The file and creator types must be exactly"
+                           L" 4 characters each.",
                     appName, MB_OK);
                 pDX->Fail();
                 return;
@@ -236,8 +238,8 @@ EditPropsDialog::DoDataExchange(CDataExchange* pDX)
         } else {
             /* ProDOS mode */
             if (GetAuxType() < 0) {
-                MessageBox("The AuxType field must be a valid 4-digit"
-                           " hexadecimal number.",
+                MessageBox(L"The AuxType field must be a valid 4-digit"
+                           L" hexadecimal number.",
                     appName, MB_OK);
                 pDX->Fail();
                 return;
@@ -329,7 +331,7 @@ EditPropsDialog::DoDataExchange(CDataExchange* pDX)
             //DDX_CBIndex(pDX, IDC_PROPS_FILETYPE, fileTypeIdx);
 
             /* write the aux type as a hex string */
-            fAuxType.Format("%04X", fProps.auxType);
+            fAuxType.Format(L"%04X", fProps.auxType);
             DDX_Text(pDX, IDC_PROPS_AUXTYPE, fAuxType);
         }
         OnTypeChange();         // set the description field
@@ -352,12 +354,12 @@ EditPropsDialog::DoDataExchange(CDataExchange* pDX)
 void
 EditPropsDialog::OnTypeChange(void)
 {
-    static const char* kUnknownFileType = "Unknown file type";
+    static const WCHAR kUnknownFileType[] = L"Unknown file type";
     CComboBox* pCombo;
     CWnd* pWnd;
     int fileType, fileTypeIdx;
     long auxType;
-    const char* descr = nil;
+    const WCHAR* descr = nil;
 
     pCombo = (CComboBox*) GetDlgItem(IDC_PROPS_FILETYPE);
     ASSERT(pCombo != nil);
@@ -426,7 +428,7 @@ EditPropsDialog::UpdateHFSMode(void)
 
         pWnd = GetDlgItem(IDC_PROPS_TYPEDESCR);
         ASSERT(pWnd != nil);
-        pWnd->SetWindowText("(HFS type)");
+        pWnd->SetWindowText(L"(HFS type)");
         OnHFSTypeChange();
     } else {
         /* switch to ProDOS mode */
@@ -486,18 +488,18 @@ EditPropsDialog::GetAuxType(void)
     CString aux;
     pWnd->GetWindowText(aux);
 
-    const char* str = aux;
-    char* end;
+    const WCHAR* str = aux;
+    WCHAR* end;
     long val;
 
     if (str[0] == '\0') {
         WMSG0(" HEY: blank aux type, returning -1\n");
         return -1;
     }
-    val = strtoul(aux, &end, 16);
-    if (end != str + strlen(str)) {
-        WMSG1(" HEY: found some garbage in aux type '%s', returning -1\n",
-            (LPCTSTR) aux);
+    val = wcstoul(aux, &end, 16);
+    if (end != str + wcslen(str)) {
+        WMSG1(" HEY: found some garbage in aux type '%ls', returning -1\n",
+            (LPCWSTR) aux);
         return -1;
     }
     return val;

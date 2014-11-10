@@ -6,8 +6,8 @@
 /*
  * My debug stuff.
  */
-#ifndef __MY_DEBUG__
-#define __MY_DEBUG__
+#ifndef UTIL_MYDEBUG_H
+#define UTIL_MYDEBUG_H
 
 //#define _DEBUG_LOG        /* set this to force logging in all builds */
 
@@ -74,4 +74,4 @@ extern int gPid;
 # define DebugBreak() ((void) 0)
 #endif
 
-#endif /*__MY_DEBUG__*/
+#endif /*UTIL_MYDEBUG_H*/

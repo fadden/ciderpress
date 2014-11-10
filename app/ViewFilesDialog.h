@@ -6,8 +6,8 @@
 /*
  * Class for the "view files" dialog box.
  */
-#ifndef __VIEWFILESDIALOG__
-#define __VIEWFILESDIALOG__
+#ifndef APP_VIEWFILESDIALOG_H
+#define APP_VIEWFILESDIALOG_H
 
 #include "GenericArchive.h"
 #include "resource.h"
@@ -50,7 +50,7 @@ public:
     void SetSelectionSet(SelectionSet* pSelSet) { fpSelSet = pSelSet; }
 
     CString GetTextTypeFace(void) const { return fTypeFace; }
-    void SetTextTypeFace(const char* name) { fTypeFace = name; }
+    void SetTextTypeFace(const WCHAR* name) { fTypeFace = name; }
     int GetTextPointSize(void) const { return fPointSize; }
     void SetTextPointSize(int size) { fPointSize = size; }
     //bool GetNoWrapText(void) const { return fNoWrapText; }
@@ -89,7 +89,7 @@ private:
     //void MoveControl(int id, int deltaX, int deltaY);
     //void StretchControl(int id, int deltaX, int deltaY);
     void NewFontSelected(bool resetBold);
-    void DisplayText(const char* fileName);
+    void DisplayText(const WCHAR* fileName);
     int ReformatPrep(GenericEntry* pEntry);
     int Reformat(const GenericEntry* pEntry,
         ReformatHolder::ReformatPart part, ReformatHolder::ReformatID id);
@@ -100,7 +100,7 @@ private:
         ReformatHolder::ReformatPart part);
     int FindByVal(CComboBox* pCombo, DWORD val);
     void EnableFormatSelection(BOOL enable);
-    void FindNext(const char* str, bool down, bool matchCase,
+    void FindNext(const WCHAR* str, bool down, bool matchCase,
         bool wholeWord);
 
     // pointer to main window, so we can ask for text to view
@@ -153,4 +153,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__VIEWFILESDIALOG__*/
+#endif /*APP_VIEWFILESDIALOG_H*/

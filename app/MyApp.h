@@ -6,21 +6,21 @@
 /*
  * The application object.
  */
-#ifndef __MYAPP__
-#define __MYAPP__
+#ifndef APP_MYAPP_H
+#define APP_MYAPP_H
 
 #include "Registry.h"
 
 #if defined(_DEBUG_LOG)
 //#define kDebugLog "C:\\test\\cplog.txt"
-#define kDebugLog   "C:\\cplog.txt"
+#define kDebugLog   L"C:\\cplog.txt"
 #endif
 
 /* CiderPress version numbers */
 #define kAppMajorVersion    3
 #define kAppMinorVersion    0
 #define kAppBugVersion      1
-#define kAppDevString       ""
+#define kAppDevString       L""
 
 /*
  * Windows application object.
@@ -33,15 +33,15 @@ public:
 
     MyRegistry  fRegistry;
 
-    const char* GetExeFileName(void) const { return fExeFileName; }
-    const char* GetExeBaseName(void) const { return fExeBaseName; }
+    const WCHAR* GetExeFileName(void) const { return fExeFileName; }
+    const WCHAR* GetExeBaseName(void) const { return fExeBaseName; }
 
 private:
     // Overridden functions
     virtual BOOL InitInstance(void);
     virtual BOOL OnIdle(LONG lCount);
 
-    void LogModuleLocation(const char* name);
+    void LogModuleLocation(const WCHAR* name);
 
     CString     fExeFileName;
     CString     fExeBaseName;
@@ -49,4 +49,4 @@ private:
 
 extern MyApp gMyApp;
 
-#endif /*__MYAPP__*/
+#endif /*APP_MYAPP_H*/

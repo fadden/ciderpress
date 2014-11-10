@@ -15,25 +15,25 @@
 static const char* kDefaultTempPath = ".";
 
 /* registry section for columns */
-static const char* kColumnSect = _T("columns");
+static const WCHAR kColumnSect[] = L"columns";
 /* registry section for file add options */
-static const char* kAddSect = _T("add");
+static const WCHAR kAddSect[] = L"add";
 /* registry section for extraction options */
-static const char* kExtractSect = _T("extract");
+static const WCHAR kExtractSect[] = L"extract";
 /* registry section for view options */
-static const char* kViewSect = _T("view");
+static const WCHAR kViewSect[] = L"view";
 /* registry section for logical/physical volume operations */
-static const char* kVolumeSect = _T("volume");
+static const WCHAR kVolumeSect[] = L"volume";
 /* registry section for file-to-disk options */
-//static const char* kConvDiskSect = _T("conv-disk");
+//static const WCHAR kConvDiskSect[] = L"conv-disk";
 /* registry section for disk-to-file options */
-static const char* kConvFileSect = _T("conv-file");
+static const WCHAR kConvFileSect[] = L"conv-file";
 /* registry section for folders */
-static const char* kFolderSect = _T("folders");
+static const WCHAR kFolderSect[] = L"folders";
 /* registry section for preferences on property pages */
-static const char* kPrefsSect = _T("prefs");
+static const WCHAR kPrefsSect[] = L"prefs";
 /* registry section for miscellaneous settings */
-static const char* kMiscSect = _T("misc");
+static const WCHAR kMiscSect[] = L"misc";
 
 
 /*
@@ -46,96 +46,96 @@ static const char* kMiscSect = _T("misc");
 const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
     /**/ { kPrefNumUnknown,             kPTNone, nil,           nil },
 
-    { kPrAddIncludeSubFolders,          kBool,  kAddSect,       _T("include-sub-folders") },
-    { kPrAddStripFolderNames,           kBool,  kAddSect,       _T("strip-folder-names") },
-    { kPrAddOverwriteExisting,          kBool,  kAddSect,       _T("overwrite-existing") },
-    { kPrAddTypePreservation,           kLong,  kAddSect,       _T("type-preservation") },
-    { kPrAddConvEOL,                    kLong,  kAddSect,       _T("conv-eol") },
+    { kPrAddIncludeSubFolders,          kBool,  kAddSect,       L"include-sub-folders" },
+    { kPrAddStripFolderNames,           kBool,  kAddSect,       L"strip-folder-names" },
+    { kPrAddOverwriteExisting,          kBool,  kAddSect,       L"overwrite-existing" },
+    { kPrAddTypePreservation,           kLong,  kAddSect,       L"type-preservation" },
+    { kPrAddConvEOL,                    kLong,  kAddSect,       L"conv-eol" },
 
-//  { kPrExtractPath,                   kString, kExtractSect,  _T("path") },
-    { kPrExtractConvEOL,                kLong,  kExtractSect,   _T("conv-eol") },
-    { kPrExtractConvHighASCII,          kBool,  kExtractSect,   _T("conv-high-ascii") },
-    { kPrExtractIncludeData,            kBool,  kExtractSect,   _T("include-data") },
-    { kPrExtractIncludeRsrc,            kBool,  kExtractSect,   _T("include-rsrc") },
-    { kPrExtractIncludeDisk,            kBool,  kExtractSect,   _T("include-disk") },
-    { kPrExtractEnableReformat,         kBool,  kExtractSect,   _T("enable-reformat") },
-    { kPrExtractDiskTo2MG,              kBool,  kExtractSect,   _T("disk-to-2mg") },
-    { kPrExtractAddTypePreservation,    kBool,  kExtractSect,   _T("add-type-preservation") },
-    { kPrExtractAddExtension,           kBool,  kExtractSect,   _T("add-extension") },
-    { kPrExtractStripFolderNames,       kBool,  kExtractSect,   _T("strip-folder-names") },
-    { kPrExtractOverwriteExisting,      kBool,  kExtractSect,   _T("overwrite-existing") },
+//  { kPrExtractPath,                   kString, kExtractSect,  L"path" },
+    { kPrExtractConvEOL,                kLong,  kExtractSect,   L"conv-eol" },
+    { kPrExtractConvHighASCII,          kBool,  kExtractSect,   L"conv-high-ascii" },
+    { kPrExtractIncludeData,            kBool,  kExtractSect,   L"include-data" },
+    { kPrExtractIncludeRsrc,            kBool,  kExtractSect,   L"include-rsrc" },
+    { kPrExtractIncludeDisk,            kBool,  kExtractSect,   L"include-disk" },
+    { kPrExtractEnableReformat,         kBool,  kExtractSect,   L"enable-reformat" },
+    { kPrExtractDiskTo2MG,              kBool,  kExtractSect,   L"disk-to-2mg" },
+    { kPrExtractAddTypePreservation,    kBool,  kExtractSect,   L"add-type-preservation" },
+    { kPrExtractAddExtension,           kBool,  kExtractSect,   L"add-extension" },
+    { kPrExtractStripFolderNames,       kBool,  kExtractSect,   L"strip-folder-names" },
+    { kPrExtractOverwriteExisting,      kBool,  kExtractSect,   L"overwrite-existing" },
 
-//  { kPrViewIncludeDataForks,          kBool,  kViewSect,      _T("include-data-forks") },
-//  { kPrViewIncludeRsrcForks,          kBool,  kViewSect,      _T("include-rsrc-forks") },
-//  { kPrViewIncludeDiskImages,         kBool,  kViewSect,      _T("include-disk-images") },
-//  { kPrViewIncludeComments,           kBool,  kViewSect,      _T("include-comments") },
+//  { kPrViewIncludeDataForks,          kBool,  kViewSect,      L"include-data-forks" },
+//  { kPrViewIncludeRsrcForks,          kBool,  kViewSect,      L"include-rsrc-forks" },
+//  { kPrViewIncludeDiskImages,         kBool,  kViewSect,      L"include-disk-images" },
+//  { kPrViewIncludeComments,           kBool,  kViewSect,      L"include-comments" },
 
-    { kPrConvFileEmptyFolders,          kBool,  kConvFileSect,  _T("preserve-empty-folders") },
+    { kPrConvFileEmptyFolders,          kBool,  kConvFileSect,  L"preserve-empty-folders" },
 
-    { kPrOpenArchiveFolder,             kString, kFolderSect,   _T("open-archive") },
-    { kPrConvertArchiveFolder,          kString, kFolderSect,   _T("convert-archive") },
-    { kPrAddFileFolder,                 kString, kFolderSect,   _T("add-file") },
-    { kPrExtractFileFolder,             kString, kFolderSect,   _T("extract-file") },
+    { kPrOpenArchiveFolder,             kString, kFolderSect,   L"open-archive" },
+    { kPrConvertArchiveFolder,          kString, kFolderSect,   L"convert-archive" },
+    { kPrAddFileFolder,                 kString, kFolderSect,   L"add-file" },
+    { kPrExtractFileFolder,             kString, kFolderSect,   L"extract-file" },
 
-    { kPrVolumeFilter,                  kLong,  kVolumeSect,    _T("open-filter") },
-    //{ kPrVolumeReadOnly,              kBool,  kVolumeSect,    _T("read-only") },
+    { kPrVolumeFilter,                  kLong,  kVolumeSect,    L"open-filter" },
+    //{ kPrVolumeReadOnly,              kBool,  kVolumeSect,    L"read-only" },
 
-    { kPrCassetteAlgorithm,             kLong,  kVolumeSect,    _T("cassette-algorithm") },
-    { kPrOpenWAVFolder,                 kString, kFolderSect,   _T("open-wav") },
+    { kPrCassetteAlgorithm,             kLong,  kVolumeSect,    L"cassette-algorithm" },
+    { kPrOpenWAVFolder,                 kString, kFolderSect,   L"open-wav" },
 
-    { kPrMimicShrinkIt,                 kBool,  kPrefsSect,     _T("mimic-shrinkit") },
-    { kPrBadMacSHK,                     kBool,  kPrefsSect,     _T("bad-mac-shk") },
-    { kPrReduceSHKErrorChecks,          kBool,  kPrefsSect,     _T("reduce-shk-error-checks") },
-    { kPrCoerceDOSFilenames,            kBool,  kPrefsSect,     _T("coerce-dos-filenames") },
-    { kPrSpacesToUnder,                 kBool,  kPrefsSect,     _T("spaces-to-under") },
-    { kPrPasteJunkPaths,                kBool,  kPrefsSect,     _T("paste-junk-paths") },
-    { kPrBeepOnSuccess,                 kBool,  kPrefsSect,     _T("beep-on-success") },
+    { kPrMimicShrinkIt,                 kBool,  kPrefsSect,     L"mimic-shrinkit" },
+    { kPrBadMacSHK,                     kBool,  kPrefsSect,     L"bad-mac-shk" },
+    { kPrReduceSHKErrorChecks,          kBool,  kPrefsSect,     L"reduce-shk-error-checks" },
+    { kPrCoerceDOSFilenames,            kBool,  kPrefsSect,     L"coerce-dos-filenames" },
+    { kPrSpacesToUnder,                 kBool,  kPrefsSect,     L"spaces-to-under" },
+    { kPrPasteJunkPaths,                kBool,  kPrefsSect,     L"paste-junk-paths" },
+    { kPrBeepOnSuccess,                 kBool,  kPrefsSect,     L"beep-on-success" },
 
-    { kPrQueryImageFormat,              kBool,  kPrefsSect,     _T("query-image-format") },
-    { kPrOpenVolumeRO,                  kBool,  kPrefsSect,     _T("open-volume-ro") },
-    { kPrOpenVolumePhys0,               kBool,  kPrefsSect,     _T("open-volume-phys0") },
-    { kPrProDOSAllowLower,              kBool,  kPrefsSect,     _T("prodos-allow-lower") },
-    { kPrProDOSUseSparse,               kBool,  kPrefsSect,     _T("prodos-use-sparse") },
+    { kPrQueryImageFormat,              kBool,  kPrefsSect,     L"query-image-format" },
+    { kPrOpenVolumeRO,                  kBool,  kPrefsSect,     L"open-volume-ro" },
+    { kPrOpenVolumePhys0,               kBool,  kPrefsSect,     L"open-volume-phys0" },
+    { kPrProDOSAllowLower,              kBool,  kPrefsSect,     L"prodos-allow-lower" },
+    { kPrProDOSUseSparse,               kBool,  kPrefsSect,     L"prodos-use-sparse" },
 
-    { kPrCompressionType,               kLong,  kPrefsSect,     _T("compression-type") },
+    { kPrCompressionType,               kLong,  kPrefsSect,     L"compression-type" },
 
-    { kPrMaxViewFileSize,               kLong,  kPrefsSect,     _T("max-view-file-size") },
-    { kPrNoWrapText,                    kBool,  kPrefsSect,     _T("no-wrap-text") },
+    { kPrMaxViewFileSize,               kLong,  kPrefsSect,     L"max-view-file-size" },
+    { kPrNoWrapText,                    kBool,  kPrefsSect,     L"no-wrap-text" },
 
-    { kPrHighlightHexDump,              kBool,  kPrefsSect,     _T("highlight-hex-dump") },
-    { kPrHighlightBASIC,                kBool,  kPrefsSect,     _T("highlight-basic") },
-    { kPrConvHiResBlackWhite,           kBool,  kPrefsSect,     _T("conv-hi-res-black-white") },
-    { kPrConvDHRAlgorithm,              kLong,  kPrefsSect,     _T("dhr-algorithm") },
-    { kPrRelaxGfxTypeCheck,             kBool,  kPrefsSect,     _T("relax-gfx-type-check") },
-    { kPrDisasmOneByteBrkCop,           kBool,  kPrefsSect,     _T("disasm-onebytebrkcop") },
-    //{ kPrEOLConvRaw,                  kBool,  kPrefsSect,     _T("eol-conv-raw") },
-    { kPrConvTextEOL_HA,                kBool,  kPrefsSect,     _T("conv-eol-ha") },
-    { kPrConvPascalText,                kBool,  kPrefsSect,     _T("conv-pascal-text") },
-    { kPrConvPascalCode,                kBool,  kPrefsSect,     _T("conv-pascal-code") },
-    { kPrConvCPMText,                   kBool,  kPrefsSect,     _T("conv-cpm-text") },
-    { kPrConvApplesoft,                 kBool,  kPrefsSect,     _T("conv-applesoft") },
-    { kPrConvInteger,                   kBool,  kPrefsSect,     _T("conv-integer") },
-    { kPrConvBusiness,                  kBool,  kPrefsSect,     _T("conv-business") },
-    { kPrConvGWP,                       kBool,  kPrefsSect,     _T("conv-gwp") },
-    { kPrConvText8,                     kBool,  kPrefsSect,     _T("conv-text8") },
-    { kPrConvGutenberg,                 kBool,  kPrefsSect,     _T("conv-gutenberg") },
-    { kPrConvAWP,                       kBool,  kPrefsSect,     _T("conv-awp") },
-    { kPrConvADB,                       kBool,  kPrefsSect,     _T("conv-adb") },
-    { kPrConvASP,                       kBool,  kPrefsSect,     _T("conv-asp") },
-    { kPrConvSCAssem,                   kBool,  kPrefsSect,     _T("conv-scassem") },
-    { kPrConvDisasm,                    kBool,  kPrefsSect,     _T("conv-disasm") },
-    { kPrConvHiRes,                     kBool,  kPrefsSect,     _T("conv-hi-res") },
-    { kPrConvDHR,                       kBool,  kPrefsSect,     _T("conv-dhr") },
-    { kPrConvSHR,                       kBool,  kPrefsSect,     _T("conv-shr") },
-    { kPrConvPrintShop,                 kBool,  kPrefsSect,     _T("conv-print-shop") },
-    { kPrConvMacPaint,                  kBool,  kPrefsSect,     _T("conv-mac-paint") },
-    { kPrConvProDOSFolder,              kBool,  kPrefsSect,     _T("conv-prodos-folder") },
-    { kPrConvResources,                 kBool,  kPrefsSect,     _T("conv-resources") },
+    { kPrHighlightHexDump,              kBool,  kPrefsSect,     L"highlight-hex-dump" },
+    { kPrHighlightBASIC,                kBool,  kPrefsSect,     L"highlight-basic" },
+    { kPrConvHiResBlackWhite,           kBool,  kPrefsSect,     L"conv-hi-res-black-white" },
+    { kPrConvDHRAlgorithm,              kLong,  kPrefsSect,     L"dhr-algorithm" },
+    { kPrRelaxGfxTypeCheck,             kBool,  kPrefsSect,     L"relax-gfx-type-check" },
+    { kPrDisasmOneByteBrkCop,           kBool,  kPrefsSect,     L"disasm-onebytebrkcop" },
+    //{ kPrEOLConvRaw,                  kBool,  kPrefsSect,     L"eol-conv-raw" },
+    { kPrConvTextEOL_HA,                kBool,  kPrefsSect,     L"conv-eol-ha" },
+    { kPrConvPascalText,                kBool,  kPrefsSect,     L"conv-pascal-text" },
+    { kPrConvPascalCode,                kBool,  kPrefsSect,     L"conv-pascal-code" },
+    { kPrConvCPMText,                   kBool,  kPrefsSect,     L"conv-cpm-text" },
+    { kPrConvApplesoft,                 kBool,  kPrefsSect,     L"conv-applesoft" },
+    { kPrConvInteger,                   kBool,  kPrefsSect,     L"conv-integer" },
+    { kPrConvBusiness,                  kBool,  kPrefsSect,     L"conv-business" },
+    { kPrConvGWP,                       kBool,  kPrefsSect,     L"conv-gwp" },
+    { kPrConvText8,                     kBool,  kPrefsSect,     L"conv-text8" },
+    { kPrConvGutenberg,                 kBool,  kPrefsSect,     L"conv-gutenberg" },
+    { kPrConvAWP,                       kBool,  kPrefsSect,     L"conv-awp" },
+    { kPrConvADB,                       kBool,  kPrefsSect,     L"conv-adb" },
+    { kPrConvASP,                       kBool,  kPrefsSect,     L"conv-asp" },
+    { kPrConvSCAssem,                   kBool,  kPrefsSect,     L"conv-scassem" },
+    { kPrConvDisasm,                    kBool,  kPrefsSect,     L"conv-disasm" },
+    { kPrConvHiRes,                     kBool,  kPrefsSect,     L"conv-hi-res" },
+    { kPrConvDHR,                       kBool,  kPrefsSect,     L"conv-dhr" },
+    { kPrConvSHR,                       kBool,  kPrefsSect,     L"conv-shr" },
+    { kPrConvPrintShop,                 kBool,  kPrefsSect,     L"conv-print-shop" },
+    { kPrConvMacPaint,                  kBool,  kPrefsSect,     L"conv-mac-paint" },
+    { kPrConvProDOSFolder,              kBool,  kPrefsSect,     L"conv-prodos-folder" },
+    { kPrConvResources,                 kBool,  kPrefsSect,     L"conv-resources" },
 
-    { kPrTempPath,                      kString, kPrefsSect,    _T("temp-path") },
-    { kPrExtViewerExts,                 kString, kPrefsSect,    _T("extviewer-exts") },
+    { kPrTempPath,                      kString, kPrefsSect,    L"temp-path" },
+    { kPrExtViewerExts,                 kString, kPrefsSect,    L"extviewer-exts" },
 
-    { kPrLastOpenFilterIndex,           kLong,  kMiscSect,      _T("open-filter-index") },
+    { kPrLastOpenFilterIndex,           kLong,  kMiscSect,      L"open-filter-index" },
 
     /**/ { kPrefNumLastRegistry,        kPTNone, nil,           nil },
 
@@ -243,11 +243,11 @@ Preferences::Preferences(void)
     SetPrefBool(kPrConvResources, true);
 
     InitTempPath();     // set default for kPrTempPath
-    SetPrefString(kPrExtViewerExts, "gif; jpg; jpeg");
+    SetPrefString(kPrExtViewerExts, L"gif; jpg; jpeg");
 
     SetPrefLong(kPrLastOpenFilterIndex, 0);
 
-    SetPrefString(kPrViewTextTypeFace, "Courier New");
+    SetPrefString(kPrViewTextTypeFace, L"Courier New");
     SetPrefLong(kPrViewTextPointSize, 10);
     long width = 680;   /* exact width for 80-column text */
     long height = 510;  /* exact height for file viewer to show IIgs graphic */
@@ -272,39 +272,39 @@ Preferences::Preferences(void)
  * Restore column widths.
  */
 void
-ColumnLayout::LoadFromRegistry(const char* section)
+ColumnLayout::LoadFromRegistry(const WCHAR* section)
 {
-    char numBuf[8];
+    WCHAR numBuf[8];
     int i;
 
     for (i = 0; i < kNumVisibleColumns; i++) {
-        sprintf(numBuf, "%d", i);
+        wsprintf(numBuf, L"%d", i);
 
         fColumnWidth[i] = gMyApp.GetProfileInt(section, numBuf,
                             fColumnWidth[i]);
         fColumnWidth[i] = gMyApp.GetProfileInt(section, numBuf,
                             fColumnWidth[i]);
     }
-    fSortColumn = gMyApp.GetProfileInt(section, _T("sort-column"), fSortColumn);
-    fAscending = (gMyApp.GetProfileInt(section, _T("ascending"), fAscending) != 0);
+    fSortColumn = gMyApp.GetProfileInt(section, L"sort-column", fSortColumn);
+    fAscending = (gMyApp.GetProfileInt(section, L"ascending", fAscending) != 0);
 }
 
 /*
  * Store column widths.
  */
 void
-ColumnLayout::SaveToRegistry(const char* section)
+ColumnLayout::SaveToRegistry(const WCHAR* section)
 {
-    char numBuf[8];
+    WCHAR numBuf[8];
     int i;
 
     for (i = 0; i < kNumVisibleColumns; i++) {
-        sprintf(numBuf, "%d", i);
+        wsprintf(numBuf, L"%d", i);
 
         gMyApp.WriteProfileInt(section, numBuf, fColumnWidth[i]);
     }
-    gMyApp.WriteProfileInt(section, _T("sort-column"), fSortColumn);
-    gMyApp.WriteProfileInt(section, _T("ascending"), fAscending);
+    gMyApp.WriteProfileInt(section, L"sort-column", fSortColumn);
+    gMyApp.WriteProfileInt(section, L"ascending", fAscending);
 }
 
 
@@ -320,29 +320,29 @@ ColumnLayout::SaveToRegistry(const char* section)
 void
 Preferences::InitTempPath(void)
 {
-    char buf[MAX_PATH];
+    WCHAR buf[MAX_PATH];
     DWORD len;
     CString tempPath;
 
-    len = ::GetTempPath(sizeof(buf), buf);
+    len = ::GetTempPath(NELEM(buf), buf);
     if (len == 0) {
         DWORD err = ::GetLastError();
         WMSG1("GetTempPath failed, err=%d\n", err);
         tempPath = kDefaultTempPath;
-    } else if (len >= sizeof(buf)) {
+    } else if (len >= NELEM(buf)) {
         /* sheesh! */
-        WMSG1("GetTempPath wants a %d-byte buffer\n", len);
+        WMSG1("GetTempPath wants a %d-unit buffer\n", len);
         tempPath = kDefaultTempPath;
     } else {
         tempPath = buf;
     }
 
     PathName path(tempPath);
-    WMSG1("Temp path is '%s'\n", tempPath);
+    WMSG1("Temp path is '%ls'\n", tempPath);
     path.SFNToLFN();
     tempPath = path.GetPathName();
 
-    WMSG1("Temp path (long form) is '%s'\n", tempPath);
+    WMSG1("Temp path (long form) is '%ls'\n", tempPath);
 
     SetPrefString(kPrTempPath, tempPath);
 
@@ -366,8 +366,8 @@ Preferences::InitFolders(void)
         SetPrefString(kPrExtractFileFolder, path);
         SetPrefString(kPrOpenWAVFolder, path);
     } else {
-        char buf[MAX_PATH];
-        ::GetCurrentDirectory(sizeof(buf), buf);
+        WCHAR buf[MAX_PATH];
+        ::GetCurrentDirectory(NELEM(buf), buf);
         SetPrefString(kPrOpenArchiveFolder, buf);
         SetPrefString(kPrConvertArchiveFolder, buf);
         SetPrefString(kPrAddFileFolder, buf);
@@ -375,7 +375,7 @@ Preferences::InitFolders(void)
         SetPrefString(kPrOpenWAVFolder, buf);
     }
 
-    WMSG1("Default folder is '%s'\n", GetPrefString(kPrExtractFileFolder));
+    WMSG1("Default folder is '%ls'\n", GetPrefString(kPrExtractFileFolder));
 }
 
 /*
@@ -459,25 +459,23 @@ Preferences::SetPrefLong(PrefNum num, long val)
         return;
     fValues[num] = (void*) val;
 }
-const char*
+const WCHAR*
 Preferences::GetPrefString(PrefNum num) const
 {
     if (!ValidateEntry(num, kString))
         return nil;
-    return (const char*) fValues[num];
+    return (const WCHAR*) fValues[num];
 }
 void
-Preferences::SetPrefString(PrefNum num, const char* str)
+Preferences::SetPrefString(PrefNum num, const WCHAR* str)
 {
     if (!ValidateEntry(num, kString))
         return;
     free(fValues[num]);
-    if (str == nil)
+    if (str == nil) {
         fValues[num] = nil;
-    else {
-        fValues[num] = new char[strlen(str) +1];
-        if (fValues[num] != nil)
-            strcpy((char*)fValues[num], str);
+    } else {
+        fValues[num] = wcsdup(str);
     }
 }
 
@@ -523,12 +521,12 @@ Preferences::ScanPrefMaps(void)
             {
                 continue;
             }
-            if (strcasecmp(fPrefMaps[i].registryKey,
-                           fPrefMaps[j].registryKey) == 0 &&
-                strcasecmp(fPrefMaps[i].registrySection,
-                           fPrefMaps[j].registrySection) == 0)
+            if (wcsicmp(fPrefMaps[i].registryKey,
+                        fPrefMaps[j].registryKey) == 0 &&
+                wcsicmp(fPrefMaps[i].registrySection,
+                        fPrefMaps[j].registrySection) == 0)
             {
-                WMSG4("HEY: PrefMaps[%d] and [%d] both have '%s'/'%s'\n",
+                WMSG4("HEY: PrefMaps[%d] and [%d] both have '%ls'/'%ls'\n",
                     i, j, fPrefMaps[i].registrySection,
                     fPrefMaps[i].registryKey);
                 ASSERT(false);

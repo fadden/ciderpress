@@ -6,10 +6,9 @@
 /*
  * Acknowledge and clarify a request to delete files.
  */
-#ifndef __USE_SELECTION_DIALOG__
-#define __USE_SELECTION_DIALOG__
+#ifndef APP_USESELECTIONDIALOG_H
+#define APP_USESELECTIONDIALOG_H
 
-//#include "../util/UtilLib.h"
 #include "resource.h"
 
 /*
@@ -59,4 +58,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__USE_SELECTION_DIALOG__*/
+#endif /*APP_USESELECTIONDIALOG_H*/

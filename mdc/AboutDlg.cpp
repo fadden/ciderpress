@@ -49,7 +49,7 @@ BOOL AboutDlg::OnInitDialog()
     pWnd->GetWindowText(fmt);
     newText.Format(fmt, kAppMajorVersion, kAppMinorVersion, kAppBugVersion);
     pWnd->SetWindowText(newText);
-    WMSG1("STR is '%s'\n", newText);
+    WMSG1("STR is '%ls'\n", (LPCWSTR) newText);
 
     return TRUE;  // return TRUE unless you set the focus to a control
                   // EXCEPTION: OCX Property Pages should return FALSE

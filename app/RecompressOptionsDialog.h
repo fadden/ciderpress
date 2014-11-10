@@ -7,11 +7,11 @@
  * Options for recompressing files.  This is derived from the "use selection"
  * dialog.
  */
-#ifndef __RECOMPRESS_OPTIONS_DIALOG__
-#define __RECOMPRESS_OPTIONS_DIALOG__
+#ifndef APP_RECOMPESSOPTIONSDIALOG_H
+#define APP_RECOMPESSOPTIONSDIALOG_H
 
 #include "UseSelectionDialog.h"
-#include "../prebuilt/NufxLib.h"
+#include "../nufxlib/NufxLib.h"
 #include "resource.h"
 
 /*
@@ -40,4 +40,4 @@ private:
     //DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__RECOMPRESS_OPTIONS_DIALOG__*/
+#endif /*APP_RECOMPESSOPTIONSDIALOG_H*/

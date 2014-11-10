@@ -7,8 +7,8 @@
 /*
  * Reformat 8-bit word processor files.
  */
-#ifndef __LR_TEXT8__
-#define __LR_TEXT8__
+#ifndef REFORMAT_TEXT8_H
+#define REFORMAT_TEXT8_H
 
 #include "ReformatBase.h"
 
@@ -46,4 +46,4 @@ public:
 
 };
 
-#endif /*__LR_TEXT8__*/
+#endif /*REFORMAT_TEXT8_H*/

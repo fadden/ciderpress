@@ -186,10 +186,10 @@ ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
 
 #if 1
             {   /* DEBUG */
-                char szBuff[MAX_PATH];
-                if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
-                    WMSG2(" Checking '%s' 0x%08lx\n",
-                        szBuff, ulAttrs);
+                CString name;
+                if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, &name)) {
+                    WMSG2(" Checking '%ls' 0x%08lx\n",
+                        name, ulAttrs);
                 } else {
                     WMSG1(" Checking <no-name> 0x%08lx\n",
                         ulAttrs);
@@ -297,14 +297,14 @@ ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
         tvi.hItem = hParent;
         tvi.mask = TVIF_CHILDREN;
         if (!GetItem(&tvi)) {
-            WMSG1("Could not get TV '%s'\n", name);
+            WMSG1("Could not get TV '%ls'\n", name);
             ASSERT(false);
         } else if (tvi.cChildren) {
-            WMSG2("Removing child count (%d) from '%s'\n",
+            WMSG2("Removing child count (%d) from '%ls'\n",
                 tvi.cChildren, name);
             tvi.cChildren = 0;
             if (!SetItem(&tvi)) {
-                WMSG1("Could not set TV '%s'\n", name);
+                WMSG1("Could not set TV '%ls'\n", name);
                 ASSERT(false);
             }
         }
@@ -338,7 +338,8 @@ ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
     TVINSERTSTRUCT  tvins;
     LPITEMIDLIST    lpifqThisItem = nil;
     TVItemData*     lptvid = nil;
-    char            szBuff[MAX_PATH];
+    WCHAR           szBuff[MAX_PATH];
+    CString         name;
     LPMALLOC        lpMalloc = nil;
     HRESULT         hr;
     BOOL            result = FALSE;
@@ -348,11 +349,12 @@ ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
        return FALSE;
 
     //Now get the friendly name that we'll put in the treeview.
-    if (!Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
+    if (!Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, &name)) {
         WMSG0("HEY: failed getting friendly name\n");
         goto bail; // Error - could not get friendly name.
     }
-    //WMSG2("AddNode '%s' ATTR=0x%08lx\n", szBuff, ulAttrs);
+    wcscpy_s(szBuff, name);
+    //WMSG2("AddNode '%ls' ATTR=0x%08lx\n", szBuff, ulAttrs);
 
     lptvid = (TVItemData*)lpMalloc->Alloc(sizeof(TVItemData));
     if (!lptvid)
@@ -492,13 +494,12 @@ ShellTree::AddFolderAtSelection(const CString& name)
     const TVItemData* parentTvid;
     TVItemData* newTvid = nil;
     HWND hwnd = ::GetParent(m_hWnd);
-    char szBuff[MAX_PATH];
     HTREEITEM hPrev = nil;
     BOOL result = false;
     CString debugName;
     HRESULT hr;
 
-    WMSG1("AddFolderAtSelection '%s'\n", name);
+    WMSG1("AddFolderAtSelection '%ls'\n", name);
 
     // Allocate a shell memory object. 
     hr = ::SHGetMalloc(&lpMalloc);
@@ -533,26 +534,26 @@ ShellTree::AddFolderAtSelection(const CString& name)
     tvi.hItem = hParent;
     tvi.mask = TVIF_CHILDREN;
     if (!GetItem(&tvi)) {
-        WMSG1("Could not get TV '%s'\n", debugName);
+        WMSG1("Could not get TV '%ls'\n", debugName);
         ASSERT(false);
     } else {
         HTREEITEM child = GetChildItem(hParent);
         if (child == nil && tvi.cChildren) {
-            WMSG1(" Found unexpanded node, not adding %s\n", name);
+            WMSG1(" Found unexpanded node, not adding %ls\n", name);
             result = TRUE;
             goto bail;
         } else if (child == nil && !tvi.cChildren) {
-            WMSG1(" Found former leaf node, updating kids in %s\n", debugName);
+            WMSG1(" Found former leaf node, updating kids in %ls\n", debugName);
             tvi.cChildren = 1;
             if (!SetItem(&tvi)) {
-                WMSG1("Could not set TV '%s'\n", debugName);
+                WMSG1("Could not set TV '%ls'\n", debugName);
                 ASSERT(false);
             }
             result = TRUE;
             goto bail;
         } else {
             ASSERT(child != nil && tvi.cChildren != 0);
-            WMSG2(" Found expanded branch node '%s', adding new '%s'\n",
+            WMSG2(" Found expanded branch node '%ls', adding new '%ls'\n",
                 debugName, name);
         }
     }
@@ -579,8 +580,9 @@ ShellTree::AddFolderAtSelection(const CString& name)
 
     // Enumerate throught the list of folder and non-folder objects.
     while (S_OK == lpe->Next(1, &lpi, nil)) {
-        if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, szBuff)) {
-            if (name.CompareNoCase(szBuff) == 0) {
+        CString pidlName;
+        if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, &pidlName)) {
+            if (name.CompareNoCase(pidlName) == 0) {
                 /* match! */
                 if (!AddNode(lpsf, lpi, parentTvid->lpifq, 0, hParent, &hPrev)) {
                     WMSG0("AddNode failed!\n");
@@ -712,7 +714,7 @@ ShellTree::OnFolderSelected(NMHDR* pNMHDR, LRESULT* pResult,
 {
     TVItemData*     lptvid;
     LPSHELLFOLDER   lpsf2=NULL;
-    char            szBuff[MAX_PATH];
+    WCHAR           szBuff[MAX_PATH];
     HRESULT         hr;
     BOOL            bRet=false;
     HTREEITEM       hItem=NULL;
@@ -741,7 +743,7 @@ ShellTree::OnFolderSelected(NMHDR* pNMHDR, LRESULT* pResult,
                 }
 
                 if (bRet) {
-                    WMSG1("Now selected: '%s'\n", szBuff);
+                    WMSG1("Now selected: '%ls'\n", szBuff);
                 } else {
                     WMSG0("Now selected: <no path>\n");
                 }
@@ -821,7 +823,7 @@ ShellTree::EnableImages()
     HIMAGELIST hImageList;
     SHFILEINFO sfi;
 
-    hImageList = (HIMAGELIST)SHGetFileInfo((LPCSTR)"C:\\", 
+    hImageList = (HIMAGELIST)SHGetFileInfo(L"C:\\", 
                     0, &sfi, sizeof(SHFILEINFO), 
                     SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
 
@@ -847,7 +849,7 @@ BOOL ShellTree::GetSelectedFolderPath(CString &szFolderPath)
 {
     TVItemData*     lptvid;  //Long pointer to TreeView item data
     LPSHELLFOLDER   lpsf2=NULL;
-    char            szBuff[MAX_PATH];
+    WCHAR           szBuff[MAX_PATH];
     HTREEITEM       hItem=NULL;
     HRESULT         hr;
     BOOL            bRet=false;
@@ -961,14 +963,14 @@ LPITEMIDLIST ShellTree::GetFullyQualifiedID(HTREEITEM folderNode)
 void
 ShellTree::TunnelTree(CString path, CString* pResultStr)
 {
-    const char* str = path;
+    const WCHAR* str = path;
     int len;
 
     if (str[0] == '\\' && str[1] == '\\') {
         *pResultStr = "Can't expand network locations directly.";
         return;
     }
-    len = strlen(path);
+    len = path.GetLength();
     if (len < 1) {
         *pResultStr = "You must enter a folder name.";
         return;
@@ -981,7 +983,7 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
     /* if it doesn't exist, there's not much point in searching for it */
     PathName pathName(path);
     if (!pathName.Exists()) {
-        *pResultStr = "Folder not found.";
+        *pResultStr = L"Folder not found.";
         return;
     }
 
@@ -991,17 +993,17 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
      */
     HTREEITEM myComputer = FindMyComputer();
     if (myComputer == nil) {
-        *pResultStr = "Unable to locate My Computer in tree.";
+        *pResultStr = L"Unable to locate My Computer in tree.";
         return;
     }
 
     CString drive = pathName.GetDriveOnly();
-    WMSG1("Searching for drive='%s'\n", drive);
+    WMSG1("Searching for drive='%ls'\n", drive);
 
     HTREEITEM node = FindDrive(myComputer, drive);
     if (node == nil) {
         /* unexpected -- couldn't find the drive */
-        pResultStr->Format("Unable to find drive %s.", drive);
+        pResultStr->Format(L"Unable to find drive %ls.", drive);
         return;
     }
 
@@ -1014,8 +1016,8 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
 
     if (node == nil) {
         /* unexpected -- file doesn't exist */
-        pResultStr->Format("Unable to find file '%s'.",
-            pathName.GetPathOnly());
+        pResultStr->Format(L"Unable to find file '%ls'.",
+            (LPCWSTR) pathName.GetPathOnly());
     } else {
         Select(node, TVGN_CARET);
         EnsureVisible(node);
@@ -1067,7 +1069,7 @@ ShellTree::FindMyComputer(void)
 
         hr = desktop->CompareIDs(0, myComputerPidl, pData->lpi);
         if (SUCCEEDED(hr) && HRESULT_CODE(hr) == 0) {
-            WMSG1("MATCHED on '%s'\n", itemText);
+            WMSG1("MATCHED on '%ls'\n", itemText);
             result = node;
             break;
         }
@@ -1123,9 +1125,9 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
         CString itemText = GetItemText(node);
         itemText.MakeUpper();
 
-        //WMSG2("COMPARING '%s' vs '%s'\n", udrive, itemText);
+        //WMSG2("COMPARING '%ls' vs '%ls'\n", (LPCWSTR) udrive, (LPCWSTR) itemText);
         if (itemText.Find(udrive) != -1) {
-            WMSG2("MATCHED '%s' in '%s'\n", udrive, itemText);
+            WMSG2("MATCHED '%ls' in '%ls'\n", (LPCWSTR) udrive, (LPCWSTR) itemText);
             break;
         }
         node = GetNextSiblingItem(node);
@@ -1144,17 +1146,17 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
 HTREEITEM
 ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
 {
-    WMSG2("SearchTree node=0x%08lx path='%s'\n",
+    WMSG2("SearchTree node=0x%08lx path='%ls'\n",
         treeNode, (LPCTSTR) path);
 
     HTREEITEM node;
     CString mangle(path);
-    char* start;
-    char* end;
+    WCHAR* start;
+    WCHAR* end;
 
     /* make a copy of "path" that we can mess with */
     start = mangle.GetBuffer(0);
-    if (start == nil || *start != '\\' || *(start + strlen(start)-1) != '\\')
+    if (start == nil || *start != '\\' || *(start + wcslen(start)-1) != '\\')
         return nil;
     start++;
 
@@ -1164,7 +1166,7 @@ ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
         Expand(node, TVE_EXPAND);   // need to fill in the tree
         node = GetChildItem(node);
 
-        end = strchr(start, '\\');
+        end = wcschr(start, '\\');
         if (end == nil) {
             ASSERT(false);
             return nil;
@@ -1183,7 +1185,7 @@ ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
             node = GetNextSiblingItem(node);
         }
         if (node == nil) {
-            WMSG2("NOT FOUND '%s' '%s'\n", (LPCTSTR) path, start);
+            WMSG2("NOT FOUND '%ls' '%ls'\n", (LPCTSTR) path, start);
             break;
         }
 

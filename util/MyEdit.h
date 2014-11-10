@@ -6,8 +6,8 @@
 /*
  * My edit class.
  */
-#ifndef __MYEDIT__
-#define __MYEDIT__
+#ifndef UTIL_MYEDIT_H
+#define UTIL_MYEDIT_H
 
 /*
  * Replace the edit box in a dialog with this code by calling MyEdit's
@@ -52,4 +52,4 @@ private:
     //DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__MYEDIT__*/
+#endif /*UTIL_MYEDIT_H*/

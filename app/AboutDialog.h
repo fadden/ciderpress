@@ -6,8 +6,8 @@
 /*
  * Class definition for About dialog.
  */
-#ifndef __ABOUT_DIALOG__
-#define __ABOUT_DIALOG__
+#ifndef APP_ABOUTDIALOG_H
+#define APP_ABOUTDIALOG_H
 
 //#include <afxwin.h>
 #include "resource.h"
@@ -34,4 +34,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__ABOUT_DIALOG__*/
+#endif /*APP_ABOUTDIALOG_H*/

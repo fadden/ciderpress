@@ -203,7 +203,7 @@ public:
     static bool GetHasSPTI(void);
     static bool GetHasASPI(void);
 
-    // return a pointer to our global ASPI instance
+    // return a pointer to our global ASPI instance, or NULL
     static ASPI* GetASPI(void) { return fpASPI; }
     // shortcut for fpASPI->GetVersion()
     static unsigned long GetASPIVersion(void);
@@ -1177,7 +1177,7 @@ public:
         kStorageDirectory       = 13,
     };
     typedef struct CreateParms {
-        const char*     pathName;       // full pathname
+        const char*     pathName;       // full pathname for file on disk image
         char            fssep;
         int             storageType;    // determines normal, subdir, or forked
         long            fileType;

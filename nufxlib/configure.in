@@ -1,0 +1,228 @@
+dnl NuFX archive manipulation library
+dnl Copyright (C) 2000-2007 by Andy McFadden, All Rights Reserved.
+dnl This is free software; you can redistribute it and/or modify it under the
+dnl terms of the BSD License, see the file COPYING-LIB.
+dnl
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(NufxLibPriv.h)
+AC_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_CANONICAL_HOST
+dnl AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+dnl Checks for header files.
+AC_CHECK_HEADERS(fcntl.h malloc.h stdlib.h sys/stat.h sys/time.h sys/types.h \
+    sys/utime.h unistd.h utime.h)
+
+LIBS=""
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_MODE_T
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+AC_STRUCT_TM
+AC_CHECK_TYPE(uchar, unsigned char)
+AC_CHECK_TYPE(ushort, unsigned short)
+AC_CHECK_TYPE(uint, unsigned int)
+AC_CHECK_TYPE(ulong, unsigned long)
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(fdopen ftruncate memmove mkdir mkstemp mktime timelocal \
+    localtime_r snprintf strcasecmp strncasecmp strtoul strerror vsnprintf)
+
+dnl Kent says: snprintf doesn't always have a declaration
+AC_MSG_CHECKING(if snprintf is declared)
+AC_CACHE_VAL(nufxlib_cv_snprintf_in_header, [
+    AC_EGREP_HEADER(snprintf, stdio.h,
+        [nufxlib_cv_snprintf_in_header=yes],
+        [nufxlib_cv_snprintf_in_header=no])
+])
+if test $nufxlib_cv_snprintf_in_header = "yes"; then
+    AC_DEFINE(SNPRINTF_DECLARED)
+fi
+AC_MSG_RESULT($nufxlib_cv_snprintf_in_header)
+
+dnl Kent says: vsnprintf doesn't always have a declaration
+AC_MSG_CHECKING(if vsnprintf is declared)
+AC_CACHE_VAL(nufxlib_cv_vsnprintf_in_header, [
+    AC_EGREP_HEADER(vsnprintf, stdio.h,
+        [nufxlib_cv_vsnprintf_in_header=yes],
+        [nufxlib_cv_vsnprintf_in_header=no])
+])
+if test $nufxlib_cv_vsnprintf_in_header = "yes"; then
+    AC_DEFINE(VSNPRINTF_DECLARED)
+fi
+AC_MSG_RESULT($nufxlib_cv_vsnprintf_in_header)
+
+dnl if we're using gcc, include gcc-specific warning flags
+if test -z "$GCC"; then
+    BUILD_FLAGS='$(OPT)'
+else
+    BUILD_FLAGS='$(OPT) $(GCC_FLAGS)'
+fi
+
+dnl ---------------------------------------------------------------------------
+dnl Some host-specific stuff.  Variables you can test (set by the
+dnl AC_CANONICAL_HOST call earlier) look like this:
+dnl
+dnl     $host = i686-pc-linux-gnu
+dnl     $host_cpu = i686
+dnl     $host_vendor = pc
+dnl     $host_os = linux-gnu
+
+dnl Figure out what the build and link flags should be; different for BeOS.
+dnl (Should really use the auto-shared-lib stuff, but that adds a whole
+dnl bunch of stuff.)
+SHARE_FLAGS='-shared'
+if test "$host_cpu" = "powerpc" -a "$host_os" = "beos"; then
+    dnl BeOS/PPC, with Metrowerks compiler
+    CC=cc
+    GCC=
+    CFLAGS='-proc 603 -opt full'
+    SHARE_FLAGS='-shared -nostdlib'
+    echo "forcing CC to \"$CC\" and CFLAGS to \"$CFLAGS\""
+elif test "$host_os" = "beos"; then
+    dnl BeOS/x86
+    SHARE_FLAGS='-nostartfiles -Xlinker -soname="$@"'
+fi
+
+dnl Mac OS X (powerpc-apple-darwin6.6) needs an extra flag.
+if test "$host_vendor" = "apple" -a ${host_os:0:6} = "darwin"; then
+    echo "checking for Mac OS X... yes, adding -framework Carbon"
+    LIBS="$LIBS -framework Carbon"
+fi
+
+AC_SUBST(BUILD_FLAGS)
+AC_SUBST(SHARE_FLAGS)
+
+dnl BeOS doesn't like /usr/local/include, and gets feisty about it.  If libdir
+dnl and includedir are set to defaults, replace them with BeOS values.  This
+dnl might be going a little too far...
+if test "$host_os" = "beos"; then
+    if test "$prefix" = "NONE" -a \
+            "$includedir" = '${prefix}/include' -a \
+            "$libdir" = '${exec_prefix}/lib' -a \
+            "$bindir" = '${exec_prefix}/bin' -a \
+            "$mandir" = '${prefix}/man'
+    then
+        echo replacing install locations with BeOS values
+        prefix=/boot
+        includedir='${prefix}/develop/headers'
+        libdir='${exec_prefix}/home/config/lib'
+        bindir='${exec_prefix}/home/config/bin'
+        mandir='/tmp'
+        AC_SUBST(prefix)
+        AC_SUBST(includedir)
+        AC_SUBST(libdir)
+        AC_SUBST(bindir)
+        AC_SUBST(mandir)
+    fi
+fi
+
+
+
+dnl Test to see if sprintf does something reasonable.  I'm going to assume
+dnl that vsprintf and (if available) vsnprintf return the same thing.
+AC_MSG_CHECKING(if sprintf returns int)
+AC_CACHE_VAL(nufxlib_cv_sprintf_returns_int, [
+    AC_TRY_RUN([
+        #include <stdio.h>
+        int main(void)
+        {
+            int count;
+            char buf[8];
+            count = sprintf(buf, "123");    /* should return three */
+            exit(count != 3);
+        }
+    ],
+    [nufxlib_cv_sprintf_returns_int=yes], [nufxlib_cv_sprintf_returns_int=no],
+    [nufxlib_cv_sprintf_returns_int=no])
+])
+
+if test $nufxlib_cv_sprintf_returns_int = "yes"; then
+    AC_DEFINE(SPRINTF_RETURNS_INT)
+fi
+AC_MSG_RESULT($nufxlib_cv_sprintf_returns_int)
+
+dnl
+dnl Allow selective disabling of compression algorithms.  By default,
+dnl all are enabled.  We do a little extra work for libz and libbz2
+dnl because they're not built in.
+dnl
+dnl If we're creating a shared library, we need to explicitly link
+dnl against libz and/or libbz2 when those features are enabled.
+dnl
+
+AC_ARG_ENABLE(sq,
+    [  --disable-sq            disable SQ compression],
+    [ ], [ enable_sq=yes ])
+if test $enable_sq = "yes"; then
+    AC_DEFINE(ENABLE_SQ)
+fi
+
+AC_ARG_ENABLE(lzw,
+    [  --disable-lzw           disable LZW/1 and LZW/2 compression],
+    [ ], [ enable_lzw=yes ])
+if test $enable_lzw = "yes"; then
+    AC_DEFINE(ENABLE_LZW)
+fi
+
+AC_ARG_ENABLE(lzc,
+    [  --disable-lzc           disable 12- and 16-bit LZC compression],
+    [ ], [ enable_lzc=yes ])
+if test $enable_lzc = "yes"; then
+    AC_DEFINE(ENABLE_LZC)
+fi
+
+AC_ARG_ENABLE(deflate,
+    [  --disable-deflate       disable zlib deflate compression],
+    [ ], [ enable_deflate=yes ])
+if test $enable_deflate = "yes"; then
+    dnl Check for zlib.  Make sure it comes with zlib.h.
+    got_zlibh=false
+    AC_CHECK_LIB(z, deflate, got_libz=true, got_libz=false)
+    if $got_libz; then
+        AC_CHECK_HEADER(zlib.h, got_zlibh=true LIBS="$LIBS -lz")
+    fi
+    if $got_zlibh; then
+        echo "  (found libz and zlib.h, enabling deflate)"
+        AC_DEFINE(ENABLE_DEFLATE)
+    else
+        echo "  (couldn't find libz and zlib.h, not enabling deflate)"
+    fi
+fi
+
+AC_ARG_ENABLE(bzip2,
+    [  --enable-bzip2          enable libbz2 bzip2 compression],
+    [ ], [ enable_bzip2=no ])
+if test $enable_bzip2 = "yes"; then
+    dnl Check for libbz2.  Make sure it comes with bzlib.h.
+    dnl AC_CHECK_LIB(bz2, BZ2_bzCompress,
+    dnl     AC_CHECK_HEADER(bzlib.h, AC_DEFINE(ENABLE_BZIP2) LIBS="$LIBS -lbz2"))
+    got_bzlibh=false
+    AC_CHECK_LIB(bz2, BZ2_bzCompress, got_libbz=true, got_libbz=false)
+    if $got_libbz; then
+        AC_CHECK_HEADER(bzlib.h, got_bzlibh=true LIBS="$LIBS -lbz2")
+    fi
+    if $got_bzlibh; then
+        echo "  (found libbz2 and bzlib.h, enabling bzip2)"
+        AC_DEFINE(ENABLE_BZIP2)
+    else
+        echo "  (couldn't find libbz2 and bzlib.h, not enabling bzip2)"
+    fi
+fi
+
+
+AC_ARG_ENABLE(dmalloc, [  --enable-dmalloc        do dmalloc stuff],
+    [ echo "--- enabling dmalloc";
+    LIBS="$LIBS -L/usr/local/lib -ldmalloc"; AC_DEFINE(USE_DMALLOC) ])
+
+AC_OUTPUT(Makefile samples/Makefile)

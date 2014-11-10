@@ -6,8 +6,8 @@
 /*
  * Convert the various Super HiRes formats.
  */
-#ifndef __LR_SUPERHIRES__
-#define __LR_SUPERHIRES__
+#ifndef REFORMAT_SUPERHIRES_H
+#define REFORMAT_SUPERHIRES_H
 
 #include "ReformatBase.h"
 
@@ -307,4 +307,4 @@ private:
     DreamGrafix fDG;
 };
 
-#endif /*__LR_SUPERHIRES__*/
+#endif /*REFORMAT_SUPERHIRES_H*/

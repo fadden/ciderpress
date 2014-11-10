@@ -14,7 +14,7 @@
  *  - The Win98 generic ASPI only finds CD-ROM drives on the IDE bus.
  */
 #include "StdAfx.h"
-#ifdef _WIN32
+#if defined(_WIN32) && defined (WANT_ASPI)
 
 #include "DiskImgPriv.h"
 #include "SCSIDefs.h"

@@ -6,8 +6,8 @@
 /*
  * Choose the sub-volume and directory where added files will be put.
  */
-#ifndef __CHOOSE_ADD_TARGET_DIALOG__
-#define __CHOOSE_ADD_TARGET_DIALOG__
+#ifndef APP_CHOOSEADDTARGETDIALOG_H
+#define APP_CHOOSEADDTARGETDIALOG_H
 
 #include "resource.h"
 #include "DiskFSTree.h"
@@ -44,4 +44,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CHOOSE_ADD_TARGET_DIALOG__*/
+#endif /*APP_CHOOSEADDTARGETDIALOG_H*/

@@ -6,8 +6,8 @@
 /*
  * Simple reformatters that can apply to anything.
  */
-#ifndef __LR_SIMPLE__
-#define __LR_SIMPLE__
+#ifndef REFORMAT_SIMPLE_H
+#define REFORMAT_SIMPLE_H
 
 #include "ReformatBase.h"
 
@@ -53,4 +53,4 @@ public:
         ReformatOutput* pOutput);
 };
 
-#endif /*__LR_SIMPLE__*/
+#endif /*REFORMAT_SIMPLE_H*/

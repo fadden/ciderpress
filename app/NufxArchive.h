@@ -6,11 +6,11 @@
 /*
  * NuFX archive support.
  */
-#ifndef __NUFX_ARCHIVE__
-#define __NUFX_ARCHIVE__
+#ifndef APP_NUFXARCHIVE_H
+#define APP_NUFXARCHIVE_H
 
 #include "GenericArchive.h"
-#include "../prebuilt/NufxLib.h"        // ideally this wouldn't be here, only in .cpp
+#include "../nufxlib/NufxLib.h"        // ideally this wouldn't be here, only in .cpp
 
 
 /*
@@ -72,20 +72,20 @@ public:
     // One-time initialization; returns an error string.
     static CString AppInit(void);
 
-    virtual OpenResult Open(const char* filename, bool readOnly,
+    virtual OpenResult Open(const WCHAR* filename, bool readOnly,
         CString* pErrMsg);
-    virtual CString New(const char* filename, const void* options);
+    virtual CString New(const WCHAR* filename, const void* options);
     virtual CString Flush(void) { return ""; }
     virtual CString Reload(void);
     virtual bool IsReadOnly(void) const { return fIsReadOnly; };
     virtual bool IsModified(void) const { return false; }
-    virtual void GetDescription(CString* pStr) const { *pStr = "NuFX"; }
+    virtual void GetDescription(CString* pStr) const { *pStr = L"NuFX"; }
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts);
     virtual bool AddDisk(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts);
     virtual bool CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
-        const char* newName)
+        const WCHAR* newName)
         { ASSERT(false); return false; }
     virtual bool TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet);
     virtual bool DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet);
@@ -93,11 +93,11 @@ public:
     virtual CString TestPathName(const GenericEntry* pGenericEntry,
         const CString& basePath, const CString& newName, char newFssep) const;
     virtual bool RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
-        const char* newName)
+        const WCHAR* newName)
         { ASSERT(false); return false; }
     virtual CString TestVolumeName(const DiskFS* pDiskFS,
-        const char* newName) const
-        { ASSERT(false); return "!"; }
+        const WCHAR* newName) const
+        { ASSERT(false); return L"!"; }
     virtual bool RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         const RecompressOptionsDialog* pRecompOpts);
     virtual XferStatus XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
@@ -129,7 +129,7 @@ private:
             NuClose(fpArchive);
             fpArchive = nil;
         }
-        return "";
+        return L"";
     }
     bool RecompressThread(NufxEntry* pEntry, int threadKind,
         const RecompressOptionsDialog* pRecompOpts, long* pSizeInMemory,
@@ -178,4 +178,4 @@ private:
     const AddFilesDialog*   fpAddOpts;
 };
 
-#endif /*__NUFX_ARCHIVE__*/
+#endif /*APP_NUFXARCHIVE_H*/

@@ -6,15 +6,16 @@
 /*
  * Standard stuff.
  */
-#ifndef __FADDEN_STD__
-#define __FADDEN_STD__
+#ifndef UTIL_FADDENSTD_H
+#define UTIL_FADDENSTD_H
 
 #define NELEM(x) ((int) (sizeof(x) / sizeof(x[0])))
 
+// TODO: nuke this
 #define nil NULL
 
 // Windows equivalents
 #define strcasecmp      stricmp
 #define strncasecmp     strnicmp
 
-#endif /*__FADDEN_STD__*/
+#endif /*UTIL_FADDENSTD_H*/

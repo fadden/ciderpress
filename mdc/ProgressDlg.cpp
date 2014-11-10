@@ -60,7 +60,7 @@ void ProgressDlg::PostNcDestroy()
  * working on.
  */
 void
-ProgressDlg::SetCurrentFile(const char* fileName)
+ProgressDlg::SetCurrentFile(const WCHAR* fileName)
 {
     CWnd* pWnd = GetDlgItem(IDC_PROGRESS_FILENAME);
     ASSERT(pWnd != nil);

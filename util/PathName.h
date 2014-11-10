@@ -7,8 +7,8 @@
  * Filename manipulations.  Includes some basic file ops (e.g. tests for
  * file existence) as well.
  */
-#ifndef __PATHNAME__
-#define __PATHNAME__
+#ifndef UTIL_PATHNAME_H
+#define UTIL_PATHNAME_H
 
 /*
  * Holds a full or partial pathname, manipulating it in various ways.
@@ -22,13 +22,13 @@
  */
 class PathName {
 public:
-    PathName(const char* pathName = "", char fssep = '\\') {
+    PathName(const WCHAR* pathName = L"", WCHAR fssep = '\\') {
         ASSERT(fssep == '\\');  // not handling other cases yet
         fPathName = pathName;
         fFssep = fssep;
         fSplit = false;
     }
-    PathName(const CString& pathName, char fssep = '\\') {
+    PathName(const CString& pathName, WCHAR fssep = '\\') {
         ASSERT(fssep == '\\');  // not handling other cases yet
         fPathName = pathName;
         fFssep = fssep;
@@ -39,13 +39,13 @@ public:
     /*
      * Name manipulations.
      */
-    void SetPathName(const char* pathName, char fssep = '\\') {
+    void SetPathName(const WCHAR* pathName, WCHAR fssep = '\\') {
         ASSERT(fssep == '\\');  // not handling other cases yet
         fPathName = pathName;
         fFssep = fssep;
         fSplit = false;
     }
-    void SetPathName(const CString& pathName, char fssep = '\\') {
+    void SetPathName(const CString& pathName, WCHAR fssep = '\\') {
         ASSERT(fssep == '\\');  // not handling other cases yet
         fPathName = pathName;
         fFssep = fssep;
@@ -85,7 +85,7 @@ public:
     bool Exists(void);
 
     // check the status of a file
-    int CheckFileStatus(struct stat* psb, bool* pExists, bool* pIsReadable,
+    int CheckFileStatus(struct _stat* psb, bool* pExists, bool* pIsReadable,
         bool* pIsDir);
 
     // get the modification date
@@ -96,31 +96,31 @@ public:
     // create the path, if necessary
     int CreatePathIFN(void);
 
+    static const WCHAR* FindExtension(const WCHAR* pathname, WCHAR fssep);
+    static const WCHAR* FilenameOnly(const WCHAR* pathname, WCHAR fssep);
+    //int SFNToLFN(const char* sfn, CString* pLfn);
+
 private:
     void SplitIFN(void) {
         if (!fSplit) {
-            _splitpath(fPathName, fDrive, fDir, fFileName, fExt);
+            _wsplitpath(fPathName, fDrive, fDir, fFileName, fExt);
             fSplit = true;
         }
     }
-    int Mkdir(const char* dir);
-    int GetFileInfo(const char* pathname, struct stat* psb, time_t* pModWhen,
+    int Mkdir(const WCHAR* dir);
+    int GetFileInfo(const WCHAR* pathname, struct _stat* psb, time_t* pModWhen,
         bool* pExists, bool* pIsReadable, bool* pIsDirectory);
-    int CreateSubdirIFN(const char* pathStart, const char* pathEnd,
-        char fssep);
+    int CreateSubdirIFN(const WCHAR* pathStart, const WCHAR* pathEnd,
+        WCHAR fssep);
 
     CString     fPathName;
-    char        fFssep;
+    WCHAR       fFssep;
     bool        fSplit;
 
-    char        fDrive[_MAX_DRIVE];         // 3
-    char        fDir[_MAX_DIR];             // 256
-    char        fFileName[_MAX_FNAME];      // 256
-    char        fExt[_MAX_EXT];             // 256
+    WCHAR       fDrive[_MAX_DRIVE];         // 3
+    WCHAR       fDir[_MAX_DIR];             // 256
+    WCHAR       fFileName[_MAX_FNAME];      // 256
+    WCHAR       fExt[_MAX_EXT];             // 256
 };
 
-const char* FindExtension(const char* pathname, char fssep);
-const char* FilenameOnly(const char* pathname, char fssep);
-//int SFNToLFN(const char* sfn, CString* pLfn);
-
-#endif /*__PATHNAME__*/
+#endif /*UTIL_PATHNAME_H*/

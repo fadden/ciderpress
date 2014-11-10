@@ -151,7 +151,7 @@ SelectFilesDialog::HandleNotify(HWND hDlg, LPOFNOTIFY pofn)
 //      } else {
 //          OPENFILENAME* pOfn;
 //          pOfn = (OPENFILENAME*) GetWindowLong(hDlg, GWL_USERDATA);
-//          WMSG1("Count=0, name='%s'\n", pOfn->lpstrFile);
+//          WMSG1("Count=0, name='%ls'\n", pOfn->lpstrFile);
 //      }
         PrepEndDialog();
         /* must do this every time, or it fails in funky ways */
@@ -408,13 +408,13 @@ SelectFilesDialog::PrepEndDialog(void)
      */
     WMSG2("PrepEndDialog: got max=%d off=%d\n", m_ofn.nMaxFile, m_ofn.nFileOffset);
     if (m_ofn.nFileOffset != 0) {
-        char* buf = m_ofn.lpstrFile;
+        WCHAR* buf = m_ofn.lpstrFile;
         buf += m_ofn.nFileOffset;
         while (*buf != '\0') {
             if (buf > m_ofn.lpstrFile)
                 *(buf-1) = '\\';
-            WMSG1("    File '%s'\n", buf);
-            buf += strlen(buf) +1;
+            WMSG1("    File '%ls'\n", buf);
+            buf += wcslen(buf) +1;
         }
         //Sleep(1000);
         nextSpot = (buf - m_ofn.lpstrFile) -1;
@@ -456,7 +456,7 @@ SelectFilesDialog::PrepEndDialog(void)
     int count = pList->GetSelectedCount();
     if (count == 0) {
         if (nextSpot == 0) {
-            MessageBox("Please select one or more files and directories.",
+            MessageBox(L"Please select one or more files and directories.",
                 m_ofn.lpstrTitle, MB_OK | MB_ICONWARNING);
             /* make it clear that we're ignoring the names they typed */
             ClearFileName();
@@ -471,13 +471,13 @@ SelectFilesDialog::PrepEndDialog(void)
         if (nextSpot == 0) {
             fileNames = GetFolderPath();
             /* add a trailing '\', which gets stomped to '\0' later on */
-            if (fileNames.Right(1) != "\\")
-                fileNames += "\\";
+            if (fileNames.Right(1) != L"\\")
+                fileNames += L"\\";
             fFileNameOffset = fileNames.GetLength();
             compare = false;
         } else {
             fileNames = m_ofn.lpstrFile;
-            ASSERT(fileNames.Right(1) == "\\");
+            ASSERT(fileNames.Right(1) == L"\\");
             fFileNameOffset = m_ofn.nFileOffset;
             compare = true;
         }
@@ -492,38 +492,38 @@ SelectFilesDialog::PrepEndDialog(void)
         }
         while (posn != nil) {
             /* do this every time, because "fileNames" can be reallocated */
-            const char* tailStr = fileNames;
+            const WCHAR* tailStr = fileNames;
             tailStr += fFileNameOffset-1;
 
             int num = pList->GetNextSelectedItem(posn);     // posn is updated
 
             /* here we make a big assumption: that GetItemData returns a PIDL */
             LPITEMIDLIST pidl;
-            char buf[MAX_PATH];
+            WCHAR buf[MAX_PATH];
             pidl = (LPITEMIDLIST) pList->GetItemData(num);
             if (SHGetPathFromIDList(pidl, buf)) {
                 /* it's a relative PIDL but SHGetPathFromIDList wants a full
                    one, so it returns CWD + filename... strip bogus path off */
-                CString compareName("\\");
+                CString compareName(L"\\");
                 PathName path(buf);
                 compareName += path.GetFileName();
-                compareName += "\\";
-                //WMSG1("  Checking name='%s'\n", compareName);
+                compareName += L"\\";
+                //WMSG1("  Checking name='%ls'\n", compareName);
 
-                if (compare && stristr(tailStr, compareName) != nil) {
-                    WMSG1("    Matched '%s', not adding\n", compareName);
+                if (compare && Stristr(tailStr, compareName) != nil) {
+                    WMSG1("    Matched '%ls', not adding\n", compareName);
                 } else {
                     if (compare) {
-                        WMSG1("    No match on '%s', adding\n", compareName);
+                        WMSG1("    No match on '%ls', adding\n", compareName);
                     } else {
-                        WMSG1("    Found '%s', adding\n", compareName);
+                        WMSG1("    Found '%ls', adding\n", compareName);
                     }
                     fileNames += path.GetFileName();
-                    fileNames += "\\";
+                    fileNames += L"\\";
                 }
             } else {
                 /* expected, for things like "Control Panels" or "My Network" */
-                WMSG1("  No path for '%s'\n",
+                WMSG1("  No path for '%ls'\n",
                     (LPCTSTR) pList->GetItemText(num, 0));
             }
         }
@@ -534,8 +534,8 @@ SelectFilesDialog::PrepEndDialog(void)
         }
     }
 
-    WMSG3("Final result: names at %d, len=%d, str='%s'\n",
-        fFileNameOffset, strlen(fileNames), fileNames);
+    WMSG3("Final result: names at %d, len=%d, str='%ls'\n",
+        fFileNameOffset, wcslen(fileNames), fileNames);
 
     /*
      * Null-terminate with extreme prejudice.  Every filename should be
@@ -549,8 +549,8 @@ SelectFilesDialog::PrepEndDialog(void)
      */
     ASSERT(fFileNames != m_ofn.lpstrFile);
     delete[] fFileNames;
-    fFileNames = strdup(fileNames);
-    char* cp = fFileNames;
+    fFileNames = wcsdup(fileNames);
+    WCHAR* cp = fFileNames;
     cp += fFileNameOffset-1;
     while (*cp != '\0') {
         if (*cp == '\\')
@@ -585,5 +585,5 @@ SelectFilesDialog::ClearFileName(void)
 {
     CWnd* pWnd = GetParent()->GetDlgItem(edt1);
     if (pWnd != nil)
-        pWnd->SetWindowText("");
+        pWnd->SetWindowText(L"");
 }

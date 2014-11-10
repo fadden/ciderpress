@@ -6,8 +6,8 @@
 /*
  * Ask for confirmation before overwriting a file.
  */
-#ifndef __CONFIRMOVERWRITEDIALOG__
-#define __CONFIRMOVERWRITEDIALOG__
+#ifndef APP_CONFIRMOVERWRITEDIALOG_H
+#define APP_CONFIRMOVERWRITEDIALOG_H
 
 #include "resource.h"
 
@@ -90,4 +90,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CONFIRMOVERWRITEDIALOG__*/
+#endif /*APP_CONFIRMOVERWRITEDIALOG_H*/

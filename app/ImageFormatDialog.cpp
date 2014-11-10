@@ -30,83 +30,83 @@ END_MESSAGE_MAP()
  * to get the text string.  That way we'd be consistent.
  */
 typedef struct ImageFormatDialog::ConvTable {
-    int         enumval;        // a DiskImg::enum type
-    const char* name;
+    int          enumval;       // a DiskImg::enum type
+    const WCHAR* name;
 } ConvTable;
 
 const int kLastEntry = -1;
 
 /* DiskImg::OuterFormat */
 static const ConvTable gOuterFormats[] = {
-    { DiskImg::kOuterFormatUnknown,         "Unknown format" },
-    { DiskImg::kOuterFormatNone,            "(none)" },
-//  { DiskImg::kOuterFormatCompress,        "UNIX compress" },
-    { DiskImg::kOuterFormatGzip,            "gzip" },
-//  { DiskImg::kOuterFormatBzip2,           "bzip2" },
-    { DiskImg::kOuterFormatZip,             "Zip archive" },
+    { DiskImg::kOuterFormatUnknown,         L"Unknown format" },
+    { DiskImg::kOuterFormatNone,            L"(none)" },
+//  { DiskImg::kOuterFormatCompress,        L"UNIX compress" },
+    { DiskImg::kOuterFormatGzip,            L"gzip" },
+//  { DiskImg::kOuterFormatBzip2,           L"bzip2" },
+    { DiskImg::kOuterFormatZip,             L"Zip archive" },
     { kLastEntry,                           nil }
 };
 /* DiskImg::FileFormat */
 static const ConvTable gFileFormats[] = {
-    { DiskImg::kFileFormatUnknown,          "Unknown format" },
-    { DiskImg::kFileFormatUnadorned,        "Unadorned raw data" },
-    { DiskImg::kFileFormat2MG,              "2MG" },
-    { DiskImg::kFileFormatNuFX,             "NuFX (ShrinkIt)" },
-    { DiskImg::kFileFormatDiskCopy42,       "DiskCopy 4.2" },
-//  { DiskImg::kFileFormatDiskCopy60,       "DiskCopy 6.0" },
-//  { DiskImg::kFileFormatDavex,            "Davex volume image" },
-    { DiskImg::kFileFormatSim2eHDV,         "Sim //e HDV" },
-    { DiskImg::kFileFormatDDD,              "DDD" },
-    { DiskImg::kFileFormatTrackStar,        "TrackStar image" },
-    { DiskImg::kFileFormatFDI,              "FDI image" },
-//  { DiskImg::kFileFormatDDDDeluxe,        "DDDDeluxe" },
+    { DiskImg::kFileFormatUnknown,          L"Unknown format" },
+    { DiskImg::kFileFormatUnadorned,        L"Unadorned raw data" },
+    { DiskImg::kFileFormat2MG,              L"2MG" },
+    { DiskImg::kFileFormatNuFX,             L"NuFX (ShrinkIt)" },
+    { DiskImg::kFileFormatDiskCopy42,       L"DiskCopy 4.2" },
+//  { DiskImg::kFileFormatDiskCopy60,       L"DiskCopy 6.0" },
+//  { DiskImg::kFileFormatDavex,            L"Davex volume image" },
+    { DiskImg::kFileFormatSim2eHDV,         L"Sim //e HDV" },
+    { DiskImg::kFileFormatDDD,              L"DDD" },
+    { DiskImg::kFileFormatTrackStar,        L"TrackStar image" },
+    { DiskImg::kFileFormatFDI,              L"FDI image" },
+//  { DiskImg::kFileFormatDDDDeluxe,        L"DDDDeluxe" },
     { kLastEntry,                           nil }
 };
 /* DiskImg::PhysicalFormat */
 static const ConvTable gPhysicalFormats[] = {
-    { DiskImg::kPhysicalFormatUnknown,      "Unknown format" },
-    { DiskImg::kPhysicalFormatSectors,      "Sectors" },
-    { DiskImg::kPhysicalFormatNib525_6656,  "Raw nibbles (6656-byte)" },
-    { DiskImg::kPhysicalFormatNib525_6384,  "Raw nibbles (6384-byte)" },
-    { DiskImg::kPhysicalFormatNib525_Var,   "Raw nibbles (variable len)" },
+    { DiskImg::kPhysicalFormatUnknown,      L"Unknown format" },
+    { DiskImg::kPhysicalFormatSectors,      L"Sectors" },
+    { DiskImg::kPhysicalFormatNib525_6656,  L"Raw nibbles (6656-byte)" },
+    { DiskImg::kPhysicalFormatNib525_6384,  L"Raw nibbles (6384-byte)" },
+    { DiskImg::kPhysicalFormatNib525_Var,   L"Raw nibbles (variable len)" },
     { kLastEntry,                           nil }
 };
 /* DiskImg::SectorOrder */
 static const ConvTable  gSectorOrders[] = {
-    { DiskImg::kSectorOrderUnknown,         "Unknown ordering" },
-    { DiskImg::kSectorOrderProDOS,          "ProDOS block ordering" },
-    { DiskImg::kSectorOrderDOS,             "DOS sector ordering" },
-    { DiskImg::kSectorOrderCPM,             "CP/M block ordering" },
-    { DiskImg::kSectorOrderPhysical,        "Physical sector ordering" },
+    { DiskImg::kSectorOrderUnknown,         L"Unknown ordering" },
+    { DiskImg::kSectorOrderProDOS,          L"ProDOS block ordering" },
+    { DiskImg::kSectorOrderDOS,             L"DOS sector ordering" },
+    { DiskImg::kSectorOrderCPM,             L"CP/M block ordering" },
+    { DiskImg::kSectorOrderPhysical,        L"Physical sector ordering" },
     { kLastEntry,                           nil }
 };
 /* DiskImg::FSFormat */
 static const ConvTable gFSFormats[] = {
-    { DiskImg::kFormatUnknown,              "Unknown filesystem" },
-    { DiskImg::kFormatGenericDOSOrd,        "Generic DOS sectors" },
-    { DiskImg::kFormatGenericProDOSOrd,     "Generic ProDOS blocks" },
-    { DiskImg::kFormatGenericPhysicalOrd,   "Generic raw sectors" },
-    { DiskImg::kFormatGenericCPMOrd,        "Generic CP/M blocks" },
-    { DiskImg::kFormatProDOS,               "ProDOS" },
-    { DiskImg::kFormatDOS33,                "DOS 3.3" },
-    { DiskImg::kFormatDOS32,                "DOS 3.2" },
-    { DiskImg::kFormatPascal,               "Pascal" },
-    { DiskImg::kFormatMacHFS,               "HFS" },
-//  { DiskImg::kFormatMacMFS,               "MFS" },
-//  { DiskImg::kFormatLisa,                 "Lisa" },
-    { DiskImg::kFormatCPM,                  "CP/M" },
-    { DiskImg::kFormatMSDOS,                "MS-DOS FAT" },
-//  { DiskImg::kFormatISO9660,              "ISO-9660" },
-    { DiskImg::kFormatUNIDOS,               "UNIDOS (400K DOS x2)" },
-    { DiskImg::kFormatOzDOS,                "OzDOS (400K DOS x2)" },
-    { DiskImg::kFormatCFFA4,                "CFFA (4 or 6 partitions)" },
-    { DiskImg::kFormatCFFA8,                "CFFA (8 partitions)" },
-    { DiskImg::kFormatMacPart,              "Macintosh partitioned disk" },
-    { DiskImg::kFormatMicroDrive,           "MicroDrive partitioned disk" },
-    { DiskImg::kFormatFocusDrive,           "FocusDrive partitioned disk" },
-    { DiskImg::kFormatRDOS33,               "RDOS 3.3 (16-sector)" },
-    { DiskImg::kFormatRDOS32,               "RDOS 3.2 (13-sector)" },
-    { DiskImg::kFormatRDOS3,                "RDOS 3 (cracked 13-sector)" },
+    { DiskImg::kFormatUnknown,              L"Unknown filesystem" },
+    { DiskImg::kFormatGenericDOSOrd,        L"Generic DOS sectors" },
+    { DiskImg::kFormatGenericProDOSOrd,     L"Generic ProDOS blocks" },
+    { DiskImg::kFormatGenericPhysicalOrd,   L"Generic raw sectors" },
+    { DiskImg::kFormatGenericCPMOrd,        L"Generic CP/M blocks" },
+    { DiskImg::kFormatProDOS,               L"ProDOS" },
+    { DiskImg::kFormatDOS33,                L"DOS 3.3" },
+    { DiskImg::kFormatDOS32,                L"DOS 3.2" },
+    { DiskImg::kFormatPascal,               L"Pascal" },
+    { DiskImg::kFormatMacHFS,               L"HFS" },
+//  { DiskImg::kFormatMacMFS,               L"MFS" },
+//  { DiskImg::kFormatLisa,                 L"Lisa" },
+    { DiskImg::kFormatCPM,                  L"CP/M" },
+    { DiskImg::kFormatMSDOS,                L"MS-DOS FAT" },
+//  { DiskImg::kFormatISO9660,              L"ISO-9660" },
+    { DiskImg::kFormatUNIDOS,               L"UNIDOS (400K DOS x2)" },
+    { DiskImg::kFormatOzDOS,                L"OzDOS (400K DOS x2)" },
+    { DiskImg::kFormatCFFA4,                L"CFFA (4 or 6 partitions)" },
+    { DiskImg::kFormatCFFA8,                L"CFFA (8 partitions)" },
+    { DiskImg::kFormatMacPart,              L"Macintosh partitioned disk" },
+    { DiskImg::kFormatMicroDrive,           L"MicroDrive partitioned disk" },
+    { DiskImg::kFormatFocusDrive,           L"FocusDrive partitioned disk" },
+    { DiskImg::kFormatRDOS33,               L"RDOS 3.3 (16-sector)" },
+    { DiskImg::kFormatRDOS32,               L"RDOS 3.2 (13-sector)" },
+    { DiskImg::kFormatRDOS3,                L"RDOS 3 (cracked 13-sector)" },
     { kLastEntry,                           nil }
 };
 
@@ -230,7 +230,7 @@ ImageFormatDialog::LoadComboBox(int boxID, const ConvTable* pTable, int dflt)
         if (pTable == gFSFormats && !fAllowGenericFormats &&
             DiskImg::IsGenericFormat((DiskImg::FSFormat)pTable[idx].enumval))
         {
-            WMSG1("LoadComboBox skipping '%s'\n", pTable[idx].name);
+            WMSG1("LoadComboBox skipping '%ls'\n", pTable[idx].name);
             idxShift++;
         } else {
             // Note to self: AddString returns the combo box item ID;
@@ -281,7 +281,7 @@ ImageFormatDialog::ConvComboSel(int boxID, const ConvTable* pTable)
         ASSERT(enumval == pTable[idx].enumval);
     }
 
-    WMSG3(" Returning ev=%d for %d entry '%s'\n",
+    WMSG3(" Returning ev=%d for %d entry '%ls'\n",
         enumval, boxID, pTable[idx].name);
 
     return enumval;
@@ -321,7 +321,7 @@ ImageFormatDialog::OnOK(void)
                     ConvComboSel(IDC_DECONF_FSFORMAT, gFSFormats);
 
     if (fSectorOrder == DiskImg::kSectorOrderUnknown) {
-        MessageBox("You must choose a sector ordering.", "Error",
+        MessageBox(L"You must choose a sector ordering.", L"Error",
             MB_OK | MB_ICONEXCLAMATION);
         return;
     }
@@ -329,9 +329,9 @@ ImageFormatDialog::OnOK(void)
     if (fFSFormat == DiskImg::kFormatUnknown &&
         !fAllowUnknown)
     {
-        MessageBox("You must choose a filesystem format. If not known,"
-                   " use one of the 'generic' entries.",
-            "Error", MB_OK | MB_ICONEXCLAMATION);
+        MessageBox(L"You must choose a filesystem format. If not known,"
+                   L" use one of the 'generic' entries.",
+            L"Error", MB_OK | MB_ICONEXCLAMATION);
         return;
     }
 

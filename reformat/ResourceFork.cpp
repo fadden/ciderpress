@@ -16,7 +16,7 @@
  * NList.Data from NiftyList, which included some items that were
  * blanks in the Apple docs.
  */
-static const char* kUnknownSysRsrc = _T("(system resource)");
+static const char* kUnknownSysRsrc = "(system resource)";
 static const char* kRsrc8000[0x30] = {
     // 0x8000 through 0x802f
     kUnknownSysRsrc,            "rIcon",
@@ -135,7 +135,7 @@ ReformatResourceFork::Process(const ReformatHolder* pHolder,
         else if (resType >= 0xc000 && resType < 0xc000 + NELEM(kRsrcC000))
             typeDescr = kRsrcC000[resType - 0xc000];
         else if (resType >= 0x0001 && resType <= 0x7fff)
-            typeDescr = _T("(application-defined resource)");
+            typeDescr = "(application-defined resource)";
         else
             typeDescr = kUnknownSysRsrc;
 

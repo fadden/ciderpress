@@ -6,8 +6,8 @@
 /*
  * Reformat UCSD Pascal files.
  */
-#ifndef __LR_PASCALFILES__
-#define __LR_PASCALFILES__
+#ifndef REFORMAT_PASCALFILES_H
+#define REFORMAT_PASCALFILES_H
 
 #include "ReformatBase.h"
 
@@ -100,4 +100,4 @@ private:
     void ProcessBlock(const unsigned char* srcBuf, long length);
 };
 
-#endif /*__LR_PASCALFILES__*/
+#endif /*REFORMAT_PASCALFILES_H*/

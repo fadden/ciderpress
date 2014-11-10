@@ -6,8 +6,8 @@
 /*
  * Teach Text handling.
  */
-#ifndef __LR_TEACH__
-#define __LR_TEACH__
+#ifndef REFORMAT_TEACH_H
+#define REFORMAT_TEACH_H
 
 #include "ReformatBase.h"
 
@@ -208,4 +208,4 @@ private:
 };
 
 
-#endif /*__LR_TEACH__*/
+#endif /*REFORMAT_TEACH_H*/

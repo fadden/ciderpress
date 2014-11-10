@@ -17,6 +17,8 @@
 
 #define VC_EXTRALEAN        // Exclude rarely-used stuff from Windows headers
 
+#include "../app/targetver.h"
+
 #include <stdio.h>
 #include <assert.h>
 #include <afxwin.h>

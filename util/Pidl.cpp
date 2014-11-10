@@ -119,7 +119,6 @@ Pidl::CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi)
     return lpiTemp;
 }
 
-
 /*
  * Get the display name of a file in a ShellFolder.
  *
@@ -130,48 +129,49 @@ Pidl::CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi)
  */
 BOOL
 Pidl::GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, DWORD dwFlags,
-    LPSTR lpFriendlyName)
+    CString* pFriendlyName)
 {
     BOOL   bSuccess=TRUE;
     STRRET str;
 
-    if (NOERROR == lpsf->GetDisplayNameOf(lpi, dwFlags, &str))
-    {
+    if (NOERROR == lpsf->GetDisplayNameOf(lpi, dwFlags, &str)) {
         switch (str.uType) {
         case STRRET_WSTR:
-            WideCharToMultiByte(CP_ACP,             // CodePage
-                                0,                  // dwFlags
-                                str.pOleStr,        // lpWideCharStr
-                                -1,                 // cchWideChar
-                                lpFriendlyName,     // lpMultiByteStr
-                                MAX_PATH,           // cchMultiByte
-                                NULL,               // lpDefaultChar,
-                                NULL);              // lpUsedDefaultChar
+            //WideCharToMultiByte(CP_ACP,             // CodePage
+            //                    0,                  // dwFlags
+            //                    str.pOleStr,        // lpWideCharStr
+            //                    -1,                 // cchWideChar
+            //                    lpFriendlyName,     // lpMultiByteStr
+            //                    MAX_PATH,           // cchMultiByte
+            //                    NULL,               // lpDefaultChar,
+            //                    NULL);              // lpUsedDefaultChar
 
-            //Once the the function returns, the wide string
-            //should be freed. CoTaskMemFree(str.pOleStr) seems
-            //to do the job as well.
-            LPMALLOC pMalloc;
-            SHGetMalloc(&pMalloc); 
-            pMalloc->Free (str.pOleStr);
-            pMalloc->Release();
+            ////Once the the function returns, the wide string
+            ////should be freed. CoTaskMemFree(str.pOleStr) seems
+            ////to do the job as well.
+            //LPMALLOC pMalloc;
+            //SHGetMalloc(&pMalloc); 
+            //pMalloc->Free (str.pOleStr);
+            //pMalloc->Release();
+            *pFriendlyName = str.pOleStr;
+            CoTaskMemFree(str.pOleStr);
             break;
 
          case STRRET_OFFSET:
-             lstrcpy(lpFriendlyName, (LPSTR)lpi+str.uOffset);
+             *pFriendlyName = (LPSTR)lpi+str.uOffset;
              break;
 
          case STRRET_CSTR:
-             lstrcpy(lpFriendlyName, (LPSTR)str.cStr);
+             *pFriendlyName = (LPSTR)str.cStr;
              break;
 
          default:
              bSuccess = FALSE;
              break;
         }
+    } else {
+        bSuccess = FALSE;
     }
-    else
-      bSuccess = FALSE;
 
     return bSuccess;
 }
@@ -184,20 +184,23 @@ Pidl::GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, DWORD dwFlags,
  * This is a rather roundabout way of doing things (converting to a full
  * display name and then converting that to a PIDL).  However, there doesn't
  * seem to be a way to just ask a ShellFolder for its fully qualified PIDL.
+ * TODO: see if there's a better way now.
  *
  * Pass in the parent ShellFolder and the item's partial PIDL.
  */
 LPITEMIDLIST
 Pidl::GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi)
 {
-    char szBuff[MAX_PATH];
-    OLECHAR szOleChar[MAX_PATH];
+    //char szBuff[MAX_PATH];
+    //OLECHAR szOleChar[MAX_PATH];
+    CString name;
+    WCHAR pathBuf[MAX_PATH];
     LPSHELLFOLDER lpsfDeskTop;
     LPITEMIDLIST lpifq;
     ULONG ulEaten, ulAttribs;
     HRESULT hr;
     
-    if (!GetName(lpsf, lpi, SHGDN_FORPARSING, szBuff))
+    if (!GetName(lpsf, lpi, SHGDN_FORPARSING, &name))
         return NULL;
     
     hr = SHGetDesktopFolder(&lpsfDeskTop);
@@ -205,10 +208,11 @@ Pidl::GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi)
     if (FAILED(hr))
         return NULL;
     
-    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, szBuff, -1,
-                       (USHORT *)szOleChar, sizeof(szOleChar));
+    //MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, szBuff, -1,
+    //                   (USHORT *)szOleChar, sizeof(szOleChar));
+    wcscpy_s(pathBuf, name);
     
-    hr = lpsfDeskTop->ParseDisplayName(NULL, NULL, szOleChar,
+    hr = lpsfDeskTop->ParseDisplayName(NULL, NULL, pathBuf,
             &ulEaten, &lpifq, &ulAttribs);
     
     lpsfDeskTop->Release();
@@ -228,7 +232,7 @@ BOOL
 Pidl::GetPath(LPCITEMIDLIST pidl, CString* pPath)
 {
     BOOL result;
-    char buf[MAX_PATH];
+    WCHAR buf[MAX_PATH];
 
     result = SHGetPathFromIDList(pidl, buf);
     if (result)
@@ -343,8 +347,8 @@ Pidl::GetItemIcon(LPITEMIDLIST lpi, UINT uFlags)
 {
     SHFILEINFO sfi;
     
-    uFlags |= SHGFI_PIDL;
-    SHGetFileInfo((LPCSTR)lpi, 0, &sfi, sizeof(SHFILEINFO), uFlags);
+    uFlags |= SHGFI_PIDL;   // we're passing a PIDL, not a pathname, in 1st arg
+    SHGetFileInfo((LPCWSTR)lpi, 0, &sfi, sizeof(SHFILEINFO), uFlags);
     
     return sfi.iIcon;
 }

@@ -16,8 +16,8 @@
  * state of the sector editor.  The read-only state of the underlying FS
  * doesn't matter, since we're writing sectors, not really editing files.
  */
-#ifndef __DEFILEDIALOG__
-#define __DEFILEDIALOG__
+#ifndef APP_DEFILEDIALOG_H
+#define APP_DEFILEDIALOG_H
 
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
@@ -32,7 +32,7 @@ public:
     DEFileDialog(CWnd* pParentWnd = NULL) : CDialog(IDD_DEFILE, pParentWnd)
     {
         fOpenRsrcFork = false;
-        fName = "";
+        fName = L"";
     }
     virtual ~DEFileDialog(void) {}
 
@@ -57,4 +57,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__DEFILEDIALOG__*/
+#endif /*APP_DEFILEDIALOG_H*/

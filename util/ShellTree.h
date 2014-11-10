@@ -10,8 +10,8 @@
  * interface".  Enhanced by Selom Ofori as "ShellTree" class.  Modified
  * extensively.
  */
-#ifndef __SHELLTREE__
-#define __SHELLTREE__
+#ifndef UTIL_SHELLTREE_H
+#define UTIL_SHELLTREE_H
 
 
 /*
@@ -81,4 +81,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__SHELLTREE__*/
+#endif /*UTIL_SHELLTREE_H*/

@@ -68,7 +68,7 @@ EnterRegDialog::DoDataExchange(CDataExchange* pDX)
         if (gMyApp.fRegistry.IsValidRegistrationKey(fUserName, fCompanyName,
                 fRegKey))
         {
-            WMSG3("Correct key entered: '%s' '%s' '%s'\n",
+            WMSG3("Correct key entered: '%ls' '%ls' '%ls'\n",
                 (LPCTSTR)fUserName, (LPCTSTR)fCompanyName, (LPCTSTR)fRegKey);
         } else {
             WMSG0("Incorrect key entered, rejecting\n");

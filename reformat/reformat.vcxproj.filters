@@ -11,6 +11,68 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppleWorks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Asm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AWGS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BASIC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CPMFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Directory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Disasm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DoubleHiRes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HiRes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MacPaint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PascalFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintShop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Reformat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReformatBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceFork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SuperHiRes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Teach.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Text8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="AppleWorks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,67 +142,5 @@
     <ClCompile Include="Text8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AppleWorks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Asm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AWGS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BASIC.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CPMFiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Directory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Disasm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DoubleHiRes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HiRes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MacPaint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PascalFiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PrintShop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Reformat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReformatBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceFork.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simple.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SuperHiRes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Teach.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Text8.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

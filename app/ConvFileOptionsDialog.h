@@ -6,8 +6,8 @@
 /*
  * Options for converting a disk image to a file archive.
  */
-#ifndef __CONVFILE_OPTIONS_DIALOG__
-#define __CONVFILE_OPTIONS_DIALOG__
+#ifndef APP_CONFFILEOPTIONSDIALOG_H
+#define APP_CONFFILEOPTIONSDIALOG_H
 
 #include "UseSelectionDialog.h"
 #include "resource.h"
@@ -35,4 +35,4 @@ private:
     //DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CONVFILE_OPTIONS_DIALOG__*/
+#endif /*APP_CONFFILEOPTIONSDIALOG_H*/

@@ -6,8 +6,8 @@
 /*
  * Reformat assembly-language source code.
  */
-#ifndef __LR_ASM__
-#define __LR_ASM__
+#ifndef REFORMAT_ASM_H
+#define REFORMAT_ASM_H
 
 #include "ReformatBase.h"
 
@@ -289,4 +289,4 @@ private:
     unsigned char fCpuType;
 };
 
-#endif /*__LR_ASM__*/
+#endif /*REFORMAT_ASM_H*/

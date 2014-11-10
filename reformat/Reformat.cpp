@@ -102,164 +102,164 @@ ReformatHolder::GetReformatInstance(ReformatID id)
  * Would have been nice to embed these in the individual classes, but that's
  * harder to maintain.
  */
-/*static*/ const char*
+/*static*/ const WCHAR*
 ReformatHolder::GetReformatName(ReformatID id)
 {
-    const char* descr = nil;
+    const WCHAR* descr = nil;
 
     switch (id) {
     case kReformatTextEOL_HA:
-        descr = "Converted Text";
+        descr = L"Converted Text";
         break;
     case kReformatRaw:
-        descr = "Raw";
+        descr = L"Raw";
         break;
     case kReformatHexDump:
-        descr = "Hex Dump";
+        descr = L"Hex Dump";
         break;
     case kReformatResourceFork:
-        descr = "Resource Fork";
+        descr = L"Resource Fork";
         break;
     case kReformatProDOSDirectory:
-        descr = "ProDOS Directory";
+        descr = L"ProDOS Directory";
         break;
     case kReformatPascalText:
-        descr = "Pascal Text";
+        descr = L"Pascal Text";
         break;
     case kReformatPascalCode:
-        descr = "Pascal Code";
+        descr = L"Pascal Code";
         break;
     case kReformatCPMText:
-        descr = "CP/M Text";
+        descr = L"CP/M Text";
         break;
     case kReformatApplesoft:
-        descr = "Applesoft BASIC";
+        descr = L"Applesoft BASIC";
         break;
     case kReformatApplesoft_Hilite:
-        descr = "Applesoft BASIC w/Highlighting";
+        descr = L"Applesoft BASIC w/Highlighting";
         break;
     case kReformatInteger:
-        descr = "Integer BASIC";
+        descr = L"Integer BASIC";
         break;
     case kReformatInteger_Hilite:
-        descr = "Integer BASIC w/Highlighting";
+        descr = L"Integer BASIC w/Highlighting";
         break;
     case kReformatBusiness:
-        descr = "Apple /// Business BASIC";
+        descr = L"Apple /// Business BASIC";
         break;
     case kReformatBusiness_Hilite:
-        descr = "Apple /// Business BASIC w/Highlighting";
+        descr = L"Apple /// Business BASIC w/Highlighting";
         break;
     case kReformatSCAssem:
-        descr = "S-C Assembler";
+        descr = L"S-C Assembler";
         break;
     case kReformatMerlin:
-        descr = "Merlin Assembler";
+        descr = L"Merlin Assembler";
         break;
     case kReformatLISA2:
-        descr = "LISA Assembler (v2)";
+        descr = L"LISA Assembler (v2)";
         break;
     case kReformatLISA3:
-        descr = "LISA Assembler (v3)";
+        descr = L"LISA Assembler (v3)";
         break;
     case kReformatLISA4:
-        descr = "LISA Assembler (v4/v5)";
+        descr = L"LISA Assembler (v4/v5)";
         break;
     case kReformatMonitor8:
-        descr = "//e monitor listing";
+        descr = L"//e monitor listing";
         break;
     case kReformatDisasmMerlin8:
-        descr = "8-bit disassembly (Merlin)";
+        descr = L"8-bit disassembly (Merlin)";
         break;
     case kReformatMonitor16Long:
-        descr = "IIgs monitor listing (long regs)";
+        descr = L"IIgs monitor listing (long regs)";
         break;
     case kReformatMonitor16Short:
-        descr = "IIgs monitor listing (short regs)";
+        descr = L"IIgs monitor listing (short regs)";
         break;
     case kReformatDisasmOrcam16:
-        descr = "16-bit disassembly (Orca/M)";
+        descr = L"16-bit disassembly (Orca/M)";
         break;
     case kReformatAWGS_WP:
-        descr = "AppleWorks GS Word Processor";
+        descr = L"AppleWorks GS Word Processor";
         break;
     case kReformatTeach:
-        descr = "Teach Text";
+        descr = L"Teach Text";
         break;
     case kReformatGWP:
-        descr = "Generic IIgs text document";
+        descr = L"Generic IIgs text document";
         break;
     case kReformatMagicWindow:
-        descr = "Magic Window";
+        descr = L"Magic Window";
         break;
     case kReformatGutenberg:
-        descr = "Gutenberg Word Processor";
+        descr = L"Gutenberg Word Processor";
         break;
     case kReformatAWP:
-        descr = "AppleWorks Word Processor";
+        descr = L"AppleWorks Word Processor";
         break;
     case kReformatADB:
-        descr = "AppleWorks Database";
+        descr = L"AppleWorks Database";
         break;
     case kReformatASP:
-        descr = "AppleWorks Spreadsheet";
+        descr = L"AppleWorks Spreadsheet";
         break;
     case kReformatHiRes:
-        descr = "Hi-Res / Color";
+        descr = L"Hi-Res / Color";
         break;
     case kReformatHiRes_BW:
-        descr = "Hi-Res / B&W";
+        descr = L"Hi-Res / B&W";
         break;
     case kReformatDHR_Latched:
-        descr = "Double Hi-Res / Latched";
+        descr = L"Double Hi-Res / Latched";
         break;
     case kReformatDHR_BW:
-        descr = "Double Hi-Res / B&W";
+        descr = L"Double Hi-Res / B&W";
         break;
     case kReformatDHR_Plain140:
-        descr = "Double Hi-Res / Plain140";
+        descr = L"Double Hi-Res / Plain140";
         break;
     case kReformatDHR_Window:
-        descr = "Double Hi-Res / Windowed";
+        descr = L"Double Hi-Res / Windowed";
         break;
     case kReformatSHR_PIC:
-        descr = "Super Hi-Res";
+        descr = L"Super Hi-Res";
         break;
     case kReformatSHR_JEQ:
-        descr = "JEQ Super Hi-Res";
+        descr = L"JEQ Super Hi-Res";
         break;
     case kReformatSHR_Paintworks:
-        descr = "Paintworks Super Hi-Res";
+        descr = L"Paintworks Super Hi-Res";
         break;
     case kReformatSHR_Packed:
-        descr = "Packed Super Hi-Res";
+        descr = L"Packed Super Hi-Res";
         break;
     case kReformatSHR_APF:
-        descr = "APF Super Hi-Res";
+        descr = L"APF Super Hi-Res";
         break;
     case kReformatSHR_3200:
-        descr = "3200-Color Super Hi-Res";
+        descr = L"3200-Color Super Hi-Res";
         break;
     case kReformatSHR_3201:
-        descr = "Packed 3200-Color Super Hi-Res";
+        descr = L"Packed 3200-Color Super Hi-Res";
         break;
     case kReformatSHR_DG256:
-        descr = "DreamGrafix 256-Color Super Hi-Res";
+        descr = L"DreamGrafix 256-Color Super Hi-Res";
         break;
     case kReformatSHR_DG3200:
-        descr = "DreamGrafix 3200-Color Super Hi-Res";
+        descr = L"DreamGrafix 3200-Color Super Hi-Res";
         break;
     case kReformatPrintShop:
-        descr = "Print Shop Clip Art";
+        descr = L"Print Shop Clip Art";
         break;
     case kReformatMacPaint:
-        descr = "MacPaint";
+        descr = L"MacPaint";
         break;
     case kReformatUnknown:
     case kReformatMAX:
     default:
         assert(false);
-        descr = "UNKNOWN";
+        descr = L"UNKNOWN";
         break;
     }
 
@@ -279,13 +279,12 @@ ReformatHolder::SetSourceAttributes(long fileType, long auxType,
     fAuxType = auxType;
     fSourceFormat = sourceFormat;
 
+    assert(fNameExt == nil);
     if (nameExt == nil) {
-        assert(fNameExt == nil);
         fNameExt = new char[1];
         fNameExt[0] = '\0';
     } else {
-        fNameExt = new char[strlen(nameExt)+1];
-        strcpy(fNameExt, nameExt);
+        fNameExt = strdup(nameExt);
     }
 }
 
@@ -489,7 +488,7 @@ ReformatHolder::Apply(ReformatPart part, ReformatID id)
     if (fErrorBuf[part] != nil) {
         pOutput->SetTextBuf(fErrorBuf[part], strlen(fErrorBuf[part]), false);
         pOutput->SetOutputKind(ReformatOutput::kOutputErrorMsg);
-        pOutput->SetFormatDescr(_T("Error Message"));
+        pOutput->SetFormatDescr(L"Error Message");
         return pOutput;
     }
 
@@ -590,9 +589,13 @@ ReformatHolder::SetErrorMsg(ReformatPart part, const char* msg)
     assert(part > kPartUnknown && part < kPartMAX);
     assert(fErrorBuf[part] == nil);
 
-    fErrorBuf[part] = new char[strlen(msg) + 1];
-    if (fErrorBuf[part] != nil) {
-        WMSG2("+++ set error message for part %d to '%s'\n", part, msg);
-        strcpy(fErrorBuf[part], msg);
-    }
+    fErrorBuf[part] = strdup(msg);
+    WMSG2("+++ set error message for part %d to '%hs'\n", part, msg);
+}
+
+void
+ReformatHolder::SetErrorMsg(ReformatPart part, const CString& str)
+{
+    CStringA stra(str);
+    SetErrorMsg(part, (LPCSTR) stra);
 }

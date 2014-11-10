@@ -125,7 +125,7 @@ AddFilesDialog::ValidateStoragePrefix(void)
     const char kFssep = PathProposal::kDefaultStoredFssep;
     if (fStoragePrefix[0] == kFssep || fStoragePrefix.Right(1) == kFssep) {
         CString errMsg;
-        errMsg.Format("The storage prefix may not start or end with '%c'.",
+        errMsg.Format(L"The storage prefix may not start or end with '%c'.",
             kFssep);
         MessageBox(errMsg, m_ofn.lpstrTitle, MB_OK | MB_ICONWARNING);
         return false;

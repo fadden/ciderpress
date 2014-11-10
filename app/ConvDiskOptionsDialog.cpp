@@ -119,9 +119,10 @@ ConvDiskOptionsDialog::OnRadioChangeRange(UINT nID)
  * Test a ProDOS filename for validity.
  */
 bool
-ConvDiskOptionsDialog::IsValidVolumeName_ProDOS(const char* name)
+ConvDiskOptionsDialog::IsValidVolumeName_ProDOS(const WCHAR* name)
 {
-    return DiskImgLib::DiskFSProDOS::IsValidVolumeName(name);
+    CStringA nameA(name);
+    return DiskImgLib::DiskFSProDOS::IsValidVolumeName(nameA);
 }
 
 
@@ -172,7 +173,7 @@ ConvDiskOptionsDialog::LimitSizeControls(long totalBlocks, long blocksUsed)
         blocksUsed - NewDiskSize::GetNumBitmapBlocks_ProDOS(totalBlocks);
     long sizeInK = usedWithoutBitmap / 2;
     CString sizeStr, spaceReq;
-    sizeStr.Format("%dK", sizeInK);
+    sizeStr.Format(L"%dK", sizeInK);
     spaceReq.Format(IDS_CONVDISK_SPACEREQ, sizeStr);
 
     pWnd = GetDlgItem(IDC_CONVDISK_SPACEREQ);
@@ -242,8 +243,8 @@ ConvDiskOptionsDialog::OnCompute(void)
 
     if (selSet.GetNumEntries() == 0) {
         /* should be impossible */
-        MessageBox("No files matched the selection criteria.",
-            "No match", MB_OK|MB_ICONEXCLAMATION);
+        MessageBox(L"No files matched the selection criteria.",
+            L"No match", MB_OK|MB_ICONEXCLAMATION);
         return;
     }
 
@@ -253,26 +254,26 @@ ConvDiskOptionsDialog::OnCompute(void)
     //xferOpts.fUseSparseBlocks =
     //  pPreferences->GetPrefBool(kPrProDOSUseSparse) != 0;
 
-    WMSG1("New volume name will be '%s'\n", fVolName);
+    WMSG1("New volume name will be '%ls'\n", fVolName);
 
     /*
      * Create a new disk image file.
      */
     CString errStr;
-    char nameBuf[MAX_PATH];
+    WCHAR nameBuf[MAX_PATH];
     UINT unique;
     unique = GetTempFileName(pMain->GetPreferences()->GetPrefString(kPrTempPath),
-                "CPdisk", 0, nameBuf);
+                L"CPdisk", 0, nameBuf);
     if (unique == 0) {
         DWORD dwerr = ::GetLastError();
-        errStr.Format("GetTempFileName failed on '%s' (err=0x%08lx)\n",
+        errStr.Format(L"GetTempFileName failed on '%ls' (err=0x%08lx)\n",
             pMain->GetPreferences()->GetPrefString(kPrTempPath), dwerr);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         return;
     }
-    WMSG1(" Will xfer to file '%s'\n", nameBuf);
+    WMSG1(" Will xfer to file '%ls'\n", nameBuf);
     // annoying -- DiskArchive insists on creating it
-    (void) unlink(nameBuf);
+    (void) _wunlink(nameBuf);
 
     DiskArchive::NewOptions options;
     memset(&options, 0, sizeof(options));
@@ -318,7 +319,7 @@ ConvDiskOptionsDialog::OnCompute(void)
             dierr = pDiskFS->GetFreeSpaceCount(&totalBlocks, &freeBlocks,
                         &unitSize);
             if (dierr != kDIErrNone) {
-                errStr.Format("Unable to get free space count: %s.\n",
+                errStr.Format(L"Unable to get free space count: %hs.\n",
                     DiskImgLib::DIStrError(dierr));
                 ShowFailureMsg(this, errStr, IDS_FAILED);
             } else {
@@ -340,5 +341,5 @@ ConvDiskOptionsDialog::OnCompute(void)
 
     /* clean up */
     delete xferOpts.fTarget;
-    (void) unlink(nameBuf);
+    (void) _wunlink(nameBuf);
 }

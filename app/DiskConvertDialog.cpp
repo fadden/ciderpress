@@ -141,7 +141,7 @@ DiskConvertDialog::Init(int fileCount)
         fAllowNuFX = fAllowTrackStar = fAllowSim2eHDV = fAllowDDD = true;
     fConvertIdx = kConvDOSRaw;      // default choice == first in list
     fBulkFileCount = fileCount;
-    fDiskDescription.Format("%d images selected", fBulkFileCount);
+    fDiskDescription.Format(L"%d images selected", fBulkFileCount);
 }
 
 
@@ -238,28 +238,29 @@ DiskConvertDialog::DoDataExchange(CDataExchange* pDX)
 
     if (pDX->m_bSaveAndValidate) {
         switch (fConvertIdx) {
-        case kConvDOSRaw:       fExtension = "do";      break;
-        case kConvDOS2MG:       fExtension = "2mg";     break;
-        case kConvProDOSRaw:    fExtension = "po";      break;
-        case kConvProDOS2MG:    fExtension = "2mg";     break;
-        case kConvNibbleRaw:    fExtension = "nib";     break;
-        case kConvNibble2MG:    fExtension = "2mg";     break;
-        case kConvD13:          fExtension = "d13";     break;
-        case kConvDiskCopy42:   fExtension = "dsk";     break;
-        case kConvNuFX:         fExtension = "sdk";     break;
-        case kConvTrackStar:    fExtension = "app";     break;
-        case kConvSim2eHDV:     fExtension = "hdv";     break;
-        case kConvDDD:          fExtension = "ddd";     break;
+        case kConvDOSRaw:       fExtension = L"do";     break;
+        case kConvDOS2MG:       fExtension = L"2mg";    break;
+        case kConvProDOSRaw:    fExtension = L"po";     break;
+        case kConvProDOS2MG:    fExtension = L"2mg";    break;
+        case kConvNibbleRaw:    fExtension = L"nib";    break;
+        case kConvNibble2MG:    fExtension = L"2mg";    break;
+        case kConvD13:          fExtension = L"d13";    break;
+        case kConvDiskCopy42:   fExtension = L"dsk";    break;
+        case kConvNuFX:         fExtension = L"sdk";    break;
+        case kConvTrackStar:    fExtension = L"app";    break;
+        case kConvSim2eHDV:     fExtension = L"hdv";    break;
+        case kConvDDD:          fExtension = L"ddd";    break;
         default:
-            fExtension = "???";
+            fExtension = L"???";
             ASSERT(false);
             break;
         }
 
-        if (fAddGzip && fConvertIdx != kConvNuFX)
-            fExtension += ".gz";
+        if (fAddGzip && fConvertIdx != kConvNuFX) {
+            fExtension += L".gz";
+        }
 
-        WMSG1(" DCD recommending extension '%s'\n", (LPCTSTR) fExtension);
+        WMSG1(" DCD recommending extension '%ls'\n", (LPCWSTR) fExtension);
     }
 }
 

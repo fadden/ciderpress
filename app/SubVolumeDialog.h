@@ -6,8 +6,8 @@
 /*
  * Sub-volume selection dialog.
  */
-#ifndef __SUBVOLUMEDIALOG__
-#define __SUBVOLUMEDIALOG__
+#ifndef APP_SUBVOLUMEDIALOG_H
+#define APP_SUBVOLUMEDIALOG_H
 
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
@@ -44,4 +44,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__SUBVOLUMEDIALOG__*/
+#endif /*APP_SUBVOLUMEDIALOG_H*/

@@ -1,0 +1,155 @@
+# Makefile for NufxLib using Microsoft Visual C++.  This builds the library
+# as a static lib and as a DLL, and builds all samples.  The test-basic
+# sample is built twice, once with the static lib, and once with the DLL.
+#
+# Tested with VS 2013 Pro.  From the "VS2013 x86 Native Tools Command
+# Prompt", run "nmake -f makefile.msc".
+#
+# If you're including zlib support, place copies of zlib.h, zconf.h,
+# and the zlib library in this directory.
+#
+# Adapted from zlib's Makefile.msc.
+#
+
+TOP = .
+
+STATICLIB = nufxlib2.lib
+SHAREDLIB = nufxlib2.dll
+IMPLIB    = nufxdll.lib
+
+CC = cl
+LD = link
+AR = lib
+
+# C compiler flags
+# -Fd: rename PDB file from "VCx0.pdb" (where 'x' is the version number);
+#      allows DLL debug info to be separate from app debug info
+# -Ox: full optimization
+# -Oy-: disable frame pointer omission (for easier debugging)
+# -MD: create a multithreaded DLL using MSVCRT.lib; alternatively,
+#      use -MDd to create a debug executable with MSVCRTD.lib
+# -nologo: suppress display of copyright banner
+# -W3: set warning level to 3 (all production-level warnings)
+# -Zi: generate a PDB file with full debugging info
+#
+# The OPTFLAGSTR define is used by Version.c to show how the library was
+# built.  Defining NUFXLIB_EXPORTS enables the __declspec(dllexport)
+# macros that are required for creating the DLL.
+OPTFLAGS = -Ox -Oy-
+CFLAGS = -nologo -MD -W3 $(OPTFLAGS) -Zi -Fd"nufxlib"
+
+LIB_CFLAGS = -DOPTFLAGSTR="\"$(OPTFLAGS)\"" #-DNUFXLIB_EXPORTS
+
+# Warning suppression flags
+WFLAGS = -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE
+
+# Linker flags
+# -debug: creates debugging info for EXE or DLL in PDB file
+# -incremental:no: disable incremental linking, making the resulting library
+#    a tad smaller
+# -nologo: suppress display of copyright banner
+# -opt:ref: eliminates unreferenced functions and data (default for non-debug
+#    builds, but we've enabled debug info)
+LDFLAGS = -nologo -debug -incremental:no -opt:ref
+
+# Library creator flags
+ARFLAGS = -nologo
+
+
+ZLIB=1
+!ifdef ZLIB
+# enable deflate support; requires zlib
+CFLAGS = $(CFLAGS) -DENABLE_DEFLATE
+LDFLAGS = $(LDFLAGS) zlib.lib
+!endif
+
+
+# object files
+OBJS =  Archive.obj ArchiveIO.obj Bzip2.obj Compress.obj Crc16.obj Debug.obj \
+	Deferred.obj Deflate.obj Entry.obj Expand.obj FileIO.obj Funnel.obj \
+	Lzc.obj Lzw.obj MiscStuff.obj MiscUtils.obj Record.obj SourceSink.obj \
+	Squeeze.obj Thread.obj Value.obj Version.obj
+
+
+# build targets -- static library, dynamic library, and test programs
+all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB) \
+	exerciser.exe imgconv.exe launder.exe test-basic.exe \
+	test-basic-d.exe test-extract.exe test-simple.exe test-twirl.exe
+
+clean:
+	-del *.obj *.pdb *.exp
+	-del $(STATICLIB) $(SHAREDLIB) $(IMPLIB)
+
+$(STATICLIB): $(OBJS)
+	$(AR) $(ARFLAGS) -out:$@ $(OBJS)
+
+$(IMPLIB): $(SHAREDLIB)
+
+$(SHAREDLIB): $(OBJS)
+	$(LD) $(LDFLAGS) -dll -def:nufxlib.def -implib:$(IMPLIB) -out:$@ \
+	  $(OBJS)
+
+exerciser.exe: Exerciser.obj $(STATICLIB)
+	$(LD) $(LDFLAGS) -out:$@ Exerciser.obj $(STATICLIB)
+
+imgconv.exe: ImgConv.obj $(STATICLIB)
+	$(LD) $(LDFLAGS) -out:$@ ImgConv.obj $(STATICLIB)
+
+launder.exe: Launder.obj $(STATICLIB)
+	$(LD) $(LDFLAGS) -out:$@ Launder.obj $(STATICLIB)
+
+test-basic.exe: TestBasic.obj $(STATICLIB)
+	$(LD) $(LDFLAGS) -out:$@ TestBasic.obj $(STATICLIB)
+
+test-basic-d.exe: TestBasic.obj $(IMPLIB)
+	$(LD) $(LDFLAGS) -out:$@ TestBasic.obj $(IMPLIB)
+
+test-extract.exe: TestExtract.obj $(STATICLIB)
+	$(LD) $(LDFLAGS) -out:$@ TestExtract.obj $(STATICLIB)
+
+test-simple.exe: TestSimple.obj $(STATICLIB)
+	$(LD) $(LDFLAGS) -out:$@ TestSimple.obj $(STATICLIB)
+
+test-twirl.exe: TestTwirl.obj $(STATICLIB)
+	$(LD) $(LDFLAGS) -out:$@ TestTwirl.obj $(STATICLIB)
+
+# generic rules
+{$(TOP)}.c.obj:
+	$(CC) -c $(WFLAGS) $(CFLAGS) $(LIB_CFLAGS) $<
+
+{$(TOP)/samples}.c.obj:
+	$(CC) -c -I$(TOP) $(WFLAGS) $(CFLAGS) $<
+
+# dependency info
+COMMON_HDRS = NufxLibPriv.h NufxLib.h MiscStuff.h SysDefs.h
+Archive.obj: Archive.c $(COMMON_HDRS)
+ArchiveIO.obj: ArchiveIO.c $(COMMON_HDRS)
+Bzip2.obj: Bzip2.c $(COMMON_HDRS)
+Compress.obj: Compress.c $(COMMON_HDRS)
+Crc16.obj: Crc16.c $(COMMON_HDRS)
+Debug.obj: Debug.c $(COMMON_HDRS)
+Deferred.obj: Deferred.c $(COMMON_HDRS)
+Deflate.obj: Deflate.c $(COMMON_HDRS)
+Entry.obj: Entry.c $(COMMON_HDRS)
+Expand.obj: Expand.c $(COMMON_HDRS)
+FileIO.obj: FileIO.c $(COMMON_HDRS)
+Funnel.obj: Funnel.c $(COMMON_HDRS)
+Lzc.obj: Lzc.c $(COMMON_HDRS)
+Lzw.obj: Lzw.c $(COMMON_HDRS)
+MiscStuff.obj: MiscStuff.c $(COMMON_HDRS)
+MiscUtils.obj: MiscUtils.c $(COMMON_HDRS)
+Record.obj: Record.c $(COMMON_HDRS)
+SourceSink.obj: SourceSink.c $(COMMON_HDRS)
+Squeeze.obj: Squeeze.c $(COMMON_HDRS)
+Thread.obj: Thread.c $(COMMON_HDRS)
+Value.obj: Value.c $(COMMON_HDRS)
+Version.obj: Version.c $(COMMON_HDRS)
+
+Exerciser.obj: samples/Exerciser.c $(COMMON_HDRS)
+ImgConv.obj: samples/ImgConv.c $(COMMON_HDRS)
+Launder.obj: samples/Launder.c $(COMMON_HDRS)
+TestBasic.obj: samples/TestBasic.c $(COMMON_HDRS)
+TestExtract.obj: samples/TestExtract.c $(COMMON_HDRS)
+TestSimple.obj: samples/TestSimple.c $(COMMON_HDRS)
+TestTwirl.obj: samples/TestTwirl.c $(COMMON_HDRS)
+

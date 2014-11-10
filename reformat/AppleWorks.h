@@ -6,8 +6,8 @@
 /*
  * Reformat AppleWorks documents.
  */
-#ifndef __LR_APPLEWORKS__
-#define __LR_APPLEWORKS__
+#ifndef REFORMAT_APPLEWORKS_H
+#define REFORMAT_APPLEWORKS_H
 
 #include "ReformatBase.h"
 
@@ -242,4 +242,4 @@ private:
     double ConvertSANEDouble(const unsigned char* srcPtr);
 };
 
-#endif /*__LR_APPLEWORKS__*/
+#endif /*REFORMAT_APPLEWORKS_H*/

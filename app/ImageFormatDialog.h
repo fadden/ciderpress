@@ -6,8 +6,8 @@
 /*
  * Dialog asking the user to confirm certain details of a disk image.
  */
-#ifndef __IMAGEFORMATDIALOG__
-#define __IMAGEFORMATDIALOG__
+#ifndef APP_IMAGEFORMATDIALOG_H
+#define APP_IMAGEFORMATDIALOG_H
 
 //#include <afxwin.h>
 #include "resource.h"
@@ -24,7 +24,7 @@ public:
         CDialog(IDD_DECONF, pParentWnd)
     {
         fInitialized = false;
-        fFileSource = "";
+        fFileSource = L"";
         fAllowUnknown = false;
         fOuterFormat = DiskImg::kOuterFormatUnknown;
         fFileFormat = DiskImg::kFileFormatUnknown;
@@ -78,4 +78,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__IMAGEFORMATDIALOG__*/
+#endif /*APP_IMAGEFORMATDIALOG_H*/

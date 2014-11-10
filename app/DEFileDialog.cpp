@@ -51,7 +51,7 @@ DEFileDialog::OnChange(void)
 
     CString str;
     pEdit->GetWindowText(str);
-    //WMSG2("STR is '%s' (%d)\n", str, str.GetLength());
+    //WMSG2("STR is '%ls' (%d)\n", str, str.GetLength());
 
     CWnd* pWnd = GetDlgItem(IDOK);
     ASSERT(pWnd != nil);

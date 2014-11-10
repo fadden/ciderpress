@@ -9,8 +9,8 @@
  * This is based on code originally written by Definitive Solutions, Inc.
  * It was rewritten because their code was miserable.
  */
-#ifndef __MYSPINCTRL__
-#define __MYSPINCTRL__
+#ifndef UTIL_MYSPINCTRL_H
+#define UTIL_MYSPINCTRL_H
 
 #include <afxcmn.h>     // for CSpinButtonCtrl
 
@@ -42,9 +42,9 @@ protected:
 private:
     int fLow, fHigh;
 
-    bool ConvLong(const char* str, long* pVal) const;
+    bool ConvLong(const WCHAR* str, long* pVal) const;
 
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__MYSPINCTRL__*/
+#endif /*UTIL_MYSPINCTRL_H*/

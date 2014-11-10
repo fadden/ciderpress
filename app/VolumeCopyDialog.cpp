@@ -37,7 +37,7 @@ public:
                 IDD_VOLUMECOPYPROG, IDC_VOLUMECOPYPROG_PROGRESS, pParentWnd);
     }
 
-    void SetCurrentFiles(const char* fromName, const char* toName) {
+    void SetCurrentFiles(const WCHAR* fromName, const WCHAR* toName) {
         CWnd* pWnd = GetDlgItem(IDC_VOLUMECOPYPROG_FROM);
         ASSERT(pWnd != nil);
         pWnd->SetWindowText(fromName);
@@ -102,15 +102,15 @@ VolumeCopyDialog::OnInitDialog(void)
     //CRect rect;
 
     pListView->GetClientRect(&rect);
-    width1 = pListView->GetStringWidth("XXVolume NameXXmmmmm");
-    width2 = pListView->GetStringWidth("XXFormatXXmmmmmmmmmm");
-    width3 = pListView->GetStringWidth("XXSizeXXmmm");
+    width1 = pListView->GetStringWidth(L"XXVolume NameXXmmmmm");
+    width2 = pListView->GetStringWidth(L"XXFormatXXmmmmmmmmmm");
+    width3 = pListView->GetStringWidth(L"XXSizeXXmmm");
     //width4 = pListView->GetStringWidth("XXBlock CountXX");
 
-    pListView->InsertColumn(0, "Volume Name", LVCFMT_LEFT, width1);
-    pListView->InsertColumn(1, "Format", LVCFMT_LEFT, width2);
-    pListView->InsertColumn(2, "Size", LVCFMT_LEFT, width3);
-    pListView->InsertColumn(3, "Block Count", LVCFMT_LEFT,
+    pListView->InsertColumn(0, L"Volume Name", LVCFMT_LEFT, width1);
+    pListView->InsertColumn(1, L"Format", LVCFMT_LEFT, width2);
+    pListView->InsertColumn(2, L"Size", LVCFMT_LEFT, width3);
+    pListView->InsertColumn(3, L"Block Count", LVCFMT_LEFT,
         rect.Width() - (width1+width2+width3)
         - ::GetSystemMetrics(SM_CXVSCROLL) );
 
@@ -274,7 +274,7 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
         if (dierr != kDIErrNone) {
             CString appName, msg;
             appName.LoadString(IDS_MB_APP_NAME);
-            msg.Format("Warning: error during disk scan: %s.",
+            msg.Format(L"Warning: error during disk scan: %hs.",
                 DiskImgLib::DIStrError(dierr));
             fpWaitDlg->MessageBox(msg, appName, MB_OK | MB_ICONEXCLAMATION);
             /* keep going */
@@ -362,13 +362,13 @@ VolumeCopyDialog::AddToList(CListCtrl* pListView, DiskImg* pDiskImg,
 
     volName = pDiskFS->GetVolumeName();
     format = DiskImg::ToString(pDiskImg->GetFSFormat());
-    blocksStr.Format("%ld", pDiskImg->GetNumBlocks());
+    blocksStr.Format(L"%ld", pDiskImg->GetNumBlocks());
     if (numBlocks > 1024*1024*2)
-        sizeStr.Format("%.2fGB", (double) numBlocks / (1024.0*1024.0*2.0));
+        sizeStr.Format(L"%.2fGB", (double) numBlocks / (1024.0*1024.0*2.0));
     else if (numBlocks > 1024*2)
-        sizeStr.Format("%.2fMB", (double) numBlocks / (1024.0*2.0));
+        sizeStr.Format(L"%.2fMB", (double) numBlocks / (1024.0*2.0));
     else
-        sizeStr.Format("%.2fKB", (double) numBlocks / 2.0);
+        sizeStr.Format(L"%.2fKB", (double) numBlocks / 2.0);
 
     /* add entry; first entry is the whole volume */
     pListView->InsertItem(*pIndex, volName,
@@ -455,26 +455,25 @@ VolumeCopyDialog::OnCopyToFile(void)
     dierr = pSrcImg->OverrideFormat(pSrcImg->GetPhysicalFormat(),
                 DiskImg::kFormatGenericProDOSOrd, pSrcImg->GetSectorOrder());
     if (dierr != kDIErrNone) {
-        errMsg.Format("Internal error: couldn't switch to generic ProDOS: %s.",
+        errMsg.Format(L"Internal error: couldn't switch to generic ProDOS: %hs.",
                 DiskImgLib::DIStrError(dierr));
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
-    WMSG2("Logical volume '%s' has %d 512-byte blocks\n",
-        srcName, pSrcImg->GetNumBlocks());
+    WMSG2("Logical volume '%ls' has %d 512-byte blocks\n",
+        (LPCWSTR) srcName, pSrcImg->GetNumBlocks());
 
     /*
      * Select file to write blocks to.
      */
     {
-        CFileDialog saveDlg(FALSE, "po", NULL,
+        CFileDialog saveDlg(FALSE, L"po", NULL,
             OFN_OVERWRITEPROMPT|OFN_NOREADONLYRETURN|OFN_HIDEREADONLY,
-            "All Files (*.*)|*.*||", this);
+            L"All Files (*.*)|*.*||", this);
 
         CString saveFolder;
-        static char* title = "New disk image (.po)";
 
-        saveDlg.m_ofn.lpstrTitle = title;
+        saveDlg.m_ofn.lpstrTitle = L"New disk image (.po)";
         saveDlg.m_ofn.lpstrInitialDir =
             pPreferences->GetPrefString(kPrOpenArchiveFolder);
     
@@ -489,7 +488,7 @@ VolumeCopyDialog::OnCopyToFile(void)
 
         saveName = saveDlg.GetPathName();
     }
-    WMSG1("File will be saved to '%s'\n", saveName);
+    WMSG1("File will be saved to '%ls'\n", (LPCWSTR) saveName);
 
     /* DiskImgLib does not like it if file already exists */
     errMsg = pMain->RemoveFile(saveName);
@@ -511,7 +510,8 @@ VolumeCopyDialog::OnCopyToFile(void)
         pMain->PeekAndPump();   // redraw
         CWaitCursor waitc;
 
-        dierr = dstImg.CreateImage(saveName, nil,
+        CStringA saveNameA(saveName);
+        dierr = dstImg.CreateImage(saveNameA, nil,
                     DiskImg::kOuterFormatNone,
                     DiskImg::kFileFormatUnadorned,
                     DiskImg::kPhysicalFormatSectors,
@@ -525,7 +525,7 @@ VolumeCopyDialog::OnCopyToFile(void)
         //pMain->PeekAndPump(); // redraw
     }
     if (dierr != kDIErrNone) {
-        errMsg.Format("Couldn't create disk image: %s.",
+        errMsg.Format(L"Couldn't create disk image: %hs.",
                 DiskImgLib::DIStrError(dierr));
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
@@ -554,9 +554,9 @@ VolumeCopyDialog::OnCopyToFile(void)
             ShowFailureMsg(pProgressDialog, errMsg, IDS_CANCELLED);
             // remove the partially-written file
             dstImg.CloseImage();
-            unlink(saveName);
+            (void) _wunlink(saveName);
         } else {
-            errMsg.Format("Copy failed: %s.", DiskImgLib::DIStrError(dierr));
+            errMsg.Format(L"Copy failed: %hs.", DiskImgLib::DIStrError(dierr));
             ShowFailureMsg(pProgressDialog, errMsg, IDS_FAILED);
         }
         goto bail;
@@ -564,7 +564,7 @@ VolumeCopyDialog::OnCopyToFile(void)
 
     dierr = dstImg.CloseImage();
     if (dierr != kDIErrNone) {
-        errMsg.Format("ERROR: dstImg close failed (err=%d)\n", dierr);
+        errMsg.Format(L"ERROR: dstImg close failed (err=%d)\n", dierr);
         ShowFailureMsg(pProgressDialog, errMsg, IDS_FAILED);
         goto bail;
     }
@@ -576,12 +576,12 @@ VolumeCopyDialog::OnCopyToFile(void)
         elapsed = 1.0;
     else
         elapsed = (float) (endWhen - startWhen);
-    msg.Format("Copied %ld blocks in %ld seconds (%.2fKB/sec)",
+    msg.Format(L"Copied %ld blocks in %ld seconds (%.2fKB/sec)",
         pSrcImg->GetNumBlocks(), endWhen - startWhen,
         (pSrcImg->GetNumBlocks() / 2.0) / elapsed);
-    WMSG1("%s\n", (const char*) msg);
+    WMSG1("%ls\n", (LPCWSTR) msg);
 #ifdef _DEBUG
-    pProgressDialog->MessageBox(msg, "DEBUG: elapsed time", MB_OK);
+    pProgressDialog->MessageBox(msg, L"DEBUG: elapsed time", MB_OK);
 #endif
 
     pMain->SuccessBeep();
@@ -651,11 +651,11 @@ VolumeCopyDialog::OnCopyFromFile(void)
     openFilters = MainWindow::kOpenDiskImage;
     openFilters += MainWindow::kOpenAll;
     openFilters += MainWindow::kOpenEnd;
-    CFileDialog dlg(TRUE, "dsk", NULL, OFN_FILEMUSTEXIST, openFilters, this);
+    CFileDialog dlg(TRUE, L"dsk", NULL, OFN_FILEMUSTEXIST, openFilters, this);
 
     /* source file gets opened read-only */
     dlg.m_ofn.Flags |= OFN_HIDEREADONLY;
-    dlg.m_ofn.lpstrTitle = "Select image to copy from";
+    dlg.m_ofn.lpstrTitle = L"Select image to copy from";
     dlg.m_ofn.lpstrInitialDir = pPreferences->GetPrefString(kPrOpenArchiveFolder);
 
     if (dlg.DoModal() != IDOK)
@@ -669,15 +669,15 @@ VolumeCopyDialog::OnCopyFromFile(void)
         /* open the image file and analyze it */
         dierr = srcImg.OpenImage(loadName, PathProposal::kLocalFssep, true);
         if (dierr != kDIErrNone) {
-            errMsg.Format("Unable to open disk image: %s.",
+            errMsg.Format(L"Unable to open disk image: %hs.",
                 DiskImgLib::DIStrError(dierr));
             ShowFailureMsg(this, errMsg, IDS_FAILED);
             goto bail;
         }
 
         if (srcImg.AnalyzeImage() != kDIErrNone) {
-            errMsg.Format("The file '%s' doesn't seem to hold a valid disk image.",
-                loadName);
+            errMsg.Format(L"The file '%ls' doesn't seem to hold a valid disk image.",
+                (LPCWSTR) loadName);
             ShowFailureMsg(this, errMsg, IDS_FAILED);
             goto bail;
         }
@@ -699,8 +699,8 @@ VolumeCopyDialog::OnCopyFromFile(void)
      * EOF on the output.
      */
     if (!srcImg.GetHasBlocks()) {
-        errMsg = "The disk image must be block-oriented.  Nibble images"
-                 " cannot be copied.";
+        errMsg = L"The disk image must be block-oriented.  Nibble images"
+                 L" cannot be copied.";
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
@@ -709,38 +709,39 @@ VolumeCopyDialog::OnCopyFromFile(void)
     dierr = srcImg.OverrideFormat(srcImg.GetPhysicalFormat(),
                 DiskImg::kFormatGenericProDOSOrd, srcImg.GetSectorOrder());
     if (dierr != kDIErrNone) {
-        errMsg.Format("Internal error: couldn't switch source to generic ProDOS: %s.",
+        errMsg.Format(L"Internal error: couldn't switch source to generic ProDOS: %hs.",
                 DiskImgLib::DIStrError(dierr));
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
-    WMSG2("Source image '%s' has %d 512-byte blocks\n",
-        loadName, srcImg.GetNumBlocks());
+    WMSG2("Source image '%ls' has %d 512-byte blocks\n",
+        (LPCWSTR) loadName, srcImg.GetNumBlocks());
 
     WMSG1("Target volume has %d 512-byte blocks\n", pDstImg->GetNumBlocks());
 
     if (srcImg.GetNumBlocks() > pDstImg->GetNumBlocks()) {
-        errMsg.Format("Error: the disk image file has %ld blocks, but the"
-                      " target volume holds %ld blocks.  The target must"
-                      " have more space than the input file.",
+        errMsg.Format(L"Error: the disk image file has %ld blocks, but the"
+                      L" target volume holds %ld blocks.  The target must"
+                      L" have more space than the input file.",
             srcImg.GetNumBlocks(), pDstImg->GetNumBlocks());
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
     if (pDstImg->GetNumBlocks() >= DiskImgLib::kVolumeMaxBlocks) {
-        errMsg.Format("Error: for safety reasons, copying disk images to"
-                      " larger volumes is not supported when the target"
-                      " is 8GB or larger.");
+        // TODO: re-evaluate this limitation
+        errMsg.Format(L"Error: for safety reasons, copying disk images to"
+                      L" larger volumes is not supported when the target"
+                      L" is 8GB or larger.");
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
 
     if (srcImg.GetNumBlocks() != pDstImg->GetNumBlocks()) {
         errMsg.LoadString(IDS_WARNING);
-        errMsg.Format("The disk image file has %ld blocks, but the target"
-                      " volume holds %ld blocks.  The leftover space may be"
-                      " wasted, and non-ProDOS volumes may not be identified"
-                      " correctly.  Do you wish to continue?",
+        errMsg.Format(L"The disk image file has %ld blocks, but the target"
+                      L" volume holds %ld blocks.  The leftover space may be"
+                      L" wasted, and non-ProDOS volumes may not be identified"
+                      L" correctly.  Do you wish to continue?",
             srcImg.GetNumBlocks(), pDstImg->GetNumBlocks());
         result = MessageBox(errMsg, warning, MB_OKCANCEL | MB_ICONQUESTION);
         if (result != IDOK) {
@@ -750,11 +751,11 @@ VolumeCopyDialog::OnCopyFromFile(void)
         isPartial = true;
     }
 
-    errMsg.LoadString(IDS_WARNING);
-    errMsg.Format("You are about to overwrite volume %s with the"
-                   " contents of '%s'.  This will destroy all data on"
-                   " %s.  Are you sure you wish to continue?",
-        targetName, loadName, targetName);
+    errMsg.LoadString(IDS_WARNING);     // TODO: what does this accomplish?
+    errMsg.Format(L"You are about to overwrite volume %ls with the"
+                  L" contents of '%ls'.  This will destroy all data on"
+                  L" %ls.  Are you sure you wish to continue?",
+        (LPCWSTR) targetName, (LPCWSTR) loadName, (LPCWSTR) targetName);
     result = MessageBox(errMsg, warning, MB_OKCANCEL | MB_ICONEXCLAMATION);
     if (result != IDOK) {
         WMSG0("User chickened out of disk copy\n");
@@ -765,7 +766,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
     dierr = pDstImg->OverrideFormat(pDstImg->GetPhysicalFormat(),
                 DiskImg::kFormatGenericProDOSOrd, pDstImg->GetSectorOrder());
     if (dierr != kDIErrNone) {
-        errMsg.Format("Internal error: couldn't switch target to generic ProDOS: %s.",
+        errMsg.Format(L"Internal error: couldn't switch target to generic ProDOS: %hs.",
                 DiskImgLib::DIStrError(dierr));
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
@@ -811,7 +812,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
             errMsg.LoadString(IDS_OPERATION_CANCELLED);
             ShowFailureMsg(pProgressDialog, errMsg, IDS_CANCELLED);
         } else {
-            errMsg.Format("Copy failed: %s.", DiskImgLib::DIStrError(dierr));
+            errMsg.Format(L"Copy failed: %hs.", DiskImgLib::DIStrError(dierr));
             ShowFailureMsg(pProgressDialog, errMsg, IDS_FAILED);
         }
         goto bail;
@@ -819,7 +820,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
 
     dierr = srcImg.CloseImage();
     if (dierr != kDIErrNone) {
-        errMsg.Format("ERROR: srcImg close failed (err=%d)\n", dierr);
+        errMsg.Format(L"ERROR: srcImg close failed (err=%d)\n", dierr);
         ShowFailureMsg(pProgressDialog, errMsg, IDS_FAILED);
         goto bail;
     }
@@ -830,12 +831,12 @@ VolumeCopyDialog::OnCopyFromFile(void)
         elapsed = 1.0;
     else
         elapsed = (float) (endWhen - startWhen);
-    errMsg.Format("Copied %ld blocks in %ld seconds (%.2fKB/sec)",
+    errMsg.Format(L"Copied %ld blocks in %ld seconds (%.2fKB/sec)",
         srcImg.GetNumBlocks(), endWhen - startWhen,
         (srcImg.GetNumBlocks() / 2.0) / elapsed);
-    WMSG1("%s\n", (const char*) errMsg);
+    WMSG1("%ls\n", (LPCWSTR) errMsg);
 #ifdef _DEBUG
-    pProgressDialog->MessageBox(errMsg, "DEBUG: elapsed time", MB_OK);
+    pProgressDialog->MessageBox(errMsg, L"DEBUG: elapsed time", MB_OK);
 #endif
 
     pMain->SuccessBeep();

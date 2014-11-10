@@ -6,8 +6,8 @@
 /*
  * Apple II cassette I/O functions.
  */
-#ifndef __CASSETTEDIALOG__
-#define __CASSETTEDIALOG__
+#ifndef APP_CASSETTEDIALOG_H
+#define APP_CASSETTEDIALOG_H
 
 /*
  * The dialog box is primarily concerned with extracting the original data
@@ -157,4 +157,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif /*__CASSETTEDIALOG__*/
+#endif /*APP_CASSETTEDIALOG_H*/
