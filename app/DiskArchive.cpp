@@ -2612,7 +2612,8 @@ DiskArchive::TestPathName(const GenericEntry* pGenericEntry,
 {
     const DiskEntry* pEntry = (DiskEntry*) pGenericEntry;
     DiskImg::FSFormat format;
-    CStringA pathName, errMsg, newNameA;
+    CString errMsg, pathName;
+    CStringA newNameA;
     DiskFS* pDiskFS;
 
     if (basePath.IsEmpty()) {
@@ -2631,7 +2632,7 @@ DiskArchive::TestPathName(const GenericEntry* pGenericEntry,
     CStringA pathNameA(pathName);
     existingFile = pDiskFS->GetFileByName(pathNameA);
     if (existingFile != NULL && existingFile != pEntry->GetA2File()) {
-        errMsg = "A file with that name already exists.";
+        errMsg = L"A file with that name already exists.";
         goto bail;
     }
 

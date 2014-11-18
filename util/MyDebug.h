@@ -50,7 +50,6 @@ private:
 
     FILE*   fLogFp;
     int     fPid;
-    bool    fDoCrtDebug;
 };
 
 extern DebugLog* gDebugLog;     // declare and allocate in app

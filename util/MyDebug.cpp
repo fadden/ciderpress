@@ -12,11 +12,6 @@ DebugLog::DebugLog(const WCHAR* logFile)
     : fLogFp(NULL)
 {
     fPid = getpid();
-#ifdef _DEBUG
-    fDoCrtDebug = true;
-#else
-    fDoCrtDebug = false;
-#endif
 
     if (logFile == NULL) {
         return;
@@ -33,8 +28,10 @@ DebugLog::DebugLog(const WCHAR* logFile)
     }
     fLogFp = _wfopen(logFile, L"a");
     if (fLogFp == NULL) {
+#ifdef _DEBUG
         _CrtDbgReport(_CRT_WARN, __FILE__, __LINE__, NULL,
             "Unable to open %ls: %d\n", logFile, errno);
+#endif
     } else {
         // disable buffering so we don't lose anything if app crashes
         setvbuf(fLogFp, NULL, _IONBF, 0);
@@ -57,9 +54,12 @@ DebugLog::~DebugLog() {
 void DebugLog::Log(LogSeverity severity, const char* file, int line,
     const char* format, ...)
 {
-    if (fLogFp == NULL && !fDoCrtDebug) {
+#ifndef _DEBUG
+    if (fLogFp == NULL) {
+        // nothing to do, don't waste time formatting the string
         return;
     }
+#endif
 
     static const char kSeverityChars[] = "?VDIWE";
     if (severity < 0 || severity > sizeof(kSeverityChars) - 1) {
@@ -84,10 +84,10 @@ void DebugLog::Log(LogSeverity severity, const char* file, int line,
             tmbuf.tm_min, tmbuf.tm_sec, kSeverityChars[severity],
             textBuf);
     }
-    if (fDoCrtDebug) {
-        if (_CrtDbgReport(_CRT_WARN, file, line, NULL, "%s\n", textBuf) == 1) {
-            // "retry" button causes a debugger break
-            _CrtDbgBreak();
-        }
+#ifdef _DEBUG
+     if (_CrtDbgReport(_CRT_WARN, file, line, NULL, "%s\n", textBuf) == 1) {
+        // "retry" button causes a debugger break
+         _CrtDbgBreak();
     }
+#endif
 }

@@ -93,7 +93,7 @@ RenameEntryDialog::DoDataExchange(CDataExchange* pDX)
         if (fFssepStr.IsEmpty())
             fFssep = '\0';
         else
-            fFssep = fFssepStr.GetAt(0);    // could be '\0', that's okay
+            fFssep = (char) fFssepStr.GetAt(0); // could be '\0', that's okay
     }
 
     return;

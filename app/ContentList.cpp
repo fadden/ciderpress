@@ -448,7 +448,7 @@ ContentList::MakeMacTypeString(unsigned long val, WCHAR* buf)
 
     /* sanitize */
     while (*buf != '\0') {
-        *buf = DiskImg::MacToASCII(*buf);
+        *buf = DiskImg::MacToASCII((unsigned char)*buf);
         buf++;
     }
 }
@@ -536,7 +536,7 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
 
         switch (plvdi->item.iSubItem) {
         case 0:     // pathname
-            if (wcslen(pEntry->GetDisplayName()) > plvdi->item.cchTextMax) {
+            if ((int) wcslen(pEntry->GetDisplayName()) > plvdi->item.cchTextMax) {
                 // looks like current limit is 264 chars, which we could hit
                 wcsncpy(plvdi->item.pszText, pEntry->GetDisplayName(),
                     plvdi->item.cchTextMax);
@@ -640,6 +640,16 @@ CompareLONGLONG(LONGLONG u1, LONGLONG u2)
     else
         return 0;
 }
+static inline int
+CompareTime(time_t t1, time_t t2)
+{
+    if (t1 < t2)
+        return -1;
+    else if (t1 > t2)
+        return 1;
+    else
+        return 0;
+}
 
 /*
  * Static comparison function for list sorting.
@@ -687,7 +697,7 @@ ContentList::CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
         }
         break;
     case 3:     // mod date
-        result = CompareUnsignedLong(pEntry1->GetModWhen(),
+        result = CompareTime(pEntry1->GetModWhen(),
                     pEntry2->GetModWhen());
         break;
     case 4:     // format
