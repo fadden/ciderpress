@@ -12,14 +12,6 @@
 
 #include "resource.h"
 
-/*
- * Application object.
- */
-
-#if defined(_DEBUG_LOG)
-#define kDebugLog   "C:\\mdclog.txt"
-#endif
-
 /* MDC version numbers */
 #define kAppMajorVersion    2
 #define kAppMinorVersion    2

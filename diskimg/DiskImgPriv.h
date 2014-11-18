@@ -8,8 +8,8 @@
  *
  * External code should not include this.
  */
-#ifndef __DISK_IMG_PRIV__
-#define __DISK_IMG_PRIV__
+#ifndef DISKIMG_DISKIMGPRIV_H
+#define DISKIMG_DISKIMGPRIV_H
 
 #include "DiskImgDetail.h"
 #include <errno.h>
@@ -20,38 +20,32 @@ using namespace DiskImgLib;     // make life easy for all internal code
 
 namespace DiskImgLib {
 
-#ifndef _DEBUG_LOG
-//# define _DEBUG_LOG       /* define this to force log msgs in non-debug build */
-#endif
-
-#if defined(_DEBUG) || defined(_DEBUG_LOG)
-# define _DEBUG_MSGS
-#endif
-
 /*
- * Win32-style debug message macros.
+ * Debug logging macros.
+ *
+ * The macro choice implies a severity level, but we don't currently
+ * support that in the callback interface, so it's not used.
  */
-#ifdef _DEBUG_MSGS
-#define WMSG0(fmt) \
-    Global::PrintDebugMsg(__FILE__, __LINE__, fmt)
-#define WMSG1(fmt, arg0) \
-    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0)
-#define WMSG2(fmt, arg0, arg1) \
-    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1)
-#define WMSG3(fmt, arg0, arg1, arg2) \
-    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2)
-#define WMSG4(fmt, arg0, arg1, arg2, arg3) \
-    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2, arg3)
-#define WMSG5(fmt, arg0, arg1, arg2, arg3, arg4) \
-    Global::PrintDebugMsg(__FILE__, __LINE__, fmt, arg0, arg1, arg2, arg3, arg4)
+#define DLOG_BASE(file, line, format, ...) \
+        Global::PrintDebugMsg((file), (line), (format), __VA_ARGS__)
+
+#ifdef SHOW_LOGV
+# define LOGV(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
 #else
-#define WMSG0(fmt) ((void) 0)
-#define WMSG1(fmt, arg0) ((void) 0)
-#define WMSG2(fmt, arg0, arg1) ((void) 0)
-#define WMSG3(fmt, arg0, arg1, arg2) ((void) 0)
-#define WMSG4(fmt, arg0, arg1, arg2, arg3) ((void) 0)
-#define WMSG5(fmt, arg0, arg1, arg2, arg3, arg4) ((void) 0)
+# define LOGV(format, ...) ((void) 0)
 #endif
+#define LOGD(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
+#define LOGI(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
+#define LOGW(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
+#define LOGE(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
+
+// TODO: remove these
+#define WMSG0(fmt) LOGI(fmt)
+#define WMSG1(fmt, arg0) LOGI(fmt, arg0)
+#define WMSG2(fmt, arg0, arg1) LOGI(fmt, arg0, arg1)
+#define WMSG3(fmt, arg0, arg1, arg2) LOGI(fmt, arg0, arg1, arg2)
+#define WMSG4(fmt, arg0, arg1, arg2, arg3) LOGI(fmt, arg0, arg1, arg2, arg3)
+#define WMSG5(fmt, arg0, arg1, arg2, arg3, arg4) LOGI(fmt, arg0, arg1, arg2, arg3, arg4)
 
 /* put this in to break on interesting events when built debug */
 #if defined(_DEBUG)
@@ -354,11 +348,11 @@ private:
 };
 
 
-};  // namespace DiskImgLib
+}  // namespace DiskImgLib
 
 /*
  * Most of the code needs these.
  */
 #include "GenericFD.h"
 
-#endif /*__DISK_IMG_PRIV__*/
+#endif /*DISKIMG_DISKIMGPRIV_H*/

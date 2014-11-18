@@ -14,8 +14,8 @@
 **
 ******************************************************************************/
 
-#ifndef __WNASPI32_H__
-#define __WNASPI32_H__
+#ifndef DISKIMG_WNASPI32_H
+#define DISKIMG_WNASPI32_H
 
 /*
 ** Make sure structures are packed and undecorated.
@@ -322,4 +322,4 @@ extern BOOL TranslateASPI32Address( PDWORD, PDWORD );
 }
 #endif //__cplusplus
 
-#endif //__WNASPI32_H__
+#endif //DISKIMG_WNASPI32_H

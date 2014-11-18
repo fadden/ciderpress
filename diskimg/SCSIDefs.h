@@ -11,8 +11,8 @@
  *
  * Consult the SCSI-2 and MMC-2 specifications for details.
  */
-#ifndef __SCSI_DEFS__
-#define __SCSI_DEFS__
+#ifndef DISKIMG_SCSIDEFS_H
+#define DISKIMG_SCSIDEFS_H
 
 /*
  * SCSI-2 operation codes.
@@ -305,4 +305,4 @@ typedef struct CDB_ReadCapacityData {
     unsigned char   bytesPerBlock3;     // LSB
 } CDB_ReadCapacityData;
 
-#endif /*__SCSI_DEFS__*/
+#endif /*DISKIMG_SCSIDEFS_H*/

@@ -11,16 +11,11 @@
 
 #include "Registry.h"
 
-#if defined(_DEBUG_LOG)
-//#define kDebugLog "C:\\test\\cplog.txt"
-#define kDebugLog   L"C:\\cplog.txt"
-#endif
-
 /* CiderPress version numbers */
-#define kAppMajorVersion    3
+#define kAppMajorVersion    4
 #define kAppMinorVersion    0
-#define kAppBugVersion      1
-#define kAppDevString       L""
+#define kAppBugVersion      0
+#define kAppDevString       L"d1"
 
 /*
  * Windows application object.

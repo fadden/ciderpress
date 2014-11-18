@@ -533,28 +533,11 @@ NufxArchive::IsCompressionSupported(NuThreadFormat format)
 NuResult
 NufxArchive::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
 {
-#if defined(_DEBUG_LOG)
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
-    CStringA msg(pErrorMessage->message);
-    
-    msg += "\n";
 
-    if (pErrorMessage->isDebug)
-        msg = "[D] " + msg;
-    fprintf(gLog, "%05u NufxLib %hs(%d) : %hs",
-        gPid, pErrorMessage->file, pErrorMessage->line, msg);
-
-#elif defined(_DEBUG)
-    const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
-    CStringA msg(pErrorMessage->message);
-    
-    msg += "\n";
-
-    if (pErrorMessage->isDebug)
-        msg = "[D] " + msg;
-    _CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
-        pErrorMessage->function, "%hs", msg);
-#endif
+    LOG_BASE(pErrorMessage->isDebug ? DebugLog::LOG_DEBUG : DebugLog::LOG_WARNING,
+        pErrorMessage->file, pErrorMessage->line, "<nufxlib> %hs\n",
+        pErrorMessage->message);
 
     return kNuOK;
 }

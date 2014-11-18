@@ -19,8 +19,8 @@
  * different objects will work, though modifying the same disk image
  * file from multiple objects will lead to unpredictable results.
  */
-#ifndef __DISK_IMG__
-#define __DISK_IMG__
+#ifndef DISKIMG_DISKIMG_H
+#define DISKIMG_DISKIMG_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1659,4 +1659,4 @@ private:
 
 };  // namespace DiskImgLib
 
-#endif /*__DISK_IMG__*/
+#endif /*DISKIMG_DISKIMG_H*/

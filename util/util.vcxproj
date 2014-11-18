@@ -124,6 +124,7 @@
   <ItemGroup>
     <ClCompile Include="ImageDataObject.cpp" />
     <ClCompile Include="MyBitmapButton.cpp" />
+    <ClCompile Include="MyDebug.cpp" />
     <ClCompile Include="MyDIBitmap.cpp" />
     <ClCompile Include="MyEdit.cpp" />
     <ClCompile Include="MySpinCtrl.cpp" />

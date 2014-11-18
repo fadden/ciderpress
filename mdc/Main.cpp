@@ -176,15 +176,9 @@ MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
     ASSERT(file != nil);
     ASSERT(msg != nil);
 
-#if defined(_DEBUG_LOG)
-    //fprintf(gLog, "%s(%d) : %s", file, line, msg);
-    fprintf(gLog, "%05u %hs", gPid, msg);
-#elif defined(_DEBUG)
-    _CrtDbgReport(_CRT_WARN, file, line, NULL, "%hs", msg);
-#else
-    /* do nothing */
-#endif
+    LOG_BASE(DebugLog::LOG_INFO, file, line, "<diskimg> %hs", msg);
 }
+
 /*
  * Handle a global error message from the NufxLib library.
  */
@@ -193,23 +187,9 @@ MainWindow::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
 {
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
-#if defined(_DEBUG_LOG)
-    if (pErrorMessage->isDebug) {
-        fprintf(gLog, "%05u <nufxlib> [D] %hs\n", gPid, pErrorMessage->message);
-    } else {
-        fprintf(gLog, "%05u <nufxlib> %hs\n", gPid, pErrorMessage->message);
-    }
-#elif defined(_DEBUG)
-    if (pErrorMessage->isDebug) {
-        _CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
-            NULL, "<nufxlib> [D] %hs\n", pErrorMessage->message);
-    } else {
-        _CrtDbgReport(_CRT_WARN, pErrorMessage->file, pErrorMessage->line,
-            NULL, "<nufxlib> %hs\n", pErrorMessage->message);
-    }
-#else
-    /* do nothing */
-#endif
+    LOG_BASE(pErrorMessage->isDebug ? DebugLog::LOG_DEBUG : DebugLog::LOG_WARNING,
+        pErrorMessage->file, pErrorMessage->line, "<nufxlib> %hs\n",
+        pErrorMessage->message);
 
     return kNuOK;
 }

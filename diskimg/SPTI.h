@@ -6,8 +6,8 @@
 /*
  * Declarations for the Win32 SCSI Pass-Through Interface.
  */
-#ifndef __SPTI__
-#define __SPTI__
+#ifndef DISKIMG_SPTI_H
+#define DISKIMG_SPTI_H
 
 #ifdef _WIN32
 
@@ -33,8 +33,8 @@ private:
     ~SPTI(void) {}
 };
 
-};  // namespace DiskImgLib
+}  // namespace DiskImgLib
 
 #endif /*_WIN32*/
 
-#endif /*__SPTI__*/
+#endif /*DISKIMG_SPTI_H*/

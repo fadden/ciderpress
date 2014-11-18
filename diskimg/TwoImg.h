@@ -9,8 +9,8 @@
  * This gets its own header because CiderPress uses these definitions and
  * functions directly.
  */
-#ifndef __TWOIMG__
-#define __TWOIMG__
+#ifndef DISKIMG_TWOIMG_H
+#define DISKIMG_TWOIMG_H
 
 #include "DiskImg.h"
 
@@ -131,6 +131,6 @@ private:
     char*   fCreatorChunk;
 };
 
-};  // namespace DiskImgLib
+}  // namespace DiskImgLib
 
-#endif /*TWOIMG*/
+#endif /*DISKIMG_TWOIMG_H*/

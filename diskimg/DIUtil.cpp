@@ -309,6 +309,8 @@ DiskImgLib::FindExtension(const char* pathname, char fssep)
  * Like strcpy(), but allocate with new[] instead.
  *
  * If "str" is nil, or "new" fails, this returns nil.
+ *
+ * TODO: should be "StrdupNew()"
  */
 char*
 DiskImgLib::StrcpyNew(const char* str)

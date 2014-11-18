@@ -222,7 +222,7 @@ BEGIN
     PUSHBUTTON      "Enter registration code",IDC_ABOUT_ENTER_REG,144,132,86,14
     CONTROL         IDB_FSLOGO,IDC_STATIC,"Static",SS_BITMAP,7,6,64,59
     LTEXT           "CiderPress v%d.%d.%d%ls%ls",IDC_CIDERPRESS_VERS_TEXT,77,7,153,9
-    LTEXT           "Copyright © 2009 by CiderPress project authors\rAll Rights Reserved.",IDC_STATIC,77,20,153,19
+    LTEXT           "Copyright © 2014 by CiderPress project authors\rAll Rights Reserved.",IDC_STATIC,77,20,153,19
     ICON            IDR_MAINFRAME,IDC_STATIC,77,45,20,20
     ICON            IDI_FILE_NUFX,IDC_STATIC,106,45,20,20
     ICON            IDI_FILE_BINARY2,IDC_STATIC,136,45,20,20
@@ -1299,12 +1299,12 @@ BEGIN
             VALUE "Comments", "The end is nigh."
             VALUE "CompanyName", "CiderPress Project"
             VALUE "FileDescription", "CiderPress"
-            VALUE "FileVersion", "3, 0, 1, 0"
+            VALUE "FileVersion", "4, 0, 0, 0"
             VALUE "InternalName", "CiderPress"
-            VALUE "LegalCopyright", "Copyright © 2009 CiderPress project authors"
+            VALUE "LegalCopyright", "Copyright © 2014 CiderPress project authors"
             VALUE "OriginalFilename", "CiderPress.exe"
             VALUE "ProductName", "CiderPress"
-            VALUE "ProductVersion", "3, 0, 1, 0"
+            VALUE "ProductVersion", "4, 0, 0, 0"
         END
     END
     BLOCK "VarFileInfo"

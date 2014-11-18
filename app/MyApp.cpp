@@ -17,10 +17,8 @@
 /* magic global that MFC finds (or that finds MFC) */
 MyApp gMyApp;
 
-#if defined(_DEBUG_LOG)
-FILE* gLog = nil;
-int gPid = -1;
-#endif
+DebugLog* gDebugLog;
+
 
 /*
  * Constructor.  This is the closest thing to "main" that we have, but we
@@ -28,36 +26,11 @@ int gPid = -1;
  */
 MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
 {
-    const int kStaleLog = 8 * 60 * 60;
+    gDebugLog = new DebugLog(L"C:\\src\\cplog.txt");
 
-    //fclose(fopen("c:\\cp-myapp.txt", "w"));
+    time_t now = time(nil);
 
-    time_t now;
-    now = time(nil);
-
-#ifdef _DEBUG_LOG
-    PathName debugPath(kDebugLog);
-    time_t when = debugPath.GetModWhen();
-    if (when > 0 && now - when > kStaleLog) {
-        /* log file is more than 8 hours old, remove it */
-        /* [consider opening it and truncating with chsize() instead, so we
-           don't hose somebody's custom access permissions. ++ATM 20041015] */
-        unlink(kDebugLog);
-    }
-    gLog = fopen(kDebugLog, "a");
-    if (gLog == nil)
-        abort();
-    ::setvbuf(gLog, nil, _IONBF, 0);
-
-    gPid = ::getpid();
-    fprintf(gLog, "\n");
-    if (when > 0) {
-        WMSG2("(Log file was %.3f hours old; logs are reset after %.3f)\n",
-            (now - when) / 3600.0, kStaleLog / 3600.0);
-    }
-#endif
-
-    WMSG5("CiderPress v%d.%d.%d%s started at %.24hs\n",
+    LOGI("CiderPress v%d.%d.%d%ls started at %.24hs\n",
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
         kAppDevString, ctime(&now));
 
@@ -78,10 +51,7 @@ MyApp::~MyApp(void)
     NiftyList::AppCleanup();
 
     WMSG0("SHUTTING DOWN\n\n");
-#ifdef _DEBUG_LOG
-    if (gLog != nil)
-        fclose(gLog);
-#endif
+    delete gDebugLog;
 }
 
 

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __NTDDSCSI_H
-#define __NTDDSCSI_H
+#ifndef DISKIMG_NTDDSCSI_H
+#define DISKIMG_NTDDSCSI_H
 
 #if __GNUC__ >=3
 #pragma GCC system_header
@@ -181,4 +181,4 @@ typedef struct _DUMP_POINTERS {
 }
 #endif
 
-#endif /* __NTDDSCSI_H */
+#endif /*DISKIMG_NTDDSCSI_H*/

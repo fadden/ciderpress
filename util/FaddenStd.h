@@ -11,6 +11,14 @@
 
 #define NELEM(x) ((int) (sizeof(x) / sizeof(x[0])))
 
+/*
+ * Declare copy construction and operator=.  Put this in a private section
+ * of a class declaration to prevent objects from being copied.
+ */
+#define DECLARE_COPY_AND_OPEQ(_TYPE) \
+    _TYPE(const _TYPE&); \
+    _TYPE& operator= (const _TYPE&);
+
 // TODO: nuke this
 #define nil NULL
 

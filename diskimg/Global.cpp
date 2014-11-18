@@ -28,11 +28,11 @@ Global::AppInit(void)
     long major, minor, bug;
 
     if (fAppInitCalled) {
-        WMSG0("DiskImg AppInit already called\n");
+        LOGW("DiskImg AppInit already called\n");
         return kDIErrNone;
     }
 
-    WMSG3("AppInit for DiskImg library v%d.%d.%d\n",
+    LOGI("Initializing DiskImg library v%d.%d.%d\n",
         kDiskImgVersionMajor, kDiskImgVersionMinor, kDiskImgVersionBug);
 
 #ifdef _WIN32
@@ -44,9 +44,9 @@ Global::AppInit(void)
             sizeof(fileNameBuf) / sizeof(WCHAR)) != 0)
     {
         // GetModuleHandle does not increase ref count, so no need to release
-        WMSG1("DiskImg DLL loaded from '%ls'\n", fileNameBuf);
+        LOGD("DiskImg DLL loaded from '%ls'\n", fileNameBuf);
     } else {
-        WMSG0("Unable to get DiskImg DLL filename\n");
+        LOGW("Unable to get DiskImg DLL filename\n");
     }
 #endif
 
@@ -55,12 +55,12 @@ Global::AppInit(void)
      */
     nerr = NuGetVersion(&major, &minor, &bug, NULL, NULL);
     if (nerr != kNuErrNone) {
-        WMSG0("Unable to get version number from NufxLib.");
+        LOGE("Unable to get version number from NufxLib.");
         return kDIErrNufxLibInitFailed;
     }
 
     if (major != kNuVersionMajor || minor < kNuVersionMinor) {
-        WMSG3("Unexpected NufxLib version %ld.%ld.%ld\n",
+        LOGE("Unexpected NufxLib version %ld.%ld.%ld\n",
                 major, minor, bug);
         return kDIErrNufxLibInitFailed;
     }
@@ -79,7 +79,7 @@ Global::AppInit(void)
         }
     }
 #endif
-    WMSG2("DiskImg HasSPTI=%d HasASPI=%d\n", GetHasSPTI(), GetHasASPI());
+    LOGD("DiskImg HasSPTI=%d HasASPI=%d\n", GetHasSPTI(), GetHasASPI());
 
     fAppInitCalled = true;
 

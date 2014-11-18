@@ -6,8 +6,8 @@
 /*
  * Declarations for GenericFD class and sub-classes.
  */
-#ifndef __GENERIC_FD__
-#define __GENERIC_FD__
+#ifndef DISKIMG_GENERICFD_H
+#define DISKIMG_GENERICFD_H
 
 #include "Win32BlockIO.h"
 

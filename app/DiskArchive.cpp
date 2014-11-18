@@ -446,14 +446,7 @@ DiskArchive::DebugMsgHandler(const char* file, int line, const char* msg)
     ASSERT(file != nil);
     ASSERT(msg != nil);
 
-#if defined(_DEBUG_LOG)
-    //fprintf(gLog, "%s(%d) : %s", file, line, msg);
-    fprintf(gLog, "%05u %s", gPid, msg);
-#elif defined(_DEBUG)
-    _CrtDbgReport(_CRT_WARN, file, line, NULL, "%s", msg);
-#else
-    /* do nothing */
-#endif
+    LOG_BASE(DebugLog::LOG_INFO, file, line, "<diskimg> %hs", msg);
 }
 
 /*

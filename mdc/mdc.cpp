@@ -14,10 +14,7 @@
 /* magic global that MFC finds (or that finds MFC) */
 MyApp gMyApp;
 
-#if defined(_DEBUG_LOG)
-FILE* gLog = nil;
-int gPid = -1;
-#endif
+DebugLog* gDebugLog;
 
 /*
  * Constructor.  This is the closest thing to "main" that we have, but we
@@ -25,20 +22,13 @@ int gPid = -1;
  */
 MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
 {
-    time_t now;
-    now = time(nil);
+    // TODO: make the log file configurable
+    gDebugLog = new DebugLog(L"C:\\src\\mdclog.txt");
 
-#ifdef _DEBUG_LOG
-    gLog = fopen(kDebugLog, "w");
-    if (gLog == nil)
-        abort();
-    ::setvbuf(gLog, nil, _IONBF, 0);
-
-    gPid = ::getpid();
-    fprintf(gLog, "\n");
-#endif
-
-    WMSG1("MDC started at %.24hs\n", ctime(&now));
+    time_t now = time(nil);
+    LOGI("MDC v%d.%d.%d started at %.24hs\n",
+        kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
+        ctime(&now));
 
     int tmpDbgFlag;
     // enable memory leak detection
@@ -54,10 +44,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
 MyApp::~MyApp(void)
 {
     WMSG0("MDC SHUTTING DOWN\n\n");
-#ifdef _DEBUG_LOG
-    if (gLog != nil)
-        fclose(gLog);
-#endif
+    delete gDebugLog;
 }
 
 
