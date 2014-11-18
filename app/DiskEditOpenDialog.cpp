@@ -21,7 +21,7 @@ DiskEditOpenDialog::OnInitDialog(void)
 {
     if (!fArchiveOpen) {
         CButton* pButton = (CButton*) GetDlgItem(IDC_DEOW_CURRENT);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         pButton->EnableWindow(FALSE);
     }
 

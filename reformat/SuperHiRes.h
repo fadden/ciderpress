@@ -157,12 +157,12 @@ private:
  */
 class ReformatAPFSHR : public ReformatSHR {
 public:
-    ReformatAPFSHR(void) : fNonStandard(false), fPixelStore(nil),
-        fSCBStore(nil) {}
+    ReformatAPFSHR(void) : fNonStandard(false), fPixelStore(NULL),
+        fSCBStore(NULL) {}
     virtual ~ReformatAPFSHR(void) {
-        if (fPixelStore != nil && fPixelStore != fScreen.pixels)
+        if (fPixelStore != NULL && fPixelStore != fScreen.pixels)
             delete[] fPixelStore;
-        if (fSCBStore != nil && fSCBStore != fScreen.scb)
+        if (fSCBStore != NULL && fSCBStore != fScreen.scb)
             delete[] fSCBStore;
     }
 

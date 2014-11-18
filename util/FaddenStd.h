@@ -19,9 +19,6 @@
     _TYPE(const _TYPE&); \
     _TYPE& operator= (const _TYPE&);
 
-// TODO: nuke this
-#define nil NULL
-
 // Windows equivalents
 #define strcasecmp      stricmp
 #define strncasecmp     strnicmp

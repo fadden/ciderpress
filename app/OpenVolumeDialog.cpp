@@ -36,14 +36,14 @@ OpenVolumeDialog::OnInitDialog(void)
 
     /* highlight/select entire line, not just filename */
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUME_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
 
     ListView_SetExtendedListViewStyleEx(pListView->m_hWnd,
         LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
     /* disable the OK button until they click on something */
     CButton* pButton = (CButton*) GetDlgItem(IDOK);
-    ASSERT(pButton != nil);
+    ASSERT(pButton != NULL);
 
     pButton->EnableWindow(FALSE);
 
@@ -51,13 +51,13 @@ OpenVolumeDialog::OnInitDialog(void)
     if (!fAllowROChange) {
         CButton* pButton;
         pButton = (CButton*) GetDlgItem(IDC_OPENVOL_READONLY);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         pButton->EnableWindow(FALSE);
     }
 
     /* prep the combo box */
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_VOLUME_FILTER);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
     defaultFilter = pPreferences->GetPrefLong(kPrVolumeFilter);
     if (defaultFilter >= kBoth && defaultFilter <= kPhysical)
         pCombo->SetCurSel(defaultFilter);
@@ -108,9 +108,9 @@ OpenVolumeDialog::LoadDriveList(void)
     int filterSelection;
 
     pListView = (CListCtrl*) GetDlgItem(IDC_VOLUME_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
     pCombo = (CComboBox*) GetDlgItem(IDC_VOLUME_FILTER);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
 
     pListView->DeleteAllItems();
 
@@ -136,7 +136,7 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
     bool isWin9x = IsWin9x();
     int itemIndex = *pItemIndex;
 
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
 
     drivesAvailable = GetLogicalDrives();
     if (drivesAvailable == 0) {
@@ -157,7 +157,7 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
             driveName[0] = 'A' + i;
 
             unsigned int driveType;
-            const WCHAR* driveTypeComment = nil;
+            const WCHAR* driveTypeComment = NULL;
             BOOL result;
 
             driveType = fVolumeInfo[i].driveType = GetDriveType(driveName);
@@ -201,7 +201,7 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
 
             WCHAR volNameBuf[256];
             WCHAR fsNameBuf[64];
-            const WCHAR* errorComment = nil;
+            const WCHAR* errorComment = NULL;
             //DWORD fsFlags;
             CString entryName, entryRemarks;
 
@@ -255,17 +255,17 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
                         driveName, GetLastError());
                     continue;
                 }
-                ASSERT(errorComment != nil);
+                ASSERT(errorComment != NULL);
 
                 entryName.Format(L"(%c:)", 'A' + i);
-                if (driveTypeComment != nil)
+                if (driveTypeComment != NULL)
                     entryRemarks.Format(L"%ls - %ls", driveTypeComment,
                         errorComment);
                 else
                     entryRemarks.Format(L"%ls", errorComment);
             } else {
                 entryName.Format(L"%ls (%c:)", volNameBuf, 'A' + i);
-                if (driveTypeComment != nil)
+                if (driveTypeComment != NULL)
                     entryRemarks.Format(L"%ls", driveTypeComment);
                 else
                     entryRemarks = "";
@@ -356,7 +356,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
 #if 0   // can we remove this?
         DIError dierr;
         DiskImgLib::ASPI* pASPI = DiskImgLib::Global::GetASPI();
-        ASPIDevice* deviceArray = nil;
+        ASPIDevice* deviceArray = NULL;
         int numDevices;
 
         dierr = pASPI->GetAccessibleDevices(
@@ -419,7 +419,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
 bool
 OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
 {
-    HANDLE handle = nil;
+    HANDLE handle = NULL;
     const int VWIN32_DIOC_DOS_INT13 = 4;
     const int CARRY_FLAG = 1;
     BOOL result;
@@ -623,7 +623,7 @@ void
 OpenVolumeDialog::OnVolumeFilterSelChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_VOLUME_FILTER);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
     WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
     LoadDriveList();
 }
@@ -638,7 +638,7 @@ OpenVolumeDialog::OnOK(void)
      * Figure out the (zero-based) drive letter.
      */
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUME_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
 
     if (pListView->GetSelectedCount() != 1) {
         CString msg, failed;
@@ -650,7 +650,7 @@ OpenVolumeDialog::OnOK(void)
 
     POSITION posn;
     posn = pListView->GetFirstSelectedItemPosition();
-    if (posn == nil) {
+    if (posn == NULL) {
         ASSERT(false);
         return;
     }
@@ -732,7 +732,7 @@ void
 OpenVolumeDialog::ForceReadOnly(bool readOnly) const
 {
     CButton* pButton = (CButton*) GetDlgItem(IDC_OPENVOL_READONLY);
-    ASSERT(pButton != nil);
+    ASSERT(pButton != NULL);
 
     if (readOnly)
         pButton->SetCheck(BST_CHECKED);

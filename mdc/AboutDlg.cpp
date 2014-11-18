@@ -43,7 +43,7 @@ BOOL AboutDlg::OnInitDialog()
     
     // TODO: Add extra initialization here
     CWnd* pWnd = GetDlgItem(IDC_ABOUT_VERS);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     CString fmt, newText;
 
     pWnd->GetWindowText(fmt);

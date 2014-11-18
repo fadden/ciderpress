@@ -31,7 +31,7 @@ public:
     }
     /* enable the parent window before we're destroyed */
     virtual BOOL DestroyWindow(void) {
-        if (fpParentWnd != nil)
+        if (fpParentWnd != NULL)
             fpParentWnd->EnableWindow(TRUE);
         return ModelessDialog::DestroyWindow();
     }

@@ -16,7 +16,7 @@
  */
 class ConfirmOverwriteDialog : public CDialog {
 public:
-    ConfirmOverwriteDialog(CWnd* pParentWnd = nil) :
+    ConfirmOverwriteDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_CONFIRM_OVERWRITE, pParentWnd)
     {
         fResultOverwrite = false;
@@ -67,7 +67,7 @@ private:
  */
 class RenameOverwriteDialog : public CDialog {
 public:
-    RenameOverwriteDialog(CWnd* pParentWnd = nil) :
+    RenameOverwriteDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_RENAME_OVERWRITE, pParentWnd)
     {}
     ~RenameOverwriteDialog(void) {}

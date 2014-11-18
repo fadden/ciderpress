@@ -41,7 +41,7 @@ TwoImgHeader::InitHeader(int imageFormat, long imageSize, long imageBlockCount)
         return -1;
     }
 
-    assert(fComment == nil);
+    assert(fComment == NULL);
 
     //memcpy(fMagic, kMagic, 4);
     //memcpy(fCreator, kCreator, 4);
@@ -95,16 +95,16 @@ void
 TwoImgHeader::SetComment(const char* comment)
 {
     delete[] fComment;
-    if (comment == nil) {
-        fComment = nil;
+    if (comment == NULL) {
+        fComment = NULL;
     } else {
         fComment = new char[strlen(comment)+1];
-        if (fComment != nil)
+        if (fComment != NULL)
             strcpy(fComment, comment);
         // else throw alloc failure
     }
 
-    if (fComment == nil) {
+    if (fComment == NULL) {
         fCmtLen = 0;
         fCmtOffset = 0;
         if (fCreatorOffset > 0)
@@ -126,16 +126,16 @@ TwoImgHeader::SetCreatorChunk(const void* chunk, long len)
     assert(len >= 0);
 
     delete[] fCreatorChunk;
-    if (chunk == nil || len == 0) {
-        fCreatorChunk = nil;
+    if (chunk == NULL || len == 0) {
+        fCreatorChunk = NULL;
     } else {
         fCreatorChunk = new char[len];
-        if (fCreatorChunk != nil)
+        if (fCreatorChunk != NULL)
             memcpy(fCreatorChunk, chunk, len);
         // else throw alloc failure
     }
 
-    if (fCreatorChunk == nil) {
+    if (fCreatorChunk == NULL) {
         fCreatorLen = 0;
         fCreatorOffset = 0;
     } else {
@@ -271,14 +271,14 @@ TwoImgHeader::GetChunk(GenericFD* pGFD, di_off_t relOffset, long len,
         return -1;
     }
 
-    assert(*pBuf == nil);
+    assert(*pBuf == NULL);
     *pBuf = new char[len+1];        // one extra, for null termination
 
     dierr = pGFD->Read(*pBuf, len);
     if (dierr != kDIErrNone) {
         WMSG0("2MG chunk read failed\n");
         delete[] (char*) (*pBuf);
-        *pBuf = nil;
+        *pBuf = NULL;
         (void) pGFD->Seek(curPos, kSeekSet);
         return -1;
     }
@@ -312,14 +312,14 @@ TwoImgHeader::GetChunk(FILE* fp, di_off_t relOffset, long len,
         return errno ? errno : -1;;
     }
 
-    assert(*pBuf == nil);
+    assert(*pBuf == NULL);
     *pBuf = new char[len+1];        // one extra, for null termination
 
     count = fread(*pBuf, len, 1, fp);
     if (!count || ferror(fp) || feof(fp)) {
         WMSG0("2MG chunk read failed\n");
         delete[] (char*) (*pBuf);
-        *pBuf = nil;
+        *pBuf = NULL;
         (void) fseek(fp, curPos, SEEK_SET);
         clearerr(fp);
         return errno ? errno : -1;;

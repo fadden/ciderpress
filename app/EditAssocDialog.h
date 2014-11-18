@@ -16,9 +16,9 @@
  */
 class EditAssocDialog : public CDialog {
 public:
-    EditAssocDialog(CWnd* pParentWnd = nil) :
+    EditAssocDialog(CWnd* pParentWnd = NULL) :
       CDialog(IDD_ASSOCIATIONS, pParentWnd),
-      fOurAssociations(nil)
+      fOurAssociations(NULL)
         {}
     virtual ~EditAssocDialog() {
         delete[] fOurAssociations;

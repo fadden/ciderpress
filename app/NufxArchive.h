@@ -60,12 +60,12 @@ private:
 class NufxArchive : public GenericArchive {
 public:
     NufxArchive(void) :
-        fpArchive(nil),
+        fpArchive(NULL),
         fIsReadOnly(false),
         fProgressAsRecompress(false),
         fNumAdded(-1),
-        fpMsgWnd(nil),
-        fpAddOpts(nil)
+        fpMsgWnd(NULL),
+        fpAddOpts(NULL)
     {}
     virtual ~NufxArchive(void) { (void) Close(); }
 
@@ -123,11 +123,11 @@ public:
 
 private:
     virtual CString Close(void) {
-        if (fpArchive != nil) {
+        if (fpArchive != NULL) {
             WMSG0("Closing archive (aborting any un-flushed changes)\n");
             NuAbort(fpArchive);
             NuClose(fpArchive);
-            fpArchive = nil;
+            fpArchive = NULL;
         }
         return L"";
     }

@@ -124,7 +124,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
     dataLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
     rsrcBuf = pHolder->GetSourceBuf(ReformatHolder::kPartRsrc);
     rsrcLen = pHolder->GetSourceLen(ReformatHolder::kPartRsrc);
-    if (dataBuf == nil || rsrcBuf == nil || dataLen <= 0 || rsrcLen <= 0) {
+    if (dataBuf == NULL || rsrcBuf == NULL || dataLen <= 0 || rsrcLen <= 0) {
         WMSG0("Teach reformatter missing one fork of the file\n");
         return -1;
     }
@@ -160,7 +160,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
      * anyway.
      */
     RStyleBlock::TERuler* pRuler = rStyleBlock.GetRuler(0);
-    assert(pRuler != nil);
+    assert(pRuler != NULL);
     if (pRuler->GetJustification() != RStyleBlock::TERuler::kJustLeft) {
         WMSG0("WARNING: not using left justified Teach text\n");
         /* ignore it */
@@ -173,7 +173,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
 
         /* set up the style */
         pStyleItem = rStyleBlock.GetStyleItem(style);
-        assert(pStyleItem != nil);
+        assert(pStyleItem != NULL);
         if (pStyleItem->GetLength() == RStyleBlock::StyleItem::kUnusedItem)
             continue;
         numBytes = pStyleItem->GetLength();
@@ -245,7 +245,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
     unsigned long partLen;
     int i;
 
-    assert(buf != nil);
+    assert(buf != NULL);
     if (len < kMinLen) {
         WMSG1("Too short to be rStyleBlock (%d)\n", len);
         return false;
@@ -267,7 +267,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
 
     fNumRulers = 1;
     fpRulers = new TERuler[fNumRulers];
-    if (fpRulers == nil)
+    if (fpRulers == NULL)
         return false;
     if (fpRulers->Create(buf, partLen) <= 0)
         return false;
@@ -289,7 +289,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
 
     fNumStyles = partLen / TEStyle::kDataLen;
     fpStyles = new TEStyle[fNumStyles];
-    if (fpStyles == nil)
+    if (fpStyles == NULL)
         return false;
     for (i = 0; i < fNumStyles; i++) {
         fpStyles[i].Create(buf);
@@ -306,7 +306,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
     }
 
     fpStyleItems = new StyleItem[fNumStyleItems];
-    if (fpStyleItems == nil)
+    if (fpStyleItems == NULL)
         return false;
     for (i = 0; i < fNumStyleItems; i++) {
         fpStyleItems[i].Create(buf);

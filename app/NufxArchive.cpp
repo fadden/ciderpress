@@ -32,11 +32,11 @@ const unsigned char kNufxNoFssep = 0xff;
 /*
  * Extract data from a thread into a buffer.
  *
- * If "*ppText" is non-nil and "*pLength" is > 0, the data will be read into
+ * If "*ppText" is non-NULL and "*pLength" is > 0, the data will be read into
  * the pointed-to buffer so long as it's shorter than *pLength bytes.  The
  * value in "*pLength" will be set to the actual length used.
  *
- * If "*ppText" is nil or the length is <= 0, the uncompressed data will be
+ * If "*ppText" is NULL or the length is <= 0, the uncompressed data will be
  * placed into a buffer allocated with "new[]".
  *
  * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
@@ -50,8 +50,8 @@ NufxEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
     CString* pErrMsg) const
 {
     NuError nerr;
-    char* dataBuf = nil;
-    NuDataSink* pDataSink = nil;
+    char* dataBuf = NULL;
+    NuDataSink* pDataSink = NULL;
     NuThread thread;
     unsigned long actualThreadEOF;
     NuThreadIdx threadIdx;
@@ -60,7 +60,7 @@ NufxEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
 
     ASSERT(IDOK != -1 && IDCANCEL != -1);   // make sure return vals don't clash
 
-    if (*ppText != nil)
+    if (*ppText != NULL)
         needAlloc = false;
 
     FindThreadInfo(which, &thread, pErrMsg);
@@ -88,7 +88,7 @@ NufxEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
 
     if (needAlloc) {
         dataBuf = new char[actualThreadEOF];
-        if (dataBuf == nil) {
+        if (dataBuf == NULL) {
             pErrMsg->Format(L"allocation of %ld bytes failed",
                 actualThreadEOF);
             goto bail;
@@ -140,10 +140,10 @@ bail:
         ASSERT(result == IDCANCEL || !pErrMsg->IsEmpty());
         if (needAlloc) {
             delete[] dataBuf;
-            ASSERT(*ppText == nil);
+            ASSERT(*ppText == NULL);
         }
     }
-    if (pDataSink != nil)
+    if (pDataSink != NULL)
         NuFreeDataSink(pDataSink);
     return result;
 }
@@ -160,14 +160,14 @@ int
 NufxEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
     ConvertHighASCII convHA, CString* pErrMsg) const
 {
-    NuDataSink* pDataSink = nil;
+    NuDataSink* pDataSink = NULL;
     NuError nerr;
     NuThread thread;
     unsigned long actualThreadEOF;
     NuThreadIdx threadIdx;
     int result = -1;
 
-    ASSERT(outfp != nil);
+    ASSERT(outfp != NULL);
 
     //CString errMsg;
     FindThreadInfo(which, &thread, pErrMsg);
@@ -254,7 +254,7 @@ bail:
     if (result == IDOK) {
         SET_PROGRESS_END();
     }
-    if (pDataSink != nil)
+    if (pDataSink != NULL)
         NuFreeDataSink(pDataSink);
     return result;
 }
@@ -304,7 +304,7 @@ NufxEntry::FindThreadInfo(int which, NuThread* pRetThread,
     }
 
     int i;
-    pThread = nil;
+    pThread = NULL;
     for (i = 0; i < (int)NuRecordGetNumThreads(pRecord); i++) {
         pThread = NuGetThread(pRecord, i);
         if (NuGetThreadID(pThread) == wantedThreadID)
@@ -369,7 +369,7 @@ NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
 
     for (idx = 0; idx < pRecord->recTotalThreads; idx++) {
         pThread = NuGetThread(pRecord, idx);
-        ASSERT(pThread != nil);
+        ASSERT(pThread != NULL);
 
         threadID = NuMakeThreadID(pThread->thThreadClass,
                     pThread->thThreadKind);
@@ -558,14 +558,14 @@ NufxArchive::ProgressUpdater(NuArchive* pArchive, void* vpProgress)
     const char* newName;
     int perc;
 
-    ASSERT(pProgress != nil);
-    ASSERT(pMainWin != nil);
+    ASSERT(pProgress != NULL);
+    ASSERT(pMainWin != NULL);
 
-    ASSERT(pArchive != nil);
+    ASSERT(pArchive != NULL);
     (void) NuGetExtraData(pArchive, (void**) &pThis);
-    ASSERT(pThis != nil);
+    ASSERT(pThis != NULL);
 
-    oldName = newName = nil;
+    oldName = newName = NULL;
     if (pProgress->operation == kNuOpAdd) {
         oldName = pProgress->origPathname;
         newName = pProgress->pathname;
@@ -585,8 +585,8 @@ NufxArchive::ProgressUpdater(NuArchive* pArchive, void* vpProgress)
         perc = 100;
 
     //WMSG3("Progress: %d%% '%hs' '%hs'\n", perc,
-    //  oldName == nil ? "(nil)" : oldName,
-    //  newName == nil ? "(nil)" : newName);
+    //  oldName == NULL ? "(null)" : oldName,
+    //  newName == NULL ? "(null)" : newName);
 
     //status = pMainWin->SetProgressUpdate(perc, oldName, newName);
     CString oldNameW(oldName);
@@ -610,7 +610,7 @@ NufxArchive::ProgressUpdater(NuArchive* pArchive, void* vpProgress)
 /*
  * Finish instantiating a NufxArchive object by opening an existing file.
  *
- * Returns an error string on failure, or nil on success.
+ * Returns an error string on failure, or NULL on success.
  */
 GenericArchive::OpenResult
 NufxArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
@@ -618,7 +618,7 @@ NufxArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
     NuError nerr;
     CString errMsg;
 
-    ASSERT(fpArchive == nil);
+    ASSERT(fpArchive == NULL);
 
     CStringA filenameA(filename);
     if (!readOnly) {
@@ -678,8 +678,8 @@ NufxArchive::New(const WCHAR* filename, const void* options)
     NuError nerr;
     CString retmsg;
 
-    ASSERT(fpArchive == nil);
-    ASSERT(options == nil);
+    ASSERT(fpArchive == NULL);
+    ASSERT(options == NULL);
 
     CString tmpname = GenDerivedTempName(filename);
     WMSG2("Creating file '%ls' (tmp='%ls')\n", filename, (LPCWSTR) tmpname);
@@ -822,7 +822,7 @@ NufxArchive::LoadContents(void)
     NuError result;
 
     WMSG0("NufxArchive LoadContents\n");
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     {
         MainWindow* pMain = GET_MAIN_WINDOW();
@@ -897,8 +897,8 @@ NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
     NufxArchive* pThis;
     NufxEntry* pNewEntry;
 
-    ASSERT(pArchive != nil);
-    ASSERT(vpRecord != nil);
+    ASSERT(pArchive != NULL);
+    ASSERT(vpRecord != NULL);
 
     NuGetExtraData(pArchive, (void**) &pThis);
 
@@ -1113,8 +1113,8 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     PathProposal pathProp;
     PathName pathName;
     DiskImg* pDiskImg;
-    NuDataSource* pSource = nil;
-    unsigned char* diskData = nil;
+    NuDataSource* pSource = NULL;
+    unsigned char* diskData = NULL;
     WCHAR curDir[MAX_PATH] = L"\\";
     bool retVal = false;
     CStringA storageNameA, origNameA;
@@ -1128,11 +1128,11 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
         pAddOpts->fOverwriteExisting);
 
     pDiskImg = pAddOpts->fpDiskImg;
-    ASSERT(pDiskImg != nil);
+    ASSERT(pDiskImg != NULL);
 
     /* allocate storage for the entire disk */
     diskData = new BYTE[pDiskImg->GetNumBlocks() * kBlockSize];
-    if (diskData == nil) {
+    if (diskData == NULL) {
         errMsg.Format(L"Unable to allocate %d bytes.",
             pDiskImg->GetNumBlocks() * kBlockSize);
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
@@ -1183,7 +1183,7 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     time_t now, then;
 
     pathName = buf;
-    now = time(nil);
+    now = time(NULL);
     then = pathName.GetModWhen();
     UNIXTimeToDateTime(&now, &details.archiveWhen);
     UNIXTimeToDateTime(&then, &details.modWhen);
@@ -1217,7 +1217,7 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     /* create a data source for the disk */
     nerr = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed, 0,
             diskData, 0, pAddOpts->fpDiskImg->GetNumBlocks() * kBlockSize,
-            nil, &pSource);
+            NULL, &pSource);
     if (nerr != kNuErrNone) {
         errMsg = "Unable to create NufxLib data source.";
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
@@ -1237,13 +1237,13 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
 
     /* do the compression */
     nerr = NuAddThread(fpArchive, recordIdx, kNuThreadIDDiskImage,
-            pSource, nil);
+            pSource, NULL);
     if (nerr != kNuErrNone) {
         errMsg.Format(L"Failed adding thread: %hs.", NuStrError(nerr));
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
         goto bail;
     }
-    pSource = nil;      /* NufxLib owns it now */
+    pSource = NULL;      /* NufxLib owns it now */
 
     /* actually do the work */
     long statusFlags;
@@ -1344,13 +1344,13 @@ NufxArchive::AddPrep(CWnd* pMsgWnd, const AddFilesDialog* pAddOpts)
     const Preferences* pPreferences = GET_PREFERENCES();
     int defaultCompression;
 
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     fpMsgWnd = pMsgWnd;
-    ASSERT(fpMsgWnd != nil);
+    ASSERT(fpMsgWnd != NULL);
 
     fpAddOpts = pAddOpts;
-    ASSERT(fpAddOpts != nil);
+    ASSERT(fpAddOpts != NULL);
 
     //fBulkProgress = true;
 
@@ -1380,10 +1380,10 @@ NufxArchive::AddPrep(CWnd* pMsgWnd, const AddFilesDialog* pAddOpts)
 void
 NufxArchive::AddFinish(void)
 {
-    NuSetErrorHandler(fpArchive, nil);
+    NuSetErrorHandler(fpArchive, NULL);
     NuSetValue(fpArchive, kNuValueHandleExisting, kNuMaybeOverwrite);
-    fpMsgWnd = nil;
-    fpAddOpts = nil;
+    fpMsgWnd = NULL;
+    fpAddOpts = NULL;
     //fBulkProgress = false;
 }
 
@@ -1398,9 +1398,9 @@ NufxArchive::BulkAddErrorHandler(NuArchive* pArchive, void* vErrorStatus)
     NufxArchive* pThis;
     NuResult result;
 
-    ASSERT(pArchive != nil);
+    ASSERT(pArchive != NULL);
     (void) NuGetExtraData(pArchive, (void**) &pThis);
-    ASSERT(pThis != nil);
+    ASSERT(pThis != NULL);
     ASSERT(pArchive == pThis->fpArchive);
 
     /* default action is to abort the current operation */
@@ -1443,8 +1443,8 @@ NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
 {
     NuResult result = kNuOK;
 
-    ASSERT(pErrorStatus != nil);
-    ASSERT(pErrorStatus->pathname != nil);
+    ASSERT(pErrorStatus != NULL);
+    ASSERT(pErrorStatus->pathname != NULL);
 
     ASSERT(pErrorStatus->canOverwrite);
     ASSERT(pErrorStatus->canSkip);
@@ -1458,7 +1458,7 @@ NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
     confOvwr.fExistingFile = pErrorStatus->pRecord->filename;
     confOvwr.fExistingFileModWhen =
         DateTimeToSeconds(&pErrorStatus->pRecord->recModWhen);
-    if (pErrorStatus->origPathname != nil) {
+    if (pErrorStatus->origPathname != NULL) {
         confOvwr.fNewFileSource = pErrorStatus->origPathname;
         PathName checkPath(confOvwr.fNewFileSource);
         confOvwr.fNewFileModWhen = checkPath.GetModWhen();
@@ -1530,12 +1530,12 @@ NufxArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     CString errMsg;
     bool retVal = false;
 
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     WMSG1("Testing %d entries\n", pSelSet->GetNumEntries());
 
     SelectionEntry* pSelEntry = pSelSet->IterNext();
-    while (pSelEntry != nil) {
+    while (pSelEntry != NULL) {
         pEntry = (NufxEntry*) pSelEntry->GetEntry();
 
         WMSG2("  Testing %ld '%ls'\n", pEntry->GetRecordIdx(),
@@ -1587,13 +1587,13 @@ NufxArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     CString errMsg;
     bool retVal = false;
 
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     WMSG1("Deleting %d entries\n", pSelSet->GetNumEntries());
 
     /* mark entries for deletion */
     SelectionEntry* pSelEntry = pSelSet->IterNext();
-    while (pSelEntry != nil) {
+    while (pSelEntry != NULL) {
         pEntry = (NufxEntry*) pSelEntry->GetEntry();
 
         WMSG2("  Deleting %ld '%ls'\n", pEntry->GetRecordIdx(),
@@ -1645,7 +1645,7 @@ NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     NuError nerr;
     bool retVal = false;
 
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     WMSG1("Renaming %d entries\n", pSelSet->GetNumEntries());
 
@@ -1668,7 +1668,7 @@ NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
      * sorts of archives (e.g. disk archives).
      */
     SelectionEntry* pSelEntry = pSelSet->IterNext();
-    while (pSelEntry != nil) {
+    while (pSelEntry != NULL) {
         NufxEntry* pEntry = (NufxEntry*) pSelEntry->GetEntry();
         WMSG1("  Renaming '%ls'\n", pEntry->GetPathName());
 
@@ -1743,7 +1743,7 @@ NufxArchive::TestPathName(const GenericEntry* pGenericEntry,
     const CString& basePath, const CString& newName, char newFssep) const
 {
     CString errMsg;
-    ASSERT(pGenericEntry != nil);
+    ASSERT(pGenericEntry != NULL);
 
     ASSERT(basePath.IsEmpty());
 
@@ -1771,7 +1771,7 @@ NufxArchive::TestPathName(const GenericEntry* pGenericEntry,
      */
     GenericEntry* pEntry;
     pEntry = GetEntries();
-    while (pEntry != nil) {
+    while (pEntry != NULL) {
         if (pEntry != pGenericEntry &&
             ComparePaths(pEntry->GetPathName(), pEntry->GetFssep(),
                          newName, newFssep) == 0)
@@ -1839,8 +1839,8 @@ NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
     SelectionEntry* pSelEntry = pSelSet->IterNext();
     long sizeInMemory = 0;
     bool result = true;
-    NufxEntry* pEntry = nil;
-    for ( ; pSelEntry != nil; pSelEntry = pSelSet->IterNext()) {
+    NufxEntry* pEntry = NULL;
+    for ( ; pSelEntry != NULL; pSelEntry = pSelSet->IterNext()) {
         pEntry = (NufxEntry*) pSelEntry->GetEntry();
 
         /*
@@ -1893,7 +1893,7 @@ NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
 
     /* handle errors that threw us out of the while loop */
     if (!result) {
-        ASSERT(pEntry != nil);
+        ASSERT(pEntry != NULL);
         CString dispStr;
         dispStr.Format(L"Failed while recompressing '%ls': %ls.",
             pEntry->GetDisplayName(), (LPCWSTR) errMsg);
@@ -1944,10 +1944,10 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     NuThread thread;
     NuThreadID threadID;
     NuError nerr;
-    NuDataSource* pSource = nil;
+    NuDataSource* pSource = NULL;
     CString subErrMsg;
     bool retVal = false;
-    char* buf = nil;
+    char* buf = NULL;
     long len = 0;
 
     WMSG2("  Recompressing %ld '%ls'\n", pEntry->GetRecordIdx(),
@@ -1974,7 +1974,7 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     result = pEntry->ExtractThreadToBuffer(threadKind, &buf, &len, &subErrMsg);
     if (result == IDCANCEL) {
         WMSG0("Cancelled during extract!\n");
-        ASSERT(buf == nil);
+        ASSERT(buf == NULL);
         goto bail;  /* abort anything that was pending */
     } else if (result != IDOK) {
         pErrMsg->Format(L"Failed while extracting '%ls': %ls",
@@ -1992,7 +1992,7 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
             len);
         goto bail;
     }
-    buf = nil;      // data source owns it now
+    buf = NULL;      // data source owns it now
 
     /* delete the existing thread */
     //WMSG1("+++ DELETE threadIdx=%d\n", thread.threadIdx);
@@ -2006,13 +2006,13 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     /* mark the new thread for addition */
     //WMSG1("+++ ADD threadID=0x%08lx\n", threadID);
     nerr = NuAddThread(fpArchive, pEntry->GetRecordIdx(), threadID,
-                pSource, nil);
+                pSource, NULL);
     if (nerr != kNuErrNone) {
         pErrMsg->Format(L"Unable to add thread type %d: %hs",
             threadID, NuStrError(nerr));
         goto bail;
     }
-    pSource = nil;      // now owned by nufxlib
+    pSource = NULL;      // now owned by nufxlib
 
     /* at this point, we just wait for the flush in the outer loop */
     retVal = true;
@@ -2043,21 +2043,21 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
 {
     WMSG0("NufxArchive XferSelection!\n");
     XferStatus retval = kXferFailed;
-    unsigned char* dataBuf = nil;
-    unsigned char* rsrcBuf = nil;
+    unsigned char* dataBuf = NULL;
+    unsigned char* rsrcBuf = NULL;
     CString errMsg, dispMsg;
 
     pXferOpts->fTarget->XferPrepare(pXferOpts);
 
     SelectionEntry* pSelEntry = pSelSet->IterNext();
-    for ( ; pSelEntry != nil; pSelEntry = pSelSet->IterNext()) {
+    for ( ; pSelEntry != NULL; pSelEntry = pSelSet->IterNext()) {
         long dataLen=-1, rsrcLen=-1;
         NufxEntry* pEntry = (NufxEntry*) pSelEntry->GetEntry();
         FileDetails fileDetails;
         CString errMsg;
 
-        ASSERT(dataBuf == nil);
-        ASSERT(rsrcBuf == nil);
+        ASSERT(dataBuf == NULL);
+        ASSERT(rsrcBuf == NULL);
 
         /* in case we start handling CRC errors better */
         if (pEntry->GetDamaged()) {
@@ -2077,7 +2077,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         fileDetails.storageType = kNuStorageSeedling;
 
         time_t when;
-        when = time(nil);
+        when = time(NULL);
         UNIXTimeToDateTime(&when, &fileDetails.archiveWhen);
         when = pEntry->GetModWhen();
         UNIXTimeToDateTime(&when, &fileDetails.modWhen);
@@ -2099,7 +2099,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
              * Found a data thread.
              */
             int result;
-            dataBuf = nil;
+            dataBuf = NULL;
             dataLen = 0;
             result = pEntry->ExtractThreadToBuffer(GenericEntry::kDataThread,
                         (char**) &dataBuf, &dataLen, &errMsg);
@@ -2113,7 +2113,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                 ShowFailureMsg(pMsgWnd, dispMsg, IDS_FAILED);
                 goto bail;
             }
-            ASSERT(dataBuf != nil);
+            ASSERT(dataBuf != NULL);
             ASSERT(dataLen >= 0);
 
         } else if (pEntry->GetHasDiskImage()) {
@@ -2121,7 +2121,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
              * No data thread found.  Look for a disk image.
              */
             int result;
-            dataBuf = nil;
+            dataBuf = NULL;
             dataLen = 0;
             result = pEntry->ExtractThreadToBuffer(GenericEntry::kDiskImageThread,
                         (char**) &dataBuf, &dataLen, &errMsg);
@@ -2134,7 +2134,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                 ShowFailureMsg(pMsgWnd, dispMsg, IDS_FAILED);
                 goto bail;
             }
-            ASSERT(dataBuf != nil);
+            ASSERT(dataBuf != NULL);
             ASSERT(dataLen >= 0);
         }
 
@@ -2144,7 +2144,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
          */
         if (pEntry->GetHasRsrcFork()) {
             int result;
-            rsrcBuf = nil;
+            rsrcBuf = NULL;
             rsrcLen = 0;
             result = pEntry->ExtractThreadToBuffer(GenericEntry::kRsrcThread,
                         (char**) &rsrcBuf, &rsrcLen, &errMsg);
@@ -2160,7 +2160,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
 
             fileDetails.storageType = kNuStorageExtended;
         } else {
-            ASSERT(rsrcBuf == nil);
+            ASSERT(rsrcBuf == NULL);
         }
 
         if (dataLen < 0 && rsrcLen < 0) {
@@ -2178,8 +2178,8 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
-        ASSERT(dataBuf == nil);
-        ASSERT(rsrcBuf == nil);
+        ASSERT(dataBuf == NULL);
+        ASSERT(rsrcBuf == NULL);
 
         if (pActionProgress->SetProgress(100) == IDCANCEL) {
             retval = kXferCancelled;
@@ -2220,7 +2220,7 @@ NufxArchive::XferPrepare(const XferFileOptions* pXferOpts)
  * exist.
  *
  * Returns 0 on success, -1 on failure.  On success, "*pDataBuf" and
- * "*pRsrcBuf" are set to nil (ownership transfers to NufxLib).
+ * "*pRsrcBuf" are set to NULL (ownership transfers to NufxLib).
  */
 CString
 NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
@@ -2228,25 +2228,25 @@ NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
 {
     NuError nerr;
     const int kFileTypeTXT = 0x04;
-    NuDataSource* pSource = nil;
+    NuDataSource* pSource = NULL;
     CString errMsg;
 
     WMSG1("  NufxArchive::XferFile '%ls'\n", (LPCWSTR) pDetails->storageName);
     WMSG4("  dataBuf=0x%08lx dataLen=%ld rsrcBuf=0x%08lx rsrcLen=%ld\n",
         *pDataBuf, dataLen, *pRsrcBuf, rsrcLen);
-    ASSERT(pDataBuf != nil);
-    ASSERT(pRsrcBuf != nil);
+    ASSERT(pDataBuf != NULL);
+    ASSERT(pRsrcBuf != NULL);
 
     /* NuFX doesn't explicitly store directories */
     if (pDetails->entryKind == FileDetails::kFileKindDirectory) {
         delete[] *pDataBuf;
         delete[] *pRsrcBuf;
-        *pDataBuf = *pRsrcBuf = nil;
+        *pDataBuf = *pRsrcBuf = NULL;
         goto bail;
     }
 
     ASSERT(dataLen >= 0 || rsrcLen >= 0);
-    ASSERT(*pDataBuf != nil || *pRsrcBuf != nil);
+    ASSERT(*pDataBuf != NULL || *pRsrcBuf != NULL);
 
     /* add the record; we have "allow duplicates" enabled for clashes */
     NuRecordIdx recordIdx;
@@ -2286,7 +2286,7 @@ NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
     }
 
     if (dataLen >= 0) {
-        ASSERT(*pDataBuf != nil);
+        ASSERT(*pDataBuf != NULL);
 
         /* strip the high ASCII from DOS and RDOS text files */
         if (pDetails->entryKind != FileDetails::kFileKindDiskImage &&
@@ -2310,7 +2310,7 @@ NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
             //ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
-        *pDataBuf = nil;        /* owned by data source */
+        *pDataBuf = NULL;        /* owned by data source */
 
         /* add the data fork, as a disk image if appropriate */
         NuThreadID targetID;
@@ -2319,18 +2319,18 @@ NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
         else
             targetID = kNuThreadIDDataFork;
 
-        nerr = NuAddThread(fpArchive, recordIdx, targetID, pSource, nil);
+        nerr = NuAddThread(fpArchive, recordIdx, targetID, pSource, NULL);
         if (nerr != kNuErrNone) {
             errMsg.Format(L"Failed adding thread: %hs.", NuStrError(nerr));
             //ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
-        pSource = nil;      /* NufxLib owns it now */
+        pSource = NULL;      /* NufxLib owns it now */
     }
 
     /* add the resource fork, if one was provided */
     if (rsrcLen >= 0) {
-        ASSERT(*pRsrcBuf != nil);
+        ASSERT(*pRsrcBuf != NULL);
 
         nerr = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed, 0,
                 *pRsrcBuf, 0, rsrcLen, ArrayDeleteHandler, &pSource);
@@ -2339,17 +2339,17 @@ NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
             //ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
-        *pRsrcBuf = nil;        /* owned by data source */
+        *pRsrcBuf = NULL;        /* owned by data source */
 
         /* add the data fork */
         nerr = NuAddThread(fpArchive, recordIdx, kNuThreadIDRsrcFork,
-                pSource, nil);
+                pSource, NULL);
         if (nerr != kNuErrNone) {
             errMsg.Format(L"Failed adding thread: %hs.", NuStrError(nerr));
             //ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
-        pSource = nil;      /* NufxLib owns it now */
+        pSource = NULL;      /* NufxLib owns it now */
     }
 
 bail:
@@ -2436,13 +2436,13 @@ NufxArchive::GetComment(CWnd* pMsgWnd, const GenericEntry* pGenericEntry,
     ASSERT(pGenericEntry->GetHasComment());
 
     /* use standard extract function to pull comment out */
-    buf = nil;
+    buf = NULL;
     len = 0;
     result = pEntry->ExtractThreadToBuffer(GenericEntry::kCommentThread,
                 &buf, &len, &errMsg);
     if (result != IDOK) {
         WMSG1("Failed getting comment: %hs\n", buf);
-        ASSERT(buf == nil);
+        ASSERT(buf == NULL);
         return false;
     }
 
@@ -2487,7 +2487,7 @@ bool
 NufxArchive::SetComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
     const CString& str)
 {
-    NuDataSource* pSource = nil;
+    NuDataSource* pSource = NULL;
     NufxEntry* pEntry = (NufxEntry*) pGenericEntry;
     NuError nerr;
     bool retVal = false;
@@ -2536,7 +2536,7 @@ NufxArchive::SetComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
     /* create a data source to write from */
     nerr = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed,
             maxLen, (const BYTE*)(LPCSTR)newStr, 0,
-            newStr.GetLength(), nil, &pSource);
+            newStr.GetLength(), NULL, &pSource);
     if (nerr != kNuErrNone) {
         errMsg.Format(L"Unable to create NufxLib data source (len=%d, maxLen=%d).",
             newStr.GetLength(), maxLen);
@@ -2545,13 +2545,13 @@ NufxArchive::SetComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
 
     /* add the new thread */
     nerr = NuAddThread(fpArchive, pEntry->GetRecordIdx(),
-            kNuThreadIDComment, pSource, nil);
+            kNuThreadIDComment, pSource, NULL);
     if (nerr != kNuErrNone) {
         errMsg.Format(L"Unable to add comment thread: %hs.",
             NuStrError(nerr));
         goto bail;
     }
-    pSource = nil;  // nufxlib owns it now
+    pSource = NULL;  // nufxlib owns it now
 
     /* flush changes */
     long statusFlags;

@@ -585,9 +585,9 @@ DiskImg::LoadNibbleTrack(long track, long* pTrackLen)
     fNibbleTrackLoaded = -1;
 
     /* alloc track buffer if needed */
-    if (fNibbleTrackBuf == nil) {
+    if (fNibbleTrackBuf == NULL) {
         fNibbleTrackBuf = new unsigned char[kTrackAllocSize];
-        if (fNibbleTrackBuf == nil)
+        if (fNibbleTrackBuf == NULL)
             return kDIErrMalloc;
     }
 
@@ -613,7 +613,7 @@ DiskImg::SaveNibbleTrack(void)
         WMSG0("ERROR: tried to save track without loading it first\n");
         return kDIErrInternal;
     }
-    assert(fNibbleTrackBuf != nil);
+    assert(fNibbleTrackBuf != NULL);
 
     DIError dierr = kDIErrNone;
     long trackLen = GetNibbleTrackLength(fNibbleTrackLoaded);
@@ -627,7 +627,7 @@ DiskImg::SaveNibbleTrack(void)
 
 /*
  * Count up the number of readable sectors found on this track, and
- * return it.  If "pVol" is non-nil, return the volume number from
+ * return it.  If "pVol" is non-NULL, return the volume number from
  * one of the readable sectors.
  */
 int
@@ -638,7 +638,7 @@ DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
     int count = 0;
 
     assert(track >= 0 && track < kTrackCount525);
-    assert(pNibbleDescr != nil);
+    assert(pNibbleDescr != NULL);
 
     if (LoadNibbleTrack(track, &trackLen) != kDIErrNone) {
         WMSG0("   DI FindNibbleSectorStart: LoadNibbleTrack failed\n");
@@ -652,7 +652,7 @@ DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
         int vol;
         sectorIdx = FindNibbleSectorStart(buffer, track, i, pNibbleDescr, &vol);
         if (sectorIdx >= 0) {
-            if (pVol != nil)
+            if (pVol != NULL)
                 *pVol = vol;
 
             unsigned char sctBuf[256];
@@ -709,16 +709,16 @@ DiskImg::AnalyzeNibbleData(void)
         WMSG1("  Trying '%s'\n", fpNibbleDescrTable[i].description);
         goodTracks = 0;
 
-        good = TestNibbleTrack(1, &fpNibbleDescrTable[i], nil);
+        good = TestNibbleTrack(1, &fpNibbleDescrTable[i], NULL);
         if (good > fpNibbleDescrTable[i].numSectors - 4)
             goodTracks++;
-        good = TestNibbleTrack(16, &fpNibbleDescrTable[i], nil);
+        good = TestNibbleTrack(16, &fpNibbleDescrTable[i], NULL);
         if (good > fpNibbleDescrTable[i].numSectors - 4)
             goodTracks++;
         good = TestNibbleTrack(17, &fpNibbleDescrTable[i], &protoVol);
         if (good > fpNibbleDescrTable[i].numSectors - 4)
             goodTracks++;
-        good = TestNibbleTrack(26, &fpNibbleDescrTable[i], nil);
+        good = TestNibbleTrack(26, &fpNibbleDescrTable[i], NULL);
         if (good > fpNibbleDescrTable[i].numSectors - 4)
             goodTracks++;
 
@@ -750,9 +750,9 @@ DIError
 DiskImg::ReadNibbleSector(long track, int sector, void* buf,
     const NibbleDescr* pNibbleDescr)
 {
-    if (pNibbleDescr == nil) {
+    if (pNibbleDescr == NULL) {
         /* disk has no recognizable sectors */
-        WMSG0(" DI ReadNibbleSector: pNibbleDescr is nil, returning failure\n");
+        WMSG0(" DI ReadNibbleSector: pNibbleDescr is NULL, returning failure\n");
         return kDIErrBadNibbleSectors;
     }
     if (sector >= pNibbleDescr->numSectors) {
@@ -761,7 +761,7 @@ DiskImg::ReadNibbleSector(long track, int sector, void* buf,
         return kDIErrInvalidSector;
     }
 
-    assert(pNibbleDescr != nil);
+    assert(pNibbleDescr != NULL);
     assert(IsNibbleFormat(fPhysical));
     assert(track >= 0 && track < GetNumTracks());
     assert(sector >= 0 && sector < pNibbleDescr->numSectors);
@@ -795,7 +795,7 @@ DIError
 DiskImg::WriteNibbleSector(long track, int sector, const void* buf,
     const NibbleDescr* pNibbleDescr)
 {
-    assert(pNibbleDescr != nil);
+    assert(pNibbleDescr != NULL);
     assert(IsNibbleFormat(fPhysical));
     assert(track >= 0 && track < GetNumTracks());
     assert(sector >= 0 && sector < pNibbleDescr->numSectors);
@@ -944,7 +944,7 @@ DiskImg::FormatNibbles(GenericFD* pGFD) const
 
 
     assert(fHasSectors);
-    assert(fpNibbleDescr != nil);
+    assert(fpNibbleDescr != NULL);
     assert(fpNibbleDescr->numSectors == GetNumSectPerTrack());
     assert(fpNibbleDescr->encoding == kNibbleEnc53 ||
            fpNibbleDescr->encoding == kNibbleEnc62);

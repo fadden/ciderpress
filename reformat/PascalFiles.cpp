@@ -280,7 +280,7 @@ bail:
 void
 ReformatPascalText::ProcessBlock(const unsigned char* srcBuf, long length)
 {
-    ASSERT(srcBuf != nil);
+    ASSERT(srcBuf != NULL);
     ASSERT(length > 0 && length <= kPTXBlockSize);
     
     char lineBuf[kPTXBlockSize+1];

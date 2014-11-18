@@ -90,7 +90,7 @@ const int kUnk = 0x3f;      // for unmappable chars, use '?'
     0xba,   // 0xbc o underbar (masculine ordinal)  [using raised o]
     kUnk,   // 0xbd omega (Ohm)
     0xe6,   // 0xbe merged ae
-    0xf8,   // 0xbf o + slash (lower-case nil?)
+    0xf8,   // 0xbf o + slash (lower-case NULL?)
     0xbf,   // 0xc0 upside-down question mark
     0xa1,   // 0xc1 upside-down exclamation point
     0xac,   // 0xc2 rotated L ("not" sign)
@@ -199,7 +199,7 @@ ReformatText::SetResultBuffer(ReformatOutput* pOutput, bool multiFont)
     fExpBuf.SeizeBuffer(&buf, &len);
     pOutput->SetTextBuf(buf, len, true);
 
-    if (pOutput->GetTextBuf() == nil) {
+    if (pOutput->GetTextBuf() == NULL) {
         /*
          * Force "raw" mode if there's no output.  This can happen if we,
          * say, try to format an empty file as a hex dump.  We never
@@ -210,7 +210,7 @@ ReformatText::SetResultBuffer(ReformatOutput* pOutput, bool multiFont)
          * it's possible the length will be zero, we promise that there'll
          * be a buffer there.  I'm not sure it's important to do this,
          * but it does reduce the #of situations in which we have to
-         * worry about nil pointers.
+         * worry about NULL pointers.
          */
         pOutput->SetOutputKind(ReformatOutput::kOutputRaw);
         WMSG0("ReformatText returning a null pointer\n");
@@ -767,7 +767,7 @@ ReformatText::BufHexDump(const unsigned char* srcBuf, long srcLen)
     char chBuf[17];
     int i, remLen;
 
-    ASSERT(srcBuf != nil);
+    ASSERT(srcBuf != NULL);
     ASSERT(srcLen >= 0);
 
     chBuf[16] = '\0';
@@ -897,8 +897,8 @@ ReformatGraphics::InitPalette(void)
 void
 ReformatGraphics::SetResultBuffer(ReformatOutput* pOutput, MyDIBitmap* pDib)
 {
-    ASSERT(pOutput != nil);
-    ASSERT(pDib != nil);
+    ASSERT(pOutput != NULL);
+    ASSERT(pDib != NULL);
     pOutput->SetOutputKind(ReformatOutput::kOutputBitmap);
     pOutput->SetDIB(pDib);
 }

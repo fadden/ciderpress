@@ -44,7 +44,7 @@ static const ConvTable gOuterFormats[] = {
     { DiskImg::kOuterFormatGzip,            L"gzip" },
 //  { DiskImg::kOuterFormatBzip2,           L"bzip2" },
     { DiskImg::kOuterFormatZip,             L"Zip archive" },
-    { kLastEntry,                           nil }
+    { kLastEntry,                           NULL }
 };
 /* DiskImg::FileFormat */
 static const ConvTable gFileFormats[] = {
@@ -60,7 +60,7 @@ static const ConvTable gFileFormats[] = {
     { DiskImg::kFileFormatTrackStar,        L"TrackStar image" },
     { DiskImg::kFileFormatFDI,              L"FDI image" },
 //  { DiskImg::kFileFormatDDDDeluxe,        L"DDDDeluxe" },
-    { kLastEntry,                           nil }
+    { kLastEntry,                           NULL }
 };
 /* DiskImg::PhysicalFormat */
 static const ConvTable gPhysicalFormats[] = {
@@ -69,7 +69,7 @@ static const ConvTable gPhysicalFormats[] = {
     { DiskImg::kPhysicalFormatNib525_6656,  L"Raw nibbles (6656-byte)" },
     { DiskImg::kPhysicalFormatNib525_6384,  L"Raw nibbles (6384-byte)" },
     { DiskImg::kPhysicalFormatNib525_Var,   L"Raw nibbles (variable len)" },
-    { kLastEntry,                           nil }
+    { kLastEntry,                           NULL }
 };
 /* DiskImg::SectorOrder */
 static const ConvTable  gSectorOrders[] = {
@@ -78,7 +78,7 @@ static const ConvTable  gSectorOrders[] = {
     { DiskImg::kSectorOrderDOS,             L"DOS sector ordering" },
     { DiskImg::kSectorOrderCPM,             L"CP/M block ordering" },
     { DiskImg::kSectorOrderPhysical,        L"Physical sector ordering" },
-    { kLastEntry,                           nil }
+    { kLastEntry,                           NULL }
 };
 /* DiskImg::FSFormat */
 static const ConvTable gFSFormats[] = {
@@ -107,7 +107,7 @@ static const ConvTable gFSFormats[] = {
     { DiskImg::kFormatRDOS33,               L"RDOS 3.3 (16-sector)" },
     { DiskImg::kFormatRDOS32,               L"RDOS 3.2 (13-sector)" },
     { DiskImg::kFormatRDOS3,                L"RDOS 3 (cracked 13-sector)" },
-    { kLastEntry,                           nil }
+    { kLastEntry,                           NULL }
 };
 
 
@@ -169,24 +169,24 @@ ImageFormatDialog::LoadComboBoxes(void)
     CButton* pButton;
 
     pWnd = GetDlgItem(IDC_DECONF_SOURCE);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(fFileSource);
 
     if (fQueryDisplayFormat) {
         pButton = (CButton*) GetDlgItem(IDC_DECONF_VIEWASSECTORS);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         pButton->SetCheck(fDisplayFormat == kShowAsSectors);
         if (!fHasSectors)
             pButton->EnableWindow(FALSE);
 
         pButton = (CButton*) GetDlgItem(IDC_DECONF_VIEWASBLOCKS);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         pButton->SetCheck(fDisplayFormat == kShowAsBlocks);
         if (!fHasBlocks)
             pButton->EnableWindow(FALSE);
 
         pButton = (CButton*) GetDlgItem(IDC_DECONF_VIEWASNIBBLES);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         pButton->SetCheck(fDisplayFormat == kShowAsNibbles);
         if (!fHasNibbles)
             pButton->EnableWindow(FALSE);
@@ -222,7 +222,7 @@ ImageFormatDialog::LoadComboBox(int boxID, const ConvTable* pTable, int dflt)
     int idx, idxShift;
 
     pCombo = (CComboBox*) GetDlgItem(boxID);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
 
     idx = idxShift = 0;
     while (pTable[idx].enumval != kLastEntry) {
@@ -264,7 +264,7 @@ ImageFormatDialog::ConvComboSel(int boxID, const ConvTable* pTable)
     int idx, enumval;
 
     pCombo = (CComboBox*) GetDlgItem(boxID);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
     idx = pCombo->GetCurSel();
 
     if (idx < 0) {
@@ -298,17 +298,17 @@ ImageFormatDialog::OnOK(void)
 
     if (fQueryDisplayFormat) {
         pButton = (CButton*) GetDlgItem(IDC_DECONF_VIEWASSECTORS);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         if (pButton->GetCheck())
             fDisplayFormat = kShowAsSectors;
 
         pButton = (CButton*) GetDlgItem(IDC_DECONF_VIEWASBLOCKS);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         if (pButton->GetCheck())
             fDisplayFormat = kShowAsBlocks;
 
         pButton = (CButton*) GetDlgItem(IDC_DECONF_VIEWASNIBBLES);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         if (pButton->GetCheck())
             fDisplayFormat = kShowAsNibbles;
     }

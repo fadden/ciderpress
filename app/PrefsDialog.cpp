@@ -76,7 +76,7 @@ PrefsGeneralPage::OnDefaults(void)
     /* assumes that the controls are numbered sequentially */
     for (int i = 0; i < kNumVisibleColumns; i++) {
         pButton = (CButton*) GetDlgItem(IDC_COL_PATHNAME+i);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         pButton->SetCheck(1);   // 0=unchecked, 1=checked, 2=indeterminate
     }
 
@@ -94,13 +94,13 @@ PrefsGeneralPage::OnAssociations(void)
     EditAssocDialog assocDlg;
 
     assocDlg.fOurAssociations = fOurAssociations;
-    fOurAssociations = nil;
+    fOurAssociations = NULL;
 
     if (assocDlg.DoModal() == IDOK) {
         // steal the modified associations
         delete[] fOurAssociations;
         fOurAssociations = assocDlg.fOurAssociations;
-        assocDlg.fOurAssociations = nil;
+        assocDlg.fOurAssociations = NULL;
         SetModified(TRUE);
     }
 }
@@ -301,7 +301,7 @@ PrefsCompressionPage::DisableWnd(int id)
 {
     CWnd* pWnd;
     pWnd = GetDlgItem(id);
-    if (pWnd == nil) {
+    if (pWnd == NULL) {
         ASSERT(false);
         return;
     }
@@ -378,7 +378,7 @@ PrefsFviewPage::OnInitDialog(void)
     //WMSG0("Configuring spin\n");
 
     pSpin = (CSpinButtonCtrl*) GetDlgItem(IDC_PVIEW_SIZE_SPIN);
-    ASSERT(pSpin != nil);
+    ASSERT(pSpin != NULL);
 
     UDACCEL uda;
     uda.nSec = 0;
@@ -541,7 +541,7 @@ PrefsFilesPage::OnChooseFolder(void)
 
     /* get the currently-showing text from the edit field */
     pEditWnd = GetDlgItem(IDC_PREF_TEMP_FOLDER);
-    ASSERT(pEditWnd != nil);
+    ASSERT(pEditWnd != NULL);
     pEditWnd->GetWindowText(editPath);
 
     chooseDir.SetPathName(editPath);

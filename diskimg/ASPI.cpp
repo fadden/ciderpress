@@ -35,7 +35,7 @@ ASPI::Init(void)
      * Try to load the DLL.
      */
     fhASPI = ::LoadLibrary(kASPIDllName);
-    if (fhASPI == nil) {
+    if (fhASPI == NULL) {
         DWORD lastErr = ::GetLastError();
         if (lastErr == ERROR_MOD_NOT_FOUND) {
             WMSG1("ASPI DLL '%s' not found\n", kASPIDllName);
@@ -49,14 +49,14 @@ ASPI::Init(void)
     GetASPI32SupportInfo = (DWORD(*)(void))::GetProcAddress(fhASPI, "GetASPI32SupportInfo");
     SendASPI32Command = (DWORD(*)(LPSRB))::GetProcAddress(fhASPI, "SendASPI32Command");
     GetASPI32DLLVersion = (DWORD(*)(void))::GetProcAddress(fhASPI, "GetASPI32DLLVersion");
-    if (GetASPI32SupportInfo == nil || SendASPI32Command == nil) {
+    if (GetASPI32SupportInfo == NULL || SendASPI32Command == NULL) {
         WMSG0("ASPI functions not found in dll\n");
         ::FreeLibrary(fhASPI);
-        fhASPI = nil;
+        fhASPI = NULL;
         return kDIErrGeneric;
     }
 
-    if (GetASPI32DLLVersion != nil) {
+    if (GetASPI32DLLVersion != NULL) {
         fASPIVersion = GetASPI32DLLVersion();
         WMSG4(" ASPI version is %d.%d.%d.%d\n",
             fASPIVersion & 0x0ff,
@@ -75,7 +75,7 @@ ASPI::Init(void)
         WMSG1("ASPI loaded but not working (status=%d)\n",
             HIBYTE(LOWORD(aspiStatus)));
         ::FreeLibrary(fhASPI);
-        fhASPI = nil;
+        fhASPI = NULL;
         return kDIErrASPIFailure;
     }
 
@@ -91,10 +91,10 @@ ASPI::Init(void)
  */
 ASPI::~ASPI(void)
 {
-    if (fhASPI != nil) {
+    if (fhASPI != NULL) {
         WMSG0("Unloading ASPI DLL\n");
         ::FreeLibrary(fhASPI);
-        fhASPI = nil;
+        fhASPI = NULL;
     }
 }
 
@@ -150,7 +150,7 @@ ASPI::GetDeviceType(unsigned char adapter, unsigned char target,
     assert(adapter >= 0 && adapter < kMaxAdapters);
     assert(target >= 0 && target < kMaxTargets);
     assert(lun >= 0 && lun < kMaxLuns);
-    assert(pType != nil);
+    assert(pType != NULL);
 
     memset(&req, 0, sizeof(req));
     req.SRB_Cmd = SC_GET_DEV_TYPE;
@@ -311,7 +311,7 @@ ASPI::TestUnitReady(unsigned char adapter, unsigned char target,
     srb.SRB_Lun = lun;
     srb.SRB_Flags = 0; //SRB_DIR_IN;
     srb.SRB_BufLen = 0;
-    srb.SRB_BufPointer = nil;
+    srb.SRB_BufPointer = NULL;
     srb.SRB_SenseLen = SENSE_LEN;
     srb.SRB_CDBLen = sizeof(*pCDB);
 
@@ -369,7 +369,7 @@ ASPI::ReadBlocks(unsigned char adapter, unsigned char target,
     assert(sizeof(CDB10) == 10);
     assert(startBlock >= 0);
     assert(numBlocks > 0);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     memset(&srb, 0, sizeof(srb));
     srb.SRB_Cmd = SC_EXEC_SCSI_CMD;
@@ -411,7 +411,7 @@ ASPI::WriteBlocks(unsigned char adapter, unsigned char target,
     assert(sizeof(CDB10) == 10);
     assert(startBlock >= 0);
     assert(numBlocks > 0);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     memset(&srb, 0, sizeof(srb));
     srb.SRB_Cmd = SC_EXEC_SCSI_CMD;
@@ -449,7 +449,7 @@ ASPI::WriteBlocks(unsigned char adapter, unsigned char target,
 DIError
 ASPI::ExecSCSICommand(SRB_ExecSCSICmd* pSRB)
 {
-    HANDLE completionEvent = nil;
+    HANDLE completionEvent = NULL;
     DWORD eventStatus;
     DWORD aspiStatus;
 
@@ -464,7 +464,7 @@ ASPI::ExecSCSICommand(SRB_ExecSCSICmd* pSRB)
     pSRB->SRB_Flags |= SRB_EVENT_NOTIFY;
 
     completionEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
-    if (completionEvent == nil) {
+    if (completionEvent == NULL) {
         WMSG0("Failed creating a completion event?\n");
         return kDIErrGeneric;
     }
@@ -527,16 +527,16 @@ ASPI::GetAccessibleDevices(int deviceMask, ASPIDevice** ppDeviceArray,
     int* pNumDevices)
 {
     DIError dierr;
-    ASPIDevice* deviceArray = nil;
+    ASPIDevice* deviceArray = NULL;
     int idx = 0;
 
     assert(deviceMask != 0);
     assert((deviceMask & ~(kDevMaskCDROM | kDevMaskHardDrive)) == 0);
-    assert(ppDeviceArray != nil);
-    assert(pNumDevices != nil);
+    assert(ppDeviceArray != NULL);
+    assert(pNumDevices != NULL);
 
     deviceArray = new ASPIDevice[kMaxAccessibleDrives];
-    if (deviceArray == nil)
+    if (deviceArray == NULL)
         return kDIErrMalloc;
 
     WMSG1("ASPI scanning %d host adapters\n", fHostAdapterCount);

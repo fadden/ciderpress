@@ -11,7 +11,7 @@
  *  - Add a corresponding entry to Preferences::fPrefMaps, adding a new
  *    section to the registry if appropriate.
  *  - Add a default value to Preferences::Preferences.  If not specified,
- *    strings will be nil and numeric values will be zero.
+ *    strings will be NULL and numeric values will be zero.
  */
 #ifndef APP_PREFERENCES_H
 #define APP_PREFERENCES_H

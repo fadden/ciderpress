@@ -28,7 +28,7 @@ public:
       fCoerceDOSFilenames(FALSE),
       fSpacesToUnder(FALSE),
       fDefaultsPushed(FALSE),
-      fOurAssociations(nil)
+      fOurAssociations(NULL)
         {}
     virtual ~PrefsGeneralPage(void) {
         delete[] fOurAssociations;

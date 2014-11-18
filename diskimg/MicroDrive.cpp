@@ -182,8 +182,8 @@ DIError
 DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
 {
     DIError dierr = kDIErrNone;
-    DiskFS* pNewFS = nil;
-    DiskImg* pNewImg = nil;
+    DiskFS* pNewFS = NULL;
+    DiskImg* pNewImg = NULL;
     //bool tweaked = false;
 
     WMSG2("Adding %ld +%ld\n", startBlock, numBlocks);
@@ -204,7 +204,7 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
     }
 
     pNewImg = new DiskImg;
-    if (pNewImg == nil) {
+    if (pNewImg == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -233,7 +233,7 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
         WMSG2(" MicroDriveSub (%ld,%ld): unable to identify filesystem\n",
             startBlock, numBlocks);
         DiskFSUnknown* pUnknownFS = new DiskFSUnknown;
-        if (pUnknownFS == nil) {
+        if (pUnknownFS == NULL) {
             dierr = kDIErrInternal;
             goto bail;
         }
@@ -245,7 +245,7 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
         /* open a DiskFS for the sub-image */
         WMSG2(" MicroDriveSub (%ld,%ld) analyze succeeded!\n", startBlock, numBlocks);
         pNewFS = pNewImg->OpenAppropriateDiskFS(true);
-        if (pNewFS == nil) {
+        if (pNewFS == NULL) {
             WMSG0(" MicroDriveSub: OpenAppropriateDiskFS failed\n");
             dierr = kDIErrUnsupportedFSFmt;
             goto bail;
@@ -277,8 +277,8 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
 
     /* add it to the list */
     AddSubVolumeToList(pNewImg, pNewFS);
-    pNewImg = nil;
-    pNewFS = nil;
+    pNewImg = NULL;
+    pNewFS = NULL;
 
 bail:
     delete pNewFS;
@@ -384,8 +384,8 @@ DiskFSMicroDrive::OpenVol(int idx, long startBlock, long numBlocks)
     if (dierr != kDIErrNone) {
         if (dierr == kDIErrCancelled)
             goto bail;
-        DiskFS* pNewFS = nil;
-        DiskImg* pNewImg = nil;
+        DiskFS* pNewFS = NULL;
+        DiskImg* pNewImg = NULL;
 
         WMSG1(" MicroDrive failed opening sub-volume %d\n", idx);
         dierr = CreatePlaceholder(startBlock, numBlocks, NULL, NULL,

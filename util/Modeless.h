@@ -63,13 +63,13 @@ private:
  */
 class ExclusiveModelessDialog : public ModelessDialog {
 public:
-    ExclusiveModelessDialog(void) : fpParentWnd(nil) {}
+    ExclusiveModelessDialog(void) : fpParentWnd(NULL) {}
     virtual ~ExclusiveModelessDialog(void) {};
 
     /* disable the parent window before we're created */
     BOOL Create(int dialogID, CWnd* pParentWnd = NULL) {
-        ASSERT(pParentWnd != nil);      // else what's the point?
-        if (pParentWnd != nil) {
+        ASSERT(pParentWnd != NULL);      // else what's the point?
+        if (pParentWnd != NULL) {
             fpParentWnd = pParentWnd;
             fpParentWnd->EnableWindow(FALSE);
         }
@@ -78,7 +78,7 @@ public:
 
     /* enable the parent window before we're destroyed */
     virtual BOOL DestroyWindow(void) {
-        if (fpParentWnd != nil)
+        if (fpParentWnd != NULL)
             fpParentWnd->EnableWindow(TRUE);
         return ModelessDialog::DestroyWindow();
     }

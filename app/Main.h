@@ -374,7 +374,7 @@ private:
         class DeleteListNode {
         public:
             DeleteListNode(const CString& name) : fName(name),
-                fPrev(nil), fNext(nil) {}
+                fPrev(NULL), fNext(NULL) {}
             ~DeleteListNode(void) {}
 
             DeleteListNode* fPrev;
@@ -383,13 +383,13 @@ private:
         };
 
     public:
-        DeleteList(void) { fHead = nil; }
+        DeleteList(void) { fHead = NULL; }
         ~DeleteList(void) {
             WMSG1("Processing DeleteList (head=0x%08lx)\n", fHead);
             DeleteListNode* pNode = fHead;
             DeleteListNode* pNext;
 
-            while (pNode != nil) {
+            while (pNode != NULL) {
                 pNext = pNode->fNext;
                 if (_wunlink(pNode->fName) != 0) {
                     WMSG2(" WARNING: delete of '%ls' failed, err=%d\n",
@@ -405,7 +405,7 @@ private:
 
         void Add(const CString& name) {
             DeleteListNode* pNode = new DeleteListNode(name);
-            if (fHead != nil) {
+            if (fHead != NULL) {
                 fHead->fPrev = pNode;
                 pNode->fNext = fHead;
             }
@@ -424,13 +424,13 @@ private:
 
 #define SET_PROGRESS_BEGIN() ((MainWindow*)::AfxGetMainWnd())->SetProgressBegin()
 #define SET_PROGRESS_UPDATE(perc) \
-    ((MainWindow*)::AfxGetMainWnd())->SetProgressUpdate(perc, nil, nil)
+    ((MainWindow*)::AfxGetMainWnd())->SetProgressUpdate(perc, NULL, NULL)
 #define SET_PROGRESS_UPDATE2(perc, oldName, newName) \
     ((MainWindow*)::AfxGetMainWnd())->SetProgressUpdate(perc, oldName, newName)
 #define SET_PROGRESS_END() ((MainWindow*)::AfxGetMainWnd())->SetProgressEnd()
 
 #define SET_PROGRESS_COUNTER(val) \
-    ((MainWindow*)::AfxGetMainWnd())->SetProgressCounter(nil, val)
+    ((MainWindow*)::AfxGetMainWnd())->SetProgressCounter(NULL, val)
 #define SET_PROGRESS_COUNTER_2(fmt, val) \
     ((MainWindow*)::AfxGetMainWnd())->SetProgressCounter(fmt, val)
 

@@ -18,8 +18,8 @@ using namespace DiskImgLib;
 bool
 DiskFSTree::BuildTree(DiskFS* pDiskFS, CTreeCtrl* pTree)
 {
-    ASSERT(pDiskFS != nil);
-    ASSERT(pTree != nil);
+    ASSERT(pDiskFS != NULL);
+    ASSERT(pTree != NULL);
 
     pTree->SetImageList(&fTreeImageList, TVSIL_NORMAL);
     return AddDiskFS(pTree, TVI_ROOT, pDiskFS, 1);
@@ -49,7 +49,7 @@ DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     pTarget = AllocTargetData();
     pTarget->kind = kTargetDiskFS;
     pTarget->pDiskFS = pDiskFS;
-    pTarget->pFile = nil;   // could also use volume dir for ProDOS
+    pTarget->pFile = NULL;   // could also use volume dir for ProDOS
     tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
     // TODO(xyzzy): need storage for wide-char version
     tvi.pszText = L"XYZZY-DiskFSTree1"; // pDiskFS->GetVolumeID();
@@ -69,7 +69,7 @@ DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     tvins.hInsertAfter = parent;
     tvins.hParent = parent;
     hLocalRoot = pTree->InsertItem(&tvins);
-    if (hLocalRoot == nil) {
+    if (hLocalRoot == NULL) {
         WMSG0("Tree root InsertItem failed\n");
         return false;
     }
@@ -77,8 +77,8 @@ DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     /*
      * Scan for and handle all sub-volumes.
      */
-    pSubVol = pDiskFS->GetNextSubVolume(nil);
-    while (pSubVol != nil) {
+    pSubVol = pDiskFS->GetNextSubVolume(NULL);
+    while (pSubVol != NULL) {
         if (!AddDiskFS(pTree, hLocalRoot, pSubVol->GetDiskFS(), depth+1))
             return false;
 
@@ -96,7 +96,7 @@ DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     if (fIncludeSubdirs && pDiskFS->GetReadWriteSupported() &&
         !pDiskFS->GetFSDamaged())
     {
-        AddSubdir(pTree, hLocalRoot, pDiskFS, nil, depth);
+        AddSubdir(pTree, hLocalRoot, pDiskFS, NULL, depth);
     }
 
     /*
@@ -121,7 +121,7 @@ DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
  * Add the subdir and all of the subdirectories of the current subdir.
  *
  * The files are held in a linear list in the DiskFS, so we have to
- * reconstruct the hierarchy from the path names.  Pass in nil for the
+ * reconstruct the hierarchy from the path names.  Pass in NULL for the
  * root volume.
  *
  * Returns a pointer to the next A2File in the list (i.e. the first one
@@ -141,15 +141,15 @@ DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
     TVINSERTSTRUCT tvins;
 
     pFile = pDiskFS->GetNextFile(pParentFile);
-    if (pFile == nil && pParentFile == nil) {
+    if (pFile == NULL && pParentFile == NULL) {
         /* this can happen on an empty DOS 3.3 disk; under ProDOS, we always
            have the volume entry */
-        /* note pFile will be nil if this happens to be a subdirectory
+        /* note pFile will be NULL if this happens to be a subdirectory
            positioned as the very last file on the disk */
-        return nil;
+        return NULL;
     }
 
-    if (pParentFile == nil) {
+    if (pParentFile == NULL) {
         /*
          * This is the root of the disk.  We already have a DiskFS entry for
          * it, so don't add a new tree item here.
@@ -181,20 +181,20 @@ DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
         tvins.hInsertAfter = parent;
         tvins.hParent = parent;
         hLocalRoot = pTree->InsertItem(&tvins);
-        if (hLocalRoot == nil) {
+        if (hLocalRoot == NULL) {
             WMSG1("Tree insert '%ls' failed\n", tvi.pszText);
-            return nil;
+            return NULL;
         }
     }
 
-    while (pFile != nil) {
+    while (pFile != NULL) {
         if (pFile->IsDirectory()) {
              ASSERT(!pFile->IsVolumeDirectory());
 
              if (pFile->GetParent() == pParentFile) {
                  /* this is a subdir of us */
                  pFile = AddSubdir(pTree, hLocalRoot, pDiskFS, pFile, depth+1);
-                 if (pFile == nil)
+                 if (pFile == NULL)
                      break;     // out of while -- disk is done
              } else {
                  /* not one of our subdirs; pop up a level */
@@ -221,8 +221,8 @@ DiskFSTree::AllocTargetData(void)
 {
     TargetData* pNew = new TargetData;
 
-    if (pNew == nil)
-        return nil;
+    if (pNew == NULL)
+        return NULL;
     memset(pNew, 0, sizeof(*pNew));
 
     /* insert it at the head of the list, and update the head pointer */
@@ -244,11 +244,11 @@ DiskFSTree::FreeAllTargetData(void)
     TargetData* pNext;
 
     pTarget = fpTargetData;
-    while (pTarget != nil) {
+    while (pTarget != NULL) {
         pNext = pTarget->pNext;
         delete pTarget;
         pTarget = pNext;
     }
 
-    fpTargetData = nil;
+    fpTargetData = NULL;
 }

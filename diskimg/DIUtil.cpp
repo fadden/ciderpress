@@ -217,23 +217,23 @@ DiskImgLib::WriteLongBE(GenericFD* pGFD, unsigned long val)
  * in.  If the fssep is '\0' (as is the case for DOS 3.3), then the entire
  * pathname is returned.
  *
- * Always returns a pointer to a string; never returns nil.
+ * Always returns a pointer to a string; never returns NULL.
  */
 const char*
 DiskImgLib::FilenameOnly(const char* pathname, char fssep)
 {
     const char* retstr;
     const char* pSlash;
-    char* tmpStr = nil;
+    char* tmpStr = NULL;
 
-    assert(pathname != nil);
+    assert(pathname != NULL);
     if (fssep == '\0') {
         retstr = pathname;
         goto bail;
     }
 
     pSlash = strrchr(pathname, fssep);
-    if (pSlash == nil) {
+    if (pSlash == NULL) {
         retstr = pathname;      /* whole thing is the filename */
         goto bail;
     }
@@ -251,7 +251,7 @@ DiskImgLib::FilenameOnly(const char* pathname, char fssep)
         tmpStr[strlen(pathname)-1] = '\0';
         pSlash = strrchr(tmpStr, fssep);
 
-        if (pSlash == nil) {
+        if (pSlash == NULL) {
             retstr = pathname;  /* just a filename with a '/' after it */
             goto bail;
         }
@@ -279,7 +279,7 @@ bail:
  * An extension is the stuff following the last '.' in the filename.  If
  * there is nothing following the last '.', then there is no extension.
  *
- * Returns a pointer to the '.' preceding the extension, or nil if no
+ * Returns a pointer to the '.' preceding the extension, or NULL if no
  * extension was found.
  *
  * We guarantee that there is at least one character after the '.'.
@@ -295,20 +295,20 @@ DiskImgLib::FindExtension(const char* pathname, char fssep)
      * about "/foo.bar/file".
      */
     pFilename = FilenameOnly(pathname, fssep);
-    assert(pFilename != nil);
+    assert(pFilename != NULL);
     pExt = strrchr(pFilename, kFilenameExtDelim);
 
     /* also check for "/blah/foo.", which doesn't count */
-    if (pExt != nil && *(pExt+1) != '\0')
+    if (pExt != NULL && *(pExt+1) != '\0')
         return pExt;
 
-    return nil;
+    return NULL;
 }
 
 /*
  * Like strcpy(), but allocate with new[] instead.
  *
- * If "str" is nil, or "new" fails, this returns nil.
+ * If "str" is NULL, or "new" fails, this returns NULL.
  *
  * TODO: should be "StrdupNew()"
  */
@@ -317,10 +317,10 @@ DiskImgLib::StrcpyNew(const char* str)
 {
     char* newStr;
 
-    if (str == nil)
-        return nil;
+    if (str == NULL)
+        return NULL;
     newStr = new char[strlen(str)+1];
-    if (newStr != nil)
+    if (newStr != NULL)
         strcpy(newStr, str);
     return newStr;
 }

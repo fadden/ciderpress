@@ -226,11 +226,11 @@ DiskFSHFS::LoadVolHeader(void)
         time_t when;
         int isDst;
 
-        when = time(nil);
+        when = time(NULL);
         isDst = localtime(&when)->tm_isdst;
 
         ptm = gmtime(&when);
-        if (ptm != nil) {
+        if (ptm != NULL) {
             tmWhen = *ptm;  // make a copy -- static buffers in time functions
             tmWhen.tm_isdst = isDst;
 
@@ -289,7 +289,7 @@ DiskFSHFS::LoadVolHeader(void)
      */
     A2FileHFS* pFile;
     pFile = new A2FileHFS(this);
-    if (pFile == nil) {
+    if (pFile == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -410,14 +410,14 @@ DiskFSHFS::Initialize(InitMode initMode)
      */
     fHfsVol = hfs_callback_open(LibHFSCB, this, /*HFS_OPT_NOCACHE |*/
                 (fpImg->GetReadOnly() ? HFS_MODE_RDONLY : HFS_MODE_RDWR));
-    if (fHfsVol == nil) {
+    if (fHfsVol == NULL) {
         WMSG1("ERROR: hfs_opencallback failed: %s\n", hfs_error);
         return kDIErrGeneric;
     }
 
     /* volume dir is guaranteed to come first; if not, we need a lookup func */
     A2FileHFS* pVolumeDir;
-    pVolumeDir = (A2FileHFS*) GetNextFile(nil);
+    pVolumeDir = (A2FileHFS*) GetNextFile(NULL);
 
     dierr = RecursiveDirAdd(pVolumeDir, ":", 0);
     if (dierr != kDIErrNone)
@@ -449,7 +449,7 @@ DiskFSHFS::LibHFSCB(void* vThis, int op, unsigned long arg1, void* arg2)
     DiskFSHFS* pThis = (DiskFSHFS*) vThis;
     unsigned long result = (unsigned long) -1;
 
-    assert(pThis != nil);
+    assert(pThis != NULL);
 
     switch (op) {
     case HFS_CB_VOLSIZE:
@@ -458,7 +458,7 @@ DiskFSHFS::LibHFSCB(void* vThis, int op, unsigned long arg1, void* arg2)
         break;
     case HFS_CB_READ:       // arg1=block, arg2=buffer
         //WMSG1("  HFSCB read block %lu\n", arg1);
-        if (arg1 < pThis->fTotalBlocks && arg2 != nil) {
+        if (arg1 < pThis->fTotalBlocks && arg2 != NULL) {
             DIError err = pThis->fpImg->ReadBlock(arg1, arg2);
             if (err == kDIErrNone)
                 result = 0;
@@ -469,7 +469,7 @@ DiskFSHFS::LibHFSCB(void* vThis, int op, unsigned long arg1, void* arg2)
         break;
     case HFS_CB_WRITE:
         WMSG1("  HFSCB write block %lu\n", arg1);
-        if (arg1 < pThis->fTotalBlocks && arg2 != nil) {
+        if (arg1 < pThis->fTotalBlocks && arg2 != NULL) {
             DIError err = pThis->fpImg->WriteBlock(arg1, arg2);
             if (err == kDIErrNone)
                 result = 0;
@@ -500,7 +500,7 @@ DIError
 DiskFSHFS::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     int* pUnitSize) const
 {
-    assert(fHfsVol != nil);
+    assert(fHfsVol != NULL);
 
     hfsvolent volEnt;
     if (hfs_vstat(fHfsVol, &volEnt) != 0)
@@ -522,7 +522,7 @@ DiskFSHFS::RecursiveDirAdd(A2File* pParent, const char* basePath, int depth)
     DIError dierr = kDIErrNone;
     hfsdir* dir;
     hfsdirent dirEntry;
-    char* pathBuf = nil;
+    char* pathBuf = NULL;
     int nameOffset;
 
     /* if we get too deep, assume it's a loop */
@@ -533,7 +533,7 @@ DiskFSHFS::RecursiveDirAdd(A2File* pParent, const char* basePath, int depth)
 
     //WMSG1(" HFS RecursiveDirAdd '%s'\n", basePath);
     dir = hfs_opendir(fHfsVol, basePath);
-    if (dir == nil) {
+    if (dir == NULL) {
         printf("  HFS unable to open dir '%s'\n", basePath);
         WMSG1("  HFS unable to open dir '%s'\n", basePath);
         dierr = kDIErrGeneric;
@@ -545,7 +545,7 @@ DiskFSHFS::RecursiveDirAdd(A2File* pParent, const char* basePath, int depth)
 
     nameOffset = strlen(basePath) +1;
     pathBuf = new char[nameOffset + A2FileHFS::kMaxFileName +1];
-    if (pathBuf == nil) {
+    if (pathBuf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -564,7 +564,7 @@ DiskFSHFS::RecursiveDirAdd(A2File* pParent, const char* basePath, int depth)
         pFile->SetParent(pParent);
         AddFileToList(pFile);
 
-        if (!fpImg->UpdateScanProgress(nil)) {
+        if (!fpImg->UpdateScanProgress(NULL)) {
             WMSG0(" HFS cancelled by user\n");
             dierr = kDIErrCancelled;
             goto bail;
@@ -644,7 +644,7 @@ void A2FileHFS::InitEntry(const hfsdirent* dirEntry)
 /*static*/ bool
 DiskFSHFS::IsValidVolumeName(const char* name)
 {
-    if (name == nil)
+    if (name == NULL)
         return false;
 
     int len = strlen(name);
@@ -666,7 +666,7 @@ DiskFSHFS::IsValidVolumeName(const char* name)
 /*static*/ bool
 DiskFSHFS::IsValidFileName(const char* name)
 {
-    if (name == nil)
+    if (name == NULL)
         return false;
 
     int len = strlen(name);
@@ -694,7 +694,7 @@ DiskFSHFS::Format(DiskImg* pDiskImg, const char* volName)
         return kDIErrInvalidArg;
 
     /* set fpImg so calls that rely on it will work; we un-set it later */
-    assert(fpImg == nil);
+    assert(fpImg == NULL);
     SetDiskImg(pDiskImg);
 
     /* need this for callback function */
@@ -708,7 +708,7 @@ DiskFSHFS::Format(DiskImg* pDiskImg, const char* volName)
 
     // no need to flush; HFS volume is closed
 
-    SetDiskImg(nil);        // shouldn't really be set by us
+    SetDiskImg(NULL);        // shouldn't really be set by us
     return kDIErrNone;
 }
 
@@ -726,19 +726,19 @@ DiskFSHFS::NormalizePath(const char* path, char fssep,
     char* normalizedBuf, int* pNormalizedBufLen)
 {
     DIError dierr = kDIErrNone;
-    char* normalizedPath = nil;
+    char* normalizedPath = NULL;
     int len;
 
-    assert(pNormalizedBufLen != nil);
-    assert(normalizedBuf != nil || *pNormalizedBufLen == 0);
+    assert(pNormalizedBufLen != NULL);
+    assert(normalizedBuf != NULL || *pNormalizedBufLen == 0);
 
     dierr = DoNormalizePath(path, fssep, &normalizedPath);
     if (dierr != kDIErrNone)
         goto bail;
 
-    assert(normalizedPath != nil);
+    assert(normalizedPath != NULL);
     len = strlen(normalizedPath);
-    if (normalizedBuf == nil || *pNormalizedBufLen <= len) {
+    if (normalizedBuf == NULL || *pNormalizedBufLen <= len) {
         /* too short */
         dierr = kDIErrDataOverrun;
     } else {
@@ -765,18 +765,18 @@ DiskFSHFS::DoNormalizePath(const char* path, char fssep,
     char** pNormalizedPath)
 {
     DIError dierr = kDIErrNone;
-    char* workBuf = nil;
-    char* partBuf = nil;
-    char* outputBuf = nil;
+    char* workBuf = NULL;
+    char* partBuf = NULL;
+    char* outputBuf = NULL;
     char* start;
     char* end;
     char* outPtr;
 
-    assert(path != nil);
+    assert(path != NULL);
     workBuf = new char[strlen(path)+1];
     partBuf = new char[strlen(path)+1 +1];  // need +1 for prepending letter
     outputBuf = new char[strlen(path) * 2];
-    if (workBuf == nil || partBuf == nil || outputBuf == nil) {
+    if (workBuf == NULL || partBuf == NULL || outputBuf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -791,10 +791,10 @@ DiskFSHFS::DoNormalizePath(const char* path, char fssep,
         int partIdx;
 
         if (fssep == '\0') {
-            end = nil;
+            end = NULL;
         } else {
             end = strchr(start, fssep);
-            if (end != nil)
+            if (end != NULL)
                 *end = '\0';
         }
         partIdx = 0;
@@ -824,7 +824,7 @@ DiskFSHFS::DoNormalizePath(const char* path, char fssep,
         if (partIdx > A2FileHFS::kMaxFileName) {
             const char* pDot = strrchr(partBuf, '.');
             //int DEBUGDOTLEN = pDot - partBuf;
-            if (pDot != nil && partIdx - (pDot-partBuf) <= kMaxExtensionLen) {
+            if (pDot != NULL && partIdx - (pDot-partBuf) <= kMaxExtensionLen) {
                 int dotLen = partIdx - (pDot-partBuf);
                 memmove(partBuf + (A2FileProDOS::kMaxFileName - dotLen),
                     pDot, dotLen);      // don't use memcpy, move might overlap
@@ -844,7 +844,7 @@ DiskFSHFS::DoNormalizePath(const char* path, char fssep,
         /*
          * Continue with next segment.
          */
-        if (end == nil)
+        if (end == NULL)
             break;
         start = end+1;
     }
@@ -856,7 +856,7 @@ DiskFSHFS::DoNormalizePath(const char* path, char fssep,
     assert(*outputBuf != '\0');
 
     *pNormalizedPath = outputBuf;
-    outputBuf = nil;
+    outputBuf = NULL;
 
 bail:
     delete[] workBuf;
@@ -915,13 +915,13 @@ DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
     char* uniqueName;
     char* fileName;     // points inside uniqueName
 
-    assert(pathName != nil);
+    assert(pathName != NULL);
     assert(pathName[0] == A2FileHFS::kFssep);
 
     /* see if it exists */
     pFile = GetFileByName(pathName+1);
-    if (pFile == nil) {
-        *pUniqueName = nil;
+    if (pFile == NULL) {
+        *pUniqueName = NULL;
         return kDIErrNone;
     }
 
@@ -930,7 +930,7 @@ DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
     strcpy(uniqueName, pathName);
 
     fileName = strrchr(uniqueName, A2FileHFS::kFssep);
-    assert(fileName != nil);
+    assert(fileName != NULL);
     fileName++;
 
     int nameLen = strlen(fileName);
@@ -946,7 +946,7 @@ DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
      * do everything we need.
      */
     const char* cp = strrchr(fileName, '.');
-    if (cp != nil) {
+    if (cp != NULL) {
         int tmpOffset = cp - fileName;
         if (tmpOffset > 0 && nameLen - tmpOffset <= kMaxExtensionLen) {
             WMSG1("  HFS   (keeping extension '%s')\n", cp);
@@ -976,7 +976,7 @@ DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
         memcpy(fileName + copyOffset, digitBuf, digitLen);
         if (dotLen != 0)
             memcpy(fileName + copyOffset + digitLen, dotBuf, dotLen);
-    } while (GetFileByName(uniqueName+1) != nil);
+    } while (GetFileByName(uniqueName+1) != NULL);
 
     WMSG1(" HFS  converted to unique name: %s\n", uniqueName);
 
@@ -998,22 +998,22 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
 {
     DIError dierr = kDIErrNone;
     char typeStr[5], creatorStr[5];
-    char* normalizedPath = nil;
-    char* basePath = nil;
-    char* fileName = nil;
-    char* fullPath = nil;
-    A2FileHFS* pSubdir = nil;
-    A2FileHFS* pNewFile = nil;
-    hfsfile* pHfsFile = nil;
+    char* normalizedPath = NULL;
+    char* basePath = NULL;
+    char* fileName = NULL;
+    char* fullPath = NULL;
+    A2FileHFS* pSubdir = NULL;
+    A2FileHFS* pNewFile = NULL;
+    hfsfile* pHfsFile = NULL;
     const bool createUnique = (GetParameter(kParm_CreateUnique) != 0);
 
-    assert(fHfsVol != nil);
+    assert(fHfsVol != NULL);
 
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
 
-    assert(pParms != nil);
-    assert(pParms->pathName != nil);
+    assert(pParms != NULL);
+    assert(pParms->pathName != NULL);
     assert(pParms->storageType == A2FileProDOS::kStorageSeedling ||
            pParms->storageType == A2FileProDOS::kStorageExtended ||
            pParms->storageType == A2FileProDOS::kStorageDirectory);
@@ -1027,12 +1027,12 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      * This must not "sanitize" the path.  We need to be working with the
      * original characters, not the sanitized-for-display versions.
      */
-    assert(pParms->pathName != nil);
+    assert(pParms->pathName != NULL);
     dierr = DoNormalizePath(pParms->pathName, pParms->fssep,
                 &normalizedPath);
     if (dierr != kDIErrNone)
         goto bail;
-    assert(normalizedPath != nil);
+    assert(normalizedPath != NULL);
 
     /*
      * The normalized path lacks a leading ':', and might need to
@@ -1042,7 +1042,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     fullPath[0] = A2FileHFS::kFssep;
     strcpy(fullPath+1, normalizedPath);
     delete[] normalizedPath;
-    normalizedPath = nil;
+    normalizedPath = NULL;
 
     /*
      * Make the name unique within the current directory.  This requires
@@ -1056,7 +1056,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
         dierr = MakeFileNameUnique(fullPath, &uniquePath);
         if (dierr != kDIErrNone)
             goto bail;
-        if (uniquePath != nil) {
+        if (uniquePath != NULL) {
             delete[] fullPath;
             fullPath = uniquePath;
         }
@@ -1077,9 +1077,9 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      */
     char* cp;
     cp = strrchr(fullPath, A2FileHFS::kFssep);
-    assert(cp != nil);
+    assert(cp != NULL);
     if (cp == fullPath) {
-        assert(basePath == nil);
+        assert(basePath == NULL);
         fileName = new char[strlen(fullPath) +1];
         strcpy(fileName, fullPath);
     } else {
@@ -1094,12 +1094,12 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
 
     WMSG2("SPLIT: '%s' '%s'\n", basePath, fileName);
 
-    assert(fileName != nil);
+    assert(fileName != NULL);
 
     /*
      * Open the base path.  If it doesn't exist, create it recursively.
      */
-    if (basePath != nil) {
+    if (basePath != NULL) {
         WMSG2(" HFS  Creating '%s' in '%s'\n", fileName, basePath);
         /*
          * Open the named subdir, creating it if it doesn't exist.  We need
@@ -1107,7 +1107,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
          * linear file list, and that doesn't include the leading ':'.
          */
         pSubdir = (A2FileHFS*)GetFileByName(basePath+1, CompareMacFileNames);
-        if (pSubdir == nil) {
+        if (pSubdir == NULL) {
             WMSG1("  HFS  Creating subdir '%s'\n", basePath);
             A2File* pNewSub;
             CreateParms newDirParms;
@@ -1117,11 +1117,11 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
             newDirParms.fileType = 0;
             newDirParms.auxType = 0;
             newDirParms.access = 0;
-            newDirParms.createWhen = newDirParms.modWhen = time(nil);
+            newDirParms.createWhen = newDirParms.modWhen = time(NULL);
             dierr = this->CreateFile(&newDirParms, &pNewSub);
             if (dierr != kDIErrNone)
                 goto bail;
-            assert(pNewSub != nil);
+            assert(pNewSub != NULL);
 
             pSubdir = (A2FileHFS*) pNewSub;
         }
@@ -1161,7 +1161,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
             basePathLen -= fixedLen+1;
 
             pBaseDir = (A2FileHFS*) pBaseDir->GetParent();
-            assert(pBaseDir != nil);
+            assert(pBaseDir != NULL);
         }
         // check the math; we should be left with the leading ':'
         if (pSubdir->IsVolumeDirectory())
@@ -1172,11 +1172,11 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
         /* open the volume directory */
         WMSG1(" HFS  Creating '%s' in volume dir\n", fileName);
         /* volume dir must be first in the list */
-        pSubdir = (A2FileHFS*) GetNextFile(nil);
-        assert(pSubdir != nil);
+        pSubdir = (A2FileHFS*) GetNextFile(NULL);
+        assert(pSubdir != NULL);
         assert(pSubdir->IsVolumeDirectory());
     }
-    if (pSubdir == nil) {
+    if (pSubdir == NULL) {
         WMSG1(" HFS Unable to open subdir '%s'\n", basePath);
         dierr = kDIErrFileNotFound;
         goto bail;
@@ -1208,7 +1208,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     } else {
         /* create, and open, the file */
         pHfsFile = hfs_create(fHfsVol, fullPath, typeStr, creatorStr);
-        if (pHfsFile == nil) {
+        if (pHfsFile == NULL) {
             WMSG1(" HFS create failed: %s\n", hfs_error);
             dierr = kDIErrGeneric;
             goto bail;
@@ -1233,7 +1233,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
 
         (void) hfs_fsetattr(pHfsFile, &dirEnt);
         (void) hfs_close(pHfsFile);
-        pHfsFile = nil;
+        pHfsFile = NULL;
     }
 
     /*
@@ -1243,7 +1243,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      */
     pNewFile = new A2FileHFS(this);
     pNewFile->InitEntry(&dirEnt);
-    pNewFile->SetPathName(basePath == nil ? "" : basePath, pNewFile->fFileName);
+    pNewFile->SetPathName(basePath == NULL ? "" : basePath, pNewFile->fFileName);
     pNewFile->SetParent(pSubdir);
 
     /*
@@ -1271,7 +1271,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
 
     pPrevFile = pLastSubdirFile = pSubdir;
     pNextFile = GetNextFile(pPrevFile);
-    while (pNextFile != nil) {
+    while (pNextFile != NULL) {
         if (pNextFile->GetParent() == pNewFile->GetParent()) {
             /* in same subdir, compare names */
             if (CompareMacFileNames(pNextFile->GetPathName(),
@@ -1299,7 +1299,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     //DumpFileList();
 
     *ppNewFile = pNewFile;
-    pNewFile = nil;
+    pNewFile = NULL;
 
 bail:
     delete pNewFile;
@@ -1321,7 +1321,7 @@ DIError
 DiskFSHFS::DeleteFile(A2File* pGenericFile)
 {
     DIError dierr = kDIErrNone;
-    char* pathName = nil;
+    char* pathName = NULL;
 
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
@@ -1378,10 +1378,10 @@ DiskFSHFS::RenameFile(A2File* pGenericFile, const char* newName)
 {
     DIError dierr = kDIErrNone;
     A2FileHFS* pFile = (A2FileHFS*) pGenericFile;
-    char* colonOldName = nil;
-    char* colonNewName = nil;
+    char* colonOldName = NULL;
+    char* colonNewName = NULL;
 
-    if (pFile == nil || newName == nil)
+    if (pFile == NULL || newName == NULL)
         return kDIErrInvalidArg;
     if (!IsValidFileName(newName))
         return kDIErrInvalidArg;
@@ -1396,7 +1396,7 @@ DiskFSHFS::RenameFile(A2File* pGenericFile, const char* newName)
 
     colonOldName = pFile->GetLibHFSPathName();  // adds ':' to start of string
     lastColon = strrchr(colonOldName, A2FileHFS::kFssep);
-    assert(lastColon != nil);
+    assert(lastColon != NULL);
     if (lastColon == colonOldName) {
         /* in root dir */
         colonNewName = new char[1 + strlen(newName) +1];
@@ -1448,7 +1448,7 @@ DiskFSHFS::RenameFile(A2File* pGenericFile, const char* newName)
     if (pFile->IsDirectory()) {
         /* do all files that come after us */
         pCur = pFile;
-        while (pCur != nil) {
+        while (pCur != NULL) {
             RegeneratePathName((A2FileHFS*) pCur);
             pCur = GetNextFile(pCur);
         }
@@ -1478,7 +1478,7 @@ DIError
 DiskFSHFS::RegeneratePathName(A2FileHFS* pFile)
 {
     A2FileHFS* pParent;
-    char* buf = nil;
+    char* buf = NULL;
     int len;
 
     /* nothing to do here */
@@ -1496,7 +1496,7 @@ DiskFSHFS::RegeneratePathName(A2FileHFS* pFile)
     }
 
     buf = new char[len+1];
-    if (buf == nil)
+    if (buf == NULL)
         return kDIErrMalloc;
 
     /* generate the new path name */
@@ -1537,8 +1537,8 @@ DiskFSHFS::RenameVolume(const char* newName)
 {
     DIError dierr = kDIErrNone;
     A2FileHFS* pFile;
-    char* oldNameColon = nil;
-    char* newNameColon = nil;
+    char* oldNameColon = NULL;
+    char* newNameColon = NULL;
 
     if (!IsValidVolumeName(newName))
         return kDIErrInvalidArg;
@@ -1546,7 +1546,7 @@ DiskFSHFS::RenameVolume(const char* newName)
         return kDIErrAccessDenied;
 
     /* get file list entry for volume name */
-    pFile = (A2FileHFS*) GetNextFile(nil);
+    pFile = (A2FileHFS*) GetNextFile(NULL);
     assert(strcmp(pFile->GetFileName(), fVolumeName) == 0);
 
     oldNameColon = new char[strlen(fVolumeName)+2];
@@ -1590,7 +1590,7 @@ DiskFSHFS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
 
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
-    if (pFile == nil)
+    if (pFile == NULL)
         return kDIErrInvalidArg;
     if (pFile->IsDirectory() || pFile->IsVolumeDirectory())
         return kDIErrNone;      // impossible; just ignore it
@@ -1741,13 +1741,13 @@ long A2FileHFS::GetAuxType(void) const
  * Set the full pathname to a combination of the base path and the
  * current file's name.
  *
- * If we're in the volume directory, pass in "" for the base path (not nil).
+ * If we're in the volume directory, pass in "" for the base path (not NULL).
  */
 void
 A2FileHFS::SetPathName(const char* basePath, const char* fileName)
 {
-    assert(basePath != nil && fileName != nil);
-    if (fPathName != nil)
+    assert(basePath != NULL && fileName != NULL);
+    if (fPathName != NULL)
         delete[] fPathName;
 
     // strip leading ':' (but treat ":" specially for volume dir entry)
@@ -1845,11 +1845,11 @@ A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     DIError dierr = kDIErrNone;
-    A2FDHFS* pOpenFile = nil;
+    A2FDHFS* pOpenFile = NULL;
     hfsfile* pHfsFile;
-    char* nameBuf = nil;
+    char* nameBuf = NULL;
 
-    if (fpOpenFile != nil)
+    if (fpOpenFile != NULL)
         return kDIErrAlreadyOpen;
     //if (rsrcFork && fRsrcLength < 0)
     //  return kDIErrForkNotFound;
@@ -1899,7 +1899,7 @@ A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
     if (result < 0)
         return kDIErrReadFailed;
 
-    if (pActual != nil) {
+    if (pActual != NULL) {
         *pActual = (size_t) result;
     } else if (result != (long) len) {
         // short read, can't report it, return error
@@ -1943,7 +1943,7 @@ A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
     if (result < 0)
         return kDIErrWriteFailed;
 
-    if (pActual != nil) {
+    if (pActual != NULL) {
         *pActual = (size_t) result;
     } else if (result != (long) len) {
         // short write, can't report it, return error
@@ -2030,7 +2030,7 @@ A2FDHFS::Close(void)
     }
 
     hfs_close(fHfsFile);
-    fHfsFile = nil;
+    fHfsFile = NULL;
 
     /* flush changes */
     if (fModified) {
@@ -2146,7 +2146,7 @@ DiskFSHFS::CreateFakeFile(void)
     time_t when =
         (time_t) (fModifiedDateTime - kDateTimeOffset - fLocalTimeOffset);
     timeStr = ctime(&when);
-    if (timeStr == nil) {
+    if (timeStr == NULL) {
         WMSG2("Invalid date %ld (orig=%ld)\n", when, fModifiedDateTime);
         strcpy(dateBuf, "<no date>");
     } else
@@ -2198,15 +2198,15 @@ DIError
 A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
-    A2FDHFS* pOpenFile = nil;
+    A2FDHFS* pOpenFile = NULL;
 
-    if (fpOpenFile != nil)
+    if (fpOpenFile != NULL)
         return kDIErrAlreadyOpen;
     if (rsrcFork && fRsrcLength < 0)
         return kDIErrForkNotFound;
     assert(readOnly == true);
 
-    pOpenFile = new A2FDHFS(this, nil);
+    pOpenFile = new A2FDHFS(this, NULL);
 
     fpOpenFile = pOpenFile;
     *ppOpenFile = pOpenFile;
@@ -2234,11 +2234,11 @@ A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
 
     /* don't allow them to read past the end of the file */
     if (fOffset + (long)len > pFile->fDataLength) {
-        if (pActual == nil)
+        if (pActual == NULL)
             return kDIErrDataUnderrun;
         len = (size_t) (pFile->fDataLength - fOffset);
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = len;
 
     memcpy(buf, pFile->GetFakeFileBuf(), len);

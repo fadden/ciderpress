@@ -22,7 +22,7 @@ BOOL
 MyEdit::ReplaceDlgCtrl(CDialog* pDialog, int editID)
 {
     CWnd* pWnd = pDialog->GetDlgItem(editID);
-    if (pWnd == nil)
+    if (pWnd == NULL)
         return FALSE;
 
     /* latch on to their window handle */

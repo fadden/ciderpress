@@ -99,7 +99,7 @@ const unsigned long kDDDProSignature = 0xd0bfc903;
  */
 class WrapperDDD::BitBuffer {
 public:
-    BitBuffer(void) : fpGFD(nil), fBits(0), fBitCount(0), fIOFailure(false) {}
+    BitBuffer(void) : fpGFD(NULL), fBits(0), fBitCount(0), fIOFailure(false) {}
     ~BitBuffer(void) {}
 
     void SetFile(GenericFD* pGFD) { fpGFD = pGFD; }
@@ -129,7 +129,7 @@ WrapperDDD::BitBuffer::PutBits(unsigned char bits, int numBits)
 {
     assert(fBitCount >= 0 && fBitCount < 8);
     assert(numBits > 0 && numBits <= 8);
-    assert(fpGFD != nil);
+    assert(fpGFD != NULL);
 
     DIError dierr;
 
@@ -158,7 +158,7 @@ WrapperDDD::BitBuffer::GetBits(int numBits)
 {
     assert(fBitCount >= 0 && fBitCount < 8);
     assert(numBits > 0 && numBits <= 8);
-    assert(fpGFD != nil);
+    assert(fpGFD != NULL);
 
     DIError dierr;
     unsigned char retVal;
@@ -464,8 +464,8 @@ WrapperDDD::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
     unsigned char val;
     long lbuf;
 
-    assert(pGFD != nil);
-    assert(pNewGFD != nil);
+    assert(pGFD != NULL);
+    assert(pNewGFD != NULL);
 
     /* read four zeroes to skip the DOS addr/len bytes */
     assert(sizeof(lbuf) >= 4);

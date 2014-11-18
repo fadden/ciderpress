@@ -230,7 +230,7 @@ void
 MyRegistry::FixBasicSettings(void) const
 {
     const WCHAR* exeName = gMyApp.GetExeFileName();
-    ASSERT(exeName != nil && wcslen(exeName) > 0);
+    ASSERT(exeName != NULL && wcslen(exeName) > 0);
 
     WMSG0("Fixing any missing file type AppID entries in registry\n");
 
@@ -248,8 +248,8 @@ MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
 {
     WMSG2(" Configuring '%ls' for '%ls'\n", appID, exeName);
 
-    HKEY hAppKey = nil;
-    HKEY hIconKey = nil;
+    HKEY hAppKey = NULL;
+    HKEY hIconKey = NULL;
 
     DWORD dw;
     if (RegCreateKeyEx(HKEY_CLASSES_ROOT, appID, 0, REG_NONE,
@@ -267,7 +267,7 @@ MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
             long res;
 
             size = sizeof(buf);     // size in bytes
-            res = RegQueryValueEx(hIconKey, L"", nil, &type, buf, &size);
+            res = RegQueryValueEx(hIconKey, L"", NULL, &type, buf, &size);
             if (res == ERROR_SUCCESS && size > 1) {
                 WMSG1("  Icon for '%ls' already exists, not altering\n", appID);
             } else {
@@ -307,10 +307,10 @@ MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
     HKEY hShellKey, hOpenKey, hCommandKey;
     DWORD dw;
 
-    ASSERT(hAppKey != nil);
-    ASSERT(descr != nil);
-    ASSERT(exeName != nil);
-    hShellKey = hOpenKey = hCommandKey = nil;
+    ASSERT(hAppKey != NULL);
+    ASSERT(descr != NULL);
+    ASSERT(exeName != NULL);
+    hShellKey = hOpenKey = hCommandKey = NULL;
     
     if (RegSetValueEx(hAppKey, L"", 0, REG_SZ, (const BYTE*) descr,
         wcslen(descr) * sizeof(WCHAR)) != ERROR_SUCCESS)
@@ -335,7 +335,7 @@ MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
                 long res;
 
                 size = sizeof(buf);     // size in bytes
-                res = RegQueryValueEx(hCommandKey, L"", nil, &type, (LPBYTE) buf,
+                res = RegQueryValueEx(hCommandKey, L"", NULL, &type, (LPBYTE) buf,
                     &size);
                 if (res == ERROR_SUCCESS && size > 1) {
                     WMSG1("  Command already exists, not altering ('%ls')\n", buf);
@@ -423,7 +423,7 @@ MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
     *pHandler = "";
 
     CString appID;
-    HKEY hExtKey = nil;
+    HKEY hExtKey = NULL;
 
     res = RegOpenKeyEx(HKEY_CLASSES_ROOT, *pExt, 0, KEY_READ, &hExtKey);
     if (res == ERROR_SUCCESS) {
@@ -431,7 +431,7 @@ MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
         DWORD type;
         DWORD size = sizeof(buf);   // size in bytes
 
-        res = RegQueryValueEx(hExtKey, L"", nil, &type, (LPBYTE)buf, &size);
+        res = RegQueryValueEx(hExtKey, L"", NULL, &type, (LPBYTE)buf, &size);
         if (res == ERROR_SUCCESS) {
             WMSG1("  Got '%ls'\n", buf);
             appID = buf;
@@ -465,7 +465,7 @@ MyRegistry::GetAssocAppName(const CString& appID, CString* pCmd) const
 {
     CString keyName;
     WCHAR buf[260];
-    HKEY hAppKey = nil;
+    HKEY hAppKey = NULL;
     long res;
     int result = -1;
 
@@ -476,7 +476,7 @@ MyRegistry::GetAssocAppName(const CString& appID, CString* pCmd) const
         DWORD type;
         DWORD size = sizeof(buf);       // size in bytes
 
-        res = RegQueryValueEx(hAppKey, L"", nil, &type, (LPBYTE) buf, &size);
+        res = RegQueryValueEx(hAppKey, L"", NULL, &type, (LPBYTE) buf, &size);
         if (res == ERROR_SUCCESS) {
             CString cmd(buf);
             int pos;
@@ -574,7 +574,7 @@ bool
 MyRegistry::GetAssocState(const WCHAR* ext) const
 {
     WCHAR buf[260];
-    HKEY hExtKey = nil;
+    HKEY hExtKey = NULL;
     int res;
     bool result = false;
 
@@ -582,7 +582,7 @@ MyRegistry::GetAssocState(const WCHAR* ext) const
     if (res == ERROR_SUCCESS) {
         DWORD type;
         DWORD size = sizeof(buf);       // size in bytes
-        res = RegQueryValueEx(hExtKey, L"", nil, &type, (LPBYTE) buf, &size);
+        res = RegQueryValueEx(hExtKey, L"", NULL, &type, (LPBYTE) buf, &size);
         if (res == ERROR_SUCCESS && type == REG_SZ) {
             /* compare it to known appID values */
             WMSG2("  Found '%ls', testing '%ls'\n", ext, buf);
@@ -605,9 +605,9 @@ MyRegistry::GetAssocState(const WCHAR* ext) const
 int
 MyRegistry::DisownExtension(const WCHAR* ext) const
 {
-    ASSERT(ext != nil);
+    ASSERT(ext != NULL);
     ASSERT(ext[0] == '.');
-    if (ext == nil || wcslen(ext) < 2)
+    if (ext == NULL || wcslen(ext) < 2)
         return -1;
 
     if (RegDeleteKeyNT(HKEY_CLASSES_ROOT, ext) == ERROR_SUCCESS) {
@@ -628,12 +628,12 @@ MyRegistry::DisownExtension(const WCHAR* ext) const
 int
 MyRegistry::OwnExtension(const WCHAR* ext, const WCHAR* appID) const
 {
-    ASSERT(ext != nil);
+    ASSERT(ext != NULL);
     ASSERT(ext[0] == '.');
-    if (ext == nil || wcslen(ext) < 2)
+    if (ext == NULL || wcslen(ext) < 2)
         return -1;
 
-    HKEY hExtKey = nil;
+    HKEY hExtKey = NULL;
     DWORD dw;
     int res, result = -1;
 

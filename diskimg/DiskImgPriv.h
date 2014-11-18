@@ -59,8 +59,6 @@ namespace DiskImgLib {
  */
 #define NELEM(x) ((int) (sizeof(x) / sizeof(x[0])))
 
-#define nil NULL
-
 #define ErrnoOrGeneric() (errno != 0 ? (DIError) errno : kDIErrGeneric)
 
 
@@ -108,10 +106,10 @@ class CircularBufferAccess {
 public:
     CircularBufferAccess(unsigned char* buf, long len) :
         fBuf(buf), fLen(len)
-        { assert(fLen > 0); assert(fBuf != nil); }
+        { assert(fLen > 0); assert(fBuf != NULL); }
     CircularBufferAccess(const unsigned char* buf, long len) :
         fBuf(const_cast<unsigned char*>(buf)), fLen(len)
-        { assert(fLen > 0); assert(fBuf != nil); }
+        { assert(fLen > 0); assert(fBuf != NULL); }
     ~CircularBufferAccess(void) {}
 
     /*
@@ -254,7 +252,7 @@ public:
             fBitPosn = 7;
             fBuf = fBufStart;
             //fByte = *fBuf++;
-            if (pWrap != nil)
+            if (pWrap != NULL)
                 *pWrap = true;
         }
 

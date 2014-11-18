@@ -22,11 +22,11 @@ class VolumeCopyDialog : public CDialog {
 public:
     VolumeCopyDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_VOLUMECOPYSEL, pParentWnd),
-        fpDiskImg(nil),
-        fpDiskFS(nil),
-        fpWaitDlg(nil)
+        fpDiskImg(NULL),
+        fpDiskFS(NULL),
+        fpWaitDlg(NULL)
     {}
-    ~VolumeCopyDialog(void) { assert(fpDiskFS == nil); }
+    ~VolumeCopyDialog(void) { assert(fpDiskFS == NULL); }
 
     /* disk image to work with; we don't own it */
     DiskImgLib::DiskImg*    fpDiskImg;

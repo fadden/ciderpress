@@ -173,8 +173,8 @@ MainWindow::PeekAndPump(void)
 /*static*/ void
 MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
 {
-    ASSERT(file != nil);
-    ASSERT(msg != nil);
+    ASSERT(file != NULL);
+    ASSERT(msg != NULL);
 
     LOG_BASE(DebugLog::LOG_INFO, file, line, "<diskimg> %hs", msg);
 }
@@ -242,7 +242,7 @@ MainWindow::ScanFiles(void)
     WMSG1("NEW FILE '%ls'\n", (LPCWSTR) outPath);
 
     scanOpts.outfp = _wfopen(outPath, L"w");
-    if (scanOpts.outfp == nil) {
+    if (scanOpts.outfp == NULL) {
         ShowFailureMsg(this, "Unable to open output file", IDS_FAILED);
         goto bail;
     }
@@ -276,7 +276,7 @@ MainWindow::ScanFiles(void)
     doResetDir = true;
 
     time_t now;
-    now = time(nil);
+    now = time(NULL);
     fprintf(scanOpts.outfp,
         "Run started at %.24hs in '%ls'\n\n", ctime(&now), buf);
 
@@ -286,7 +286,7 @@ MainWindow::ScanFiles(void)
 
     /* create a modeless dialog with a cancel button */
     scanOpts.pProgress = new ProgressDlg;
-    if (scanOpts.pProgress == nil)
+    if (scanOpts.pProgress == NULL)
         goto bail;
     scanOpts.pProgress->fpCancelFlag = &fCancelFlag;
     fCancelFlag = false;
@@ -298,7 +298,7 @@ MainWindow::ScanFiles(void)
     }
 
     time_t start, end;
-    start = time(nil);
+    start = time(NULL);
 
     /* start cranking */
     buf += chooseFiles.GetFileNameOffset();
@@ -315,7 +315,7 @@ MainWindow::ScanFiles(void)
 
         buf += wcslen(buf)+1;
     }
-    end = time(nil);
+    end = time(NULL);
     fprintf(scanOpts.outfp, "\nScan completed in %ld seconds.\n",
         end - start);
 
@@ -337,7 +337,7 @@ MainWindow::ScanFiles(void)
     }
 
 bail:
-    if (scanOpts.outfp != nil)
+    if (scanOpts.outfp != NULL)
         fclose(scanOpts.outfp);
 
     if (doResetDir && SetCurrentDirectory(curDir) == false) {
@@ -349,7 +349,7 @@ bail:
     // restore the main window
     EnableWindow(TRUE);
 
-    if (scanOpts.pProgress != nil)
+    if (scanOpts.pProgress != NULL)
         scanOpts.pProgress->DestroyWindow();
 
     SetWindowText(L"MDC");
@@ -375,15 +375,15 @@ static const WCHAR kWildMatchAll[] = L"*.*";
 Win32dirent*
 MainWindow::OpenDir(const WCHAR* name)
 {
-    Win32dirent* dir = nil;
-    WCHAR* tmpStr = nil;
+    Win32dirent* dir = NULL;
+    WCHAR* tmpStr = NULL;
     WCHAR* cp;
     WIN32_FIND_DATA fnd;
 
     dir = (Win32dirent*) malloc(sizeof(*dir));
     tmpStr = (WCHAR*) malloc((wcslen(name) + wcslen(kWildMatchAll) + 2)
         * sizeof(WCHAR));
-    if (dir == nil || tmpStr == nil)
+    if (dir == NULL || tmpStr == NULL)
         goto failed;
 
     wcscpy(tmpStr, name);
@@ -413,14 +413,14 @@ bail:
 
 failed:
     free(dir);
-    dir = nil;
+    dir = NULL;
     goto bail;
 }
 
 /*
  * Get an entry from an open directory.
  *
- * Returns a nil pointer after the last entry has been read.
+ * Returns a NULL pointer after the last entry has been read.
  */
 Win32dirent*
 MainWindow::ReadDir(Win32dirent* dir)
@@ -431,7 +431,7 @@ MainWindow::ReadDir(Win32dirent* dir)
         WIN32_FIND_DATA fnd;
 
         if (!FindNextFile(dir->d_hFindFile, &fnd))
-            return nil;
+            return NULL;
         wcscpy(dir->d_name, fnd.cFileName);
         dir->d_attr = (unsigned char) fnd.dwFileAttributes;
     }
@@ -445,7 +445,7 @@ MainWindow::ReadDir(Win32dirent* dir)
 void
 MainWindow::CloseDir(Win32dirent* dir)
 {
-    if (dir == nil)
+    if (dir == NULL)
         return;
 
     FindClose(dir->d_hFindFile);
@@ -469,8 +469,8 @@ MainWindow::Process(const WCHAR* pathname, ScanOpts* pScanOpts,
     if (fCancelFlag)
         return -1;
 
-    ASSERT(pathname != nil);
-    ASSERT(pErrMsg != nil);
+    ASSERT(pathname != NULL);
+    ASSERT(pErrMsg != NULL);
 
     PathName checkPath(pathname);
     int ierr = checkPath.CheckFileStatus(&sb, &exists, &isReadable, &isDir);
@@ -513,20 +513,20 @@ int
 MainWindow::ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
     CString* pErrMsg)
 {
-    Win32dirent* dirp = nil;
+    Win32dirent* dirp = NULL;
     Win32dirent* entry;
     WCHAR nbuf[MAX_PATH];   /* malloc might be better; this soaks stack */
     WCHAR fssep;
     int len;
     int result = -1;
 
-    ASSERT(dirName != nil);
-    ASSERT(pErrMsg != nil);
+    ASSERT(dirName != NULL);
+    ASSERT(pErrMsg != NULL);
 
     WMSG1("+++ DESCEND: '%ls'\n", (LPCWSTR) dirName);
 
     dirp = OpenDir(dirName);
-    if (dirp == nil) {
+    if (dirp == NULL) {
         pErrMsg->Format(L"Failed on '%ls': %hs", dirName, strerror(errno));
         goto bail;
     }
@@ -534,7 +534,7 @@ MainWindow::ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
     fssep = kLocalFssep;
 
     /* could use readdir_r, but we don't care about reentrancy here */
-    while ((entry = ReadDir(dirp)) != nil) {
+    while ((entry = ReadDir(dirp)) != NULL) {
         /* skip the dotsies */
         if (wcscmp(entry->d_name, L".") == 0 || wcscmp(entry->d_name, L"..") == 0)
             continue;
@@ -561,7 +561,7 @@ MainWindow::ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
     result = 0;
 
 bail:
-    if (dirp != nil)
+    if (dirp != NULL)
         (void)CloseDir(dirp);
     return result;
 }
@@ -575,14 +575,14 @@ bail:
 int
 MainWindow::ScanDiskImage(const WCHAR* pathName, ScanOpts* pScanOpts)
 {
-    ASSERT(pathName != nil);
-    ASSERT(pScanOpts != nil);
-    ASSERT(pScanOpts->outfp != nil);
+    ASSERT(pathName != NULL);
+    ASSERT(pScanOpts != NULL);
+    ASSERT(pScanOpts->outfp != NULL);
 
     DIError dierr;
     CString errMsg;
     DiskImg diskImg;
-    DiskFS* pDiskFS = nil;
+    DiskFS* pDiskFS = NULL;
     PathName path(pathName);
     CString ext = path.GetExtension();
 
@@ -628,7 +628,7 @@ MainWindow::ScanDiskImage(const WCHAR* pathName, ScanOpts* pScanOpts)
 
     /* create an appropriate DiskFS object */
     pDiskFS = diskImg.OpenAppropriateDiskFS();
-    if (pDiskFS == nil) {
+    if (pDiskFS == NULL) {
         /* unknown FS should've been caught above! */
         ASSERT(false);
         errMsg.Format(L"Format of '%ls' not recognized.", pathName);
@@ -803,12 +803,12 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
     ScanOpts* pScanOpts)
 {
     static const char* kBlankFileName = "<blank filename>";
-    DiskFS::SubVolume* pSubVol = nil;
+    DiskFS::SubVolume* pSubVol = NULL;
     A2File* pFile;
 
-    ASSERT(pDiskFS != nil);
-    pFile = pDiskFS->GetNextFile(nil);
-    for ( ; pFile != nil; pFile = pDiskFS->GetNextFile(pFile)) {
+    ASSERT(pDiskFS != NULL);
+    pFile = pDiskFS->GetNextFile(NULL);
+    for ( ; pFile != NULL; pFile = pDiskFS->GetNextFile(pFile)) {
         CStringA subVolName, dispName;
         RecordKind recordKind;
         LONGLONG totalLen, totalCompLen;
@@ -827,7 +827,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
             subVolName.Format("_%hs", volName);
 
         const char* ccp = pFile->GetPathName();
-        ASSERT(ccp != nil);
+        ASSERT(ccp != NULL);
         if (strlen(ccp) == 0)
             ccp = kBlankFileName;
 
@@ -1005,13 +1005,13 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
     /*
      * Load all sub-volumes.
      */
-    pSubVol = pDiskFS->GetNextSubVolume(nil);
-    while (pSubVol != nil) {
+    pSubVol = pDiskFS->GetNextSubVolume(NULL);
+    while (pSubVol != NULL) {
         const char* subVolName;
         int ret;
 
         subVolName = pSubVol->GetDiskFS()->GetVolumeName();
-        if (subVolName == nil)
+        if (subVolName == NULL)
             subVolName = "+++";     // could probably do better than this
 
         ret = LoadDiskFSContents(pSubVol->GetDiskFS(), subVolName, pScanOpts);

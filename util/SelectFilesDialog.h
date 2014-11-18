@@ -92,7 +92,7 @@ protected:
     virtual void ShiftControls(int deltaX, int deltaY);
     virtual void DestroyItem(CWnd* pDlg, int id) {
         CWnd* pWnd = pDlg->GetDlgItem(id);
-        if (pWnd == nil) {
+        if (pWnd == NULL) {
             WMSG1("Could not find item %d\n", id);
             return;
         }

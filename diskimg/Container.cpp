@@ -40,8 +40,8 @@ DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
     DiskImg** ppNewImg, DiskFS** ppNewFS)
 {
     DIError dierr = kDIErrNone;
-    DiskFS* pNewFS = nil;
-    DiskImg* pNewImg = nil;
+    DiskFS* pNewFS = NULL;
+    DiskImg* pNewImg = NULL;
 
     WMSG3(" %s/CrPl creating placeholder for %ld +%ld\n", GetDebugName(),
         startBlock, numBlocks);
@@ -53,13 +53,13 @@ DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
     }
 
     pNewImg = new DiskImg;
-    if (pNewImg == nil) {
+    if (pNewImg == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
 
-    if (partName != nil) {
-        if (partType != nil)
+    if (partName != NULL) {
+        if (partType != NULL)
             pNewImg->AddNote(DiskImg::kNoteInfo,
                 "Partition name='%s' type='%s'.", partName, partType);
         else
@@ -97,7 +97,7 @@ DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
 
     /* open a DiskFS for the sub-image, allowing "unknown" */
     pNewFS = pNewImg->OpenAppropriateDiskFS(true);
-    if (pNewFS == nil) {
+    if (pNewFS == NULL) {
         WMSG1(" %s/CrPl: OpenAppropriateDiskFS failed\n", GetDebugName());
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;

@@ -15,7 +15,7 @@
 class MyBitmapButton : public CButton {
 public:
     MyBitmapButton(void) {
-        fhBitmap = nil;
+        fhBitmap = NULL;
         fBitmapID = -1;
     }
     virtual ~MyBitmapButton(void) {

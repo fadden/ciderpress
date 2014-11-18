@@ -56,7 +56,7 @@ MainWindow::OnActionsView(void)
 void
 MainWindow::OnUpdateActionsView(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil &&
+    pCmdUI->Enable(fpContentList != NULL &&
         fpContentList->GetSelectedCount() > 0);
 }
 
@@ -73,7 +73,7 @@ MainWindow::OnUpdateActionsView(CCmdUI* pCmdUI)
 void
 MainWindow::HandleView(void)
 {
-    ASSERT(fpContentList != nil);
+    ASSERT(fpContentList != NULL);
 
     SelectionSet selSet;
     int threadMask = GenericEntry::kAnyThread | GenericEntry::kAllowDamaged |
@@ -96,7 +96,7 @@ MainWindow::HandleView(void)
     vfd.SetNoWrapText(fPreferences.GetPrefBool(kPrNoWrapText));
     vfd.DoModal();
 
-    //fpSelSet = nil;
+    //fpSelSet = NULL;
 
     // remember which font they used (sticky pref, not in registry)
     fPreferences.SetPrefString(kPrViewTextTypeFace, vfd.GetTextTypeFace());
@@ -122,7 +122,7 @@ MainWindow::HandleView(void)
 void
 MainWindow::OnActionsOpenAsDisk(void)
 {
-    ASSERT(fpContentList != nil);
+    ASSERT(fpContentList != NULL);
     ASSERT(fpContentList->GetSelectedCount() == 1);
 
     GenericEntry* pEntry = GetSelectedItem(fpContentList);
@@ -137,9 +137,9 @@ MainWindow::OnUpdateActionsOpenAsDisk(CCmdUI* pCmdUI)
     const int kMinLen = 512 * 7;
     bool allow = false;
 
-    if (fpContentList != nil && fpContentList->GetSelectedCount() == 1) {
+    if (fpContentList != NULL && fpContentList->GetSelectedCount() == 1) {
         GenericEntry* pEntry = GetSelectedItem(fpContentList);
-        if (pEntry != nil) {
+        if (pEntry != NULL) {
             if ((pEntry->GetHasDataFork() || pEntry->GetHasDiskImage()) &&
                 pEntry->GetUncompressedLen() > kMinLen)
             {
@@ -165,7 +165,7 @@ MainWindow::OnActionsAddFiles(void)
 {
     WMSG0("Add files!\n");
     AddFilesDialog addFiles(this);
-    DiskImgLib::A2File* pTargetSubdir = nil;
+    DiskImgLib::A2File* pTargetSubdir = NULL;
 
     /*
      * Special handling for adding files to disk images.
@@ -199,11 +199,11 @@ MainWindow::OnActionsAddFiles(void)
      * stripping to be on for non-hierarchical filesystems (i.e. everything
      * but ProDOS and HFS).
      */
-    if (addFiles.fpTargetDiskFS != nil) {
+    if (addFiles.fpTargetDiskFS != NULL) {
         DiskImg::FSFormat format;
         format = addFiles.fpTargetDiskFS->GetDiskImg()->GetFSFormat();
 
-        if (pTargetSubdir != nil) {
+        if (pTargetSubdir != NULL) {
             ASSERT(!pTargetSubdir->IsVolumeDirectory());
             addFiles.fStoragePrefix = pTargetSubdir->GetPathName();
         }
@@ -259,7 +259,7 @@ MainWindow::OnActionsAddFiles(void)
         fpContentList->Reload();
 
         fpActionProgress->Cleanup(this);
-        fpActionProgress = nil;
+        fpActionProgress = NULL;
         if (result)
             SuccessBeep();
     } else {
@@ -269,7 +269,7 @@ MainWindow::OnActionsAddFiles(void)
 void
 MainWindow::OnUpdateActionsAddFiles(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly());
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly());
 }
 
 
@@ -277,20 +277,20 @@ MainWindow::OnUpdateActionsAddFiles(CCmdUI* pCmdUI)
  * Figure out where they want to add files.
  *
  * If the volume directory of a disk is chosen, "*ppTargetSubdir" will
- * be set to nil.
+ * be set to NULL.
  */
 bool
 MainWindow::ChooseAddTarget(DiskImgLib::A2File** ppTargetSubdir,
     DiskImgLib::DiskFS** ppTargetDiskFS)
 {
-    ASSERT(ppTargetSubdir != nil);
-    ASSERT(ppTargetDiskFS != nil);
+    ASSERT(ppTargetSubdir != NULL);
+    ASSERT(ppTargetDiskFS != NULL);
 
-    *ppTargetSubdir = nil;
-    *ppTargetDiskFS = nil;
+    *ppTargetSubdir = NULL;
+    *ppTargetDiskFS = NULL;
 
     GenericEntry* pEntry = GetSelectedItem(fpContentList);
-    if (pEntry != nil &&
+    if (pEntry != NULL &&
         (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory ||
          pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir))
     {
@@ -324,12 +324,12 @@ MainWindow::ChooseAddTarget(DiskImgLib::A2File** ppTargetSubdir,
         *ppTargetDiskFS = targetDialog.fpChosenDiskFS;
 
         /* make sure the subdir is part of the diskfs */
-        ASSERT(*ppTargetSubdir == nil ||
+        ASSERT(*ppTargetSubdir == NULL ||
             (*ppTargetSubdir)->GetDiskFS() == *ppTargetDiskFS);
     }
 
-    if (*ppTargetSubdir != nil && (*ppTargetSubdir)->IsVolumeDirectory())
-        *ppTargetSubdir = nil;
+    if (*ppTargetSubdir != NULL && (*ppTargetSubdir)->IsVolumeDirectory())
+        *ppTargetSubdir = NULL;
 
     return true;
 }
@@ -481,7 +481,7 @@ MainWindow::OnActionsAddDisks(void)
     fpContentList->Reload();
 
     fpActionProgress->Cleanup(this);
-    fpActionProgress = nil;
+    fpActionProgress = NULL;
 
     if (result)
         SuccessBeep();
@@ -492,7 +492,7 @@ bail:
 void
 MainWindow::OnUpdateActionsAddDisks(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly() &&
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpOpenArchive->GetCapability(GenericArchive::kCapCanAddDisk));
 }
 
@@ -516,12 +516,12 @@ MainWindow::OnActionsCreateSubdir(void)
 {
     CreateSubdirDialog csDialog;
 
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
     ASSERT(!fpOpenArchive->IsReadOnly());
 
     GenericEntry* pEntry = GetSelectedItem(fpContentList);
-    if (pEntry == nil) {
+    if (pEntry == NULL) {
         // can happen for no selection or multi-selection; should not be here
         ASSERT(false);
         return;
@@ -552,14 +552,14 @@ MainWindow::OnActionsCreateSubdir(void)
 void
 MainWindow::OnUpdateActionsCreateSubdir(CCmdUI* pCmdUI)
 {
-    bool enable = fpContentList != nil && !fpOpenArchive->IsReadOnly() &&
+    bool enable = fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpContentList->GetSelectedCount() == 1 &&
         fpOpenArchive->GetCapability(GenericArchive::kCapCanCreateSubdir);
 
     if (enable) {
         /* second-level check: make sure it's a subdir */
         GenericEntry* pEntry = GetSelectedItem(fpContentList);
-        if (pEntry == nil) {
+        if (pEntry == NULL) {
             ASSERT(false);
             return;
         }
@@ -586,7 +586,7 @@ MainWindow::OnUpdateActionsCreateSubdir(CCmdUI* pCmdUI)
 void
 MainWindow::OnActionsExtract(void)
 {
-    ASSERT(fpContentList != nil);
+    ASSERT(fpContentList != NULL);
 
     /*
      * Ask the user about various options.
@@ -664,12 +664,12 @@ MainWindow::OnActionsExtract(void)
     fpActionProgress->Create(ActionProgressDialog::kActionExtract, this);
     DoBulkExtract(&selSet, &extOpts);
     fpActionProgress->Cleanup(this);
-    fpActionProgress = nil;
+    fpActionProgress = NULL;
 }
 void
 MainWindow::OnUpdateActionsExtract(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil);
+    pCmdUI->Enable(fpContentList != NULL);
 }
 
 /*
@@ -685,11 +685,11 @@ void
 MainWindow::DoBulkExtract(SelectionSet* pSelSet,
     const ExtractOptionsDialog* pExtOpts)
 {
-    ReformatHolder* pHolder = nil;
+    ReformatHolder* pHolder = NULL;
     bool overwriteExisting, ovwrForAll;
 
-    ASSERT(pSelSet != nil);
-    ASSERT(fpActionProgress != nil);
+    ASSERT(pSelSet != NULL);
+    ASSERT(fpActionProgress != NULL);
 
     pSelSet->IterReset();
 
@@ -704,7 +704,7 @@ MainWindow::DoBulkExtract(SelectionSet* pSelSet,
         PeekAndPump();
 
         pSelEntry = pSelSet->IterNext();
-        if (pSelEntry == nil) {
+        if (pSelEntry == NULL) {
             SuccessBeep();
             break;      // out of while (all done!)
         }
@@ -783,7 +783,7 @@ MainWindow::DoBulkExtract(SelectionSet* pSelSet,
                 break;
         }
         delete pHolder;
-        pHolder = nil;
+        pHolder = NULL;
     }
 
     // if they cancelled, delete the "stray"
@@ -793,8 +793,8 @@ MainWindow::DoBulkExtract(SelectionSet* pSelSet,
 /*
  * Extract a single entry.
  *
- * If "pHolder" is non-nil, it holds the data from the file, and can be
- * used for formatted or non-formatted output.  If it's nil, we need to
+ * If "pHolder" is non-NULL, it holds the data from the file, and can be
+ * used for formatted or non-formatted output.  If it's NULL, we need to
  * extract the data ourselves.
  *
  * Returns "true" on success, "false" on failure.
@@ -849,10 +849,10 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
     failed.LoadString(IDS_FAILED);
     bool writeFailed = false;
     bool extractAs2MG = false;
-    char* reformatText = nil;
-    MyDIBitmap* reformatDib = nil;
+    char* reformatText = NULL;
+    MyDIBitmap* reformatDib = NULL;
 
-    ASSERT(pEntry != nil);
+    ASSERT(pEntry != NULL);
 
     /*
      * If we're interested in extracting disk images as 2MG files,
@@ -909,7 +909,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
      */
     ASSERT(pExtOpts->fExtractPath.Right(1) == "\\");
     CString adjustedExtractPath(pExtOpts->fExtractPath);
-    if (!pExtOpts->fStripFolderNames && pEntry->GetSubVolName() != nil) {
+    if (!pExtOpts->fStripFolderNames && pEntry->GetSubVolName() != NULL) {
         adjustedExtractPath += pEntry->GetSubVolName();
         adjustedExtractPath += "\\";
     }
@@ -917,12 +917,12 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
     outputPath += convNameExtdPlus;
 
 
-    ReformatOutput* pOutput = nil;
+    ReformatOutput* pOutput = NULL;
 
     /*
      * If requested, try to reformat this file.
      */
-    if (pHolder != nil) {
+    if (pHolder != NULL) {
         ReformatHolder::ReformatPart part = ReformatHolder::kPartUnknown;
         ReformatHolder::ReformatID id;
         CString title;
@@ -952,7 +952,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
             pOutput = pHolder->Apply(part, id);
         }
 
-        if (pOutput != nil) {
+        if (pOutput != NULL) {
             /* use output pathname without preservation */
             CString tmpPath;
             bool goodReformat = true;
@@ -999,7 +999,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
                     outputPath = tmpPath;
             } else {
                 delete pOutput;
-                pOutput = nil;
+                pOutput = NULL;
             }
         }
     }
@@ -1035,7 +1035,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
      *
      * Returns IDCANCEL on failures as well as user cancellation.
      */
-    FILE* fp = nil;
+    FILE* fp = NULL;
     int result;
     result = OpenOutputFile(&outputPath, pathProp, pEntry->GetModWhen(),
                 pOverwriteExisting, pOvwrForAll, &fp);
@@ -1053,7 +1053,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
         fpActionProgress->SetFileName(outputPath);
     }
 
-    if (fp == nil) {
+    if (fp == NULL) {
         /* looks like they elected to skip extraction of this file */
         delete pOutput;
         return true;
@@ -1143,7 +1143,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
      *
      * (Could also be due to extraction failure, e.g. bad CRC.)
      */
-    if (pOutput != nil) {
+    if (pOutput != NULL) {
         /*
          * We have the data in our buffer.  Write it out.  No need
          * to tweak the progress updater, which already shows 100%.
@@ -1160,7 +1160,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
             pOutput->GetOutputKind() == ReformatOutput::kOutputCSV)
         {
             WMSG0("  Writing text, RTF, CSV, or raw\n");
-            ASSERT(pOutput->GetTextBuf() != nil);
+            ASSERT(pOutput->GetTextBuf() != NULL);
             int err = 0;
             if (fwrite(pOutput->GetTextBuf(),
                        pOutput->GetTextLen(), 1, fp) != 1)
@@ -1176,7 +1176,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
             }
         } else if (pOutput->GetOutputKind() == ReformatOutput::kOutputBitmap) {
             WMSG0("  Writing bitmap\n");
-            ASSERT(pOutput->GetDIB() != nil);
+            ASSERT(pOutput->GetDIB() != NULL);
             int err = pOutput->GetDIB()->WriteToFile(fp);
             if (err != 0) {
                 errMsg.Format(L"Unable to save bitmap '%ls': %hs\n",
@@ -1198,7 +1198,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
              */
             WMSG1("  Writing un-reformatted data (%ld bytes)\n",
                 pOutput->GetTextLen());
-            ASSERT(pOutput->GetTextBuf() != nil);
+            ASSERT(pOutput->GetTextBuf() != NULL);
             bool lastCR = false;
             GenericEntry::ConvertHighASCII thisConvHA = convHA;
             int err;
@@ -1229,7 +1229,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
          */
         CString msg;
         int result;
-        ASSERT(fpActionProgress != nil);
+        ASSERT(fpActionProgress != NULL);
         WMSG3("Extracting '%ls', requesting thisConv=%d, convHA=%d\n",
             outputPath, thisConv, convHA);
         result = pEntry->ExtractThreadToFile(thread, fp,
@@ -1284,7 +1284,7 @@ open_file_fail:
  * is false, then we will put up the "do you want to overwrite?" dialog.
  * One possible outcome of the dialog is renaming the output path.
  *
- * On success, "*pFp" will be non-nil, and IDOK will be returned.  On
+ * On success, "*pFp" will be non-NULL, and IDOK will be returned.  On
  * failure, IDCANCEL will be returned.  The values in "*pOverwriteExisting"
  * and "*pOvwrForAll" may be updated, and "*pOutputPath" will change if
  * the user chose to rename the file.
@@ -1301,7 +1301,7 @@ MainWindow::OpenOutputFile(CString* pOutputPath, const PathProposal& pathProp,
 
     failed.LoadString(IDS_FAILED);
 
-    *pFp = nil;
+    *pFp = NULL;
 
 did_rename:
     PathName path(*pOutputPath);
@@ -1361,7 +1361,7 @@ do_overwrite:
         goto bail;
 
     *pFp = _wfopen(*pOutputPath, L"wb");
-    if (*pFp == nil)
+    if (*pFp == NULL)
         err = errno ? errno : -1;
     /* fall through with error */
 
@@ -1407,8 +1407,8 @@ bail:
 void
 MainWindow::OnActionsTest(void)
 {
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
 
     /*
      * Ask the user about various options.
@@ -1461,14 +1461,14 @@ MainWindow::OnActionsTest(void)
     result = fpOpenArchive->TestSelection(fpActionProgress, &selSet);
 
     fpActionProgress->Cleanup(this);
-    fpActionProgress = nil;
+    fpActionProgress = NULL;
     //if (result)
     //  SuccessBeep();
 }
 void
 MainWindow::OnUpdateActionsTest(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && fpContentList->GetItemCount() > 0
+    pCmdUI->Enable(fpContentList != NULL && fpContentList->GetItemCount() > 0
         && fpOpenArchive->GetCapability(GenericArchive::kCapCanTest));
 }
 
@@ -1485,8 +1485,8 @@ MainWindow::OnUpdateActionsTest(CCmdUI* pCmdUI)
 void
 MainWindow::OnActionsDelete(void)
 {
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
     ASSERT(!fpOpenArchive->IsReadOnly());
 
     /*
@@ -1565,7 +1565,7 @@ MainWindow::OnActionsDelete(void)
     fpContentList->Reload();
 
     fpActionProgress->Cleanup(this);
-    fpActionProgress = nil;
+    fpActionProgress = NULL;
 
     if (result)
         SuccessBeep();
@@ -1573,7 +1573,7 @@ MainWindow::OnActionsDelete(void)
 void
 MainWindow::OnUpdateActionsDelete(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly()
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly()
         && fpContentList->GetSelectedCount() > 0);
 }
 
@@ -1592,8 +1592,8 @@ MainWindow::OnUpdateActionsDelete(CCmdUI* pCmdUI)
 void
 MainWindow::OnActionsRename(void)
 {
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
     ASSERT(!fpOpenArchive->IsReadOnly());
 
     /*
@@ -1628,7 +1628,7 @@ MainWindow::OnActionsRename(void)
 void
 MainWindow::OnUpdateActionsRename(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly()
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly()
         && fpContentList->GetSelectedCount() > 0);
 }
 
@@ -1645,15 +1645,15 @@ MainWindow::OnUpdateActionsRename(CCmdUI* pCmdUI)
 void
 MainWindow::OnActionsEditComment(void)
 {
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
     ASSERT(!fpOpenArchive->IsReadOnly());
 
     EditCommentDialog editDlg(this);
     CString oldComment;
 
     GenericEntry* pEntry = GetSelectedItem(fpContentList);
-    if (pEntry == nil) {
+    if (pEntry == NULL) {
         ASSERT(false);
         return;
     }
@@ -1690,7 +1690,7 @@ MainWindow::OnActionsEditComment(void)
 void
 MainWindow::OnUpdateActionsEditComment(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly() &&
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpContentList->GetSelectedCount() == 1 &&
         fpOpenArchive->GetCapability(GenericArchive::kCapCanEditComment));
 }
@@ -1714,14 +1714,14 @@ MainWindow::OnUpdateActionsEditComment(CCmdUI* pCmdUI)
 void
 MainWindow::OnActionsEditProps(void)
 {
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
 
     EditPropsDialog propsDlg(this);
     CString oldComment;
 
     GenericEntry* pEntry = GetSelectedItem(fpContentList);
-    if (pEntry == nil) {
+    if (pEntry == NULL) {
         ASSERT(false);
         return;
     }
@@ -1745,7 +1745,7 @@ void
 MainWindow::OnUpdateActionsEditProps(CCmdUI* pCmdUI)
 {
     // allow it in read-only mode, so we can view the props
-    pCmdUI->Enable(fpContentList != nil &&
+    pCmdUI->Enable(fpContentList != NULL &&
         fpContentList->GetSelectedCount() == 1);
 }
 
@@ -1764,8 +1764,8 @@ MainWindow::OnActionsRenameVolume(void)
 {
     RenameVolumeDialog rvDialog;
 
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
     ASSERT(!fpOpenArchive->IsReadOnly());
 
     /* only know how to deal with disk images */
@@ -1777,7 +1777,7 @@ MainWindow::OnActionsRenameVolume(void)
     DiskImgLib::DiskFS* pDiskFS;
 
     pDiskFS = ((DiskArchive*) fpOpenArchive)->GetDiskFS();
-    ASSERT(pDiskFS != nil);
+    ASSERT(pDiskFS != NULL);
 
     rvDialog.fpArchive = (DiskArchive*) fpOpenArchive;
     if (rvDialog.DoModal() != IDOK)
@@ -1808,7 +1808,7 @@ MainWindow::OnActionsRenameVolume(void)
 void
 MainWindow::OnUpdateActionsRenameVolume(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly() &&
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpOpenArchive->GetCapability(GenericArchive::kCapCanRenameVolume));
 }
 
@@ -1825,8 +1825,8 @@ MainWindow::OnUpdateActionsRenameVolume(CCmdUI* pCmdUI)
 void
 MainWindow::OnActionsRecompress(void)
 {
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
 
     /*
      * Ask the user about various options.
@@ -1886,7 +1886,7 @@ MainWindow::OnActionsRecompress(void)
     fpContentList->Reload();
 
     fpActionProgress->Cleanup(this);
-    fpActionProgress = nil;
+    fpActionProgress = NULL;
 
     
     if (result) {
@@ -1908,7 +1908,7 @@ MainWindow::OnActionsRecompress(void)
 void
 MainWindow::OnUpdateActionsRecompress(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly() &&
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpContentList->GetItemCount() > 0 &&
         fpOpenArchive->GetCapability(GenericArchive::kCapCanRecompress));
 }
@@ -1922,7 +1922,7 @@ MainWindow::CalcTotalSize(LONGLONG* pUncomp, LONGLONG* pComp) const
     GenericEntry* pEntry = fpOpenArchive->GetEntries();
     LONGLONG uncomp = 0, comp = 0;
 
-    while (pEntry != nil) {
+    while (pEntry != NULL) {
         uncomp += pEntry->GetUncompressedLen();
         comp += pEntry->GetCompressedLen();
         pEntry = pEntry->GetNext();
@@ -1945,8 +1945,8 @@ MainWindow::CalcTotalSize(LONGLONG* pUncomp, LONGLONG* pComp) const
 void
 MainWindow::OnActionsConvDisk(void)
 {
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
 
     /*
      * Ask the user about various options.
@@ -2065,7 +2065,7 @@ MainWindow::OnActionsConvDisk(void)
                 fpActionProgress, &xferOpts);
 
     fpActionProgress->Cleanup(this);
-    fpActionProgress = nil;
+    fpActionProgress = NULL;
 
     if (result == GenericArchive::kXferOK)
         SuccessBeep();
@@ -2077,7 +2077,7 @@ void
 MainWindow::OnUpdateActionsConvDisk(CCmdUI* pCmdUI)
 {
     /* right now, only NufxArchive has the Xfer stuff implemented */
-    pCmdUI->Enable(fpContentList != nil &&
+    pCmdUI->Enable(fpContentList != NULL &&
         fpContentList->GetItemCount() > 0 &&
         fpOpenArchive->GetArchiveKind() == GenericArchive::kArchiveNuFX);
 }
@@ -2095,8 +2095,8 @@ MainWindow::OnUpdateActionsConvDisk(CCmdUI* pCmdUI)
 void
 MainWindow::OnActionsConvFile(void)
 {
-    ASSERT(fpContentList != nil);
-    ASSERT(fpOpenArchive != nil);
+    ASSERT(fpContentList != NULL);
+    ASSERT(fpOpenArchive != NULL);
 
     /*
      * Ask the user about various options.
@@ -2192,7 +2192,7 @@ MainWindow::OnActionsConvFile(void)
     }
 
     xferOpts.fTarget = new NufxArchive;
-    errStr = xferOpts.fTarget->New(filename, nil);
+    errStr = xferOpts.fTarget->New(filename, NULL);
     if (!errStr.IsEmpty()) {
         ShowFailureMsg(this, errStr, IDS_FAILED);
         delete xferOpts.fTarget;
@@ -2211,7 +2211,7 @@ MainWindow::OnActionsConvFile(void)
                 fpActionProgress, &xferOpts);
 
     fpActionProgress->Cleanup(this);
-    fpActionProgress = nil;
+    fpActionProgress = NULL;
     if (result == GenericArchive::kXferOK)
         SuccessBeep();
 
@@ -2221,7 +2221,7 @@ MainWindow::OnActionsConvFile(void)
 void
 MainWindow::OnUpdateActionsConvFile(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil &&
+    pCmdUI->Enable(fpContentList != NULL &&
         fpContentList->GetItemCount() > 0 &&
         fpOpenArchive->GetArchiveKind() == GenericArchive::kArchiveDiskImage);
 }
@@ -2247,7 +2247,7 @@ MainWindow::OnUpdateActionsConvToWav(CCmdUI* pCmdUI)
 {
     BOOL enable = false;
 
-    if (fpContentList != nil && fpContentList->GetSelectedCount() == 1) {
+    if (fpContentList != NULL && fpContentList->GetSelectedCount() == 1) {
         /* only BAS, INT, and BIN shorter than 64K */
         GenericEntry* pEntry = GetSelectedItem(fpContentList);
 
@@ -2293,7 +2293,7 @@ MainWindow::OnActionsConvFromWav(void)
 
     dlg.DoModal();
     if (dlg.IsDirty()) {
-        assert(fpContentList != nil);
+        assert(fpContentList != NULL);
         fpContentList->Reload();
     }
 
@@ -2303,7 +2303,7 @@ bail:
 void
 MainWindow::OnUpdateActionsConvFromWav(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly());
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly());
 }
 
 
@@ -2322,13 +2322,13 @@ MainWindow::SaveToArchive(GenericArchive::FileDetails* pDetails,
 {
     MainWindow* pMain = GET_MAIN_WINDOW();
     GenericArchive* pArchive = pMain->GetOpenArchive();
-    DiskImgLib::A2File* pTargetSubdir = nil;
+    DiskImgLib::A2File* pTargetSubdir = NULL;
     XferFileOptions xferOpts;
     CString storagePrefix;
-    unsigned char* dataBuf = nil;
-    unsigned char* rsrcBuf = nil;
+    unsigned char* dataBuf = NULL;
+    unsigned char* rsrcBuf = NULL;
 
-    ASSERT(pArchive != nil);
+    ASSERT(pArchive != NULL);
     ASSERT(errMsg.IsEmpty());
 
     /*
@@ -2339,7 +2339,7 @@ MainWindow::SaveToArchive(GenericArchive::FileDetails* pDetails,
             dataBuf = new unsigned char[1];
         else
             dataBuf = new unsigned char[dataLen];
-        if (dataBuf == nil) {
+        if (dataBuf == NULL) {
             errMsg.Format(L"Unable to allocate %ld bytes", dataLen);
             goto bail;
         }
@@ -2366,7 +2366,7 @@ MainWindow::SaveToArchive(GenericArchive::FileDetails* pDetails,
         //details.storageName.Replace(':', '_');
         pDetails->fileSysInfo = ':';
     }
-    if (pTargetSubdir != nil) {
+    if (pTargetSubdir != NULL) {
         storagePrefix = pTargetSubdir->GetPathName();
         WMSG1("--- using storagePrefix '%ls'\n", storagePrefix);
     }
@@ -2441,7 +2441,7 @@ MainWindow::OnActionsImportBAS(void)
 
     dlg.DoModal();
     if (dlg.IsDirty()) {
-        assert(fpContentList != nil);
+        assert(fpContentList != NULL);
         fpContentList->Reload();
     }
 
@@ -2451,7 +2451,7 @@ bail:
 void
 MainWindow::OnUpdateActionsImportBAS(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly());
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly());
 }
 
 
@@ -2475,7 +2475,7 @@ MainWindow::GetFileParts(const GenericEntry* pEntry,
     ReformatHolder* pHolder = new ReformatHolder;
     CString errMsg;
 
-    if (pHolder == nil)
+    if (pHolder == NULL)
         return -1;
 
     if (pEntry->GetHasDataFork())
@@ -2501,7 +2501,7 @@ MainWindow::GetFilePart(const GenericEntry* pEntry, int whichThread,
 {
     CString errMsg;
     ReformatHolder::ReformatPart part;
-    char* buf = nil;
+    char* buf = NULL;
     long len = 0;
     di_off_t threadLen;
     int result;
@@ -2542,19 +2542,19 @@ MainWindow::GetFilePart(const GenericEntry* pEntry, int whichThread,
 
     if (result == IDOK) {
         /* on success, ETTB guarantees a buffer, even for zero-len file */
-        ASSERT(buf != nil);
+        ASSERT(buf != NULL);
         pHolder->SetSourceBuf(part, (unsigned char*) buf, len);
     } else if (result == IDCANCEL) {
         /* not expected */
         errMsg = L"Cancelled!";
         pHolder->SetErrorMsg(part, errMsg);
-        ASSERT(buf == nil);
+        ASSERT(buf == NULL);
     } else {
         /* transfer error message to ReformatHolder buffer */
         WMSG1("Got error message from ExtractThread: '%ls'\n",
             (LPCWSTR) errMsg);
         pHolder->SetErrorMsg(part, errMsg);
-        ASSERT(buf == nil);
+        ASSERT(buf == NULL);
     }
 
 bail:

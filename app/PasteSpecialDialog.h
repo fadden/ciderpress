@@ -16,7 +16,7 @@
  */
 class PasteSpecialDialog : public CDialog {
 public:
-    PasteSpecialDialog(CWnd* pParentWnd = nil) :
+    PasteSpecialDialog(CWnd* pParentWnd = NULL) :
       CDialog(IDD_PASTE_SPECIAL, pParentWnd),
       fPasteHow(kPastePaths)
       {}

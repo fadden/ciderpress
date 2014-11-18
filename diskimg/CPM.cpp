@@ -161,8 +161,8 @@ DiskFSCPM::Initialize(void)
     fVolumeUsage.Dump();
 
     //A2File* pFile;
-    //pFile = GetNextFile(nil);
-    //while (pFile != nil) {
+    //pFile = GetNextFile(NULL);
+    //while (pFile != NULL) {
     //  pFile->Dump();
     //  pFile = GetNextFile(pFile);
     //}
@@ -459,9 +459,9 @@ A2FileCPM::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     DIError dierr;
-    A2FDCPM* pOpenFile = nil;
+    A2FDCPM* pOpenFile = NULL;
 
-    if (fpOpenFile != nil)
+    if (fpOpenFile != NULL)
         return kDIErrAlreadyOpen;
     if (rsrcFork)
         return kDIErrForkNotFound;
@@ -470,7 +470,7 @@ A2FileCPM::Open(A2FileDescr** ppOpenFile, bool readOnly,
 
     pOpenFile = new A2FDCPM(this);
 
-    dierr = GetBlockList(&pOpenFile->fBlockCount, nil);
+    dierr = GetBlockList(&pOpenFile->fBlockCount, NULL);
     if (dierr != kDIErrNone)
         goto bail;
 
@@ -488,7 +488,7 @@ A2FileCPM::Open(A2FileDescr** ppOpenFile, bool readOnly,
 
     fpOpenFile = pOpenFile;
     *ppOpenFile = pOpenFile;
-    pOpenFile = nil;
+    pOpenFile = NULL;
 
 bail:
     delete pOpenFile;
@@ -500,7 +500,7 @@ bail:
  * Get the complete block list for a file.  This will involve reading
  * one or more directory entries.
  *
- * Call this once with "blockBuf" equal to "nil" to get the block count,
+ * Call this once with "blockBuf" equal to "NULL" to get the block count,
  * then call a second time after allocating blockBuf.
  */
 DIError
@@ -534,7 +534,7 @@ A2FileCPM::GetBlockList(long* pBlockCount, unsigned char* blockBuf) const
                 }
                 blockCount++;
 
-                if (blockBuf != nil) {
+                if (blockBuf != NULL) {
                     long listOffset = j +
                         fpDirEntry[i].extent * DiskFSCPM::kDirEntryBlockCount;
                     blockBuf[listOffset] = fpDirEntry[i].blocks[j];
@@ -554,8 +554,8 @@ A2FileCPM::GetBlockList(long* pBlockCount, unsigned char* blockBuf) const
 
     //WMSG2(" Returning blockCount=%d for '%s'\n", blockCount,
     //  fpDirEntry[fDirIdx].fileName);
-    if (pBlockCount != nil) {
-        assert(blockBuf == nil || *pBlockCount == blockCount);
+    if (pBlockCount != NULL) {
+        assert(blockBuf == NULL || *pBlockCount == blockCount);
         *pBlockCount = blockCount;
     }
 
@@ -591,11 +591,11 @@ A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
 
     /* don't allow them to read past the end of the file */
     if (fOffset + (long)len > pFile->fLength) {
-        if (pActual == nil)
+        if (pActual == NULL)
             return kDIErrDataUnderrun;
         len = (size_t) (pFile->fLength - fOffset);
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = len;
     long incrLen = len;
 

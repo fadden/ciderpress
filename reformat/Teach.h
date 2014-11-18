@@ -51,7 +51,7 @@ private:
  */
 class RStyleBlock {
 public:
-    RStyleBlock(void) : fpRulers(nil), fpStyles(nil), fpStyleItems(nil) {}
+    RStyleBlock(void) : fpRulers(NULL), fpStyles(NULL), fpStyleItems(NULL) {}
     virtual ~RStyleBlock(void) {
             delete[] fpRulers;
             delete[] fpStyles;

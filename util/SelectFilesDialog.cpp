@@ -74,13 +74,13 @@ SelectFilesDialog::OFNHookProc(HWND hDlg, UINT uiMsg, WPARAM wParam,
     LPARAM lParam)
 {
     OPENFILENAME* pOfn;
-    SelectFilesDialog* pSFD = nil;
+    SelectFilesDialog* pSFD = NULL;
     pOfn = (OPENFILENAME*) GetWindowLong(hDlg, GWL_USERDATA);
-    if (pOfn != nil) {
+    if (pOfn != NULL) {
         pSFD = (SelectFilesDialog*) pOfn->lCustData;
         /* allow our "this" pointer to play with the window */
         /* [does not seem to cause double-frees on cleanup] */
-        if (pSFD->m_hWnd == nil)
+        if (pSFD->m_hWnd == NULL)
             pSFD->m_hWnd = hDlg;
     }
 
@@ -90,16 +90,16 @@ SelectFilesDialog::OFNHookProc(HWND hDlg, UINT uiMsg, WPARAM wParam,
         SetWindowLong(hDlg, GWL_USERDATA, lParam);
         break;
     case WM_NOTIFY:     // 0x4e
-        ASSERT(pSFD != nil);
+        ASSERT(pSFD != NULL);
         return pSFD->HandleNotify(hDlg, (LPOFNOTIFY)lParam);
     case WM_COMMAND:
-        ASSERT(pSFD != nil);
+        ASSERT(pSFD != NULL);
         return pSFD->HandleCommand(hDlg, wParam, lParam);
     case WM_SIZE:
-        ASSERT(pSFD != nil);
+        ASSERT(pSFD != NULL);
         return pSFD->HandleSize(hDlg, wParam, LOWORD(lParam), HIWORD(lParam));
     case WM_HELP:
-        ASSERT(pSFD != nil);
+        ASSERT(pSFD != NULL);
         return pSFD->HandleHelp(hDlg, (LPHELPINFO) lParam);
     default:
         //WMSG4("OFNHookProc: hDlg=0x%08lx uiMsg=0x%08lx "
@@ -252,16 +252,16 @@ SelectFilesDialog::MyOnInitDone(void)
     CRect okRect, cancelRect, acceptRect;
     int vertDiff;
 
-    ASSERT(pParent != nil);
+    ASSERT(pParent != NULL);
     pWnd = GetDlgItem(fAcceptButtonID);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->GetWindowRect(&acceptRect);
 
     pWnd = pParent->GetDlgItem(IDOK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->GetWindowRect(&okRect);
     pWnd = pParent->GetDlgItem(IDCANCEL);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->GetWindowRect(&cancelRect);
 
     vertDiff = acceptRect.top - okRect.top;
@@ -314,7 +314,7 @@ SelectFilesDialog::ShiftControls(int deltaX, int deltaY)
 /*
  * Get the list view control out of the common file dialog.
  *
- * Returns "nil" if it can't find it.
+ * Returns "NULL" if it can't find it.
  */
 CWnd*
 SelectFilesDialog::GetListCtrl(void)
@@ -324,13 +324,13 @@ SelectFilesDialog::GetListCtrl(void)
 
     /* our dialog is a child; get our parent, then grab the shellview */
     pItem = GetParent()->GetDlgItem(lst2);
-    ASSERT(pItem != nil);
-    if (pItem == nil)
-        return nil;
+    ASSERT(pItem != NULL);
+    if (pItem == NULL)
+        return NULL;
 
     /* pull the listview out of the shellview */
     pList = pItem->GetDlgItem( 1);
-    ASSERT(pList != nil);
+    ASSERT(pList != NULL);
 
     return pList;
 }
@@ -346,18 +346,18 @@ SelectFilesDialog::MyOnFileNameChange(void)
     CListCtrl* pList;
 
     pList = (CListCtrl*) GetListCtrl();
-    if (pList == nil) {
+    if (pList == NULL) {
         WMSG0("GLITCH: could not get list control\n");
         return;
     }
-    ASSERT(pList != nil);
+    ASSERT(pList != NULL);
 
     //WMSG1("Selected count=%d\n", pList->GetSelectedCount());
     //*pCount = pList->GetSelectedCount();
 
     //CWnd* pItem;
     //pItem = GetDlgItem(IDC_SELECT_ACCEPT);
-    //ASSERT(pItem != nil);
+    //ASSERT(pItem != NULL);
     //pItem->EnableWindow(*pCount != 0);
 }
 
@@ -445,11 +445,11 @@ SelectFilesDialog::PrepEndDialog(void)
      * Now merge in the selected files.
      */
     pList = (CListCtrl*) GetListCtrl();
-    if (pList == nil) {
+    if (pList == NULL) {
         WMSG0("GLITCH: could not get list control\n");
         return false;
     }
-    ASSERT(pList != nil);
+    ASSERT(pList != NULL);
 
     CString fileNames;
 
@@ -485,12 +485,12 @@ SelectFilesDialog::PrepEndDialog(void)
 
         POSITION posn;
         posn = pList->GetFirstSelectedItemPosition();
-        if (posn == nil) {
+        if (posn == NULL) {
             /* shouldn't happen -- Accept button should be dimmed */
             ASSERT(false);
             return false;
         }
-        while (posn != nil) {
+        while (posn != NULL) {
             /* do this every time, because "fileNames" can be reallocated */
             const WCHAR* tailStr = fileNames;
             tailStr += fFileNameOffset-1;
@@ -510,7 +510,7 @@ SelectFilesDialog::PrepEndDialog(void)
                 compareName += L"\\";
                 //WMSG1("  Checking name='%ls'\n", compareName);
 
-                if (compare && Stristr(tailStr, compareName) != nil) {
+                if (compare && Stristr(tailStr, compareName) != NULL) {
                     WMSG1("    Matched '%ls', not adding\n", compareName);
                 } else {
                     if (compare) {
@@ -584,6 +584,6 @@ void
 SelectFilesDialog::ClearFileName(void)
 {
     CWnd* pWnd = GetParent()->GetDlgItem(edt1);
-    if (pWnd != nil)
+    if (pWnd != NULL)
         pWnd->SetWindowText(L"");
 }

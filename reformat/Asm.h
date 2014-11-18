@@ -129,7 +129,7 @@ private:
  */
 class ReformatLISA3 : public ReformatAsm {
 public:
-    ReformatLISA3(void) : fSymTab(nil) {}
+    ReformatLISA3(void) : fSymTab(NULL) {}
     virtual ~ReformatLISA3(void) {}
 
     virtual void Examine(ReformatHolder* pHolder);
@@ -197,7 +197,7 @@ private:
  */
 class ReformatLISA4 : public ReformatAsm {
 public:
-    ReformatLISA4(void) : fSymTab(nil) {}
+    ReformatLISA4(void) : fSymTab(NULL) {}
     virtual ~ReformatLISA4(void) { delete[] fSymTab; }
 
     virtual void Examine(ReformatHolder* pHolder);

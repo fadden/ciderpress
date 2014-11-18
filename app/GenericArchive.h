@@ -52,7 +52,7 @@ typedef struct FileProps {
 class XferFileOptions {
 public:
     XferFileOptions(void) :
-        fTarget(nil), fPreserveEmptyFolders(false), fpTargetFS(nil)
+        fTarget(NULL), fPreserveEmptyFolders(false), fpTargetFS(NULL)
         {}
     ~XferFileOptions(void) {}
 
@@ -245,7 +245,7 @@ private:
     const WCHAR* fFileName;         // points within fPathName
     const WCHAR* fFileNameExtension; // points within fPathName
     char        fFssep;
-    WCHAR*       fSubVolName;       // sub-volume prefix, or nil if none
+    WCHAR*       fSubVolName;       // sub-volume prefix, or NULL if none
     WCHAR*      fDisplayName;       // combination of sub-vol and path
     long        fFileType;
     long        fAuxType;
@@ -285,11 +285,11 @@ private:
 class GenericArchive {
 public:
     GenericArchive(void) {
-        fPathName = nil;
+        fPathName = NULL;
         fNumEntries = 0;
-        fEntryHead = fEntryTail = nil;
+        fEntryHead = fEntryTail = NULL;
         fReloadFlag = true;
-        //fEntryIndex = nil;
+        //fEntryIndex = NULL;
     }
     virtual ~GenericArchive(void) {
         //WMSG0("Deleting GenericArchive\n");
@@ -305,7 +305,7 @@ public:
     }
     //virtual GenericEntry* GetEntry(long num) {
     //  ASSERT(num >= 0 && num < fNumEntries);
-    //  if (fEntryIndex == nil)
+    //  if (fEntryIndex == NULL)
     //      CreateIndex();
     //  return fEntryIndex[num];
     //}
@@ -563,10 +563,10 @@ protected:
 
     void SetPathName(const WCHAR* pathName) {
         free(fPathName);
-        if (pathName != nil) {
+        if (pathName != NULL) {
             fPathName = _wcsdup(pathName);
         } else {
-            fPathName = nil;
+            fPathName = NULL;
         }
     }
 
@@ -595,7 +595,7 @@ public:
         //fThreadKind = threadKind;
         //fFilter = filter;
         //fReformatName = "";
-        fpPrev = fpNext = nil;
+        fpPrev = fpNext = NULL;
     }
     ~SelectionEntry(void) {}
 
@@ -634,7 +634,7 @@ class SelectionSet {
 public:
     SelectionSet(void) {
         fNumEntries = 0;
-        fEntryHead = fEntryTail = fIterCurrent = nil;
+        fEntryHead = fEntryTail = fIterCurrent = NULL;
     }
     ~SelectionSet(void) {
         DeleteEntries();
@@ -649,18 +649,18 @@ public:
     SelectionEntry* GetEntries(void) const { return fEntryHead; }
 
     void IterReset(void) {
-        fIterCurrent = nil;
+        fIterCurrent = NULL;
     }
     // move to the next or previous entry as part of iterating
     SelectionEntry* IterPrev(void) {
-        if (fIterCurrent == nil)
+        if (fIterCurrent == NULL)
             fIterCurrent = fEntryTail;
         else
             fIterCurrent = fIterCurrent->GetPrev();
         return fIterCurrent;
     }
     SelectionEntry* IterNext(void) {
-        if (fIterCurrent == nil)
+        if (fIterCurrent == NULL)
             fIterCurrent = fEntryHead;
         else
             fIterCurrent = fIterCurrent->GetNext();
@@ -670,16 +670,16 @@ public:
         return fIterCurrent;
     }
     bool IterHasPrev(void) const {
-        if (fIterCurrent == nil)
-            return fEntryTail != nil;
+        if (fIterCurrent == NULL)
+            return fEntryTail != NULL;
         else
-            return (fIterCurrent->GetPrev() != nil);
+            return (fIterCurrent->GetPrev() != NULL);
     }
     bool IterHasNext(void) const {
-        if (fIterCurrent == nil)
-            return fEntryHead != nil;
+        if (fIterCurrent == NULL)
+            return fEntryHead != NULL;
         else
-            return (fIterCurrent->GetNext() != nil);
+            return (fIterCurrent->GetNext() != NULL);
     }
 
     int GetNumEntries(void) const { return fNumEntries; }

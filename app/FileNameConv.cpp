@@ -591,7 +591,7 @@ static const struct {
 
 /*
  * Find an entry in the type description table that matches both file type and
- * aux type.  If no match is found, nil is returned.
+ * aux type.  If no match is found, NULL is returned.
  */
 /*static*/ const WCHAR*
 PathProposal::FileTypeDescription(long fileType, long auxType)
@@ -607,7 +607,7 @@ PathProposal::FileTypeDescription(long fileType, long auxType)
         }
     }
 
-    return nil;
+    return NULL;
 }
 
 
@@ -644,7 +644,7 @@ PathProposal::ArchiveToLocal(void)
      */
     newBufLen = fStoredPathName.GetLength()*3 + kMaxPathGrowth +1;
     pathBuf = fLocalPathName.GetBuffer(newBufLen);
-    ASSERT(pathBuf != nil);
+    ASSERT(pathBuf != NULL);
 
     startp = fStoredPathName;
     dstp = pathBuf;
@@ -654,17 +654,17 @@ PathProposal::ArchiveToLocal(void)
     }
 
     /* normalize all directory components and the filename component */
-    while (startp != nil) {
-        endp = nil;
+    while (startp != NULL) {
+        endp = NULL;
         if (fStoredFssep != '\0')
             endp = wcschr(startp, fStoredFssep);
-        if (endp != nil && endp == startp) {
+        if (endp != NULL && endp == startp) {
             /* zero-length subdir component */
             WMSG1("WARNING: zero-length subdir component in '%ls'\n", startp);
             startp++;
             continue;
         }
-        if (endp != nil) {
+        if (endp != NULL) {
             /* normalize directory component */
             NormalizeDirectoryName(startp, endp - startp,
                     fStoredFssep, &dstp, newBufLen);
@@ -692,7 +692,7 @@ PathProposal::ArchiveToLocal(void)
             ASSERT(wcslen(extBuf) <= kMaxPathGrowth);
             wcscat(pathBuf, extBuf);
 
-            startp = nil;   /* we're done, break out of loop */
+            startp = NULL;   /* we're done, break out of loop */
         }
     }
 
@@ -705,7 +705,7 @@ PathProposal::ArchiveToLocal(void)
     if (fJunkPaths) {
         WCHAR* lastFssep;
         lastFssep = wcsrchr(pathBuf, fLocalFssep);
-        if (lastFssep != nil) {
+        if (lastFssep != NULL) {
             ASSERT(*(lastFssep+1) != '\0'); /* should already have been caught*/
             memmove(pathBuf, lastFssep+1,
                 (wcslen(lastFssep+1)+1) * sizeof(WCHAR));
@@ -728,12 +728,12 @@ PathProposal::ArchiveToLocal(void)
  * that the name is just "aux", or it could be "aux.this.txt".
  */
 static const WCHAR* gFatReservedNames3[] = {
-    L"CON", L"PRN", L"NUL", L"AUX", nil
+    L"CON", L"PRN", L"NUL", L"AUX", NULL
 };
 static const WCHAR* gFatReservedNames4[] = {
     L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9",
     L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
-    nil
+    NULL
 };
 
 /*
@@ -755,7 +755,7 @@ PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
     if (srcLen >= 3) {
         const WCHAR** ppcch;
 
-        for (ppcch = gFatReservedNames3; *ppcch != nil; ppcch++) {
+        for (ppcch = gFatReservedNames3; *ppcch != NULL; ppcch++) {
             if (wcsnicmp(srcp, *ppcch, 3) == 0 &&
                 (srcp[3] == '.' || srcLen == 3))
             {
@@ -773,7 +773,7 @@ PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
     if (srcLen >= 4) {
         const WCHAR** ppcch;
 
-        for (ppcch = gFatReservedNames4; *ppcch != nil; ppcch++) {
+        for (ppcch = gFatReservedNames4; *ppcch != NULL; ppcch++) {
             if (wcsnicmp(srcp, *ppcch, 4) == 0 &&
                 (srcp[4] == '.' || srcLen == 4))
             {
@@ -798,7 +798,7 @@ PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
             if (fPreservation)
                 *dstp++ = *srcp;
             *dstp++ = *srcp++;
-        } else if (wcschr(kInvalid, *srcp) != nil ||
+        } else if (wcschr(kInvalid, *srcp) != NULL ||
             *srcp < 0x20 || *srcp >= 0x7f)
         {
             /* change invalid char to "%2f" or '_' */
@@ -837,11 +837,11 @@ void
 PathProposal::NormalizeFileName(const WCHAR* srcp, long srcLen,
     char fssep, WCHAR** pDstp, long dstLen)
 {
-    ASSERT(srcp != nil);
+    ASSERT(srcp != NULL);
     ASSERT(srcLen > 0);
     ASSERT(dstLen > srcLen);
-    ASSERT(pDstp != nil);
-    ASSERT(*pDstp != nil);
+    ASSERT(pDstp != NULL);
+    ASSERT(*pDstp != NULL);
 
 #if defined(UNIX_LIKE)
     UNIXNormalizeFileName(srcp, srcLen, fssep, pDstp, dstLen);
@@ -877,8 +877,8 @@ PathProposal::AddPreservationString(const WCHAR* pathBuf, WCHAR* extBuf)
 {
     WCHAR* cp;
 
-    ASSERT(pathBuf != nil);
-    ASSERT(extBuf != nil);
+    ASSERT(pathBuf != NULL);
+    ASSERT(extBuf != NULL);
     ASSERT(fPreservation);
 
     cp = extBuf + wcslen(extBuf);
@@ -914,9 +914,9 @@ PathProposal::AddPreservationString(const WCHAR* pathBuf, WCHAR* extBuf)
 void
 PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
 {
-    const WCHAR* pPathExt = nil;
-    const WCHAR* pWantedExt = nil;
-    const WCHAR* pTypeExt = nil;
+    const WCHAR* pPathExt = NULL;
+    const WCHAR* pWantedExt = NULL;
+    const WCHAR* pTypeExt = NULL;
     WCHAR* end;
     WCHAR* cp;
 
@@ -927,7 +927,7 @@ PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
      * Note FindExtension guarantees there's at least one char after '.'.
      */
     pPathExt = PathName::FindExtension(pathBuf, fLocalFssep);
-    if (pPathExt == nil) {
+    if (pPathExt == NULL) {
         /*
          * There's no extension on the filename.  Use the standard
          * ProDOS type, if one exists for this entry.  We don't use
@@ -936,7 +936,7 @@ PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
         if (fFileType) {
             pTypeExt = FileTypeString(fFileType);
             if (pTypeExt[0] == '?' || pTypeExt[0] == '$')
-                pTypeExt = nil;
+                pTypeExt = NULL;
         }
     } else {
         pPathExt++;     // skip leading '.'
@@ -957,37 +957,37 @@ PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
          * We want to use the extension currently on the file, if it has one.
          * If not, use the one from the file type.
          */
-        if (pPathExt != nil) {
+        if (pPathExt != NULL) {
             pWantedExt = pPathExt;
         } else {
             pWantedExt = pTypeExt;
         }
     }
-    /* pWantedExt != nil unless we failed to find a pTypeExt */
+    /* pWantedExt != NULL unless we failed to find a pTypeExt */
 
 
     /*
      * Now we know which one we want.  Figure out if we want to add it.
      */
-    if (pWantedExt != nil) {
-        if (extBuf[0] == '\0' && pPathExt != nil &&
+    if (pWantedExt != NULL) {
+        if (extBuf[0] == '\0' && pPathExt != NULL &&
             wcsicmp(pPathExt, pWantedExt) == 0)
         {
             /* don't add an extension that's already there */
-            pWantedExt = nil;
+            pWantedExt = NULL;
             goto know_ext;
         }
 
         if (wcslen(pWantedExt) >= kMaxExtLen) {
             /* too long, forget it */
-            pWantedExt = nil;
+            pWantedExt = NULL;
             goto know_ext;
         }
 
         /* if it's strictly decimal-numeric, don't use it (.1, .2, etc) */
         (void) wcstoul(pWantedExt, &end, 10);
         if (*end == '\0') {
-            pWantedExt = nil;
+            pWantedExt = NULL;
             goto know_ext;
         }
 
@@ -996,7 +996,7 @@ PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
         const WCHAR* ccp = pWantedExt;
         while (*ccp != '\0') {
             if (*ccp == kPreserveIndic) {
-                pWantedExt = nil;
+                pWantedExt = NULL;
                 goto know_ext;
             }
             ccp++;
@@ -1005,10 +1005,10 @@ PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
 know_ext:
 
     /*
-     * If pWantedExt is non-nil, it points to a filename extension without
+     * If pWantedExt is non-NULL, it points to a filename extension without
      * the leading '.'.
      */
-    if (pWantedExt != nil) {
+    if (pWantedExt != NULL) {
         *cp++ = kFilenameExtDelim;
         wcscpy(cp, pWantedExt);
         //cp += strlen(pWantedExt);
@@ -1132,7 +1132,7 @@ PathProposal::LocalToArchive(const AddFilesDialog* pAddOpts)
     slashDotDotSlash[0] = kLocalFssep;
     slashDotDotSlash[3] = kLocalFssep;
     if ((livePathStr[0] == '.' && livePathStr[1] == '.') ||
-        (wcsstr(livePathStr, slashDotDotSlash) != nil))
+        (wcsstr(livePathStr, slashDotDotSlash) != NULL))
     {
         WMSG1("Found dot dot in '%ls', keeping only filename\n", livePathStr);
         doJunk = true;
@@ -1151,7 +1151,7 @@ PathProposal::LocalToArchive(const AddFilesDialog* pAddOpts)
     if (pAddOpts->fStripFolderNames || doJunk) {
         WCHAR* lastFssep;
         lastFssep = wcsrchr(livePathStr, kLocalFssep);
-        if (lastFssep != nil) {
+        if (lastFssep != NULL) {
             ASSERT(*(lastFssep+1) != '\0'); /* should already have been caught*/
             memmove(livePathStr, lastFssep+1,
                 (wcslen(lastFssep+1)+1) * sizeof(WCHAR));
@@ -1250,10 +1250,10 @@ PathProposal::InterpretExtension(const WCHAR* pathName)
 {
     const WCHAR* pExt;
 
-    ASSERT(pathName != nil);
+    ASSERT(pathName != NULL);
 
     pExt = PathName::FindExtension(pathName, fLocalFssep);
-    if (pExt != nil)
+    if (pExt != NULL)
         LookupExtension(pExt+1);
 }
 
@@ -1276,10 +1276,10 @@ PathProposal::ExtractPreservationString(WCHAR* pathname)
     WCHAR* cp;
     int digitCount;
 
-    ASSERT(pathname != nil);
+    ASSERT(pathname != NULL);
 
     pPreserve = wcsrchr(pathname, kPreserveIndic);
-    if (pPreserve == nil)
+    if (pPreserve == NULL)
         return false;
 
     /* count up the #of hex digits */
@@ -1418,7 +1418,7 @@ PathProposal::StripDiskImageSuffix(WCHAR* pathName)
     int i;
 
     pExt = PathName::FindExtension(pathName, fLocalFssep);
-    if (pExt == nil || pExt == pathName)
+    if (pExt == NULL || pExt == pathName)
         return;
 
     for (i = 0; i < NELEM(diskExt); i++) {

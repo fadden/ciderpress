@@ -39,7 +39,7 @@ ExtractOptionsDialog::OnInitDialog(void)
 
     /* grab the radio button with the selection count */
     pWnd = GetDlgItem(IDC_EXT_SELECTED);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
 
     /* set the count string using a string table entry */
     if (fSelectedCount == 1) {
@@ -156,11 +156,11 @@ void
 ExtractOptionsDialog::OnChangeTextConv(void)
 {
     CButton* pButton = (CButton*) GetDlgItem(IDC_EXT_CONVEOLNONE);
-    ASSERT(pButton != nil);
+    ASSERT(pButton != NULL);
     bool convDisabled = (pButton->GetCheck() == BST_CHECKED);
 
     CWnd* pWnd = GetDlgItem(IDC_EXT_CONVHIGHASCII);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(!convDisabled);
 }
 
@@ -176,7 +176,7 @@ ExtractOptionsDialog::OnChooseFolder(void)
 
     /* get the currently-showing text from the edit field */
     pEditWnd = GetDlgItem(IDC_EXT_PATH);
-    ASSERT(pEditWnd != nil);
+    ASSERT(pEditWnd != NULL);
     pEditWnd->GetWindowText(editPath);
 
     chooseDir.SetPathName(editPath);

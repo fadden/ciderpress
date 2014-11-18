@@ -234,11 +234,11 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
     NuThreadIdx* pThreadIdx, long* pLength, bool readOnly)
 {
     NuError nerr = kNuErrNone;
-    NuArchive* pArchive = nil;
+    NuArchive* pArchive = NULL;
     NuRecordIdx recordIdx;
     NuAttr attr;
     const NuRecord* pRecord;
-    const NuThread* pThread = nil;
+    const NuThread* pThread = NULL;
     int idx;
 
     WMSG1("Opening file '%s' to test for NuFX\n", pathName);
@@ -256,7 +256,7 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
         char* tmpPath;
 
         tmpPath = GenTempPath(pathName);
-        if (tmpPath == nil) {
+        if (tmpPath == NULL) {
             nerr = kNuErrInternal;
             goto bail;
         }
@@ -311,7 +311,7 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
         nerr = kNuErrGeneric;
         goto file_archive;
     }
-    assert(pThread != nil);
+    assert(pThread != NULL);
     *pThreadIdx = pThread->threadIdx;
 
     /*
@@ -329,10 +329,10 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
      */
     assert(nerr == kNuErrNone);
     *ppArchive = pArchive;
-    pArchive = nil;
+    pArchive = NULL;
 
 bail:
-    if (pArchive != nil)
+    if (pArchive != NULL)
         NuClose(pArchive);
     if (nerr == kNuErrNone)
         return kDIErrNone;
@@ -342,7 +342,7 @@ bail:
         return kDIErrGeneric;
 
 file_archive:
-    if (pArchive != nil)
+    if (pArchive != NULL)
         NuClose(pArchive);
     return kDIErrFileArchive;
 }
@@ -367,12 +367,12 @@ WrapperNuFX::GetNuFXDiskImage(NuArchive* pArchive, NuThreadIdx threadIdx,
     long length, char** ppData)
 {
     NuError err;
-    NuDataSink* pDataSink = nil;
-    unsigned char* buf = nil;
+    NuDataSink* pDataSink = NULL;
+    unsigned char* buf = NULL;
 
     assert(length > 0);
     buf = new unsigned char[length];
-    if (buf == nil)
+    if (buf == NULL)
         return kDIErrMalloc;
 
     /*
@@ -421,13 +421,13 @@ bail:
 WrapperNuFX::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DIError dierr;
-    NuArchive* pArchive = nil;
+    NuArchive* pArchive = NULL;
     NuThreadIdx threadIdx;
     long length;
     const char* imagePath;
 
     imagePath = pGFD->GetPathName();
-    if (imagePath == nil) {
+    if (imagePath == NULL) {
         WMSG0("Can't test NuFX on non-file\n");
         return kDIErrNotSupported;
     }
@@ -437,7 +437,7 @@ WrapperNuFX::Test(GenericFD* pGFD, di_off_t wrappedLength)
         return dierr;
 
     /* success; throw away state in case they don't like us anyway */
-    assert(pArchive != nil);
+    assert(pArchive != NULL);
     NuClose(pArchive);
     
     return kDIErrNone;
@@ -454,13 +454,13 @@ WrapperNuFX::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
 {
     DIError dierr = kDIErrNone;
     NuThreadIdx threadIdx;
-    GFDBuffer* pNewGFD = nil;
-    char* buf = nil;
+    GFDBuffer* pNewGFD = NULL;
+    char* buf = NULL;
     long length = -1;
     const char* imagePath;
 
     imagePath = pGFD->GetPathName();
-    if (imagePath == nil) {
+    if (imagePath == NULL) {
         assert(false);      // should've been caught in Test
         return kDIErrNotSupported;
     }
@@ -477,7 +477,7 @@ WrapperNuFX::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     dierr = pNewGFD->Open(buf, length, true, false, readOnly);
     if (dierr != kDIErrNone)
         goto bail;
-    buf = nil;      // now owned by pNewGFD;
+    buf = NULL;      // now owned by pNewGFD;
 
     /*
      * Success!
@@ -494,7 +494,7 @@ WrapperNuFX::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
 bail:
     if (dierr != kDIErrNone) {
         NuClose(fpArchive);
-        fpArchive = nil;
+        fpArchive = NULL;
         delete pNewGFD;
         delete buf;
     }
@@ -517,12 +517,12 @@ WrapperNuFX::GenTempPath(const char* path)
     static const char* kTmpTemplate = "DItmp_XXXXXX";
     char* tmpPath;
 
-    assert(path != nil);
+    assert(path != NULL);
     assert(strlen(path) > 0);
 
     tmpPath = new char[strlen(path) + 32];
-    if (tmpPath == nil)
-        return nil;
+    if (tmpPath == NULL)
+        return NULL;
 
     strcpy(tmpPath, path);
 
@@ -562,8 +562,8 @@ WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DIError dierr = kDIErrNone;
     NuArchive* pArchive;
     const char* imagePath;
-    char* tmpPath = nil;
-    unsigned char* buf = nil;
+    char* tmpPath = NULL;
+    unsigned char* buf = NULL;
     NuError nerr;
 
     /*
@@ -571,14 +571,14 @@ WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
      * makes pWrapperGFD invalid, but such is life with NufxLib.)
      */
     imagePath = pWrapperGFD->GetPathName();
-    if (imagePath == nil) {
+    if (imagePath == NULL) {
         assert(false);      // must not have an outer wrapper
         dierr = kDIErrNotSupported;
         goto bail;
     }
     pWrapperGFD->Close();       // don't hold the file open
     tmpPath = GenTempPath(imagePath);
-    if (tmpPath == nil) {
+    if (tmpPath == NULL) {
         dierr = kDIErrInternal;
         goto bail;
     }
@@ -595,7 +595,7 @@ WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
      */
     assert(length > 0);
     buf = new unsigned char[(int) length];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -608,7 +608,7 @@ WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
         goto bail;
     }
     *pDataFD = pNewGFD;
-    buf = nil;          // now owned by pNewGFD;
+    buf = NULL;          // now owned by pNewGFD;
 
     /*
      * Success!  Set misc stuff.
@@ -658,7 +658,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     NuFileDetails fileDetails;
     NuRecordIdx recordIdx;
     NuThreadIdx threadIdx;
-    NuDataSource* pDataSource = nil;
+    NuDataSource* pDataSource = NULL;
 
     if (fThreadIdx != 0) {
         /*
@@ -694,7 +694,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
      */
     memset(&fileDetails, 0, sizeof(fileDetails));
     fileDetails.threadID = kNuThreadIDDiskImage;
-    if (fStorageName != nil)
+    if (fStorageName != NULL)
         fileDetails.storageName = fStorageName;
     else
         fileDetails.storageName = "NEW.DISK";
@@ -705,7 +705,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     fileDetails.access = kNuAccessUnlocked;
 
     time_t now;
-    now = time(nil);
+    now = time(NULL);
     UNIXTimeToDateTime(&now, &fileDetails.archiveWhen);
     UNIXTimeToDateTime(&now, &fileDetails.modWhen);
     UNIXTimeToDateTime(&now, &fileDetails.createWhen);
@@ -728,7 +728,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
      */
     nerr = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed, 0,
             (const unsigned char*) ((GFDBuffer*) pDataGFD)->GetBuffer(),
-            0, (long) dataLen, nil, &pDataSource);
+            0, (long) dataLen, NULL, &pDataSource);
     if (nerr != kNuErrNone) {
         WMSG1(" NuFX unable to create NufxLib data source (nerr=%d)", nerr);
         goto bail;
@@ -743,7 +743,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
         WMSG1(" NuFX AddThread failed (nerr=%d)\n", nerr);
         goto bail;
     }
-    pDataSource = nil;      // now owned by NufxLib
+    pDataSource = NULL;      // now owned by NufxLib
     WMSG2(" NuFX added thread %ld in record %ld, flushing changes\n",
         threadIdx, recordIdx);
 
@@ -775,8 +775,8 @@ WrapperNuFX::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime)
 {
     struct tm* ptm;
 
-    assert(pWhen != nil);
-    assert(pDateTime != nil);
+    assert(pWhen != NULL);
+    assert(pDateTime != NULL);
 
     ptm = localtime(pWhen);
     pDateTime->second = ptm->tm_sec;
@@ -806,7 +806,7 @@ WrapperNuFX::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime)
 WrapperDDD::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DIError dierr;
-    GenericFD* pNewGFD = nil;
+    GenericFD* pNewGFD = NULL;
     WMSG0("Testing for DDD\n");
 
     pGFD->Rewind();
@@ -815,7 +815,7 @@ WrapperDDD::Test(GenericFD* pGFD, di_off_t wrappedLength)
     if (dierr != kDIErrNone)
         return dierr;
 
-    dierr = Unpack(pGFD, &pNewGFD, nil);
+    dierr = Unpack(pGFD, &pNewGFD, NULL);
     delete pNewGFD;
     return dierr;
 }
@@ -913,7 +913,7 @@ WrapperDDD::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     DIError dierr;
     WMSG0("Prepping for DDD\n");
 
-    assert(*ppNewGFD == nil);
+    assert(*ppNewGFD == NULL);
 
     dierr = Unpack(pGFD, ppNewGFD, pDiskVolNum);
     if (dierr != kDIErrNone)
@@ -934,36 +934,36 @@ WrapperDDD::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
 WrapperDDD::Unpack(GenericFD* pGFD, GenericFD** ppNewGFD, short* pDiskVolNum)
 {
     DIError dierr;
-    GFDBuffer* pNewGFD = nil;
-    unsigned char* buf = nil;
+    GFDBuffer* pNewGFD = NULL;
+    unsigned char* buf = NULL;
     short diskVolNum;
 
     pGFD->Rewind();
 
     buf = new unsigned char[kNumTracks * kTrackLen];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
 
     pNewGFD = new GFDBuffer;
-    if (pNewGFD == nil) {
+    if (pNewGFD == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
     dierr = pNewGFD->Open(buf, kNumTracks * kTrackLen, true, false, false);
     if (dierr != kDIErrNone)
         goto bail;
-    buf = nil;      // now owned by pNewGFD;
+    buf = NULL;      // now owned by pNewGFD;
 
     dierr = UnpackDisk(pGFD, pNewGFD, &diskVolNum);
     if (dierr != kDIErrNone)
         goto bail;
 
-    if (pDiskVolNum != nil)
+    if (pDiskVolNum != NULL)
         *pDiskVolNum = diskVolNum;
     *ppNewGFD = pNewGFD;
-    pNewGFD = nil;  // now owned by caller
+    pNewGFD = NULL;  // now owned by caller
 
 bail:
     delete[] buf;
@@ -985,13 +985,13 @@ WrapperDDD::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     assert(order == DiskImg::kSectorOrderDOS);
 
     DIError dierr;
-    unsigned char* buf = nil;
+    unsigned char* buf = NULL;
 
     /*
      * Create a blank chunk of memory for the image.
      */
     buf = new unsigned char[(int) length];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -1004,7 +1004,7 @@ WrapperDDD::Create(di_off_t length, DiskImg::PhysicalFormat physical,
         goto bail;
     }
     *pDataFD = pNewGFD;
-    buf = nil;          // now owned by pNewGFD;
+    buf = NULL;          // now owned by pNewGFD;
 
     // can't set *pWrappedLength yet
 
@@ -1362,10 +1362,10 @@ WrapperDiskCopy42::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     dierr = pWrapperGFD->Seek(kDC42DataOffset + 800*1024, kSeekSet);
     char* tmpBuf;
     tmpBuf = new char[kDC42FakeTagLen];
-    if (tmpBuf == nil)
+    if (tmpBuf == NULL)
         return kDIErrMalloc;
     memset(tmpBuf, 0, kDC42FakeTagLen);
-    dierr = pWrapperGFD->Write(tmpBuf, kDC42FakeTagLen, nil);
+    dierr = pWrapperGFD->Write(tmpBuf, kDC42FakeTagLen, NULL);
     delete[] tmpBuf;
     if (dierr != kDIErrNone)
         goto bail;
@@ -1663,19 +1663,19 @@ DIError
 WrapperTrackStar::Unpack(GenericFD* pGFD, GenericFD** ppNewGFD)
 {
     DIError dierr;
-    GFDBuffer* pNewGFD = nil;
-    unsigned char* buf = nil;
+    GFDBuffer* pNewGFD = NULL;
+    unsigned char* buf = NULL;
 
     pGFD->Rewind();
 
     buf = new unsigned char[kTrackStarNumTracks * kTrackAllocSize];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
 
     pNewGFD = new GFDBuffer;
-    if (pNewGFD == nil) {
+    if (pNewGFD == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -1683,14 +1683,14 @@ WrapperTrackStar::Unpack(GenericFD* pGFD, GenericFD** ppNewGFD)
         true, false, false);
     if (dierr != kDIErrNone)
         goto bail;
-    buf = nil;      // now owned by pNewGFD;
+    buf = NULL;      // now owned by pNewGFD;
 
     dierr = UnpackDisk(pGFD, pNewGFD);
     if (dierr != kDIErrNone)
         goto bail;
 
     *ppNewGFD = pNewGFD;
-    pNewGFD = nil;  // now owned by caller
+    pNewGFD = NULL;  // now owned by caller
 
 bail:
     delete[] buf;
@@ -1779,7 +1779,7 @@ WrapperTrackStar::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     assert(order == DiskImg::kSectorOrderPhysical);
 
     DIError dierr;
-    unsigned char* buf = nil;
+    unsigned char* buf = NULL;
     int numTracks = (int) (length / kTrackLenTrackStar525);
     int i;
 
@@ -1799,7 +1799,7 @@ WrapperTrackStar::Create(di_off_t length, DiskImg::PhysicalFormat physical,
      * Create a blank chunk of memory for the image.
      */
     buf = new unsigned char[(int) length];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -1812,7 +1812,7 @@ WrapperTrackStar::Create(di_off_t length, DiskImg::PhysicalFormat physical,
         goto bail;
     }
     *pDataFD = pNewGFD;
-    buf = nil;          // now owned by pNewGFD;
+    buf = NULL;          // now owned by pNewGFD;
 
     // can't set *pWrappedLength yet
 
@@ -2118,8 +2118,8 @@ WrapperFDI::Unpack525(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
     int numHeads)
 {
     DIError dierr = kDIErrNone;
-    GFDBuffer* pNewGFD = nil;
-    unsigned char* buf = nil;
+    GFDBuffer* pNewGFD = NULL;
+    unsigned char* buf = NULL;
     int numTracks;
 
     numTracks = numCyls * numHeads;
@@ -2129,13 +2129,13 @@ WrapperFDI::Unpack525(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
     pGFD->Rewind();
 
     buf = new unsigned char[numTracks * kTrackAllocSize];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
 
     pNewGFD = new GFDBuffer;
-    if (pNewGFD == nil) {
+    if (pNewGFD == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -2143,14 +2143,14 @@ WrapperFDI::Unpack525(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
         true, false, false);
     if (dierr != kDIErrNone)
         goto bail;
-    buf = nil;      // now owned by pNewGFD;
+    buf = NULL;      // now owned by pNewGFD;
 
     dierr = UnpackDisk525(pGFD, pNewGFD, numCyls, numHeads);
     if (dierr != kDIErrNone)
         goto bail;
 
     *ppNewGFD = pNewGFD;
-    pNewGFD = nil;  // now owned by caller
+    pNewGFD = NULL;  // now owned by caller
 
 bail:
     delete[] buf;
@@ -2166,29 +2166,29 @@ WrapperFDI::Unpack35(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
     int numHeads, LinearBitmap** ppBadBlockMap)
 {
     DIError dierr = kDIErrNone;
-    GFDBuffer* pNewGFD = nil;
-    unsigned char* buf = nil;
+    GFDBuffer* pNewGFD = NULL;
+    unsigned char* buf = NULL;
 
     pGFD->Rewind();
 
     buf = new unsigned char[800 * 1024];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
 
     pNewGFD = new GFDBuffer;
-    if (pNewGFD == nil) {
+    if (pNewGFD == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
     dierr = pNewGFD->Open(buf, 800 * 1024, true, false, false);
     if (dierr != kDIErrNone)
         goto bail;
-    buf = nil;      // now owned by pNewGFD;
+    buf = NULL;      // now owned by pNewGFD;
 
     *ppBadBlockMap = new LinearBitmap(1600);
-    if (*ppBadBlockMap == nil) {
+    if (*ppBadBlockMap == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -2198,7 +2198,7 @@ WrapperFDI::Unpack35(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
         goto bail;
 
     *ppNewGFD = pNewGFD;
-    pNewGFD = nil;  // now owned by caller
+    pNewGFD = NULL;  // now owned by caller
 
 bail:
     delete[] buf;
@@ -2217,7 +2217,7 @@ WrapperFDI::Create(di_off_t length, DiskImg::PhysicalFormat physical,
 {
     DIError dierr = kDIErrGeneric;      // not yet
 #if 0
-    unsigned char* buf = nil;
+    unsigned char* buf = NULL;
     int numTracks = (int) (length / kTrackLenTrackStar525);
     int i;
 
@@ -2242,7 +2242,7 @@ WrapperFDI::Create(di_off_t length, DiskImg::PhysicalFormat physical,
      * Create a blank chunk of memory for the image.
      */
     buf = new unsigned char[(int) length];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -2255,7 +2255,7 @@ WrapperFDI::Create(di_off_t length, DiskImg::PhysicalFormat physical,
         goto bail;
     }
     *pDataFD = pNewGFD;
-    buf = nil;          // now owned by pNewGFD;
+    buf = NULL;          // now owned by pNewGFD;
 
     // can't set *pWrappedLength yet
 

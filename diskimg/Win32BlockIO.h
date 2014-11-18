@@ -238,7 +238,7 @@ private:
     class LogicalBlockAccess : public BlockAccess {
     public:
         LogicalBlockAccess(void) : fHandle(NULL), fIsCDROM(false),
-            fDriveNum(-1), fLastSectorCache(nil), fLastSectorNum(-1)
+            fDriveNum(-1), fLastSectorCache(NULL), fLastSectorNum(-1)
             {}
         virtual ~LogicalBlockAccess(void) {
             if (fHandle != NULL) {
@@ -357,9 +357,9 @@ private:
      */
     class ASPIBlockAccess : public BlockAccess {
     public:
-        ASPIBlockAccess(void) : fpASPI(nil),
+        ASPIBlockAccess(void) : fpASPI(NULL),
             fAdapter(0xff), fTarget(0xff), fLun(0xff), fReadOnly(false),
-            fLastChunkCache(nil), fLastChunkNum(-1), fChunkSize(-1)
+            fLastChunkCache(NULL), fLastChunkNum(-1), fChunkSize(-1)
             {}
         virtual ~ASPIBlockAccess(void) { delete[] fLastChunkCache; }
 

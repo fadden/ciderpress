@@ -44,7 +44,7 @@
 /*static*/ NiftyList::DataSet NiftyList::f00Addrs = { 0 };
 /*static*/ NiftyList::DataSet NiftyList::f01Vectors = { 0 };
 
-/*static*/ char* NiftyList::fFileData = nil;
+/*static*/ char* NiftyList::fFileData = NULL;
 /*static*/ bool NiftyList::fDataReady = false;
 
 /*
@@ -53,7 +53,7 @@
 /*static*/ bool
 NiftyList::AppInit(const WCHAR* fileName)
 {
-    FILE* fp = nil;
+    FILE* fp = NULL;
     long fileLen;
     char* pData;
     bool result = false;
@@ -62,7 +62,7 @@ NiftyList::AppInit(const WCHAR* fileName)
      * Open the NList.Data file and load the contents into memory.
      */
     fp = _wfopen(fileName, L"rb");
-    if (fp == nil) {
+    if (fp == NULL) {
         WMSG1("NL Unable to open '%ls'\n", fileName);
         goto bail;
     } else {
@@ -77,7 +77,7 @@ NiftyList::AppInit(const WCHAR* fileName)
     rewind(fp);
 
     fFileData = new char[fileLen];
-    if (fFileData == nil) {
+    if (fFileData == NULL) {
         WMSG1("Failed allocating %d bytes\n", fileLen);
         goto bail;
     }
@@ -97,7 +97,7 @@ NiftyList::AppInit(const WCHAR* fileName)
         goto bail;
     if (!ReadSection(&pData, &fileLen, &fSystemTools, kModeNormal))
         goto bail;
-    if (!ReadSection(&pData, &fileLen, nil, kModeSkip)) // user tools
+    if (!ReadSection(&pData, &fileLen, NULL, kModeSkip)) // user tools
         goto bail;
     if (!ReadSection(&pData, &fileLen, &fE1Vectors, kModeNormal))
         goto bail;
@@ -116,7 +116,7 @@ NiftyList::AppInit(const WCHAR* fileName)
     WMSG0("NL NiftyList data loaded\n");
 
 bail:
-    if (fp != nil)
+    if (fp != NULL)
         fclose(fp);
     return result;
 }
@@ -152,11 +152,11 @@ NiftyList::AppCleanup(void)
 NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
     LoadMode mode)
 {
-    assert(ppData != nil);
-    assert(pRemLen != nil);
-    assert(*ppData != nil);
+    assert(ppData != NULL);
+    assert(pRemLen != NULL);
+    assert(*ppData != NULL);
     assert(*pRemLen > 0);
-    assert(pSet != nil || mode == kModeSkip);
+    assert(pSet != NULL || mode == kModeSkip);
     assert(mode == kModeNormal || mode == kModeSkip);
 
     char* pData = *ppData;
@@ -196,10 +196,10 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
     /*
      * Allocate storage for the lookup array.
      */
-    assert(pSet->numEntries == 0 && pSet->pEntries == nil);
+    assert(pSet->numEntries == 0 && pSet->pEntries == NULL);
 
     pSet->pEntries = new NameValue[numLines];
-    if (pSet->pEntries == nil) {
+    if (pSet->pEntries == NULL) {
         WMSG0("NameValue alloc failed\n");
         return false;
     }
@@ -348,7 +348,7 @@ NiftyList::DumpSection(const DataSet& dataSet)
 
 
 /*
- * Look up a value in the specified table.  Returns the name, or "nil" if
+ * Look up a value in the specified table.  Returns the name, or "NULL" if
  * not found.
  *
  * This uses a binary search, so the entries must be in sorted order.
@@ -374,5 +374,5 @@ NiftyList::Lookup(const DataSet& dataSet, unsigned short key)
             return dataSet.pEntries[mid].name;
     }
 
-    return nil;
+    return NULL;
 }

@@ -19,7 +19,7 @@
  * Copy "length" bytes from "pSrc" to "pDst".  Both GenericFDs should be
  * seeked to their initial positions.
  *
- * If "pCRC" is non-nil, this computes a CRC32 as it goes, using the zlib
+ * If "pCRC" is non-NULL, this computes a CRC32 as it goes, using the zlib
  * library function.
  */
 /*static*/ DIError
@@ -28,21 +28,21 @@ GenericFD::CopyFile(GenericFD* pDst, GenericFD* pSrc, di_off_t length,
 {
     DIError dierr = kDIErrNone;
     const int kCopyBufSize = 32768;
-    unsigned char* copyBuf = nil;
+    unsigned char* copyBuf = NULL;
     int copySize;
 
     WMSG1("+++ CopyFile: %ld bytes\n", (long) length);
 
-    if (pDst == nil || pSrc == nil || length < 0)
+    if (pDst == NULL || pSrc == NULL || length < 0)
         return kDIErrInvalidArg;
     if (length == 0)
         return kDIErrNone;
 
     copyBuf = new unsigned char[kCopyBufSize];
-    if (copyBuf == nil)
+    if (copyBuf == NULL)
         return kDIErrMalloc;
 
-    if (pCRC != nil)
+    if (pCRC != NULL)
         *pCRC = crc32(0L, Z_NULL, 0);
 
     while (length != 0) {
@@ -54,7 +54,7 @@ GenericFD::CopyFile(GenericFD* pDst, GenericFD* pSrc, di_off_t length,
         if (dierr != kDIErrNone)
             goto bail;
 
-        if (pCRC != nil)
+        if (pCRC != NULL)
             *pCRC = crc32(*pCRC, copyBuf, copySize);
 
         dierr = pDst->Write(copyBuf, copySize);
@@ -94,9 +94,9 @@ GFDFile::Open(const char* filename, bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
-    if (fFp != nil)
+    if (fFp != NULL)
         return kDIErrAlreadyOpen;
-    if (filename == nil)
+    if (filename == NULL)
         return kDIErrInvalidArg;
     if (filename[0] == '\0')
         return kDIErrInvalidArg;
@@ -106,7 +106,7 @@ GFDFile::Open(const char* filename, bool readOnly)
     strcpy(fPathName, filename);
 
     fFp = fopen(filename, readOnly ? "rb" : "r+b");
-    if (fFp == nil) {
+    if (fFp == NULL) {
         if (errno == EACCES)
             dierr = kDIErrAccessDenied;
         else
@@ -125,7 +125,7 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
     DIError dierr = kDIErrNone;
     size_t actual;
 
-    if (fFp == nil)
+    if (fFp == NULL)
         return kDIErrNotReady;
     actual = ::fread(buf, 1, length, fFp);
     if (actual == 0) {
@@ -139,7 +139,7 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
         return kDIErrInternal;
     }
 
-    if (pActual == nil) {
+    if (pActual == NULL) {
         if (actual != length) {
             dierr = ErrnoOrGeneric();
             WMSG3("  GDFile Read failed on %d bytes (actual=%d, err=%d)\n",
@@ -157,11 +157,11 @@ GFDFile::Write(const void* buf, size_t length, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
 
-    if (fFp == nil)
+    if (fFp == NULL)
         return kDIErrNotReady;
     if (fReadOnly)
         return kDIErrAccessDenied;
-    assert(pActual == nil);     // not handling this yet
+    assert(pActual == NULL);     // not handling this yet
     if (::fwrite(buf, length, 1, fFp) != 1) {
         dierr = ErrnoOrGeneric();
         WMSG2("  GDFile Write failed on %d bytes (err=%d)\n", length, dierr);
@@ -177,7 +177,7 @@ GFDFile::Seek(di_off_t offset, DIWhence whence)
     //static const long kOneGB = 1024*1024*1024;
     //static const long kAlmostTwoGB = kOneGB + (kOneGB -1);
 
-    if (fFp == nil)
+    if (fFp == NULL)
         return kDIErrNotReady;
     //assert(offset <= kAlmostTwoGB);
     //if (::fseek(fFp, (long) offset, whence) != 0) {
@@ -195,7 +195,7 @@ GFDFile::Tell(void)
     DIError dierr = kDIErrNone;
     di_off_t result;
 
-    if (fFp == nil)
+    if (fFp == NULL)
         return kDIErrNotReady;
     //result = ::ftell(fFp);
     result = ::ftello(fFp);
@@ -230,12 +230,12 @@ GFDFile::Truncate(void)
 DIError
 GFDFile::Close(void)
 {
-    if (fFp == nil)
+    if (fFp == NULL)
         return kDIErrNotReady;
 
     WMSG1("  GFDFile closing '%s'\n", fPathName);
     fclose(fFp);
-    fFp = nil;
+    fFp = NULL;
     return kDIErrNone;
 }
 
@@ -248,7 +248,7 @@ GFDFile::Open(const char* filename, bool readOnly)
 
     if (fFd >= 0)
         return kDIErrAlreadyOpen;
-    if (filename == nil)
+    if (filename == NULL)
         return kDIErrInvalidArg;
     if (filename[0] == '\0')
         return kDIErrInvalidArg;
@@ -289,7 +289,7 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
         return dierr;
     }
 
-    if (pActual == nil) {
+    if (pActual == NULL) {
         if (actual != (ssize_t) length) {
             WMSG2("  GDFile Read partial (wanted=%d actual=%d)\n",
                 length, actual);
@@ -311,7 +311,7 @@ GFDFile::Write(const void* buf, size_t length, size_t* pActual)
         return kDIErrNotReady;
     if (fReadOnly)
         return kDIErrAccessDenied;
-    assert(pActual == nil);     // not handling partial writes yet
+    assert(pActual == NULL);     // not handling partial writes yet
     actual = ::write(fFd, buf, length);
     if (actual != (ssize_t) length) {
         dierr = ErrnoOrGeneric();
@@ -414,7 +414,7 @@ DIError
 GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
     bool readOnly)
 {
-    if (fBuffer != nil)
+    if (fBuffer != NULL)
         return kDIErrAlreadyOpen;
     if (length <= 0)
         return kDIErrInvalidArg;
@@ -425,10 +425,10 @@ GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
         return kDIErrInvalidArg;
     }
 
-    /* if buffer is nil, allocate it ourselves */
-    if (buffer == nil) {
+    /* if buffer is NULL, allocate it ourselves */
+    if (buffer == NULL) {
         fBuffer = (void*) new char[(int) length];
-        if (fBuffer == nil)
+        if (fBuffer == NULL)
             return kDIErrMalloc;
     } else
         fBuffer = buffer;
@@ -447,13 +447,13 @@ GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
 DIError
 GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
 {
-    if (fBuffer == nil)
+    if (fBuffer == NULL)
         return kDIErrNotReady;
     if (length == 0)
         return kDIErrInvalidArg;
 
     if (fCurrentOffset + (long)length > fLength) {
-        if (pActual == nil) {
+        if (pActual == NULL) {
             WMSG3("  GFDBuffer underrrun off=%ld len=%d flen=%ld\n",
                 (long) fCurrentOffset, length, (long) fLength);
             return kDIErrDataUnderrun;
@@ -467,7 +467,7 @@ GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
                 return kDIErrEOF;
         }
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = length;
 
     memcpy(buf, (const char*)fBuffer + fCurrentOffset, length);
@@ -479,9 +479,9 @@ GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
 DIError
 GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
 {
-    if (fBuffer == nil)
+    if (fBuffer == NULL)
         return kDIErrNotReady;
-    assert(pActual == nil);     // not handling this yet
+    assert(pActual == NULL);     // not handling this yet
     if (fCurrentOffset + (long)length > fLength) {
         if (!fDoExpand) {
             WMSG3("  GFDBuffer overrun off=%ld len=%d flen=%ld\n",
@@ -506,7 +506,7 @@ GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
             WMSG1("Reallocating buffer (new size = %ld)\n", fAllocLength);
             assert(fAllocLength < kMaxReasonableSize);
             char* newBuf = new char[(int) fAllocLength];
-            if (newBuf == nil)
+            if (newBuf == NULL)
                 return kDIErrMalloc;
 
             memcpy(newBuf, fBuffer, fLength);
@@ -530,7 +530,7 @@ GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
 DIError
 GFDBuffer::Seek(di_off_t offset, DIWhence whence)
 {
-    if (fBuffer == nil)
+    if (fBuffer == NULL)
         return kDIErrNotReady;
 
     switch (whence) {
@@ -564,7 +564,7 @@ GFDBuffer::Seek(di_off_t offset, DIWhence whence)
 di_off_t
 GFDBuffer::Tell(void)
 {
-    if (fBuffer == nil)
+    if (fBuffer == NULL)
         return (di_off_t) -1;
     return fCurrentOffset;
 }
@@ -572,7 +572,7 @@ GFDBuffer::Tell(void)
 DIError
 GFDBuffer::Close(void)
 {
-    if (fBuffer == nil)
+    if (fBuffer == NULL)
         return kDIErrNone;
 
     if (fDoDelete) {
@@ -581,7 +581,7 @@ GFDBuffer::Close(void)
     } else {
         WMSG0("  GFDBuffer closing\n");
     }
-    fBuffer = nil;
+    fBuffer = NULL;
 
     return kDIErrNone;
 }
@@ -613,12 +613,12 @@ DIError
 GFDWinVolume::Open(const char* deviceName, bool readOnly)
 {
     DIError dierr = kDIErrNone;
-    HANDLE handle = nil;
+    HANDLE handle = NULL;
     //unsigned long kTwoGBBlocks;
     
     if (fVolAccess.Ready())
         return kDIErrAlreadyOpen;
-    if (deviceName == nil)
+    if (deviceName == NULL)
         return kDIErrInvalidArg;
     if (deviceName[0] == '\0')
         return kDIErrInvalidArg;
@@ -659,7 +659,7 @@ DIError
 GFDWinVolume::Read(void* buf, size_t length, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* blkBuf = nil;
+    unsigned char* blkBuf = NULL;
 
     //WMSG2(" GFDWinVolume: reading %ld bytes from offset %ld\n", length,
     //  fCurrentOffset);
@@ -669,11 +669,11 @@ GFDWinVolume::Read(void* buf, size_t length, size_t* pActual)
 
     // don't allow reading past the end of file
     if (fCurrentOffset + (long) length > fVolumeEOF) {
-        if (pActual == nil)
+        if (pActual == NULL)
             return kDIErrDataUnderrun;
         length = (size_t) (fVolumeEOF - fCurrentOffset);
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = length;
     if (length == 0)
         return kDIErrNone;
@@ -743,7 +743,7 @@ DIError
 GFDWinVolume::Write(const void* buf, size_t length, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* blkBuf = nil;
+    unsigned char* blkBuf = NULL;
 
     //WMSG2(" GFDWinVolume: writing %ld bytes at offset %ld\n", length,
     //  fCurrentOffset);
@@ -755,11 +755,11 @@ GFDWinVolume::Write(const void* buf, size_t length, size_t* pActual)
 
     // don't allow writing past the end of the volume
     if (fCurrentOffset + (long) length > fVolumeEOF) {
-        if (pActual == nil)
+        if (pActual == NULL)
             return kDIErrDataOverrun;
         length = (size_t) (fVolumeEOF - fCurrentOffset);
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = length;
     if (length == 0)
         return kDIErrNone;

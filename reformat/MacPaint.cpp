@@ -94,7 +94,7 @@ ReformatMacPaint::Process(const ReformatHolder* pHolder,
     }
 
     pDib = ConvertMacPaint(srcBuf, srcLen);
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);
@@ -113,7 +113,7 @@ bail:
 MyDIBitmap*
 ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
 {
-    MyDIBitmap* pDib = nil;
+    MyDIBitmap* pDib = NULL;
     unsigned char* outBuf;
     static const RGBQUAD colorConv[2] = {
         /* blue, green, red, reserved */
@@ -137,7 +137,7 @@ ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
     }
     
     pDib = new MyDIBitmap;
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     srcBuf += offset;
@@ -148,9 +148,9 @@ ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
 
     outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
                                     1, kNumColors);
-    if (outBuf == nil) {
+    if (outBuf == NULL) {
         delete pDib;
-        pDib = nil;
+        pDib = NULL;
         goto bail;
     }
     pDib->SetColorTable(colorConv);

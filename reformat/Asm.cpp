@@ -958,7 +958,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
     retval = 0;
 
 bail:
-    fSymTab = nil;
+    fSymTab = NULL;
     return retval;
 }
 
@@ -1600,7 +1600,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     }
     if (fSymCount > 0) {
         fSymTab = new const unsigned char*[fSymCount];
-        if (fSymTab == nil)
+        if (fSymTab == NULL)
             goto bail;
     }
 
@@ -1727,7 +1727,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
 
 bail:
     delete[] fSymTab;
-    fSymTab = nil;
+    fSymTab = NULL;
     return retval;
 }
 

@@ -48,9 +48,9 @@ Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
-    assert(deviceName != nil);
+    assert(deviceName != NULL);
 
-    if (fpBlockAccess != nil) {
+    if (fpBlockAccess != NULL) {
         assert(false);
         return kDIErrAlreadyOpen;
     }
@@ -58,7 +58,7 @@ Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
 #ifdef WANT_ASPI
     if (strncmp(deviceName, kASPIDev, strlen(kASPIDev)) == 0) {
         fpBlockAccess = new ASPIBlockAccess;
-        if (fpBlockAccess == nil) {
+        if (fpBlockAccess == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -69,7 +69,7 @@ Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
 #endif
     if (deviceName[0] >= 'A' && deviceName[0] <= 'Z') {
         fpBlockAccess = new LogicalBlockAccess;
-        if (fpBlockAccess == nil) {
+        if (fpBlockAccess == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -78,7 +78,7 @@ Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
             goto bail;
     } else if (deviceName[0] >= '0' && deviceName[0] <= '9') {
         fpBlockAccess = new PhysicalBlockAccess;
-        if (fpBlockAccess == nil) {
+        if (fpBlockAccess == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -99,7 +99,7 @@ Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
 bail:
     if (dierr != kDIErrNone) {
         delete fpBlockAccess;
-        fpBlockAccess = nil;
+        fpBlockAccess = NULL;
     }
     return dierr;
 }
@@ -110,7 +110,7 @@ bail:
 void
 Win32VolumeAccess::Close(void)
 {
-    if (fpBlockAccess != nil) {
+    if (fpBlockAccess != NULL) {
         DIError dierr;
         WMSG0("  Win32VolumeAccess closing\n");
 
@@ -126,7 +126,7 @@ Win32VolumeAccess::Close(void)
                 dierr);
         }
         delete fpBlockAccess;
-        fpBlockAccess = nil;
+        fpBlockAccess = NULL;
     }
 }
 
@@ -150,8 +150,8 @@ Win32VolumeAccess::ReadBlocks(long startBlock, short blockCount,
 
     assert(startBlock >= 0);
     assert(blockCount > 0);
-    assert(buf != nil);
-    assert(fpBlockAccess != nil);
+    assert(buf != NULL);
+    assert(fpBlockAccess != NULL);
 
     if (blockCount == 1) {
         if (fBlockCache.IsBlockInCache(startBlock)) {
@@ -207,7 +207,7 @@ Win32VolumeAccess::WriteBlocks(long startBlock, short blockCount,
 
     assert(startBlock >= 0);
     assert(blockCount > 0);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     if (blockCount == 1) {
         /* is this block already in the cache? */
@@ -527,9 +527,9 @@ Win32VolumeAccess::BlockAccess::GetInt13Unit(HANDLE handle, int driveNum, int* p
     const int kDeviceCategory1 = 0x08;      // for older stuff
     const int kDeviceCategory2 = 0x48;      // for FAT32
 
-    assert(handle != nil);
+    assert(handle != NULL);
     assert(driveNum > 0 && driveNum <= kNumLogicalVolumes);
-    assert(pInt13Unit != nil);
+    assert(pInt13Unit != NULL);
 
     *pInt13Unit = -1;
 
@@ -604,7 +604,7 @@ bail:
  *
  * Returns "true" if the geometry is known, "false" otherwise.  When "true"
  * is returned, "*pNumTracks", "*pNumHeads", and "*pNumSectors" will receive
- * values if the pointers are non-nil.
+ * values if the pointers are non-NULL.
  */
 /*static*/ bool
 Win32VolumeAccess::BlockAccess::LookupFloppyGeometry(long totalBlocks,
@@ -681,13 +681,13 @@ Win32VolumeAccess::BlockAccess::BlockToCylinderHeadSector(long blockNum,
 
     lastBlockOnTrack = blockNum + (pGeometry->numSectors - sector -1);
 
-    if (pCylinder != nil)
+    if (pCylinder != NULL)
         *pCylinder = cylinder;
-    if (pHead != nil)
+    if (pHead != NULL)
         *pHead = head;
-    if (pSector != nil)
+    if (pSector != NULL)
         *pSector = sector+1;
-    if (pLastBlockOnTrack != nil)
+    if (pLastBlockOnTrack != NULL)
         *pLastBlockOnTrack = lastBlockOnTrack;
 
     return true;
@@ -1109,7 +1109,7 @@ Win32VolumeAccess::BlockAccess::ReadBlocksWin2K(HANDLE handle,
     //WMSG2("   ReadFile block start=%d count=%d\n", startBlock, blockCount);
 
     BOOL result;
-    result = ::ReadFile(handle, buf, blockCount * kBlockSize, &actual, nil);
+    result = ::ReadFile(handle, buf, blockCount * kBlockSize, &actual, NULL);
     if (!result) {
         DWORD lerr = GetLastError();
         WMSG3("  ReadBlocksWin2K: ReadFile failed (start=%ld count=%d err=%ld)\n",
@@ -1132,7 +1132,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
 {
     DWORD posn, actual;
 
-    posn = ::SetFilePointer(handle, startBlock * kBlockSize, nil,
+    posn = ::SetFilePointer(handle, startBlock * kBlockSize, NULL,
                 FILE_BEGIN);
     if (posn == INVALID_SET_FILE_POINTER) {
         DWORD lerr = GetLastError();
@@ -1142,7 +1142,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
     }
 
     BOOL result;
-    result = ::WriteFile(handle, buf, blockCount * kBlockSize, &actual, nil);
+    result = ::WriteFile(handle, buf, blockCount * kBlockSize, &actual, NULL);
     if (!result) {
         DWORD lerr = GetLastError();
         WMSG1("  GFDWinVolume WriteBlocks: WriteFile failed (err=%ld)\n",
@@ -1171,7 +1171,7 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOn
     DIError dierr = kDIErrNone;
     const bool kPreferASPI = true;
 
-    assert(fHandle == nil);
+    assert(fHandle == NULL);
     fIsCDROM = false;
     fDriveNum = -1;
 
@@ -1271,7 +1271,7 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOn
         }
     }
 
-    assert(fHandle != nil && fHandle != INVALID_HANDLE_VALUE);
+    assert(fHandle != NULL && fHandle != INVALID_HANDLE_VALUE);
 
 #if 0
     if (fIsCDROM) {
@@ -1297,9 +1297,9 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOn
 
 bail:
     if (dierr != kDIErrNone) {
-        if (fHandle != nil && fHandle != INVALID_HANDLE_VALUE)
+        if (fHandle != NULL && fHandle != INVALID_HANDLE_VALUE)
             ::CloseHandle(fHandle);
-        fHandle = nil;
+        fHandle = NULL;
     }
     return dierr;
 }
@@ -1310,9 +1310,9 @@ bail:
 DIError
 Win32VolumeAccess::LogicalBlockAccess::Close(void)
 {
-    if (fHandle != nil) {
+    if (fHandle != NULL) {
         ::CloseHandle(fHandle);
-        fHandle = nil;
+        fHandle = NULL;
     }
     return kDIErrNone;
 }
@@ -1328,17 +1328,17 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
 #ifdef HAVE_WINDOWS_CDROM
     DIError dierr;
 
-    assert(handle != nil);
+    assert(handle != NULL);
     assert(startBlock >= 0);
     assert(blockCount > 0);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     //WMSG2(" CDROM read block %ld (%ld)\n", startBlock, block);
 
     /* alloc sector buffer on first use */
-    if (fLastSectorCache == nil) {
+    if (fLastSectorCache == NULL) {
         fLastSectorCache = new unsigned char[kCDROMSectorSize];
-        if (fLastSectorCache == nil)
+        if (fLastSectorCache == NULL)
             return kDIErrMalloc;
         assert(fLastSectorNum == -1);
     }
@@ -1431,7 +1431,7 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readO
     DIError dierr = kDIErrNone;
 
     // initialize all local state
-    assert(fHandle == nil);
+    assert(fHandle == NULL);
     fInt13Unit = -1;
     fFloppyKind = kFloppyUnknown;
     memset(&fGeometry, 0, sizeof(fGeometry));
@@ -1520,13 +1520,13 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readO
         }
     }
 
-    assert(fHandle != nil && fHandle != INVALID_HANDLE_VALUE);
+    assert(fHandle != NULL && fHandle != INVALID_HANDLE_VALUE);
 
 bail:
     if (dierr != kDIErrNone) {
-        if (fHandle != nil && fHandle != INVALID_HANDLE_VALUE)
+        if (fHandle != NULL && fHandle != INVALID_HANDLE_VALUE)
             ::CloseHandle(fHandle);
-        fHandle = nil;
+        fHandle = NULL;
     }
 
     return dierr;
@@ -1652,9 +1652,9 @@ Win32VolumeAccess::PhysicalBlockAccess::FlushBlockDevice(void)
 DIError
 Win32VolumeAccess::PhysicalBlockAccess::Close(void)
 {
-    if (fHandle != nil) {
+    if (fHandle != NULL) {
         ::CloseHandle(fHandle);
-        fHandle = nil;
+        fHandle = NULL;
     }
     return kDIErrNone;
 }
@@ -1676,11 +1676,11 @@ Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName, bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
-    if (fpASPI != nil)
+    if (fpASPI != NULL)
         return kDIErrAlreadyOpen;
 
     fpASPI = Global::GetASPI();
-    if (fpASPI == nil)
+    if (fpASPI == NULL)
         return kDIErrASPIFailure;
 
     if (strncmp(deviceName, kASPIDev, strlen(kASPIDev)) != 0) {
@@ -1728,7 +1728,7 @@ Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName, bool readOnly)
 
 bail:
     if (dierr != kDIErrNone)
-        fpASPI = nil;
+        fpASPI = NULL;
     return dierr;
 }
 
@@ -1741,17 +1741,17 @@ bail:
 int
 Win32VolumeAccess::ASPIBlockAccess::ExtractInt(const char** pStr, int* pResult)
 {
-    char* end = nil;
+    char* end = NULL;
 
-    if (*pStr == nil) {
+    if (*pStr == NULL) {
         assert(false);
         return -1;
     }
 
     *pResult = (int) strtol(*pStr, &end, 10);
 
-    if (end == nil)
-        *pStr = nil;
+    if (end == NULL)
+        *pStr = NULL;
     else
         *pStr = end+1;
 
@@ -1812,9 +1812,9 @@ Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount
     assert((fChunkSize % kBlockSize) == 0);
 
     /* alloc chunk buffer on first use */
-    if (fLastChunkCache == nil) {
+    if (fLastChunkCache == NULL) {
         fLastChunkCache = new unsigned char[fChunkSize];
-        if (fLastChunkCache == nil)
+        if (fLastChunkCache == NULL)
             return kDIErrMalloc;
         assert(fLastChunkNum == -1);
     }
@@ -1973,7 +1973,7 @@ Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock, short blockCoun
 DIError
 Win32VolumeAccess::ASPIBlockAccess::Close(void)
 {
-    fpASPI = nil;
+    fpASPI = NULL;
     return kDIErrNone;
 }
 #endif

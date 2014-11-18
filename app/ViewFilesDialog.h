@@ -25,18 +25,18 @@ public:
     ViewFilesDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_FILE_VIEWER, pParentWnd)
     {
-        //fpMainWindow = nil;
-        fpSelSet = nil;
-        fpHolder = nil;
-        fpOutput = nil;
+        //fpMainWindow = NULL;
+        fpSelSet = NULL;
+        fpHolder = NULL;
+        fpOutput = NULL;
         fTypeFace = "";
         fPointSize = 0;
         fNoWrapText = false;
         fBusy = false;
-        fpRichEditOle = nil;
+        fpRichEditOle = NULL;
         fFirstResize = false;
 
-        fpFindDialog = nil;
+        fpFindDialog = NULL;
         fFindDown = false;
         fFindMatchCase = false;
         fFindMatchWholeWord = false;

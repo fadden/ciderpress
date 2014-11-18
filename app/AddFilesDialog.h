@@ -38,9 +38,9 @@ public:
 
         fAcceptButtonID = IDC_SELECT_ACCEPT;
 
-        fpTargetDiskFS = nil;
-        //fpTargetSubdir = nil;
-        fpDiskImg = nil;
+        fpTargetDiskFS = NULL;
+        //fpTargetSubdir = NULL;
+        fpDiskImg = NULL;
     }
     virtual ~AddFilesDialog(void) {}
 

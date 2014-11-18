@@ -54,7 +54,7 @@ NewFolderDialog::DoDataExchange(CDataExchange* pDX)
                 fNewFullPath += "\\";
             fNewFullPath += fNewFolder;
             WMSG1("CREATING '%ls'\n", (LPCWSTR) fNewFullPath);
-            if (!::CreateDirectory(fNewFullPath, nil)) {
+            if (!::CreateDirectory(fNewFullPath, NULL)) {
                 /* show the sometimes-bizarre Windows error string */
                 CString msg, errStr, failed;
                 DWORD dwerr = ::GetLastError();

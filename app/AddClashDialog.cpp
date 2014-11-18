@@ -25,11 +25,11 @@ AddClashDialog::OnInitDialog(void)
     CWnd* pWnd;
 
     pWnd = GetDlgItem(IDC_CLASH_WINNAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(fWindowsName);
 
     pWnd = GetDlgItem(IDC_CLASH_STORAGENAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(fStorageName);
 
     return CDialog::OnInitDialog();

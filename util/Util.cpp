@@ -55,10 +55,10 @@ RichEditXfer::EditStreamCallback(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG* p
 {
     RichEditXfer* pThis = (RichEditXfer*) dwCookie;
 
-    ASSERT(dwCookie != nil);
-    ASSERT(pbBuff != nil);
+    ASSERT(dwCookie != NULL);
+    ASSERT(pbBuff != NULL);
     ASSERT(cb != 0);
-    ASSERT(pcb != nil);
+    ASSERT(pcb != NULL);
 
     long copyLen = pThis->fLen;
     if (copyLen > cb)
@@ -93,7 +93,7 @@ bail:
 int
 ExpandBuffer::CreateWorkBuf(void)
 {
-    if (fWorkBuf != nil) {
+    if (fWorkBuf != NULL) {
         ASSERT(fWorkMax > 0);
         return 0;
     }
@@ -101,7 +101,7 @@ ExpandBuffer::CreateWorkBuf(void)
     assert(fInitialSize > 0);
 
     fWorkBuf = new char[fInitialSize];
-    if (fWorkBuf == nil)
+    if (fWorkBuf == NULL)
         return -1;
 
     fWorkCount = 0;
@@ -120,7 +120,7 @@ ExpandBuffer::SeizeBuffer(char** ppBuf, long* pLen)
     *ppBuf = fWorkBuf;
     *pLen = fWorkCount;
 
-    fWorkBuf = nil;
+    fWorkBuf = NULL;
     fWorkCount = 0;
     fWorkMax = 0;
 }
@@ -147,7 +147,7 @@ ExpandBuffer::GrowWorkBuf(void)
 //  ASSERT(fWorkMax < 1024*1024*24);
 
     char* newBuf = new char[fWorkMax];
-    if (newBuf == nil) {
+    if (newBuf == NULL) {
         WMSG1("ALLOC FAILURE (%ld)\n", fWorkMax);
         ASSERT(false);
         fWorkMax -= newIncr;    // put it back so we don't overrun
@@ -167,7 +167,7 @@ ExpandBuffer::GrowWorkBuf(void)
 void
 ExpandBuffer::Write(const unsigned char* buf, long len)
 {
-    if (fWorkBuf == nil)
+    if (fWorkBuf == NULL)
         CreateWorkBuf();
     while (fWorkCount + len >= fWorkMax) {
         if (GrowWorkBuf() != 0)
@@ -195,14 +195,14 @@ ExpandBuffer::Printf(const char* format, ...)
 {
     va_list args;
 
-    ASSERT(format != nil);
+    ASSERT(format != NULL);
 
-    if (fWorkBuf == nil)
+    if (fWorkBuf == NULL)
         CreateWorkBuf();
 
     va_start(args, format);
 
-    if (format != nil) {
+    if (format != NULL) {
         int count;
         count = _vsnprintf(fWorkBuf + fWorkCount, fWorkMax - fWorkCount,
                     format, args);
@@ -239,7 +239,7 @@ void
 EnableControl(CDialog* pDlg, int id, bool enable)
 {
     CWnd* pWnd = pDlg->GetDlgItem(id);
-    if (pWnd == nil) {
+    if (pWnd == NULL) {
         WMSG1("GLITCH: control %d not found in dialog\n", id);
         ASSERT(false);
     } else {
@@ -258,8 +258,8 @@ MoveControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
     CRect rect;
 
     pWnd = pDlg->GetDlgItem(id);
-    ASSERT(pWnd != nil);
-    if (pWnd == nil)
+    ASSERT(pWnd != NULL);
+    if (pWnd == NULL)
         return;
 
     pWnd->GetWindowRect(&rect);
@@ -281,8 +281,8 @@ StretchControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
     CRect rect;
 
     pWnd = pDlg->GetDlgItem(id);
-    ASSERT(pWnd != nil);
-    if (pWnd == nil)
+    ASSERT(pWnd != NULL);
+    if (pWnd == NULL)
         return;
 
     pWnd->GetWindowRect(&rect);
@@ -315,8 +315,8 @@ MoveControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
     CRect rect;
 
     pWnd = pDlg->GetDlgItem(id);
-    ASSERT(pWnd != nil);
-    if (pWnd == nil)
+    ASSERT(pWnd != NULL);
+    if (pWnd == NULL)
         return hdwp;
 
     pWnd->GetWindowRect(&rect);
@@ -325,7 +325,7 @@ MoveControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
     rect.right += deltaX;
     rect.top += deltaY;
     rect.bottom += deltaY;
-    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
+    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, NULL, rect.left, rect.top,
         rect.Width(), rect.Height(), 0);
 
     return hdwp;
@@ -342,15 +342,15 @@ StretchControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
     CRect rect;
 
     pWnd = pDlg->GetDlgItem(id);
-    ASSERT(pWnd != nil);
-    if (pWnd == nil)
+    ASSERT(pWnd != NULL);
+    if (pWnd == NULL)
         return hdwp;
 
     pWnd->GetWindowRect(&rect);
     pDlg->ScreenToClient(&rect);
     rect.right += deltaX;
     rect.bottom += deltaY;
-    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
+    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, NULL, rect.left, rect.top,
         rect.Width(), rect.Height(), 0);
 
     return hdwp;
@@ -367,8 +367,8 @@ MoveStretchControl(HDWP hdwp, CDialog* pDlg, int id, int moveX, int moveY,
     CRect rect;
 
     pWnd = pDlg->GetDlgItem(id);
-    ASSERT(pWnd != nil);
-    if (pWnd == nil)
+    ASSERT(pWnd != NULL);
+    if (pWnd == NULL)
         return hdwp;
 
     pWnd->GetWindowRect(&rect);
@@ -379,7 +379,7 @@ MoveStretchControl(HDWP hdwp, CDialog* pDlg, int id, int moveX, int moveY,
     rect.bottom += moveY;
     rect.right += stretchX;
     rect.bottom += stretchY;
-    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, nil, rect.left, rect.top,
+    hdwp = DeferWindowPos(hdwp, pWnd->m_hWnd, NULL, rect.left, rect.top,
         rect.Width(), rect.Height(), 0);
 
     return hdwp;
@@ -393,8 +393,8 @@ GetDlgButtonCheck(CWnd* pWnd, int id)
 {
     CButton* pButton;
     pButton = (CButton*) pWnd->GetDlgItem(id);
-    ASSERT(pButton != nil);
-    if (pButton == nil)
+    ASSERT(pButton != NULL);
+    if (pButton == NULL)
         return -1;
     return pButton->GetCheck();
 }
@@ -403,8 +403,8 @@ SetDlgButtonCheck(CWnd* pWnd, int id, int checkVal)
 {
     CButton* pButton;
     pButton = (CButton*) pWnd->GetDlgItem(id);
-    ASSERT(pButton != nil);
-    if (pButton == nil)
+    ASSERT(pButton != NULL);
+    if (pButton == NULL)
         return;
     pButton->SetCheck(checkVal);
 }
@@ -547,7 +547,7 @@ LogHexDump(const void* vbuf, long len)
     char outBuf[10 + 16*3 +1 +8];   // addr: 00 11 22 ... + 8 bytes slop
     bool skipFirst;
     long addr;
-    char* cp = nil;
+    char* cp = NULL;
     int i;
 
     WMSG2(" Memory at 0x%08lx %ld bytes:\n", buf, len);
@@ -836,7 +836,7 @@ InjectLowercase(CString* pStr)
         WCHAR ch;
         do {
             ch = pStr->GetAt(startPos);
-            if (wcschr(kGapChars, ch) == nil)
+            if (wcschr(kGapChars, ch) == NULL)
                 break;
             startPos++;
         } while (startPos < len);
@@ -847,7 +847,7 @@ InjectLowercase(CString* pStr)
         endPos = startPos + 1;
         while (endPos < len) {
             ch = pStr->GetAt(endPos);
-            if (wcschr(kGapChars, ch) != nil)
+            if (wcschr(kGapChars, ch) != NULL)
                 break;
             endPos++;
         }
@@ -903,17 +903,17 @@ MatchSemicolonList(const CString set, const CString match)
 /*
  * Like strcpy(), but allocate with new[] instead.
  *
- * If "str" is nil, or "new" fails, this returns nil.
+ * If "str" is NULL, or "new" fails, this returns NULL.
  */
 char*
 StrcpyNew(const char* str)
 {
     char* newStr;
 
-    if (str == nil)
-        return nil;
+    if (str == NULL)
+        return NULL;
     newStr = new char[strlen(str)+1];
-    if (newStr != nil)
+    if (newStr != NULL)
         strcpy(newStr, str);
     return newStr;
 }

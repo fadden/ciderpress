@@ -53,7 +53,7 @@ NewDiskSize::EnableButtons(CDialog* pDialog, BOOL state /*=true*/)
 
     for (int i = 0; i < NELEM(kCtrlMap); i++) {
         pWnd = pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
-        if (pWnd != nil)
+        if (pWnd != NULL)
             pWnd->EnableWindow(state);
     }
 }
@@ -84,7 +84,7 @@ NewDiskSize::EnableButtons_ProDOS(CDialog* pDialog, long totalBlocks,
 
     for (int i = 0; i < NELEM(kCtrlMap); i++) {
         pButton = (CButton*) pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
-        if (pButton == nil) {
+        if (pButton == NULL) {
             WMSG1("WARNING: couldn't find ctrlID %d\n", kCtrlMap[i].ctrlID);
             continue;
         }
@@ -137,14 +137,14 @@ NewDiskSize::UpdateSpecifyEdit(CDialog* pDialog)
     CEdit* pEdit = (CEdit*) pDialog->GetDlgItem(kEditBoxID);
     int i;
 
-    if (pEdit == nil) {
+    if (pEdit == NULL) {
         ASSERT(false);
         return;
     }
 
     for (i = 0; i < NELEM(kCtrlMap); i++) {
         CButton* pButton = (CButton*) pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
-        if (pButton == nil) {
+        if (pButton == NULL) {
             WMSG1("WARNING: couldn't find ctrlID %d\n", kCtrlMap[i].ctrlID);
             continue;
         }

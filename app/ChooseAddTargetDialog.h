@@ -22,15 +22,15 @@ public:
     ChooseAddTargetDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_CHOOSE_ADD_TARGET, pParentWnd)
     {
-        fpDiskFS = fpChosenDiskFS = nil;
-        fpChosenSubdir = nil;
+        fpDiskFS = fpChosenDiskFS = NULL;
+        fpChosenSubdir = NULL;
     }
     virtual ~ChooseAddTargetDialog(void) {}
 
     /* set this before calling DoModal */
     DiskImgLib::DiskFS* fpDiskFS;
 
-    /* results; fpChosenSubdir will be nil if root vol selected */
+    /* results; fpChosenSubdir will be NULL if root vol selected */
     DiskImgLib::DiskFS* fpChosenDiskFS;
     DiskImgLib::A2File* fpChosenSubdir;
 

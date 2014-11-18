@@ -30,7 +30,7 @@ BASTokenLookup::Init(const char* tokenList, int numTokens,
 {
     int i;
 
-    ASSERT(tokenList != nil);
+    ASSERT(tokenList != NULL);
     ASSERT(numTokens > 0);
     ASSERT(tokenLen > 0);
 
@@ -131,8 +131,8 @@ ImportBASDialog::ImportBAS(const WCHAR* fileName)
     FILE* fp = NULL;
     ExpandBuffer msgs(1024);
     long fileLen, outLen, count;
-    char* buf = nil;
-    char* outBuf = nil;
+    char* buf = NULL;
+    char* outBuf = NULL;
     bool result = false;
 
     msgs.Printf("Importing from '%ls'...", fileName);
@@ -187,7 +187,7 @@ bail:
 
     /* copy our error messages out */
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_IMPORT_BAS_RESULTS);
-    char* msgBuf = nil;
+    char* msgBuf = NULL;
     long msgLen;
     msgs.SeizeBuffer(&msgBuf, &msgLen);
     CString msgStr(msgBuf);
@@ -599,7 +599,7 @@ ImportBASDialog::FindEOL(const char* buf, long max)
 {
     ASSERT(max >= 0);
     if (max == 0)
-        return nil;
+        return NULL;
 
     while (max) {
         if (*buf == '\r' || *buf == '\n') {
@@ -639,7 +639,7 @@ ImportBASDialog::GetNextNWC(const char** pBuf, int* pLen, char* pCh)
         (*pBuf)++;
         (*pLen)--;
 
-        if (ptr == nil) {
+        if (ptr == NULL) {
             *pCh = ch;
             return true;
         }
@@ -678,7 +678,7 @@ void ImportBASDialog::OnOK(void)
     details.fileType = kFileTypeBAS;
     details.extraType = 0x0801;
     details.storageType = DiskFS::kStorageSeedling;
-    time_t now = time(nil);
+    time_t now = time(NULL);
     GenericArchive::UNIXTimeToDateTime(&now, &details.createWhen);
     GenericArchive::UNIXTimeToDateTime(&now, &details.archiveWhen);
     GenericArchive::UNIXTimeToDateTime(&now, &details.modWhen);
@@ -687,7 +687,7 @@ void ImportBASDialog::OnOK(void)
 
     fDirty = true;
     if (!MainWindow::SaveToArchive(&details, (const unsigned char*) fOutput,
-        fOutputLen, nil, -1, /*ref*/errMsg, this))
+        fOutputLen, NULL, -1, /*ref*/errMsg, this))
     {
         goto bail;
     }

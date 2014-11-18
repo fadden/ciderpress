@@ -106,7 +106,7 @@ MainWindow::OnEditCopy(void)
     bool isOpen = false;
     HGLOBAL hGlobal;
     LPVOID pGlobal;
-    unsigned char* buf = nil;
+    unsigned char* buf = NULL;
     long bufLen = -1;
 
     /* associate a number with the format name */
@@ -153,7 +153,7 @@ MainWindow::OnEditCopy(void)
      */
     size_t neededLen = (fileList.GetLength() + 1) * sizeof(WCHAR);
     hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, neededLen);
-    if (hGlobal == nil) {
+    if (hGlobal == NULL) {
         WMSG1("Failed allocating %d bytes\n", neededLen);
         errStr.LoadString(IDS_CLIPBOARD_ALLOCFAILED);
         ShowFailureMsg(this, errStr, IDS_FAILED);
@@ -161,7 +161,7 @@ MainWindow::OnEditCopy(void)
     }
     WMSG1("  Allocated %ld bytes for file list on clipboard\n", neededLen);
     pGlobal = ::GlobalLock(hGlobal);
-    ASSERT(pGlobal != nil);
+    ASSERT(pGlobal != NULL);
     wcscpy((WCHAR*) pGlobal, fileList);
     ::GlobalUnlock(hGlobal);
 
@@ -172,7 +172,7 @@ MainWindow::OnEditCopy(void)
      * files in it.  This may fail for any number of reasons.
      */
     hGlobal = CreateFileCollection(&selSet);
-    if (hGlobal != nil) {
+    if (hGlobal != NULL) {
         SetClipboardData(myFormat, hGlobal);
         // beep annoys me on copy
         //SuccessBeep();
@@ -184,7 +184,7 @@ bail:
 void
 MainWindow::OnUpdateEditCopy(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil &&
+    pCmdUI->Enable(fpContentList != NULL &&
         fpContentList->GetSelectedCount() > 0);
 }
 
@@ -206,9 +206,9 @@ MainWindow::CreateFileList(SelectionSet* pSelSet)
     CString fileName, subVol, fileType, auxType, modDate, format, length;
 
     pSelEntry = pSelSet->IterNext();
-    while (pSelEntry != nil) {
+    while (pSelEntry != NULL) {
         pEntry = pSelEntry->GetEntry();
-        ASSERT(pEntry != nil);
+        ASSERT(pEntry != NULL);
 
         fileName = DblDblQuote(pEntry->GetPathName());
         subVol = pEntry->GetSubVolName();
@@ -269,7 +269,7 @@ MainWindow::GetClipboardContentLen(void)
 
     while ((format = EnumClipboardFormats(format)) != 0) {
         hGlobal = GetClipboardData(format);
-        ASSERT(hGlobal != nil);
+        ASSERT(hGlobal != NULL);
         len += GlobalSize(hGlobal);
     }
 
@@ -284,8 +284,8 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
 {
     SelectionEntry* pSelEntry;
     GenericEntry* pEntry;
-    HGLOBAL hGlobal = nil;
-    HGLOBAL hResult = nil;
+    HGLOBAL hGlobal = NULL;
+    HGLOBAL hResult = NULL;
     LPVOID pGlobal;
     size_t totalLength, numFiles;
     long priorLength;
@@ -303,9 +303,9 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
      */
     pSelSet->IterReset();
     pSelEntry = pSelSet->IterNext();
-    while (pSelEntry != nil) {
+    while (pSelEntry != NULL) {
         pEntry = pSelEntry->GetEntry();
-        ASSERT(pEntry != nil);
+        ASSERT(pEntry != NULL);
 
         //WMSG1("+++ Examining '%s'\n", pEntry->GetDisplayName());
 
@@ -322,7 +322,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
         if (totalLength < 0) {
             DebugBreak();
             WMSG0("Overflow\n");    // pretty hard to do right now!
-            return nil;
+            return NULL;
         }
 
         pSelEntry = pSelSet->IterNext();
@@ -333,7 +333,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
         CString msg;
         msg.Format("totalLength is %ld+%ld = %ld",
             totalLength, priorLength, totalLength+priorLength);
-        if (MessageBox(msg, nil, MB_OKCANCEL) == IDCANCEL)
+        if (MessageBox(msg, NULL, MB_OKCANCEL) == IDCANCEL)
             goto bail;
     }
 #endif
@@ -353,7 +353,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
      * Create a big buffer to hold it all.
      */
     hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, totalLength);
-    if (hGlobal == nil) {
+    if (hGlobal == NULL) {
         CString errMsg;
         errMsg.Format(L"ERROR: unable to allocate %ld bytes for copy",
             totalLength);
@@ -363,7 +363,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     }
     pGlobal = ::GlobalLock(hGlobal);
 
-    ASSERT(pGlobal != nil);
+    ASSERT(pGlobal != NULL);
     ASSERT(GlobalSize(hGlobal) >= (DWORD) totalLength);
     WMSG3("hGlobal=0x%08lx pGlobal=0x%08lx size=%ld\n",
         (long) hGlobal, (long) pGlobal, GlobalSize(hGlobal));
@@ -371,7 +371,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     /*
      * Set up a progress dialog to track it.
      */
-    ASSERT(fpActionProgress == nil);
+    ASSERT(fpActionProgress == NULL);
     fpActionProgress = new ActionProgressDialog;
     fpActionProgress->Create(ActionProgressDialog::kActionExtract, this);
     fpActionProgress->SetFileName(L"Clipboard");
@@ -386,11 +386,11 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     buf = (unsigned char*) pGlobal + sizeof(FileCollection);
     pSelSet->IterReset();
     pSelEntry = pSelSet->IterNext();
-    while (pSelEntry != nil) {
+    while (pSelEntry != NULL) {
         CString errStr;
 
         pEntry = pSelEntry->GetEntry();
-        ASSERT(pEntry != nil);
+        ASSERT(pEntry != NULL);
 
         CString displayName(pEntry->GetDisplayName());
         fpActionProgress->SetArcName(displayName);
@@ -424,17 +424,17 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     ::GlobalUnlock(hGlobal);
 
     hResult = hGlobal;
-    hGlobal = nil;
+    hGlobal = NULL;
 
 bail:
-    if (hGlobal != nil) {
-        ASSERT(hResult == nil);
+    if (hGlobal != NULL) {
+        ASSERT(hResult == NULL);
         ::GlobalUnlock(hGlobal);
         ::GlobalFree(hGlobal);
     }
-    if (fpActionProgress != nil) {
+    if (fpActionProgress != NULL) {
         fpActionProgress->Cleanup(this);
-        fpActionProgress = nil;
+        fpActionProgress = NULL;
     }
     return hResult;
 }
@@ -634,7 +634,7 @@ MainWindow::OnUpdateEditPaste(CCmdUI* pCmdUI)
     if (myFormat != 0 && IsClipboardFormatAvailable(myFormat))
         dataAvailable = true;
 
-    pCmdUI->Enable(fpContentList != nil && !fpOpenArchive->IsReadOnly() &&
+    pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         dataAvailable);
 }
 
@@ -688,7 +688,7 @@ MainWindow::DoPaste(bool pasteJunkPaths)
     UINT myFormat;
     bool isOpen = false;
 
-    if (fpContentList == nil || fpOpenArchive->IsReadOnly()) {
+    if (fpContentList == NULL || fpOpenArchive->IsReadOnly()) {
         ASSERT(false);
         return;
     }
@@ -738,12 +738,12 @@ MainWindow::DoPaste(bool pasteJunkPaths)
     LPVOID pGlobal;
 
     hGlobal = GetClipboardData(myFormat);
-    if (hGlobal == nil) {
+    if (hGlobal == NULL) {
         ASSERT(false);
         goto bail;
     }
     pGlobal = GlobalLock(hGlobal);
-    ASSERT(pGlobal != nil);
+    ASSERT(pGlobal != NULL);
     errStr = ProcessClipboard(pGlobal, GlobalSize(hGlobal), pasteJunkPaths);
     fpContentList->Reload();
 
@@ -770,7 +770,7 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
     FileCollection fileColl;
     CString errMsg, storagePrefix;
     const unsigned char* buf = (const unsigned char*) vbuf;
-    DiskImgLib::A2File* pTargetSubdir = nil;
+    DiskImgLib::A2File* pTargetSubdir = NULL;
     XferFileOptions xferOpts;
     bool xferPrepped = false;
 
@@ -828,7 +828,7 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
     fpOpenArchive->XferPrepare(&xferOpts);
     xferPrepped = true;
 
-    if (pTargetSubdir != nil) {
+    if (pTargetSubdir != NULL) {
         storagePrefix = pTargetSubdir->GetPathName();
         WMSG1("--- using storagePrefix '%ls'\n", (LPCWSTR) storagePrefix);
     }
@@ -836,7 +836,7 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
     /*
      * Set up a progress dialog to track it.
      */
-    ASSERT(fpActionProgress == nil);
+    ASSERT(fpActionProgress == NULL);
     fpActionProgress = new ActionProgressDialog;
     fpActionProgress->Create(ActionProgressDialog::kActionAdd, this);
     fpActionProgress->SetArcName(L"Clipboard data");
@@ -945,9 +945,9 @@ bail:
         else
             fpOpenArchive->XferAbort(this);
     }
-    if (fpActionProgress != nil) {
+    if (fpActionProgress != NULL) {
         fpActionProgress->Cleanup(this);
-        fpActionProgress = nil;
+        fpActionProgress = NULL;
     }
     return errMsg;
 }
@@ -966,8 +966,8 @@ MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
 {
     GenericArchive::FileDetails::FileKind entryKind;
     GenericArchive::FileDetails details;
-    unsigned char* dataBuf = nil;
-    unsigned char* rsrcBuf = nil;
+    unsigned char* dataBuf = NULL;
+    unsigned char* rsrcBuf = NULL;
     long dataLen, rsrcLen, cmmtLen;
     CString errMsg;
 
@@ -986,7 +986,7 @@ MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
         &details.createWhen);
     GenericArchive::UNIXTimeToDateTime(&pCollEnt->modWhen,
         &details.modWhen);
-    time_t now = time(nil);
+    time_t now = time(NULL);
     GenericArchive::UNIXTimeToDateTime(&now, &details.archiveWhen);
 
     /*
@@ -1036,14 +1036,14 @@ MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
         } else {
             dataLen = pCollEnt->dataLen;
             dataBuf = new unsigned char[dataLen];
-            if (dataBuf == nil)
+            if (dataBuf == NULL)
                 return "memory allocation failed.";
             memcpy(dataBuf, buf, dataLen);
             buf += dataLen;
             remLen -= dataLen;
         }
     } else {
-        ASSERT(dataBuf == nil);
+        ASSERT(dataBuf == NULL);
         dataLen = -1;
     }
 
@@ -1054,14 +1054,14 @@ MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
         } else {
             rsrcLen = pCollEnt->rsrcLen;
             rsrcBuf = new unsigned char[rsrcLen];
-            if (rsrcBuf == nil)
+            if (rsrcBuf == NULL)
                 return "Memory allocation failed.";
             memcpy(rsrcBuf, buf, rsrcLen);
             buf += rsrcLen;
             remLen -= rsrcLen;
         }
     } else {
-        ASSERT(rsrcBuf == nil);
+        ASSERT(rsrcBuf == NULL);
         rsrcLen = -1;
     }
 
@@ -1076,7 +1076,7 @@ MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
                 &rsrcBuf, rsrcLen);
     delete[] dataBuf;
     delete[] rsrcBuf;
-    dataBuf = rsrcBuf = nil;
+    dataBuf = rsrcBuf = NULL;
 
     return errMsg;
 }

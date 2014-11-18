@@ -31,10 +31,10 @@ ActionProgressDialog::OnInitDialog(void)
 
     // clear the filename fields
     pWnd = GetDlgItem(IDC_PROG_ARC_NAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(_T("-"));
     pWnd = GetDlgItem(IDC_PROG_FILE_NAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(_T("-"));
 
     pWnd->SetFocus();   // get the focus off the Cancel button
@@ -44,12 +44,12 @@ ActionProgressDialog::OnInitDialog(void)
     } else if (fAction == kActionRecompress) {
         CString tmpStr;
         pWnd = GetDlgItem(IDC_PROG_VERB);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         tmpStr.LoadString(IDS_NOW_EXPANDING);
         pWnd->SetWindowText(tmpStr);
 
         pWnd = GetDlgItem(IDC_PROG_TOFROM);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         tmpStr.LoadString(IDS_NOW_COMPRESSING);
         pWnd->SetWindowText(tmpStr);
     } else if (fAction == kActionAdd || fAction == kActionAddDisk ||
@@ -57,37 +57,37 @@ ActionProgressDialog::OnInitDialog(void)
     {
         CString tmpStr;
         pWnd = GetDlgItem(IDC_PROG_VERB);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         tmpStr.LoadString(IDS_NOW_ADDING);
         pWnd->SetWindowText(tmpStr);
 
         pWnd = GetDlgItem(IDC_PROG_TOFROM);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         tmpStr.LoadString(IDS_ADDING_AS);
         pWnd->SetWindowText(tmpStr);
     } else if (fAction == kActionDelete) {
         CString tmpStr;
         pWnd = GetDlgItem(IDC_PROG_VERB);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         tmpStr.LoadString(IDS_NOW_DELETING);
         pWnd->SetWindowText(tmpStr);
 
         pWnd = GetDlgItem(IDC_PROG_TOFROM);
         pWnd->DestroyWindow();
         pWnd = GetDlgItem(IDC_PROG_FILE_NAME);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->SetWindowText(_T(""));
     } else if (fAction == kActionTest) {
         CString tmpStr;
         pWnd = GetDlgItem(IDC_PROG_VERB);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         tmpStr.LoadString(IDS_NOW_TESTING);
         pWnd->SetWindowText(tmpStr);
 
         pWnd = GetDlgItem(IDC_PROG_TOFROM);
         pWnd->DestroyWindow();
         pWnd = GetDlgItem(IDC_PROG_FILE_NAME);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->SetWindowText(_T(""));
     } else {
         ASSERT(false);
@@ -105,7 +105,7 @@ ActionProgressDialog::SetArcName(const WCHAR* str)
     CString oldStr;
 
     CWnd* pWnd = GetDlgItem(IDC_PROG_ARC_NAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->GetWindowText(oldStr);
     if (oldStr != str)
         pWnd->SetWindowText(str);
@@ -117,7 +117,7 @@ ActionProgressDialog::GetFileName(void)
     CString str;
 
     CWnd* pWnd = GetDlgItem(IDC_PROG_FILE_NAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->GetWindowText(str);
 
     return str;
@@ -132,7 +132,7 @@ ActionProgressDialog::SetFileName(const WCHAR* str)
     CString oldStr;
 
     CWnd* pWnd = GetDlgItem(IDC_PROG_FILE_NAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->GetWindowText(oldStr);
     if (oldStr != str)
         pWnd->SetWindowText(str);

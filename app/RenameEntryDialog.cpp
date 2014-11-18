@@ -55,7 +55,7 @@ RenameEntryDialog::OnInitDialog(void)
 
     /* select the editable text and set the focus */
     pEdit = (CEdit*) GetDlgItem(IDC_RENAME_NEW);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetSel(0, -1);
     pEdit->SetFocus();
 

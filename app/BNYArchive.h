@@ -66,7 +66,7 @@ private:
  */
 class BnyArchive : public GenericArchive {
 public:
-    BnyArchive(void) : fIsReadOnly(false), fFp(nil)
+    BnyArchive(void) : fIsReadOnly(false), fFp(NULL)
         {}
     virtual ~BnyArchive(void) { (void) Close(); }
 
@@ -128,9 +128,9 @@ public:
 
 private:
     virtual CString Close(void) {
-        if (fFp != nil) {
+        if (fFp != NULL) {
             fclose(fFp);
-            fFp = nil;
+            fFp = NULL;
         }
         return "";
     }

@@ -12,7 +12,7 @@
 
 /*static*/ bool Global::fAppInitCalled = false;
 
-/*static*/ ASPI* Global::fpASPI = nil;
+/*static*/ ASPI* Global::fpASPI = NULL;
 
 /* global constant */
 const char* DiskImgLib::kASPIDev = "ASPI:";
@@ -39,7 +39,7 @@ Global::AppInit(void)
     HMODULE hModule;
     WCHAR fileNameBuf[256];
     hModule = ::GetModuleHandle(L"DiskImg4.dll");
-    if (hModule != nil &&
+    if (hModule != NULL &&
         ::GetModuleFileName(hModule, fileNameBuf,
             sizeof(fileNameBuf) / sizeof(WCHAR)) != 0)
     {
@@ -75,7 +75,7 @@ Global::AppInit(void)
         fpASPI = new ASPI;
         if (fpASPI->Init() != kDIErrNone) {
             delete fpASPI;
-            fpASPI = nil;
+            fpASPI = NULL;
         }
     }
 #endif
@@ -105,10 +105,10 @@ Global::AppCleanup(void)
  * the other.
  */
 #ifdef _WIN32
-/*static*/ bool Global::GetHasSPTI(void) { return !IsWin9x() && fpASPI == nil; }
-/*static*/ bool Global::GetHasASPI(void) { return fpASPI != nil; }
+/*static*/ bool Global::GetHasSPTI(void) { return !IsWin9x() && fpASPI == NULL; }
+/*static*/ bool Global::GetHasASPI(void) { return fpASPI != NULL; }
 /*static*/ unsigned long Global::GetASPIVersion(void) {
-    assert(fpASPI != nil);
+    assert(fpASPI != NULL);
 #ifdef WANT_ASPI
     return fpASPI->GetVersion();
 #else
@@ -128,11 +128,11 @@ Global::AppCleanup(void)
 /*static*/ void
 Global::GetVersion(long* pMajor, long* pMinor, long* pBug)
 {
-    if (pMajor != nil)
+    if (pMajor != NULL)
         *pMajor = kDiskImgVersionMajor;
-    if (pMinor != nil)
+    if (pMinor != NULL)
         *pMinor = kDiskImgVersionMinor;
-    if (pBug != nil)
+    if (pBug != NULL)
         *pBug = kDiskImgVersionBug;
 }
 
@@ -140,7 +140,7 @@ Global::GetVersion(long* pMajor, long* pMinor, long* pBug)
 /*
  * Pointer to debug message handler function.
  */
-/*static*/ Global::DebugMsgHandler Global::gDebugMsgHandler = nil;
+/*static*/ Global::DebugMsgHandler Global::gDebugMsgHandler = NULL;
 
 /*
  * Change the debug message handler.  The previous handler is returned.
@@ -164,7 +164,7 @@ Global::SetDebugMsgHandler(DebugMsgHandler handler)
 /*static*/ void
 Global::PrintDebugMsg(const char* file, int line, const char* fmt, ...)
 {
-    if (gDebugMsgHandler == nil) {
+    if (gDebugMsgHandler == NULL) {
         /*
          * This can happen if the app decides to bail with an exit()
          * call.  I'm not sure what's zapping the pointer.

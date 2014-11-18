@@ -49,7 +49,7 @@ AboutDialog::OnInitDialog(void)
 
     /* CiderPress version string */
     pStatic = (CStatic*) GetDlgItem(IDC_CIDERPRESS_VERS_TEXT);
-    ASSERT(pStatic != nil);
+    ASSERT(pStatic != NULL);
     pStatic->GetWindowText(tmpStr);
     newVersion.Format(tmpStr,
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
@@ -58,7 +58,7 @@ AboutDialog::OnInitDialog(void)
 
     /* grab the static text control with the NufxLib version info */
     pStatic = (CStatic*) GetDlgItem(IDC_NUFXLIB_VERS_TEXT);
-    ASSERT(pStatic != nil);
+    ASSERT(pStatic != NULL);
     nerr = NuGetVersion(&major, &minor, &bug, NULL, NULL);
     ASSERT(nerr == kNuErrNone);
 
@@ -68,7 +68,7 @@ AboutDialog::OnInitDialog(void)
 
     /* grab the static text control with the DiskImg version info */
     pStatic = (CStatic*) GetDlgItem(IDC_DISKIMG_VERS_TEXT);
-    ASSERT(pStatic != nil);
+    ASSERT(pStatic != NULL);
     DiskImgLib::Global::GetVersion(&major, &minor, &bug);
 
     pStatic->GetWindowText(tmpStr);
@@ -77,7 +77,7 @@ AboutDialog::OnInitDialog(void)
 
     /* set the zlib version */
     pStatic = (CStatic*) GetDlgItem(IDC_ZLIB_VERS_TEXT);
-    ASSERT(pStatic != nil);
+    ASSERT(pStatic != NULL);
     pStatic->GetWindowText(tmpStr);
     CString zlibVersionStr(zlibVersion());
     newVersion.Format(tmpStr, zlibVersionStr);
@@ -85,7 +85,7 @@ AboutDialog::OnInitDialog(void)
 
     /* and, finally, the ASPI version */
     pStatic = (CStatic*) GetDlgItem(IDC_ASPI_VERS_TEXT);
-    ASSERT(pStatic != nil);
+    ASSERT(pStatic != NULL);
     if (DiskImgLib::Global::GetHasASPI()) {
         CString versionStr;
         DWORD version = DiskImgLib::Global::GetASPIVersion();
@@ -104,7 +104,7 @@ AboutDialog::OnInitDialog(void)
     //ShowRegistrationInfo();
     {
             CWnd* pWnd = GetDlgItem(IDC_ABOUT_ENTER_REG);
-            if (pWnd != nil) {
+            if (pWnd != NULL) {
                 pWnd->EnableWindow(FALSE);
                 pWnd->ShowWindow(FALSE);
             }
@@ -139,11 +139,11 @@ AboutDialog::ShowRegistrationInfo(void)
     //CWnd* pExpireWnd;
 
     pUserWnd = GetDlgItem(IDC_REG_USER_NAME);
-    ASSERT(pUserWnd != nil);
+    ASSERT(pUserWnd != NULL);
     pCompanyWnd = GetDlgItem(IDC_REG_COMPANY_NAME);
-    ASSERT(pCompanyWnd != nil);
+    ASSERT(pCompanyWnd != NULL);
     //pExpireWnd = GetDlgItem(IDC_REG_EXPIRES);
-    //ASSERT(pExpireWnd != nil);
+    //ASSERT(pExpireWnd != NULL);
 
     if (gMyApp.fRegistry.GetRegistration(&user, &company, &reg, &versions,
             &expire) == 0)
@@ -160,7 +160,7 @@ AboutDialog::ShowRegistrationInfo(void)
             expireWhen = atol(expire);
             if (expireWhen > 0) {
                 CString expireStr;
-                time_t now = time(nil);
+                time_t now = time(NULL);
                 expireStr.Format(IDS_REG_EVAL_REM,
                     ((expireWhen - now) + kDay-1) / kDay);
                 /* leave pUserWnd and pCompanyWnd set to defaults */
@@ -176,7 +176,7 @@ AboutDialog::ShowRegistrationInfo(void)
 
             /* remove "Enter Registration" button */
             CWnd* pWnd = GetDlgItem(IDC_ABOUT_ENTER_REG);
-            if (pWnd != nil) {
+            if (pWnd != NULL) {
                 pWnd->EnableWindow(FALSE);
             }
         }

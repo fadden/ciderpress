@@ -165,7 +165,7 @@
 DiskImg::GetStdNibbleDescr(StdNibbleDescr idx)
 {
     if ((int)idx < 0 || (int)idx >= (int) NELEM(kStdNibbleDescrs))
-        return nil;
+        return NULL;
     return &kStdNibbleDescrs[(int)idx];
 }
 
@@ -180,7 +180,7 @@ DiskImg::DiskImg(void)
     fOuterFormat = kOuterFormatUnknown;
     fFileFormat = kFileFormatUnknown;
     fPhysical = kPhysicalFormatUnknown;
-    fpNibbleDescr = nil;
+    fpNibbleDescr = NULL;
     fOrder = kSectorOrderUnknown;
     fFormat = kFormatUnknown;
 
@@ -188,12 +188,12 @@ DiskImg::DiskImg(void)
     fSectorPairing = false;
     fSectorPairOffset = -1;
 
-    fpOuterGFD = nil;
-    fpWrapperGFD = nil;
-    fpDataGFD = nil;
-    fpOuterWrapper = nil;
-    fpImageWrapper = nil;
-    fpParentImg = nil;
+    fpOuterGFD = NULL;
+    fpWrapperGFD = NULL;
+    fpDataGFD = NULL;
+    fpOuterWrapper = NULL;
+    fpImageWrapper = NULL;
+    fpParentImg = NULL;
     fDOSVolumeNum = kVolumeNumNotSet;
     fOuterLength = -1;
     fWrappedLength = -1;
@@ -227,13 +227,13 @@ DiskImg::DiskImg(void)
     fNumNibbleDescrEntries = NELEM(kStdNibbleDescrs);
     memcpy(fpNibbleDescrTable, kStdNibbleDescrs, sizeof(kStdNibbleDescrs));
 
-    fNibbleTrackBuf = nil;
+    fNibbleTrackBuf = NULL;
     fNibbleTrackLoaded = -1;
 
     fNuFXCompressType = kNuThreadFormatLZW2;
 
-    fNotes = nil;
-    fpBadBlockMap = nil;
+    fNotes = NULL;
+    fpBadBlockMap = NULL;
     fDiskFSRefCnt = 0;
 }
 
@@ -242,7 +242,7 @@ DiskImg::DiskImg(void)
  */
 DiskImg::~DiskImg(void)
 {
-    if (fpDataGFD != nil) {
+    if (fpDataGFD != NULL) {
         WMSG0("~DiskImg closing GenericFD(s)\n");
     }
     (void) CloseImage();
@@ -252,15 +252,15 @@ DiskImg::~DiskImg(void)
     delete fpBadBlockMap;
 
     /* normally these will be closed, but perhaps not if something failed */
-    if (fpOuterGFD != nil)
+    if (fpOuterGFD != NULL)
         delete fpOuterGFD;
-    if (fpWrapperGFD != nil)
+    if (fpWrapperGFD != NULL)
         delete fpWrapperGFD;
-    if (fpDataGFD != nil)
+    if (fpDataGFD != NULL)
         delete fpDataGFD;
-    if (fpOuterWrapper != nil)
+    if (fpOuterWrapper != NULL)
         delete fpOuterWrapper;
-    if (fpImageWrapper != nil)
+    if (fpImageWrapper != NULL)
         delete fpImageWrapper;
 
     fDiskFSRefCnt = 100;    // flag as freed
@@ -307,7 +307,7 @@ DiskImg::OpenImage(const char* pathName, char fssep, bool readOnly)
     DIError dierr = kDIErrNone;
     bool isWinDevice = false;
 
-    if (fpDataGFD != nil) {
+    if (fpDataGFD != NULL) {
         WMSG0(" DI already open!\n");
         return kDIErrAlreadyOpen;
     }
@@ -367,7 +367,7 @@ DiskImg::OpenImage(const char* pathName, char fssep, bool readOnly)
         //strcpy(fImageFileName, pathName);
 
         fpWrapperGFD = pGFDFile;
-        pGFDFile = nil;
+        pGFDFile = NULL;
 
         dierr = AnalyzeImageFile(pathName, fssep);
         if (dierr != kDIErrNone)
@@ -375,7 +375,7 @@ DiskImg::OpenImage(const char* pathName, char fssep, bool readOnly)
     }
 
 
-    assert(fpDataGFD != nil);
+    assert(fpDataGFD != NULL);
 
 bail:
     return dierr;
@@ -388,7 +388,7 @@ bail:
 DIError
 DiskImg::OpenImage(const void* buffer, long length, bool readOnly)
 {
-    if (fpDataGFD != nil) {
+    if (fpDataGFD != NULL) {
         WMSG0(" DI already open!\n");
         return kDIErrAlreadyOpen;
     }
@@ -408,13 +408,13 @@ DiskImg::OpenImage(const void* buffer, long length, bool readOnly)
     }
 
     fpWrapperGFD = pGFDBuffer;
-    pGFDBuffer = nil;
+    pGFDBuffer = NULL;
 
     dierr = AnalyzeImageFile("", '\0');
     if (dierr != kDIErrNone)
         return dierr;
 
-    assert(fpDataGFD != nil);
+    assert(fpDataGFD != NULL);
     return kDIErrNone;
 }
 
@@ -438,12 +438,12 @@ DiskImg::OpenImage(DiskImg* pParent, long firstBlock, long numBlocks)
 {
     WMSG3(" DI OpenImage parent=0x%08lx %ld %ld\n", (long) pParent, firstBlock,
         numBlocks);
-    if (fpDataGFD != nil) {
+    if (fpDataGFD != NULL) {
         WMSG0(" DI already open!\n");
         return kDIErrAlreadyOpen;
     }
 
-    if (pParent == nil || firstBlock < 0 || numBlocks <= 0 ||
+    if (pParent == NULL || firstBlock < 0 || numBlocks <= 0 ||
         firstBlock + numBlocks > pParent->GetNumBlocks())
     {
         assert(false);
@@ -463,7 +463,7 @@ DiskImg::OpenImage(DiskImg* pParent, long firstBlock, long numBlocks)
     }
 
     fpDataGFD = pGFDGFD;
-    assert(fpWrapperGFD == nil);
+    assert(fpWrapperGFD == NULL);
 
     /*
      * This replaces the call to "analyze image file" because we know we
@@ -486,12 +486,12 @@ DiskImg::OpenImage(DiskImg* pParent, long firstTrack, long firstSector,
 {
     WMSG4(" DI OpenImage parent=0x%08lx %ld %ld %ld\n", (long) pParent,
         firstTrack, firstSector, numSectors);
-    if (fpDataGFD != nil) {
+    if (fpDataGFD != NULL) {
         WMSG0(" DI already open!\n");
         return kDIErrAlreadyOpen;
     }
 
-    if (pParent == nil)
+    if (pParent == NULL)
         return kDIErrInvalidArg;
 
     int prntSectPerTrack = pParent->GetNumSectPerTrack();
@@ -517,7 +517,7 @@ DiskImg::OpenImage(DiskImg* pParent, long firstTrack, long firstSector,
     }
     
     fpDataGFD = pGFDGFD;
-    assert(fpWrapperGFD == nil);
+    assert(fpWrapperGFD == NULL);
 
     /*
      * This replaces the call to "analyze image file" because we know we
@@ -591,25 +591,25 @@ DiskImg::CloseImage(void)
      * In some cases we will have the file open more than once (e.g. a
      * NuFX archive, which must be opened on disk).
      */
-    if (fpDataGFD != nil) {
+    if (fpDataGFD != NULL) {
         fpDataGFD->Close();
         delete fpDataGFD;
-        fpDataGFD = nil;
+        fpDataGFD = NULL;
     }
-    if (fpWrapperGFD != nil) {
+    if (fpWrapperGFD != NULL) {
         fpWrapperGFD->Close();
         delete fpWrapperGFD;
-        fpWrapperGFD = nil;
+        fpWrapperGFD = NULL;
     }
-    if (fpOuterGFD != nil) {
+    if (fpOuterGFD != NULL) {
         fpOuterGFD->Close();
         delete fpOuterGFD;
-        fpOuterGFD = nil;
+        fpOuterGFD = NULL;
     }
     delete fpImageWrapper;
-    fpImageWrapper = nil;
+    fpImageWrapper = NULL;
     delete fpOuterWrapper;
-    fpOuterWrapper = nil;
+    fpOuterWrapper = NULL;
 
     return dierr;
 }
@@ -641,7 +641,7 @@ DiskImg::FlushImage(FlushMode mode)
     WMSG2(" DI FlushImage (dirty=%d mode=%d)\n", fDirty, mode);
     if (!fDirty)
         return kDIErrNone;
-    if (fpDataGFD == nil) {
+    if (fpDataGFD == NULL) {
         /*
          * This can happen if we tried to create a disk image but failed, e.g.
          * couldn't create the output file because of access denied on the
@@ -655,8 +655,8 @@ DiskImg::FlushImage(FlushMode mode)
     }
 
     if (mode == kFlushFastOnly &&
-        ((fpImageWrapper != nil && !fpImageWrapper->HasFastFlush()) ||
-         (fpOuterWrapper != nil && !fpOuterWrapper->HasFastFlush()) ))
+        ((fpImageWrapper != NULL && !fpImageWrapper->HasFastFlush()) ||
+         (fpOuterWrapper != NULL && !fpOuterWrapper->HasFastFlush()) ))
     {
         WMSG0("DI fast flush requested, but one or both wrappers are slow\n");
         return kDIErrNone;
@@ -680,10 +680,10 @@ DiskImg::FlushImage(FlushMode mode)
      * rename over the old will close fpWrapperGFD and just access it
      * directly.  This is bad, because it doesn't allow them to have an
      * "outer" format, but it's the way life is.  The point is that it's
-     * okay for fpWrapperGFD to be non-nil but represent a closed file,
+     * okay for fpWrapperGFD to be non-NULL but represent a closed file,
      * so long as the "Flush" function has it figured out.)
      */
-    if (fpWrapperGFD != nil) {
+    if (fpWrapperGFD != NULL) {
         WMSG2(" DI flushing data changes to wrapper (fLen=%ld fWrapLen=%ld)\n",
             (long) fLength, (long) fWrappedLength);
         dierr = fpImageWrapper->Flush(fpWrapperGFD, fpDataGFD, fLength,
@@ -695,17 +695,17 @@ DiskImg::FlushImage(FlushMode mode)
         /* flush the GFD in case it's a Win32 volume with block caching */
         dierr = fpWrapperGFD->Flush();
     } else {
-        assert(fpParentImg != nil);
+        assert(fpParentImg != NULL);
     }
 
     /*
      * Step 3: if we have an fpOuterGFD, rebuild the file with the data
      * in fpWrapperGFD.
      */
-    if (fpOuterWrapper != nil) {
+    if (fpOuterWrapper != NULL) {
         WMSG1(" DI saving wrapper to outer, fWrapLen=%ld\n",
             (long) fWrappedLength);
-        assert(fpOuterGFD != nil);
+        assert(fpOuterGFD != NULL);
         dierr = fpOuterWrapper->Save(fpOuterGFD, fpWrapperGFD,
                     fWrappedLength);
         if (dierr != kDIErrNone) {
@@ -755,7 +755,7 @@ DiskImg::FlushImage(FlushMode mode)
  *  fWrappedLength, fOuterLength - set appropriately
  *  fpDataGFD - GFD for the raw data, possibly just a GFDGFD with an offset
  *  fLength - length of unadorned data in the file, or the length of
- *            data stored in fBuffer (test for fBuffer!=nil)
+ *            data stored in fBuffer (test for fBuffer!=NULL)
  *  fFileFormat - set to the overall file format, mostly interesting
  *            for identification of the file "wrapper"
  *  fPhysicalFormat - set to the type of data this holds
@@ -773,10 +773,10 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
     FileFormat probableFormat;
     bool reliableExt;
     const char* ext = FindExtension(pathName, fssep);
-    char* extBuf = nil;     // uses malloc/free
+    char* extBuf = NULL;     // uses malloc/free
     bool needExtFromOuter = false;
 
-    if (ext != nil) {
+    if (ext != NULL) {
         assert(*ext == '.');
         ext++;
     } else
@@ -820,7 +820,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
         WMSG0("  DI found gz outer wrapper\n");
 
         fpOuterWrapper = new OuterGzip();
-        if (fpOuterWrapper == nil) {
+        if (fpOuterWrapper == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -829,20 +829,20 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
         /* drop the ".gz" and get down to the next extension */
         ext = "";
         extBuf = strdup(pathName);
-        if (extBuf != nil) {
+        if (extBuf != NULL) {
             char* localExt;
 
             localExt = (char*) FindExtension(extBuf, fssep);
-            if (localExt != nil)
+            if (localExt != NULL)
                 *localExt = '\0';
             localExt = (char*) FindExtension(extBuf, fssep);
-            if (localExt != nil) {
+            if (localExt != NULL) {
                 ext = localExt;
                 assert(*ext == '.');
                 ext++;
             }
         }
-        WMSG1("  DI after gz, ext='%s'\n", ext == nil ? "(nil)" : ext);
+        WMSG1("  DI after gz, ext='%s'\n", ext == NULL ? "(NULL)" : ext);
 
     } else if (strcasecmp(ext, "zip") == 0) {
         dierr = OuterZip::Test(fpWrapperGFD, fOuterLength);
@@ -852,7 +852,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
         WMSG0("  DI found ZIP outer wrapper\n");
 
         fpOuterWrapper = new OuterZip();
-        if (fpOuterWrapper == nil) {
+        if (fpOuterWrapper == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -866,7 +866,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
 
     /* finish up outer wrapper stuff */
     if (fOuterFormat != kOuterFormatNone) {
-        GenericFD* pNewGFD = nil;
+        GenericFD* pNewGFD = NULL;
         dierr = fpOuterWrapper->Load(fpWrapperGFD, fOuterLength, fReadOnly,
                     &fWrappedLength, &pNewGFD);
         if (dierr != kDIErrNone) {
@@ -887,7 +887,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
 
         if (needExtFromOuter) {
             ext = fpOuterWrapper->GetExtension();
-            if (ext == nil)
+            if (ext == NULL)
                 ext = "";
         }
     }
@@ -1098,8 +1098,8 @@ gotit: ;
         dierr = kDIErrUnrecognizedFileFmt;
         break;
     }
-    if (fpImageWrapper != nil) {
-        assert(fpDataGFD == nil);
+    if (fpImageWrapper != NULL) {
+        assert(fpDataGFD == NULL);
         dierr = fpImageWrapper->Prep(fpWrapperGFD, fWrappedLength, fReadOnly,
                     &fLength, &fPhysical, &fOrder, &fDOSVolumeNum,
                     &fpBadBlockMap, &fpDataGFD);
@@ -1123,7 +1123,7 @@ gotit: ;
     fFileFormat = probableFormat;
 
     assert(fLength >= 0);
-    assert(fpDataGFD != nil);
+    assert(fpDataGFD != NULL);
     assert(fOuterFormat != kOuterFormatUnknown);
     assert(fFileFormat != kFileFormatUnknown);
     assert(fPhysical != kPhysicalFormatUnknown);
@@ -1157,7 +1157,7 @@ DIError
 DiskImg::AnalyzeImage(void)
 {
     assert(fLength >= 0);
-    assert(fpDataGFD != nil);
+    assert(fpDataGFD != NULL);
     assert(fFileFormat != kFileFormatUnknown);
     assert(fPhysical != kPhysicalFormatUnknown);
     assert(fFormat == kFormatUnknown);
@@ -1165,7 +1165,7 @@ DiskImg::AnalyzeImage(void)
     assert(fNumTracks == -1);
     assert(fNumSectPerTrack == -1);
     assert(fNumBlocks == -1);
-    if (fpDataGFD == nil)
+    if (fpDataGFD == NULL)
         return kDIErrInternal;
 
     /*
@@ -1235,7 +1235,7 @@ DiskImg::AnalyzeImage(void)
         DIError dierr;
         dierr = AnalyzeNibbleData();    // sets nibbleDescr and DOS vol num
         if (dierr == kDIErrNone) {
-            assert(fpNibbleDescr != nil);
+            assert(fpNibbleDescr != NULL);
             fNumSectPerTrack = fpNibbleDescr->numSectors;
             fOrder = kSectorOrderPhysical;
 
@@ -1246,7 +1246,7 @@ DiskImg::AnalyzeImage(void)
                 fReadOnly = true;
             }
         } else {
-            //assert(fpNibbleDescr == nil);
+            //assert(fpNibbleDescr == NULL);
             fNumSectPerTrack = -1;
             fOrder = kSectorOrderPhysical;
             fHasSectors = false;
@@ -1674,7 +1674,7 @@ DIError
 DiskImg::FormatImage(FSFormat format, const char* volName)
 {
     DIError dierr = kDIErrNone;
-    DiskFS* pDiskFS = nil;
+    DiskFS* pDiskFS = NULL;
     FSFormat savedFormat;
 
     WMSG1(" DI FormatImage '%s'\n", volName);
@@ -1690,7 +1690,7 @@ DiskImg::FormatImage(FSFormat format, const char* volName)
     pDiskFS = OpenAppropriateDiskFS(false);
     fFormat = savedFormat;
 
-    if (pDiskFS == nil) {
+    if (pDiskFS == NULL) {
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
@@ -1744,7 +1744,7 @@ DiskImg::ZeroImage(void)
 void
 DiskImg::SetScanProgressCallback(ScanProgressCallback func, void* cookie)
 {
-    if (fpParentImg != nil) {
+    if (fpParentImg != NULL) {
         /* unexpected, but perfectly okay */
         DebugBreak();
     }
@@ -1753,7 +1753,7 @@ DiskImg::SetScanProgressCallback(ScanProgressCallback func, void* cookie)
     fScanProgressCookie = cookie;
     fScanCount = 0;
     fScanMsg[0] = '\0';
-    fScanLastMsgWhen = time(nil);
+    fScanLastMsgWhen = time(NULL);
 }
 
 /*
@@ -1768,14 +1768,14 @@ DiskImg::UpdateScanProgress(const char* newStr)
     bool result = true;
 
     /* search up the tree to find a progress updater */
-    while (func == nil) {
+    while (func == NULL) {
         pImg = pImg->fpParentImg;
-        if (pImg == nil)
+        if (pImg == NULL)
             return result;      // none defined, bail out
         func = pImg->fpScanProgressCallback;
     }
 
-    time_t now = time(nil);
+    time_t now = time(NULL);
 
     if (newStr == NULL) {
         fScanCount++;
@@ -1987,7 +1987,7 @@ DiskImg::ReadTrackSectorSwapped(long track, int sector, void* buf,
     di_off_t offset;
     int newSector = -1;
 
-    if (buf == nil)
+    if (buf == NULL)
         return kDIErrInvalidArg;
 
 #if 0   // Pre-d13
@@ -2040,7 +2040,7 @@ DiskImg::WriteTrackSector(long track, int sector, const void* buf)
     di_off_t offset;
     int newSector = -1;
 
-    if (buf == nil)
+    if (buf == NULL)
         return kDIErrInvalidArg;
     if (fReadOnly)
         return kDIErrAccessDenied;
@@ -2093,7 +2093,7 @@ DiskImg::ReadBlockSwapped(long block, void* buf, SectorOrder imageOrder,
         return kDIErrUnsupportedAccess;
     if (block < 0 || block >= fNumBlocks)
         return kDIErrInvalidBlock;
-    if (buf == nil)
+    if (buf == NULL)
         return kDIErrInvalidArg;
 
     DIError dierr;
@@ -2146,7 +2146,7 @@ DiskImg::ReadBlocks(long startBlock, int numBlocks, void* buf)
     assert(fHasBlocks);
     assert(startBlock >= 0);
     assert(numBlocks > 0);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     if (startBlock < 0 || numBlocks + startBlock > GetNumBlocks()) {
         assert(false);
@@ -2201,7 +2201,7 @@ DiskImg::CheckForBadBlocks(long startBlock, int numBlocks)
 {
     int i;
 
-    if (fpBadBlockMap == nil)
+    if (fpBadBlockMap == NULL)
         return false;
 
     for (i = startBlock; i < startBlock+numBlocks; i++) {
@@ -2224,7 +2224,7 @@ DiskImg::WriteBlock(long block, const void* buf)
         return kDIErrUnsupportedAccess;
     if (block < 0 || block >= fNumBlocks)
         return kDIErrInvalidBlock;
-    if (buf == nil)
+    if (buf == NULL)
         return kDIErrInvalidArg;
     if (fReadOnly)
         return kDIErrAccessDenied;
@@ -2265,7 +2265,7 @@ DiskImg::WriteBlocks(long startBlock, int numBlocks, const void* buf)
     assert(fHasBlocks);
     assert(startBlock >= 0);
     assert(numBlocks > 0);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     if (startBlock < 0 || numBlocks + startBlock > GetNumBlocks()) {
         assert(false);
@@ -2344,7 +2344,7 @@ DiskImg::CopyBytesIn(const void* buf, di_off_t offset, int size)
         DebugBreak();
         return kDIErrAccessDenied;
     }
-    assert(fpDataGFD != nil);   // somebody closed the image?
+    assert(fpDataGFD != NULL);   // somebody closed the image?
 
     dierr = fpDataGFD->Seek(offset, kSeekSet);
     if (dierr != kDIErrNone) {
@@ -2361,7 +2361,7 @@ DiskImg::CopyBytesIn(const void* buf, di_off_t offset, int size)
 
     /* set the dirty flag here and everywhere above */
     DiskImg* pImg = this;
-    while (pImg != nil) {
+    while (pImg != NULL) {
         pImg->fDirty = true;
         pImg = pImg->fpParentImg;
     }
@@ -2379,7 +2379,7 @@ DiskImg::CopyBytesIn(const void* buf, di_off_t offset, int size)
 /*
  * Create a disk image with the specified parameters.
  *
- * "storageName" and "pNibbleDescr" may be nil.
+ * "storageName" and "pNibbleDescr" may be NULL.
  */
 DIError
 DiskImg::CreateImage(const char* pathName, const char* storageName,
@@ -2387,7 +2387,7 @@ DiskImg::CreateImage(const char* pathName, const char* storageName,
     const NibbleDescr* pNibbleDescr, SectorOrder order,
     FSFormat format, long numBlocks, bool skipFormat)
 {
-    assert(fpDataGFD == nil);       // should not be open already!
+    assert(fpDataGFD == NULL);       // should not be open already!
 
     if (numBlocks <= 0) {
         WMSG1("ERROR: bad numBlocks %ld\n", numBlocks);
@@ -2413,7 +2413,7 @@ DiskImg::CreateImage(const char* pathName, const char* storageName,
     const NibbleDescr* pNibbleDescr, SectorOrder order,
     FSFormat format, long numTracks, long numSectPerTrack, bool skipFormat)
 {
-    assert(fpDataGFD == nil);       // should not be open already!
+    assert(fpDataGFD == NULL);       // should not be open already!
 
     if (numTracks <= 0 || numSectPerTrack == 0) {
         WMSG2("ERROR: bad tracks/sectors %ld/%ld\n", numTracks, numSectPerTrack);
@@ -2441,7 +2441,7 @@ DiskImg::CreateImage(const char* pathName, const char* storageName,
         WMSG0("Sector image w/o sectors, switching to nibble mode\n");
         fHasNibbles = true;
         fHasSectors = false;
-        fpNibbleDescr = nil;
+        fpNibbleDescr = NULL;
     }
 
     return CreateImageCommon(pathName, storageName, skipFormat);
@@ -2529,7 +2529,7 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
         fpWrapperGFD = pGFDFile;
     else
         fpOuterGFD = pGFDFile;
-    pGFDFile = nil;
+    pGFDFile = NULL;
 
     /*
      * Step 4: if we have an outer GFD and therefore don't currently have
@@ -2551,19 +2551,19 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
     }
     assert(fLength > 0);
 
-    if (fpWrapperGFD == nil) {
+    if (fpWrapperGFD == NULL) {
         /* shift GFDs and create a new memory GFD, pre-sized */
         GFDBuffer* pGFDBuffer = new GFDBuffer;
 
         /* use fLength as a starting point for buffer size; this may expand */
-        dierr = pGFDBuffer->Open(nil, fLength, true, true, false);
+        dierr = pGFDBuffer->Open(NULL, fLength, true, true, false);
         if (dierr != kDIErrNone) {
             delete pGFDBuffer;
             goto bail;
         }
 
         fpWrapperGFD = pGFDBuffer;
-        pGFDBuffer = nil;
+        pGFDBuffer = NULL;
     }
 
     /* create an fpOuterWrapper struct */
@@ -2572,14 +2572,14 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
         break;
     case kOuterFormatGzip:
         fpOuterWrapper = new OuterGzip;
-        if (fpOuterWrapper == nil) {
+        if (fpOuterWrapper == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
         break;
     case kOuterFormatZip:
         fpOuterWrapper = new OuterZip;
-        if (fpOuterWrapper == nil) {
+        if (fpOuterWrapper == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -2646,25 +2646,25 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
         }
         break;
     default:
-        assert(fpImageWrapper == nil);
+        assert(fpImageWrapper == NULL);
         break;
     }
 
-    if (fpImageWrapper == nil) {
+    if (fpImageWrapper == NULL) {
         WMSG0(" DI couldn't figure out the file format\n");
         dierr = kDIErrUnrecognizedFileFmt;
         goto bail;
     }
 
     /* create the wrapper, write the header, and create fpDataGFD */
-    assert(fpDataGFD == nil);
+    assert(fpDataGFD == NULL);
     dierr = fpImageWrapper->Create(fLength, fPhysical, fOrder,
                 fDOSVolumeNum, fpWrapperGFD, &fWrappedLength, &fpDataGFD);
     if (dierr != kDIErrNone) {
         WMSG1("ImageWrapper Create failed, err=%d\n", dierr);
         goto bail;
     }
-    assert(fpDataGFD != nil);
+    assert(fpDataGFD != NULL);
 
     /*
      * Step 6: "format" fpDataGFD.
@@ -2695,9 +2695,9 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
      * Quick sanity check...
      */
     if (fOuterFormat != kOuterFormatNone) {
-        assert(fpOuterGFD != nil);
-        assert(fpWrapperGFD != nil);
-        assert(fpDataGFD != nil);
+        assert(fpOuterGFD != NULL);
+        assert(fpWrapperGFD != NULL);
+        assert(fpDataGFD != NULL);
     }
 
 bail:
@@ -2778,12 +2778,12 @@ DiskImg::ValidateCreateFormat(void) const
             return kDIErrInvalidCreateReq;
         }
 
-        if (fpNibbleDescr == nil && GetNumSectPerTrack() > 0) {
+        if (fpNibbleDescr == NULL && GetNumSectPerTrack() > 0) {
             WMSG0("CreateImage: must provide NibbleDescr for non-sector\n");
             return kDIErrInvalidCreateReq;
         }
 
-        if (fpNibbleDescr != nil &&
+        if (fpNibbleDescr != NULL &&
             fpNibbleDescr->numSectors != GetNumSectPerTrack())
         {
             WMSG2("CreateImage: ?? nd->numSectors=%d, GetNumSectPerTrack=%d\n",
@@ -2791,7 +2791,7 @@ DiskImg::ValidateCreateFormat(void) const
             return kDIErrInvalidCreateReq;
         }
 
-        if (fpNibbleDescr != nil && (
+        if (fpNibbleDescr != NULL && (
             (fpNibbleDescr->numSectors == 13 &&
              fpNibbleDescr->encoding != kNibbleEnc53) ||
             (fpNibbleDescr->numSectors == 16 &&
@@ -2930,14 +2930,14 @@ DiskImg::FormatSectors(GenericFD* pGFD, bool quickFormat) const
                 (long) fLength - sizeof(sctBuf), dierr);
             goto bail;
         }
-        dierr = pGFD->Write(sctBuf, sizeof(sctBuf), nil);
+        dierr = pGFD->Write(sctBuf, sizeof(sctBuf), NULL);
         if (dierr != kDIErrNone) {
             WMSG1(" FormatSectors: GFD quick write failed (err=%d)\n", dierr);
             goto bail;
         }
     } else {
         for (length = fLength ; length > 0; length -= sizeof(sctBuf)) {
-            dierr = pGFD->Write(sctBuf, sizeof(sctBuf), nil);
+            dierr = pGFD->Write(sctBuf, sizeof(sctBuf), NULL);
             if (dierr != kDIErrNone) {
                 WMSG1(" FormatSectors: GFD write failed (err=%d)\n", dierr);
                 goto bail;
@@ -2966,13 +2966,13 @@ DiskImg::FormatBlocks(GenericFD* pGFD) const
 
     assert(fLength > 0 && (fLength & 0x1ff) == 0);
 
-    start = time(nil);
+    start = time(NULL);
 
     memset(blkBuf, 0, sizeof(blkBuf));
     pGFD->Rewind();
 
     for (length = fLength ; length > 0; length -= sizeof(blkBuf)) {
-        dierr = pGFD->Write(blkBuf, sizeof(blkBuf), nil);
+        dierr = pGFD->Write(blkBuf, sizeof(blkBuf), NULL);
         if (dierr != kDIErrNone) {
             WMSG1(" FormatBlocks: GFD write failed (err=%d)\n", dierr);
             return dierr;
@@ -2980,7 +2980,7 @@ DiskImg::FormatBlocks(GenericFD* pGFD) const
     }
     assert(length == 0);
 
-    end = time(nil);
+    end = time(NULL);
     WMSG1("FormatBlocks complete, time=%ld\n", end - start);
 
     return kDIErrNone;
@@ -3049,9 +3049,9 @@ DiskImg::AddNote(NoteType type, const char* fmt, ...)
 
     WMSG1("+++ adding note '%s'\n", buf);
 
-    if (fNotes == nil) {
+    if (fNotes == NULL) {
         fNotes = new char[len +1];
-        if (fNotes == nil) {
+        if (fNotes == NULL) {
             WMSG1("Unable to create notes[%d]\n", len+1);
             assert(false);
             return;
@@ -3060,7 +3060,7 @@ DiskImg::AddNote(NoteType type, const char* fmt, ...)
     } else {
         int existingLen = strlen(fNotes);
         char* newNotes = new char[existingLen + len +1];
-        if (newNotes == nil) {
+        if (newNotes == NULL) {
             WMSG1("Unable to create newNotes[%d]\n", existingLen+len+1);
             assert(false);
             return;
@@ -3078,7 +3078,7 @@ DiskImg::AddNote(NoteType type, const char* fmt, ...)
 const char*
 DiskImg::GetNotes(void) const
 {
-    if (fNotes == nil)
+    if (fNotes == NULL)
         return "";
     else
         return fNotes;
@@ -3106,7 +3106,7 @@ DiskImg::GetNibbleTrackOffset(long track) const
 /*
  * Return a new object with the appropriate DiskFS sub-class.
  *
- * If the image hasn't been analyzed, or was analyzed to no avail, "nil"
+ * If the image hasn't been analyzed, or was analyzed to no avail, "NULL"
  * is returned unless "allowUnknown" is set to "true".  In that case, a
  * DiskFSUnknown is returned.
  *
@@ -3116,7 +3116,7 @@ DiskImg::GetNibbleTrackOffset(long track) const
 DiskFS*
 DiskImg::OpenAppropriateDiskFS(bool allowUnknown)
 {
-    DiskFS* pDiskFS = nil;
+    DiskFS* pDiskFS = NULL;
 
     /*
      * Create an appropriate DiskFS object.
@@ -3335,7 +3335,7 @@ DiskImgLib::DIStrError(DIError dierr)
     if (dierr > 0) {
         const char* msg;
         msg = strerror(dierr);
-        if (msg != nil)
+        if (msg != NULL)
             return msg;
     }
 
@@ -3347,7 +3347,7 @@ DiskImgLib::DIStrError(DIError dierr)
      * to return this.
      *
      * An easier solution, should this present a problem for someone, would
-     * be to have the function return nil or "unknown error" when the
+     * be to have the function return NULL or "unknown error" when the
      * error value isn't recognized.  I'd recommend leaving it as-is for
      * debug builds, though, as it's helpful to know *which* error is not
      * recognized.

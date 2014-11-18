@@ -556,7 +556,7 @@ public:
 
     /*
      * Set up a progress callback to use when scanning a disk volume.  Pass
-     * nil for "func" to disable.
+     * NULL for "func" to disable.
      *
      * The callback function is expected to return "true" if all is well.
      * If it returns false, kDIErrCancelled will eventually come back.
@@ -1152,7 +1152,7 @@ public:
      * Pass in a full path to normalize, and a buffer to copy the output
      * into.  On entry "pNormalizedBufLen" holds the length of the buffer.
      * On exit, it holds the size of the buffer required to hold the
-     * normalized string.  If the buffer is nil or isn't big enough, no part
+     * normalized string.  If the buffer is NULL or isn't big enough, no part
      * of the normalized path will be copied into the buffer, and a specific
      * error (kDIErrDataOverrun) will be returned.
      */
@@ -1232,7 +1232,7 @@ public:
     // Return the "bare" volume name.  For formats where the volume name
     // is actually a number (e.g. DOS 3.3), this returns just the number.
     // For formats without a volume name or number (e.g. CP/M), this returns
-    // nil, indicating that any attempt to change the volume name will fail.
+    // NULL, indicating that any attempt to change the volume name will fail.
     virtual const char* GetBareVolumeName(void) const = 0;
 
     // Returns "false" if we only support read-only access to this FS type

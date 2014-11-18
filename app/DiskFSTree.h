@@ -23,8 +23,8 @@ public:
         fIncludeSubdirs = false;
         fExpandDepth = 0;
 
-        fpDiskFS = nil;
-        fpTargetData = nil;
+        fpDiskFS = NULL;
+        fpTargetData = NULL;
         LoadTreeImages();
     }
     virtual ~DiskFSTree(void) { FreeAllTargetData(); }

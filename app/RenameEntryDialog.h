@@ -30,8 +30,8 @@ public:
     {
         fFssep = '=';
         //fNewNameLimit = 0;
-        fpArchive = nil;
-        fpEntry = nil;
+        fpArchive = NULL;
+        fpEntry = NULL;
         fCanRenameFullPath = false;
         fCanChangeFssep = false;
     }

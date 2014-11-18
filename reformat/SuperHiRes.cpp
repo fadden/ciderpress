@@ -65,7 +65,7 @@ ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
     unsigned char* outBuf;
     int line;
 
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     /*
@@ -74,9 +74,9 @@ ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
      */
     outBuf = (unsigned char*) pDib->Create(outputWidth, outputHeight, 8,
                             kNumColorTables * kNumEntriesPerColorTable);
-    if (outBuf == nil) {
+    if (outBuf == NULL) {
         delete pDib;
-        pDib = nil;
+        pDib = NULL;
         goto bail;
     }
 
@@ -274,7 +274,7 @@ ReformatUnpackedSHR::Process(const ReformatHolder* pHolder,
     memcpy(&fScreen, pHolder->GetSourceBuf(part), sizeof(fScreen));
 
     pDib = SHRScreenToBitmap8(&fScreen);
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);
@@ -347,7 +347,7 @@ ReformatJEQSHR::Process(const ReformatHolder* pHolder,
     memcpy(&fScreen.colorTable, srcBuf + 0x7e00, 32);
 
     pDib = SHRScreenToBitmap8(&fScreen);
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);
@@ -417,7 +417,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
     const int kPWDataOffset = 0x222;
     unsigned char scb[kPWOutputLines];
     unsigned char colorTable[kNumEntriesPerColorTable * kColorTableEntrySize];
-    unsigned char* unpackBuf = nil;
+    unsigned char* unpackBuf = NULL;
     int retval = -1;
     int i, result;
 
@@ -442,7 +442,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
      * have 396 lines and only recognizes that many.
      */
     unpackBuf = new unsigned char[kPWOutputSize];
-    if (unpackBuf == nil)
+    if (unpackBuf == NULL)
         goto bail;
     memset(unpackBuf, 0, sizeof(unpackBuf));        // in case we fall short
 
@@ -461,7 +461,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
             pHolder->GetSourceLen(part)) == 0)
         {
             pDib = SHRScreenToBitmap8(&fScreen);
-            if (pDib == nil)
+            if (pDib == NULL)
                 goto bail;
             goto gotit;
         }
@@ -472,7 +472,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
         scb[i] = 0;     // 320 mode
     pDib = SHRDataToBitmap8(unpackBuf, scb, colorTable, kPixelBytesPerLine,
             kPWOutputLines, kOutputWidth, kPWOutputLines * 2);
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
 //gotit:
@@ -541,7 +541,7 @@ ReformatPackedSHR::Process(const ReformatHolder* pHolder,
     }
 
     pDib = SHRScreenToBitmap8(&fScreen);
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);
@@ -674,7 +674,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
     } else {
         pDib = SHRScreenToBitmap8(&fScreen);
     }
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);
@@ -714,7 +714,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
     const int kColorTableSize = kNumEntriesPerColorTable * kColorTableEntrySize;
     unsigned short masterMode;
     int numColorTables;
-    int* packedDataLen = nil;
+    int* packedDataLen = NULL;
     int retval = -1;
 
     if (srcLen < 256) {
@@ -809,13 +809,13 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
          */
         fPixelBytesPerLine = ((fPixelBytesPerLine + 7) / 8) * 8;
         fPixelStore = new unsigned char[fPixelBytesPerLine * fNumScanLines];
-        if (fPixelStore == nil) {
+        if (fPixelStore == NULL) {
             WMSG1(" APFSHR ERROR: alloc of %d bytes fPixelStore failed\n",
                 fPixelBytesPerLine * fNumScanLines);
             goto bail;
         }
         fSCBStore = new unsigned char[fNumScanLines];
-        if (fSCBStore == nil) {
+        if (fSCBStore == NULL) {
             WMSG1(" APFSHR ERROR: alloc of %d bytes fSCBStore failed\n",
                 fNumScanLines);
             goto bail;
@@ -828,7 +828,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
      * Get the per-scanline data.
      */
     packedDataLen = new int[fNumScanLines];
-    if (packedDataLen == nil)
+    if (packedDataLen == NULL)
         goto bail;
     for (i = 0; i < fNumScanLines; i++) {
         unsigned short mode;
@@ -1034,7 +1034,7 @@ Reformat3200SHR::Process(const ReformatHolder* pHolder,
     }
 
     pDib = SHR3200ToBitmap24();
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);
@@ -1058,16 +1058,16 @@ Reformat3200SHR::SHR3200ToBitmap24(void)
     RGBTRIPLE* rgbBuf;
     const unsigned char* pPixels = fScreen.pixels;
 
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     /*
      * Set up a DIB to hold the data.
      */
     rgbBuf = (RGBTRIPLE*) pDib->Create(kOutputWidth, kOutputHeight, 24, 0);
-    if (rgbBuf == nil) {
+    if (rgbBuf == NULL) {
         delete pDib;
-        pDib = nil;
+        pDib = NULL;
         goto bail;
     }
 
@@ -1173,7 +1173,7 @@ Reformat3201SHR::Process(const ReformatHolder* pHolder,
     const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
-    unsigned char* tmpBuf = nil;
+    unsigned char* tmpBuf = NULL;
     int retval = -1;
 
     if (srcLen < 16 || srcLen > kExtTotalSize) {
@@ -1214,7 +1214,7 @@ Reformat3201SHR::Process(const ReformatHolder* pHolder,
         goto bail;
 
     pDib = SHR3200ToBitmap24();
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);

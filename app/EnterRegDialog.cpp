@@ -27,7 +27,7 @@ BOOL
 EnterRegDialog::OnInitDialog(void)
 {
     //CWnd* pWnd = GetDlgItem(IDOK);
-    //ASSERT(pWnd != nil);
+    //ASSERT(pWnd != NULL);
     //pWnd->EnableWindow(false);
 
     fMyEdit.ReplaceDlgCtrl(this, IDC_REGENTER_REG);
@@ -37,13 +37,13 @@ EnterRegDialog::OnInitDialog(void)
        straight into the registry */
     CEdit* pEdit;
     pEdit = (CEdit*) GetDlgItem(IDC_REGENTER_USER);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(120);
     pEdit = (CEdit*) GetDlgItem(IDC_REGENTER_COMPANY);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(120);
     pEdit = (CEdit*) GetDlgItem(IDC_REGENTER_REG);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(40);
 
     return CDialog::OnInitDialog();
@@ -102,28 +102,28 @@ EnterRegDialog::HandleEditChange(int editID, int crcID)
      * Update the CRC for the modified control.
      */
     pEdit = (CEdit*) GetDlgItem(editID);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->GetWindowText(userStr);
     unsigned short crc;
     crc = gMyApp.fRegistry.ComputeStringCRC(userStr);
     userStr.Format("%04X", crc);
     pWnd = GetDlgItem(crcID);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(userStr);
 
     /*
      * Update the OK button.
      */
     pEdit = (CEdit*) GetDlgItem(IDC_REGENTER_USER);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->GetWindowText(userStr);
 
     pEdit = (CEdit*) GetDlgItem(IDC_REGENTER_REG);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->GetWindowText(regStr);
 
     pWnd = GetDlgItem(IDOK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(!userStr.IsEmpty() && !regStr.IsEmpty());
 }
 

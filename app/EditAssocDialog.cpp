@@ -32,7 +32,7 @@ EditAssocDialog::OnInitDialog(void)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
 
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
     //pListView->ModifyStyleEx(0, LVS_EX_CHECKBOXES);
     ListView_SetExtendedListViewStyleEx(pListView->m_hWnd,
         LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES);
@@ -49,7 +49,7 @@ EditAssocDialog::OnInitDialog(void)
      * Initialize this before DDX stuff happens.  If the caller didn't
      * provide a set, load our own.
      */
-    if (fOurAssociations == nil) {
+    if (fOurAssociations == NULL) {
         fOurAssociations = new bool[gMyApp.fRegistry.GetNumFileAssocs()];
         Setup(true);
     } else {
@@ -73,9 +73,9 @@ EditAssocDialog::Setup(bool loadAssoc)
     WMSG0("Setup!\n");
 
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
 
-    ASSERT(fOurAssociations != nil);
+    ASSERT(fOurAssociations != NULL);
 
     /* two columns */
     CRect rect;
@@ -115,8 +115,8 @@ EditAssocDialog::DoDataExchange(CDataExchange* pDX)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
 
-    ASSERT(fOurAssociations != nil);
-    if (fOurAssociations == nil)
+    ASSERT(fOurAssociations != NULL);
+    if (fOurAssociations == NULL)
         return;
 
     int num = gMyApp.fRegistry.GetNumFileAssocs();

@@ -199,20 +199,20 @@ MainWindow::MainWindow()
 {
     static const WCHAR kAppName[] = L"CiderPress";
 
-    fpContentList = nil;
-    fpOpenArchive = nil;
-    //fpSelSet = nil;
-    fpActionProgress = nil;
-    fpProgressCounter = nil;
-    fpFindDialog = nil;
+    fpContentList = NULL;
+    fpOpenArchive = NULL;
+    //fpSelSet = NULL;
+    fpActionProgress = NULL;
+    fpProgressCounter = NULL;
+    fpFindDialog = NULL;
 
     fFindDown = true;
     fFindMatchCase = false;
     fFindMatchWholeWord = false;
 
     fAbortPrinting = false;
-    fhDevMode = nil;
-    fhDevNames = nil;
+    fhDevMode = NULL;
+    fhDevNames = NULL;
     fNeedReopen = false;
 
     CString wndClass = AfxRegisterWndClass(
@@ -312,7 +312,7 @@ MainWindow::DoIdle(void)
      * be nice to have a way to prevent it, but for now we'll just shove
      * things back where they're supposed to be.
      */
-    if (fpContentList != nil) {
+    if (fpContentList != NULL) {
         /* get the current column 0 width, with current user adjustments */
         fpContentList->ExportColumnWidths();
         int width = fPreferences.GetColumnLayout()->GetColumnWidth(0);
@@ -332,7 +332,7 @@ MainWindow::DoIdle(void)
      * Put an asterisk at the end of the title if we have an open archive
      * and it has pending modifications.  Remove it if nothing is pending.
      */
-    if (fpOpenArchive != nil) {
+    if (fpOpenArchive != NULL) {
         CString title;
         int len;
 
@@ -368,11 +368,11 @@ MainWindow::ProcessCommandLine(void)
      * Get the command line and break it down into an argument vector.
      */
     const WCHAR* cmdLine = ::GetCommandLine();
-    if (cmdLine == nil || wcslen(cmdLine) == 0)
+    if (cmdLine == NULL || wcslen(cmdLine) == 0)
         return;
 
     WCHAR* mangle = wcsdup(cmdLine);
-    if (mangle == nil)
+    if (mangle == NULL)
         return;
 
     WMSG1("Mangling '%ls'\n", mangle);
@@ -388,8 +388,8 @@ MainWindow::ProcessCommandLine(void)
     /*
      * Figure out what the arguments are.
      */
-    const WCHAR* filename = nil;
-    const WCHAR* dispName = nil;
+    const WCHAR* filename = NULL;
+    const WCHAR* dispName = NULL;
     int filterIndex = kFilterIndexGeneric;
     bool temp = false;
 
@@ -438,15 +438,15 @@ MainWindow::ProcessCommandLine(void)
             break;
         }
     }
-    if (argc != 1 && filename == nil) {
+    if (argc != 1 && filename == NULL) {
         WMSG0("WARNING: args specified but no filename found\n");
     }
 
     WMSG0("Argument handling:\n");
     WMSG3(" index=%d temp=%d filename='%ls'\n",
-        filterIndex, temp, filename == nil ? L"(null)" : filename);
+        filterIndex, temp, filename == NULL ? L"(null)" : filename);
 
-    if (filename != nil) {
+    if (filename != NULL) {
         PathName path(filename);
         CString ext = path.GetExtension();
 
@@ -461,7 +461,7 @@ MainWindow::ProcessCommandLine(void)
                 fOpenArchivePathName = path.GetFileName();
             else
                 fOpenArchivePathName = filename;
-            if (dispName != nil)
+            if (dispName != NULL)
                 fOpenArchivePathName = dispName;
             SetCPTitle(fOpenArchivePathName, fpOpenArchive);
         }
@@ -716,7 +716,7 @@ MainWindow::OnPaint(void)
      * If there's no control in the window, fill in the client area with
      * what looks like an empty MDI client rect.
      */
-    if (fpContentList == nil) {
+    if (fpContentList == NULL) {
         DrawEmptyClientArea(&dc, clientRect);
     }
 
@@ -746,7 +746,7 @@ MainWindow::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 
     wparam = nFlags | (zDelta << 16);
     lparam = pt.x | (pt.y << 16);
-    if (fpContentList != nil)
+    if (fpContentList != NULL)
         fpContentList->SendMessage(WM_MOUSEWHEEL, wparam, lparam);
     return CWnd::OnMouseWheel(nFlags, zDelta, pt);
 //  return TRUE;
@@ -759,7 +759,7 @@ MainWindow::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 void
 MainWindow::OnSetFocus(CWnd* /*pOldWnd*/)
 {
-    if (fpContentList != nil) {
+    if (fpContentList != NULL) {
         WMSG0("Returning focus to ContentList\n");
         fpContentList->SetFocus();
     }
@@ -804,7 +804,7 @@ MainWindow::OnEditPreferences(void)
     ColumnLayout* pColLayout = fPreferences.GetColumnLayout();
 
     /* pull any user header tweaks out of list so we can configure prefs */
-    if (fpContentList != nil)
+    if (fpContentList != NULL)
         fpContentList->ExportColumnWidths();
 
     /* set up PrefsGeneralPage */
@@ -909,7 +909,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
             pColLayout->SetColumnWidth(i, 0);
         }
     }
-    if (fpContentList != nil)
+    if (fpContentList != NULL)
         fpContentList->NewColumnWidths();
     fPreferences.SetPrefBool(kPrMimicShrinkIt,
         pPS->fGeneralPage.fMimicShrinkIt != 0);
@@ -935,7 +935,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
     fPreferences.SetPrefBool(kPrPasteJunkPaths, pPS->fGeneralPage.fPasteJunkPaths != 0);
     fPreferences.SetPrefBool(kPrBeepOnSuccess, pPS->fGeneralPage.fBeepOnSuccess != 0);
 
-    if (pPS->fGeneralPage.fOurAssociations != nil) {
+    if (pPS->fGeneralPage.fOurAssociations != NULL) {
         WMSG0("NEW ASSOCIATIONS!\n");
 
         for (int assoc = 0; assoc < gMyApp.fRegistry.GetNumFileAssocs(); assoc++)
@@ -946,7 +946,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
 
         /* delete them so, if they hit "apply" again, we only update once */
         delete[] pPS->fGeneralPage.fOurAssociations;
-        pPS->fGeneralPage.fOurAssociations = nil;
+        pPS->fGeneralPage.fOurAssociations = NULL;
     }
 
     fPreferences.SetPrefBool(kPrQueryImageFormat, pPS->fDiskImagePage.fQueryImageFormat != 0);
@@ -1002,14 +1002,14 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
 //  }
 
     /* allow open archive to track changes to preferences */
-    if (fpOpenArchive != nil)
+    if (fpOpenArchive != NULL)
         fpOpenArchive->PreferencesChanged();
 
     if (mustReload) {
         WMSG0("Preferences apply requesting GA/CL reload\n");
-        if (fpOpenArchive != nil)
+        if (fpOpenArchive != NULL)
             fpOpenArchive->Reload();
-        if (fpContentList != nil)
+        if (fpContentList != NULL)
             fpContentList->Reload();
     }
 
@@ -1027,7 +1027,7 @@ MainWindow::OnEditFind(void)
 {
     DWORD flags = 0;
 
-    if (fpFindDialog != nil)
+    if (fpFindDialog != NULL)
         return;
 
     if (fFindDown)
@@ -1048,7 +1048,7 @@ MainWindow::OnEditFind(void)
 void
 MainWindow::OnUpdateEditFind(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpOpenArchive != nil);
+    pCmdUI->Enable(fpOpenArchive != NULL);
 }
 
 /*
@@ -1057,14 +1057,14 @@ MainWindow::OnUpdateEditFind(CCmdUI* pCmdUI)
 LRESULT
 MainWindow::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
 {
-    assert(fpFindDialog != nil);
+    assert(fpFindDialog != NULL);
 
     fFindDown = (fpFindDialog->SearchDown() != 0);
     fFindMatchCase = (fpFindDialog->MatchCase() != 0);
     fFindMatchWholeWord = (fpFindDialog->MatchWholeWord() != 0);
 
     if (fpFindDialog->IsTerminating()) {
-        fpFindDialog = nil;
+        fpFindDialog = NULL;
         return 0;
     }
 
@@ -1093,7 +1093,7 @@ MainWindow::OnEditSort(UINT id)
     ASSERT(id >= IDM_SORT_PATHNAME && id <= IDM_SORT_ORIGINAL);
     fPreferences.GetColumnLayout()->SetSortColumn(id - IDM_SORT_PATHNAME);
     fPreferences.GetColumnLayout()->SetAscending(true);
-    if (fpContentList != nil)
+    if (fpContentList != NULL)
         fpContentList->NewSortOrder();
 }
 void
@@ -1163,7 +1163,7 @@ MainWindow::OnHelpAbout(void)
      * User could've changed registration.  If we're showing the registered
      * user name in the title bar, update it.
      */
-    if (fpOpenArchive == nil)
+    if (fpOpenArchive == NULL)
         SetCPTitle();
 }
 
@@ -1202,7 +1202,7 @@ MainWindow::OnFileNewArchive(void)
     }
 
     pOpenArchive = new NufxArchive;
-    errStr = pOpenArchive->New(filename, nil);
+    errStr = pOpenArchive->New(filename, NULL);
     if (!errStr.IsEmpty()) {
         CString failed;
         failed.LoadString(IDS_FAILED);
@@ -1299,7 +1299,7 @@ MainWindow::DoOpenArchive(const WCHAR* pathName, const WCHAR* ext,
         SetCPTitle(fOpenArchivePathName, fpOpenArchive);
     } else {
         /* some failures will close an open archive */
-        //if (fpOpenArchive == nil)
+        //if (fpOpenArchive == NULL)
         //  SetCPTitle();
     }
 }
@@ -1318,7 +1318,7 @@ MainWindow::OnFileReopen(void)
 void
 MainWindow::OnUpdateFileReopen(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpOpenArchive != nil);
+    pCmdUI->Enable(fpOpenArchive != NULL);
 }
 
 
@@ -1333,7 +1333,7 @@ MainWindow::OnFileSave(void)
 {
     CString errMsg;
 
-    if (fpOpenArchive == nil)
+    if (fpOpenArchive == NULL)
         return;
 
     {
@@ -1349,7 +1349,7 @@ MainWindow::OnFileSave(void)
 void
 MainWindow::OnUpdateFileSave(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpOpenArchive != nil && fpOpenArchive->IsModified());
+    pCmdUI->Enable(fpOpenArchive != NULL && fpOpenArchive->IsModified());
 }
 
 /*
@@ -1365,7 +1365,7 @@ MainWindow::OnFileClose(void)
 void
 MainWindow::OnUpdateFileClose(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpOpenArchive != nil);
+    pCmdUI->Enable(fpOpenArchive != NULL);
 }
 
 
@@ -1375,8 +1375,8 @@ MainWindow::OnUpdateFileClose(CCmdUI* pCmdUI)
 void
 MainWindow::OnFileArchiveInfo(void)
 {
-    ArchiveInfoDialog* pDlg = nil;
-    ASSERT(fpOpenArchive != nil);
+    ArchiveInfoDialog* pDlg = NULL;
+    ASSERT(fpOpenArchive != NULL);
 
     switch (fpOpenArchive->GetArchiveKind()) {
     case GenericArchive::kArchiveNuFX:
@@ -1404,7 +1404,7 @@ MainWindow::OnFileArchiveInfo(void)
 void
 MainWindow::OnUpdateFileArchiveInfo(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil);
+    pCmdUI->Enable(fpContentList != NULL);
 }
 
 /*
@@ -1418,7 +1418,7 @@ MainWindow::OnFilePrint(void)
 void
 MainWindow::OnUpdateFilePrint(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil && fpContentList->GetItemCount() > 0);
+    pCmdUI->Enable(fpContentList != NULL && fpContentList->GetItemCount() > 0);
 }
 
 /*
@@ -1478,13 +1478,13 @@ MainWindow::OnFileExit(void)
 void
 MainWindow::OnEditSelectAll(void)
 {
-    ASSERT(fpContentList != nil);
+    ASSERT(fpContentList != NULL);
     fpContentList->SelectAll();
 }
 void
 MainWindow::OnUpdateEditSelectAll(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil);
+    pCmdUI->Enable(fpContentList != NULL);
 }
 
 /*
@@ -1493,13 +1493,13 @@ MainWindow::OnUpdateEditSelectAll(CCmdUI* pCmdUI)
 void
 MainWindow::OnEditInvertSelection(void)
 {
-    ASSERT(fpContentList != nil);
+    ASSERT(fpContentList != NULL);
     fpContentList->InvertSelection();
 }
 void
 MainWindow::OnUpdateEditInvertSelection(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(fpContentList != nil);
+    pCmdUI->Enable(fpContentList != NULL);
 }
 
 
@@ -1508,24 +1508,24 @@ MainWindow::OnUpdateEditInvertSelection(CCmdUI* pCmdUI)
  * for the double-click handler, but also used for "action" menu items
  * that insist on operating on a single menu item (edit prefs, create subdir).
  *
- * Returns nil if the item couldn't be found or if more than one item was
+ * Returns NULL if the item couldn't be found or if more than one item was
  * selected.
  */
 GenericEntry*
 MainWindow::GetSelectedItem(ContentList* pContentList)
 {
     if (pContentList->GetSelectedCount() != 1)
-        return nil;
+        return NULL;
 
     POSITION posn;
     posn = pContentList->GetFirstSelectedItemPosition();
-    if (posn == nil) {
+    if (posn == NULL) {
         ASSERT(false);
-        return nil;
+        return NULL;
     }
     int num = pContentList->GetNextSelectedItem(/*ref*/ posn);
     GenericEntry* pEntry = (GenericEntry*) pContentList->GetItemData(num);
-    if (pEntry == nil) {
+    if (pEntry == NULL) {
         WMSG1(" Glitch: couldn't find entry %d\n", num);
         ASSERT(false);
     }
@@ -1544,7 +1544,7 @@ MainWindow::HandleDoubleClick(void)
 {
     bool handled = false;
 
-    ASSERT(fpContentList != nil);
+    ASSERT(fpContentList != NULL);
     if (fpContentList->GetSelectedCount() == 0) {
         /* nothing selected, they double-clicked outside first column */
         WMSG0("Double-click but nothing selected\n");
@@ -1560,7 +1560,7 @@ MainWindow::HandleDoubleClick(void)
      * Find the GenericEntry that corresponds to this item.
      */
     GenericEntry* pEntry = GetSelectedItem(fpContentList);
-    if (pEntry == nil)
+    if (pEntry == NULL)
         return;
 
     WMSG1(" Double-click GOT '%ls'\n", pEntry->GetPathName());
@@ -1593,12 +1593,12 @@ MainWindow::HandleDoubleClick(void)
      */
     CString extViewerExts;
     extViewerExts = fPreferences.GetPrefString(kPrExtViewerExts);
-    if (ext != nil && MatchSemicolonList(extViewerExts, ext+1)) {
+    if (ext != NULL && MatchSemicolonList(extViewerExts, ext+1)) {
         WMSG1(" Launching external viewer for '%ls'\n", ext);
         TmpExtractForExternal(pEntry);
         handled = true;
     } else if (pEntry->GetRecordKind() == GenericEntry::kRecordKindFile) {
-        if ((ext != nil && (
+        if ((ext != NULL && (
                 wcsicmp(ext, L".shk") == 0 ||
                 wcsicmp(ext, L".sdk") == 0 ||
                 wcsicmp(ext, L".bxy") == 0)) ||
@@ -1608,7 +1608,7 @@ MainWindow::HandleDoubleClick(void)
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeNuFX);
             handled = true;
         } else
-        if ((ext != nil && (
+        if ((ext != NULL && (
                 wcsicmp(ext, L".bny") == 0 ||
                 wcsicmp(ext, L".bqy") == 0)) ||
             (fileType == 0xe0 && auxType == 0x8000))
@@ -1617,7 +1617,7 @@ MainWindow::HandleDoubleClick(void)
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeBinaryII);
             handled = true;
         } else
-        if ((ext != nil && (
+        if ((ext != NULL && (
                 wcsicmp(ext, L".acu") == 0)) ||
             (fileType == 0xe0 && auxType == 0x8001))
         {
@@ -1693,7 +1693,7 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
     FILE* fp;
 
     fp = _wfopen(nameBuf, L"wb");
-    if (fp != nil) {
+    if (fp != NULL) {
         WMSG2("Extracting to '%ls' (unique=%d)\n", nameBuf, unique);
         result = pEntry->ExtractThreadToFile(threadKind, fp,
                     GenericEntry::kConvertEOLOff, GenericEntry::kConvertHAOff,
@@ -1783,7 +1783,7 @@ MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
     FILE* fp;
 
     fp = _wfopen(nameBuf, L"wb");
-    if (fp != nil) {
+    if (fp != NULL) {
         fDeleteList.Add(nameBuf);   // second file created by fopen
         WMSG2("Extracting to '%ls' (unique=%d)\n", nameBuf, unique);
         result = pEntry->ExtractThreadToFile(GenericEntry::kDataThread, fp,
@@ -1826,7 +1826,7 @@ MainWindow::OnRtClkDefault(void)
 {
     int idx;
 
-    ASSERT(fpContentList != nil);
+    ASSERT(fpContentList != NULL);
 
     idx = fpContentList->GetRightClickItem();
     ASSERT(idx != -1);
@@ -1854,7 +1854,7 @@ MainWindow::OnRtClkDefault(void)
 void
 MainWindow::SetProgressBegin(void)
 {
-    if (fpActionProgress != nil)
+    if (fpActionProgress != NULL)
         fpActionProgress->SetProgress(0);
     else
         fStatusBar.SetPaneText(kProgressPane, L"--%");
@@ -1870,11 +1870,11 @@ MainWindow::SetProgressUpdate(int percent, const WCHAR* oldName,
 {
     int status = IDOK;
 
-    if (fpActionProgress != nil) {
+    if (fpActionProgress != NULL) {
         status = fpActionProgress->SetProgress(percent);
-        if (oldName != nil)
+        if (oldName != NULL)
             fpActionProgress->SetArcName(oldName);
-        if (newName != nil)
+        if (newName != NULL)
             fpActionProgress->SetFileName(newName);
     } else {
         WCHAR buf[8];
@@ -1894,7 +1894,7 @@ MainWindow::SetProgressUpdate(int percent, const WCHAR* oldName,
 void
 MainWindow::SetProgressEnd(void)
 {
-    if (fpActionProgress != nil)
+    if (fpActionProgress != NULL)
         fpActionProgress->SetProgress(100);
     else
         fStatusBar.SetPaneText(kProgressPane, L"");
@@ -1918,11 +1918,11 @@ MainWindow::SetProgressCounter(const WCHAR* str, long val)
     /* if the main window is enabled, user could activate menus */
     ASSERT(!IsWindowEnabled());
 
-    if (fpProgressCounter != nil) {
+    if (fpProgressCounter != NULL) {
         //WMSG2("SetProgressCounter '%ls' %d\n", str, val);
         CString msg;
 
-        if (str != nil)
+        if (str != NULL)
             fpProgressCounter->SetCounterFormat(str);
         fpProgressCounter->SetCount((int) val);
     } else {
@@ -1940,7 +1940,7 @@ MainWindow::SetProgressCounter(const WCHAR* str, long val)
     }
     //EventPause(10);       // DEBUG DEBUG
 
-    if (fpProgressCounter != nil)
+    if (fpProgressCounter != NULL)
         return !fpProgressCounter->GetCancel();
     else
         return true;
@@ -2077,7 +2077,7 @@ MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
 {
     GenericArchive::OpenResult openResult;
     int result = -1;
-    GenericArchive* pOpenArchive = nil;
+    GenericArchive* pOpenArchive = NULL;
     int origFilterIndex = filterIndex;
     CString errStr, appName;
 
@@ -2152,7 +2152,7 @@ try_again:
             goto bail;
         } else if (openResult == GenericArchive::kResultFileArchive) {
             delete pOpenArchive;
-            pOpenArchive = nil;
+            pOpenArchive = NULL;
 
             if (wcsicmp(extension, L"zip") == 0) {
                 errStr = "ZIP archives with multiple files are not supported.";
@@ -2201,11 +2201,11 @@ try_again:
 
     SwitchContentList(pOpenArchive);
 
-    pOpenArchive = nil;
+    pOpenArchive = NULL;
     result = 0;
 
 bail:
-    if (pOpenArchive != nil) {
+    if (pOpenArchive != NULL) {
         ASSERT(result != 0);
         delete pOpenArchive;
     }
@@ -2238,7 +2238,7 @@ MainWindow::DoOpenVolume(CString drive, bool readOnly)
     /* close existing archive */
     CloseArchive();
 
-    GenericArchive* pOpenArchive = nil;
+    GenericArchive* pOpenArchive = NULL;
     pOpenArchive = new DiskArchive;
     {
         CWaitCursor waitc;
@@ -2257,7 +2257,7 @@ MainWindow::DoOpenVolume(CString drive, bool readOnly)
 
     // success!
     SwitchContentList(pOpenArchive);
-    pOpenArchive = nil;
+    pOpenArchive = NULL;
     fOpenArchivePathName = drive;
     result = 0;
 
@@ -2265,7 +2265,7 @@ MainWindow::DoOpenVolume(CString drive, bool readOnly)
     SetCPTitle(fOpenArchivePathName, fpOpenArchive);
 
 bail:
-    if (pOpenArchive != nil) {
+    if (pOpenArchive != NULL) {
         ASSERT(result != 0);
         delete pOpenArchive;
     }
@@ -2279,7 +2279,7 @@ bail:
 void
 MainWindow::ReopenArchive(void)
 {
-    if (fpOpenArchive == nil) {
+    if (fpOpenArchive == NULL) {
         ASSERT(false);
         return;
     }
@@ -2287,7 +2287,7 @@ MainWindow::ReopenArchive(void)
     /* clear the flag, regardless of success or failure */
     fNeedReopen = false;
 
-    GenericArchive* pOpenArchive = nil;
+    GenericArchive* pOpenArchive = NULL;
     CString pathName = fpOpenArchive->GetPathName();
     bool readOnly = fpOpenArchive->IsReadOnly();
     GenericArchive::ArchiveKind archiveKind = fpOpenArchive->GetArchiveKind();
@@ -2326,7 +2326,7 @@ MainWindow::ReopenArchive(void)
 
     WMSG0(" Reopen was successful\n");
     SwitchContentList(pOpenArchive);
-    pOpenArchive = nil;
+    pOpenArchive = NULL;
     SetCPTitle(pathName, fpOpenArchive);
 
 bail:
@@ -2339,7 +2339,7 @@ bail:
 bool
 MainWindow::IsOpenPathName(const WCHAR* path)
 {
-    if (fpOpenArchive == nil)
+    if (fpOpenArchive == NULL)
         return false;
 
     if (wcsicmp(path, fpOpenArchive->GetPathName()) == 0)
@@ -2356,7 +2356,7 @@ MainWindow::IsOpenPathName(const WCHAR* path)
 void
 MainWindow::SwitchContentList(GenericArchive* pOpenArchive)
 {
-    assert(pOpenArchive != nil);
+    assert(pOpenArchive != NULL);
 
     /*
      * We've got an archive opened successfully.  If we already had one
@@ -2365,11 +2365,11 @@ MainWindow::SwitchContentList(GenericArchive* pOpenArchive)
      * something that might fail, like flush changes, we should've done
      * that before getting this far to avoid confusion.)
      */
-    if (fpOpenArchive != nil)
+    if (fpOpenArchive != NULL)
         CloseArchive();
 
-    ASSERT(fpOpenArchive == nil);
-    ASSERT(fpContentList == nil);
+    ASSERT(fpOpenArchive == NULL);
+    ASSERT(fpContentList == NULL);
 
     /*
      * Without this we get an assertion failure in CImageList::Attach if we
@@ -2410,11 +2410,11 @@ MainWindow::SwitchContentList(GenericArchive* pOpenArchive)
 void
 MainWindow::CloseArchiveWOControls(void)
 {
-    if (fpOpenArchive != nil) {
+    if (fpOpenArchive != NULL) {
         //fpOpenArchive->Close();
         WMSG0("Deleting OpenArchive\n");
         delete fpOpenArchive;
-        fpOpenArchive = nil;
+        fpOpenArchive = NULL;
     }
 }
 
@@ -2428,10 +2428,10 @@ MainWindow::CloseArchive(void)
     CWaitCursor waitc;  // closing large compressed archive can be slow
 
     // destroy the ContentList
-    if (fpContentList != nil) {
+    if (fpContentList != NULL) {
         WMSG0("Destroying ContentList\n");
         fpContentList->DestroyWindow(); // auto-cleanup invokes "delete"
-        fpContentList = nil;
+        fpContentList = NULL;
     }
 
     // destroy the GenericArchive
@@ -2452,7 +2452,7 @@ MainWindow::CloseArchive(void)
 void
 MainWindow::SetCPTitle(const WCHAR* pathname, GenericArchive* pOpenArchive)
 {
-    ASSERT(pathname != nil);
+    ASSERT(pathname != NULL);
     CString title;
     CString appName;
     CString archiveDescription;
@@ -2513,7 +2513,7 @@ MainWindow::GetPrintTitle(void)
     CString archiveDescription;
     CString appName;
 
-    if (fpOpenArchive == nil) {
+    if (fpOpenArchive == NULL) {
         ASSERT(false);
         return title;
     }

@@ -37,7 +37,7 @@ RenameVolumeDialog::OnInitDialog(void)
     CTreeCtrl* pTree = (CTreeCtrl*) GetDlgItem(IDC_RENAMEVOL_TREE);
     DiskImgLib::DiskFS* pDiskFS = fpArchive->GetDiskFS();
 
-    ASSERT(pTree != nil);
+    ASSERT(pTree != NULL);
 
     fDiskFSTree.fIncludeSubdirs = false;
     fDiskFSTree.fExpandDepth = -1;
@@ -51,7 +51,7 @@ RenameVolumeDialog::OnInitDialog(void)
 
     /* select the default text and set the focus */
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_RENAMEVOL_NEW);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetSel(0, -1);
     pEdit->SetFocus();
 
@@ -84,7 +84,7 @@ RenameVolumeDialog::DoDataExchange(CDataExchange* pDX)
 
         HTREEITEM selected;
         selected = pTree->GetSelectedItem();
-        if (selected == nil) {
+        if (selected == NULL) {
             errMsg = "Please select a disk to rename.";
             MessageBox(errMsg, appName, MB_OK);
             pDX->Fail();
@@ -142,7 +142,7 @@ RenameVolumeDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
     CString newText;
 
     selected = pTree->GetSelectedItem();
-    if (selected != nil) {
+    if (selected != NULL) {
         DiskFSTree::TargetData* pTargetData;
         pTargetData = (DiskFSTree::TargetData*) pTree->GetItemData(selected);
         if (pTargetData->selectable) {
@@ -153,7 +153,7 @@ RenameVolumeDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
     }
     
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_RENAMEVOL_NEW);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetWindowText(newText);
     pEdit->SetSel(0, -1);
 

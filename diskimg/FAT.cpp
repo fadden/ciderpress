@@ -375,9 +375,9 @@ DIError
 A2FileFAT::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
-    A2FDFAT* pOpenFile = nil;
+    A2FDFAT* pOpenFile = NULL;
 
-    if (fpOpenFile != nil)
+    if (fpOpenFile != NULL)
         return kDIErrAlreadyOpen;
     if (rsrcFork)
         return kDIErrForkNotFound;
@@ -411,11 +411,11 @@ A2FDFAT::Read(void* buf, size_t len, size_t* pActual)
 
     /* don't allow them to read past the end of the file */
     if (fOffset + (long)len > pFile->fLength) {
-        if (pActual == nil)
+        if (pActual == NULL)
             return kDIErrDataUnderrun;
         len = (size_t) (pFile->fLength - fOffset);
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = len;
 
     memcpy(buf, pFile->GetFakeFileBuf(), len);

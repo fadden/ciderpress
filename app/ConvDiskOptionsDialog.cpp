@@ -37,13 +37,13 @@ BOOL
 ConvDiskOptionsDialog::OnInitDialog(void)
 {
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_CONVDISK_VOLNAME);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(kProDOSVolNameMax);
 
     ResetSizeControls();
 
     pEdit = (CEdit*) GetDlgItem(IDC_CONVDISK_SPECIFY_EDIT);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(5);     // enough for "65535"
     pEdit->EnableWindow(FALSE);
 
@@ -141,14 +141,14 @@ ConvDiskOptionsDialog::ResetSizeControls(void)
     WMSG0("Resetting size controls\n");
     spaceReq.Format(IDS_CONVDISK_SPACEREQ, "(unknown)");
     pWnd = GetDlgItem(IDC_CONVDISK_SPACEREQ);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(spaceReq);
 
 #if 0
     int i;
     for (i = 0; i < NELEM(gDiskSizes); i++) {
         pWnd = GetDlgItem(gDiskSizes[i].ctrlID);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->EnableWindow(TRUE);
     }
 #endif
@@ -177,7 +177,7 @@ ConvDiskOptionsDialog::LimitSizeControls(long totalBlocks, long blocksUsed)
     spaceReq.Format(IDS_CONVDISK_SPACEREQ, sizeStr);
 
     pWnd = GetDlgItem(IDC_CONVDISK_SPACEREQ);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(spaceReq);
 
     NewDiskSize::EnableButtons_ProDOS(this, totalBlocks, blocksUsed);
@@ -190,7 +190,7 @@ ConvDiskOptionsDialog::LimitSizeControls(long totalBlocks, long blocksUsed)
 
         CButton* pButton;
         pButton = (CButton*) GetDlgItem(gDiskSizes[i].ctrlID);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         if (usedWithoutBitmap + GetNumBitmapBlocks(gDiskSizes[i].blocks) <=
             gDiskSizes[i].blocks)
         {
@@ -303,7 +303,7 @@ ConvDiskOptionsDialog::OnCompute(void)
         result = pMain->GetOpenArchive()->XferSelection(pActionProgress, &selSet,
                     pActionProgress, &xferOpts);
         pActionProgress->Cleanup(this);
-        pMain->SetActionProgressDialog(nil);
+        pMain->SetActionProgressDialog(NULL);
 
         if (result == GenericArchive::kXferOK) {
             DiskFS* pDiskFS;
@@ -314,7 +314,7 @@ ConvDiskOptionsDialog::OnCompute(void)
             WMSG0("SUCCESS\n");
 
             pDiskFS = ((DiskArchive*) xferOpts.fTarget)->GetDiskFS();
-            ASSERT(pDiskFS != nil);
+            ASSERT(pDiskFS != NULL);
 
             dierr = pDiskFS->GetFreeSpaceCount(&totalBlocks, &freeBlocks,
                         &unitSize);

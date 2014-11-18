@@ -236,7 +236,7 @@ ReformatDisasm65xxx::OutputMonitor8(const unsigned char* srcBuf, long srcLen,
         const char* callName;
 
         callName = NiftyList::LookupP8MLI(srcBuf[3]);
-        if (callName == nil)
+        if (callName == NULL)
             callName = "(Unknown P8 MLI)";
         PrintMonitor8Line(opCode, addrMode, addr, srcBuf, bytesUsed, callName);
         BufPrintf("%04X-   %02X                $%02X",
@@ -253,9 +253,9 @@ ReformatDisasm65xxx::OutputMonitor8(const unsigned char* srcBuf, long srcLen,
         memset(tmpBuf, 0, kMaxByteConsumption);
         memcpy(tmpBuf, srcBuf, srcLen);
 
-        PrintMonitor8Line(opCode, addrMode, addr, tmpBuf, bytesUsed, nil);
+        PrintMonitor8Line(opCode, addrMode, addr, tmpBuf, bytesUsed, NULL);
     } else {
-        PrintMonitor8Line(opCode, addrMode, addr, srcBuf, bytesUsed, nil);
+        PrintMonitor8Line(opCode, addrMode, addr, srcBuf, bytesUsed, NULL);
     }
 
 
@@ -340,7 +340,7 @@ ReformatDisasm65xxx::PrintMonitor8Line(OpCode opCode, AddrMode addrMode,
 
     case kAddrAbs:
         cp += sprintf(cp, "   $%02X%02X", byte2, byte1);
-        if (comment == nil)
+        if (comment == NULL)
             comment = NiftyList::Lookup00Addr(byte1 | byte2 << 8);
         break;
     case kAddrAbsIndexX:
@@ -386,7 +386,7 @@ ReformatDisasm65xxx::PrintMonitor8Line(OpCode opCode, AddrMode addrMode,
     }
 
     assert(strlen(cp)+1 < sizeof(lineBuf));
-    if (comment == nil)
+    if (comment == NULL)
         BufPrintf("%s", lineBuf);
     else
         BufPrintf("%s    %s", lineBuf, comment);
@@ -422,7 +422,7 @@ ReformatDisasm65xxx::OutputMonitor16(const unsigned char* srcBuf, long srcLen,
     if (Bank(addr) == 0 && IsP8Call(srcBuf, srcLen)) {
         /* print and skip P8 inline call stuff */
         callName = NiftyList::LookupP8MLI(srcBuf[3]);
-        if (callName == nil)
+        if (callName == NULL)
             callName = "(Unknown P8 MLI)";
         PrintMonitor16Line(opCode, addrMode, addr, srcBuf, bytesUsed, callName);
         BufPrintf("00/%04X: %02X                %02X",
@@ -461,9 +461,9 @@ ReformatDisasm65xxx::OutputMonitor16(const unsigned char* srcBuf, long srcLen,
         memset(tmpBuf, 0, kMaxByteConsumption);
         memcpy(tmpBuf, srcBuf, srcLen);
 
-        PrintMonitor16Line(opCode, addrMode, addr, tmpBuf, bytesUsed, nil);
+        PrintMonitor16Line(opCode, addrMode, addr, tmpBuf, bytesUsed, NULL);
     } else {
-        PrintMonitor16Line(opCode, addrMode, addr, srcBuf, bytesUsed, nil);
+        PrintMonitor16Line(opCode, addrMode, addr, srcBuf, bytesUsed, NULL);
     }
 
     return bytesUsed;
@@ -568,7 +568,7 @@ ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
 
     case kAddrAbs:
         cp += sprintf(cp, " %02X%02X", byte2, byte1);
-        if (comment == nil && Bank(addr) == 0)
+        if (comment == NULL && Bank(addr) == 0)
             comment = NiftyList::Lookup00Addr(byte1 | byte2 << 8);
         break;
     case kAddrAbsIndexX:
@@ -594,7 +594,7 @@ ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
         break;
     case kAddrAbsLong:
         cp += sprintf(cp, " %02X%02X%02X", byte3, byte2, byte1);
-        if (comment == nil) {
+        if (comment == NULL) {
             if (byte3 == 0x00)
                 comment = NiftyList::Lookup00Addr(byte1 | byte2 << 8);
             else if (byte3 == 0x01)
@@ -648,7 +648,7 @@ ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
     }
 
     assert(strlen(cp)+1 < sizeof(lineBuf));
-    if (comment == nil)
+    if (comment == NULL)
         BufPrintf("%s", lineBuf);
     else {
         if (srcLen < 4)
@@ -1011,8 +1011,8 @@ ReformatDisasm16::PrintSegment(const OMFSegmentHeader* pSegHdr,
     unsigned long subLen;
     int offset = 0;
 
-    assert(pSegHdr != nil);
-    assert(srcBuf != nil);
+    assert(pSegHdr != NULL);
+    assert(srcBuf != NULL);
     assert(srcLen > 0);
 
     srcBuf += pSegHdr->GetDispData();
@@ -1039,7 +1039,7 @@ ReformatDisasm16::PrintSegment(const OMFSegmentHeader* pSegHdr,
 
     do {
         ptr = seg.ProcessNextChunk();
-        if (ptr == nil) {
+        if (ptr == NULL) {
             BufPrintf("!!! bogus OMF values encountered\r\n");
             return;
         }
@@ -1337,7 +1337,7 @@ OMFSegment::Setup(const OMFSegmentHeader* pSegHdr, const unsigned char* srcBuf,
 /*
  * Process the next chunk from the segment.
  *
- * Returns a pointer to the start of the chunk, or "nil" if we've encountered
+ * Returns a pointer to the start of the chunk, or "NULL" if we've encountered
  * some bogus condition (e.g. running off the end).
  */
 const unsigned char*
@@ -1434,7 +1434,7 @@ OMFSegment::ProcessNextChunk(void)
         subLen = Get32LE(fCurPtr+1);    // assumes fNumLen==4
         WMSG2("  OMF found 'reserved' len=%lu (remLen=%ld)\n", subLen, remLen);
         if (subLen > (unsigned long) remLen)
-            return nil;
+            return NULL;
         len += subLen + fNumLen;
         break;
     default:

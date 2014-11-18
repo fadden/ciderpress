@@ -27,8 +27,8 @@
 void
 PrintStuff::InitBasics(CDC* pDC)
 {
-    ASSERT(pDC != nil);
-    ASSERT(fpDC == nil);
+    ASSERT(pDC != NULL);
+    ASSERT(fpDC == NULL);
 
     fpDC = pDC;
 
@@ -50,9 +50,9 @@ PrintStuff::InitBasics(CDC* pDC)
 void
 PrintStuff::CreateFontByNumLines(CFont* pFont, int numLines)
 {
-    ASSERT(pFont != nil);
+    ASSERT(pFont != NULL);
     ASSERT(numLines > 0);
-    ASSERT(fpDC != nil);
+    ASSERT(fpDC != NULL);
 
     /* required height */
     int reqCharHeight;
@@ -172,7 +172,7 @@ void
 PrintContentList::CalcNumPages(void)
 {
     /* set up our local goodies */
-    ASSERT(fpContentList != nil);
+    ASSERT(fpContentList != NULL);
     int numLines = fpContentList->GetItemCount();
     ASSERT(numLines > 0);
 
@@ -270,7 +270,7 @@ bail:
     // destroy print-cancel dialog and restore main window
     fpParentWnd->EnableWindow(TRUE);
     //fpParentWnd->SetActiveWindow();
-    if (pPCD != nil)
+    if (pPCD != NULL)
         pPCD->DestroyWindow();
 
     return result;
@@ -437,7 +437,7 @@ void
 PrintRichEdit::Setup(CDC* pDC, CWnd* pParent)
 {
     /* preflighting can cause this to be initialized twice */
-    fpDC = nil;
+    fpDC = NULL;
 
     /* init base class */
     InitBasics(pDC);
@@ -485,7 +485,7 @@ PrintRichEdit::PrintAll(CRichEditCtrl* pREC, const WCHAR* title)
     fEndChar = -1;
     fStartPage = 0;
     fEndPage = -1;
-    return StartPrint(pREC, title, nil, true);
+    return StartPrint(pREC, title, NULL, true);
 }
 
 /*
@@ -499,7 +499,7 @@ PrintRichEdit::PrintPages(CRichEditCtrl* pREC, const WCHAR* title,
     fEndChar = -1;
     fStartPage = startPage;
     fEndPage = endPage;
-    return StartPrint(pREC, title, nil, true);
+    return StartPrint(pREC, title, NULL, true);
 }
 
 /*
@@ -513,7 +513,7 @@ PrintRichEdit::PrintSelection(CRichEditCtrl* pREC, const WCHAR* title,
     fEndChar = endChar;
     fStartPage = 0;
     fEndPage = -1;
-    return StartPrint(pREC, title, nil, true);
+    return StartPrint(pREC, title, NULL, true);
 }
 
 /*
@@ -523,7 +523,7 @@ int
 PrintRichEdit::StartPrint(CRichEditCtrl* pREC, const WCHAR* title,
     int* pNumPages, bool doPrint)
 {
-    CancelDialog* pPCD = nil;
+    CancelDialog* pPCD = NULL;
     MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
     int result;
 
@@ -547,7 +547,7 @@ PrintRichEdit::StartPrint(CRichEditCtrl* pREC, const WCHAR* title,
 
     if (doPrint) {
         fpParentWnd->EnableWindow(TRUE);
-        if (pPCD != nil)
+        if (pPCD != NULL)
             pPCD->DestroyWindow();
     }
 
@@ -806,14 +806,14 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
         }
     } while (textPrinted < textLength);
 
-    //WMSG0("  +++ calling FormatRange(nil, FALSE)\n");
-    pREC->FormatRange(nil, FALSE);
+    //WMSG0("  +++ calling FormatRange(NULL, FALSE)\n");
+    pREC->FormatRange(NULL, FALSE);
     //WMSG0("  +++  returned from final FormatRange\n");
 
     if (doPrint)
         fpDC->EndDoc();
 
-    if (pNumPages != nil)
+    if (pNumPages != NULL)
         *pNumPages = pageNum;
 
     WMSG1("Printing completed (textPrinted=%ld)\n", textPrinted);

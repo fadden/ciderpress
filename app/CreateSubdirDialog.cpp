@@ -27,7 +27,7 @@ CreateSubdirDialog::OnInitDialog(void)
 
     /* select the default text and set the focus */
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_CREATESUBDIR_NEW);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetSel(0, -1);
     pEdit->SetFocus();
 

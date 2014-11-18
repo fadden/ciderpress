@@ -129,7 +129,7 @@ long
 CassImpTargetDialog::GetStartAddr(void) const
 {
     CWnd* pWnd = GetDlgItem(IDC_CASSIMPTARG_BINADDR);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
 
     CString aux;
     pWnd->GetWindowText(aux);

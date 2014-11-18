@@ -41,23 +41,23 @@ CreateImageDialog::OnInitDialog(void)
     }
 
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_CREATEFSPRODOS_VOLNAME);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(kProDOSVolNameMax);
 
     pEdit = (CEdit*) GetDlgItem(IDC_CREATEFSPASCAL_VOLNAME);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(kPascalVolNameMax);
 
     pEdit = (CEdit*) GetDlgItem(IDC_CREATEFSHFS_VOLNAME);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(kHFSVolNameMax);
 
     pEdit = (CEdit*) GetDlgItem(IDC_CREATEFSDOS_VOLNUM);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(3);     // 3 digit volume number
 
     pEdit = (CEdit*) GetDlgItem(IDC_CONVDISK_SPECIFY_EDIT);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->EnableWindow(FALSE);
 
     return CDialog::OnInitDialog();
@@ -234,7 +234,7 @@ CreateImageDialog::OnFormatChangeRange(UINT nID)
 
     for (i = 0; i < NELEM(kDetailControls); i++) {
         CWnd* pWnd = GetDlgItem(kDetailControls[i]);
-        if (pWnd != nil)
+        if (pWnd != NULL)
             pWnd->EnableWindow(FALSE);
     }
 
@@ -242,8 +242,8 @@ CreateImageDialog::OnFormatChangeRange(UINT nID)
     for (i = 0; i < NELEM(kFormatTab); i++) {
         if (kFormatTab[i].buttonID == nID) {
             CWnd* pWnd = GetDlgItem(kFormatTab[i].ctrlID);
-            ASSERT(pWnd != nil);
-            if (pWnd != nil)
+            ASSERT(pWnd != NULL);
+            if (pWnd != NULL)
                 pWnd->EnableWindow(TRUE);
         }
     }

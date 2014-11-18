@@ -43,16 +43,16 @@ public:
     enum { kAlphaMask = 0xff000000 };   // alpha byte in an ARGB DWORD
 
     MyDIBitmap(void) :
-        mhBitmap(nil),
-        mpFileBuffer(nil),
+        mhBitmap(NULL),
+        mpFileBuffer(NULL),
         mWidth(-1),
         mHeight(-1),
         mBpp(-1),
         mPitchBytes(0),
         mNumColorsUsed(0),
-        mpColorTable(nil),
+        mpColorTable(NULL),
         mColorTableInitialized(false),
-        mpPixels(nil),
+        mpPixels(NULL),
         mAlphaType(kAlphaOpaque),
         mTransparentColor(0)
     {
@@ -118,7 +118,7 @@ public:
     // Return the DIB handle; keep in mind that this HBITMAP is different
     // from a DDB HBITMAP, and many calls that take an HBITMAP will fail.
     HBITMAP GetHandle(void) {
-        if (mhBitmap == nil && mpFileBuffer != nil)
+        if (mhBitmap == NULL && mpFileBuffer != NULL)
             ConvertBufToDIBSection();
         return mhBitmap;
     }
@@ -158,7 +158,7 @@ private:
     int CreateFromNewBuffer(void* vbuf, long len);
 
     BITMAPINFOHEADER    mBitmapInfoHdr;
-    /* either mhBitmap or mpFileContents will be non-nil, but not both */
+    /* either mhBitmap or mpFileContents will be non-NULL, but not both */
     HBITMAP             mhBitmap;           // DIB section handle, not DDB
     void*               mpFileBuffer;       // buffer with contents of .BMP
     int                 mWidth;

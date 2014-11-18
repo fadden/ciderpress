@@ -43,7 +43,7 @@ private:
      */
     class CassetteData {
     public:
-        CassetteData(void) : fFileType(0x00), fOutputBuf(nil), fOutputLen(-1),
+        CassetteData(void) : fFileType(0x00), fOutputBuf(NULL), fOutputLen(-1),
             fStartSample(-1), fEndSample(-1), fChecksum(0x00),
             fChecksumGood(false)
             {}

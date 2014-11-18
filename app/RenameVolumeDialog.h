@@ -23,7 +23,7 @@ public:
     RenameVolumeDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_RENAME_VOLUME, pParentWnd)
     {
-        fpArchive = nil;
+        fpArchive = NULL;
     }
     virtual ~RenameVolumeDialog(void) {}
 

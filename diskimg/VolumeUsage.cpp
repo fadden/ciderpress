@@ -24,7 +24,7 @@ DiskFS::VolumeUsage::Create(long numBlocks)
     fTotalChunks = numBlocks;
     fListSize = numBlocks;
     fList = new unsigned char[fListSize];
-    if (fList == nil)
+    if (fList == NULL)
         return kDIErrMalloc;
 
     memset(fList, 0, fListSize);
@@ -47,7 +47,7 @@ DiskFS::VolumeUsage::Create(long numTracks, long numSectors)
     fTotalChunks = count;
     fListSize = count;
     fList = new unsigned char[fListSize];
-    if (fList == nil)
+    if (fList == NULL)
         return kDIErrMalloc;
 
     memset(fList, 0, fListSize);
@@ -78,7 +78,7 @@ DiskFS::VolumeUsage::GetChunkState(long track, long sector,
 DIError
 DiskFS::VolumeUsage::GetChunkStateIdx(int idx, ChunkState* pState) const
 {
-    if (fList == nil || idx < 0 || idx >= fListSize) {
+    if (fList == NULL || idx < 0 || idx >= fListSize) {
         assert(false);
         return kDIErrInvalidArg;
     }
@@ -114,7 +114,7 @@ DiskFS::VolumeUsage::SetChunkState(long track, long sector,
 DIError
 DiskFS::VolumeUsage::SetChunkStateIdx(int idx, const ChunkState* pState)
 {
-    if (fList == nil || idx < 0 || idx >= fListSize) {
+    if (fList == NULL || idx < 0 || idx >= fListSize) {
         assert(false);
         return kDIErrInvalidArg;
     }
@@ -221,7 +221,7 @@ void
 DiskFS::VolumeUsage::Dump(void) const
 {
 #define kMapInit "--------------------------------"
-    if (fList == nil) {
+    if (fList == NULL) {
         WMSG0(" VU asked to dump empty list?\n");
         return;
     }

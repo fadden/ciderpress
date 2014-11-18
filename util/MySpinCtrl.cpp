@@ -67,7 +67,7 @@ MySpinCtrl::OnDeltaPos(NMHDR* pNMHDR, LRESULT* pResult)
     NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
 
     /* grab value from buddy ctrl */
-    ASSERT(GetBuddy() != nil);
+    ASSERT(GetBuddy() != NULL);
     CString buddyStr;
     GetBuddy()->GetWindowText(buddyStr);
 

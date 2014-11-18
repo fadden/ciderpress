@@ -28,7 +28,7 @@
 class SoundFile {
 public:
     SoundFile(void) :
-        mFP(nil),
+        mFP(NULL),
         mDoClose(false),
         mFileStart(0),
         mSampleStart(-1),
@@ -37,7 +37,7 @@ public:
         memset(&mFormat, 0, sizeof(mFormat));
     }
     virtual ~SoundFile(void) {
-        if (mDoClose && mFP != nil)
+        if (mDoClose && mFP != NULL)
             fclose(mFP);
     }
 
@@ -61,7 +61,7 @@ public:
 
     /* returns the #of bytes per sample (all channels) */
     int GetBPS(void) const {
-        ASSERT(mFP != nil);
+        ASSERT(mFP != NULL);
         return ((mFormat.wBitsPerSample+7)/8) * mFormat.nChannels;
     }
 

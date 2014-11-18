@@ -126,7 +126,7 @@ ReformatDHR::Process(const ReformatHolder* pHolder,
     InitColorLookup();
 
     pDib = DHRScreenToBitmap(srcBuf);
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);
@@ -214,14 +214,14 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
 
     ASSERT(kOutputWidth == kPixelsPerLine);
 
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
                                     4, kNumColors);
-    if (outBuf == nil) {
+    if (outBuf == NULL) {
         delete pDib;
-        pDib = nil;
+        pDib = NULL;
         goto bail;
     }
     pDib->SetColorTable(colorConv);

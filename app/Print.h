@@ -18,7 +18,7 @@
  */
 class PrintStuff {
 protected:
-    PrintStuff(void) : fpDC(nil) {}
+    PrintStuff(void) : fpDC(NULL) {}
     virtual ~PrintStuff(void) {}
 
     /* get basic goodies, based on the DC */
@@ -58,7 +58,7 @@ protected:
  */
 class PrintContentList : public PrintStuff {
 public:
-    PrintContentList(void) : fpContentList(nil), fCLLinesPerPage(0) {}
+    PrintContentList(void) : fpContentList(NULL), fCLLinesPerPage(0) {}
     virtual ~PrintContentList(void) {}
 
     /* set the DC and the parent window (for the cancel box) */
@@ -103,7 +103,7 @@ private:
  */
 class PrintRichEdit : public PrintStuff {
 public:
-    PrintRichEdit(void) : fInitialized(false), fpParentWnd(nil) {}
+    PrintRichEdit(void) : fInitialized(false), fpParentWnd(NULL) {}
     virtual ~PrintRichEdit(void) {}
 
     /* set the DC and the parent window (for the cancel box) */

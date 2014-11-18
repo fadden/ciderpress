@@ -125,8 +125,8 @@ DiskFSPascal::Initialize(void)
     fVolumeUsage.Dump();
 
     //A2File* pFile;
-    //pFile = GetNextFile(nil);
-    //while (pFile != nil) {
+    //pFile = GetNextFile(NULL);
+    //while (pFile != NULL) {
     //  pFile->Dump();
     //  pFile = GetNextFile(pFile);
     //}
@@ -244,7 +244,7 @@ DiskFSPascal::LoadCatalog(void)
     unsigned char* dirPtr;
     int block, numBlocks;
 
-    assert(fDirectory == nil);
+    assert(fDirectory == NULL);
 
     numBlocks = fNextBlock - kVolHeaderBlock;
     if (numBlocks <= 0 || numBlocks > kHugeDir) {
@@ -253,7 +253,7 @@ DiskFSPascal::LoadCatalog(void)
     }
 
     fDirectory = new unsigned char[kBlkSize * numBlocks];
-    if (fDirectory == nil) {
+    if (fDirectory == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -272,7 +272,7 @@ DiskFSPascal::LoadCatalog(void)
 bail:
     if (dierr != kDIErrNone) {
         delete[] fDirectory;
-        fDirectory = nil;
+        fDirectory = NULL;
     }
     return dierr;
 }
@@ -287,7 +287,7 @@ DiskFSPascal::SaveCatalog(void)
     unsigned char* dirPtr;
     int block, numBlocks;
 
-    assert(fDirectory != nil);
+    assert(fDirectory != NULL);
 
     numBlocks = fNextBlock - kVolHeaderBlock;
     block = kVolHeaderBlock;
@@ -312,7 +312,7 @@ void
 DiskFSPascal::FreeCatalog(void)
 {
     delete[] fDirectory;
-    fDirectory = nil;
+    fDirectory = NULL;
 }
 
 
@@ -412,8 +412,8 @@ DiskFSPascal::ScanFileUsage(void)
     }
 
     A2FilePascal* pFile;
-    pFile = (A2FilePascal*) GetNextFile(nil);
-    while (pFile != nil) {
+    pFile = (A2FilePascal*) GetNextFile(NULL);
+    while (pFile != NULL) {
         for (block = pFile->fStartBlock; block < pFile->fNextBlock; block++)
             SetBlockUsage(block, VolumeUsage::kChunkPurposeUserData);
 
@@ -453,7 +453,7 @@ DiskFSPascal::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
 /*static*/ bool
 DiskFSPascal::IsValidVolumeName(const char* name)
 {
-    if (name == nil) {
+    if (name == NULL) {
         assert(false);
         return false;
     }
@@ -474,7 +474,7 @@ DiskFSPascal::IsValidVolumeName(const char* name)
 /*static*/ bool
 DiskFSPascal::IsValidFileName(const char* name)
 {
-    assert(name != nil);
+    assert(name != NULL);
 
     if (name[0] == '\0')
         return false;
@@ -487,7 +487,7 @@ DiskFSPascal::IsValidFileName(const char* name)
             return false;
         //if (*name >= 'a' && *name <= 'z')     // no lower case
         //  return false;
-        if (strchr(kInvalidNameChars, *name) != nil) // filer metacharacters
+        if (strchr(kInvalidNameChars, *name) != NULL) // filer metacharacters
             return false;
 
         name++;
@@ -510,7 +510,7 @@ DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
         return kDIErrInvalidArg;
 
     /* set fpImg so calls that rely on it will work; we un-set it later */
-    assert(fpImg == nil);
+    assert(fpImg == NULL);
     SetDiskImg(pDiskImg);
 
     WMSG0(" Pascal formatting disk image\n");
@@ -572,7 +572,7 @@ DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
 
 
 bail:
-    SetDiskImg(nil);        // shouldn't really be set by us
+    SetDiskImg(NULL);        // shouldn't really be set by us
     return dierr;
 }
 
@@ -817,8 +817,8 @@ DiskFSPascal::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     long freeBlocks = 0;
     unsigned short prevNextBlock = fNextBlock;
 
-    pFile = (A2FilePascal*) GetNextFile(nil);
-    while (pFile != nil) {
+    pFile = (A2FilePascal*) GetNextFile(NULL);
+    while (pFile != NULL) {
         freeBlocks += pFile->fStartBlock - prevNextBlock;
         prevNextBlock = pFile->fNextBlock;
 
@@ -875,13 +875,13 @@ DiskFSPascal::DoNormalizePath(const char* name, char fssep, char* outBuf)
     /* throw out leading pathname, if any */
     if (fssep != '\0') {
         cp = strrchr(name, fssep);
-        if (cp != nil)
+        if (cp != NULL)
             name = cp+1;
     }
 
     while (*name != '\0' && (outp - outBuf) < A2FilePascal::kMaxFileName) {
         if (*name > 0x20 && *name < 0x7f &&
-            strchr(kInvalidNameChars, *name) == nil)
+            strchr(kInvalidNameChars, *name) == NULL)
         {
             *outp++ = toupper(*name);
         }
@@ -918,15 +918,15 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     DIError dierr = kDIErrNone;
     const bool createUnique = (GetParameter(kParm_CreateUnique) != 0);
     char normalName[A2FilePascal::kMaxFileName+1];
-    A2FilePascal* pNewFile = nil;
+    A2FilePascal* pNewFile = NULL;
 
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
     if (!fDiskIsGood)
         return kDIErrBadDiskImage;
 
-    assert(pParms != nil);
-    assert(pParms->pathName != nil);
+    assert(pParms != NULL);
+    assert(pParms->pathName != NULL);
     assert(pParms->storageType == A2FileProDOS::kStorageSeedling);
     WMSG1(" Pascal ---v--- CreateFile '%s'\n", pParms->pathName);
 
@@ -938,7 +938,7 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
         return kDIErrVolumeDirFull;
     }
 
-    *ppNewFile = nil;
+    *ppNewFile = NULL;
 
     DoNormalizePath(pParms->pathName, pParms->fssep, normalName);
 
@@ -951,7 +951,7 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     if (createUnique) {
         MakeFileNameUnique(normalName);
     } else {
-        if (GetFileByName(normalName) != nil) {
+        if (GetFileByName(normalName) != NULL) {
             WMSG1(" Pascal create: normalized name '%s' already exists\n",
                 normalName);
             dierr = kDIErrFileExists;
@@ -964,7 +964,7 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      *
      * We get an index pointer and A2File pointer to the previous entry.  If
      * the blank space is at the head of the list, prevIdx will be zero and
-     * pPrevFile will be nil.
+     * pPrevFile will be NULL.
      */
     A2FilePascal* pPrevFile;
     int prevIdx;
@@ -979,11 +979,11 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      */
     time_t now;
     pNewFile = new A2FilePascal(this);
-    if (pNewFile == nil) {
+    if (pNewFile == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
-    if (pPrevFile == nil)
+    if (pPrevFile == NULL)
         pNewFile->fStartBlock = fNextBlock;
     else
         pNewFile->fStartBlock = pPrevFile->fNextBlock;
@@ -992,7 +992,7 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     memset(pNewFile->fFileName, 0, A2FilePascal::kMaxFileName);
     strcpy(pNewFile->fFileName, normalName);
     pNewFile->fBytesRemaining = 0;
-    now = time(nil);
+    now = time(NULL);
     pNewFile->fModWhen = A2FilePascal::ConvertPascalDate(now);
 
     pNewFile->fLength = 0;
@@ -1044,7 +1044,7 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     InsertFileInList(pNewFile, pPrevFile);
 
     *ppNewFile = pNewFile;
-    pNewFile = nil;
+    pNewFile = NULL;
 
 bail:
     delete pNewFile;
@@ -1068,10 +1068,10 @@ bail:
 DIError
 DiskFSPascal::MakeFileNameUnique(char* fileName)
 {
-    assert(fileName != nil);
+    assert(fileName != NULL);
     assert(strlen(fileName) <= A2FilePascal::kMaxFileName);
 
-    if (GetFileByName(fileName) == nil)
+    if (GetFileByName(fileName) == NULL)
         return kDIErrNone;
 
     WMSG1(" Pascal   found duplicate of '%s', making unique\n", fileName);
@@ -1088,7 +1088,7 @@ DiskFSPascal::MakeFileNameUnique(char* fileName)
      * to preserve ".gif", ".c", etc.
      */
     const char* cp = strrchr(fileName, '.');
-    if (cp != nil) {
+    if (cp != NULL) {
         int tmpOffset = cp - fileName;
         if (tmpOffset > 0 && nameLen - tmpOffset <= kMaxExtensionLen) {
             WMSG1("  Pascal   (keeping extension '%s')\n", cp);
@@ -1119,7 +1119,7 @@ DiskFSPascal::MakeFileNameUnique(char* fileName)
         memcpy(fileName + copyOffset, digitBuf, digitLen);
         if (dotLen != 0)
             memcpy(fileName + copyOffset + digitLen, dotBuf, dotLen);
-    } while (GetFileByName(fileName) != nil);
+    } while (GetFileByName(fileName) != NULL);
 
     WMSG1(" Pascal  converted to unique name: %s\n", fileName);
 
@@ -1146,10 +1146,10 @@ DiskFSPascal::FindLargestFreeArea(int *pPrevIdx, A2FilePascal** ppPrevFile)
     maxIndex = -1;
     maxGap = 0;
     idx = 0;
-    *ppPrevFile = pPrevFile = nil;
+    *ppPrevFile = pPrevFile = NULL;
 
-    pFile = (A2FilePascal*) GetNextFile(nil);
-    while (pFile != nil) {
+    pFile = (A2FilePascal*) GetNextFile(NULL);
+    while (pFile != NULL) {
         gapSize = pFile->fStartBlock - prevNextBlock;
         if (gapSize > maxGap) {
             maxGap = gapSize;
@@ -1172,7 +1172,7 @@ DiskFSPascal::FindLargestFreeArea(int *pPrevIdx, A2FilePascal** ppPrevFile)
 
     WMSG3("Pascal largest gap after entry %d '%s' (size=%d)\n",
         maxIndex,
-        *ppPrevFile != nil ? (*ppPrevFile)->GetPathName() : "(root)",
+        *ppPrevFile != NULL ? (*ppPrevFile)->GetPathName() : "(root)",
         maxGap);
     *pPrevIdx = maxIndex;
 
@@ -1194,7 +1194,7 @@ DiskFSPascal::DeleteFile(A2File* pGenericFile)
     unsigned char* pEntry;
     int dirLen, offsetToNextEntry;
 
-    if (pGenericFile == nil) {
+    if (pGenericFile == NULL) {
         assert(false);
         return kDIErrInvalidArg;
     }
@@ -1213,7 +1213,7 @@ DiskFSPascal::DeleteFile(A2File* pGenericFile)
         goto bail;
 
     pEntry = FindDirEntry(pFile);
-    if (pEntry == nil) {
+    if (pEntry == NULL) {
         assert(false);
         dierr = kDIErrInternal;
         goto bail;
@@ -1255,7 +1255,7 @@ DiskFSPascal::RenameFile(A2File* pGenericFile, const char* newName)
     char normalName[A2FilePascal::kMaxFileName+1];
     unsigned char* pEntry;
 
-    if (pFile == nil || newName == nil)
+    if (pFile == NULL || newName == NULL)
         return kDIErrInvalidArg;
     if (!IsValidFileName(newName))
         return kDIErrInvalidArg;
@@ -1276,7 +1276,7 @@ DiskFSPascal::RenameFile(A2File* pGenericFile, const char* newName)
         goto bail;
 
     pEntry = FindDirEntry(pFile);
-    if (pEntry == nil) {
+    if (pEntry == NULL) {
         assert(false);
         dierr = kDIErrInternal;
         goto bail;
@@ -1310,7 +1310,7 @@ DiskFSPascal::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     A2FilePascal* pFile = (A2FilePascal*) pGenericFile;
     unsigned char* pEntry;
 
-    if (pFile == nil)
+    if (pFile == NULL)
         return kDIErrInvalidArg;
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
@@ -1325,7 +1325,7 @@ DiskFSPascal::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
         goto bail;
 
     pEntry = FindDirEntry(pFile);
-    if (pEntry == nil) {
+    if (pEntry == NULL) {
         assert(false);
         dierr = kDIErrInternal;
         goto bail;
@@ -1393,7 +1393,7 @@ DiskFSPascal::FindDirEntry(A2FilePascal* pFile)
     unsigned char* ptr;
     int i;
 
-    assert(fDirectory != nil);
+    assert(fDirectory != NULL);
 
     ptr = fDirectory;       // volume header; first iteration skips over it
     for (i = 0; i < fNumFiles; i++) {
@@ -1404,13 +1404,13 @@ DiskFSPascal::FindDirEntry(A2FilePascal* pFile)
                 assert(false);
                 WMSG2("name/block mismatch on '%s' %d\n",
                     pFile->GetPathName(), pFile->fStartBlock);
-                return nil;
+                return NULL;
             }
             return ptr;
         }
     }
 
-    return nil;
+    return NULL;
 }
 
 
@@ -1534,7 +1534,7 @@ A2FilePascal::ConvertPascalDate(time_t unixDate)
         return 0;
 
     ptm = localtime(&unixDate);
-    if (ptm == nil)
+    if (ptm == NULL)
         return 0;       // must've been invalid or unspecified
 
     year = ptm->tm_year;    // years since 1900
@@ -1578,7 +1578,7 @@ DIError
 A2FilePascal::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
-    A2FDPascal* pOpenFile = nil;
+    A2FDPascal* pOpenFile = NULL;
 
     if (!readOnly) {
         if (fpDiskFS->GetDiskImg()->GetReadOnly())
@@ -1586,7 +1586,7 @@ A2FilePascal::Open(A2FileDescr** ppOpenFile, bool readOnly,
         if (fpDiskFS->GetFSDamaged())
             return kDIErrBadDiskImage;
     }
-    if (fpOpenFile != nil)
+    if (fpOpenFile != NULL)
         return kDIErrAlreadyOpen;
     if (rsrcFork)
         return kDIErrForkNotFound;
@@ -1624,11 +1624,11 @@ A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
 
     /* don't allow them to read past the end of the file */
     if (fOffset + (long)len > fOpenEOF) {
-        if (pActual == nil)
+        if (pActual == NULL)
             return kDIErrDataUnderrun;
         len = (size_t) (fOpenEOF - fOffset);
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = len;
     long incrLen = len;
 
@@ -1693,7 +1693,7 @@ A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
     assert(fOffset == 0);       // big simplifying assumption
     assert(fOpenEOF == 0);      // another one
     assert(fOpenBlocksUsed == 1);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     /*
      * Verify that there's enough room between this file and the next to
@@ -1702,7 +1702,7 @@ A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
     long blocksNeeded, blocksAvail;
     A2FilePascal* pNextFile;
     pNextFile = (A2FilePascal*) pDiskFS->GetNextFile(pFile);
-    if (pNextFile == nil)
+    if (pNextFile == NULL)
         blocksAvail = pDiskFS->GetTotalBlocks() - pFile->fStartBlock;
     else
         blocksAvail = pNextFile->fStartBlock - pFile->fStartBlock;
@@ -1823,7 +1823,7 @@ A2FDPascal::Close(void)
          */
         pFile->fLength = fOpenEOF;
         pFile->fNextBlock = pFile->fStartBlock + (unsigned short) fOpenBlocksUsed;
-        pFile->fModWhen = A2FilePascal::ConvertPascalDate(time(nil));
+        pFile->fModWhen = A2FilePascal::ConvertPascalDate(time(NULL));
 
         /*
          * Update the "next block" value and the length-in-last-block.  We
@@ -1832,7 +1832,7 @@ A2FDPascal::Close(void)
          * somebody created or deleted a file after we were opened.
          */
         pEntry = pDiskFS->FindDirEntry(pFile);
-        if (pEntry == nil) {
+        if (pEntry == NULL) {
             // we deleted an open file?
             assert(false);
             dierr = kDIErrInternal;

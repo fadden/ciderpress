@@ -254,12 +254,12 @@ DIError
 DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
 {
     DIError dierr = kDIErrNone;
-    DiskFS* pNewFS = nil;
-    DiskImg* pNewImg = nil;
+    DiskFS* pNewFS = NULL;
+    DiskImg* pNewImg = NULL;
     long startBlock, numBlocks;
     bool tweaked = false;
 
-    assert(pMap != nil);
+    assert(pMap != NULL);
     startBlock = pMap->pmPyPartStart;
     numBlocks = pMap->pmPartBlkCnt;
 
@@ -283,7 +283,7 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
     }
 
     pNewImg = new DiskImg;
-    if (pNewImg == nil) {
+    if (pNewImg == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -324,7 +324,7 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
         WMSG2(" MacPartSub (%ld,%ld): unable to identify filesystem\n",
             startBlock, numBlocks);
         DiskFSUnknown* pUnknownFS = new DiskFSUnknown;
-        if (pUnknownFS == nil) {
+        if (pUnknownFS == NULL) {
             dierr = kDIErrInternal;
             goto bail;
         }
@@ -336,7 +336,7 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
         /* open a DiskFS for the sub-image */
         WMSG2(" MacPartSub (%ld,%ld) analyze succeeded!\n", startBlock, numBlocks);
         pNewFS = pNewImg->OpenAppropriateDiskFS(true);
-        if (pNewFS == nil) {
+        if (pNewFS == NULL) {
             WMSG0(" MacPartSub: OpenAppropriateDiskFS failed\n");
             dierr = kDIErrUnsupportedFSFmt;
             goto bail;
@@ -368,8 +368,8 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
 
     /* add it to the list */
     AddSubVolumeToList(pNewImg, pNewFS);
-    pNewImg = nil;
-    pNewFS = nil;
+    pNewImg = NULL;
+    pNewFS = NULL;
 
 bail:
     delete pNewFS;
@@ -458,8 +458,8 @@ DiskFSMacPart::FindSubVolumes(void)
         if (dierr != kDIErrNone) {
             if (dierr == kDIErrCancelled)
                 goto bail;
-            DiskFS* pNewFS = nil;
-            DiskImg* pNewImg = nil;
+            DiskFS* pNewFS = NULL;
+            DiskImg* pNewImg = NULL;
             WMSG1(" MacPart failed opening sub-volume %d\n", i);
             dierr = CreatePlaceholder(map.pmPyPartStart, map.pmPartBlkCnt,
                 (const char*)map.pmPartName, (const char*)map.pmParType,

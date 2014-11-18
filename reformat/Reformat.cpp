@@ -34,7 +34,7 @@
 /*static*/ Reformat*
 ReformatHolder::GetReformatInstance(ReformatID id)
 {
-    Reformat* pReformat = nil;
+    Reformat* pReformat = NULL;
 
     switch (id) {
     case kReformatTextEOL_HA:       pReformat = new ReformatEOL_HA;             break;
@@ -105,7 +105,7 @@ ReformatHolder::GetReformatInstance(ReformatID id)
 /*static*/ const WCHAR*
 ReformatHolder::GetReformatName(ReformatID id)
 {
-    const WCHAR* descr = nil;
+    const WCHAR* descr = NULL;
 
     switch (id) {
     case kReformatTextEOL_HA:
@@ -279,8 +279,8 @@ ReformatHolder::SetSourceAttributes(long fileType, long auxType,
     fAuxType = auxType;
     fSourceFormat = sourceFormat;
 
-    assert(fNameExt == nil);
-    if (nameExt == nil) {
+    assert(fNameExt == NULL);
+    if (nameExt == NULL) {
         fNameExt = new char[1];
         fNameExt[0] = '\0';
     } else {
@@ -330,7 +330,7 @@ ReformatHolder::TestApplicability(void)
          * than creating a separate table of pointers to static functions.
          */
         pReformat = GetReformatInstance((ReformatID) i);
-        assert(pReformat != nil);
+        assert(pReformat != NULL);
         pReformat->Examine(this);
         delete pReformat;
     }
@@ -430,7 +430,7 @@ ReformatHolder::FindBest(ReformatPart part)
     int i;
 
     /* if the source couldn't be loaded, just return "raw" */
-    if (fErrorBuf[part] != nil)
+    if (fErrorBuf[part] != NULL)
         return kReformatRaw;
 
     /*
@@ -471,21 +471,21 @@ ReformatHolder::Apply(ReformatPart part, ReformatID id)
     {
         WMSG2("Invalid reformat request (part=%d id=%d)\n", part, id);
         assert(false);
-        return nil;
+        return NULL;
     }
 
     /* create a place for the output */
     pOutput = new ReformatOutput;
-    if (pOutput == nil) {
+    if (pOutput == NULL) {
         assert(false);
-        return nil;     // alloc failure
+        return NULL;     // alloc failure
     }
 
     /*
      * If the caller was unable to fill our source buffer, they will have
      * supplied us with an error message.  Return that instead of the data.
      */
-    if (fErrorBuf[part] != nil) {
+    if (fErrorBuf[part] != NULL) {
         pOutput->SetTextBuf(fErrorBuf[part], strlen(fErrorBuf[part]), false);
         pOutput->SetOutputKind(ReformatOutput::kOutputErrorMsg);
         pOutput->SetFormatDescr(L"Error Message");
@@ -502,7 +502,7 @@ ReformatHolder::Apply(ReformatPart part, ReformatID id)
 
     /* create an instance of a reformatter */
     pReformat = GetReformatInstance(id);
-    assert(pReformat != nil);
+    assert(pReformat != NULL);
     result = pReformat->Process(this, id, part, pOutput);
     delete pReformat;
 
@@ -512,7 +512,7 @@ ReformatHolder::Apply(ReformatPart part, ReformatID id)
      * This commonly happens on zero-length files.  The chosen reformatter
      * rejects it, returns -1, and we return the source buffer.  Since even
      * zero-length files are guaranteed to have some sort of allocated
-     * buffer, "pOutput" never points at nil.  Unless, of course, a text
+     * buffer, "pOutput" never points at NULL.  Unless, of course, a text
      * reformatter produces no output but still returns "success".
      */
     if (result < 0) {
@@ -533,7 +533,7 @@ ReformatHolder::GetSourceBuf(ReformatPart part) const
 {
     if (part <= kPartUnknown || part >= kPartMAX) {
         assert(false);
-        return nil;
+        return NULL;
     }
 
     return fSourceBuf[part];
@@ -547,7 +547,7 @@ ReformatHolder::GetSourceLen(ReformatPart part) const
 {
     if (part <= kPartUnknown || part >= kPartMAX) {
         assert(false);
-        return nil;
+        return NULL;
     }
 
     return fSourceLen[part];
@@ -570,7 +570,7 @@ ReformatHolder::SetSourceBuf(ReformatPart part, unsigned char* buf,
         assert(false);
         return;
     }
-    assert(buf != nil);
+    assert(buf != NULL);
     assert(len >= 0);
 
     fSourceBuf[part] = buf;
@@ -585,9 +585,9 @@ ReformatHolder::SetSourceBuf(ReformatPart part, unsigned char* buf,
 void
 ReformatHolder::SetErrorMsg(ReformatPart part, const char* msg)
 {
-    assert(msg != nil && *msg != '\0');
+    assert(msg != NULL && *msg != '\0');
     assert(part > kPartUnknown && part < kPartMAX);
-    assert(fErrorBuf[part] == nil);
+    assert(fErrorBuf[part] == NULL);
 
     fErrorBuf[part] = strdup(msg);
     WMSG2("+++ set error message for part %d to '%hs'\n", part, msg);

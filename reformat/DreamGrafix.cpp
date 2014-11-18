@@ -47,7 +47,7 @@ ReformatDG256SHR::Process(const ReformatHolder* pHolder,
 
     if (fDG.UnpackDG(srcBuf, srcLen, &fScreen, NULL)) {
         MyDIBitmap* pDib = SHRScreenToBitmap8(&fScreen);
-        if (pDib != nil) {
+        if (pDib != NULL) {
             SetResultBuffer(pOutput, pDib);
             retval = 0;
         }
@@ -92,7 +92,7 @@ ReformatDG3200SHR::Process(const ReformatHolder* pHolder,
 
     if (fDG.UnpackDG(srcBuf, srcLen, &fScreen, fExtColorTable)) {
         MyDIBitmap* pDib = SHR3200ToBitmap24();
-        if (pDib != nil) {
+        if (pDib != NULL) {
             SetResultBuffer(pOutput, pDib);
             retval = 0;
         }

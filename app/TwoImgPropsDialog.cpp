@@ -28,7 +28,7 @@ TwoImgPropsDialog::OnInitDialog(void)
     CEdit* pEdit;
     CString tmpStr;
 
-    ASSERT(fpHeader != nil);
+    ASSERT(fpHeader != NULL);
 
     /*
      * Set up the static fields.
@@ -125,7 +125,7 @@ TwoImgPropsDialog::DoDataExchange(CDataExchange* pDX)
             CStringA commentA(comment);
             fpHeader->SetComment(commentA);
         } else {
-            fpHeader->SetComment(nil);
+            fpHeader->SetComment(NULL);
         }
     } else {
         CWnd* pWnd;

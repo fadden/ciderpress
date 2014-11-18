@@ -52,12 +52,12 @@ NufxArchiveInfoDialog::OnInitDialog(void)
     NuError nerr;
     time_t when;
 
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     pNuArchive = fpArchive->GetNuArchivePointer();
-    ASSERT(pNuArchive != nil);
+    ASSERT(pNuArchive != NULL);
     (void) NuGetMasterHeader(pNuArchive, &pMasterHeader);
-    ASSERT(pMasterHeader != nil);
+    ASSERT(pMasterHeader != NULL);
 
     pWnd = GetDlgItem(IDC_AI_FILENAME);
     CString pathName(fpArchive->GetPathName());
@@ -133,12 +133,12 @@ DiskArchiveInfoDialog::OnInitDialog(void)
     const DiskImg* pDiskImg;
     const DiskFS* pDiskFS;
 
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     pDiskImg = fpArchive->GetDiskImg();
-    ASSERT(pDiskImg != nil);
+    ASSERT(pDiskImg != NULL);
     pDiskFS = fpArchive->GetDiskFS();
-    ASSERT(pDiskFS != nil);
+    ASSERT(pDiskFS != NULL);
 
     /*
      * Volume characteristics.
@@ -162,7 +162,7 @@ DiskArchiveInfoDialog::OnInitDialog(void)
     {
         CString tmpStr;
         const DiskImg::NibbleDescr* pNibbleDescr = pDiskImg->GetNibbleDescr();
-        if (pNibbleDescr != nil)
+        if (pNibbleDescr != NULL)
             tmpStr.Format(L"%hs, layout is \"%hs\"",
                 DiskImg::ToString(physicalFormat), pNibbleDescr->description);
         else
@@ -215,10 +215,10 @@ DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS, const WCHAR* prefix,
      * Add everything beneath the current level.
      */
     DiskFS::SubVolume* pSubVol;
-    pSubVol = pDiskFS->GetNextSubVolume(nil);
+    pSubVol = pDiskFS->GetNextSubVolume(NULL);
     tmpStr = prefix;
     tmpStr += L"   ";
-    while (pSubVol != nil) {
+    while (pSubVol != NULL) {
         AddSubVolumes(pSubVol->GetDiskFS(), tmpStr, pIdx);
 
         pSubVol = pDiskFS->GetNextSubVolume(pSubVol);
@@ -232,12 +232,12 @@ void
 DiskArchiveInfoDialog::OnSubVolSelChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_AIDISK_SUBVOLSEL);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
     //WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
 
     const DiskFS* pDiskFS;
     pDiskFS = (DiskFS*) pCombo->GetItemData(pCombo->GetCurSel());
-    ASSERT(pDiskFS != nil);
+    ASSERT(pDiskFS != NULL);
     FillInVolumeInfo(pDiskFS);
 }
 
@@ -402,7 +402,7 @@ BnyArchiveInfoDialog::OnInitDialog(void)
     CWnd* pWnd;
     CString tmpStr;
 
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     pWnd = GetDlgItem(IDC_AI_FILENAME);
     pWnd->SetWindowText(fpArchive->GetPathName());
@@ -429,7 +429,7 @@ AcuArchiveInfoDialog::OnInitDialog(void)
     CWnd* pWnd;
     CString tmpStr;
 
-    ASSERT(fpArchive != nil);
+    ASSERT(fpArchive != NULL);
 
     pWnd = GetDlgItem(IDC_AI_FILENAME);
     pWnd->SetWindowText(fpArchive->GetPathName());

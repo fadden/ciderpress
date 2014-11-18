@@ -31,7 +31,7 @@ RenameOverwriteDialog::OnInitDialog(void)
     CWnd* pWnd;
 
     pWnd = GetDlgItem(IDC_RENOVWR_SOURCE_NAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(fNewFileSource);
 
     return CDialog::OnInitDialog();
@@ -92,27 +92,27 @@ ConfirmOverwriteDialog::OnInitDialog(void)
     CString tmpStr, dateStr;
 
     pWnd = GetDlgItem(IDC_OVWR_EXIST_NAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(fExistingFile);
 
     pWnd = GetDlgItem(IDC_OVWR_EXIST_INFO);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     FormatDate(fExistingFileModWhen, &dateStr);
     tmpStr.Format(L"Modified %ls", dateStr);
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_OVWR_NEW_NAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(fNewFileSource);
 
     pWnd = GetDlgItem(IDC_OVWR_NEW_INFO);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     FormatDate(fNewFileModWhen, &dateStr);
     tmpStr.Format(L"Modified %ls", dateStr);
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_OVWR_RENAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(fAllowRename);
 
     return CDialog::OnInitDialog();

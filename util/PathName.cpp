@@ -43,23 +43,23 @@
  * in.  If the fssep is '\0' (as is the case for DOS 3.3), then the entire
  * pathname is returned.
  *
- * Always returns a pointer to a string; never returns nil.
+ * Always returns a pointer to a string; never returns NULL.
  */
 const WCHAR*
 PathName::FilenameOnly(const WCHAR* pathname, WCHAR fssep)
 {
     const WCHAR* retstr;
     const WCHAR* pSlash;
-    WCHAR* tmpStr = nil;
+    WCHAR* tmpStr = NULL;
 
-    ASSERT(pathname != nil);
+    ASSERT(pathname != NULL);
     if (fssep == '\0') {
         retstr = pathname;
         goto bail;
     }
 
     pSlash = wcsrchr(pathname, fssep);  // strrchr
-    if (pSlash == nil) {
+    if (pSlash == NULL) {
         retstr = pathname;      /* whole thing is the filename */
         goto bail;
     }
@@ -77,7 +77,7 @@ PathName::FilenameOnly(const WCHAR* pathname, WCHAR fssep)
         tmpStr[wcslen(pathname)-1] = '\0';
         pSlash = wcsrchr(tmpStr, fssep);
 
-        if (pSlash == nil) {
+        if (pSlash == NULL) {
             retstr = pathname;  /* just a filename with a '/' after it */
             goto bail;
         }
@@ -105,7 +105,7 @@ bail:
  * An extension is the stuff following the last '.' in the filename.  If
  * there is nothing following the last '.', then there is no extension.
  *
- * Returns a pointer to the '.' preceding the extension, or nil if no
+ * Returns a pointer to the '.' preceding the extension, or NULL if no
  * extension was found.
  *
  * We guarantee that there is at least one character after the '.'.
@@ -121,14 +121,14 @@ PathName::FindExtension(const WCHAR* pathname, WCHAR fssep)
      * about "/foo.bar/file".
      */
     pFilename = FilenameOnly(pathname, fssep);
-    ASSERT(pFilename != nil);
+    ASSERT(pFilename != NULL);
     pExt = wcsrchr(pFilename, kFilenameExtDelim);
 
     /* also check for "/blah/foo.", which doesn't count */
-    if (pExt != nil && *(pExt+1) != '\0')
+    if (pExt != NULL && *(pExt+1) != '\0')
         return pExt;
 
-    return nil;
+    return NULL;
 }
 
 
@@ -205,8 +205,8 @@ PathName::GetExtension(void)
     {
         const WCHAR* ccp;
         ccp = FindExtension(fPathName, '\\');
-        if ((ccp == nil && wcslen(fExt) > 0) ||
-            (ccp != nil && wcscmp(ccp, fExt) != 0))
+        if ((ccp == NULL && wcslen(fExt) > 0) ||
+            (ccp != NULL && wcscmp(ccp, fExt) != 0))
         {
             WMSG2("NOTE: got different extensions '%ls' vs '%ls'\n",
                 ccp, (LPCTSTR) fExt);
@@ -417,7 +417,7 @@ PathName::Mkdir(const WCHAR* dir)
 {
     int err = 0;
 
-    ASSERT(dir != nil);
+    ASSERT(dir != NULL);
 
     if (_wmkdir(dir) < 0)
         err = errno ? errno : -1;
@@ -428,7 +428,7 @@ PathName::Mkdir(const WCHAR* dir)
 /*
  * Determine if a file exists, and if so whether or not it's a directory.
  *
- * Set fields you're not interested in to nil.
+ * Set fields you're not interested in to NULL.
  *
  * On success, returns 0 and fields are set appropriately.  On failure,
  * returns nonzero and result values are undefined.
@@ -450,36 +450,36 @@ PathName::GetFileInfo(const WCHAR* pathname, struct _stat* psb,
     //  int cc2 = access(pathname, 0);
     //}
 
-    if (pModWhen != nil)
+    if (pModWhen != NULL)
         *pModWhen = (time_t) -1;
-    if (pExists != nil)
+    if (pExists != NULL)
         *pExists = false;
-    if (pIsReadable != nil)
+    if (pIsReadable != NULL)
         *pIsReadable = false;
-    if (pIsDirectory != nil)
+    if (pIsDirectory != NULL)
         *pIsDirectory = false;
 
     cc = _wstat(pathname, &sbuf);
-    if (psb != nil)
+    if (psb != NULL)
         *psb = sbuf;
     if (cc != 0) {
         if (errno == ENOENT) {
-            if (pExists != nil)
+            if (pExists != NULL)
                 *pExists = false;
             return 0;
         } else
             return errno;
     }
 
-    if (pExists != nil)
+    if (pExists != NULL)
         *pExists = true;
 
-    if (pIsDirectory != nil && S_ISDIR(sbuf.st_mode))
+    if (pIsDirectory != NULL && S_ISDIR(sbuf.st_mode))
         *pIsDirectory = true;
-    if (pModWhen != nil)
+    if (pModWhen != NULL)
         *pModWhen = sbuf.st_mtime;
 
-    if (pIsReadable != nil) {
+    if (pIsReadable != NULL) {
         /*
          * Test if we can read this file.  How do we do that?  The easy but
          * slow way is to call access(2), the harder way is to figure out
@@ -501,7 +501,7 @@ int
 PathName::CheckFileStatus(struct _stat* psb, bool* pExists, bool* pIsReadable,
     bool* pIsDir)
 {
-    return GetFileInfo(fPathName, psb, nil, pExists, pIsReadable, pIsDir);
+    return GetFileInfo(fPathName, psb, NULL, pExists, pIsReadable, pIsDir);
 }
 
 /*
@@ -512,7 +512,7 @@ PathName::GetModWhen(void)
 {
     time_t when;
 
-    if (GetFileInfo(fPathName, nil, &when, nil, nil, nil) != 0)
+    if (GetFileInfo(fPathName, NULL, &when, NULL, NULL, NULL) != 0)
         return (time_t) -1;
 
     return when;
@@ -552,26 +552,26 @@ PathName::CreateSubdirIFN(const WCHAR* pathStart, const WCHAR* pathEnd,
     WCHAR fssep)
 {
     int err = 0;
-    WCHAR* tmpBuf = nil;
+    WCHAR* tmpBuf = NULL;
     bool isDirectory;
     bool exists;
 
-    ASSERT(pathStart != nil);
-    ASSERT(pathEnd != nil);
+    ASSERT(pathStart != NULL);
+    ASSERT(pathEnd != NULL);
     ASSERT(fssep != '\0');
 
     /* pathStart might have whole path, but we only want up to "pathEnd" */
     tmpBuf = wcsdup(pathStart);
     tmpBuf[pathEnd - pathStart +1] = '\0';
 
-    err = GetFileInfo(tmpBuf, nil, nil, &exists, nil, &isDirectory);
+    err = GetFileInfo(tmpBuf, NULL, NULL, &exists, NULL, &isDirectory);
     if (err != 0) {
         WMSG1("  Could not get file info for '%ls'\n", tmpBuf);
         goto bail;
     } else if (!exists) {
         /* dir doesn't exist; move up a level and check parent */
         pathEnd = wcsrchr(tmpBuf, fssep);
-        if (pathEnd != nil) {
+        if (pathEnd != NULL) {
             pathEnd--;
             ASSERT(pathEnd >= tmpBuf);
             err = CreateSubdirIFN(tmpBuf, pathEnd, fssep);
@@ -632,7 +632,7 @@ PathName::CreatePathIFN(void)
     }
 
     pathEnd = wcsrchr(pathStart, fFssep);
-    if (pathEnd == nil) {
+    if (pathEnd == NULL) {
         /* no subdirectory components found */
         goto bail;
     }

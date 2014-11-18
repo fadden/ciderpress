@@ -205,9 +205,9 @@ public:
                 continue;
             for (i = 0; i < kReformatMAX; i++)
                 fApplies[part][i] = kApplicUnknown;
-            fSourceBuf[part] = nil;
-            fSourceLen[part] = nil;
-            fErrorBuf[part] = nil;
+            fSourceBuf[part] = NULL;
+            fSourceLen[part] = NULL;
+            fErrorBuf[part] = NULL;
         }
         for (i = 0; i < kReformatMAX; i++) {
             fAllow[i] = false;
@@ -217,7 +217,7 @@ public:
 
         fFileType = fAuxType = 0;
         fSourceFormat = kSourceFormatGeneric;
-        fNameExt = nil;
+        fNameExt = NULL;
     }
     ~ReformatHolder(void) {
         WMSG0("In ~ReformatHolder\n");
@@ -350,7 +350,7 @@ private:
     long            fFileType;
     long            fAuxType;
     SourceFormat    fSourceFormat;
-    char*           fNameExt;       // guaranteed non-nil
+    char*           fNameExt;       // guaranteed non-NULL
 
     /* input goes here */
     unsigned char*  fSourceBuf[kPartMAX];
@@ -380,10 +380,10 @@ public:
         //fOutputID
         fOutputFormatDescr(L"(none)"),
         fMultipleFonts(false),
-        fTextBuf(nil),
+        fTextBuf(NULL),
         fTextLen(-1),
         fDoDeleteText(true),
-        fpDIB(nil)
+        fpDIB(NULL)
         {}
     virtual ~ReformatOutput(void) {
         if (fDoDeleteText)
@@ -415,14 +415,14 @@ public:
     // TODO: split into two different functions, one takes const char* and
     //  doesn't delete, the other char* and does delete
     void SetTextBuf(char* buf, long len, bool doDelete) {
-        assert(fTextBuf == nil);
+        assert(fTextBuf == NULL);
         fTextBuf = buf;
         fTextLen = len;
         fDoDeleteText = doDelete;
     }
 
     void SetDIB(MyDIBitmap* pDIB) {
-        ASSERT(fpDIB == nil);
+        ASSERT(fpDIB == NULL);
         fpDIB = pDIB;
     }
 
@@ -435,7 +435,7 @@ private:
     /* output RTF uses multiple fonts, so ignore font change request */
     bool            fMultipleFonts;
 
-    /* storage; either fTextBuf or fpDIB will be nil */
+    /* storage; either fTextBuf or fpDIB will be NULL */
     char*           fTextBuf;
     long            fTextLen;
     bool            fDoDeleteText;
@@ -474,7 +474,7 @@ public:
     }
     static const char* Lookup00Addr(unsigned short addr) {
         //if (addr < 0xc000)
-        //  return nil;     // ignore Davex Bxxx values
+        //  return NULL;     // ignore Davex Bxxx values
         return Lookup(f00Addrs, addr);
     }
     static const char* Lookup01Vector(unsigned short addr) {

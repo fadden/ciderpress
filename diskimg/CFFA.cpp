@@ -58,8 +58,8 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     long totalBlocks = pImg->GetNumBlocks();
     long startBlock, maxBlocks, totalBlocksLeft;
     long fsNumBlocks;
-    DiskFS* pNewFS = nil;
-    DiskImg* pNewImg = nil;
+    DiskFS* pNewFS = NULL;
+    DiskImg* pNewImg = NULL;
     //bool fiveIs32MB;
 
     assert(totalBlocks > kEarlyVolExpectedSize);
@@ -364,11 +364,11 @@ DiskFSCFFA::OpenSubVolume(DiskImg* pImg, long startBlock, long numBlocks,
     bool scanOnly, DiskImg** ppNewImg, DiskFS** ppNewFS)
 {
     DIError dierr = kDIErrNone;
-    DiskFS* pNewFS = nil;
-    DiskImg* pNewImg = nil;
+    DiskFS* pNewFS = NULL;
+    DiskImg* pNewImg = NULL;
     
     pNewImg = new DiskImg;
-    if (pNewImg == nil) {
+    if (pNewImg == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -400,7 +400,7 @@ DiskFSCFFA::OpenSubVolume(DiskImg* pImg, long startBlock, long numBlocks,
     /* open a DiskFS for the sub-image */
     WMSG2(" CFFASub (%ld,%ld) analyze succeeded!\n", startBlock, numBlocks);
     pNewFS = pNewImg->OpenAppropriateDiskFS();
-    if (pNewFS == nil) {
+    if (pNewFS == NULL) {
         WMSG0(" CFFASub: OpenAppropriateDiskFS failed\n");
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
@@ -547,8 +547,8 @@ DiskFSCFFA::AddVolumeSeries(int start, int count, long blocksPerVolume,
     long& startBlock, long& totalBlocksLeft)
 {
     DIError dierr = kDIErrNone;
-    DiskFS* pNewFS = nil;
-    DiskImg* pNewImg = nil;
+    DiskFS* pNewFS = NULL;
+    DiskImg* pNewImg = NULL;
     long maxBlocks, fsNumBlocks;
     bool scanOnly = false;
 

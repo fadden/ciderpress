@@ -103,7 +103,7 @@ ContentList::OnCreate(LPCREATESTRUCT lpcs)
     /* add our up/down arrow bitmaps */
     LoadHeaderImages();
     CHeaderCtrl* pHeader = GetHeaderCtrl();
-    if (pHeader == nil)
+    if (pHeader == NULL)
         WMSG0("GLITCH: couldn't get header ctrl\n");
     ASSERT(pHeader != NULL);
     pHeader->SetImageList(&fHdrImageList);
@@ -244,7 +244,7 @@ ContentList::Reload(bool saveSelection)
 //  fInvalid = false;
     fpArchive->ClearReloadFlag();
 
-    long* savedSel = nil;
+    long* savedSel = NULL;
     long selCount = 0;
 
     if (saveSelection) {
@@ -260,7 +260,7 @@ ContentList::Reload(bool saveSelection)
     LoadData();
     NewSortOrder();
 
-    if (savedSel != nil) {
+    if (savedSel != NULL) {
         /* restore the selection */
         RestoreSelection(savedSel, selCount);
         delete[] savedSel;
@@ -280,7 +280,7 @@ ContentList::Reload(bool saveSelection)
 long*
 ContentList::GetSelectionSerials(long* pSelCount)
 {
-    long* savedSel = nil;
+    long* savedSel = NULL;
     long maxCount;
 
     maxCount = GetSelectedCount();
@@ -292,10 +292,10 @@ ContentList::GetSelectionSerials(long* pSelCount)
 
         POSITION posn;
         posn = GetFirstSelectedItemPosition();
-        ASSERT(posn != nil);
-        if (posn == nil)
-            return nil;
-        while (posn != nil) {
+        ASSERT(posn != NULL);
+        if (posn == NULL)
+            return NULL;
+        while (posn != NULL) {
             int num = GetNextSelectedItem(posn);
             GenericEntry* pEntry = (GenericEntry*) GetItemData(num);
 
@@ -320,7 +320,7 @@ void
 ContentList::RestoreSelection(const long* savedSel, long selCount)
 {
     WMSG1("RestoreSelection (selCount=%d)\n", selCount);
-    if (savedSel == nil)
+    if (savedSel == NULL)
         return;
 
     int i, j;
@@ -574,7 +574,7 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
             }
             break;
         case 4:     // format
-            ASSERT(pEntry->GetFormatStr() != nil);
+            ASSERT(pEntry->GetFormatStr() != NULL);
             wcscpy(plvdi->item.pszText, pEntry->GetFormatStr());
             break;
         case 5:     // size
@@ -739,7 +739,7 @@ ContentList::LoadData(void)
     DeleteAllItems();   // for Reload case
 
     pEntry = fpArchive->GetEntries();
-    while (pEntry != nil) {
+    while (pEntry != NULL) {
         pEntry->SetIndex(idx);
 
         lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
@@ -968,12 +968,12 @@ ContentList::SelectSubdirContents(void)
 {
     POSITION posn;
     posn = GetFirstSelectedItemPosition();
-    if (posn == nil) {
+    if (posn == NULL) {
         WMSG0("SelectSubdirContents: nothing is selected\n");
         return;
     }
     /* mark all selected items with LVIS_CUT */
-    while (posn != nil) {
+    while (posn != NULL) {
         int num = GetNextSelectedItem(/*ref*/ posn);
         SetItemState(num, LVIS_CUT, LVIS_CUT);
     }
@@ -1002,7 +1002,7 @@ ContentList::SelectSubdirContents(void)
 
     /* clear the LVIS_CUT flags */
     posn = GetFirstSelectedItemPosition();
-    while (posn != nil) {
+    while (posn != NULL) {
         int num = GetNextSelectedItem(/*ref*/ posn);
         SetItemState(num, 0, LVIS_CUT);
     }
@@ -1109,7 +1109,7 @@ ContentList::CompareFindString(int num, const WCHAR* str, bool matchCase,
 {
     GenericEntry* pEntry = (GenericEntry*) GetItemData(num);
     char fssep = pEntry->GetFssep();
-    const WCHAR* (*pSubCompare)(const WCHAR* str, const WCHAR* subStr) = nil;
+    const WCHAR* (*pSubCompare)(const WCHAR* str, const WCHAR* subStr) = NULL;
 
     if (matchCase)
         pSubCompare = wcsstr;
@@ -1127,7 +1127,7 @@ ContentList::CompareFindString(int num, const WCHAR* str, bool matchCase,
 
             match = (*pSubCompare)(start, str);
 
-            if (match == nil)
+            if (match == NULL)
                 break;
             if ((match == src || *(match-1) == fssep) &&
                 (match[strLen] == '\0' || match[strLen] == fssep))
@@ -1138,7 +1138,7 @@ ContentList::CompareFindString(int num, const WCHAR* str, bool matchCase,
             start++;
         }
     } else {
-        if ((*pSubCompare)(pEntry->GetDisplayName(), str) != nil)
+        if ((*pSubCompare)(pEntry->GetDisplayName(), str) != NULL)
             return true;
     }
 

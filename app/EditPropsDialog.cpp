@@ -83,7 +83,7 @@ EditPropsDialog::OnInitDialog(void)
     int comboIdx;
 
     pCombo = (CComboBox*) GetDlgItem(IDC_PROPS_FILETYPE);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
 
     pCombo->InitStorage(256, 256 * 8);
 
@@ -134,18 +134,18 @@ EditPropsDialog::OnInitDialog(void)
 
     CString dateStr;
     pWnd = GetDlgItem(IDC_PROPS_CREATEWHEN);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     FormatDate(fProps.createWhen, &dateStr);
     pWnd->SetWindowText(dateStr);
 
     pWnd = GetDlgItem(IDC_PROPS_MODWHEN);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     FormatDate(fProps.modWhen, &dateStr);
     pWnd->SetWindowText(dateStr);
     //WMSG2("USING DATE '%ls' from 0x%08lx\n", dateStr, fProps.modWhen);
 
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_PROPS_AUXTYPE);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetLimitText(4);     // max len of aux type str
     pEdit = (CEdit*) GetDlgItem(IDC_PROPS_HFS_FILETYPE);
     pEdit->SetLimitText(4);
@@ -359,10 +359,10 @@ EditPropsDialog::OnTypeChange(void)
     CWnd* pWnd;
     int fileType, fileTypeIdx;
     long auxType;
-    const WCHAR* descr = nil;
+    const WCHAR* descr = NULL;
 
     pCombo = (CComboBox*) GetDlgItem(IDC_PROPS_FILETYPE);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
 
     fileTypeIdx = pCombo->GetCurSel();
     fileType = pCombo->GetItemData(fileTypeIdx);
@@ -373,12 +373,12 @@ EditPropsDialog::OnTypeChange(void)
         if (auxType < 0)
             auxType = 0;
         descr = PathProposal::FileTypeDescription(fileType, auxType);
-        if (descr == nil)
+        if (descr == NULL)
             descr = kUnknownFileType;
     }
 
     pWnd = GetDlgItem(IDC_PROPS_TYPEDESCR);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(descr);
 
     /* DOS aux type only applies to BIN */
@@ -427,7 +427,7 @@ EditPropsDialog::UpdateHFSMode(void)
         pWnd->EnableWindow(FALSE);
 
         pWnd = GetDlgItem(IDC_PROPS_TYPEDESCR);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->SetWindowText(L"(HFS type)");
         OnHFSTypeChange();
     } else {
@@ -483,7 +483,7 @@ long
 EditPropsDialog::GetAuxType(void)
 {
     CWnd* pWnd = GetDlgItem(IDC_PROPS_AUXTYPE);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
 
     CString aux;
     pWnd->GetWindowText(aux);

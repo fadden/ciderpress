@@ -33,7 +33,7 @@ UseSelectionDialog::OnInitDialog(void)
 
     /* grab the radio button with the selection count */
     pWnd = GetDlgItem(IDC_USE_SELECTED);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
 
     /* set the string using a string table entry */
     if (fSelectedCount == 1) {
@@ -53,12 +53,12 @@ UseSelectionDialog::OnInitDialog(void)
     SetWindowText(str);
 
     pWnd = GetDlgItem(IDC_USE_ALL);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     str.LoadString(fAllID);
     pWnd->SetWindowText(str);
 
     pWnd = GetDlgItem(IDOK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     str.LoadString(fOkLabelID);
     pWnd->SetWindowText(str);
 

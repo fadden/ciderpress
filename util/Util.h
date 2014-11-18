@@ -44,11 +44,11 @@ public:
     ExpandBuffer(long initialSize = 65536) {
         ASSERT(initialSize > 0);
         fInitialSize = initialSize;
-        fWorkBuf = nil;
+        fWorkBuf = NULL;
         fWorkCount = fWorkMax = 0;
     }
     virtual ~ExpandBuffer(void) {
-        if (fWorkBuf != nil) {
+        if (fWorkBuf != NULL) {
             WMSG0("ExpandBuffer: fWorkBuf not seized; freeing\n");
             delete[] fWorkBuf;
         }
@@ -57,7 +57,7 @@ public:
 
     void Reset(void) {
         delete[] fWorkBuf;
-        fWorkBuf = nil;
+        fWorkBuf = NULL;
         fWorkCount = fWorkMax = 0;
     }
 

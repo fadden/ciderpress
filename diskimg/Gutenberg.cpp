@@ -324,8 +324,8 @@ DiskFSGutenberg::GetFileLengths(void)
     int tsCount = 0;
     unsigned short currentTrack, currentSector;
 
-    pFile = (A2FileGutenberg*) GetNextFile(nil);
-    while (pFile != nil) {
+    pFile = (A2FileGutenberg*) GetNextFile(NULL);
+    while (pFile != NULL) {
         DIError dierr;
         tsCount = 0;
         currentTrack = pFile->fTrack;
@@ -404,7 +404,7 @@ A2FileGutenberg::A2FileGutenberg(DiskFS* pDiskFS) : A2File(pDiskFS)
     fLength = -1;
     fSparseLength = -1;
 
-    fpOpenFile = nil;
+    fpOpenFile = NULL;
 }
 
 /*
@@ -485,7 +485,7 @@ A2FileGutenberg::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     DIError dierr = kDIErrNone;
-    A2FDGutenberg* pOpenFile = nil;
+    A2FDGutenberg* pOpenFile = NULL;
 
     if (!readOnly) {
         if (fpDiskFS->GetDiskImg()->GetReadOnly())
@@ -494,7 +494,7 @@ A2FileGutenberg::Open(A2FileDescr** ppOpenFile, bool readOnly,
             return kDIErrBadDiskImage;
     }
 
-    if (fpOpenFile != nil) {
+    if (fpOpenFile != NULL) {
         dierr = kDIErrAlreadyOpen;
         goto bail;
     }
@@ -510,7 +510,7 @@ A2FileGutenberg::Open(A2FileDescr** ppOpenFile, bool readOnly,
 
     fpOpenFile = pOpenFile;     // add it to our single-member "open file set"
     *ppOpenFile = pOpenFile;
-    pOpenFile = nil;
+    pOpenFile = NULL;
 
 bail:
     delete pOpenFile;

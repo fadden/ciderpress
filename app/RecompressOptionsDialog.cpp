@@ -56,7 +56,7 @@ RecompressOptionsDialog::LoadComboBox(NuThreadFormat fmt)
     int retIdx = 0;
 
     pCombo = (CComboBox*) GetDlgItem(IDC_RECOMP_COMP);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
 
     for (idx = comboIdx = 0; idx < NELEM(kComboStrings); idx++) {
         if (NufxArchive::IsCompressionSupported(kComboStrings[idx].format)) {
@@ -84,7 +84,7 @@ RecompressOptionsDialog::DoDataExchange(CDataExchange* pDX)
     if (pDX->m_bSaveAndValidate) {
         CComboBox* pCombo;
         pCombo = (CComboBox*) GetDlgItem(IDC_RECOMP_COMP);
-        ASSERT(pCombo != nil);
+        ASSERT(pCombo != NULL);
 
         fCompressionType = pCombo->GetItemData(fCompressionIdx);
         WMSG2("DDX got type=%d from combo index %d\n",

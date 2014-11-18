@@ -19,7 +19,7 @@
  */
 class EnterRegDialog : public CDialog {
 public:
-    EnterRegDialog(CWnd* pParent = nil) : CDialog(IDD_REGISTRATION, pParent)
+    EnterRegDialog(CWnd* pParent = NULL) : CDialog(IDD_REGISTRATION, pParent)
     { fDepth = 0; }
     virtual ~EnterRegDialog(void) {}
 

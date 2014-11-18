@@ -24,11 +24,11 @@
 /*
  * Extract data from an entry.
  *
- * If "*ppText" is non-nil, the data will be read into the pointed-to buffer
+ * If "*ppText" is non-NULL, the data will be read into the pointed-to buffer
  * so long as it's shorter than *pLength bytes.  The value in "*pLength"
  * will be set to the actual length used.
  *
- * If "*ppText" is nil, the uncompressed data will be placed into a buffer
+ * If "*ppText" is NULL, the uncompressed data will be placed into a buffer
  * allocated with "new[]".
  *
  * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
@@ -43,15 +43,15 @@ BnyEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
 {
     NuError nerr;
     ExpandBuffer expBuf;
-    char* dataBuf = nil;
+    char* dataBuf = NULL;
     long len;
     bool needAlloc = true;
     int result = -1;
 
-    ASSERT(fpArchive != nil);
-    ASSERT(fpArchive->fFp != nil);
+    ASSERT(fpArchive != NULL);
+    ASSERT(fpArchive->fFp != NULL);
 
-    if (*ppText != nil)
+    if (*ppText != NULL)
         needAlloc = false;
 
     if (which != kDataThread) {
@@ -87,14 +87,14 @@ BnyEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
             goto bail;
         }
 
-        char* unsqBuf = nil;
+        char* unsqBuf = NULL;
         long unsqLen = 0;
         expBuf.SeizeBuffer(&unsqBuf, &unsqLen);
         WMSG2("Unsqueezed %ld bytes to %d\n", len, unsqLen);
         if (unsqLen == 0) {
             // some bonehead squeezed a zero-length file
             delete[] unsqBuf;
-            ASSERT(*ppText == nil);
+            ASSERT(*ppText == NULL);
             WMSG0("Handling zero-length squeezed file!\n");
             if (needAlloc) {
                 *ppText = new char[1];
@@ -123,7 +123,7 @@ BnyEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
     } else {
         if (needAlloc) {
             dataBuf = new char[len];
-            if (dataBuf == nil) {
+            if (dataBuf == NULL) {
                 pErrMsg->Format(L"allocation of %ld bytes failed", len);
                 goto bail;
             }
@@ -155,7 +155,7 @@ bail:
         ASSERT(result == IDCANCEL || !pErrMsg->IsEmpty());
         if (needAlloc) {
             delete[] dataBuf;
-            ASSERT(*ppText == nil);
+            ASSERT(*ppText == NULL);
         }
     }
     return result;
@@ -226,7 +226,7 @@ BnyEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
 
         // some bonehead squeezed a zero-length file
         if (uncLen == 0) {
-            ASSERT(buf == nil);
+            ASSERT(buf == NULL);
             WMSG0("Handling zero-length squeezed file!\n");
             result = IDOK;
             goto bail;
@@ -317,7 +317,7 @@ bail:
  * Test this entry by extracting it.
  *
  * If the file isn't compressed, just make sure the file is big enough.  If
- * it's squeezed, invoke the un-squeeze function with a "nil" buffer pointer.
+ * it's squeezed, invoke the un-squeeze function with a "NULL" buffer pointer.
  */
 NuError
 BnyEntry::TestEntry(CWnd* pMsgWnd)
@@ -342,7 +342,7 @@ BnyEntry::TestEntry(CWnd* pMsgWnd)
 
     if (GetSqueezed()) {
         nerr = UnSqueeze(fpArchive->fFp, (unsigned long) GetUncompressedLen(),
-                    nil, true, kBNYBlockSize);
+                    NULL, true, kBNYBlockSize);
         if (nerr != kNuErrNone) {
             errMsg.Format(L"Unsqueeze failed: %hs.", NuStrError(nerr));
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
@@ -399,7 +399,7 @@ BnyArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
 
     errno = 0;
     fFp = _wfopen(filename, L"rb");
-    if (fFp == nil) {
+    if (fFp == NULL) {
         errMsg.Format(L"Unable to open %ls: %hs.", filename, strerror(errno));
         goto bail;
     }
@@ -485,7 +485,7 @@ BnyArchive::LoadContents(void)
 {
     NuError nerr;
 
-    ASSERT(fFp != nil);
+    ASSERT(fFp != NULL);
     rewind(fFp);
 
     nerr = BNYIterate();
@@ -631,9 +631,9 @@ BnyArchive::BNYRead(void* buf, size_t nbyte)
 {
     size_t result;
 
-    ASSERT(buf != nil);
+    ASSERT(buf != NULL);
     ASSERT(nbyte > 0);
-    ASSERT(fFp != nil);
+    ASSERT(fFp != NULL);
 
     errno = 0;
     result = fread(buf, 1, nbyte, fFp);
@@ -650,7 +650,7 @@ BnyArchive::BNYRead(void* buf, size_t nbyte)
 NuError
 BnyArchive::BNYSeek(long offset)
 {
-    ASSERT(fFp != nil);
+    ASSERT(fFp != NULL);
     ASSERT(offset > 0);
 
     /*DBUG(("--- seeking forward %ld bytes\n", offset));*/
@@ -694,7 +694,7 @@ BnyArchive::BNYDecodeHeader(BnyFileEntry* pEntry)
     uchar* raw;
     int len;
 
-    ASSERT(pEntry != nil);
+    ASSERT(pEntry != NULL);
 
     raw = pEntry->blockBuf;
 
@@ -788,9 +788,9 @@ BNYNormalizePath(BnyFileEntry* pEntry)
     pathProposal.pRecord = &fakeRecord;
     pathProposal.pThread = &fakeThread;
 
-    pathProposal.newPathname = nil;
+    pathProposal.newPathname = NULL;
     pathProposal.newFilenameSeparator = '\0';
-    pathProposal.newDataSink = nil;
+    pathProposal.newDataSink = NULL;
 
     /* need the filetype and auxtype for -e/-ee */
     fakeRecord.recFileType = pEntry->fileType;
@@ -827,7 +827,7 @@ BnyArchive::BNYCopyBlocks(BnyFileEntry* pEntry, FILE* outfp)
         if (toWrite > kBNYBlockSize)
             toWrite = kBNYBlockSize;
 
-        if (outfp != nil) {
+        if (outfp != NULL) {
             if (fwrite(pEntry->blockBuf, toWrite, 1, outfp) != 1) {
                 err = errno ? (NuError) errno : kNuErrFileWrite;
                 WMSG0("BNY write failed\n");
@@ -955,18 +955,18 @@ BnyArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     CString errMsg;
     bool retVal = false;
 
-    ASSERT(fFp != nil);
+    ASSERT(fFp != NULL);
 
     WMSG1("Testing %d entries\n", pSelSet->GetNumEntries());
 
     SelectionEntry* pSelEntry = pSelSet->IterNext();
-    while (pSelEntry != nil) {
+    while (pSelEntry != NULL) {
         pEntry = (BnyEntry*) pSelEntry->GetEntry();
 
         WMSG2("  Testing '%ls' (offset=%ld)\n", pEntry->GetDisplayName(),
             pEntry->GetOffset());
 
-        SET_PROGRESS_UPDATE2(0, pEntry->GetDisplayName(), nil);
+        SET_PROGRESS_UPDATE2(0, pEntry->GetDisplayName(), NULL);
 
         nerr = pEntry->TestEntry(pMsgWnd);
         if (nerr != kNuErrNone) {

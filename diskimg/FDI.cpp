@@ -63,7 +63,7 @@ WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
 {
     DIError dierr = kDIErrNone;
     unsigned char nibbleBuf[kNibbleBufLen];
-    unsigned char* inputBuf = nil;
+    unsigned char* inputBuf = NULL;
     bool goodTracks[kMaxNibbleTracks525];
     int inputBufLen = -1;
     int badTracks = 0;
@@ -92,7 +92,7 @@ WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
                 delete[] inputBuf;
                 inputBufLen = length256 * 256;
                 inputBuf = new unsigned char[inputBufLen];
-                if (inputBuf == nil) {
+                if (inputBuf == NULL) {
                     dierr = kDIErrMalloc;
                     goto bail;
                 }
@@ -229,7 +229,7 @@ WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
 {
     DIError dierr = kDIErrNone;
     unsigned char nibbleBuf[kNibbleBufLen];
-    unsigned char* inputBuf = nil;
+    unsigned char* inputBuf = NULL;
     unsigned char outputBuf[kMaxSectors35 * kBlockSize];    // 6KB
     int inputBufLen = -1;
     int badTracks = 0;
@@ -259,7 +259,7 @@ WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
                 delete[] inputBuf;
                 inputBufLen = length256 * 256;
                 inputBuf = new unsigned char[inputBufLen];
-                if (inputBuf == nil) {
+                if (inputBuf == NULL) {
                     dierr = kDIErrMalloc;
                     goto bail;
                 }
@@ -503,7 +503,7 @@ WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
      * Uncompress or endian-swap the pulse streams.
      */
     hdr.avgStream = new unsigned long[hdr.numPulses];
-    if (hdr.avgStream == nil)
+    if (hdr.avgStream == NULL)
         goto bail;
     if (!UncompressPulseStream(inputBuf, hdr.avgStreamLen, hdr.avgStream,
         hdr.numPulses, hdr.avgStreamCompression, 4))
@@ -514,7 +514,7 @@ WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
 
     if (hdr.minStreamLen > 0) {
         hdr.minStream = new unsigned long[hdr.numPulses];
-        if (hdr.minStream == nil)
+        if (hdr.minStream == NULL)
             goto bail;
         if (!UncompressPulseStream(inputBuf, hdr.minStreamLen, hdr.minStream,
             hdr.numPulses, hdr.minStreamCompression, 4))
@@ -550,13 +550,13 @@ WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
 
 bail:
     /* clean up */
-    if (hdr.avgStream != nil)
+    if (hdr.avgStream != NULL)
         delete[] hdr.avgStream;
-    if (hdr.minStream != nil)
+    if (hdr.minStream != NULL)
         delete[] hdr.minStream;
-    if (hdr.maxStream != nil)
+    if (hdr.maxStream != NULL)
         delete[] hdr.maxStream;
-    if (hdr.idxStream != nil)
+    if (hdr.idxStream != NULL)
         delete[] hdr.idxStream;
     return result;
 }
@@ -661,8 +661,8 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
         //  subStreamShift, signExtend, sixteenBits);
 
         /* decode the Huffman tree structure */
-        root.left = nil;
-        root.right = nil;
+        root.left = NULL;
+        root.right = NULL;
         bitMask = 0;
         inputBuf = HuffExtractTree(inputBuf, &root, &bits, &bitMask);
 
@@ -689,7 +689,7 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
             /* chase down the tree until we hit a leaf */
             /* (note: nodes have two kids or none) */
             while (true) {
-                if (pCurrent->left == nil) {
+                if (pCurrent->left == NULL) {
                     break;
                 } else {
                     bitMask >>= 1;
@@ -748,8 +748,8 @@ WrapperFDI::HuffExtractTree(const unsigned char* inputBuf, HuffNode* pNode,
     //WMSG1("     val=%d\n", val);
 
     if (val != 0) {
-        assert(pNode->left == nil);
-        assert(pNode->right == nil);
+        assert(pNode->left == NULL);
+        assert(pNode->right == NULL);
         return inputBuf;
     } else {
         pNode->left = new HuffNode;
@@ -767,7 +767,7 @@ WrapperFDI::HuffExtractTree(const unsigned char* inputBuf, HuffNode* pNode,
 const unsigned char*
 WrapperFDI::HuffExtractValues16(const unsigned char* inputBuf, HuffNode* pNode)
 {
-    if (pNode->left == nil) {
+    if (pNode->left == NULL) {
         pNode->val = (*inputBuf++) << 8;
         pNode->val |= *inputBuf++;
         return inputBuf;
@@ -783,7 +783,7 @@ WrapperFDI::HuffExtractValues16(const unsigned char* inputBuf, HuffNode* pNode)
 const unsigned char*
 WrapperFDI::HuffExtractValues8(const unsigned char* inputBuf, HuffNode* pNode)
 {
-    if (pNode->left == nil) {
+    if (pNode->left == NULL) {
         pNode->val = *inputBuf++;
         return inputBuf;
     } else {
@@ -798,7 +798,7 @@ WrapperFDI::HuffExtractValues8(const unsigned char* inputBuf, HuffNode* pNode)
 void
 WrapperFDI::HuffFreeNodes(HuffNode* pNode)
 {
-    if (pNode != nil) {
+    if (pNode != NULL) {
         HuffFreeNodes(pNode->left);
         HuffFreeNodes(pNode->right);
         delete pNode;
@@ -847,7 +847,7 @@ bool
 WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
     unsigned char* nibbleBuf, long* pNibbleLen)
 {
-    unsigned long* fakeIdxStream = nil;
+    unsigned long* fakeIdxStream = NULL;
     bool result = false;
     int i;
 
@@ -860,7 +860,7 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
     unsigned long* idxStream;
     
     avgStream = pHdr->avgStream;
-    if (pHdr->minStream != nil && pHdr->maxStream != nil) {
+    if (pHdr->minStream != NULL && pHdr->maxStream != NULL) {
         minStream = pHdr->minStream;
         maxStream = pHdr->maxStream;
 
@@ -874,7 +874,7 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
         maxStream = pHdr->avgStream;
     }
 
-    if (pHdr->idxStream != nil)
+    if (pHdr->idxStream != NULL)
         idxStream = pHdr->idxStream;
     else {
         /*
@@ -886,7 +886,7 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
         WMSG0(" FDI: HEY: using fake index stream\n");
         DebugBreak();
         fakeIdxStream = new unsigned long[pHdr->numPulses];
-        if (fakeIdxStream == nil) {
+        if (fakeIdxStream == NULL) {
             WMSG0(" FDI: unable to alloc fake idx stream\n");
             goto bail;
         }

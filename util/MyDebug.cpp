@@ -27,12 +27,12 @@ DebugLog::DebugLog(const WCHAR* logFile)
         _wunlink(logFile);
     }
     fLogFp = _wfopen(logFile, L"a");
-    if (fLogFp == nil) {
+    if (fLogFp == NULL) {
         _CrtDbgReport(_CRT_WARN, __FILE__, __LINE__, NULL,
             "Unable to open %ls: %d\n", logFile, errno);
     } else {
         // disable buffering so we don't lose anything if app crashes
-        setvbuf(fLogFp, nil, _IONBF, 0);
+        setvbuf(fLogFp, NULL, _IONBF, 0);
 
         fprintf(fLogFp, "\n");
         if (when > 0) {

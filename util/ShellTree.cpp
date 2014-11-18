@@ -35,7 +35,7 @@ BOOL
 ShellTree::ReplaceDlgCtrl(CDialog* pDialog, int treeID)
 {
     CWnd* pWnd = pDialog->GetDlgItem(treeID);
-    if (pWnd == nil)
+    if (pWnd == NULL)
         return FALSE;
 
 #if 0
@@ -63,10 +63,10 @@ ShellTree::ReplaceDlgCtrl(CDialog* pDialog, int treeID)
 BOOL
 ShellTree::PopulateTree(int nFolder) 
 {
-    LPSHELLFOLDER lpsf = nil, lpsf2 = nil;
-    LPITEMIDLIST lpi = nil;
+    LPSHELLFOLDER lpsf = NULL, lpsf2 = NULL;
+    LPITEMIDLIST lpi = NULL;
     TV_SORTCB tvscb;
-    LPMALLOC lpMalloc = nil;
+    LPMALLOC lpMalloc = NULL;
     HRESULT hr;
     BOOL retval = FALSE;
 
@@ -86,8 +86,8 @@ ShellTree::PopulateTree(int nFolder)
     if (nFolder == CSIDL_DESKTOP) {
         // already done
         lpsf2 = lpsf;
-        lpsf = nil;
-        ASSERT(lpi == nil);
+        lpsf = NULL;
+        ASSERT(lpi == NULL);
     } else {
         // find the desired special folder
         hr = SHGetSpecialFolderLocation(m_hWnd, nFolder, &lpi);
@@ -112,9 +112,9 @@ ShellTree::PopulateTree(int nFolder)
     SortChildrenCB(&tvscb);
 
 bail:
-    if (lpsf != nil)
+    if (lpsf != NULL)
         lpsf->Release();
-    if (lpsf != nil)
+    if (lpsf != NULL)
         lpsf2->Release();
     lpMalloc->Free(lpi);
 
@@ -129,7 +129,7 @@ ShellTree::ExpandMyComputer(void)
 {
     HTREEITEM hItem;
     hItem = FindMyComputer();
-    if (hItem == nil)
+    if (hItem == NULL)
         hItem = GetRootItem();
     Expand(hItem, TVE_EXPAND);
     Select(hItem, TVGN_CARET);
@@ -257,7 +257,7 @@ ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
              * seem to screen out all the bad ones.
              */
 
-            if (lpifq == nil) {
+            if (lpifq == NULL) {
                 /* dealing with stuff at the root level */
                 goodOne = ( (ulAttrs & SFGAO_FOLDER) &&
                             (ulAttrs & SFGAO_HASSUBFOLDER) &&
@@ -336,11 +336,11 @@ ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
 {
     TVITEM          tvi;
     TVINSERTSTRUCT  tvins;
-    LPITEMIDLIST    lpifqThisItem = nil;
-    TVItemData*     lptvid = nil;
+    LPITEMIDLIST    lpifqThisItem = NULL;
+    TVItemData*     lptvid = NULL;
     WCHAR           szBuff[MAX_PATH];
     CString         name;
-    LPMALLOC        lpMalloc = nil;
+    LPMALLOC        lpMalloc = NULL;
     HRESULT         hr;
     BOOL            result = FALSE;
 
@@ -382,7 +382,7 @@ ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
 
     // Done with lipfqThisItem.
     lptvid->lpifq = lpifqThisItem;
-    lpifqThisItem = nil;
+    lpifqThisItem = NULL;
 
     // Put in a copy of the relative PIDL.
     lptvid->lpi = Pidl::CopyITEMID(lpMalloc, lpi);
@@ -393,7 +393,7 @@ ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
 
     // Done with lptvid.
     tvi.lParam = (LPARAM)lptvid;
-    lptvid = nil;
+    lptvid = NULL;
 
     // Populate the TreeView Insert Struct
     // The item is the one filled above.
@@ -486,15 +486,15 @@ ShellTree::TreeViewCompareProc(LPARAM lparam1, LPARAM lparam2, LPARAM)
 BOOL
 ShellTree::AddFolderAtSelection(const CString& name)
 {
-    LPSHELLFOLDER lpsf = nil;
-    LPITEMIDLIST lpi = nil;
+    LPSHELLFOLDER lpsf = NULL;
+    LPITEMIDLIST lpi = NULL;
     HTREEITEM hParent;
-    LPMALLOC lpMalloc = nil;
-    LPENUMIDLIST lpe = nil;
+    LPMALLOC lpMalloc = NULL;
+    LPENUMIDLIST lpe = NULL;
     const TVItemData* parentTvid;
-    TVItemData* newTvid = nil;
+    TVItemData* newTvid = NULL;
     HWND hwnd = ::GetParent(m_hWnd);
-    HTREEITEM hPrev = nil;
+    HTREEITEM hPrev = NULL;
     BOOL result = false;
     CString debugName;
     HRESULT hr;
@@ -507,7 +507,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
        return FALSE;
 
     hParent = GetSelectedItem();
-    if (hParent == nil) {
+    if (hParent == NULL) {
         WMSG0("Nothing selected!\n");
         goto bail;
     }
@@ -538,11 +538,11 @@ ShellTree::AddFolderAtSelection(const CString& name)
         ASSERT(false);
     } else {
         HTREEITEM child = GetChildItem(hParent);
-        if (child == nil && tvi.cChildren) {
+        if (child == NULL && tvi.cChildren) {
             WMSG1(" Found unexpanded node, not adding %ls\n", name);
             result = TRUE;
             goto bail;
-        } else if (child == nil && !tvi.cChildren) {
+        } else if (child == NULL && !tvi.cChildren) {
             WMSG1(" Found former leaf node, updating kids in %ls\n", debugName);
             tvi.cChildren = 1;
             if (!SetItem(&tvi)) {
@@ -552,7 +552,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
             result = TRUE;
             goto bail;
         } else {
-            ASSERT(child != nil && tvi.cChildren != 0);
+            ASSERT(child != NULL && tvi.cChildren != 0);
             WMSG2(" Found expanded branch node '%ls', adding new '%ls'\n",
                 debugName, name);
         }
@@ -560,7 +560,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
 
 
     parentTvid = (TVItemData*)GetItemData(hParent);
-    ASSERT(parentTvid != nil);
+    ASSERT(parentTvid != NULL);
 
     // Get a handle to the ShellFolder for the currently selected node.
     hr = parentTvid->lpsfParent->BindToObject(parentTvid->lpi,
@@ -579,7 +579,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
     }
 
     // Enumerate throught the list of folder and non-folder objects.
-    while (S_OK == lpe->Next(1, &lpi, nil)) {
+    while (S_OK == lpe->Next(1, &lpi, NULL)) {
         CString pidlName;
         if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, &pidlName)) {
             if (name.CompareNoCase(pidlName) == 0) {
@@ -594,15 +594,15 @@ ShellTree::AddFolderAtSelection(const CString& name)
         }
 
         lpMalloc->Free(lpi);  //Free the pidl that the shell gave us.
-        lpi = nil;
+        lpi = NULL;
     }
 
 bail:
-    if (lpi != nil)
+    if (lpi != NULL)
         lpMalloc->Free(lpi);
-    if (lpsf != nil)
+    if (lpsf != NULL)
         lpsf->Release();
-    if (lpe != nil)  
+    if (lpe != NULL)  
         lpe->Release();
     lpMalloc->Release();
     return result;
@@ -992,7 +992,7 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
      * it for the drive letter.
      */
     HTREEITEM myComputer = FindMyComputer();
-    if (myComputer == nil) {
+    if (myComputer == NULL) {
         *pResultStr = L"Unable to locate My Computer in tree.";
         return;
     }
@@ -1001,7 +1001,7 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
     WMSG1("Searching for drive='%ls'\n", drive);
 
     HTREEITEM node = FindDrive(myComputer, drive);
-    if (node == nil) {
+    if (node == NULL) {
         /* unexpected -- couldn't find the drive */
         pResultStr->Format(L"Unable to find drive %ls.", drive);
         return;
@@ -1014,7 +1014,7 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
      */
     node = SearchTree(node, pathName.GetPathOnly());
 
-    if (node == nil) {
+    if (node == NULL) {
         /* unexpected -- file doesn't exist */
         pResultStr->Format(L"Unable to find file '%ls'.",
             (LPCWSTR) pathName.GetPathOnly());
@@ -1036,36 +1036,36 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
  * If it moved, or if we started the tree somewhere other than right at
  * the desktop, we'd have to recursively search the tree.
  *
- * Returns a handle to the tree item, or nil if My Computer wasn't found
+ * Returns a handle to the tree item, or NULL if My Computer wasn't found
  * or didn't have any children.
  */
 HTREEITEM
 ShellTree::FindMyComputer(void)
 {
-    LPSHELLFOLDER desktop = nil;
-    LPITEMIDLIST myComputerPidl = nil;
-    LPMALLOC lpMalloc = nil;
+    LPSHELLFOLDER desktop = NULL;
+    LPITEMIDLIST myComputerPidl = NULL;
+    LPMALLOC lpMalloc = NULL;
     HTREEITEM node;
-    HTREEITEM result = nil;
+    HTREEITEM result = NULL;
     HRESULT hr;
 
     hr = ::SHGetMalloc(&lpMalloc);
     if (FAILED(hr))
-       return nil;
+       return NULL;
 
     hr = SHGetDesktopFolder(&desktop);
     if (FAILED(hr))
         goto bail;
 
-    hr = SHGetSpecialFolderLocation(nil, CSIDL_DRIVES, &myComputerPidl);
+    hr = SHGetSpecialFolderLocation(NULL, CSIDL_DRIVES, &myComputerPidl);
     if (FAILED(hr))
         goto bail;
 
     node = GetRootItem();
-    while (node != nil) {
+    while (node != NULL) {
         CString itemText = GetItemText(node);
         TVItemData* pData = (TVItemData*) GetItemData(node);
-        ASSERT(pData != nil);
+        ASSERT(pData != NULL);
 
         hr = desktop->CompareIDs(0, myComputerPidl, pData->lpi);
         if (SUCCEEDED(hr) && HRESULT_CODE(hr) == 0) {
@@ -1076,13 +1076,13 @@ ShellTree::FindMyComputer(void)
         node = GetNextSiblingItem(node);
     }
 
-    if (result != nil && !ItemHasChildren(result)) {
+    if (result != NULL && !ItemHasChildren(result)) {
         WMSG0("Glitch: My Computer has no children\n");
-        result = nil;
+        result = NULL;
     }
 
 bail:
-    if (desktop != nil)
+    if (desktop != NULL)
         desktop->Release();
     lpMalloc->Free(myComputerPidl);
     lpMalloc->Release();
@@ -1094,7 +1094,7 @@ bail:
  * corresponding to the requested drive (which should be of the form
  * "C:").
  *
- * Returns a pointer to the drive's node on success, or nil on failure.
+ * Returns a pointer to the drive's node on success, or NULL on failure.
  */
 HTREEITEM
 ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
@@ -1106,9 +1106,9 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
 
     HTREEITEM node;
     node = GetChildItem(myComputer);
-    if (node == nil) {
+    if (node == NULL) {
         ASSERT(false);  // we verified My Computer has kids earlier
-        return nil;
+        return NULL;
     }
 
     /*
@@ -1121,7 +1121,7 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
      */
     udrive = drive;
     udrive.MakeUpper();
-    while (node != nil) {
+    while (node != NULL) {
         CString itemText = GetItemText(node);
         itemText.MakeUpper();
 
@@ -1156,8 +1156,8 @@ ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
 
     /* make a copy of "path" that we can mess with */
     start = mangle.GetBuffer(0);
-    if (start == nil || *start != '\\' || *(start + wcslen(start)-1) != '\\')
-        return nil;
+    if (start == NULL || *start != '\\' || *(start + wcslen(start)-1) != '\\')
+        return NULL;
     start++;
 
     node = treeNode;
@@ -1167,13 +1167,13 @@ ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
         node = GetChildItem(node);
 
         end = wcschr(start, '\\');
-        if (end == nil) {
+        if (end == NULL) {
             ASSERT(false);
-            return nil;
+            return NULL;
         }
         *end = '\0';
 
-        while (node != nil) {
+        while (node != NULL) {
             CString itemText = GetItemText(node);
 
             //WMSG2("COMPARE '%s' '%s'\n", start, itemText);
@@ -1184,7 +1184,7 @@ ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
 
             node = GetNextSiblingItem(node);
         }
-        if (node == nil) {
+        if (node == NULL) {
             WMSG2("NOT FOUND '%ls' '%ls'\n", (LPCTSTR) path, start);
             break;
         }
@@ -1509,7 +1509,7 @@ void ShellTree::TunnelTree(CString szFindPath)
 
 
 #if 0   // quick test
-LPMALLOC g_pMalloc = nil;
+LPMALLOC g_pMalloc = NULL;
 
 // Main_OnBrowse - browses for a program folder. 
 // hwnd - handle to the application's main window. 
@@ -1523,7 +1523,7 @@ void Main_OnBrowse(HWND hwnd)
     LPITEMIDLIST pidlPrograms;  // PIDL for Programs folder 
     LPITEMIDLIST pidlBrowse;    // PIDL selected by user 
  
-    if (g_pMalloc == nil)
+    if (g_pMalloc == NULL)
         ::SHGetMalloc(&g_pMalloc);
 
     // Allocate a buffer to receive browse information. 

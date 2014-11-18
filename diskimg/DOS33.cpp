@@ -237,8 +237,8 @@ DiskFSDOS33::Initialize(InitMode initMode)
     fVolumeUsage.Dump();
 
 //  A2File* pFile;
-//  pFile = GetNextFile(nil);
-//  while (pFile != nil) {
+//  pFile = GetNextFile(NULL);
+//  while (pFile != NULL) {
 //      pFile->Dump();
 //      pFile = GetNextFile(pFile);
 //  }
@@ -998,13 +998,13 @@ DIError
 DiskFSDOS33::GetFileLengths(void)
 {
     A2FileDOS* pFile;
-    TrackSector* tsList = nil;
-    TrackSector* indexList = nil;
+    TrackSector* tsList = NULL;
+    TrackSector* indexList = NULL;
     int tsCount;
     int indexCount;
 
-    pFile = (A2FileDOS*) GetNextFile(nil);
-    while (pFile != nil) {
+    pFile = (A2FileDOS*) GetNextFile(NULL);
+    while (pFile != NULL) {
         DIError dierr;
         dierr = pFile->LoadTSList(&tsList, &tsCount, &indexList, &indexCount);
         if (dierr != kDIErrNone) {
@@ -1030,7 +1030,7 @@ DiskFSDOS33::GetFileLengths(void)
 
         delete[] tsList;
         delete[] indexList;
-        tsList = indexList = nil;
+        tsList = indexList = NULL;
 
         pFile = (A2FileDOS*) GetNextFile(pFile);
     }
@@ -1083,8 +1083,8 @@ DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
     DIError dierr = kDIErrNone;
     unsigned char sctBuf[kSctSize];
 
-    assert(pFile != nil);
-    assert(tsList != nil);
+    assert(pFile != NULL);
+    assert(tsList != NULL);
     assert(tsCount >= 0);
 
     pFile->fDataOffset = 0;
@@ -1123,8 +1123,8 @@ DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
         if (pFile->fFileType == A2FileDOS::kTypeBinary &&
             pFile->fLength == 0 && pFile->fAuxType == 0 &&
             tsCount >= 8 &&
-            strchr(pFile->fFileName, '<') != nil &&
-            strchr(pFile->fFileName, '>') != nil)
+            strchr(pFile->fFileName, '<') != NULL &&
+            strchr(pFile->fFileName, '>') != NULL)
         {
             WMSG2(" DOS found probable DDD archive, tweaking '%s' (lis=%u)\n",
                 pFile->GetPathName(), pFile->fLengthInSectors);
@@ -1440,7 +1440,7 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
         return kDIErrInvalidArg;
     }
 
-    if (volName != nil && strcmp(volName, "DOS") == 0) {
+    if (volName != NULL && strcmp(volName, "DOS") == 0) {
         if (pDiskImg->GetNumSectPerTrack() != 16 &&
             pDiskImg->GetNumSectPerTrack() != 13)
         {
@@ -1452,7 +1452,7 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
     }
 
     /* set fpImg so calls that rely on it will work; we un-set it later */
-    assert(fpImg == nil);
+    assert(fpImg == NULL);
     SetDiskImg(pDiskImg);
 
     WMSG1(" DOS33 formatting disk image (sectorOrder=%d)\n",
@@ -1543,7 +1543,7 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
     //ScanVolBitmap();
 
 bail:
-    SetDiskImg(nil);    // shouldn't really be set by us
+    SetDiskImg(NULL);    // shouldn't really be set by us
     return dierr;
 }
 
@@ -1639,7 +1639,7 @@ DiskFSDOS33::DoNormalizePath(const char* name, char fssep, char* outBuf)
     /* throw out leading pathname, if any */
     if (fssep != '\0') {
         cp = strrchr(name, fssep);
-        if (cp != nil)
+        if (cp != NULL)
             name = cp+1;
     }
 
@@ -1692,19 +1692,19 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
     char normalName[A2FileDOS::kMaxFileName+1];
 //  char storageName[A2FileDOS::kMaxFileName+1];
     A2FileDOS::FileType fileType;
-    A2FileDOS* pNewFile = nil;
+    A2FileDOS* pNewFile = NULL;
 
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
     if (!fDiskIsGood)
         return kDIErrBadDiskImage;
 
-    assert(pParms != nil);
-    assert(pParms->pathName != nil);
+    assert(pParms != NULL);
+    assert(pParms->pathName != NULL);
     assert(pParms->storageType == A2FileProDOS::kStorageSeedling);
     WMSG1(" DOS33 ---v--- CreateFile '%s'\n", pParms->pathName);
 
-    *ppNewFile = nil;
+    *ppNewFile = NULL;
 
     DoNormalizePath(pParms->pathName, pParms->fssep, normalName);
 
@@ -1717,7 +1717,7 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
     if (createUnique) {
         MakeFileNameUnique(normalName);
     } else {
-        if (GetFileByName(normalName) != nil) {
+        if (GetFileByName(normalName) != NULL) {
             WMSG1(" DOS33 create: normalized name '%s' already exists\n",
                 normalName);
             dierr = kDIErrFileExists;
@@ -1781,7 +1781,7 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
      * Create a new entry for our file list.
      */
     pNewFile = new A2FileDOS(this);
-    if (pNewFile == nil) {
+    if (pNewFile == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -1822,7 +1822,7 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
     InsertFileInList(pNewFile, pPrevEntry);
 
     *ppNewFile = pNewFile;
-    pNewFile = nil;
+    pNewFile = NULL;
 
 bail:
     delete pNewFile;
@@ -1846,10 +1846,10 @@ bail:
 DIError
 DiskFSDOS33::MakeFileNameUnique(char* fileName)
 {
-    assert(fileName != nil);
+    assert(fileName != NULL);
     assert(strlen(fileName) <= A2FileDOS::kMaxFileName);
 
-    if (GetFileByName(fileName) == nil)
+    if (GetFileByName(fileName) == NULL)
         return kDIErrNone;
 
     WMSG1(" DOS   found duplicate of '%s', making unique\n", fileName);
@@ -1866,7 +1866,7 @@ DiskFSDOS33::MakeFileNameUnique(char* fileName)
      * to preserve ".gif", ".c", etc.
      */
     const char* cp = strrchr(fileName, '.');
-    if (cp != nil) {
+    if (cp != NULL) {
         int tmpOffset = cp - fileName;
         if (tmpOffset > 0 && nameLen - tmpOffset <= kMaxExtensionLen) {
             WMSG1("  DOS   (keeping extension '%s')\n", cp);
@@ -1897,7 +1897,7 @@ DiskFSDOS33::MakeFileNameUnique(char* fileName)
         memcpy(fileName + copyOffset, digitBuf, digitLen);
         if (dotLen != 0)
             memcpy(fileName + copyOffset + digitLen, dotBuf, dotLen);
-    } while (GetFileByName(fileName) != nil);
+    } while (GetFileByName(fileName) != NULL);
 
     WMSG1(" DOS  converted to unique name: %s\n", fileName);
 
@@ -1974,10 +1974,10 @@ DiskFSDOS33::GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
         }
 
         /* now find it in the linear file list */
-        *ppPrevEntry = nil;
+        *ppPrevEntry = NULL;
         if (prevEntry >= 0) {
-            A2FileDOS* pFile = (A2FileDOS*) GetNextFile(nil);
-            while (pFile != nil) {
+            A2FileDOS* pFile = (A2FileDOS*) GetNextFile(NULL);
+            while (pFile != NULL) {
                 if (pFile->fCatTS.track == prevTS.track &&
                     pFile->fCatTS.sector == prevTS.sector &&
                     pFile->fCatEntryNum == prevEntry)
@@ -1987,7 +1987,7 @@ DiskFSDOS33::GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
                 }
                 pFile = (A2FileDOS*) GetNextFile(pFile);
             }
-            assert(*ppPrevEntry != nil);
+            assert(*ppPrevEntry != NULL);
         }
     }
 
@@ -2035,13 +2035,13 @@ DiskFSDOS33::DeleteFile(A2File* pGenericFile)
 {
     DIError dierr = kDIErrNone;
     A2FileDOS* pFile = (A2FileDOS*) pGenericFile;
-    TrackSector* tsList = nil;
-    TrackSector* indexList = nil;
+    TrackSector* tsList = NULL;
+    TrackSector* indexList = NULL;
     int tsCount, indexCount;
     unsigned char sctBuf[kSctSize];
     unsigned char* pEntry;
 
-    if (pGenericFile == nil) {
+    if (pGenericFile == NULL) {
         assert(false);
         return kDIErrInvalidArg;
     }
@@ -2150,7 +2150,7 @@ DiskFSDOS33::RenameFile(A2File* pGenericFile, const char* newName)
     unsigned char sctBuf[kSctSize];
     unsigned char* pEntry;
 
-    if (pFile == nil || newName == nil)
+    if (pFile == NULL || newName == NULL)
         return kDIErrInvalidArg;
     if (!IsValidFileName(newName))
         return kDIErrInvalidArg;
@@ -2211,12 +2211,12 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
 {
     DIError dierr = kDIErrNone;
     A2FileDOS* pFile = (A2FileDOS*) pGenericFile;
-    TrackSector* tsList = nil;
+    TrackSector* tsList = NULL;
     int tsCount;
     bool nowLocked;
     bool typeChanged;
 
-    if (pFile == nil)
+    if (pFile == NULL)
         return kDIErrInvalidArg;
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
@@ -2426,7 +2426,7 @@ A2FileDOS::A2FileDOS(DiskFS* pDiskFS) : A2File(pDiskFS)
     fLength = -1;
     fSparseLength = -1;
 
-    fpOpenFile = nil;
+    fpOpenFile = NULL;
 }
 
 /*
@@ -2614,7 +2614,7 @@ A2FileDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     DIError dierr = kDIErrNone;
-    A2FDDOS* pOpenFile = nil;
+    A2FDDOS* pOpenFile = NULL;
 
     if (!readOnly) {
         if (fpDiskFS->GetDiskImg()->GetReadOnly())
@@ -2623,7 +2623,7 @@ A2FileDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
             return kDIErrBadDiskImage;
     }
 
-    if (fpOpenFile != nil) {
+    if (fpOpenFile != NULL) {
         dierr = kDIErrAlreadyOpen;
         goto bail;
     }
@@ -2646,7 +2646,7 @@ A2FileDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
 
     fpOpenFile = pOpenFile;     // add it to our single-member "open file set"
     *ppOpenFile = pOpenFile;
-    pOpenFile = nil;
+    pOpenFile = NULL;
 
 bail:
     delete pOpenFile;
@@ -2676,7 +2676,7 @@ A2FileDOS::Dump(void) const
  * possible for a random-access text file to have a very large number of
  * entries.
  *
- * If "pIndexList" and "pIndexCount" are non-nil, the list of index blocks is
+ * If "pIndexList" and "pIndexCount" are non-NULL, the list of index blocks is
  * also loaded.
  *
  * It's entirely possible to get a large T/S list back that is filled
@@ -2698,8 +2698,8 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
     DiskImg* pDiskImg;
     const int kDefaultTSAlloc = 2;
     const int kDefaultIndexAlloc = 8;
-    TrackSector* tsList = nil;
-    TrackSector* indexList = nil;
+    TrackSector* tsList = NULL;
+    TrackSector* indexList = NULL;
     int tsCount, tsAlloc;
     int indexCount, indexAlloc;
     unsigned char sctBuf[kSctSize];
@@ -2716,14 +2716,14 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
     indexList = new TrackSector[indexAlloc];
     indexCount = 0;
 
-    if (tsList == nil || indexList == nil) {
+    if (tsList == NULL || indexList == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
 
-    assert(fpDiskFS != nil);
+    assert(fpDiskFS != NULL);
     pDiskImg = fpDiskFS->GetDiskImg();
-    assert(pDiskImg != nil);
+    assert(pDiskImg != NULL);
 
     /* get the first T/S sector for this file */
     track = fTSListTrack;
@@ -2753,7 +2753,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
             TrackSector* newList;
             indexAlloc += kDefaultIndexAlloc;
             newList = new TrackSector[indexAlloc];
-            if (newList == nil) {
+            if (newList == NULL) {
                 dierr = kDIErrMalloc;
                 goto bail;
             }
@@ -2801,7 +2801,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
             TrackSector* newList;
             tsAlloc += kMaxTSPairs * kDefaultTSAlloc;
             newList = new TrackSector[tsAlloc];
-            if (newList == nil) {
+            if (newList == NULL) {
                 dierr = kDIErrMalloc;
                 goto bail;
             }
@@ -2843,12 +2843,12 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
 
     *pTSList = tsList;
     *pTSCount = tsCount;
-    tsList = nil;
+    tsList = NULL;
 
-    if (pIndexList != nil) {
+    if (pIndexList != NULL) {
         *pIndexList = indexList;
         *pIndexCount = indexCount;
-        indexList = nil;
+        indexList = NULL;
     }
 
 bail:
@@ -2949,11 +2949,11 @@ A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
      * from the actual data length, so don't factor it in again.
      */
     if (fOffset + (long)len > fOpenEOF) {
-        if (pActual == nil)
+        if (pActual == NULL)
             return kDIErrDataUnderrun;
         len = (size_t) (fOpenEOF - fOffset);
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = len;
     long incrLen = len;
 
@@ -3042,7 +3042,7 @@ A2FDDOS::Write(const void* buf, size_t len, size_t* pActual)
     assert(fTSCount == 0);      // must hold for our newly-created files
     assert(fIndexCount == 1);   // must hold for our newly-created files
     assert(fOpenSectorsUsed == fTSCount + fIndexCount);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     long actualLen = (long) len + pFile->fDataOffset;
     long numSectors = (actualLen + kSctSize -1) / kSctSize;
@@ -3074,14 +3074,14 @@ A2FDDOS::Write(const void* buf, size_t len, size_t* pActual)
     firstIndex = fIndexList[0];
     delete[] fTSList;
     delete[] fIndexList;
-    fTSList = fIndexList = nil;
+    fTSList = fIndexList = NULL;
 
     fTSCount = numSectors;
     fTSList = new TrackSector[fTSCount];
     fIndexCount = (numSectors + kMaxTSPairs -1) / kMaxTSPairs;
     assert(fIndexCount > 0);
     fIndexList = new TrackSector[fIndexCount];
-    if (fTSList == nil || fIndexList == nil) {
+    if (fTSList == NULL || fIndexList == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }

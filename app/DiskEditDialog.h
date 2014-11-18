@@ -30,7 +30,7 @@ public:
         CDialog(nIDTemplate, pParentWnd)
     {
         fReadOnly = true;
-        fpDiskFS = nil;
+        fpDiskFS = NULL;
         fFileName = "";
         fPositionShift = 0;
         fFirstResize = true;
@@ -38,8 +38,8 @@ public:
     virtual ~DiskEditDialog() {}
 
     void Setup(DiskFS* pDiskFS, const WCHAR* fileName) {
-        ASSERT(pDiskFS != nil);
-        ASSERT(fileName != nil);
+        ASSERT(pDiskFS != NULL);
+        ASSERT(fileName != NULL);
         fpDiskFS = pDiskFS;
         fFileName = fileName;
     }

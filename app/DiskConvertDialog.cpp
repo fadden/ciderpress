@@ -25,7 +25,7 @@ END_MESSAGE_MAP()
 void
 DiskConvertDialog::Init(const DiskImg* pDiskImg)
 {
-    ASSERT(pDiskImg != nil);
+    ASSERT(pDiskImg != NULL);
     const int kMagicNibbles = -1234;
     bool hasBlocks = pDiskImg->GetHasBlocks();
     bool hasSectors = pDiskImg->GetHasSectors();
@@ -275,9 +275,9 @@ void
 DiskConvertDialog::OnChangeRadio(UINT nID)
 {
     CWnd* pGzip = GetDlgItem(IDC_DISKCONV_GZIP);
-    ASSERT(pGzip != nil);
+    ASSERT(pGzip != NULL);
     CButton* pNuFX = (CButton*)GetDlgItem(IDC_DISKCONV_SDK);
-    ASSERT(pNuFX != nil);
+    ASSERT(pNuFX != NULL);
 
     if (fSizeInBlocks  > DiskImgLib::kGzipMax / 512)
         pGzip->EnableWindow(FALSE);

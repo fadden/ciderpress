@@ -298,8 +298,8 @@ DiskFSRDOS::Initialize(void)
     fVolumeUsage.Dump();
 
     //A2File* pFile;
-    //pFile = GetNextFile(nil);
-    //while (pFile != nil) {
+    //pFile = GetNextFile(NULL);
+    //while (pFile != NULL) {
     //  pFile->Dump();
     //  pFile = GetNextFile(pFile);
     //}
@@ -318,12 +318,12 @@ DIError
 DiskFSRDOS::ReadCatalog(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* dir = nil;
+    unsigned char* dir = NULL;
     unsigned char* dirPtr;
     int track, sector;
     
     dir = new unsigned char[kSctSize * kNumCatSectors];
-    if (dir == nil) {
+    if (dir == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -397,8 +397,8 @@ DiskFSRDOS::ScanFileUsage(void)
     int track, sector, block, count;
 
     A2FileRDOS* pFile;
-    pFile = (A2FileRDOS*) GetNextFile(nil);
-    while (pFile != nil) {
+    pFile = (A2FileRDOS*) GetNextFile(NULL);
+    while (pFile != NULL) {
         block = pFile->fStartSector;
         count = pFile->fNumSectors;
         while (count--) {
@@ -519,7 +519,7 @@ DIError
 A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
-    if (fpOpenFile != nil)
+    if (fpOpenFile != NULL)
         return kDIErrAlreadyOpen;
     if (rsrcFork)
         return kDIErrForkNotFound;
@@ -532,7 +532,7 @@ A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
 
     fpOpenFile = pOpenFile;
     *ppOpenFile = pOpenFile;
-    pOpenFile = nil;
+    pOpenFile = NULL;
 
     return kDIErrNone;
 }
@@ -559,11 +559,11 @@ A2FDRDOS::Read(void* buf, size_t len, size_t* pActual)
 
     /* don't allow them to read past the end of the file */
     if (fOffset + (long)len > pFile->fLength) {
-        if (pActual == nil)
+        if (pActual == NULL)
             return kDIErrDataUnderrun;
         len = (size_t) (pFile->fLength - fOffset);
     }
-    if (pActual != nil)
+    if (pActual != NULL)
         *pActual = len;
     long incrLen = len;
 

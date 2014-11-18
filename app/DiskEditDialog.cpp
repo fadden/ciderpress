@@ -52,14 +52,14 @@ BOOL
 DiskEditDialog::OnInitDialog(void)
 {
     ASSERT(!fFileName.IsEmpty());
-    ASSERT(fpDiskFS != nil);
+    ASSERT(fpDiskFS != NULL);
 
     /*
      * Disable the write button.
      */
     if (fReadOnly) {
         CButton* pButton = (CButton*) GetDlgItem(IDC_DISKEDIT_DOWRITE);
-        ASSERT(pButton != nil);
+        ASSERT(pButton != NULL);
         pButton->EnableWindow(FALSE);
     }
 
@@ -77,7 +77,7 @@ DiskEditDialog::OnInitDialog(void)
      * Configure the RichEdit control.
      */
     CRichEditCtrl* pEdit = (CRichEditCtrl*) GetDlgItem(IDC_DISKEDIT_EDIT);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
 
     /* set the font to 10-point Courier New */
     CHARFORMAT cf;
@@ -100,11 +100,11 @@ DiskEditDialog::OnInitDialog(void)
      * Disable the sub-volume and/or file open buttons if the DiskFS doesn't
      * have the appropriate stuff inside.
      */
-    if (fpDiskFS->GetNextFile(nil) == nil) {
+    if (fpDiskFS->GetNextFile(NULL) == NULL) {
         CWnd* pWnd = GetDlgItem(IDC_DISKEDIT_OPENFILE);
         pWnd->EnableWindow(FALSE);
     }
-    if (fpDiskFS->GetNextSubVolume(nil) == nil) {
+    if (fpDiskFS->GetNextSubVolume(NULL) == NULL) {
         CWnd* pWnd = GetDlgItem(IDC_DISKEDIT_SUBVOLUME);
         pWnd->EnableWindow(FALSE);
     }
@@ -134,7 +134,7 @@ DiskEditDialog::OnInitDialog(void)
      */
     CString title("Disk Viewer - ");
     title += fFileName;
-    if (fpDiskFS->GetVolumeID() != nil) {
+    if (fpDiskFS->GetVolumeID() != NULL) {
         title += " (";
         title += fpDiskFS->GetVolumeID();
         title += ")";
@@ -150,12 +150,12 @@ DiskEditDialog::OnInitDialog(void)
 void
 DiskEditDialog::InitNibbleParmList(void)
 {
-    ASSERT(fpDiskFS != nil);
+    ASSERT(fpDiskFS != NULL);
     DiskImg* pDiskImg = fpDiskFS->GetDiskImg();
     CComboBox* pCombo;
 
     pCombo = (CComboBox*) GetDlgItem(IDC_DISKEDIT_NIBBLE_PARMS);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
 
     if (pDiskImg->GetHasNibbles()) {
         const DiskImg::NibbleDescr* pTable;
@@ -163,7 +163,7 @@ DiskEditDialog::InitNibbleParmList(void)
         int i, count;
 
         pTable = pDiskImg->GetNibbleDescrTable(&count);
-        if (pTable == nil || count <= 0) {
+        if (pTable == NULL || count <= 0) {
             WMSG2("WHOOPS: nibble parm got table=0x%08lx, count=%d\n",
                 (long) pTable, count);
             return;
@@ -172,7 +172,7 @@ DiskEditDialog::InitNibbleParmList(void)
 
         /* configure the selection to match the disk analysis */
         int dflt = -1;
-        if (pCurrent != nil) {
+        if (pCurrent != NULL) {
             for (i = 0; i < count; i++) {
                 if (memcmp(&pTable[i], pCurrent, sizeof(*pCurrent)) == 0) {
                     WMSG1("  NibbleParm match on entry %d\n", i);
@@ -216,7 +216,7 @@ DiskEditDialog::ReplaceSpinCtrl(MySpinCtrl* pNewSpin, int idSpin, int idEdit)
     DWORD style;
         
     pSpin = (CSpinButtonCtrl*)GetDlgItem(idSpin);
-    if (pSpin == nil)
+    if (pSpin == NULL)
         return -1;
 //  pSpin->GetWindowRect(&rect);
 //  ScreenToClient(&rect);
@@ -305,7 +305,7 @@ DiskEditDialog::OnHexMode(void)
     int base;
 
     CButton* pButton = (CButton*) GetDlgItem(IDC_DISKEDIT_HEX);
-    ASSERT(pButton != nil);
+    ASSERT(pButton != NULL);
 
     if (pButton->GetCheck() == 0)
         base = 10;
@@ -328,14 +328,14 @@ DiskEditDialog::OnSubVolume(void)
     subv.Setup(fpDiskFS);
     if (subv.DoModal() == IDOK) {
         WMSG1("SELECTED subv %d\n", subv.fListBoxIndex);
-        DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(nil);
-        if (pSubVol == nil)
+        DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(NULL);
+        if (pSubVol == NULL)
             return;
 
         while (subv.fListBoxIndex-- > 0) {
             pSubVol = fpDiskFS->GetNextSubVolume(pSubVol);
         }
-        ASSERT(pSubVol != nil);
+        ASSERT(pSubVol != NULL);
 
         BlockEditDialog blockEdit;
         SectorEditDialog sectorEdit;
@@ -367,7 +367,7 @@ DiskEditDialog::SetSpinMode(int id, int base)
     ASSERT(base == 10 || base == 16);
 
     MySpinCtrl* pSpin = (MySpinCtrl*) GetDlgItem(id);
-    if (pSpin == nil) {
+    if (pSpin == NULL) {
         // expected behavior in "block" mode for sector button
         WMSG1("Couldn't find spin button %d\n", id);
         return;
@@ -399,7 +399,7 @@ int
 DiskEditDialog::ReadSpinner(int id, long* pVal)
 {
     MySpinCtrl* pSpin = (MySpinCtrl*) GetDlgItem(id);
-    ASSERT(pSpin != nil);
+    ASSERT(pSpin != NULL);
 
     long val = pSpin->GetPos();
     if (val & 0xff000000) {
@@ -426,7 +426,7 @@ void
 DiskEditDialog::SetSpinner(int id, long val)
 {
     MySpinCtrl* pSpin = (MySpinCtrl*) GetDlgItem(id);
-    ASSERT(pSpin != nil);
+    ASSERT(pSpin != NULL);
 
     /* sanity check */
     int lower, upper;
@@ -446,11 +446,11 @@ DiskEditDialog::DisplayData(const BYTE* srcBuf, int size)
     WCHAR* cp;
     int i, j;
 
-    ASSERT(srcBuf != nil);
+    ASSERT(srcBuf != NULL);
     ASSERT(size == kSectorSize || size == kBlockSize);
 
     CRichEditCtrl* pEdit = (CRichEditCtrl*)GetDlgItem(IDC_DISKEDIT_EDIT);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
 
     /*
      * If we have an alert message, show that instead.
@@ -523,7 +523,7 @@ DiskEditDialog::DisplayData(const BYTE* srcBuf, int size)
 void
 DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
 {
-    ASSERT(srcBuf != nil);
+    ASSERT(srcBuf != NULL);
     ASSERT(size > 0);
     ASSERT(fAlertMsg.IsEmpty());
 
@@ -532,7 +532,7 @@ DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
     WCHAR* cp;
     int i;
 
-    if (textBuf == nil)
+    if (textBuf == NULL)
         return;
 
     cp = textBuf;
@@ -567,7 +567,7 @@ DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
     *cp = '\0';
 
     CRichEditCtrl* pEdit = (CRichEditCtrl*)GetDlgItem(IDC_DISKEDIT_EDIT);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetWindowText(textBuf);
 
     /*
@@ -599,7 +599,7 @@ DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
 /*
  * Open a file in a disk image.
  *
- * Returns a pointer to the A2File and A2FileDescr structures on success, nil
+ * Returns a pointer to the A2File and A2FileDescr structures on success, NULL
  * on failure.  The pointer placed in "ppOpenFile" must be freed by invoking
  * its Close function.
  */
@@ -608,12 +608,12 @@ DiskEditDialog::OpenFile(const WCHAR* fileName, bool openRsrc, A2File** ppFile,
     A2FileDescr** ppOpenFile)
 {
     A2File* pFile;
-    A2FileDescr* pOpenFile = nil;
+    A2FileDescr* pOpenFile = NULL;
 
     WMSG2(" OpenFile '%ls' rsrc=%d\n", fileName, openRsrc);
     CStringA fileNameA(fileName);
     pFile = fpDiskFS->GetFileByName(fileNameA);
-    if (pFile == nil) {
+    if (pFile == NULL) {
         CString msg, failed;
 
         msg.Format(IDS_DEFILE_FIND_FAILED, fileName);
@@ -653,11 +653,11 @@ DiskEditDialog::OnNibbleParms(void)
     CComboBox* pCombo;
     int sel;
 
-    ASSERT(pDiskImg != nil);
+    ASSERT(pDiskImg != NULL);
     ASSERT(pDiskImg->GetHasNibbles());
 
     pCombo = (CComboBox*) GetDlgItem(IDC_DISKEDIT_NIBBLE_PARMS);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
 
     sel = pCombo->GetCurSel();
     if (sel == CB_ERR)
@@ -721,11 +721,11 @@ SectorEditDialog::OnInitDialog(void)
     CWnd* pWnd;
     trackStr.Format(L"Track (%d):", fpDiskFS->GetDiskImg()->GetNumTracks());
     pWnd = GetDlgItem(IDC_STEXT_TRACK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(trackStr);
     trackStr.Format(L"Sector (%d):", fpDiskFS->GetDiskImg()->GetNumSectPerTrack());
     pWnd = GetDlgItem(IDC_STEXT_SECTOR);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(trackStr);
 
     /*
@@ -733,11 +733,11 @@ SectorEditDialog::OnInitDialog(void)
      */
     MySpinCtrl* pSpin;
     pSpin = (MySpinCtrl*)GetDlgItem(IDC_DISKEDIT_TRACKSPIN);
-    ASSERT(pSpin != nil);
+    ASSERT(pSpin != NULL);
     pSpin->SetRange32(0, fpDiskFS->GetDiskImg()->GetNumTracks()-1);
     pSpin->SetPos(0);
     pSpin = (MySpinCtrl*)GetDlgItem(IDC_DISKEDIT_SECTORSPIN);
-    ASSERT(pSpin != nil);
+    ASSERT(pSpin != NULL);
     pSpin->SetRange32(0, fpDiskFS->GetDiskImg()->GetNumSectPerTrack()-1);
     pSpin->SetPos(0);
 
@@ -756,8 +756,8 @@ int
 SectorEditDialog::LoadData(void)
 {
     //WMSG0("SED LoadData\n");
-    ASSERT(fpDiskFS != nil);
-    ASSERT(fpDiskFS->GetDiskImg() != nil);
+    ASSERT(fpDiskFS != NULL);
+    ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     if (ReadSpinner(IDC_DISKEDIT_TRACKSPIN, &fTrack) != 0)
         return -1;
@@ -863,7 +863,7 @@ SectorEditDialog::OnOpenFile(void)
     if (fileDialog.DoModal() == IDOK) {
         SectorFileEditDialog fileEdit(this, this);
         A2File* pFile;
-        A2FileDescr* pOpenFile = nil;
+        A2FileDescr* pOpenFile = NULL;
         DIError dierr;
 
         dierr = OpenFile(fileDialog.fName, fileDialog.fOpenRsrcFork != 0,
@@ -901,10 +901,10 @@ SectorFileEditDialog::OnInitDialog(void)
     /* disable direct entry of tracks and sectors */
     CWnd* pWnd;
     pWnd = GetDlgItem(IDC_DISKEDIT_TRACKSPIN);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(FALSE);
     pWnd = GetDlgItem(IDC_DISKEDIT_SECTORSPIN);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(FALSE);
 
     /* disallow opening of sub-volumes and files */
@@ -915,10 +915,10 @@ SectorFileEditDialog::OnInitDialog(void)
 
     CEdit* pEdit;
     pEdit = (CEdit*) GetDlgItem(IDC_DISKEDIT_TRACK);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetReadOnly(TRUE);
     pEdit = (CEdit*) GetDlgItem(IDC_DISKEDIT_SECTOR);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetReadOnly(TRUE);
 
     /* set the window title */
@@ -941,8 +941,8 @@ SectorFileEditDialog::OnInitDialog(void)
 int
 SectorFileEditDialog::LoadData(void)
 {
-    ASSERT(fpDiskFS != nil);
-    ASSERT(fpDiskFS->GetDiskImg() != nil);
+    ASSERT(fpDiskFS != NULL);
+    ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     DIError dierr;
     WMSG1("SFED LoadData reading index=%d\n", fSectorIdx);
@@ -1021,15 +1021,15 @@ SectorFileEditDialog::LoadData(void)
 
     CWnd* pWnd;
     pWnd = GetDlgItem(IDC_DISKEDIT_PREV);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(fSectorIdx > 0);
-    if (!pWnd->IsWindowEnabled() && GetFocus() == nil)
+    if (!pWnd->IsWindowEnabled() && GetFocus() == NULL)
         GetDlgItem(IDC_DISKEDIT_NEXT)->SetFocus();
 
     pWnd = GetDlgItem(IDC_DISKEDIT_NEXT);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(fSectorIdx+1 < fpOpenFile->GetSectorCount());
-    if (!pWnd->IsWindowEnabled() && GetFocus() == nil)
+    if (!pWnd->IsWindowEnabled() && GetFocus() == NULL)
         GetDlgItem(IDC_DISKEDIT_PREV)->SetFocus();
 
     DisplayData();
@@ -1096,7 +1096,7 @@ BlockEditDialog::OnInitDialog(void)
     //blockStr.LoadString(IDS_BLOCK);
     blockStr.Format(L"Block (%d):", fpDiskFS->GetDiskImg()->GetNumBlocks());
     pWnd = GetDlgItem(IDC_STEXT_TRACK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(blockStr);
 
     /*
@@ -1110,7 +1110,7 @@ BlockEditDialog::OnInitDialog(void)
     MoveWindow(&rect);
 
     CRichEditCtrl* pEdit = (CRichEditCtrl*)GetDlgItem(IDC_DISKEDIT_EDIT);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     CRect inner;
     pEdit->GetRect(&inner);
     inner.bottom += kStretchHeight;
@@ -1136,7 +1136,7 @@ BlockEditDialog::OnInitDialog(void)
      */
     MySpinCtrl* pSpin;
     pSpin = (MySpinCtrl*)GetDlgItem(IDC_DISKEDIT_TRACKSPIN);
-    ASSERT(pSpin != nil);
+    ASSERT(pSpin != NULL);
     pSpin->SetRange32(0, fpDiskFS->GetDiskImg()->GetNumBlocks()-1);
     pSpin->SetPos(0);
 
@@ -1160,7 +1160,7 @@ BlockEditDialog::MoveControl(int id, int deltaX, int deltaY)
     CRect rect;
 
     pWnd = GetDlgItem(id);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
 
     pWnd->GetWindowRect(&rect);
     ScreenToClient(&rect);
@@ -1180,8 +1180,8 @@ int
 BlockEditDialog::LoadData(void)
 {
     //WMSG0("BED LoadData\n");
-    ASSERT(fpDiskFS != nil);
-    ASSERT(fpDiskFS->GetDiskImg() != nil);
+    ASSERT(fpDiskFS != NULL);
+    ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     if (ReadSpinner(IDC_DISKEDIT_TRACKSPIN, &fBlock) != 0)
         return -1;
@@ -1246,7 +1246,7 @@ BlockEditDialog::OnReadPrev(void)
 void
 BlockEditDialog::OnReadNext(void)
 {
-    ASSERT(fpDiskFS != nil);
+    ASSERT(fpDiskFS != NULL);
     if (fBlock == fpDiskFS->GetDiskImg()->GetNumBlocks() - 1)
         return;
 
@@ -1267,7 +1267,7 @@ BlockEditDialog::OnOpenFile(void)
     if (fileDialog.DoModal() == IDOK) {
         BlockFileEditDialog fileEdit(this, this);
         A2File* pFile;
-        A2FileDescr* pOpenFile = nil;
+        A2FileDescr* pOpenFile = NULL;
         DIError dierr;
 
         dierr = OpenFile(fileDialog.fName, fileDialog.fOpenRsrcFork != 0,
@@ -1305,7 +1305,7 @@ BlockFileEditDialog::OnInitDialog(void)
     /* disable direct entry of tracks and Blocks */
     CWnd* pWnd;
     pWnd = GetDlgItem(IDC_DISKEDIT_TRACKSPIN);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(FALSE);
 
     /* disallow opening of sub-volumes and files */
@@ -1316,7 +1316,7 @@ BlockFileEditDialog::OnInitDialog(void)
 
     CEdit* pEdit;
     pEdit = (CEdit*) GetDlgItem(IDC_DISKEDIT_TRACK);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     pEdit->SetReadOnly(TRUE);
 
     /* set the window title */
@@ -1339,8 +1339,8 @@ BlockFileEditDialog::OnInitDialog(void)
 int
 BlockFileEditDialog::LoadData(void)
 {
-    ASSERT(fpDiskFS != nil);
-    ASSERT(fpDiskFS->GetDiskImg() != nil);
+    ASSERT(fpDiskFS != NULL);
+    ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     DIError dierr;
     WMSG1("BFED LoadData reading index=%d\n", fBlockIdx);
@@ -1416,15 +1416,15 @@ BlockFileEditDialog::LoadData(void)
 
     CWnd* pWnd;
     pWnd = GetDlgItem(IDC_DISKEDIT_PREV);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(fBlockIdx > 0);
-    if (!pWnd->IsWindowEnabled() && GetFocus() == nil)
+    if (!pWnd->IsWindowEnabled() && GetFocus() == NULL)
         GetDlgItem(IDC_DISKEDIT_NEXT)->SetFocus();
 
     pWnd = GetDlgItem(IDC_DISKEDIT_NEXT);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(fBlockIdx+1 < fpOpenFile->GetBlockCount());
-    if (!pWnd->IsWindowEnabled() && GetFocus() == nil)
+    if (!pWnd->IsWindowEnabled() && GetFocus() == NULL)
         GetDlgItem(IDC_DISKEDIT_PREV)->SetFocus();
 
     DisplayData();
@@ -1489,7 +1489,7 @@ NibbleEditDialog::OnInitDialog(void)
     CString trackStr;
     trackStr.Format(L"Track (%d):", fpDiskFS->GetDiskImg()->GetNumTracks());
     pWnd = GetDlgItem(IDC_STEXT_TRACK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(trackStr);
 
     /*
@@ -1500,7 +1500,7 @@ NibbleEditDialog::OnInitDialog(void)
      * device context.
      */
     CRichEditCtrl* pEdit = (CRichEditCtrl*)GetDlgItem(IDC_DISKEDIT_EDIT);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     const int kStretchHeight = 249;
     CRect rect;
 
@@ -1556,7 +1556,7 @@ NibbleEditDialog::OnInitDialog(void)
      */
     MySpinCtrl* pSpin;
     pSpin = (MySpinCtrl*)GetDlgItem(IDC_DISKEDIT_TRACKSPIN);
-    ASSERT(pSpin != nil);
+    ASSERT(pSpin != NULL);
     pSpin->SetRange32(0, fpDiskFS->GetDiskImg()->GetNumTracks()-1);
     pSpin->SetPos(0);
 
@@ -1573,8 +1573,8 @@ int
 NibbleEditDialog::LoadData(void)
 {
     //WMSG0("BED LoadData\n");
-    ASSERT(fpDiskFS != nil);
-    ASSERT(fpDiskFS->GetDiskImg() != nil);
+    ASSERT(fpDiskFS != NULL);
+    ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     if (ReadSpinner(IDC_DISKEDIT_TRACKSPIN, &fTrack) != 0)
         return -1;
@@ -1634,7 +1634,7 @@ NibbleEditDialog::OnReadPrev(void)
 void
 NibbleEditDialog::OnReadNext(void)
 {
-    ASSERT(fpDiskFS != nil);
+    ASSERT(fpDiskFS != NULL);
     if (fTrack == fpDiskFS->GetDiskImg()->GetNumTracks() - 1)
         return;
 

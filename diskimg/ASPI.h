@@ -42,7 +42,7 @@ namespace DiskImgLib {
  */
 class DISKIMG_API ASPIDevice {
 public:
-    ASPIDevice(void) : fVendorID(nil), fProductID(nil),
+    ASPIDevice(void) : fVendorID(NULL), fProductID(NULL),
         fAdapter(0xff), fTarget(0xff), fLun(0xff), fDeviceReady(false)
         {}
     virtual ~ASPIDevice(void) {
@@ -57,10 +57,10 @@ public:
         fAdapter = adapter;
         fTarget = target;
         fLun = lun;
-        assert(fVendorID == nil);
+        assert(fVendorID == NULL);
         fVendorID = new char[strlen((const char*)vendor)+1];
         strcpy(fVendorID, (const char*)vendor);
-        assert(fProductID == nil);
+        assert(fProductID == NULL);
         fProductID = new char[strlen((const char*)product)+1];
         strcpy(fProductID, (const char*)product);
         fDeviceReady = ready;
@@ -101,10 +101,10 @@ private:
 class DISKIMG_API ASPI {
 public:
     ASPI(void) :
-        fhASPI(nil),
-        GetASPI32SupportInfo(nil),
-        SendASPI32Command(nil),
-        GetASPI32DLLVersion(nil),
+        fhASPI(NULL),
+        GetASPI32SupportInfo(NULL),
+        SendASPI32Command(NULL),
+        GetASPI32DLLVersion(NULL),
         fASPIVersion(0),
         fHostAdapterCount(-1)
         {}
@@ -115,7 +115,7 @@ public:
 
     // return the version returned by the loaded DLL
     DWORD GetVersion(void) const {
-        assert(fhASPI != nil);
+        assert(fhASPI != NULL);
         return fASPIVersion;
     }
 

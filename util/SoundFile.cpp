@@ -38,11 +38,11 @@ MakeFourCC(unsigned char c0, unsigned char c1, unsigned char c2,
 int
 SoundFile::Create(const WCHAR* fileName, CString* pErrMsg)
 {
-    FILE* fp = nil;
+    FILE* fp = NULL;
     long fileLen;
 
     fp = _wfopen(fileName, L"rb");
-    if (fp == nil) {
+    if (fp == NULL) {
         int err = errno;
         pErrMsg->Format(L"Unable to open '%ls'", fileName);
         return err;
@@ -72,12 +72,12 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
     unsigned long chunkLen;
     int err = 0;
 
-    if (mFP != nil) {
+    if (mFP != NULL) {
         WMSG0("SoundFile object already created\n");
         assert(false);
         return -1;
     }
-    if (fp == nil)
+    if (fp == NULL)
         return -1;
     if (len < kWAVMinSize) {
         *pErrMsg = L"File is too short to be WAV";

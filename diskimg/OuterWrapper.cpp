@@ -45,7 +45,7 @@ OuterGzip::Test(GenericFD* pGFD, di_off_t outerLength)
 
     /* don't need this here, but we will later on */
     imagePath = pGFD->GetPathName();
-    if (imagePath == nil) {
+    if (imagePath == NULL) {
         WMSG0("Can't test gzip on non-file\n");
         return kDIErrNotSupported;
     }
@@ -91,19 +91,19 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
     const int kNextSize2 = 1024 * 1024;
     const int kMaxIncr = 4096 * 1024;
     const int kAbsoluteMax = kMaxUncompressedSize;
-    char* buf = nil;
-    char* newBuf = nil;
+    char* buf = NULL;
+    char* newBuf = NULL;
     long curSize, maxSize;
 
-    assert(gzfp != nil);
-    assert(pBuf != nil);
-    assert(pLength != nil);
+    assert(gzfp != NULL);
+    assert(pBuf != NULL);
+    assert(pLength != NULL);
 
     curSize = 0;
     maxSize = kStartSize;
 
     buf = new char[maxSize];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -167,7 +167,7 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
                 }
 
                 newBuf = new char[maxSize];
-                if (newBuf == nil) {
+                if (newBuf == NULL) {
                     WMSG1("  ExGZ failed buffer alloc (%ld)\n",
                         maxSize);
                     dierr = kDIErrMalloc;
@@ -177,7 +177,7 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
                 memcpy(newBuf, buf, curSize);
                 delete[] buf;
                 buf = newBuf;
-                newBuf = nil;
+                newBuf = NULL;
 
                 WMSG1("  ExGZ grew buffer to %ld\n", maxSize);
             } else {
@@ -199,19 +199,19 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
         /* shrink it down so it fits */
         WMSG2("  Down-sizing buffer from %ld to %ld\n", maxSize, curSize);
         newBuf = new char[curSize];
-        if (newBuf == nil)
+        if (newBuf == NULL)
             goto bail;
         memcpy(newBuf, buf, curSize);
         delete[] buf;
         buf = newBuf;
-        newBuf = nil;
+        newBuf = NULL;
     }
 
     *pBuf = buf;
     *pLength = curSize;
     WMSG1("  ExGZ final size = %ld\n", curSize);
 
-    buf = nil;
+    buf = NULL;
 
 bail:
     delete[] buf;
@@ -227,20 +227,20 @@ OuterGzip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
     di_off_t* pWrapperLength, GenericFD** ppWrapperGFD)
 {
     DIError dierr = kDIErrNone;
-    GFDBuffer* pNewGFD = nil;
-    char* buf = nil;
+    GFDBuffer* pNewGFD = NULL;
+    char* buf = NULL;
     di_off_t length = -1;
     const char* imagePath;
-    gzFile gzfp = nil;
+    gzFile gzfp = NULL;
 
     imagePath = pOuterGFD->GetPathName();
-    if (imagePath == nil) {
+    if (imagePath == NULL) {
         assert(false);      // should've been caught in Test
         return kDIErrNotSupported;
     }
 
     gzfp = gzopen(imagePath, "rb");        // use "readOnly" here
-    if (gzfp == nil) { // DON'T retry RO -- should be done at higher level?
+    if (gzfp == NULL) { // DON'T retry RO -- should be done at higher level?
         WMSG1("gzopen failed, errno=%d\n", errno);
         dierr = kDIErrGeneric;
         goto bail;
@@ -258,14 +258,14 @@ OuterGzip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
     dierr = pNewGFD->Open(buf, length, true, false, readOnly);
     if (dierr != kDIErrNone)
         goto bail;
-    buf = nil;      // now owned by pNewGFD;
+    buf = NULL;      // now owned by pNewGFD;
 
     /*
      * Success!
      */
     assert(dierr == kDIErrNone);
     *ppWrapperGFD = pNewGFD;
-    pNewGFD = nil;
+    pNewGFD = NULL;
 
     *pWrapperLength = length;
 
@@ -273,7 +273,7 @@ bail:
     if (dierr != kDIErrNone) {
         delete pNewGFD;
     }
-    if (gzfp != nil)
+    if (gzfp != NULL)
         gzclose(gzfp);
     return dierr;
 }
@@ -291,7 +291,7 @@ OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
 {
     DIError dierr = kDIErrNone;
     const char* imagePath;
-    gzFile gzfp = nil;
+    gzFile gzfp = NULL;
 
     WMSG1(" GZ save (wrapperLen=%ld)\n", (long) wrapperLength);
     assert(wrapperLength > 0);
@@ -300,13 +300,13 @@ OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
      * Reopen the file.
      */
     imagePath = pOuterGFD->GetPathName();
-    if (imagePath == nil) {
+    if (imagePath == NULL) {
         assert(false);      // should've been caught long ago
         return kDIErrNotSupported;
     }
 
     gzfp = gzopen(imagePath, "wb");
-    if (gzfp == nil) {
+    if (gzfp == NULL) {
         WMSG1("gzopen for write failed, errno=%d\n", errno);
         dierr = kDIErrGeneric;
         goto bail;
@@ -351,7 +351,7 @@ OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     assert(dierr == kDIErrNone);
 
 bail:
-    if (gzfp != nil)
+    if (gzfp != NULL)
         gzclose(gzfp);
     return dierr;
 }
@@ -415,9 +415,9 @@ OuterZip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
     di_off_t* pWrapperLength, GenericFD** ppWrapperGFD)
 {
     DIError dierr = kDIErrNone;
-    GFDBuffer* pNewGFD = nil;
+    GFDBuffer* pNewGFD = NULL;
     CentralDirEntry cde;
-    unsigned char* buf = nil;
+    unsigned char* buf = NULL;
     di_off_t length = -1;
     const char* pExt;
 
@@ -427,7 +427,7 @@ OuterZip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
 
     if (cde.fFileNameLength > 0) {
         pExt = FindExtension((const char*) cde.fFileName, kZipFssep);
-        if (pExt != nil) {
+        if (pExt != NULL) {
             assert(*pExt == '.');
             SetExtension(pExt+1);
 
@@ -449,14 +449,14 @@ OuterZip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
     dierr = pNewGFD->Open(buf, length, true, false, readOnly);
     if (dierr != kDIErrNone)
         goto bail;
-    buf = nil;      // now owned by pNewGFD;
+    buf = NULL;      // now owned by pNewGFD;
 
     /*
      * Success!
      */
     assert(dierr == kDIErrNone);
     *ppWrapperGFD = pNewGFD;
-    pNewGFD = nil;
+    pNewGFD = NULL;
 
     *pWrapperLength = length;
 
@@ -503,7 +503,7 @@ OuterZip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
      * will have set the actual filename, with an extension that matches
      * the file contents.
      */
-    if (fStoredFileName == nil || fStoredFileName[0] == '\0')
+    if (fStoredFileName == NULL || fStoredFileName[0] == '\0')
         SetStoredFileName("disk");
 
     /*
@@ -657,7 +657,7 @@ OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
 {
     DIError dierr = kDIErrNone;
     EndOfCentralDir eocd;
-    unsigned char* buf = nil;
+    unsigned char* buf = NULL;
     di_off_t seekStart;
     long readAmount;
     int i;
@@ -667,7 +667,7 @@ OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
         return kDIErrGeneric;
 
     buf = new unsigned char[kMaxEOCDSearch];
-    if (buf == nil) {
+    if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -774,7 +774,7 @@ OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
 {
     DIError dierr = kDIErrNone;
     LocalFileHeader lfh;
-    unsigned char* buf = nil;
+    unsigned char* buf = NULL;
 
     /* seek to the start of the local header */
     dierr = pOuterGFD->Seek(pCDE->fLocalHeaderRelOffset, kSeekSet);
@@ -796,7 +796,7 @@ OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
     WMSG1("File offset is 0x%08lx\n", (long) pOuterGFD->Tell());
 
     buf = new unsigned char[pCDE->fUncompressedSize];
-    if (buf == nil) {
+    if (buf == NULL) {
         /* a very real possibility */
         WMSG1(" ZIP unable to allocate buffer of %lu bytes\n",
             pCDE->fUncompressedSize);
@@ -837,7 +837,7 @@ OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
     *pBuf = buf;
     *pLength = pCDE->fUncompressedSize;
 
-    buf = nil;
+    buf = NULL;
 
 bail:
     delete[] buf;
@@ -855,13 +855,13 @@ OuterZip::InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
 {
     DIError dierr = kDIErrNone;
     const unsigned long kReadBufSize = 65536;
-    unsigned char* readBuf = nil;
+    unsigned char* readBuf = NULL;
     z_stream zstream;
     int zerr;
     unsigned long compRemaining;
 
     readBuf = new unsigned char[kReadBufSize];
-    if (readBuf == nil) {
+    if (readBuf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -874,7 +874,7 @@ OuterZip::InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
     zstream.zalloc = Z_NULL;
     zstream.zfree = Z_NULL;
     zstream.opaque = Z_NULL;
-    zstream.next_in = nil;
+    zstream.next_in = NULL;
     zstream.avail_in = 0;
     zstream.next_out = buf;
     zstream.avail_out = uncompSize;
@@ -967,7 +967,7 @@ OuterZip::GetMSDOSTime(unsigned short* pDate, unsigned short* pTime)
     //  (*pTime >> 11) & 0x1f);
 #endif
 
-    time_t now = time(nil);
+    time_t now = time(NULL);
     DOSTime(now, pDate, pTime);
     //WMSG3("+++ Our date    : %04x %04x %d\n", *pDate, *pTime,
     //  (*pTime >> 11) & 0x1f);
@@ -1010,8 +1010,8 @@ OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t srcLen,
 {
     DIError dierr = kDIErrNone;
     const unsigned long kBufSize = 32768;
-    unsigned char* inBuf = nil;
-    unsigned char* outBuf = nil;
+    unsigned char* inBuf = NULL;
+    unsigned char* outBuf = NULL;
     z_stream zstream;
     unsigned long crc;
     int zerr;
@@ -1021,7 +1021,7 @@ OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t srcLen,
      */
     inBuf = new unsigned char[kBufSize];
     outBuf = new unsigned char[kBufSize];
-    if (inBuf == nil || outBuf == nil) {
+    if (inBuf == NULL || outBuf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -1033,7 +1033,7 @@ OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t srcLen,
     zstream.zalloc = Z_NULL;
     zstream.zfree = Z_NULL;
     zstream.opaque = Z_NULL;
-    zstream.next_in = nil;
+    zstream.next_in = NULL;
     zstream.avail_in = 0;
     zstream.next_out = outBuf;
     zstream.avail_out = kBufSize;
@@ -1175,9 +1175,9 @@ OuterZip::LocalFileHeader::Read(GenericFD* pGFD)
 
     /* grab filename */
     if (fFileNameLength != 0) {
-        assert(fFileName == nil);
+        assert(fFileName == NULL);
         fFileName = new unsigned char[fFileNameLength+1];
-        if (fFileName == nil) {
+        if (fFileName == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         } else {
@@ -1240,15 +1240,15 @@ void
 OuterZip::LocalFileHeader::SetFileName(const char* name)
 {
     delete[] fFileName;
-    fFileName = nil;
+    fFileName = NULL;
     fFileNameLength = 0;
 
-    if (name != nil) {
+    if (name != NULL) {
         fFileNameLength = strlen(name);
         fFileName = new unsigned char[fFileNameLength+1];
-        if (fFileName == nil) {
+        if (fFileName == NULL) {
             WMSG1("Malloc failure in SetFileName %u\n", fFileNameLength);
-            fFileName = nil;
+            fFileName = NULL;
             fFileNameLength = 0;
         } else {
             memcpy(fFileName, name, fFileNameLength);
@@ -1324,9 +1324,9 @@ OuterZip::CentralDirEntry::Read(GenericFD* pGFD)
 
     /* grab filename */
     if (fFileNameLength != 0) {
-        assert(fFileName == nil);
+        assert(fFileName == NULL);
         fFileName = new unsigned char[fFileNameLength+1];
-        if (fFileName == nil) {
+        if (fFileName == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         } else {
@@ -1344,9 +1344,9 @@ OuterZip::CentralDirEntry::Read(GenericFD* pGFD)
 
     /* grab comment, if any */
     if (fFileCommentLength != 0) {
-        assert(fFileComment == nil);
+        assert(fFileComment == NULL);
         fFileComment = new unsigned char[fFileCommentLength+1];
-        if (fFileComment == nil) {
+        if (fFileComment == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         } else {
@@ -1412,15 +1412,15 @@ void
 OuterZip::CentralDirEntry::SetFileName(const char* name)
 {
     delete[] fFileName;
-    fFileName = nil;
+    fFileName = NULL;
     fFileNameLength = 0;
 
-    if (name != nil) {
+    if (name != NULL) {
         fFileNameLength = strlen(name);
         fFileName = new unsigned char[fFileNameLength+1];
-        if (fFileName == nil) {
+        if (fFileName == NULL) {
             WMSG1("Malloc failure in SetFileName %u\n", fFileNameLength);
-            fFileName = nil;
+            fFileName = NULL;
             fFileNameLength = 0;
         } else {
             memcpy(fFileName, name, fFileNameLength);
@@ -1450,10 +1450,10 @@ OuterZip::CentralDirEntry::Dump(void) const
         fDiskNumberStart, fInternalAttrs, fExternalAttrs,
         fLocalHeaderRelOffset);
 
-    if (fFileName != nil) {
+    if (fFileName != NULL) {
         WMSG1("  filename: '%s'\n", fFileName);
     }
-    if (fFileComment != nil) {
+    if (fFileComment != NULL) {
         WMSG1("  comment: '%s'\n", fFileComment);
     }
 }

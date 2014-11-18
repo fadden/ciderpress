@@ -61,7 +61,7 @@ AddFilesDialog::MyDataExchange(bool saveAndValidate)
             (GetDlgButtonCheck(this, IDC_ADDFILES_OVERWRITE) == BST_CHECKED);
 
         pWnd = GetDlgItem(IDC_ADDFILES_PREFIX);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->GetWindowText(fStoragePrefix);
 
         if (!ValidateStoragePrefix())
@@ -93,7 +93,7 @@ AddFilesDialog::MyDataExchange(bool saveAndValidate)
             fOverwriteExisting != FALSE);
 
         pWnd = GetDlgItem(IDC_ADDFILES_PREFIX);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->SetWindowText(fStoragePrefix);
         if (!fStoragePrefixEnable)
             pWnd->EnableWindow(FALSE);

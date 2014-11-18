@@ -93,7 +93,7 @@ SPTI::ReadBlocks(HANDLE handle, long startBlock, short numBlocks,
 
     assert(startBlock >= 0);
     assert(numBlocks > 0);
-    assert(buf != nil);
+    assert(buf != NULL);
 
     //WMSG2(" SPTI phys read block (%ld) %d\n", startBlock, numBlocks);
 

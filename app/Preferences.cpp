@@ -44,7 +44,7 @@ static const WCHAR kMiscSect[] = L"misc";
  * index into the table.
  */
 const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
-    /**/ { kPrefNumUnknown,             kPTNone, nil,           nil },
+    /**/ { kPrefNumUnknown,             kPTNone, NULL,           NULL },
 
     { kPrAddIncludeSubFolders,          kBool,  kAddSect,       L"include-sub-folders" },
     { kPrAddStripFolderNames,           kBool,  kAddSect,       L"strip-folder-names" },
@@ -137,13 +137,13 @@ const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
 
     { kPrLastOpenFilterIndex,           kLong,  kMiscSect,      L"open-filter-index" },
 
-    /**/ { kPrefNumLastRegistry,        kPTNone, nil,           nil },
+    /**/ { kPrefNumLastRegistry,        kPTNone, NULL,          NULL },
 
-    { kPrViewTextTypeFace,              kString, nil,           nil },
-    { kPrViewTextPointSize,             kLong,  nil,            nil },
-    { kPrFileViewerWidth,               kLong,  nil,            nil },
-    { kPrFileViewerHeight,              kLong,  nil,            nil },
-    { kPrDiskImageCreateFormat,         kLong,  nil,            nil },
+    { kPrViewTextTypeFace,              kString, NULL,          NULL },
+    { kPrViewTextPointSize,             kLong,  NULL,           NULL },
+    { kPrFileViewerWidth,               kLong,  NULL,           NULL },
+    { kPrFileViewerHeight,              kLong,  NULL,           NULL },
+    { kPrDiskImageCreateFormat,         kLong,  NULL,           NULL },
 };
 
 /*
@@ -384,16 +384,16 @@ Preferences::InitFolders(void)
 bool
 Preferences::GetMyDocuments(CString* pPath)
 {
-    LPITEMIDLIST pidl = nil;
-    LPMALLOC lpMalloc = nil;
+    LPITEMIDLIST pidl = NULL;
+    LPMALLOC lpMalloc = NULL;
     HRESULT hr;
     bool result = false;
 
     hr = ::SHGetMalloc(&lpMalloc);
     if (FAILED(hr))
-       return nil;
+       return NULL;
 
-    hr = SHGetSpecialFolderLocation(nil, CSIDL_PERSONAL, &pidl);
+    hr = SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl);
     if (FAILED(hr)) {
         WMSG0("WARNING: unable to get CSIDL_PERSONAL\n");
         goto bail;
@@ -463,7 +463,7 @@ const WCHAR*
 Preferences::GetPrefString(PrefNum num) const
 {
     if (!ValidateEntry(num, kString))
-        return nil;
+        return NULL;
     return (const WCHAR*) fValues[num];
 }
 void
@@ -472,8 +472,8 @@ Preferences::SetPrefString(PrefNum num, const WCHAR* str)
     if (!ValidateEntry(num, kString))
         return;
     free(fValues[num]);
-    if (str == nil) {
-        fValues[num] = nil;
+    if (str == NULL) {
+        fValues[num] = NULL;
     } else {
         fValues[num] = wcsdup(str);
     }
@@ -516,8 +516,8 @@ Preferences::ScanPrefMaps(void)
     /* look for duplicate strings */
     for (i = 0; i < kPrefNumLastEntry; i++) {
         for (j = i+1; j < kPrefNumLastEntry; j++) {
-            if (fPrefMaps[i].registryKey == nil ||
-                fPrefMaps[j].registryKey == nil)
+            if (fPrefMaps[i].registryKey == NULL ||
+                fPrefMaps[j].registryKey == NULL)
             {
                 continue;
             }
@@ -552,7 +552,7 @@ Preferences::LoadFromRegistry(void)
 
     int i;
     for (i = 0; i < kPrefNumLastRegistry; i++) {
-        if (fPrefMaps[i].registryKey == nil)
+        if (fPrefMaps[i].registryKey == NULL)
             continue;
 
         switch (fPrefMaps[i].type) {
@@ -593,7 +593,7 @@ Preferences::SaveToRegistry(void)
 
     int i;
     for (i = 0; i < kPrefNumLastRegistry; i++) {
-        if (fPrefMaps[i].registryKey == nil)
+        if (fPrefMaps[i].registryKey == NULL)
             continue;
 
         switch (fPrefMaps[i].type) {

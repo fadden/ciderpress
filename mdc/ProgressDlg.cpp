@@ -27,7 +27,7 @@ ProgressDlg::ProgressDlg(CWnd* pParent /*=NULL*/)
         // NOTE: the ClassWizard will add member initialization here
     //}}AFX_DATA_INIT
 
-    fpCancelFlag = nil;
+    fpCancelFlag = NULL;
 }
 #endif
 
@@ -63,7 +63,7 @@ void
 ProgressDlg::SetCurrentFile(const WCHAR* fileName)
 {
     CWnd* pWnd = GetDlgItem(IDC_PROGRESS_FILENAME);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->SetWindowText(fileName);
 }
 
@@ -71,7 +71,7 @@ void ProgressDlg::OnCancel()
 {
     // TODO: Add extra cleanup here
     WMSG0("Cancel button pushed\n");
-    ASSERT(fpCancelFlag != nil);
+    ASSERT(fpCancelFlag != NULL);
     *fpCancelFlag = true;
     
     //CDialog::OnCancel();

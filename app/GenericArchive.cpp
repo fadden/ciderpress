@@ -50,11 +50,11 @@
  */
 GenericEntry::GenericEntry(void)
 {
-    fPathName = nil;
-    fFileName = nil;
+    fPathName = NULL;
+    fFileName = NULL;
     fFssep = '\0';
-    fSubVolName = nil;
-    fDisplayName = nil;
+    fSubVolName = NULL;
+    fDisplayName = NULL;
     fFileType = 0;
     fAuxType = 0;
     fAccess = 0;
@@ -75,8 +75,8 @@ GenericEntry::GenericEntry(void)
     fHasNonEmptyComment = false;
 
     fIndex = -1;
-    fpPrev = nil;
-    fpNext = nil;
+    fpPrev = NULL;
+    fpNext = NULL;
 
     fDamaged = fSuspicious = false;
 }
@@ -97,15 +97,15 @@ GenericEntry::~GenericEntry(void)
 void
 GenericEntry::SetPathName(const WCHAR* path)
 {
-    ASSERT(path != nil && wcslen(path) > 0);
-    if (fPathName != nil)
+    ASSERT(path != NULL && wcslen(path) > 0);
+    if (fPathName != NULL)
         delete fPathName;
     fPathName = wcsdup(path);
     // nuke the derived fields
-    fFileName = nil;
-    fFileNameExtension = nil;
+    fFileName = NULL;
+    fFileNameExtension = NULL;
     delete[] fDisplayName;
-    fDisplayName = nil;
+    fDisplayName = NULL;
 
     /*
      * Warning: to be 100% pedantically correct here, we should NOT do this
@@ -120,16 +120,16 @@ GenericEntry::SetPathName(const WCHAR* path)
 const WCHAR*
 GenericEntry::GetFileName(void)
 {
-    ASSERT(fPathName != nil);
-    if (fFileName == nil)
+    ASSERT(fPathName != NULL);
+    if (fFileName == NULL)
         fFileName = PathName::FilenameOnly(fPathName, fFssep);
     return fFileName;
 }
 const WCHAR*
 GenericEntry::GetFileNameExtension(void)
 {
-    ASSERT(fPathName != nil);
-    if (fFileNameExtension == nil)
+    ASSERT(fPathName != NULL);
+    if (fFileNameExtension == NULL)
         fFileNameExtension = PathName::FindExtension(fPathName, fFssep);
     return fFileNameExtension;
 }
@@ -142,26 +142,26 @@ void
 GenericEntry::SetSubVolName(const WCHAR* name)
 {
     delete[] fSubVolName;
-    fSubVolName = nil;
-    if (name != nil) {
+    fSubVolName = NULL;
+    if (name != NULL) {
         fSubVolName = wcsdup(name);
     }
 }
 const WCHAR*
 GenericEntry::GetDisplayName(void) const
 {
-    ASSERT(fPathName != nil);
-    if (fDisplayName != nil)
+    ASSERT(fPathName != NULL);
+    if (fDisplayName != NULL)
         return fDisplayName;
 
     // TODO: hmm...
     GenericEntry* pThis = const_cast<GenericEntry*>(this);
 
     int len = wcslen(fPathName) +1;
-    if (fSubVolName != nil)
+    if (fSubVolName != NULL)
         len += wcslen(fSubVolName) +1;
     pThis->fDisplayName = new WCHAR[len];
-    if (fSubVolName != nil) {
+    if (fSubVolName != NULL) {
         WCHAR xtra[2] = { DiskFS::kDIFssep, '\0' };
         wcscpy(pThis->fDisplayName, fSubVolName);
         wcscat(pThis->fDisplayName, xtra);
@@ -214,7 +214,7 @@ GenericEntry::CheckHighASCII(const unsigned char* buffer,
 {
     bool isHighASCII;
 
-    ASSERT(buffer != nil);
+    ASSERT(buffer != NULL);
     ASSERT(count != 0);
 
     isHighASCII = true;
@@ -492,27 +492,27 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
 void
 GenericArchive::AddEntry(GenericEntry* pEntry)
 {
-    if (fEntryHead == nil) {
-        ASSERT(fEntryTail == nil);
+    if (fEntryHead == NULL) {
+        ASSERT(fEntryTail == NULL);
         fEntryHead = pEntry;
         fEntryTail = pEntry;
-        ASSERT(pEntry->GetPrev() == nil);
-        ASSERT(pEntry->GetNext() == nil);
+        ASSERT(pEntry->GetPrev() == NULL);
+        ASSERT(pEntry->GetNext() == NULL);
     } else {
-        ASSERT(fEntryTail != nil);
-        ASSERT(pEntry->GetPrev() == nil);
+        ASSERT(fEntryTail != NULL);
+        ASSERT(pEntry->GetPrev() == NULL);
         pEntry->SetPrev(fEntryTail);
-        ASSERT(fEntryTail->GetNext() == nil);
+        ASSERT(fEntryTail->GetNext() == NULL);
         fEntryTail->SetNext(pEntry);
         fEntryTail = pEntry;
     }
 
     fNumEntries++;
 
-    //if (fEntryIndex != nil) {
+    //if (fEntryIndex != NULL) {
     //  WMSG0("Resetting fEntryIndex\n");
     //  delete [] fEntryIndex;
-    //  fEntryIndex = nil;
+    //  fEntryIndex = NULL;
     //}
 }
 
@@ -528,7 +528,7 @@ GenericArchive::DeleteEntries(void)
     WMSG1("Deleting %d archive entries\n", fNumEntries);
 
     pEntry = GetEntries();
-    while (pEntry != nil) {
+    while (pEntry != NULL) {
         pNext = pEntry->GetNext();
         delete pEntry;
         pEntry = pNext;
@@ -536,7 +536,7 @@ GenericArchive::DeleteEntries(void)
 
     //delete [] fEntryIndex;
     fNumEntries = 0;
-    fEntryHead = fEntryTail = nil;
+    fEntryHead = fEntryTail = NULL;
 }
 
 #if 0
@@ -554,12 +554,12 @@ GenericArchive::CreateIndex(void)
     ASSERT(fNumEntries != 0);
 
     fEntryIndex = new GenericEntry*[fNumEntries];
-    if (fEntryIndex == nil)
+    if (fEntryIndex == NULL)
         return;
 
     pEntry = GetEntries();
     num = 0;
-    while (pEntry != nil) {
+    while (pEntry != NULL) {
         fEntryIndex[num] = pEntry;
         pEntry = pEntry->GetNext();
         num++;
@@ -585,7 +585,7 @@ GenericArchive::GenDerivedTempName(const WCHAR* filename)
     CString mangle(filename);
     int idx, len;
 
-    ASSERT(filename != nil);
+    ASSERT(filename != NULL);
 
     len = mangle.GetLength();
     ASSERT(len > 0);
@@ -676,11 +676,11 @@ GenericArchive::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime* pDateTime)
 {
     struct tm* ptm;
 
-    ASSERT(pWhen != nil);
-    ASSERT(pDateTime != nil);
+    ASSERT(pWhen != NULL);
+    ASSERT(pDateTime != NULL);
 
     ptm = localtime(pWhen);
-    if (ptm == nil) {
+    if (ptm == NULL) {
         ASSERT(*pWhen == kDateNone || *pWhen == kDateInvalid);
         memset(pDateTime, 0, sizeof(*pDateTime));
         return;
@@ -710,9 +710,9 @@ GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
     //char* livePathStr;
     time_t now;
 
-    ASSERT(pAddOpts != nil);
-    ASSERT(pathname != nil);
-    ASSERT(pDetails != nil);
+    ASSERT(pAddOpts != NULL);
+    ASSERT(pathname != NULL);
+    ASSERT(pDetails != NULL);
 
     /* init to defaults */
     //pDetails->threadID = kNuThreadIDDataFork;
@@ -744,7 +744,7 @@ GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
     }
 #endif
 
-    now = time(nil);
+    now = time(NULL);
     UNIXTimeToDateTime(&now, &pDetails->archiveWhen);
     UNIXTimeToDateTime(&psb->st_mtime, &pDetails->modWhen);
     UNIXTimeToDateTime(&psb->st_ctime, &pDetails->createWhen);
@@ -817,14 +817,14 @@ static const WCHAR kWildMatchAll[] = L"*.*";
 Win32dirent*
 GenericArchive::OpenDir(const WCHAR* name)
 {
-    Win32dirent* dir = nil;
-    WCHAR* tmpStr = nil;
+    Win32dirent* dir = NULL;
+    WCHAR* tmpStr = NULL;
     WCHAR* cp;
     WIN32_FIND_DATA fnd;
 
     dir = (Win32dirent*) malloc(sizeof(*dir));
     tmpStr = (WCHAR*) malloc((wcslen(name) + 2 + wcslen(kWildMatchAll)) * sizeof(WCHAR));
-    if (dir == nil || tmpStr == nil)
+    if (dir == NULL || tmpStr == NULL)
         goto failed;
 
     wcscpy(tmpStr, name);
@@ -854,14 +854,14 @@ bail:
 
 failed:
     free(dir);
-    dir = nil;
+    dir = NULL;
     goto bail;
 }
 
 /*
  * Get an entry from an open directory.
  *
- * Returns a nil pointer after the last entry has been read.
+ * Returns a NULL pointer after the last entry has been read.
  */
 Win32dirent*
 GenericArchive::ReadDir(Win32dirent* dir)
@@ -872,7 +872,7 @@ GenericArchive::ReadDir(Win32dirent* dir)
         WIN32_FIND_DATA fnd;
 
         if (!FindNextFile(dir->d_hFindFile, &fnd))
-            return nil;
+            return NULL;
         wcscpy(dir->d_name, fnd.cFileName);
         dir->d_attr = (unsigned char) fnd.dwFileAttributes;
     }
@@ -886,7 +886,7 @@ GenericArchive::ReadDir(Win32dirent* dir)
 void
 GenericArchive::CloseDir(Win32dirent* dir)
 {
-    if (dir == nil)
+    if (dir == NULL)
         return;
 
     FindClose(dir->d_hFindFile);
@@ -903,19 +903,19 @@ GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
     const WCHAR* dirName, CString* pErrMsg)
 {
     NuError err = kNuErrNone;
-    Win32dirent* dirp = nil;
+    Win32dirent* dirp = NULL;
     Win32dirent* entry;
     WCHAR nbuf[MAX_PATH];   /* malloc might be better; this soaks stack */
     char fssep;
     int len;
 
-    ASSERT(pAddOpts != nil);
-    ASSERT(dirName != nil);
+    ASSERT(pAddOpts != NULL);
+    ASSERT(dirName != NULL);
 
     WMSG1("+++ DESCEND: '%ls'\n", dirName);
 
     dirp = OpenDir(dirName);
-    if (dirp == nil) {
+    if (dirp == NULL) {
         if (errno == ENOTDIR)
             err = kNuErrNotDir;
         else
@@ -928,7 +928,7 @@ GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
     fssep = PathProposal::kLocalFssep;
 
     /* could use readdir_r, but we don't care about reentrancy here */
-    while ((entry = ReadDir(dirp)) != nil) {
+    while ((entry = ReadDir(dirp)) != NULL) {
         /* skip the dotsies */
         if (wcscmp(entry->d_name, L".") == 0 ||
             wcscmp(entry->d_name, L"..") == 0)
@@ -956,7 +956,7 @@ GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
     }
 
 bail:
-    if (dirp != nil)
+    if (dirp != NULL)
         (void)CloseDir(dirp);
     return err;
 }
@@ -977,8 +977,8 @@ GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
     FileDetails details;
     struct _stat sb;
 
-    ASSERT(pAddOpts != nil);
-    ASSERT(pathname != nil);
+    ASSERT(pAddOpts != NULL);
+    ASSERT(pathname != NULL);
 
     PathName checkPath(pathname);
     int ierr = checkPath.CheckFileStatus(&sb, &exists, &isReadable, &isDir);
@@ -1041,7 +1041,7 @@ bail:
  *
  * [ I figure the GS/OS version will want to pass a copy of the file
  *   info from the GSOSAddDirectory function back into GSOSAddFile, so we'd
- *   want to call it from here with a nil pointer indicating that we
+ *   want to call it from here with a NULL pointer indicating that we
  *   don't yet have the file info.  That way we can get the file info
  *   from the directory read call and won't have to check it again in
  *   GSOSAddFile. ]
@@ -1200,10 +1200,10 @@ SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask)
 
     POSITION posn;
     posn = pContentList->GetFirstSelectedItemPosition();
-    ASSERT(posn != nil);
-    if (posn == nil)
+    ASSERT(posn != NULL);
+    if (posn == NULL)
         return;
-    while (posn != nil) {
+    while (posn != NULL) {
         int num = pContentList->GetNextSelectedItem(/*ref*/ posn);
         GenericEntry* pEntry = (GenericEntry*) pContentList->GetItemData(num);
 
@@ -1286,17 +1286,17 @@ SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
 void
 SelectionSet::AddEntry(SelectionEntry* pEntry)
 {
-    if (fEntryHead == nil) {
-        ASSERT(fEntryTail == nil);
+    if (fEntryHead == NULL) {
+        ASSERT(fEntryTail == NULL);
         fEntryHead = pEntry;
         fEntryTail = pEntry;
-        ASSERT(pEntry->GetPrev() == nil);
-        ASSERT(pEntry->GetNext() == nil);
+        ASSERT(pEntry->GetPrev() == NULL);
+        ASSERT(pEntry->GetNext() == NULL);
     } else {
-        ASSERT(fEntryTail != nil);
-        ASSERT(pEntry->GetPrev() == nil);
+        ASSERT(fEntryTail != NULL);
+        ASSERT(pEntry->GetPrev() == NULL);
         pEntry->SetPrev(fEntryTail);
-        ASSERT(fEntryTail->GetNext() == nil);
+        ASSERT(fEntryTail->GetNext() == NULL);
         fEntryTail->SetNext(pEntry);
         fEntryTail = pEntry;
     }
@@ -1316,7 +1316,7 @@ SelectionSet::DeleteEntries(void)
     WMSG0("Deleting selection entries\n");
 
     pEntry = GetEntries();
-    while (pEntry != nil) {
+    while (pEntry != NULL) {
         pNext = pEntry->GetNext();
         delete pEntry;
         pEntry = pNext;
@@ -1335,7 +1335,7 @@ SelectionSet::CountMatchingPrefix(const WCHAR* prefix)
     ASSERT(len > 0);
 
     pEntry = GetEntries();
-    while (pEntry != nil) {
+    while (pEntry != NULL) {
         GenericEntry* pGeneric = pEntry->GetEntry();
 
         if (wcsnicmp(prefix, pGeneric->GetDisplayName(), len) == 0)
@@ -1357,7 +1357,7 @@ SelectionSet::Dump(void)
     WMSG1("SelectionSet: %d entries\n", fNumEntries);
 
     pEntry = fEntryHead;
-    while (pEntry != nil) {
+    while (pEntry != NULL) {
         WMSG1("  : name='%ls'\n", pEntry->GetEntry()->GetPathName());
         pEntry = pEntry->GetNext();
     }

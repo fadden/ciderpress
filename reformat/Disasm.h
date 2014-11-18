@@ -305,7 +305,7 @@ private:
  */
 class OMFSegment {
 public:
-    OMFSegment(void) : fSegBuf(nil), fSegLen(-1), fCurPtr(nil),
+    OMFSegment(void) : fSegBuf(NULL), fSegLen(-1), fCurPtr(NULL),
         fNumLen(-1), fLabLen(-1)
         {}
     virtual ~OMFSegment(void) {}

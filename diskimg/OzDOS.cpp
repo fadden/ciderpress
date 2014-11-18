@@ -253,11 +253,11 @@ DIError
 DiskFSOzDOS::OpenSubVolume(int idx)
 {
     DIError dierr = kDIErrNone;
-    DiskFS* pNewFS = nil;
-    DiskImg* pNewImg = nil;
+    DiskFS* pNewFS = NULL;
+    DiskImg* pNewImg = NULL;
     
     pNewImg = new DiskImg;
-    if (pNewImg == nil) {
+    if (pNewImg == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -292,7 +292,7 @@ DiskFSOzDOS::OpenSubVolume(int idx)
     /* open a DiskFS for the sub-image */
     WMSG1(" UNISub %d succeeded!\n", idx);
     pNewFS = pNewImg->OpenAppropriateDiskFS();
-    if (pNewFS == nil) {
+    if (pNewFS == NULL) {
         WMSG0(" OzSub: OpenAppropriateDiskFS failed\n");
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;

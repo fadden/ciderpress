@@ -112,9 +112,9 @@ SQRead(FILE* fp, void* buf, size_t nbyte)
 {
     size_t result;
 
-    ASSERT(buf != nil);
+    ASSERT(buf != NULL);
     ASSERT(nbyte > 0);
-    ASSERT(fp != nil);
+    ASSERT(fp != NULL);
 
     errno = 0;
     result = fread(buf, 1, nbyte, fp);
@@ -130,7 +130,7 @@ SQRead(FILE* fp, void* buf, size_t nbyte)
  * Because we have a stop symbol, knowing the uncompressed length of
  * the file is not essential.
  *
- * If "outExp" is nil, no output is produced (useful for "test" mode).
+ * If "outExp" is NULL, no output is produced (useful for "test" mode).
  */
 NuError
 UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
@@ -142,11 +142,11 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
     unsigned short magic, fileChecksum, checksum;   // fullSqHeader only
     short nodeCount;
     int i, inrep;
-    unsigned char* tmpBuf = nil;
+    unsigned char* tmpBuf = NULL;
     unsigned char lastc = 0;
 
     tmpBuf = (unsigned char*) malloc(kSqBufferSize);
-    if (tmpBuf == nil) {
+    if (tmpBuf == NULL) {
         err = kNuErrMalloc;
         goto bail;
     }
@@ -340,9 +340,9 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
                 val = 2;
             }
             while (--val) {
-                /*if (pCrc != nil)
+                /*if (pCrc != NULL)
                     *pCrc = Nu_CalcCRC16(*pCrc, &lastc, 1);*/
-                if (outExp != nil)
+                if (outExp != NULL)
                     outExp->Putc(lastc);
                 if (fullSqHeader) {
                     checksum += lastc;
@@ -356,9 +356,9 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
                 inrep = true;
             } else {
                 lastc = val;
-                /*if (pCrc != nil)
+                /*if (pCrc != NULL)
                     *pCrc = Nu_CalcCRC16(*pCrc, &lastc, 1);*/
-                if (outExp != nil)
+                if (outExp != NULL)
                     outExp->Putc(lastc);
                 if (fullSqHeader) {
                     checksum += lastc;
@@ -404,7 +404,7 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
     }
 
 bail:
-    //if (outfp != nil)
+    //if (outfp != NULL)
     //  fflush(outfp);
     free(tmpBuf);
     return err;

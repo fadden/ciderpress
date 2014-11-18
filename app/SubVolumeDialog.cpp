@@ -25,18 +25,18 @@ END_MESSAGE_MAP()
 BOOL
 SubVolumeDialog::OnInitDialog(void)
 {
-    ASSERT(fpDiskFS != nil);
+    ASSERT(fpDiskFS != NULL);
 
     CListBox* pListBox = (CListBox*) GetDlgItem(IDC_SUBV_LIST);
-    ASSERT(pListBox != nil);
+    ASSERT(pListBox != NULL);
 
 //  if (pListBox->SetTabStops(12) != TRUE) {
 //      ASSERT(false);
 //  }
 
-    DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(nil);
-    ASSERT(pSubVol != nil);     // shouldn't be here otherwise
-    while (pSubVol != nil) {
+    DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(NULL);
+    ASSERT(pSubVol != NULL);     // shouldn't be here otherwise
+    while (pSubVol != NULL) {
         CString volumeIdW(pSubVol->GetDiskFS()->GetVolumeID());
         pListBox->AddString(volumeIdW); // makes a copy of the string
 

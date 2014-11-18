@@ -112,7 +112,7 @@ ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
 {
     CString path;
     CWnd* pWnd = GetDlgItem(IDC_CHOOSEDIR_PATH);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
 
     if (fShellTree.GetFolderPath(&path))
         fPathName = path;
@@ -122,7 +122,7 @@ ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
 
     // disable the "Select" button when there's no path ready
     pWnd = GetDlgItem(IDOK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(!fPathName.IsEmpty());
 
     // It's confusing to have two different paths showing, so wipe out the
@@ -144,7 +144,7 @@ ChooseDirDialog::OnExpandTree(void)
     CString msg;
 
     pWnd = GetDlgItem(IDC_CHOOSEDIR_PATHEDIT);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->GetWindowText(str);
 
     if (!str.IsEmpty()) {

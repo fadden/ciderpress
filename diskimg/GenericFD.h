@@ -75,7 +75,7 @@ private:
  *
  * The Read and Write calls take an optional parameter that allows the caller
  * to see how much data was actually read or written.  If the parameter is
- * not specified (or specified as nil), then failure to return the exact
+ * not specified (or specified as NULL), then failure to return the exact
  * amount of data requested results an error.
  *
  * This is not meant to be the end-all of file wrapper classes; in
@@ -83,7 +83,7 @@ private:
  *
  * Some libraries, such as NufxLib, require an actual filename to operate
  * (bad architecture?).  The GetPathName call will return the original
- * filename if one exists, or nil if there isn't one.  (At which point the
+ * filename if one exists, or NULL if there isn't one.  (At which point the
  * caller has the option of creating a temp file, copying the data into
  * it, and cranking up NufxLib or zlib on that.)
  *
@@ -100,9 +100,9 @@ public:
 
     // All sub-classes must provide these, plus a type-specific Open call.
     virtual DIError Read(void* buf, size_t length,
-        size_t* pActual = nil) = 0;
+        size_t* pActual = NULL) = 0;
     virtual DIError Write(const void* buf, size_t length,
-        size_t* pActual = nil) = 0;
+        size_t* pActual = NULL) = 0;
     virtual DIError Seek(di_off_t offset, DIWhence whence) = 0;
     virtual di_off_t Tell(void) = 0;
     virtual DIError Truncate(void) = 0;
@@ -133,7 +133,7 @@ public:
      * be seeked to their initial positions.  "length" bytes will be copied.
      */
     static DIError CopyFile(GenericFD* pDst, GenericFD* pSrc, di_off_t length,
-            unsigned long* pCRC = nil);
+            unsigned long* pCRC = NULL);
 
 protected:
     GenericFD& operator=(const GenericFD&);
@@ -145,17 +145,17 @@ protected:
 class GFDFile : public GenericFD {
 public:
 #ifdef HAVE_FSEEKO
-    GFDFile(void) : fPathName(nil), fFp(nil) {}
+    GFDFile(void) : fPathName(NULL), fFp(NULL) {}
 #else
-    GFDFile(void) : fPathName(nil), fFd(-1) {}
+    GFDFile(void) : fPathName(NULL), fFd(-1) {}
 #endif
     virtual ~GFDFile(void) { Close(); delete[] fPathName; }
 
     virtual DIError Open(const char* filename, bool readOnly);
     virtual DIError Read(void* buf, size_t length,
-        size_t* pActual = nil);
+        size_t* pActual = NULL);
     virtual DIError Write(const void* buf, size_t length,
-        size_t* pActual = nil);
+        size_t* pActual = NULL);
     virtual DIError Seek(di_off_t offset, DIWhence whence);
     virtual di_off_t Tell(void);
     virtual DIError Truncate(void);
@@ -175,15 +175,15 @@ private:
 #ifdef _WIN32
 class GFDWinVolume : public GenericFD {
 public:
-    GFDWinVolume(void) : fPathName(nil), fCurrentOffset(0), fVolumeEOF(-1)
+    GFDWinVolume(void) : fPathName(NULL), fCurrentOffset(0), fVolumeEOF(-1)
         {}
     virtual ~GFDWinVolume(void) { delete[] fPathName; }
 
     virtual DIError Open(const char* deviceName, bool readOnly);
     virtual DIError Read(void* buf, size_t length,
-        size_t* pActual = nil);
+        size_t* pActual = NULL);
     virtual DIError Write(const void* buf, size_t length,
-        size_t* pActual = nil);
+        size_t* pActual = NULL);
     virtual DIError Seek(di_off_t offset, DIWhence whence);
     virtual di_off_t Tell(void);
     virtual DIError Truncate(void) { return kDIErrNotSupported; }
@@ -203,7 +203,7 @@ private:
 
 class GFDBuffer : public GenericFD {
 public:
-    GFDBuffer(void) : fBuffer(nil) {}
+    GFDBuffer(void) : fBuffer(NULL) {}
     virtual ~GFDBuffer(void) { Close(); }
 
     // If "doDelete" is set, the buffer will be freed with delete[] when
@@ -218,9 +218,9 @@ public:
     virtual DIError Open(void* buffer, di_off_t length, bool doDelete,
         bool doExpand, bool readOnly);
     virtual DIError Read(void* buf, size_t length,
-        size_t* pActual = nil);
+        size_t* pActual = NULL);
     virtual DIError Write(const void* buf, size_t length,
-        size_t* pActual = nil);
+        size_t* pActual = NULL);
     virtual DIError Seek(di_off_t offset, DIWhence whence);
     virtual di_off_t Tell(void);
     virtual DIError Truncate(void) {
@@ -228,7 +228,7 @@ public:
         return kDIErrNone;
     }
     virtual DIError Close(void);
-    virtual const char* GetPathName(void) const { return nil; }
+    virtual const char* GetPathName(void) const { return NULL; }
 
     // Back door; try not to use this.
     void* GetBuffer(void) const { return fBuffer; }
@@ -246,18 +246,18 @@ private:
 #if 0
 class GFDEmbedded : public GenericFD {
 public:
-    GFDEmbedded(void) : fEFD(nil) {}
+    GFDEmbedded(void) : fEFD(NULL) {}
     virtual ~GFDEmbedded(void) { Close(); }
 
     virtual DIError Open(EmbeddedFD* pEFD, bool readOnly);
     virtual DIError Read(void* buf, size_t length,
-        size_t* pActual = nil);
+        size_t* pActual = NULL);
     virtual DIError Write(const void* buf, size_t length,
-        size_t* pActual = nil);
+        size_t* pActual = NULL);
     virtual DIError Seek(di_off_t offset, DIWhence whence);
     virtual di_off_t Tell(void);
     virtual DIError Close(void);
-    virtual const char* GetPathName(void) const { return nil; }
+    virtual const char* GetPathName(void) const { return NULL; }
 
 private:
     EmbeddedFD* fEFD;
@@ -267,11 +267,11 @@ private:
 /* pass all requests straight through to another GFD (with offset bias) */
 class GFDGFD : public GenericFD {
 public:
-    GFDGFD(void) : fpGFD(nil), fOffset(0) {}
+    GFDGFD(void) : fpGFD(NULL), fOffset(0) {}
     virtual ~GFDGFD(void) { Close(); }
 
     virtual DIError Open(GenericFD* pGFD, di_off_t offset, bool readOnly) {
-        if (pGFD == nil)
+        if (pGFD == NULL)
             return kDIErrInvalidArg;
         if (!readOnly && pGFD->GetReadOnly())
             return kDIErrAccessDenied;          // can't convert to read-write
@@ -282,12 +282,12 @@ public:
         return kDIErrNone;
     }
     virtual DIError Read(void* buf, size_t length,
-        size_t* pActual = nil)
+        size_t* pActual = NULL)
     {
         return fpGFD->Read(buf, length, pActual);
     }
     virtual DIError Write(const void* buf, size_t length,
-        size_t* pActual = nil)
+        size_t* pActual = NULL)
     {
         return fpGFD->Write(buf, length, pActual);
     }
@@ -302,7 +302,7 @@ public:
     }
     virtual DIError Close(void) {
         /* do NOT close underlying descriptor */
-        fpGFD = nil;
+        fpGFD = NULL;
         return kDIErrNone;
     }
     virtual const char* GetPathName(void) const { return fpGFD->GetPathName(); }

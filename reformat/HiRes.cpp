@@ -244,7 +244,7 @@ ReformatHiRes::Process(const ReformatHolder* pHolder,
     InitLineOffset(fLineOffset);
 
     pDib = HiResScreenToBitmap(srcBuf);
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     SetResultBuffer(pOutput, pDib);
@@ -265,7 +265,7 @@ ReformatHiRes::InitLineOffset(int* pOffsetBuf)
     long offset;
     int line;
 
-    ASSERT(pOffsetBuf != nil);
+    ASSERT(pOffsetBuf != NULL);
 
     for (line = 0; line < kNumLines; line++) {
         offset = (line & 0x07) << 10 | (line & 0x38) << 4 |
@@ -316,14 +316,14 @@ ReformatHiRes::HiResScreenToBitmap(const unsigned char* buf)
 
     ASSERT(kOutputWidth == 2*kPixelsPerLine);
 
-    if (pDib == nil)
+    if (pDib == NULL)
         goto bail;
 
     outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
                                     4, kNumColors);
-    if (outBuf == nil) {
+    if (outBuf == NULL) {
         delete pDib;
-        pDib = nil;
+        pDib = NULL;
         goto bail;
     }
     pDib->SetColorTable(colorConv);

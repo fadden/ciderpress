@@ -35,7 +35,7 @@
  */
 MyDIBitmap::~MyDIBitmap(void)
 {
-    if (mhBitmap != nil)
+    if (mhBitmap != NULL)
         ::DeleteObject(mhBitmap);
     delete[] mpFileBuffer;
     delete[] mpColorTable;
@@ -49,16 +49,16 @@ MyDIBitmap::~MyDIBitmap(void)
  * We probably don't need to allocate DIB storage here.  We can do most
  * operations ourselves, in local memory, and only convert when needed.
  *
- * Returns a pointer to the pixel storage on success, or nil on failure.
+ * Returns a pointer to the pixel storage on success, or NULL on failure.
  */
 void*
 MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
     bool dibSection /*=false*/)
 {
-    if (mhBitmap != nil || mpPixels != nil || mpFileBuffer != nil) {
+    if (mhBitmap != NULL || mpPixels != NULL || mpFileBuffer != NULL) {
         WMSG0(" DIB GLITCH: already created\n");
         assert(false);
-        return nil;
+        return NULL;
     }
 
     assert(width > 0 && height > 0);
@@ -87,17 +87,17 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
     mNumColorsUsed = colorsUsed;
     if (colorsUsed) {
         mpColorTable = new RGBQUAD[colorsUsed];
-        if (mpColorTable == nil)
-            return nil;
+        if (mpColorTable == NULL)
+            return NULL;
     }
 
     if (dibSection) {
         /*
          * Create an actual blank DIB section.
          */
-        mhBitmap = ::CreateDIBSection(nil, (BITMAPINFO*) &mBitmapInfoHdr,
-                        DIB_RGB_COLORS, &mpPixels, nil, 0);
-        if (mhBitmap == nil) {
+        mhBitmap = ::CreateDIBSection(NULL, (BITMAPINFO*) &mBitmapInfoHdr,
+                        DIB_RGB_COLORS, &mpPixels, NULL, 0);
+        if (mhBitmap == NULL) {
             DWORD err = ::GetLastError();
             //CString msg;
             //GetWin32ErrorString(err, &msg);
@@ -107,7 +107,7 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
             LogHexDump(&mBitmapInfoHdr, sizeof(BITMAPINFO));
             WMSG1("&mpPixels = 0x%08lx\n", &mpPixels);
             DebugBreak();
-            return nil;
+            return NULL;
         }
 
         /*
@@ -118,7 +118,7 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
         /* or GetObject(hBitmap, sizeof(DIBSECTION), &dibsection) */
         gotten = ::GetObject(mhBitmap, sizeof(info), &info);
         if (gotten != sizeof(info))
-            return nil;
+            return NULL;
         mPitchBytes = info.bmWidthBytes;
     } else {
         /*
@@ -137,7 +137,7 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
     mBpp = bitsPerPixel;
 
     /* clear the bitmap, possibly not needed for DIB section */
-    assert(mpPixels != nil);
+    assert(mpPixels != NULL);
     memset(mpPixels, 0, mPitchBytes * mBitmapInfoHdr.biHeight);
 
     //WMSG2("+++  allocated %d bytes for bitmap pixels (mPitchBytes=%d)\n",
@@ -152,11 +152,11 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
 int
 MyDIBitmap::CreateFromFile(const WCHAR* fileName)
 {
-    FILE* fp = nil;
+    FILE* fp = NULL;
     int err;
 
     fp = _wfopen(fileName, L"rb");
-    if (fp == nil) {
+    if (fp == NULL) {
         err = errno ? errno : -1;
         WMSG2("Unable to read bitmap from file '%ls' (err=%d)\n",
             fileName, err);
@@ -179,11 +179,11 @@ MyDIBitmap::CreateFromFile(const WCHAR* fileName)
 int
 MyDIBitmap::CreateFromFile(FILE* fp, long len)
 {
-    void* buf = nil;
+    void* buf = NULL;
     int err = -1;
 
     buf = new unsigned char[len];
-    if (buf == nil)
+    if (buf == NULL)
         return err;
 
     if (fread(buf, len, 1, fp) != 1) {
@@ -213,7 +213,7 @@ MyDIBitmap::CreateFromBuffer(void* buf, long len, bool doDelete)
         return CreateFromNewBuffer(buf, len);
     } else {
         void* newBuf = new unsigned char[len];
-        if (newBuf == nil)
+        if (newBuf == NULL)
             return -1;
         memcpy(newBuf, buf, len);
 
@@ -237,7 +237,7 @@ MyDIBitmap::CreateFromNewBuffer(void* vbuf, long len)
     BITMAPFILEHEADER* pHeader = (BITMAPFILEHEADER*) vbuf;
     unsigned char* buf = (unsigned char*) vbuf;
 
-    assert(pHeader != nil);
+    assert(pHeader != NULL);
     assert(len > 0);
 
     if (len > 16 && pHeader->bfType == kBMPMagic && (long) pHeader->bfSize == len)
@@ -312,7 +312,7 @@ MyDIBitmap::ImportBMP(void* vbuf, long len)
             mBitmapInfoHdr.biClrUsed = mNumColorsUsed;
         }
         mpColorTable = new RGBQUAD[mNumColorsUsed];
-        if (mpColorTable == nil)
+        if (mpColorTable == NULL)
             goto bail;
         SetColorTable(pInfo->bmiColors);
     }
@@ -434,16 +434,16 @@ MyDIBitmap::ConvertBufToDIBSection(void)
 {
     void* oldPixels = mpPixels;
 
-    assert(mhBitmap == nil);
-    assert(mpFileBuffer != nil);
+    assert(mhBitmap == NULL);
+    assert(mpFileBuffer != NULL);
 
     WMSG0(" DIB converting buf to DIB Section\n");
 
     /* alloc storage */
-    mpPixels = nil;
-    mhBitmap = ::CreateDIBSection(nil, (BITMAPINFO*) &mBitmapInfoHdr,
-                    DIB_RGB_COLORS, &mpPixels, nil, 0);
-    if (mhBitmap == nil) {
+    mpPixels = NULL;
+    mhBitmap = ::CreateDIBSection(NULL, (BITMAPINFO*) &mBitmapInfoHdr,
+                    DIB_RGB_COLORS, &mpPixels, NULL, 0);
+    if (mhBitmap == NULL) {
         DWORD err = ::GetLastError();
         WMSG1(" DIB CreateDIBSection failed (err=%d)\n", err);
         LogHexDump(&mBitmapInfoHdr, sizeof(BITMAPINFO));
@@ -452,7 +452,7 @@ MyDIBitmap::ConvertBufToDIBSection(void)
         mpPixels = oldPixels;
         return -1;
     }
-    assert(mpPixels != nil);
+    assert(mpPixels != NULL);
 
     /*
      * This shouldn't be necessary; I don't think a DIB section uses a
@@ -464,7 +464,7 @@ MyDIBitmap::ConvertBufToDIBSection(void)
     // or GetObject(hBitmap, sizeof(DIBSECTION), &dibsection)
     gotten = ::GetObject(mhBitmap, sizeof(info), &info);
     if (gotten != sizeof(info))
-        return nil;
+        return NULL;
     assert(mPitchBytes == info.bmWidthBytes);
     //mPitchBytes = info.bmWidthBytes;
 
@@ -473,7 +473,7 @@ MyDIBitmap::ConvertBufToDIBSection(void)
 
     /* throw out the old storage */
     delete[] mpFileBuffer;
-    mpFileBuffer = nil;
+    mpFileBuffer = NULL;
 
     return 0;
 }
@@ -488,14 +488,14 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
 {
     mhBitmap = (HBITMAP) ::LoadImage(hInstance, rsrc, IMAGE_BITMAP, 0, 0,
                     LR_DEFAULTCOLOR | LR_CREATEDIBSECTION);
-    if (mhBitmap == nil) {
+    if (mhBitmap == NULL) {
         DWORD err = ::GetLastError();
         //CString msg;
         //GetWin32ErrorString(err, &msg);
         //WMSG2(" DIB CreateDIBSection failed (err=%d msg='%ls')\n",
         //  err, (LPCWSTR) msg);
         WMSG1(" DIB LoadImage failed (err=%d)\n", err);
-        return nil;
+        return NULL;
     }
 
     /*
@@ -505,7 +505,7 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
     int gotten;
     gotten = ::GetObject(mhBitmap, sizeof(info), &info);
     if (gotten != sizeof(info))
-        return nil;
+        return NULL;
     mPitchBytes = info.dsBm.bmWidthBytes;
     mWidth = info.dsBm.bmWidth;
     mHeight = info.dsBm.bmHeight;
@@ -517,7 +517,7 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
         if (mNumColorsUsed == 0)
             mNumColorsUsed = 1 << mBpp;
         mpColorTable = new RGBQUAD[mNumColorsUsed];
-        if (mpColorTable == nil)
+        if (mpColorTable == NULL)
             goto bail;      // should reset mpPixels?
 
         /*
@@ -530,8 +530,8 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
         HGDIOBJ oldBits;
         int count;
 
-        tmpDC = GetDC(nil);
-        assert(tmpDC != nil);
+        tmpDC = GetDC(NULL);
+        assert(tmpDC != NULL);
         memDC = CreateCompatibleDC(tmpDC);
         oldBits = SelectObject(memDC, mhBitmap);
         count = GetDIBColorTable(memDC, 0, mNumColorsUsed, mpColorTable);
@@ -544,7 +544,7 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
         }
         SelectObject(memDC, oldBits);
         DeleteDC(memDC);
-        ReleaseDC(nil, tmpDC);
+        ReleaseDC(NULL, tmpDC);
     }
 
     /*
@@ -559,7 +559,7 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
     }
 
 bail:
-    assert(mpPixels != nil);
+    assert(mpPixels != NULL);
     return mpPixels;
 }
 #if 0   // this might be a better way??
@@ -594,7 +594,7 @@ bail:
 void
 MyDIBitmap::ClearPixels(void)
 {
-    assert(mpPixels != nil);
+    assert(mpPixels != NULL);
 
     //WMSG1(" DIB clearing entire bitmap (%d bytes)\n", mPitchBytes * mHeight);
     memset(mpPixels, 0, mPitchBytes * mHeight);
@@ -607,7 +607,7 @@ MyDIBitmap::ClearPixels(void)
 void
 MyDIBitmap::SetColorTable(const RGBQUAD* pColorTable)
 {
-    assert(pColorTable != nil);
+    assert(pColorTable != NULL);
 
     /* scan for junk */
     for (int i = 0; i < mNumColorsUsed; i++) {
@@ -752,7 +752,7 @@ MyDIBitmap::GetPixelRGBA(int x, int y, RGBQUAD* pRgbQuad) const
         idx = *ptr;
         *pRgbQuad = mpColorTable[idx];
     } else if (mBpp == 4) {
-        assert(mpColorTable != nil);
+        assert(mpColorTable != NULL);
         unsigned char* ptr = (unsigned char*) mpPixels;
         int idx;
 
@@ -996,16 +996,16 @@ MyDIBitmap::Blit(MyDIBitmap* pDstBits, const RECT* pDstRect,
  * Since we're just supplying pointers to various pieces of data, there's no
  * need for us to have a DIB section.
  *
- * Returns nil on failure.
+ * Returns NULL on failure.
  */
 HBITMAP
 MyDIBitmap::ConvertToDDB(HDC dc) const
 {
-    HBITMAP hBitmap = nil;
+    HBITMAP hBitmap = NULL;
 
     if (mNumColorsUsed != 0 && !mColorTableInitialized) {
         WMSG0(" DIB color table not initialized!\n");
-        return nil;
+        return NULL;
     }
 
     /*
@@ -1015,12 +1015,12 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
      * (We slightly over-allocate here, because the size of the BITMAPINFO
      * struct actually includes the first color entry.)
      */
-    BITMAPINFO* pNewInfo = nil;
+    BITMAPINFO* pNewInfo = NULL;
     int colorTableSize = sizeof(RGBQUAD) * mNumColorsUsed;
     pNewInfo = (BITMAPINFO*)
                     new unsigned char[sizeof(BITMAPINFO) + colorTableSize];
-    if (pNewInfo == nil)
-        return nil;
+    if (pNewInfo == NULL)
+        return NULL;
 
     pNewInfo->bmiHeader = mBitmapInfoHdr;
     if (colorTableSize != 0)
@@ -1030,10 +1030,10 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
     /*
      * Create storage.
      */
-    hBitmap = ::CreateDIBitmap(dc, &mBitmapInfoHdr, 0, nil, nil, 0);
-    if (hBitmap == nil) {
+    hBitmap = ::CreateDIBitmap(dc, &mBitmapInfoHdr, 0, NULL, NULL, 0);
+    if (hBitmap == NULL) {
         WMSG0(" DIB CreateDIBBitmap failed!\n");
-        return nil;
+        return NULL;
     }
 
     WMSG4(" PARM hbit=0x%08lx hgt=%d fpPixels=0x%08lx pNewInfo=0x%08lx\n",
@@ -1046,7 +1046,7 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
     /*
      * Transfer the bits.
      */
-    int count = ::SetDIBits(nil, hBitmap, 0, mBitmapInfoHdr.biHeight,
+    int count = ::SetDIBits(NULL, hBitmap, 0, mBitmapInfoHdr.biHeight,
                     mpPixels, pNewInfo, DIB_RGB_COLORS);
 
     if (count != mBitmapInfoHdr.biHeight) {
@@ -1054,14 +1054,14 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
 
         WMSG1(" DIB SetDIBits failed, count was %d\n", count);
         ::DeleteObject(hBitmap);
-        hBitmap = nil;
+        hBitmap = NULL;
 
         CString msg;
         GetWin32ErrorString(err, &msg);
         WMSG2(" DIB CreateDIBSection failed (err=%d msg='%ls')\n",
             err, (LPCWSTR) msg);
         //ASSERT(false);        // stop & examine this
-        return nil;
+        return NULL;
     }
 #else
     /*
@@ -1069,9 +1069,9 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
      */
     hBitmap = ::CreateDIBitmap(dc, &mBitmapInfoHdr, CBM_INIT, mpPixels,
                     pNewInfo, DIB_RGB_COLORS);
-    if (hBitmap == nil) {
+    if (hBitmap == NULL) {
         WMSG0(" DIB CreateDIBBitmap failed!\n");
-        return nil;
+        return NULL;
     }
 #endif
 
@@ -1087,13 +1087,13 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
 int
 MyDIBitmap::WriteToFile(const WCHAR* fileName) const
 {
-    FILE* fp = nil;
+    FILE* fp = NULL;
     int err;
 
-    assert(fileName != nil);
+    assert(fileName != NULL);
 
     fp = _wfopen(fileName, L"wb");
-    if (fp == nil) {
+    if (fp == NULL) {
         err = errno ? errno : -1;
         WMSG2("Unable to open bitmap file '%ls' (err=%d)\n", fileName, err);
         return err;
@@ -1119,7 +1119,7 @@ MyDIBitmap::WriteToFile(FILE* fp) const
     long startOffset;
     int result = -1;
 
-    assert(fp != nil);
+    assert(fp != NULL);
 
     startOffset = ftell(fp);
 
@@ -1147,7 +1147,7 @@ MyDIBitmap::WriteToFile(FILE* fp) const
         goto bail;
     }
     if (mNumColorsUsed != 0) {
-        assert(mpColorTable != nil);
+        assert(mpColorTable != NULL);
         if (fwrite(mpColorTable, sizeof(RGBQUAD) * mNumColorsUsed, 1, fp) != 1)
         {
             result = errno ? errno : -1;

@@ -24,7 +24,7 @@
 class BASTokenLookup {
 public:
     BASTokenLookup(void)
-        : fTokenPtr(nil), fTokenLen(nil)
+        : fTokenPtr(NULL), fTokenLen(NULL)
         {}
     ~BASTokenLookup(void) {
         delete[] fTokenPtr;
@@ -58,7 +58,7 @@ class ImportBASDialog : public CDialog {
 public:
     ImportBASDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_IMPORT_BAS, pParentWnd), fDirty(false),
-            fOutput(nil), fOutputLen(-1)
+            fOutput(NULL), fOutputLen(-1)
         {}
     virtual ~ImportBASDialog(void) {
         delete[] fOutput;

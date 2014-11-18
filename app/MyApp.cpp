@@ -28,7 +28,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
 {
     gDebugLog = new DebugLog(L"C:\\src\\cplog.txt");
 
-    time_t now = time(nil);
+    time_t now = time(NULL);
 
     LOGI("CiderPress v%d.%d.%d%ls started at %.24hs\n",
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
@@ -76,12 +76,12 @@ MyApp::InitInstance(void)
     /* find our .EXE file */
     //HMODULE hModule = ::GetModuleHandle(NULL);
     WCHAR buf[MAX_PATH];
-    if (::GetModuleFileName(nil /*hModule*/, buf, NELEM(buf)) != 0) {
+    if (::GetModuleFileName(NULL /*hModule*/, buf, NELEM(buf)) != 0) {
         WMSG1("Module name is '%ls'\n", buf);
         fExeFileName = buf;
 
         WCHAR* cp = wcsrchr(buf, '\\');
-        if (cp == nil)
+        if (cp == NULL)
             fExeBaseName = L"";
         else
             fExeBaseName = fExeFileName.Left(cp - buf +1);
@@ -97,7 +97,7 @@ MyApp::InitInstance(void)
 #if 0
     /* find our .INI file by tweaking the EXE path */
     char* cp = strrchr(buf, '\\');
-    if (cp == nil)
+    if (cp == NULL)
         cp = buf;
     else
         cp++;
@@ -149,7 +149,7 @@ MyApp::InitInstance(void)
 /*
  * Show where we got something from.  Handy for checking DLL load locations.
  *
- * If "name" is nil, we show the EXE info.
+ * If "name" is NULL, we show the EXE info.
  */
 void
 MyApp::LogModuleLocation(const WCHAR* name)
@@ -157,7 +157,7 @@ MyApp::LogModuleLocation(const WCHAR* name)
     HMODULE hModule;
     WCHAR fileNameBuf[256];
     hModule = ::GetModuleHandle(name);
-    if (hModule != nil &&
+    if (hModule != NULL &&
         ::GetModuleFileName(hModule, fileNameBuf, NELEM(fileNameBuf)) != 0)
     {
         // GetModuleHandle does not increase ref count, so no need to release

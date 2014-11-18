@@ -30,8 +30,8 @@ public:
 
     ActionProgressDialog(void) {
         fAction = kActionUnknown;
-        //fpSelSet = nil;
-        //fpOptionsDlg = nil;
+        //fpSelSet = NULL;
+        //fpOptionsDlg = NULL;
         fCancel = false;
         //fResult = 0;
     }

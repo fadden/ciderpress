@@ -35,7 +35,7 @@ public:
 
     // return the underlying FS format for this file
     virtual DiskImg::FSFormat GetFSFormat(void) const {
-        ASSERT(fpFile != nil);
+        ASSERT(fpFile != NULL);
         return fpFile->GetFSFormat();
     }
 
@@ -55,8 +55,8 @@ private:
  */
 class DiskArchive : public GenericArchive {
 public:
-    DiskArchive(void) : fpPrimaryDiskFS(nil), fIsReadOnly(false),
-        fpAddDataHead(nil), fpAddDataTail(nil)
+    DiskArchive(void) : fpPrimaryDiskFS(NULL), fIsReadOnly(false),
+        fpAddDataHead(NULL), fpAddDataTail(NULL)
         {}
     virtual ~DiskArchive(void) { (void) Close(); }
 
@@ -172,8 +172,8 @@ private:
             fDetails = *pDetails;
 
             fFSNormalPath = fsNormalPath;
-            fpOtherFork = nil;
-            fpNext = nil;
+            fpOtherFork = NULL;
+            fpNext = NULL;
         }
         virtual ~FileAddData(void) {}
 

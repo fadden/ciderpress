@@ -35,8 +35,8 @@ class ContentList: public CListCtrl
 {
 public:
     ContentList(GenericArchive* pArchive, ColumnLayout* pLayout) {
-        ASSERT(pArchive != nil);
-        ASSERT(pLayout != nil);
+        ASSERT(pArchive != NULL);
+        ASSERT(pLayout != NULL);
         fpArchive = pArchive;
         fpLayout = pLayout;
 //      fInvalid = false;

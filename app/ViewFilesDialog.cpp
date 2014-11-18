@@ -51,11 +51,11 @@ ViewFilesDialog::OnInitDialog(void)
 {
     WMSG0("Now in VFD OnInitDialog!\n");
 
-    ASSERT(fpSelSet != nil);
+    ASSERT(fpSelSet != NULL);
 
     /* delete dummy control and insert our own with modded styles */
     CRichEditCtrl* pEdit = (CRichEditCtrl*)GetDlgItem(IDC_FVIEW_EDITBOX);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     CRect rect;
     pEdit->GetWindowRect(&rect);
     pEdit->DestroyWindow();
@@ -264,7 +264,7 @@ ViewFilesDialog::ShiftControls(int deltaX, int deltaY)
      */
     CRect rect;
     CRichEditCtrl* pEdit = (CRichEditCtrl*) GetDlgItem(IDC_FVIEW_EDITBOX);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
     //pEdit->GetClientRect(&rect);
     pEdit->GetWindowRect(&rect);
     //GetClientRect(&rect);
@@ -325,15 +325,15 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
     bool emptyFlg = false;
     bool editHadFocus = false;
     
-    ASSERT(fpOutput != nil);
-    ASSERT(fileName != nil);
+    ASSERT(fpOutput != NULL);
+    ASSERT(fileName != NULL);
 
     errFlg = fpOutput->GetOutputKind() == ReformatOutput::kOutputErrorMsg;
 
     ASSERT(fpOutput->GetOutputKind() != ReformatOutput::kOutputUnknown);
 
     CRichEditCtrl* pEdit = (CRichEditCtrl*) GetDlgItem(IDC_FVIEW_EDITBOX);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
 
     /* retain the selection even if we lose focus [can't do this in OnInit] */
     pEdit->SetOptions(ECOOP_OR, ECO_SAVESEL);
@@ -373,7 +373,7 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
      * holder".
      */
     CWnd* pFocusWnd = GetFocus();
-    if (pFocusWnd == nil || pFocusWnd->m_hWnd == pEdit->m_hWnd) {
+    if (pFocusWnd == NULL || pFocusWnd->m_hWnd == pEdit->m_hWnd) {
         editHadFocus = true;
         GetDlgItem(IDOK)->SetFocus();
     }
@@ -405,20 +405,20 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
         CClientDC dcScreen(this);
         HBITMAP hBitmap;
 
-        if (fpRichEditOle == nil) {
+        if (fpRichEditOle == NULL) {
             /* can't do this in OnInitDialog -- m_pWnd isn't initialized */
             fpRichEditOle = pEdit->GetIRichEditOle();
-            ASSERT(fpRichEditOle != nil);
+            ASSERT(fpRichEditOle != NULL);
         }
 
         //FILE* fp = fopen("C:/test/output.bmp", "wb");
-        //if (fp != nil) {
+        //if (fp != NULL) {
         //  pDib->WriteToFile(fp);
         //  fclose(fp);
         //}
         
         hBitmap = fpOutput->GetDIB()->ConvertToDDB(dcScreen.m_hDC);
-        if (hBitmap == nil) {
+        if (hBitmap == NULL) {
             WMSG0("ConvertToDDB failed!\n");
             pEdit->SetWindowText(L"Internal error.");
             errFlg = true;
@@ -660,16 +660,16 @@ ViewFilesDialog::OnFviewNext(void)
         // for debugging -- simulate failure
         result = -1;
         delete fpHolder;
-        fpHolder = nil;
+        fpHolder = NULL;
         delete fpOutput;
-        fpOutput = nil;
+        fpOutput = NULL;
     }
 #endif
 
     fBusy = false;
     if (result != 0) {
-        ASSERT(fpHolder == nil);
-        ASSERT(fpOutput == nil);
+        ASSERT(fpHolder == NULL);
+        ASSERT(fpOutput == NULL);
         return;
     }
 
@@ -715,8 +715,8 @@ ViewFilesDialog::OnFviewPrev(void)
 
     fBusy = false;
     if (result != 0) {
-        ASSERT(fpHolder == nil);
-        ASSERT(fpOutput == nil);
+        ASSERT(fpHolder == NULL);
+        ASSERT(fpOutput == NULL);
         return;
     }
 
@@ -737,7 +737,7 @@ ViewFilesDialog::OnFviewPrev(void)
  *
  * Try to keep the previously-set button set.
  *
- * If "pEntry" is nil, all buttons are disabled (useful for first-time
+ * If "pEntry" is NULL, all buttons are disabled (useful for first-time
  * initialization).
  */
 void
@@ -748,7 +748,7 @@ ViewFilesDialog::ConfigurePartButtons(const GenericEntry* pEntry)
     CButton* pDataWnd = (CButton*) GetDlgItem(IDC_FVIEW_DATA);
     CButton* pRsrcWnd = (CButton*) GetDlgItem(IDC_FVIEW_RSRC);
     CButton* pCmmtWnd = (CButton*) GetDlgItem(IDC_FVIEW_CMMT);
-    ASSERT(pDataWnd != nil && pRsrcWnd != nil && pCmmtWnd != nil);
+    ASSERT(pDataWnd != NULL && pRsrcWnd != NULL && pCmmtWnd != NULL);
 
     /* figure out what was checked before, ignoring if it's not available */
     if (pDataWnd->GetCheck() == BST_CHECKED && pEntry->GetHasDataFork())
@@ -774,7 +774,7 @@ ViewFilesDialog::ConfigurePartButtons(const GenericEntry* pEntry)
     pRsrcWnd->SetCheck(BST_UNCHECKED);
     pCmmtWnd->SetCheck(BST_UNCHECKED);
 
-    if (pEntry == nil) {
+    if (pEntry == NULL) {
         pDataWnd->EnableWindow(FALSE);
         pRsrcWnd->EnableWindow(FALSE);
         pCmmtWnd->EnableWindow(FALSE);
@@ -803,7 +803,7 @@ ViewFilesDialog::GetSelectedPart(void)
     CButton* pDataWnd = (CButton*) GetDlgItem(IDC_FVIEW_DATA);
     CButton* pRsrcWnd = (CButton*) GetDlgItem(IDC_FVIEW_RSRC);
     CButton* pCmmtWnd = (CButton*) GetDlgItem(IDC_FVIEW_CMMT);
-    ASSERT(pDataWnd != nil && pRsrcWnd != nil && pCmmtWnd != nil);
+    ASSERT(pDataWnd != NULL && pRsrcWnd != NULL && pCmmtWnd != NULL);
 
     if (pDataWnd->GetCheck() == BST_CHECKED)
         return ReformatHolder::kPartData;
@@ -831,12 +831,12 @@ ViewFilesDialog::ReformatPrep(GenericEntry* pEntry)
     int result;
 
     delete fpHolder;
-    fpHolder = nil;
+    fpHolder = NULL;
 
     result = pMainWindow->GetFileParts(pEntry, &fpHolder);
     if (result != 0) {
         WMSG0("GetFileParts(prev) failed!\n");
-        ASSERT(fpHolder == nil);
+        ASSERT(fpHolder == NULL);
         return -1;
     }
 
@@ -869,29 +869,29 @@ ViewFilesDialog::Reformat(const GenericEntry* pEntry,
     CWaitCursor waitc;
 
     delete fpOutput;
-    fpOutput = nil;
+    fpOutput = NULL;
 
     /* run the best one */
     fpOutput = fpHolder->Apply(part, id);
 
 //bail:
-    if (fpOutput != nil) {
+    if (fpOutput != NULL) {
         // success -- do some sanity checks
         switch (fpOutput->GetOutputKind()) {
         case ReformatOutput::kOutputText:
         case ReformatOutput::kOutputRTF:
         case ReformatOutput::kOutputCSV:
         case ReformatOutput::kOutputErrorMsg:
-            ASSERT(fpOutput->GetTextBuf() != nil);
-            ASSERT(fpOutput->GetDIB() == nil);
+            ASSERT(fpOutput->GetTextBuf() != NULL);
+            ASSERT(fpOutput->GetDIB() == NULL);
             break;
         case ReformatOutput::kOutputBitmap:
-            ASSERT(fpOutput->GetDIB() != nil);
-            ASSERT(fpOutput->GetTextBuf() == nil);
+            ASSERT(fpOutput->GetDIB() != NULL);
+            ASSERT(fpOutput->GetTextBuf() == NULL);
             break;
         case ReformatOutput::kOutputRaw:
-            // text buf might be nil
-            ASSERT(fpOutput->GetDIB() == nil);
+            // text buf might be NULL
+            ASSERT(fpOutput->GetDIB() == NULL);
             break;
         }
         return 0;
@@ -1014,7 +1014,7 @@ void
 ViewFilesDialog::OnFormatSelChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_FVIEW_FORMATSEL);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
     WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
 
     SelectionEntry* pSelEntry = fpSelSet->IterCurrent();
@@ -1054,11 +1054,11 @@ ViewFilesDialog::ForkSelectCommon(ReformatHolder::ReformatPart part)
     ReformatHolder::ReformatID id;
 
     WMSG1("Switching to file part=%d\n", part);
-    ASSERT(fpHolder != nil);
-    ASSERT(fpSelSet != nil);
-    ASSERT(fpSelSet->IterCurrent() != nil);
+    ASSERT(fpHolder != NULL);
+    ASSERT(fpSelSet != NULL);
+    ASSERT(fpSelSet->IterCurrent() != NULL);
     pEntry = fpSelSet->IterCurrent()->GetEntry();
-    ASSERT(pEntry != nil);
+    ASSERT(pEntry != NULL);
 
     id = ConfigureFormatSel(part);
 
@@ -1176,7 +1176,7 @@ void
 ViewFilesDialog::NewFontSelected(bool resetBold)
 {
     CRichEditCtrl* pEdit = (CRichEditCtrl*) GetDlgItem(IDC_FVIEW_EDITBOX);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
 
     CHARFORMAT cf;
     cf.cbSize = sizeof(CHARFORMAT);
@@ -1291,7 +1291,7 @@ ViewFilesDialog::OnFviewFind(void)
 {
     DWORD flags = 0;
 
-    if (fpFindDialog != nil)
+    if (fpFindDialog != NULL)
         return;
 
     if (fFindDown)
@@ -1322,7 +1322,7 @@ ViewFilesDialog::OnFviewFind(void)
 LRESULT
 ViewFilesDialog::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
 {
-    assert(fpFindDialog != nil);
+    assert(fpFindDialog != NULL);
 
     fFindDown = (fpFindDialog->SearchDown() != 0);
     fFindMatchCase = (fpFindDialog->MatchCase() != 0);
@@ -1330,7 +1330,7 @@ ViewFilesDialog::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
 
     if (fpFindDialog->IsTerminating()) {
         WMSG0("VFD find dialog closing\n");
-        fpFindDialog = nil;
+        fpFindDialog = NULL;
         return 0;
     }
 

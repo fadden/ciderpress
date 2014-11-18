@@ -288,7 +288,7 @@ CassetteDialog::OnInitDialog(void)
 
     /* prep the combo box */
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_CASSETTE_ALG);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
     int defaultAlg = pPreferences->GetPrefLong(kPrCassetteAlgorithm);
     if (defaultAlg > CassetteData::kAlgorithmMIN &&
         defaultAlg < CassetteData::kAlgorithmMAX)
@@ -307,7 +307,7 @@ CassetteDialog::OnInitDialog(void)
      *  [icon] Index | Format | Length | Checksum OK
      */
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
     ListView_SetExtendedListViewStyleEx(pListView->m_hWnd,
         LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
@@ -397,7 +397,7 @@ void
 CassetteDialog::OnAlgorithmChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_CASSETTE_ALG);
-    ASSERT(pCombo != nil);
+    ASSERT(pCombo != NULL);
     WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
     fAlgorithm = (CassetteData::Algorithm) pCombo->GetCurSel();
     AnalyzeWAV();
@@ -423,12 +423,12 @@ CassetteDialog::OnImport(void)
      * Figure out which item they have selected.
      */
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
     assert(pListView->GetSelectedCount() == 1);
 
     POSITION posn;
     posn = pListView->GetFirstSelectedItemPosition();
-    if (posn == nil) {
+    if (posn == NULL) {
         ASSERT(false);
         return;
     }
@@ -463,7 +463,7 @@ CassetteDialog::OnImport(void)
     else
         details.extraType = 0x0000;
     details.storageType = DiskFS::kStorageSeedling;
-    time_t now = time(nil);
+    time_t now = time(NULL);
     GenericArchive::UNIXTimeToDateTime(&now, &details.createWhen);
     GenericArchive::UNIXTimeToDateTime(&now, &details.archiveWhen);
 
@@ -471,7 +471,7 @@ CassetteDialog::OnImport(void)
 
     fDirty = true;
     if (!MainWindow::SaveToArchive(&details, fDataArray[idx].GetDataBuf(),
-        fDataArray[idx].GetDataLen(), nil, -1, /*ref*/errMsg, this))
+        fDataArray[idx].GetDataLen(), NULL, -1, /*ref*/errMsg, this))
     {
         goto bail;
     }
@@ -558,7 +558,7 @@ CassetteDialog::AddEntry(int idx, CListCtrl* pListCtrl, long* pFileType)
     const CassetteData* pData = &fDataArray[idx];
     const unsigned char* pDataBuf = pData->GetDataBuf();
 
-    ASSERT(pDataBuf != nil);
+    ASSERT(pDataBuf != NULL);
 
     tmpStr.Format(L"%d", idx);
     pListCtrl->InsertItem(idx, tmpStr);
@@ -621,8 +621,8 @@ CassetteDialog::CassetteData::Scan(SoundFile* pSoundFile, Algorithm alg,
     ScanState scanState;
     long initialLen, dataLen, chunkLen, byteOffset;
     long sampleStartIndex;
-    unsigned char* buf = nil;
-    float* sampleBuf = nil;
+    unsigned char* buf = NULL;
+    float* sampleBuf = NULL;
     int bytesPerSample;
     bool result = false;
     unsigned char checkSum;
@@ -641,9 +641,9 @@ CassetteDialog::CassetteData::Scan(SoundFile* pSoundFile, Algorithm alg,
 
     buf = new unsigned char[kSampleChunkSize];
     sampleBuf = new float[kSampleChunkSize/bytesPerSample];
-    if (fOutputBuf == nil)  // alloc on first use
+    if (fOutputBuf == NULL)  // alloc on first use
         fOutputBuf = new unsigned char[kMaxFileLen];
-    if (buf == nil || sampleBuf == nil || fOutputBuf == nil) {
+    if (buf == NULL || sampleBuf == NULL || fOutputBuf == NULL) {
         WMSG0("Buffer alloc failed\n");
         goto bail;
     }

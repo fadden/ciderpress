@@ -14,7 +14,7 @@
  */
 class AddClashDialog : public CDialog {
 public:
-    AddClashDialog(CWnd* pParentWnd = nil) :
+    AddClashDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_ADD_CLASH, pParentWnd)
     {
         fDoRename = false;

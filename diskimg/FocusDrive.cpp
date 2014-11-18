@@ -142,8 +142,8 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
     const char* name)
 {
     DIError dierr = kDIErrNone;
-    DiskFS* pNewFS = nil;
-    DiskImg* pNewImg = nil;
+    DiskFS* pNewFS = NULL;
+    DiskImg* pNewImg = NULL;
     //bool tweaked = false;
 
     WMSG2("Adding %ld +%ld\n", startBlock, numBlocks);
@@ -164,7 +164,7 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
     }
 
     pNewImg = new DiskImg;
-    if (pNewImg == nil) {
+    if (pNewImg == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
@@ -193,7 +193,7 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
         WMSG2(" FocusDriveSub (%ld,%ld): unable to identify filesystem\n",
             startBlock, numBlocks);
         DiskFSUnknown* pUnknownFS = new DiskFSUnknown;
-        if (pUnknownFS == nil) {
+        if (pUnknownFS == NULL) {
             dierr = kDIErrInternal;
             goto bail;
         }
@@ -203,7 +203,7 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
         /* open a DiskFS for the sub-image */
         WMSG2(" FocusDriveSub (%ld,%ld) analyze succeeded!\n", startBlock, numBlocks);
         pNewFS = pNewImg->OpenAppropriateDiskFS(true);
-        if (pNewFS == nil) {
+        if (pNewFS == NULL) {
             WMSG0(" FocusDriveSub: OpenAppropriateDiskFS failed\n");
             dierr = kDIErrUnsupportedFSFmt;
             goto bail;
@@ -236,8 +236,8 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
 
     /* add it to the list */
     AddSubVolumeToList(pNewImg, pNewFS);
-    pNewImg = nil;
-    pNewFS = nil;
+    pNewImg = NULL;
+    pNewFS = NULL;
 
 bail:
     delete pNewFS;
@@ -342,8 +342,8 @@ DiskFSFocusDrive::OpenVol(int idx, long startBlock, long numBlocks,
     if (dierr != kDIErrNone) {
         if (dierr == kDIErrCancelled)
             goto bail;
-        DiskFS* pNewFS = nil;
-        DiskImg* pNewImg = nil;
+        DiskFS* pNewFS = NULL;
+        DiskImg* pNewImg = NULL;
 
         WMSG1(" FocusDrive failed opening sub-volume %d\n", idx);
         dierr = CreatePlaceholder(startBlock, numBlocks, name, NULL,

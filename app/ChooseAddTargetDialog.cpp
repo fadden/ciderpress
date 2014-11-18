@@ -28,8 +28,8 @@ ChooseAddTargetDialog::OnInitDialog(void)
 
     CTreeCtrl* pTree = (CTreeCtrl*) GetDlgItem(IDC_ADD_TARGET_TREE);
 
-    ASSERT(fpDiskFS != nil);
-    ASSERT(pTree != nil);
+    ASSERT(fpDiskFS != NULL);
+    ASSERT(pTree != NULL);
 
     fDiskFSTree.fIncludeSubdirs = true;
     fDiskFSTree.fExpandDepth = -1;
@@ -44,7 +44,7 @@ ChooseAddTargetDialog::OnInitDialog(void)
         WMSG0(" Skipping out of target selection\n");
         // adding to root volume of the sole DiskFS
         fpChosenDiskFS = fpDiskFS;
-        ASSERT(fpChosenSubdir == nil);
+        ASSERT(fpChosenSubdir == NULL);
         OnOK();
     }
 
@@ -65,12 +65,12 @@ ChooseAddTargetDialog::DoDataExchange(CDataExchange* pDX)
         appName.LoadString(IDS_MB_APP_NAME);
 
         /* shortcut for simple disk images */
-        if (pTree->GetCount() == 1 && fpChosenDiskFS != nil)
+        if (pTree->GetCount() == 1 && fpChosenDiskFS != NULL)
             return;
 
         HTREEITEM selected;
         selected = pTree->GetSelectedItem();
-        if (selected == nil) {
+        if (selected == NULL) {
             errMsg = "Please select a disk or subdirectory to add files to.";
             MessageBox(errMsg, appName, MB_OK);
             pDX->Fail();

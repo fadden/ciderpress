@@ -39,10 +39,10 @@ public:
 
     void SetCurrentFiles(const WCHAR* fromName, const WCHAR* toName) {
         CWnd* pWnd = GetDlgItem(IDC_VOLUMECOPYPROG_FROM);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->SetWindowText(fromName);
         pWnd = GetDlgItem(IDC_VOLUMECOPYPROG_TO);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->SetWindowText(toName);
     }
 
@@ -70,7 +70,7 @@ VolumeCopyDialog::OnInitDialog(void)
     //this->GetWindowRect(&rect);
     //WMSG4("RECT is %d, %d, %d, %d\n", rect.left, rect.top, rect.bottom, rect.right);
 
-    ASSERT(fpDiskImg != nil);
+    ASSERT(fpDiskImg != NULL);
     ScanDiskInfo(false);
 
     CDialog::OnInitDialog();        // does DDX init
@@ -94,7 +94,7 @@ VolumeCopyDialog::OnInitDialog(void)
      *  [icon] Volume name | Format | Size (MB/GB) | Block count
      */
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUMECOPYSEL_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
     ListView_SetExtendedListViewStyleEx(pListView->m_hWnd,
         LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
@@ -150,7 +150,7 @@ VolumeCopyDialog::Cleanup(void)
 {
     WMSG0("  VolumeCopyDialog is done, cleaning up DiskFS\n");
     delete fpDiskFS;
-    fpDiskFS = nil;
+    fpDiskFS = NULL;
 }
 
 /*
@@ -164,7 +164,7 @@ VolumeCopyDialog::OnListChange(NMHDR*, LRESULT* pResult)
     //WMSG4("RECT is %d, %d, %d, %d\n", rect.left, rect.top, rect.bottom, rect.right);
 
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUMECOPYSEL_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
     CButton* pButton;
     UINT selectedCount;
 
@@ -201,8 +201,8 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
     DIError dierr;
     CString errMsg, failed;
 
-    assert(fpDiskImg != nil);
-    assert(fpDiskFS == nil);
+    assert(fpDiskImg != NULL);
+    assert(fpDiskFS == NULL);
 
     if (scanTop) {
         DiskImg::FSFormat oldFormat;
@@ -224,7 +224,7 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
         {
             // ignore them if they hit "cancel"
             (void) pMain->TryDiskImgOverride(fpDiskImg, fPathName,
-                DiskImg::kFormatUnknown, nil, true, &errMsg);
+                DiskImg::kFormatUnknown, NULL, true, &errMsg);
             if (!errMsg.IsEmpty()) {
                 ShowFailureMsg(this, errMsg, IDS_FAILED);
                 return;
@@ -262,7 +262,7 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
      * the sub-volume info, which is unfortunate since it can be slow.
      */
     fpDiskFS = fpDiskImg->OpenAppropriateDiskFS(true);
-    if (fpDiskFS == nil) {
+    if (fpDiskFS == NULL) {
         WMSG0("HEY: OpenAppropriateDiskFS failed!\n");
         /* this is fatal, but there's no easy way to die */
         /* (could we do a DestroyWindow from here?) */
@@ -281,9 +281,9 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
         }
     }
 
-    if (!deferDestroy && fpWaitDlg != nil) {
+    if (!deferDestroy && fpWaitDlg != NULL) {
         fpWaitDlg->DestroyWindow();
-        fpWaitDlg = nil;
+        fpWaitDlg = NULL;
     }
 
     return;
@@ -296,10 +296,10 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
 LONG
 VolumeCopyDialog::OnDialogReady(UINT, LONG)
 {
-    if (fpWaitDlg != nil) {
+    if (fpWaitDlg != NULL) {
         WMSG0("OnDialogReady found active window, destroying\n");
         fpWaitDlg->DestroyWindow();
-        fpWaitDlg = nil;
+        fpWaitDlg = NULL;
     }
     return 0;
 }
@@ -316,13 +316,13 @@ void
 VolumeCopyDialog::LoadList(void)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUMECOPYSEL_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
     int itemIndex = 0;
 
     CString unknown = "(unknown)";
 
     pListView->DeleteAllItems();
-    if (fpDiskFS == nil) {
+    if (fpDiskFS == NULL) {
         /* can only happen if imported volume is unrecognizeable */
         return;
     }
@@ -330,10 +330,10 @@ VolumeCopyDialog::LoadList(void)
     AddToList(pListView, fpDiskImg, fpDiskFS, &itemIndex);
 
     DiskImgLib::DiskFS::SubVolume* pSubVolume;
-    pSubVolume = fpDiskFS->GetNextSubVolume(nil);
-    while (pSubVolume != nil) {
-        if (pSubVolume->GetDiskFS() == nil) {
-            WMSG0("WARNING: sub-volume DiskFS is nil?!\n");
+    pSubVolume = fpDiskFS->GetNextSubVolume(NULL);
+    while (pSubVolume != NULL) {
+        if (pSubVolume->GetDiskFS() == NULL) {
+            WMSG0("WARNING: sub-volume DiskFS is NULL?!\n");
             assert(false);
         } else {
             AddToList(pListView, pSubVolume->GetDiskImg(),
@@ -353,10 +353,10 @@ VolumeCopyDialog::AddToList(CListCtrl* pListView, DiskImg* pDiskImg,
     CString volName, format, sizeStr, blocksStr;
     long numBlocks;
 
-    assert(pListView != nil);
-    assert(pDiskImg != nil);
-    assert(pDiskFS != nil);
-    assert(pIndex != nil);
+    assert(pListView != NULL);
+    assert(pDiskImg != NULL);
+    assert(pDiskFS != NULL);
+    assert(pIndex != NULL);
 
     numBlocks = pDiskImg->GetNumBlocks();
 
@@ -391,17 +391,17 @@ bool
 VolumeCopyDialog::GetSelectedDisk(DiskImg** ppDiskImg, DiskFS** ppDiskFS)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUMECOPYSEL_LIST);
-    ASSERT(pListView != nil);
+    ASSERT(pListView != NULL);
 
-    ASSERT(ppDiskImg != nil);
-    ASSERT(ppDiskFS != nil);
+    ASSERT(ppDiskImg != NULL);
+    ASSERT(ppDiskFS != NULL);
 
     if (pListView->GetSelectedCount() != 1)
         return false;
 
     POSITION posn;
     posn = pListView->GetFirstSelectedItemPosition();
-    if (posn == nil) {
+    if (posn == NULL) {
         ASSERT(false);
         return false;
     }
@@ -409,7 +409,7 @@ VolumeCopyDialog::GetSelectedDisk(DiskImg** ppDiskImg, DiskFS** ppDiskFS)
     DWORD data = pListView->GetItemData(num);
 
     *ppDiskFS = (DiskFS*) data;
-    assert(*ppDiskFS != nil);
+    assert(*ppDiskFS != NULL);
     *ppDiskImg = (*ppDiskFS)->GetDiskImg();
     return true;
 }
@@ -431,12 +431,12 @@ VolumeCopyDialog::OnHelp(void)
 void
 VolumeCopyDialog::OnCopyToFile(void)
 {
-    VolumeXferProgressDialog* pProgressDialog = nil;
+    VolumeXferProgressDialog* pProgressDialog = NULL;
     Preferences* pPreferences = GET_PREFERENCES_WR();
     MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
     DiskImg::FSFormat originalFormat = DiskImg::kFormatUnknown;
-    DiskImg* pSrcImg = nil;
-    DiskFS* pSrcFS = nil;
+    DiskImg* pSrcImg = NULL;
+    DiskFS* pSrcFS = NULL;
     DiskImg dstImg;
     DIError dierr;
     CString errMsg, saveName, msg, srcName;
@@ -445,8 +445,8 @@ VolumeCopyDialog::OnCopyToFile(void)
     result = GetSelectedDisk(&pSrcImg, &pSrcFS);
     if (!result)
         return;
-    assert(pSrcImg != nil);
-    assert(pSrcFS != nil);
+    assert(pSrcImg != NULL);
+    assert(pSrcFS != NULL);
 
     srcName = pSrcFS->GetVolumeName();
 
@@ -511,11 +511,11 @@ VolumeCopyDialog::OnCopyToFile(void)
         CWaitCursor waitc;
 
         CStringA saveNameA(saveName);
-        dierr = dstImg.CreateImage(saveNameA, nil,
+        dierr = dstImg.CreateImage(saveNameA, NULL,
                     DiskImg::kOuterFormatNone,
                     DiskImg::kFileFormatUnadorned,
                     DiskImg::kPhysicalFormatSectors,
-                    nil,
+                    NULL,
                     DiskImg::kSectorOrderProDOS,
                     DiskImg::kFormatGenericProDOSOrd,
                     dstNumBlocks,
@@ -542,7 +542,7 @@ VolumeCopyDialog::OnCopyToFile(void)
     pProgressDialog->SetCurrentFiles(srcName, saveName);
 
     time_t startWhen, endWhen;
-    startWhen = time(nil);
+    startWhen = time(NULL);
 
     /*
      * Do the actual block copy.
@@ -570,7 +570,7 @@ VolumeCopyDialog::OnCopyToFile(void)
     }
 
     /* put elapsed time in the debug log */
-    endWhen = time(nil);
+    endWhen = time(NULL);
     float elapsed;
     if (endWhen == startWhen)
         elapsed = 1.0;
@@ -591,7 +591,7 @@ bail:
     // restore the dialog window to prominence
     EnableWindow(TRUE);
     //SetActiveWindow();
-    if (pProgressDialog != nil)
+    if (pProgressDialog != NULL)
         pProgressDialog->DestroyWindow();
 
     /* un-override the source disk */
@@ -614,14 +614,14 @@ bail:
 void
 VolumeCopyDialog::OnCopyFromFile(void)
 {
-    VolumeXferProgressDialog* pProgressDialog = nil;
+    VolumeXferProgressDialog* pProgressDialog = NULL;
     Preferences* pPreferences = GET_PREFERENCES_WR();
     MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
     //DiskImg::FSFormat originalFormat = DiskImg::kFormatUnknown;
     CString openFilters;
     CString loadName, targetName, errMsg, warning;
-    DiskImg* pDstImg = nil;
-    DiskFS* pDstFS = nil;
+    DiskImg* pDstImg = NULL;
+    DiskFS* pDstFS = NULL;
     DiskImg srcImg;
     DIError dierr;
     int result;
@@ -639,7 +639,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
     if (!result)
         return;
 
-//  if (pDstFS == nil)
+//  if (pDstFS == NULL)
 //      targetName = "the target volume";
 //  else
         targetName = pDstFS->GetVolumeName();
@@ -786,7 +786,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
         ASSERT(false);
         return;
     }
-//  if (pDstFS == nil)
+//  if (pDstFS == NULL)
 //      pProgressDialog->SetCurrentFiles(loadName, "target");
 //  else
         pProgressDialog->SetCurrentFiles(loadName, targetName);
@@ -800,7 +800,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
     fpDiskFS->Flush(DiskImg::kFlushAll);
 
     time_t startWhen, endWhen;
-    startWhen = time(nil);
+    startWhen = time(NULL);
 
     /*
      * Do the actual block copy.
@@ -825,7 +825,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
         goto bail;
     }
 
-    endWhen = time(nil);
+    endWhen = time(NULL);
     float elapsed;
     if (endWhen == startWhen)
         elapsed = 1.0;
@@ -849,7 +849,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
     assert(!fpDiskImg->GetReadOnly());
     fpDiskFS->SetAllReadOnly(true);
     delete fpDiskFS;
-    fpDiskFS = nil;
+    fpDiskFS = NULL;
     assert(fpDiskImg->GetReadOnly());
     fpDiskImg->SetReadOnly(false);
 
@@ -857,7 +857,7 @@ bail:
     // restore the dialog window to prominence
     EnableWindow(TRUE);
     //SetActiveWindow();
-    if (pProgressDialog != nil)
+    if (pProgressDialog != NULL)
         pProgressDialog->DestroyWindow();
 
     /*

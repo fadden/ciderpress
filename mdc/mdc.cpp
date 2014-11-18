@@ -25,7 +25,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
     // TODO: make the log file configurable
     gDebugLog = new DebugLog(L"C:\\src\\mdclog.txt");
 
-    time_t now = time(nil);
+    time_t now = time(NULL);
     LOGI("MDC v%d.%d.%d started at %.24hs\n",
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
         ctime(&now));

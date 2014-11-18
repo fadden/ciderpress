@@ -23,7 +23,7 @@ BOOL
 DEFileDialog::OnInitDialog(void)
 {
     CWnd* pWnd = GetDlgItem(IDOK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(FALSE);
 
     return CDialog::OnInitDialog();
@@ -47,14 +47,14 @@ void
 DEFileDialog::OnChange(void)
 {
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_DEFILE_FILENAME);
-    ASSERT(pEdit != nil);
+    ASSERT(pEdit != NULL);
 
     CString str;
     pEdit->GetWindowText(str);
     //WMSG2("STR is '%ls' (%d)\n", str, str.GetLength());
 
     CWnd* pWnd = GetDlgItem(IDOK);
-    ASSERT(pWnd != nil);
+    ASSERT(pWnd != NULL);
     pWnd->EnableWindow(!str.IsEmpty());
 }
 

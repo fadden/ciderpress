@@ -30,7 +30,7 @@
  * Put up the ImageFormatDialog and apply changes to "pImg".
  *
  * "*pDisplayFormat" gets the result of user changes to the display format.
- * If "pDisplayFormat" is nil, the "query image format" feature will be
+ * If "pDisplayFormat" is NULL, the "query image format" feature will be
  * disabled.
  *
  * Returns IDCANCEL if the user cancelled out of the dialog, IDOK otherwise.
@@ -47,7 +47,7 @@ MainWindow::TryDiskImgOverride(DiskImg* pImg, const WCHAR* fileSource,
     imf.InitializeValues(pImg);
     imf.fFileSource = fileSource;
     imf.fAllowUnknown = allowUnknown;
-    if (pDisplayFormat == nil)
+    if (pDisplayFormat == NULL)
         imf.SetQueryDisplayFormat(false);
 
     /* don't show "unknown format" if we have a default value */
@@ -68,7 +68,7 @@ MainWindow::TryDiskImgOverride(DiskImg* pImg, const WCHAR* fileSource,
     WMSG2(" On exit, sectord=%d format=%d\n",
         imf.fSectorOrder, imf.fFSFormat);
 
-    if (pDisplayFormat != nil)
+    if (pDisplayFormat != NULL)
         *pDisplayFormat = imf.fDisplayFormat;
     if (imf.fSectorOrder != pImg->GetSectorOrder() ||
         imf.fFSFormat != pImg->GetFSFormat())
@@ -120,7 +120,7 @@ MainWindow::OnToolsDiskEdit(void)
     failed.LoadString(IDS_FAILED);
 
     diskEditOpen.fArchiveOpen = false;
-    if (fpOpenArchive != nil &&
+    if (fpOpenArchive != NULL &&
         fpOpenArchive->GetArchiveKind() == GenericArchive::kArchiveDiskImage)
     {
         diskEditOpen.fArchiveOpen = true;
@@ -190,7 +190,7 @@ MainWindow::OnToolsDiskEdit(void)
     long length;
 
     tmpfp = fopen(loadName, "rb");
-    ASSERT(tmpfp != nil);
+    ASSERT(tmpfp != NULL);
     fseek(tmpfp, 0, SEEK_END);
     length = ftell(tmpfp);
     rewind(tmpfp);
@@ -307,7 +307,7 @@ MainWindow::OnToolsDiskEdit(void)
      */
     DiskFS* pDiskFS;
     pDiskFS = img.OpenAppropriateDiskFS(true);
-    if (pDiskFS == nil) {
+    if (pDiskFS == NULL) {
         WMSG0("HEY: OpenAppropriateDiskFS failed!\n");
         goto bail;
     }
@@ -413,7 +413,7 @@ MainWindow::OnToolsDiskConv(void)
         fPreferences.GetPrefBool(kPrQueryImageFormat))
     {
         if (TryDiskImgOverride(&srcImg, loadName, DiskImg::kFormatGenericProDOSOrd,
-            nil, false, &errMsg) != IDOK)
+            NULL, false, &errMsg) != IDOK)
         {
             goto bail;
         }
@@ -492,7 +492,7 @@ MainWindow::OnToolsDiskConv(void)
 
     const DiskImg::NibbleDescr* pNibbleDescr;
     pNibbleDescr = srcImg.GetNibbleDescr();
-    if (pNibbleDescr == nil && DiskImg::IsNibbleFormat(physicalFormat)) {
+    if (pNibbleDescr == NULL && DiskImg::IsNibbleFormat(physicalFormat)) {
         /*
          * We're writing to a nibble format, so we have to decide how the
          * disk should be formatted.  The source doesn't specify it, so we
@@ -508,7 +508,7 @@ MainWindow::OnToolsDiskConv(void)
         }
     }
     WMSG2(" NibbleDescr is 0x%08lx (%hs)\n", (long) pNibbleDescr,
-        pNibbleDescr != nil ? pNibbleDescr->description : "---");
+        pNibbleDescr != NULL ? pNibbleDescr->description : "---");
 
     if (srcImg.GetFileFormat() == DiskImg::kFileFormatTrackStar &&
         fileFormat != DiskImg::kFileFormatTrackStar)
@@ -723,7 +723,7 @@ MainWindow::OnToolsDiskConv(void)
     /*
      * Do the actual copy, either as blocks or tracks.
      */
-    dierr = CopyDiskImage(&dstImg, &srcImg, false, isPartial, nil);
+    dierr = CopyDiskImage(&dstImg, &srcImg, false, isPartial, NULL);
     if (dierr != kDIErrNone) {
         errMsg.Format(L"Copy failed: %hs.", DiskImgLib::DIStrError(dierr));
         ShowFailureMsg(this, errMsg, IDS_FAILED);
@@ -872,7 +872,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
 {
     DIError dierr = kDIErrNone;
     CString errMsg;
-    unsigned char* dataBuf = nil;
+    unsigned char* dataBuf = NULL;
 
     if (pSrcImg->GetHasNibbles() && pDstImg->GetHasNibbles() &&
         pSrcImg->GetPhysicalFormat() == pDstImg->GetPhysicalFormat())
@@ -892,7 +892,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
         int numTracks;
 
         dataBuf = new unsigned char[kTrackAllocSize];
-        if (dataBuf == nil) {
+        if (dataBuf == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -930,7 +930,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
         int numBadSectors = 0;
 
         dataBuf = new unsigned char[256];   // one sector
-        if (dataBuf == nil) {
+        if (dataBuf == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -988,7 +988,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
             blocksPerRead = 64;     // 32K per read; max seems to be 64K?
 
         dataBuf = new unsigned char[blocksPerRead * 512];
-        if (dataBuf == nil) {
+        if (dataBuf == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
         }
@@ -1026,7 +1026,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
             }
 
             /* if we have a cancel dialog, keep it lively */
-            if (pPCDialog != nil && (block % 18) == 0) {
+            if (pPCDialog != NULL && (block % 18) == 0) {
                 int status;
                 PeekAndPump();
                 LONGLONG bigBlock = block;
@@ -1077,7 +1077,7 @@ public:
 
     void SetCurrentFile(const WCHAR* fileName) {
         CWnd* pWnd = GetDlgItem(IDC_BULKCONV_PATHNAME);
-        ASSERT(pWnd != nil);
+        ASSERT(pWnd != NULL);
         pWnd->SetWindowText(fileName);
     }
 
@@ -1137,7 +1137,7 @@ MainWindow::OnToolsBulkDiskConv(void)
     POSITION posn;
     posn = dlg.GetStartPosition();
     nameCount = 0;
-    while (posn != nil) {
+    while (posn != NULL) {
         CString pathName;
         pathName = dlg.GetNextPathName(posn);
         nameCount++;
@@ -1181,7 +1181,7 @@ MainWindow::OnToolsBulkDiskConv(void)
      * Loop through all selected files and convert them one at a time.
      */
     posn = dlg.GetStartPosition();
-    while (posn != nil) {
+    while (posn != NULL) {
         CString pathName;
         pathName = dlg.GetNextPathName(posn);
         WMSG1(" BulkConv: source path='%ls'\n", (LPCWSTR) pathName);
@@ -1219,7 +1219,7 @@ bail:
     // restore the main window to prominence
     EnableWindow(TRUE);
     //SetActiveWindow();
-    if (pCancelDialog != nil)
+    if (pCancelDialog != NULL)
         pCancelDialog->DestroyWindow();
 
     delete[] dlg.m_ofn.lpstrFile;
@@ -1273,7 +1273,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
      */
     if (srcImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown) {
         if (TryDiskImgOverride(&srcImg, pathName, DiskImg::kFormatGenericProDOSOrd,
-            nil, pErrMsg) != IDOK)
+            NULL, pErrMsg) != IDOK)
         {
             *pErrMsg = "Image conversion cancelled.";
         }
@@ -1326,7 +1326,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
 
     const DiskImg::NibbleDescr* pNibbleDescr;
     pNibbleDescr = srcImg.GetNibbleDescr();
-    if (pNibbleDescr == nil && DiskImg::IsNibbleFormat(physicalFormat)) {
+    if (pNibbleDescr == NULL && DiskImg::IsNibbleFormat(physicalFormat)) {
         /*
          * We're writing to a nibble format, so we have to decide how the
          * disk should be formatted.  The source doesn't specify it, so we
@@ -1342,7 +1342,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
         }
     }
     WMSG2(" NibbleDescr is 0x%08lx (%hs)\n", (long) pNibbleDescr,
-        pNibbleDescr != nil ? pNibbleDescr->description : "---");
+        pNibbleDescr != NULL ? pNibbleDescr->description : "---");
 
     /*
      * Create the new filename based on the old filename.
@@ -1511,7 +1511,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
     /*
      * Do the actual copy, either as blocks or tracks.
      */
-    dierr = CopyDiskImage(&dstImg, &srcImg, true, isPartial, nil);
+    dierr = CopyDiskImage(&dstImg, &srcImg, true, isPartial, NULL);
     if (dierr != kDIErrNone)
         goto bail;
 
@@ -1551,7 +1551,7 @@ MainWindow::OnToolsSSTMerge(void)
     const int kBadCountThreshold = 3072;
     DiskImg srcImg0, srcImg1;
     CString appName, saveName, saveFolder, errMsg;
-    BYTE* trackBuf = nil;
+    BYTE* trackBuf = NULL;
     long badCount;
 
     // no need to flush -- can't really open raw SST images
@@ -1563,7 +1563,7 @@ MainWindow::OnToolsSSTMerge(void)
     appName.LoadString(IDS_MB_APP_NAME);
 
     trackBuf = new BYTE[kSSTNumTracks * kSSTTrackLen];
-    if (trackBuf == nil)
+    if (trackBuf == NULL)
         goto bail;
 
     /*
@@ -1623,7 +1623,7 @@ MainWindow::OnToolsSSTMerge(void)
 
     FILE* fp;
     fp = _wfopen(saveName, L"wb");
-    if (fp == nil) {
+    if (fp == NULL) {
         errMsg.Format(L"Unable to create '%ls': %hs.",
             (LPCWSTR) saveName, strerror(errno));
         ShowFailureMsg(this, errMsg, IDS_FAILED);
@@ -1723,7 +1723,7 @@ MainWindow::SSTOpenImage(int seqNum, DiskImg* pDiskImg)
         fPreferences.GetPrefBool(kPrQueryImageFormat))
     {
         if (TryDiskImgOverride(pDiskImg, loadName,
-            DiskImg::kFormatGenericDOSOrd, nil, false, &errMsg) != IDOK)
+            DiskImg::kFormatGenericDOSOrd, NULL, false, &errMsg) != IDOK)
         {
             goto bail;
         }
@@ -1968,7 +1968,7 @@ MainWindow::VolumeCopier(bool openFile)
 {
     VolumeCopyDialog copyDlg(this);
     DiskImg srcImg;
-    //DiskFS* pDiskFS = nil;
+    //DiskFS* pDiskFS = NULL;
     DIError dierr;
     CString failed, errMsg, msg;
     CString deviceName;
@@ -2060,7 +2060,7 @@ MainWindow::VolumeCopier(bool openFile)
         fPreferences.GetPrefBool(kPrQueryImageFormat))
     {
         if (TryDiskImgOverride(&srcImg, deviceName, DiskImg::kFormatUnknown,
-            nil, true, &errMsg) != IDOK)
+            NULL, true, &errMsg) != IDOK)
         {
             goto bail;
         }
@@ -2105,7 +2105,7 @@ void
 MainWindow::OnToolsDiskImageCreator(void)
 {
     CreateImageDialog createDlg(this);
-    DiskArchive* pNewArchive = nil;
+    DiskArchive* pNewArchive = NULL;
 
     createDlg.fDiskFormatIdx =
         fPreferences.GetPrefLong(kPrDiskImageCreateFormat);
@@ -2312,7 +2312,7 @@ MainWindow::OnToolsEOLScanner(void)
     WMSG1("Scanning '%ls'\n", (LPCWSTR) fileName);
 
     FILE* fp = _wfopen(fileName, L"rb");
-    if (fp == nil) {
+    if (fp == NULL) {
         errMsg.Format(L"Unable to open '%ls': %hs.",
             (LPCWSTR) fileName, strerror(errno));
         ShowFailureMsg(this, errMsg, IDS_FAILED);
@@ -2428,7 +2428,7 @@ MainWindow::EditTwoImgProps(const WCHAR* fileName)
 {
     TwoImgPropsDialog dialog;
     TwoImgHeader header;
-    FILE* fp = nil;
+    FILE* fp = NULL;
     bool dirty = false;
     CString errMsg;
     long totalLength;
@@ -2436,10 +2436,10 @@ MainWindow::EditTwoImgProps(const WCHAR* fileName)
 
     WMSG1("EditTwoImgProps '%ls'\n", fileName);
     fp = _wfopen(fileName, L"r+b");
-    if (fp == nil) {
+    if (fp == NULL) {
         int firstError = errno;
         fp = _wfopen(fileName, L"rb");
-        if (fp == nil) {
+        if (fp == NULL) {
             errMsg.Format(L"Unable to open '%ls': %hs.",
                 fileName, strerror(firstError));
             goto bail;
@@ -2499,7 +2499,7 @@ MainWindow::EditTwoImgProps(const WCHAR* fileName)
     }
 
 bail:
-    if (fp != nil)
+    if (fp != NULL)
         fclose(fp);
     if (!errMsg.IsEmpty()) {
         ShowFailureMsg(this, errMsg, IDS_FAILED);

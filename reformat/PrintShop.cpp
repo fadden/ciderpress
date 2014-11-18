@@ -63,7 +63,7 @@ ReformatPrintShop::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    MyDIBitmap* pDib = nil;
+    MyDIBitmap* pDib = NULL;
     const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
 
@@ -76,7 +76,7 @@ ReformatPrintShop::Process(const ReformatHolder* pHolder,
         return -1;
     }
 
-    if (pDib == nil) {
+    if (pDib == NULL) {
         WMSG0("DIB creation failed\n");
         return -1;
     }
@@ -103,8 +103,8 @@ ReformatPrintShop::ConvertBW(const unsigned char* srcBuf)
     int pitch;
     int x, y;
 
-    if (pDib == nil)
-        return nil;
+    if (pDib == NULL)
+        return NULL;
 
     RGBQUAD colorConv[2];
     colorConv[0].rgbRed = colorConv[0].rgbGreen = colorConv[0].rgbBlue = 255;
@@ -112,9 +112,9 @@ ReformatPrintShop::ConvertBW(const unsigned char* srcBuf)
     colorConv[0].rgbReserved = colorConv[1].rgbReserved = 0;
 
     outBuf = (unsigned char*) pDib->Create(kWidth, kHeight, 1, 2);
-    if (outBuf == nil) {
+    if (outBuf == NULL) {
         delete pDib;
-        pDib = nil;
+        pDib = NULL;
         goto bail;
     }
     pDib->SetColorTable(colorConv);
@@ -167,13 +167,13 @@ ReformatPrintShop::ConvertColor(const unsigned char* srcBuf)
         { 0x00, 0x00, 0x00 },       // 111 black
     };
 
-    if (pDib == nil)
-        return nil;
+    if (pDib == NULL)
+        return NULL;
 
     outBuf = (unsigned char*) pDib->Create(kWidth, kHeight, 4, 8);
-    if (outBuf == nil) {
+    if (outBuf == NULL) {
         delete pDib;
-        pDib = nil;
+        pDib = NULL;
         goto bail;
     }
     pDib->SetColorTable(kColorConv);

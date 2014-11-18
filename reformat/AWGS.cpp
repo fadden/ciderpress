@@ -264,7 +264,7 @@ ReformatAWGS_WP::PrintChunk(const Chunk* pChunk)
          * small (e.g. 7 for a 16K doc).
          */
         blockPtr = FindTextBlock(pChunk, sae.textBlock);
-        if (blockPtr == nil) {
+        if (blockPtr == NULL) {
             WMSG1("AWGS_WP bad textBlock %d\n", sae.textBlock);
             return;
         }

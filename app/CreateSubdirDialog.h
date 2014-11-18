@@ -20,8 +20,8 @@ public:
     CreateSubdirDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_CREATE_SUBDIR, pParentWnd)
     {
-        fpArchive = nil;
-        fpParentEntry = nil;
+        fpArchive = NULL;
+        fpParentEntry = NULL;
     }
     virtual ~CreateSubdirDialog(void) {}
 

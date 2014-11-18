@@ -42,7 +42,7 @@ public:
         ASSERT(newVal >= 0 && newVal <= kProgressResolution);
 
         CProgressCtrl* pProgress = (CProgressCtrl*) GetDlgItem(fProgressID);
-        if (pProgress != nil) {
+        if (pProgress != NULL) {
             /* would be nice to only set the range once */
             pProgress->SetRange(0, kProgressResolution);
             pProgress->SetPos(newVal);
@@ -63,7 +63,7 @@ private:
 
         ASSERT(fProgressID != 0);
         CProgressCtrl* pProgress = (CProgressCtrl*) GetDlgItem(fProgressID);
-        ASSERT(pProgress != nil);
+        ASSERT(pProgress != NULL);
 
         /* for some reason this doesn't work if I do it here */
         //pProgress->SetRange(0, kProgressResolution);

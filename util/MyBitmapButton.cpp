@@ -24,7 +24,7 @@ BOOL
 MyBitmapButton::ReplaceDlgCtrl(CDialog* pDialog, int buttonID)
 {
     CWnd* pWnd = pDialog->GetDlgItem(buttonID);
-    if (pWnd == nil)
+    if (pWnd == NULL)
         return FALSE;
 
 #if 0
@@ -77,7 +77,7 @@ MyBitmapButton::UpdateBitmap(void)
 
     hNewBits = (HBITMAP) ::LoadImage(AfxGetInstanceHandle(),
         MAKEINTRESOURCE(fBitmapID), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
-    if (hNewBits == nil) {
+    if (hNewBits == NULL) {
         WMSG1("WARNING: LoadImage failed (bitID=%d)\n", fBitmapID);
         ASSERT(false);
         return;
