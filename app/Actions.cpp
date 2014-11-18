@@ -101,7 +101,7 @@ MainWindow::HandleView(void)
     // remember which font they used (sticky pref, not in registry)
     fPreferences.SetPrefString(kPrViewTextTypeFace, vfd.GetTextTypeFace());
     fPreferences.SetPrefLong(kPrViewTextPointSize, vfd.GetTextPointSize());
-    WMSG2("Preferences: saving view font %d-point '%ls'\n",
+    LOGI("Preferences: saving view font %d-point '%ls'",
         fPreferences.GetPrefLong(kPrViewTextPointSize),
         fPreferences.GetPrefString(kPrViewTextTypeFace));
 }
@@ -163,7 +163,7 @@ MainWindow::OnUpdateActionsOpenAsDisk(CCmdUI* pCmdUI)
 void
 MainWindow::OnActionsAddFiles(void)
 {
-    WMSG0("Add files!\n");
+    LOGI("Add files!");
     AddFilesDialog addFiles(this);
     DiskImgLib::A2File* pTargetSubdir = NULL;
 
@@ -263,7 +263,7 @@ MainWindow::OnActionsAddFiles(void)
         if (result)
             SuccessBeep();
     } else {
-        WMSG0("SFD bailed with Cancel\n");
+        LOGI("SFD bailed with Cancel");
     }
 }
 void
@@ -313,7 +313,7 @@ MainWindow::ChooseAddTarget(DiskImgLib::A2File** ppTargetSubdir,
          */
         DiskArchive* pDiskArchive = (DiskArchive*) fpOpenArchive;
 
-        WMSG0("Trying ChooseAddTarget\n");
+        LOGI("Trying ChooseAddTarget");
 
         ChooseAddTargetDialog targetDialog(this);
         targetDialog.fpDiskFS = pDiskArchive->GetDiskFS();
@@ -357,7 +357,7 @@ MainWindow::OnActionsAddDisks(void)
     CString openFilters, saveFolder;
     AddFilesDialog addOpts;
 
-    WMSG0("Add disks!\n");
+    LOGI("Add disks!");
 
     failed.LoadString(IDS_FAILED);
 
@@ -406,23 +406,23 @@ MainWindow::OnActionsAddDisks(void)
         imf.fFileSource = dlg.GetPathName();
         imf.SetQueryDisplayFormat(false);
 
-        WMSG2(" On entry, sectord=%d format=%d\n",
+        LOGI(" On entry, sectord=%d format=%d",
             imf.fSectorOrder, imf.fFSFormat);
         if (imf.fFSFormat == DiskImg::kFormatUnknown)
             imf.fFSFormat = DiskImg::kFormatGenericProDOSOrd;
 
         if (imf.DoModal() != IDOK) {
-            WMSG0("User bailed on IMF dialog\n");
+            LOGI("User bailed on IMF dialog");
             goto bail;
         }
 
-        WMSG2(" On exit, sectord=%d format=%d\n",
+        LOGI(" On exit, sectord=%d format=%d",
             imf.fSectorOrder, imf.fFSFormat);
 
         if (imf.fSectorOrder != img.GetSectorOrder() ||
             imf.fFSFormat != img.GetFSFormat())
         {
-            WMSG0("Initial values overridden, forcing img format\n");
+            LOGI("Initial values overridden, forcing img format");
             dierr = img.OverrideFormat(img.GetPhysicalFormat(), imf.fFSFormat,
                         imf.fSectorOrder);
             if (dierr != kDIErrNone) {
@@ -535,7 +535,7 @@ MainWindow::OnActionsCreateSubdir(void)
         return;
     }
 
-    WMSG1("Creating subdir in '%ls'\n", pEntry->GetPathName());
+    LOGI("Creating subdir in '%ls'", pEntry->GetPathName());
 
     csDialog.fBasePath = pEntry->GetPathName();
     csDialog.fpArchive = fpOpenArchive;
@@ -544,7 +544,7 @@ MainWindow::OnActionsCreateSubdir(void)
     if (csDialog.DoModal() != IDOK)
         return;
 
-    WMSG1("Creating '%ls'\n", (LPCWSTR) csDialog.fNewName);
+    LOGI("Creating '%ls'", (LPCWSTR) csDialog.fNewName);
 
     fpOpenArchive->CreateSubdir(this, pEntry, csDialog.fNewName);
     fpContentList->Reload();
@@ -630,7 +630,7 @@ MainWindow::OnActionsExtract(void)
     fPreferences.SetPrefBool(kPrExtractStripFolderNames, extOpts.fStripFolderNames != 0);
     fPreferences.SetPrefBool(kPrExtractOverwriteExisting, extOpts.fOverwriteExisting != 0);
 
-    WMSG1("Requested extract path is '%ls'\n", (LPCWSTR) extOpts.fExtractPath);
+    LOGI("Requested extract path is '%ls'", (LPCWSTR) extOpts.fExtractPath);
 
     /*
      * Create a "selection set" of things to display.
@@ -711,7 +711,7 @@ MainWindow::DoBulkExtract(SelectionSet* pSelSet,
 
         GenericEntry* pEntry = pSelEntry->GetEntry();
         if (pEntry->GetDamaged()) {
-            WMSG1("Skipping '%ls' due to damage\n", pEntry->GetPathName());
+            LOGI("Skipping '%ls' due to damage", pEntry->GetPathName());
             continue;
         }
 
@@ -839,7 +839,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
     else
         convHA = GenericEntry::kConvertHAOff;
 
-    //WMSG2("  DBE initial text conversion: eol=%d ha=%d\n",
+    //LOGI("  DBE initial text conversion: eol=%d ha=%d",
     //  convEOL, convHA);
 
 
@@ -869,7 +869,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
             {
                 extractAs2MG = true;
             } else {
-                WMSG2("Not extracting funky image '%ls' as 2MG (len=%ld)\n",
+                LOGI("Not extracting funky image '%ls' as 2MG (len=%ld)",
                     pEntry->GetPathName(), pEntry->GetUncompressedLen());
             }
         }
@@ -1016,7 +1016,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
 
     /* update the display in case we renamed it */
     if (outputPath != fpActionProgress->GetFileName()) {
-        WMSG2(" Renamed our output, from '%ls' to '%ls'\n",
+        LOGI(" Renamed our output, from '%ls' to '%ls'",
             (LPCTSTR) fpActionProgress->GetFileName(), outputPath);
         fpActionProgress->SetFileName(outputPath);
     }
@@ -1026,7 +1026,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
      */
     fpActionProgress->SetArcName(pathProp.fStoredPathName);
     fpActionProgress->SetFileName(outputPath);
-    WMSG2("Extracting from '%ls' to '%ls'\n",
+    LOGI("Extracting from '%ls' to '%ls'",
         pathProp.fStoredPathName, outputPath);
     SET_PROGRESS_BEGIN();
 
@@ -1048,7 +1048,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
 
     /* update the display in case they renamed the file */
     if (outputPath != fpActionProgress->GetFileName()) {
-        WMSG2(" Detected rename, from '%ls' to '%ls'\n",
+        LOGI(" Detected rename, from '%ls' to '%ls'",
             (LPCWSTR) fpActionProgress->GetFileName(), outputPath);
         fpActionProgress->SetFileName(outputPath);
     }
@@ -1109,7 +1109,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
         if (DiskImg::UsesDOSFileStructure(pEntry->GetSourceFS()) &&
             pEntry->GetFileType() == kFileTypeTXT)
         {
-            WMSG0("Switching EOLAuto to EOLOn for DOS text file\n");
+            LOGI("Switching EOLAuto to EOLOn for DOS text file");
             thisConv = GenericEntry::kConvertEOLOn;
         }
     } else if (convTextByType) {
@@ -1117,7 +1117,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
         if (pEntry->GetFileType() == kFileTypeTXT ||
             pEntry->GetFileType() == kFileTypeSRC)
         {
-            WMSG0("Enabling EOL conv for text file\n");
+            LOGI("Enabling EOL conv for text file");
             thisConv = GenericEntry::kConvertEOLOn;
         } else {
             ASSERT(thisConv == GenericEntry::kConvertEOLOff);
@@ -1127,7 +1127,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
         (thread == GenericEntry::kRsrcThread ||
          thread == GenericEntry::kDiskImageThread))
     {
-        WMSG0("Disabling EOL conv for resource fork or disk image\n");
+        LOGI("Disabling EOL conv for resource fork or disk image");
         thisConv = GenericEntry::kConvertEOLOff;
     }
 
@@ -1159,7 +1159,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
             pOutput->GetOutputKind() == ReformatOutput::kOutputRTF ||
             pOutput->GetOutputKind() == ReformatOutput::kOutputCSV)
         {
-            WMSG0("  Writing text, RTF, CSV, or raw\n");
+            LOGI("  Writing text, RTF, CSV, or raw");
             ASSERT(pOutput->GetTextBuf() != NULL);
             int err = 0;
             if (fwrite(pOutput->GetTextBuf(),
@@ -1175,7 +1175,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
                 SET_PROGRESS_UPDATE(100);
             }
         } else if (pOutput->GetOutputKind() == ReformatOutput::kOutputBitmap) {
-            WMSG0("  Writing bitmap\n");
+            LOGI("  Writing bitmap");
             ASSERT(pOutput->GetDIB() != NULL);
             int err = pOutput->GetDIB()->WriteToFile(fp);
             if (err != 0) {
@@ -1196,7 +1196,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
              * We could just send it through to the generic non-reformatter
              * case, but that would require reading the file twice.
              */
-            WMSG1("  Writing un-reformatted data (%ld bytes)\n",
+            LOGI("  Writing un-reformatted data (%ld bytes)",
                 pOutput->GetTextLen());
             ASSERT(pOutput->GetTextBuf() != NULL);
             bool lastCR = false;
@@ -1216,7 +1216,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
 
         } else {
             /* something failed, and we don't have the file */
-            WMSG0("How'd we get here?\n");
+            LOGI("How'd we get here?");
             ASSERT(false);
         }
     } else {
@@ -1230,7 +1230,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
         CString msg;
         int result;
         ASSERT(fpActionProgress != NULL);
-        WMSG3("Extracting '%ls', requesting thisConv=%d, convHA=%d\n",
+        LOGI("Extracting '%ls', requesting thisConv=%d, convHA=%d",
             outputPath, thisConv, convHA);
         result = pEntry->ExtractThreadToFile(thread, fp,
                     thisConv, convHA, &msg);
@@ -1241,7 +1241,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
                 fpActionProgress->MessageBox(msg, 
                     L"CiderPress", MB_OK | MB_ICONEXCLAMATION);
             } else {
-                WMSG2("  FAILED on '%ls': %ls\n", outputPath, msg);
+                LOGI("  FAILED on '%ls': %ls", outputPath, msg);
                 errMsg.Format(L"Unable to extract file '%ls': %ls\n",
                     outputPath, msg);
                 fpActionProgress->MessageBox(errMsg, failed,
@@ -1309,10 +1309,10 @@ did_rename:
         if (*pOverwriteExisting) {
 do_overwrite:
             /* delete existing */
-            WMSG1("  Deleting existing '%ls'\n", (LPCWSTR) *pOutputPath);
+            LOGI("  Deleting existing '%ls'", (LPCWSTR) *pOutputPath);
             if (::_wunlink(*pOutputPath) != 0) {
                 err = errno;
-                WMSG2("  Failed deleting '%ls', err=%d\n",
+                LOGI("  Failed deleting '%ls', err=%d",
                     (LPCWSTR)*pOutputPath, err);
                 if (err == ENOENT) {
                     /* user might have removed it while dialog was up */
@@ -1324,7 +1324,7 @@ do_overwrite:
             }
         } else if (*pOvwrForAll) {
             /* never overwrite */
-            WMSG1("  Skipping '%ls'\n", (LPCWSTR) *pOutputPath);
+            LOGI("  Skipping '%ls'", (LPCWSTR) *pOutputPath);
             goto bail;
         } else {
             /* no firm policy, ask the user */
@@ -1382,7 +1382,7 @@ bail:
         return IDCANCEL;
     } else if (err == kUserCancel) {
         /* user elected to cancel */
-        WMSG0("Cancelling due to user request\n");
+        LOGI("Cancelling due to user request");
         return IDCANCEL;
     } else if (err != 0) {
         msg.Format(L"Unable to create file '%ls': %hs\n",
@@ -1422,7 +1422,7 @@ MainWindow::OnActionsTest(void)
         selOpts.fFilesToAction = UseSelectionDialog::kActionAll;
 
     if (selOpts.DoModal() != IDOK) {
-        WMSG0("Test cancelled\n");
+        LOGI("Test cancelled");
         return;
     }
 
@@ -1510,7 +1510,7 @@ MainWindow::OnActionsDelete(void)
         delOpts.fFilesToAction = UseSelectionDialog::kActionAll;
 
     if (delOpts.DoModal() != IDOK) {
-        WMSG0("Delete cancelled\n");
+        LOGI("Delete cancelled");
         return;
     }
 #endif
@@ -1783,14 +1783,14 @@ MainWindow::OnActionsRenameVolume(void)
     if (rvDialog.DoModal() != IDOK)
         return;
 
-    //WMSG1("Creating '%s'\n", rvDialog.fNewName);
+    //LOGI("Creating '%s'", rvDialog.fNewName);
 
     /* rename the chosen disk to the specified name */
     bool result;
     result = fpOpenArchive->RenameVolume(this, rvDialog.fpChosenDiskFS,
                 rvDialog.fNewName);
     if (!result) {
-        WMSG0("RenameVolume FAILED\n");
+        LOGI("RenameVolume FAILED");
         /* keep going -- reload just in case something partially happened */
     }
 
@@ -1842,7 +1842,7 @@ MainWindow::OnActionsRecompress(void)
     selOpts.fCompressionType = fPreferences.GetPrefLong(kPrCompressionType);
 
     if (selOpts.DoModal() != IDOK) {
-        WMSG0("Recompress cancelled\n");
+        LOGI("Recompress cancelled");
         return;
     }
 
@@ -1965,7 +1965,7 @@ MainWindow::OnActionsConvDisk(void)
     //  fPreferences.GetPrefBool(kPrConvDiskAllocSparse);
 
     if (selOpts.DoModal() != IDOK) {
-        WMSG0("ConvDisk cancelled\n");
+        LOGI("ConvDisk cancelled");
         return;
     }
 
@@ -2004,7 +2004,7 @@ MainWindow::OnActionsConvDisk(void)
     //xferOpts.fUseSparseBlocks =
     //  fPreferences.GetPrefBool(kPrProDOSUseSparse) != 0;
 
-    WMSG1("New volume name will be '%ls'\n", (LPCWSTR) selOpts.fVolName);
+    LOGI("New volume name will be '%ls'", (LPCWSTR) selOpts.fVolName);
 
     /*
      * Create a new disk image.
@@ -2019,7 +2019,7 @@ MainWindow::OnActionsConvDisk(void)
     dlg.m_ofn.lpstrInitialDir = fPreferences.GetPrefString(kPrOpenArchiveFolder);
 
     if (dlg.DoModal() != IDOK) {
-        WMSG0(" User cancelled xfer from image create dialog\n");
+        LOGI(" User cancelled xfer from image create dialog");
         return;
     }
 
@@ -2028,7 +2028,7 @@ MainWindow::OnActionsConvDisk(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     filename = dlg.GetPathName();
-    WMSG1(" Will xfer to file '%ls'\n", filename);
+    LOGI(" Will xfer to file '%ls'", filename);
 
     /* remove file if it already exists */
     CString errMsg;
@@ -2117,7 +2117,7 @@ MainWindow::OnActionsConvFile(void)
         fPreferences.GetPrefBool(kPrConvFileEmptyFolders);
 
     if (selOpts.DoModal() != IDOK) {
-        WMSG0("ConvFile cancelled\n");
+        LOGI("ConvFile cancelled");
         return;
     }
 
@@ -2172,7 +2172,7 @@ MainWindow::OnActionsConvFile(void)
     dlg.m_ofn.lpstrInitialDir = fPreferences.GetPrefString(kPrOpenArchiveFolder);
 
     if (dlg.DoModal() != IDOK) {
-        WMSG0(" User cancelled xfer from archive create dialog\n");
+        LOGI(" User cancelled xfer from archive create dialog");
         return;
     }
 
@@ -2181,7 +2181,7 @@ MainWindow::OnActionsConvFile(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     filename = dlg.GetPathName();
-    WMSG1(" Will xfer to file '%ls'\n", filename);
+    LOGI(" Will xfer to file '%ls'", filename);
 
     /* remove file if it already exists */
     CString errMsg;
@@ -2240,7 +2240,7 @@ void
 MainWindow::OnActionsConvToWav(void)
 {
     // do this someday
-    WMSG0("Convert TO wav\n");
+    LOGI("Convert TO wav");
 }
 void
 MainWindow::OnUpdateActionsConvToWav(CCmdUI* pCmdUI)
@@ -2286,7 +2286,7 @@ MainWindow::OnActionsConvFromWav(void)
     fPreferences.SetPrefString(kPrOpenWAVFolder, saveFolder);
 
     fileName = fileDlg.GetPathName();
-    WMSG1("Opening WAV file '%ls'\n", fileName);
+    LOGI("Opening WAV file '%ls'", fileName);
 
     dlg.fFileName = fileName;
     // pass in fpOpenArchive?
@@ -2368,7 +2368,7 @@ MainWindow::SaveToArchive(GenericArchive::FileDetails* pDetails,
     }
     if (pTargetSubdir != NULL) {
         storagePrefix = pTargetSubdir->GetPathName();
-        WMSG1("--- using storagePrefix '%ls'\n", storagePrefix);
+        LOGI("--- using storagePrefix '%ls'", storagePrefix);
     }
     if (!storagePrefix.IsEmpty()) {
         CString tmpStr, tmpFileName;
@@ -2434,7 +2434,7 @@ MainWindow::OnActionsImportBAS(void)
     fPreferences.SetPrefString(kPrAddFileFolder, saveFolder);
 
     fileName = fileDlg.GetPathName();
-    WMSG1("Opening TXT file '%ls'\n", fileName);
+    LOGI("Opening TXT file '%ls'", fileName);
 
     dlg.fFileName = fileName;
     // pass in fpOpenArchive?
@@ -2551,7 +2551,7 @@ MainWindow::GetFilePart(const GenericEntry* pEntry, int whichThread,
         ASSERT(buf == NULL);
     } else {
         /* transfer error message to ReformatHolder buffer */
-        WMSG1("Got error message from ExtractThread: '%ls'\n",
+        LOGI("Got error message from ExtractThread: '%ls'",
             (LPCWSTR) errMsg);
         pHolder->SetErrorMsg(part, errMsg);
         ASSERT(buf == NULL);

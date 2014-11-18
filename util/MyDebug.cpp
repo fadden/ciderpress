@@ -12,6 +12,11 @@ DebugLog::DebugLog(const WCHAR* logFile)
     : fLogFp(NULL)
 {
     fPid = getpid();
+#ifdef _DEBUG
+    fDoCrtDebug = true;
+#else
+    fDoCrtDebug = false;
+#endif
 
     if (logFile == NULL) {
         return;
@@ -52,7 +57,7 @@ DebugLog::~DebugLog() {
 void DebugLog::Log(LogSeverity severity, const char* file, int line,
     const char* format, ...)
 {
-    if (fLogFp == NULL) {
+    if (fLogFp == NULL && !fDoCrtDebug) {
         return;
     }
 
@@ -61,15 +66,28 @@ void DebugLog::Log(LogSeverity severity, const char* file, int line,
         severity = LOG_UNKNOWN;
     }
 
-    struct tm tmbuf;
-    time_t now = time(NULL);
-    localtime_s(&tmbuf, &now);
-
     va_list argptr;
-    va_start(argptr, format);
+    char textBuf[4096];
 
-    // had %05u fPid before; not sure that's useful
-    fprintf(fLogFp, "%02d:%02d:%02d %c ", tmbuf.tm_hour,
-        tmbuf.tm_min, tmbuf.tm_sec, kSeverityChars[severity]);
-    vfprintf(fLogFp, format, argptr);
+    va_start(argptr, format);
+    _vsnprintf(textBuf, NELEM(textBuf) - 1, format, argptr);
+    va_end(argptr);
+    textBuf[NELEM(textBuf) - 1] = '\0';
+
+    if (fLogFp) {
+        struct tm tmbuf;
+        time_t now = time(NULL);
+        localtime_s(&tmbuf, &now);
+
+        // also had %05u fPid before; not sure that's useful
+        fprintf(fLogFp, "%02d:%02d:%02d %c %s\n", tmbuf.tm_hour,
+            tmbuf.tm_min, tmbuf.tm_sec, kSeverityChars[severity],
+            textBuf);
+    }
+    if (fDoCrtDebug) {
+        if (_CrtDbgReport(_CRT_WARN, file, line, NULL, "%s\n", textBuf) == 1) {
+            // "retry" button causes a debugger break
+            _CrtDbgBreak();
+        }
+    }
 }

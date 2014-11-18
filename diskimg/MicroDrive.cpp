@@ -90,7 +90,7 @@ DiskFSMicroDrive::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
         goto bail;
 
     if (GetShortLE(&blkBuf[0x00]) != kPartitionSignature) {
-        WMSG0(" MicroDrive partition signature not found in first part block\n");
+        LOGI(" MicroDrive partition signature not found in first part block");
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
@@ -100,7 +100,7 @@ DiskFSMicroDrive::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
     if (partCount1 == 0 || partCount1 > kMaxNumParts ||
         partCount2 > kMaxNumParts)
     {
-        WMSG2(" MicroDrive unreasonable partCount values %d/%d\n",
+        LOGI(" MicroDrive unreasonable partCount values %d/%d",
             partCount1, partCount2);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
@@ -109,7 +109,7 @@ DiskFSMicroDrive::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
     /* consider testing other fields */
 
     // success!
-    WMSG2(" MicroDrive partition map count = %d/%d\n", partCount1, partCount2);
+    LOGI(" MicroDrive partition map count = %d/%d", partCount1, partCount2);
 
 bail:
     return dierr;
@@ -151,25 +151,25 @@ DiskFSMicroDrive::UnpackPartitionMap(const unsigned char* buf,
 /*static*/ void
 DiskFSMicroDrive::DumpPartitionMap(const PartitionMap* pMap)
 {
-    WMSG0(" MicroDrive partition map:\n");
-    WMSG4("    cyls=%d res1=%d heads=%d sects=%d\n",
+    LOGI(" MicroDrive partition map:");
+    LOGI("    cyls=%d res1=%d heads=%d sects=%d",
         pMap->cylinders, pMap->reserved1, pMap->heads, pMap->sectors);
-    WMSG3("    res2=%d numPart1=%d numPart2=%d\n",
+    LOGI("    res2=%d numPart1=%d numPart2=%d",
         pMap->reserved2, pMap->numPart1, pMap->numPart2);
-    WMSG1("    romVersion=ROM%02d\n", pMap->romVersion);
+    LOGI("    romVersion=ROM%02d", pMap->romVersion);
 
     int i, parts;
 
     parts = pMap->numPart1;
     assert(parts <= kMaxNumParts);
     for (i = 0; i < parts; i++) {
-        WMSG3("    %2d: startLBA=%8ld length=%ld\n",
+        LOGI("    %2d: startLBA=%8ld length=%ld",
             i, pMap->partitionStart1[i], pMap->partitionLength1[i]);
     }
     parts = pMap->numPart2;
     assert(parts <= kMaxNumParts);
     for (i = 0; i < parts; i++) {
-        WMSG3("    %2d: startLBA=%8ld length=%ld\n",
+        LOGI("    %2d: startLBA=%8ld length=%ld",
             i+8, pMap->partitionStart2[i], pMap->partitionLength2[i]);
     }
 }
@@ -186,15 +186,15 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
     DiskImg* pNewImg = NULL;
     //bool tweaked = false;
 
-    WMSG2("Adding %ld +%ld\n", startBlock, numBlocks);
+    LOGI("Adding %ld +%ld", startBlock, numBlocks);
 
     if (startBlock > fpImg->GetNumBlocks()) {
-        WMSG2("MicroDrive start block out of range (%ld vs %ld)\n",
+        LOGI("MicroDrive start block out of range (%ld vs %ld)",
             startBlock, fpImg->GetNumBlocks());
         return kDIErrBadPartition;
     }
     if (startBlock + numBlocks > fpImg->GetNumBlocks()) {
-        WMSG2("MicroDrive partition too large (%ld vs %ld avail)\n",
+        LOGI("MicroDrive partition too large (%ld vs %ld avail)",
             numBlocks, fpImg->GetNumBlocks() - startBlock);
         fpImg->AddNote(DiskImg::kNoteInfo,
             "Reduced partition from %ld blocks to %ld.\n",
@@ -211,18 +211,18 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
 
     dierr = pNewImg->OpenImage(fpImg, startBlock, numBlocks);
     if (dierr != kDIErrNone) {
-        WMSG3(" MicroDriveSub: OpenImage(%ld,%ld) failed (err=%d)\n",
+        LOGI(" MicroDriveSub: OpenImage(%ld,%ld) failed (err=%d)",
             startBlock, numBlocks, dierr);
         goto bail;
     }
 
-    //WMSG2("  +++ CFFASub: new image has ro=%d (parent=%d)\n",
+    //LOGI("  +++ CFFASub: new image has ro=%d (parent=%d)",
     //  pNewImg->GetReadOnly(), pImg->GetReadOnly());
 
     /* figure out what the format is */
     dierr = pNewImg->AnalyzeImage();
     if (dierr != kDIErrNone) {
-        WMSG1(" MicroDriveSub: analysis failed (err=%d)\n", dierr);
+        LOGI(" MicroDriveSub: analysis failed (err=%d)", dierr);
         goto bail;
     }
 
@@ -230,7 +230,7 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
     if (pNewImg->GetFSFormat() == DiskImg::kFormatUnknown ||
         pNewImg->GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
-        WMSG2(" MicroDriveSub (%ld,%ld): unable to identify filesystem\n",
+        LOGI(" MicroDriveSub (%ld,%ld): unable to identify filesystem",
             startBlock, numBlocks);
         DiskFSUnknown* pUnknownFS = new DiskFSUnknown;
         if (pUnknownFS == NULL) {
@@ -243,10 +243,10 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
         //  pMap->pmPartName, pMap->pmParType);
     } else {
         /* open a DiskFS for the sub-image */
-        WMSG2(" MicroDriveSub (%ld,%ld) analyze succeeded!\n", startBlock, numBlocks);
+        LOGI(" MicroDriveSub (%ld,%ld) analyze succeeded!", startBlock, numBlocks);
         pNewFS = pNewImg->OpenAppropriateDiskFS(true);
         if (pNewFS == NULL) {
-            WMSG0(" MicroDriveSub: OpenAppropriateDiskFS failed\n");
+            LOGI(" MicroDriveSub: OpenAppropriateDiskFS failed");
             dierr = kDIErrUnsupportedFSFmt;
             goto bail;
         }
@@ -271,7 +271,7 @@ DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
         initMode = kInitFull;
     dierr = pNewFS->Initialize(pNewImg, initMode);
     if (dierr != kDIErrNone) {
-        WMSG1(" MicroDriveSub: error %d reading list of files from disk", dierr);
+        LOGI(" MicroDriveSub: error %d reading list of files from disk", dierr);
         goto bail;
     }
 
@@ -305,7 +305,7 @@ DiskFSMicroDrive::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         return kDIErrNone;
     }
 
-    WMSG0("  FS didn't find valid MicroDrive\n");
+    LOGI("  FS didn't find valid MicroDrive");
     return kDIErrFilesystemNotFound;
 }
 
@@ -318,7 +318,7 @@ DiskFSMicroDrive::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
-    WMSG1("MicroDrive initializing (scanForSub=%d)\n", fScanForSubVolumes);
+    LOGI("MicroDrive initializing (scanForSub=%d)", fScanForSubVolumes);
 
     /* seems pointless *not* to, but we just do what we're told */
     if (fScanForSubVolumes != kScanSubDisabled) {
@@ -387,13 +387,13 @@ DiskFSMicroDrive::OpenVol(int idx, long startBlock, long numBlocks)
         DiskFS* pNewFS = NULL;
         DiskImg* pNewImg = NULL;
 
-        WMSG1(" MicroDrive failed opening sub-volume %d\n", idx);
+        LOGI(" MicroDrive failed opening sub-volume %d", idx);
         dierr = CreatePlaceholder(startBlock, numBlocks, NULL, NULL,
                     &pNewImg, &pNewFS);
         if (dierr == kDIErrNone) {
             AddSubVolumeToList(pNewImg, pNewFS);
         } else {
-            WMSG1("  MicroDrive unable to create placeholder (err=%d)\n",
+            LOGI("  MicroDrive unable to create placeholder (err=%d)",
                 dierr);
             // fall out with error
         }

@@ -87,7 +87,7 @@ RecompressOptionsDialog::DoDataExchange(CDataExchange* pDX)
         ASSERT(pCombo != NULL);
 
         fCompressionType = pCombo->GetItemData(fCompressionIdx);
-        WMSG2("DDX got type=%d from combo index %d\n",
+        LOGI("DDX got type=%d from combo index %d",
             fCompressionType, fCompressionIdx);
     }
 

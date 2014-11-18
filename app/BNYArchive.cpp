@@ -90,12 +90,12 @@ BnyEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
         char* unsqBuf = NULL;
         long unsqLen = 0;
         expBuf.SeizeBuffer(&unsqBuf, &unsqLen);
-        WMSG2("Unsqueezed %ld bytes to %d\n", len, unsqLen);
+        LOGI("Unsqueezed %ld bytes to %d", len, unsqLen);
         if (unsqLen == 0) {
             // some bonehead squeezed a zero-length file
             delete[] unsqBuf;
             ASSERT(*ppText == NULL);
-            WMSG0("Handling zero-length squeezed file!\n");
+            LOGI("Handling zero-length squeezed file!");
             if (needAlloc) {
                 *ppText = new char[1];
                 **ppText = '\0';
@@ -185,7 +185,7 @@ BnyEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
 
     len = (long) GetUncompressedLen();
     if (len == 0) {
-        WMSG0("Empty fork\n");
+        LOGI("Empty fork");
         result = IDOK;
         goto bail;
     }
@@ -222,12 +222,12 @@ BnyEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         }
 
         expBuf.SeizeBuffer(&buf, &uncLen);
-        WMSG2("Unsqueezed %ld bytes to %d\n", len, uncLen);
+        LOGI("Unsqueezed %ld bytes to %d", len, uncLen);
 
         // some bonehead squeezed a zero-length file
         if (uncLen == 0) {
             ASSERT(buf == NULL);
-            WMSG0("Handling zero-length squeezed file!\n");
+            LOGI("Handling zero-length squeezed file!");
             result = IDOK;
             goto bail;
         }
@@ -489,7 +489,7 @@ BnyArchive::LoadContents(void)
     rewind(fFp);
 
     nerr = BNYIterate();
-    WMSG1("BNYIterate returned %d\n", nerr);
+    LOGI("BNYIterate returned %d", nerr);
     return (nerr != kNuErrNone);
 }
 
@@ -700,7 +700,7 @@ BnyArchive::BNYDecodeHeader(BnyFileEntry* pEntry)
 
     if (raw[0] != 0x0a || raw[1] != 0x47 || raw[2] != 0x4c || raw[18] != 0x02) {
         err = kNuErrBadData;
-        WMSG0("this doesn't look like a Binary II header\n");
+        LOGI("this doesn't look like a Binary II header");
         goto bail;
     }
 
@@ -721,7 +721,7 @@ BnyArchive::BNYDecodeHeader(BnyFileEntry* pEntry)
     len = raw[23];
     if (len > kBNYMaxFileName) {
         err = kNuErrBadData;
-        WMSG1("invalid filename length %d\n", len);
+        LOGI("invalid filename length %d", len);
         goto bail;
     }
     memcpy(pEntry->fileName, &raw[24], len);
@@ -732,7 +732,7 @@ BnyArchive::BNYDecodeHeader(BnyFileEntry* pEntry)
         len = raw[39];
         if (len > kBNYMaxNativeName) {
             err = kNuErrBadData;
-            WMSG1("invalid filename length %d\n", len);
+            LOGI("invalid filename length %d", len);
             goto bail;
         }
         memcpy(pEntry->nativeName, &raw[40], len);
@@ -830,7 +830,7 @@ BnyArchive::BNYCopyBlocks(BnyFileEntry* pEntry, FILE* outfp)
         if (outfp != NULL) {
             if (fwrite(pEntry->blockBuf, toWrite, 1, outfp) != 1) {
                 err = errno ? (NuError) errno : kNuErrFileWrite;
-                WMSG0("BNY write failed\n");
+                LOGI("BNY write failed");
                 goto bail;
             }
         }
@@ -840,7 +840,7 @@ BnyArchive::BNYCopyBlocks(BnyFileEntry* pEntry, FILE* outfp)
         if (bytesLeft) {
             err = BNYRead(pEntry->blockBuf, kBNYBlockSize);
             if (err != kNuErrNone) {
-                WMSG0("BNY read failed\n");
+                LOGI("BNY read failed");
                 goto bail;
             }
         }
@@ -868,14 +868,14 @@ BnyArchive::BNYIterate(void)
     while (toFollow) {
         err = BNYRead(entry.blockBuf, sizeof(entry.blockBuf));
         if (err != kNuErrNone) {
-            WMSG0("failed while reading header\n");
+            LOGI("failed while reading header");
             goto bail;
         }
 
         err = BNYDecodeHeader(&entry);
         if (err != kNuErrNone) {
             if (first) {
-                WMSG0("not a Binary II archive?\n");
+                LOGI("not a Binary II archive?");
             }
             goto bail;
         }
@@ -888,7 +888,7 @@ BnyArchive::BNYIterate(void)
         if (entry.realEOF != 0) {
             err = BNYRead(entry.blockBuf, sizeof(entry.blockBuf));
             if (err != kNuErrNone) {
-                WMSG0("failed while reading\n");
+                LOGI("failed while reading");
                 goto bail;
             }
         }
@@ -913,7 +913,7 @@ BnyArchive::BNYIterate(void)
             if (nblocks > 1) {
                 err = BNYSeek((nblocks-1) * kBNYBlockSize);
                 if (err != kNuErrNone) {
-                    WMSG0("failed while seeking forward\n");
+                    LOGI("failed while seeking forward");
                     goto bail;
                 }
             }
@@ -921,7 +921,7 @@ BnyArchive::BNYIterate(void)
 
         if (!first) {
             if (entry.filesToFollow != toFollow -1) {
-                WMSG2("WARNING: filesToFollow %d, expected %d\n",
+                LOGI("WARNING: filesToFollow %d, expected %d",
                     entry.filesToFollow, toFollow -1);
             }
         }
@@ -932,7 +932,7 @@ BnyArchive::BNYIterate(void)
 
 bail:
     if (err != kNuErrNone) {
-        WMSG1("--- Iterator returning failure %d\n", err);
+        LOGI("--- Iterator returning failure %d", err);
     }
     return err;
 }
@@ -957,13 +957,13 @@ BnyArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 
     ASSERT(fFp != NULL);
 
-    WMSG1("Testing %d entries\n", pSelSet->GetNumEntries());
+    LOGI("Testing %d entries", pSelSet->GetNumEntries());
 
     SelectionEntry* pSelEntry = pSelSet->IterNext();
     while (pSelEntry != NULL) {
         pEntry = (BnyEntry*) pSelEntry->GetEntry();
 
-        WMSG2("  Testing '%ls' (offset=%ld)\n", pEntry->GetDisplayName(),
+        LOGI("  Testing '%ls' (offset=%ld)", pEntry->GetDisplayName(),
             pEntry->GetOffset());
 
         SET_PROGRESS_UPDATE2(0, pEntry->GetDisplayName(), NULL);

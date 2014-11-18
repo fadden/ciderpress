@@ -41,12 +41,12 @@ OuterGzip::Test(GenericFD* pGFD, di_off_t outerLength)
     unsigned short magic, magicBuf;
     const char* imagePath;
 
-    WMSG0("Testing for gzip\n");
+    LOGI("Testing for gzip");
 
     /* don't need this here, but we will later on */
     imagePath = pGFD->GetPathName();
     if (imagePath == NULL) {
-        WMSG0("Can't test gzip on non-file\n");
+        LOGI("Can't test gzip on non-file");
         return kDIErrNotSupported;
     }
 
@@ -131,9 +131,9 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
          */
         len = gzread(gzfp, buf + curSize, maxSize - curSize);
         if (len < 0) {
-            WMSG1("  ExGZ Call to gzread failed, errno=%d\n", errno);
+            LOGI("  ExGZ Call to gzread failed, errno=%d", errno);
             if (curSize == 140*1024 || curSize == 800*1024) {
-                WMSG0("WARNING: accepting damaged gzip file\n");
+                LOGI("WARNING: accepting damaged gzip file");
                 fWrapperDamaged = true;
                 break;      // sleazy, but currently necessary
             }
@@ -145,13 +145,13 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
         } else if (len < (maxSize - curSize)) {
             /* we've probably reached the end, but we can't be sure,
                so let's go around again */
-            WMSG2("  ExGZ gzread(%ld) returned %ld, letting it ride\n",
+            LOGI("  ExGZ gzread(%ld) returned %ld, letting it ride",
                 maxSize - curSize, len);
             curSize += len;
         } else {
             /* update buffer, and grow it if it's not big enough */
             curSize += len;
-            WMSG2("  max=%ld cur=%ld\n", maxSize, curSize);
+            LOGI("  max=%ld cur=%ld", maxSize, curSize);
             if (maxSize - curSize < kMinEmpty) {
                 /* not enough room, grow it */
 
@@ -168,7 +168,7 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
 
                 newBuf = new char[maxSize];
                 if (newBuf == NULL) {
-                    WMSG1("  ExGZ failed buffer alloc (%ld)\n",
+                    LOGI("  ExGZ failed buffer alloc (%ld)",
                         maxSize);
                     dierr = kDIErrMalloc;
                     goto bail;
@@ -179,17 +179,17 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
                 buf = newBuf;
                 newBuf = NULL;
 
-                WMSG1("  ExGZ grew buffer to %ld\n", maxSize);
+                LOGI("  ExGZ grew buffer to %ld", maxSize);
             } else {
                 /* don't need to grow buffer yet */
-                WMSG3("  ExGZ read %ld bytes, cur=%ld max=%ld\n",
+                LOGI("  ExGZ read %ld bytes, cur=%ld max=%ld",
                     len, curSize, maxSize);
             }
         }
         assert(curSize < maxSize);
 
         if (curSize > kAbsoluteMax) {
-            WMSG0("  ExGZ excessive size, probably not a disk image\n");
+            LOGI("  ExGZ excessive size, probably not a disk image");
             dierr = kDIErrTooBig;   // close enough
             goto bail;
         }
@@ -197,7 +197,7 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
 
     if (curSize + (1024*1024) < maxSize) {
         /* shrink it down so it fits */
-        WMSG2("  Down-sizing buffer from %ld to %ld\n", maxSize, curSize);
+        LOGI("  Down-sizing buffer from %ld to %ld", maxSize, curSize);
         newBuf = new char[curSize];
         if (newBuf == NULL)
             goto bail;
@@ -209,7 +209,7 @@ OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
 
     *pBuf = buf;
     *pLength = curSize;
-    WMSG1("  ExGZ final size = %ld\n", curSize);
+    LOGI("  ExGZ final size = %ld", curSize);
 
     buf = NULL;
 
@@ -241,7 +241,7 @@ OuterGzip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
 
     gzfp = gzopen(imagePath, "rb");        // use "readOnly" here
     if (gzfp == NULL) { // DON'T retry RO -- should be done at higher level?
-        WMSG1("gzopen failed, errno=%d\n", errno);
+        LOGI("gzopen failed, errno=%d", errno);
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -293,7 +293,7 @@ OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     const char* imagePath;
     gzFile gzfp = NULL;
 
-    WMSG1(" GZ save (wrapperLen=%ld)\n", (long) wrapperLength);
+    LOGI(" GZ save (wrapperLen=%ld)", (long) wrapperLength);
     assert(wrapperLength > 0);
 
     /*
@@ -307,7 +307,7 @@ OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
 
     gzfp = gzopen(imagePath, "wb");
     if (gzfp == NULL) {
-        WMSG1("gzopen for write failed, errno=%d\n", errno);
+        LOGI("gzopen for write failed, errno=%d", errno);
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -326,14 +326,14 @@ OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
             break;
         }
         if (dierr != kDIErrNone) {
-            WMSG1("Error reading source GFD during gzip save (err=%d)\n",dierr);
+            LOGI("Error reading source GFD during gzip save (err=%d)",dierr);
             goto bail;
         }
         assert(actual > 0);
 
         written = gzwrite(gzfp, buf, actual);
         if (written == 0) {
-            WMSG1("Failed writing %d bytes to gzio\n", actual);
+            LOGI("Failed writing %d bytes to gzio", actual);
             dierr = kDIErrGeneric;
             goto bail;
         }
@@ -343,7 +343,7 @@ OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     }
     assert(wrapperLength == 0);     // not expecting any slop
 
-    WMSG1(" GZ wrote %ld bytes\n", totalWritten);
+    LOGI(" GZ wrote %ld bytes", totalWritten);
 
     /*
      * Success!
@@ -372,7 +372,7 @@ OuterZip::Test(GenericFD* pGFD, di_off_t outerLength)
     DIError dierr = kDIErrNone;
     CentralDirEntry cde;
 
-    WMSG0("Testing for zip\n");
+    LOGI("Testing for zip");
     dierr = ReadCentralDir(pGFD, outerLength, &cde);
     if (dierr != kDIErrNone)
         goto bail;
@@ -383,7 +383,7 @@ OuterZip::Test(GenericFD* pGFD, di_off_t outerLength)
     if (cde.fCompressionMethod != kCompressStored &&
         cde.fCompressionMethod != kCompressDeflated)
     {
-        WMSG1(" ZIP compression method %d not supported\n",
+        LOGI(" ZIP compression method %d not supported",
             cde.fCompressionMethod);
         dierr = kDIErrGeneric;
         goto bail;
@@ -395,7 +395,7 @@ OuterZip::Test(GenericFD* pGFD, di_off_t outerLength)
     if (cde.fUncompressedSize < 512 ||
         cde.fUncompressedSize > kMaxUncompressedSize)
     {
-        WMSG1(" ZIP uncompressed size %lu is outside range\n",
+        LOGI(" ZIP uncompressed size %lu is outside range",
             cde.fUncompressedSize);
         dierr = kDIErrGeneric;
         goto bail;
@@ -431,7 +431,7 @@ OuterZip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
             assert(*pExt == '.');
             SetExtension(pExt+1);
 
-            WMSG1("OuterZip using extension '%s'\n", GetExtension());
+            LOGI("OuterZip using extension '%s'", GetExtension());
         }
 
         SetStoredFileName((const char*) cde.fFileName);
@@ -481,7 +481,7 @@ OuterZip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     EndOfCentralDir eocd;
     di_off_t lfhOffset;
 
-    WMSG1(" ZIP save (wrapperLen=%ld)\n", (long) wrapperLength);
+    LOGI(" ZIP save (wrapperLen=%ld)", (long) wrapperLength);
     assert(wrapperLength > 0);
 
     dierr = pOuterGFD->Rewind();
@@ -693,12 +693,12 @@ OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
         if (buf[i] == 0x50 &&
             GetLongLE(&buf[i]) == EndOfCentralDir::kSignature)
         {
-            WMSG1("+++ Found EOCD at buf+%d\n", i);
+            LOGI("+++ Found EOCD at buf+%d", i);
             break;
         }
     }
     if (i < 0) {
-        WMSG0("+++ EOCD not found, not ZIP\n");
+        LOGI("+++ EOCD not found, not ZIP");
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -712,7 +712,7 @@ OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
     if (eocd.fDiskNumber != 0 || eocd.fDiskWithCentralDir != 0 ||
         eocd.fNumEntries != 1 || eocd.fTotalNumEntries != 1)
     {
-        WMSG0(" Probable ZIP archive has more than one member\n");
+        LOGI(" Probable ZIP archive has more than one member");
         dierr = kDIErrFileArchive;
         goto bail;
     }
@@ -750,12 +750,12 @@ OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
         if (dierr != kDIErrNone)
             goto bail;
         if (GetLongLE(checkBuf) != EndOfCentralDir::kSignature) {
-            WMSG0("CDE read check failed\n");
+            LOGI("CDE read check failed");
             assert(false);
             dierr = kDIErrGeneric;
             goto bail;
         }
-        WMSG0("+++ CDE read check passed\n");
+        LOGI("+++ CDE read check passed");
     }
 
 bail:
@@ -793,12 +793,12 @@ OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
     lfh.Dump();
 
     /* we should now be pointing at the data */
-    WMSG1("File offset is 0x%08lx\n", (long) pOuterGFD->Tell());
+    LOGI("File offset is 0x%08lx", (long) pOuterGFD->Tell());
 
     buf = new unsigned char[pCDE->fUncompressedSize];
     if (buf == NULL) {
         /* a very real possibility */
-        WMSG1(" ZIP unable to allocate buffer of %lu bytes\n",
+        LOGI(" ZIP unable to allocate buffer of %lu bytes",
             pCDE->fUncompressedSize);
         dierr = kDIErrMalloc;
         goto bail;
@@ -826,9 +826,9 @@ OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
     crc = crc32(crc, buf, pCDE->fUncompressedSize);
 
     if (crc == pCDE->fCRC32) {
-        WMSG0("+++ ZIP CRCs match\n");
+        LOGI("+++ ZIP CRCs match");
     } else {
-        WMSG2("ZIP CRC mismatch: inflated crc32=0x%08lx, stored=0x%08lx\n",
+        LOGI("ZIP CRC mismatch: inflated crc32=0x%08lx, stored=0x%08lx",
             crc, pCDE->fCRC32);
         dierr = kDIErrBadChecksum;
         goto bail;
@@ -888,10 +888,10 @@ OuterZip::InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
     if (zerr != Z_OK) {
         dierr = kDIErrInternal;
         if (zerr == Z_VERSION_ERROR) {
-            WMSG1("Installed zlib is not compatible with linked version (%s)\n",
+            LOGI("Installed zlib is not compatible with linked version (%s)",
                 ZLIB_VERSION);
         } else {
-            WMSG1("Call to inflateInit2 failed (zerr=%d)\n", zerr);
+            LOGI("Call to inflateInit2 failed (zerr=%d)", zerr);
         }
         goto bail;
     }
@@ -906,12 +906,12 @@ OuterZip::InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
         if (zstream.avail_in == 0) {
             getSize = (compRemaining > kReadBufSize) ?
                         kReadBufSize : compRemaining;
-            WMSG2("+++ reading %ld bytes (%ld left)\n", getSize,
+            LOGI("+++ reading %ld bytes (%ld left)", getSize,
                 compRemaining);
 
             dierr = pGFD->Read(readBuf, getSize);
             if (dierr != kDIErrNone) {
-                WMSG0("inflate read failed\n");
+                LOGI("inflate read failed");
                 goto z_bail;
             }
 
@@ -925,7 +925,7 @@ OuterZip::InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
         zerr = inflate(&zstream, Z_NO_FLUSH);
         if (zerr != Z_OK && zerr != Z_STREAM_END) {
             dierr = kDIErrInternal;
-            WMSG1("zlib inflate call failed (zerr=%d)\n", zerr);
+            LOGI("zlib inflate call failed (zerr=%d)", zerr);
             goto z_bail;
         }
 
@@ -936,7 +936,7 @@ OuterZip::InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
 
     if (zstream.total_out != uncompSize) {
         dierr = kDIErrBadCompressedData;
-        WMSG2("Size mismatch on inflated file (%ld vs %ld)\n",
+        LOGI("Size mismatch on inflated file (%ld vs %ld)",
             zstream.total_out, uncompSize);
         goto z_bail;
     }
@@ -963,13 +963,13 @@ OuterZip::GetMSDOSTime(unsigned short* pDate, unsigned short* pTime)
     ::GetSystemTime(&sysTime);
     ::SystemTimeToFileTime(&sysTime, &fileTime);
     ::FileTimeToDosDateTime(&fileTime, pDate, pTime);
-    //WMSG3("+++ Windows date: %04x %04x %d\n", *pDate, *pTime,
+    //LOGI("+++ Windows date: %04x %04x %d", *pDate, *pTime,
     //  (*pTime >> 11) & 0x1f);
 #endif
 
     time_t now = time(NULL);
     DOSTime(now, pDate, pTime);
-    //WMSG3("+++ Our date    : %04x %04x %d\n", *pDate, *pTime,
+    //LOGI("+++ Our date    : %04x %04x %d", *pDate, *pTime,
     //  (*pTime >> 11) & 0x1f);
 }
 
@@ -1044,10 +1044,10 @@ OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t srcLen,
     if (zerr != Z_OK) {
         dierr = kDIErrInternal;
         if (zerr == Z_VERSION_ERROR) {
-            WMSG1("Installed zlib is not compatible with linked version (%s)\n",
+            LOGI("Installed zlib is not compatible with linked version (%s)",
                 ZLIB_VERSION);
         } else {
-            WMSG1("Call to deflateInit2 failed (zerr=%d)\n", zerr);
+            LOGI("Call to deflateInit2 failed (zerr=%d)", zerr);
         }
         goto bail;
     }
@@ -1064,11 +1064,11 @@ OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t srcLen,
         /* only read if the input is empty */
         if (zstream.avail_in == 0 && srcLen) {
             getSize = (srcLen > kBufSize) ? kBufSize : (long) srcLen;
-            WMSG1("+++ reading %ld bytes\n", getSize);
+            LOGI("+++ reading %ld bytes", getSize);
 
             dierr = pSrc->Read(inBuf, getSize);
             if (dierr != kDIErrNone) {
-                WMSG0("deflate read failed\n");
+                LOGI("deflate read failed");
                 goto z_bail;
             }
 
@@ -1087,7 +1087,7 @@ OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t srcLen,
 
         zerr = deflate(&zstream, flush);
         if (zerr != Z_OK && zerr != Z_STREAM_END) {
-            WMSG1("zlib deflate call failed (zerr=%d)\n", zerr);
+            LOGI("zlib deflate call failed (zerr=%d)", zerr);
             dierr = kDIErrInternal;
             goto z_bail;
         }
@@ -1096,10 +1096,10 @@ OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t srcLen,
         if (zstream.avail_out == 0 ||
             (zerr == Z_STREAM_END && zstream.avail_out != kBufSize))
         {
-            WMSG1("+++ writing %d bytes\n", zstream.next_out - outBuf);
+            LOGI("+++ writing %d bytes", zstream.next_out - outBuf);
             dierr = pDst->Write(outBuf, zstream.next_out - outBuf);
             if (dierr != kDIErrNone) {
-                WMSG0("write failed in deflate\n");
+                LOGI("write failed in deflate");
                 goto z_bail;
             }
 
@@ -1157,7 +1157,7 @@ OuterZip::LocalFileHeader::Read(GenericFD* pGFD)
         goto bail;
 
     if (GetLongLE(&buf[0x00]) != kSignature) {
-        WMSG0(" ZIP: whoops: didn't find expected signature\n");
+        LOGI(" ZIP: whoops: didn't find expected signature");
         assert(false);
         return kDIErrGeneric;
     }
@@ -1247,13 +1247,13 @@ OuterZip::LocalFileHeader::SetFileName(const char* name)
         fFileNameLength = strlen(name);
         fFileName = new unsigned char[fFileNameLength+1];
         if (fFileName == NULL) {
-            WMSG1("Malloc failure in SetFileName %u\n", fFileNameLength);
+            LOGI("Malloc failure in SetFileName %u", fFileNameLength);
             fFileName = NULL;
             fFileNameLength = 0;
         } else {
             memcpy(fFileName, name, fFileNameLength);
             fFileName[fFileNameLength] = '\0';
-            WMSG1("+++ OuterZip LFH filename set to '%s'\n", fFileName);
+            LOGI("+++ OuterZip LFH filename set to '%s'", fFileName);
         }
     }
 }
@@ -1264,14 +1264,14 @@ OuterZip::LocalFileHeader::SetFileName(const char* name)
 void
 OuterZip::LocalFileHeader::Dump(void) const
 {
-    WMSG0(" LocalFileHeader contents:\n");
-    WMSG3("  versToExt=%u gpBits=0x%04x compression=%u\n",
+    LOGI(" LocalFileHeader contents:");
+    LOGI("  versToExt=%u gpBits=0x%04x compression=%u",
         fVersionToExtract, fGPBitFlag, fCompressionMethod);
-    WMSG3("  modTime=0x%04x modDate=0x%04x crc32=0x%08lx\n",
+    LOGI("  modTime=0x%04x modDate=0x%04x crc32=0x%08lx",
         fLastModFileTime, fLastModFileDate, fCRC32);
-    WMSG2("  compressedSize=%lu uncompressedSize=%lu\n",
+    LOGI("  compressedSize=%lu uncompressedSize=%lu",
         fCompressedSize, fUncompressedSize);
-    WMSG2("  filenameLen=%u extraLen=%u\n",
+    LOGI("  filenameLen=%u extraLen=%u",
         fFileNameLength, fExtraFieldLength);
 }
 
@@ -1300,7 +1300,7 @@ OuterZip::CentralDirEntry::Read(GenericFD* pGFD)
         goto bail;
 
     if (GetLongLE(&buf[0x00]) != kSignature) {
-        WMSG0(" ZIP: whoops: didn't find expected signature\n");
+        LOGI(" ZIP: whoops: didn't find expected signature");
         assert(false);
         return kDIErrGeneric;
     }
@@ -1419,13 +1419,13 @@ OuterZip::CentralDirEntry::SetFileName(const char* name)
         fFileNameLength = strlen(name);
         fFileName = new unsigned char[fFileNameLength+1];
         if (fFileName == NULL) {
-            WMSG1("Malloc failure in SetFileName %u\n", fFileNameLength);
+            LOGI("Malloc failure in SetFileName %u", fFileNameLength);
             fFileName = NULL;
             fFileNameLength = 0;
         } else {
             memcpy(fFileName, name, fFileNameLength);
             fFileName[fFileNameLength] = '\0';
-            WMSG1("+++ OuterZip CDE filename set to '%s'\n", fFileName);
+            LOGI("+++ OuterZip CDE filename set to '%s'", fFileName);
         }
     }
 }
@@ -1437,24 +1437,24 @@ OuterZip::CentralDirEntry::SetFileName(const char* name)
 void
 OuterZip::CentralDirEntry::Dump(void) const
 {
-    WMSG0(" CentralDirEntry contents:\n");
-    WMSG4("  versMadeBy=%u versToExt=%u gpBits=0x%04x compression=%u\n",
+    LOGI(" CentralDirEntry contents:");
+    LOGI("  versMadeBy=%u versToExt=%u gpBits=0x%04x compression=%u",
         fVersionMadeBy, fVersionToExtract, fGPBitFlag, fCompressionMethod);
-    WMSG3("  modTime=0x%04x modDate=0x%04x crc32=0x%08lx\n",
+    LOGI("  modTime=0x%04x modDate=0x%04x crc32=0x%08lx",
         fLastModFileTime, fLastModFileDate, fCRC32);
-    WMSG2("  compressedSize=%lu uncompressedSize=%lu\n",
+    LOGI("  compressedSize=%lu uncompressedSize=%lu",
         fCompressedSize, fUncompressedSize);
-    WMSG3("  filenameLen=%u extraLen=%u commentLen=%u\n",
+    LOGI("  filenameLen=%u extraLen=%u commentLen=%u",
         fFileNameLength, fExtraFieldLength, fFileCommentLength);
-    WMSG4("  diskNumStart=%u intAttr=0x%04x extAttr=0x%08lx relOffset=%lu\n",
+    LOGI("  diskNumStart=%u intAttr=0x%04x extAttr=0x%08lx relOffset=%lu",
         fDiskNumberStart, fInternalAttrs, fExternalAttrs,
         fLocalHeaderRelOffset);
 
     if (fFileName != NULL) {
-        WMSG1("  filename: '%s'\n", fFileName);
+        LOGI("  filename: '%s'", fFileName);
     }
     if (fFileComment != NULL) {
-        WMSG1("  comment: '%s'\n", fFileComment);
+        LOGI("  comment: '%s'", fFileComment);
     }
 }
 
@@ -1475,7 +1475,7 @@ OuterZip::EndOfCentralDir::ReadBuf(const unsigned char* buf, int len)
 {
     if (len < kEOCDLen) {
         /* looks like ZIP file got truncated */
-        WMSG2(" Zip EOCD: expected >= %d bytes, found %d\n",
+        LOGI(" Zip EOCD: expected >= %d bytes, found %d",
             kEOCDLen, len);
         return kDIErrBadArchiveStruct;
     }
@@ -1527,9 +1527,9 @@ bail:
 void
 OuterZip::EndOfCentralDir::Dump(void) const
 {
-    WMSG0(" EndOfCentralDir contents:\n");
-    WMSG4("  diskNum=%u diskWCD=%u numEnt=%u totalNumEnt=%u\n",
+    LOGI(" EndOfCentralDir contents:");
+    LOGI("  diskNum=%u diskWCD=%u numEnt=%u totalNumEnt=%u",
         fDiskNumber, fDiskWithCentralDir, fNumEntries, fTotalNumEntries);
-    WMSG3("  centDirSize=%lu centDirOff=%lu commentLen=%u\n",
+    LOGI("  centDirSize=%lu centDirOff=%lu commentLen=%u",
         fCentralDirSize, fCentralDirOffset, fCommentLen);
 }

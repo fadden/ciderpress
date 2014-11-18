@@ -123,7 +123,7 @@ DiskFSProDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         }
     }
 
-    WMSG0(" ProDOS didn't find valid FS\n");
+    LOGI(" ProDOS didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -161,13 +161,13 @@ DiskFSProDOS::Initialize(InitMode initMode)
         goto bail;
 
     if (initMode == kInitHeaderOnly) {
-        WMSG0(" ProDOS - headerOnly set, skipping file load\n");
+        LOGI(" ProDOS - headerOnly set, skipping file load");
         goto bail;
     }
 
     sprintf(msg, "Scanning %s", fVolumeName);
     if (!fpImg->UpdateScanProgress(msg)) {
-        WMSG0(" ProDOS cancelled by user\n");
+        LOGI(" ProDOS cancelled by user");
         dierr = kDIErrCancelled;
         goto bail;
     }
@@ -178,13 +178,13 @@ DiskFSProDOS::Initialize(InitMode initMode)
 
     dierr = RecursiveDirAdd(pVolumeDir, kVolHeaderBlock, "", 0);
     if (dierr != kDIErrNone) {
-        WMSG0(" ProDOS RecursiveDirAdd failed\n");
+        LOGI(" ProDOS RecursiveDirAdd failed");
         goto bail;
     }
 
     sprintf(msg, "Processing %s", fVolumeName);
     if (!fpImg->UpdateScanProgress(msg)) {
-        WMSG0(" ProDOS cancelled by user\n");
+        LOGI(" ProDOS cancelled by user");
         dierr = kDIErrCancelled;
         goto bail;
     }
@@ -195,7 +195,7 @@ DiskFSProDOS::Initialize(InitMode initMode)
             goto bail;
 
         /* this might not be fatal; just means that *some* files are bad */
-        WMSG1("WARNING: ScanFileUsage returned err=%d\n", dierr);
+        LOGI("WARNING: ScanFileUsage returned err=%d", dierr);
         dierr = kDIErrNone;
         fpImg->AddNote(DiskImg::kNoteWarning,
             "Some errors were encountered while scanning files.");
@@ -283,7 +283,7 @@ DiskFSProDOS::LoadVolHeader(void)
 
     if (fTotalBlocks <= kVolHeaderBlock) {
         /* incr to min; don't use max, or bitmap count may be too large */
-        WMSG1(" ProDOS found tiny fTotalBlocks (%d), increasing to minimum\n",
+        LOGI(" ProDOS found tiny fTotalBlocks (%d), increasing to minimum",
             fTotalBlocks);
         fpImg->AddNote(DiskImg::kNoteWarning,
             "ProDOS filesystem blockcount (%d) too small, setting to %d.",
@@ -292,7 +292,7 @@ DiskFSProDOS::LoadVolHeader(void)
         fEarlyDamage = true;
     } else if (fTotalBlocks != fpImg->GetNumBlocks()) {
         if (fTotalBlocks != 65535 || fpImg->GetNumBlocks() != 65536) {
-            WMSG2(" ProDOS WARNING: total (%u) != img (%ld)\n",
+            LOGI(" ProDOS WARNING: total (%u) != img (%ld)",
                 fTotalBlocks, fpImg->GetNumBlocks());
             // could AddNote here, but not really necessary
         }
@@ -355,7 +355,7 @@ DiskFSProDOS::LoadVolHeader(void)
     int foundStorage;
     foundStorage = (blkBuf[0x04] & 0xf0) >> 4;
     if (foundStorage != A2FileProDOS::kStorageVolumeDirHeader) {
-        WMSG1(" ProDOS WARNING: unexpected vol dir file type %d\n",
+        LOGI(" ProDOS WARNING: unexpected vol dir file type %d",
             pEntry->storageType);
         /* keep going */
     }
@@ -404,20 +404,20 @@ DiskFSProDOS::SetVolumeID(void)
 void
 DiskFSProDOS::DumpVolHeader(void)
 {
-    WMSG1(" ProDOS volume header for '%s'\n", fVolumeName);
-    WMSG4("  CreateWhen=0x%08lx access=0x%02x bitmap=%d totalbl=%d\n",
+    LOGI(" ProDOS volume header for '%s'", fVolumeName);
+    LOGI("  CreateWhen=0x%08lx access=0x%02x bitmap=%d totalbl=%d",
         fCreateWhen, fAccess, fBitMapPointer, fTotalBlocks);
 
     time_t when;
     when = A2FileProDOS::ConvertProDate(fCreateWhen);
-    WMSG1("  CreateWhen is %.24s\n", ctime(&when));
+    LOGI("  CreateWhen is %.24s", ctime(&when));
 
-    //WMSG4("  prev=%d next=%d bitmap=%d total=%d\n",
+    //LOGI("  prev=%d next=%d bitmap=%d total=%d",
     //  fPrevBlock, fNextBlock, fBitMapPointer, fTotalBlocks);
-    //WMSG2("  create date=0x%08lx access=0x%02x\n", fCreateWhen, fAccess);
-    //WMSG4("  version=%d minVersion=%d entryLen=%d epb=%d\n",
+    //LOGI("  create date=0x%08lx access=0x%02x", fCreateWhen, fAccess);
+    //LOGI("  version=%d minVersion=%d entryLen=%d epb=%d",
     //  fVersion, fMinVersion, fEntryLength, fEntriesPerBlock);
-    //WMSG1("  volume dir fileCount=%d\n", fFileCount);
+    //LOGI("  volume dir fileCount=%d", fFileCount);
 }
 
 
@@ -517,7 +517,7 @@ DiskFSProDOS::ScanVolBitmap(void)
 
     dierr = LoadVolBitmap();
     if (dierr != kDIErrNone) {
-        WMSG1(" ProDOS failed to load volume bitmap (err=%d)\n", dierr);
+        LOGI(" ProDOS failed to load volume bitmap (err=%d)", dierr);
         return dierr;
     }
 
@@ -665,7 +665,7 @@ DiskFSProDOS::ScanForExtraEntries(void) const
 
     while (offset < endOffset) {
         if (fBlockUseMap[offset] != 0) {
-            WMSG2(" ProDOS found bogus bitmap junk 0x%02x at offset=%d\n",
+            LOGI(" ProDOS found bogus bitmap junk 0x%02x at offset=%d",
                 fBlockUseMap[offset], offset);
             return true;
         }
@@ -722,14 +722,14 @@ DiskFSProDOS::AllocBlock(void)
             assert(!GetBlockUseEntry(block));
             SetBlockUseEntry(block, true);
             if (block == 0 || block == 1) {
-                WMSG0("PRODOS: GLITCH: rejecting alloc of block 0\n");
+                LOGI("PRODOS: GLITCH: rejecting alloc of block 0");
                 continue;
             }
             return block;
         }
     }
 
-    WMSG0("ProDOS: NOTE: AllocBlock just failed!\n");
+    LOGI("ProDOS: NOTE: AllocBlock just failed!");
     return -1;
 }
 
@@ -775,7 +775,7 @@ DiskFSProDOS::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
     fVolumeUsage.GetChunkState(block, &cstate);
     if (cstate.isUsed) {
         cstate.purpose = VolumeUsage::kChunkPurposeConflict;
-        WMSG1(" ProDOS conflicting uses for bl=%ld\n", block);
+        LOGI(" ProDOS conflicting uses for bl=%ld", block);
     } else {
         cstate.isUsed = true;
         cstate.purpose = purpose;
@@ -806,7 +806,7 @@ DiskFSProDOS::RecursiveDirAdd(A2File* pParent, unsigned short dirBlock,
 
 
     if (dirBlock < kVolHeaderBlock || dirBlock >= fpImg->GetNumBlocks()) {
-        WMSG1(" ProDOS ERROR: directory block %u out of range\n", dirBlock);
+        LOGI(" ProDOS ERROR: directory block %u out of range", dirBlock);
         dierr = kDIErrInvalidBlock;
         goto bail;
     }
@@ -831,7 +831,7 @@ DiskFSProDOS::RecursiveDirAdd(A2File* pParent, unsigned short dirBlock,
             if (dierr != kDIErrNone)
                 goto bail;
             numEntries = header.fileCount;
-            //WMSG1("  ProDOS got dir header numEntries = %d\n", numEntries);
+            //LOGI("  ProDOS got dir header numEntries = %d", numEntries);
         }
 
         /* slurp the entries out of this block */
@@ -844,7 +844,7 @@ DiskFSProDOS::RecursiveDirAdd(A2File* pParent, unsigned short dirBlock,
         if (dirBlock != 0 &&
             (dirBlock < 2 || dirBlock >= fpImg->GetNumBlocks()))
         {
-            WMSG2(" ProDOS ERROR: invalid dir link block %u in base='%s'\n",
+            LOGI(" ProDOS ERROR: invalid dir link block %u in base='%s'",
                 dirBlock, basePath);
             dierr = kDIErrInvalidBlock;
             goto bail;
@@ -853,13 +853,13 @@ DiskFSProDOS::RecursiveDirAdd(A2File* pParent, unsigned short dirBlock,
         iterations++;
     }
     if (iterations == kMaxCatalogIterations) {
-        WMSG0(" ProDOS subdir iteration count exceeded\n");
+        LOGI(" ProDOS subdir iteration count exceeded");
         dierr = kDIErrDirectoryLoop;
         goto bail;
     }
     if (foundCount != numEntries) {
         /* not significant; just means somebody isn't updating correctly */
-        WMSG3(" ProDOS WARNING: numEntries=%d foundCount=%d in base='%s'\n",
+        LOGI(" ProDOS WARNING: numEntries=%d foundCount=%d in base='%s'",
             numEntries, foundCount, basePath);
     }
 
@@ -896,7 +896,7 @@ DiskFSProDOS::SlurpEntries(A2File* pParent, const DirHeader* pHeader,
         entriesThisBlock--, idx++, entryBuf += pHeader->entryLength)
     {
         if (entryBuf >= blkBuf + kBlkSize) {
-            WMSG0("  ProDOS whoops, just walked out of dirent buffer\n");
+            LOGI("  ProDOS whoops, just walked out of dirent buffer");
             return kDIErrBadDirectory;
         }
 
@@ -922,7 +922,7 @@ DiskFSProDOS::SlurpEntries(A2File* pParent, const DirHeader* pHeader,
         pFile->SetPathName(basePath, pEntry->fileName);
 
         if (pEntry->keyPointer <= kVolHeaderBlock) {
-            WMSG2("ProDOS invalid key pointer %d on '%s'\n",
+            LOGI("ProDOS invalid key pointer %d on '%s'",
                 pEntry->keyPointer, pFile->GetPathName());
             pFile->SetQuality(A2File::kQualityDamaged);
         } else
@@ -939,7 +939,7 @@ DiskFSProDOS::SlurpEntries(A2File* pParent, const DirHeader* pHeader,
         (*pCount)++;
 
         if (!fpImg->UpdateScanProgress(NULL)) {
-            WMSG0(" ProDOS cancelled by user\n");
+            LOGI(" ProDOS cancelled by user");
             dierr = kDIErrCancelled;
             goto bail;
         }
@@ -976,7 +976,7 @@ DiskFSProDOS::GetDirHeader(const unsigned char* blkBuf, DirHeader* pHeader)
     if (pHeader->storageType != A2FileProDOS::kStorageSubdirHeader &&
         pHeader->storageType != A2FileProDOS::kStorageVolumeDirHeader)
     {
-        WMSG1(" ProDOS WARNING: subdir header has wrong storage type (%d)\n",
+        LOGI(" ProDOS WARNING: subdir header has wrong storage type (%d)",
             pHeader->storageType);
         /* keep going... might be bad idea */
     }
@@ -997,7 +997,7 @@ DiskFSProDOS::GetDirHeader(const unsigned char* blkBuf, DirHeader* pHeader)
     if (pHeader->entryLength * pHeader->entriesPerBlock > kBlkSize ||
         pHeader->entryLength * pHeader->entriesPerBlock == 0)
     {
-        WMSG2(" ProDOS invalid subdir header: entryLen=%d, entriesPerBlock=%d\n",
+        LOGI(" ProDOS invalid subdir header: entryLen=%d, entriesPerBlock=%d",
             pHeader->entryLength, pHeader->entriesPerBlock);
         return kDIErrBadDirectory;
     }
@@ -1019,7 +1019,7 @@ DiskFSProDOS::ReadExtendedInfo(A2FileProDOS* pFile)
 
     dierr = fpImg->ReadBlock(pFile->fDirEntry.keyPointer, blkBuf);
     if (dierr != kDIErrNone) {
-        WMSG1(" ProDOS ReadExtendedInfo: unable to read key block %d\n",
+        LOGI(" ProDOS ReadExtendedInfo: unable to read key block %d",
             pFile->fDirEntry.keyPointer);
         goto bail;
     }
@@ -1039,7 +1039,7 @@ DiskFSProDOS::ReadExtendedInfo(A2FileProDOS* pFile)
     if (pFile->fExtData.keyBlock <= kVolHeaderBlock ||
         pFile->fExtRsrc.keyBlock <= kVolHeaderBlock)
     {
-        WMSG2(" ProDOS ReadExtendedInfo: found bad extended key blocks %d/%d\n",
+        LOGI(" ProDOS ReadExtendedInfo: found bad extended key blocks %d/%d",
             pFile->fExtData.keyBlock, pFile->fExtRsrc.keyBlock);
         return kDIErrBadFile;
     }
@@ -1067,7 +1067,7 @@ DiskFSProDOS::ScanFileUsage(void)
     pFile = (A2FileProDOS*) GetNextFile(NULL);
     while (pFile != NULL) {
         if (!fpImg->UpdateScanProgress(NULL)) {
-            WMSG0(" ProDOS cancelled by user\n");
+            LOGI(" ProDOS cancelled by user");
             dierr = kDIErrCancelled;
             goto bail;
         }
@@ -1087,7 +1087,7 @@ DiskFSProDOS::ScanFileUsage(void)
                             &blockCount, &blockList, &indexCount, &indexList);
             }
             if (dierr != kDIErrNone) {
-                WMSG1(" ProDOS skipping scan rsrc '%s'\n",
+                LOGI(" ProDOS skipping scan rsrc '%s'",
                     pFile->fDirEntry.fileName);
                 pFile->SetQuality(A2File::kQualityDamaged);
                 goto skip;
@@ -1096,7 +1096,7 @@ DiskFSProDOS::ScanFileUsage(void)
                 &sparseCount);
             pFile->fSparseRsrcEof =
                         (di_off_t) pFile->fExtRsrc.eof - sparseCount * kBlkSize;
-            //WMSG3(" SparseCount %d rsrcEof %d '%s'\n",
+            //LOGI(" SparseCount %d rsrcEof %d '%s'",
             //  sparseCount, pFile->fSparseRsrcEof, pFile->fDirEntry.fileName);
             delete[] blockList;
             blockList = NULL;
@@ -1112,7 +1112,7 @@ DiskFSProDOS::ScanFileUsage(void)
                             &blockCount, &blockList, &indexCount, &indexList);
             }
             if (dierr != kDIErrNone) {
-                WMSG1(" ProDOS skipping scan data '%s'\n",
+                LOGI(" ProDOS skipping scan data '%s'",
                     pFile->fDirEntry.fileName);
                 pFile->SetQuality(A2File::kQualityDamaged);
                 goto skip;
@@ -1121,7 +1121,7 @@ DiskFSProDOS::ScanFileUsage(void)
                 &sparseCount);
             pFile->fSparseDataEof =
                         (di_off_t) pFile->fExtData.eof - sparseCount * kBlkSize;
-            //WMSG3(" SparseCount %d dataEof %d '%s'\n",
+            //LOGI(" SparseCount %d dataEof %d '%s'",
             //  sparseCount, pFile->fSparseDataEof, pFile->fDirEntry.fileName);
             delete[] blockList;
             blockList = NULL;
@@ -1147,7 +1147,7 @@ DiskFSProDOS::ScanFileUsage(void)
                         pFile->fDirEntry.keyPointer, pFile->fDirEntry.eof,
                         &blockCount, &blockList, &indexCount, &indexList);
             if (dierr != kDIErrNone) {
-                WMSG1(" ProDOS skipping scan '%s'\n",
+                LOGI(" ProDOS skipping scan '%s'",
                     pFile->fDirEntry.fileName);
                 pFile->SetQuality(A2File::kQualityDamaged);
                 goto skip;
@@ -1156,7 +1156,7 @@ DiskFSProDOS::ScanFileUsage(void)
                 &sparseCount);
             pFile->fSparseDataEof =
                         (di_off_t) pFile->fDirEntry.eof - sparseCount * kBlkSize;
-            //WMSG4(" +++ sparseCount=%ld blockCount=%ld sparseDataEof=%ld '%s'\n",
+            //LOGI(" +++ sparseCount=%ld blockCount=%ld sparseDataEof=%ld '%s'",
             //  sparseCount, blockCount, (long) pFile->fSparseDataEof,
             //  pFile->fDirEntry.fileName);
 
@@ -1165,7 +1165,7 @@ DiskFSProDOS::ScanFileUsage(void)
             delete[] indexList;
             indexList = NULL;
         } else {
-            WMSG2(" ProDOS found weird storage type %d on '%s', ignoring\n",
+            LOGI(" ProDOS found weird storage type %d on '%s', ignoring",
                 pFile->fDirEntry.storageType, pFile->fDirEntry.fileName);
             pFile->SetQuality(A2File::kQualityDamaged);
         }
@@ -1178,7 +1178,7 @@ DiskFSProDOS::ScanFileUsage(void)
          * here.
          */
         //if (stricmp(pFile->fDirEntry.fileName, "EMPTY.SPARSE.R") == 0)
-        //  WMSG0("wahoo\n");
+        //  LOGI("wahoo");
         if (pFile->fSparseDataEof < 0)
             pFile->fSparseDataEof = 0;
         if (pFile->fSparseRsrcEof < 0)
@@ -1245,7 +1245,7 @@ DiskFSProDOS::ScanForSubVolumes(void)
     assert(fTotalBlocks <= fpImg->GetNumBlocks());
 
     if (fTotalBlocks != 1600) {
-        WMSG1(" ProDOS ScanForSub: not 800K disk (%ld)\n",
+        LOGI(" ProDOS ScanForSub: not 800K disk (%ld)",
             fpImg->GetNumBlocks());
         return kDIErrNone;      // only scan 800K disks
     }
@@ -1264,11 +1264,11 @@ DiskFSProDOS::ScanForSubVolumes(void)
     }
     firstBlock = block+1;
 
-    WMSG1("MATCH COUNT %d\n", matchCount);
+    LOGI("MATCH COUNT %d", matchCount);
     if (matchCount < 35*8)      // 280 blocks on 35-track floppy
         return kDIErrNone;
     //if (matchCount % 8 != 0) {    // must have 4K tracks
-    //  WMSG1(" ProDOS ScanForSub: matchCount %d odd number\n",
+    //  LOGI(" ProDOS ScanForSub: matchCount %d odd number",
     //      matchCount);
     //  return kDIErrNone;
     //}
@@ -1279,7 +1279,7 @@ DiskFSProDOS::ScanForSubVolumes(void)
     if ((matchCount % 8) == 0 && matchCount <= (50*8)) {    // max 50 tracks
         DiskFS* pNewFS = NULL;
         DiskImg* pNewImg = NULL;
-        WMSG0(" Sub #1: looking for single DOS volume\n");
+        LOGI(" Sub #1: looking for single DOS volume");
         dierr = FindSubVolume(firstBlock, matchCount, &pNewImg, &pNewFS);
         if (dierr == kDIErrNone) {
             AddSubVolumeToList(pNewImg, pNewFS);
@@ -1301,13 +1301,13 @@ DiskFSProDOS::ScanForSubVolumes(void)
         bool found = false;
 
         count = matchCount / kBlkCount140;
-        WMSG1(" Sub #2: looking for %d 140K volumes\n",
+        LOGI(" Sub #2: looking for %d 140K volumes",
             matchCount / kBlkCount140);
 
         for (i = 0; i < count; i++) {
             DiskFS* pNewFS = NULL;
             DiskImg* pNewImg = NULL;
-            WMSG1(" Sub #2: looking for DOS volume at (%d)\n",
+            LOGI(" Sub #2: looking for DOS volume at (%d)",
                 firstBlock + i * kBlkCount140);
             dierr = FindSubVolume(firstBlock + i * kBlkCount140,
                         kBlkCount140, &pNewImg, &pNewFS);
@@ -1339,13 +1339,13 @@ DiskFSProDOS::ScanForSubVolumes(void)
         bool found = false;
 
         count = 1600 / kBlkCount160;
-        WMSG1(" Sub #3: looking for %d 160K volumes\n",
+        LOGI(" Sub #3: looking for %d 160K volumes",
             matchCount / kBlkCount160);
 
         for (i = 0; i < count; i++) {
             DiskFS* pNewFS = NULL;
             DiskImg* pNewImg = NULL;
-            WMSG1(" Sub #3: looking for DOS volume at (%d)\n",
+            LOGI(" Sub #3: looking for DOS volume at (%d)",
                 i * kBlkCount160);
             dierr = FindSubVolume(i * kBlkCount160,
                         kBlkCount160, &pNewImg, &pNewFS);
@@ -1393,30 +1393,30 @@ DiskFSProDOS::FindSubVolume(long blockStart, long blockCount,
 
     dierr = pNewImg->OpenImage(fpImg, blockStart, blockCount);
     if (dierr != kDIErrNone) {
-        WMSG3(" Sub: OpenImage(%ld,%ld) failed (err=%d)\n",
+        LOGI(" Sub: OpenImage(%ld,%ld) failed (err=%d)",
             blockStart, blockCount, dierr);
         goto bail;
     }
 
     dierr = pNewImg->AnalyzeImage();
     if (dierr != kDIErrNone) {
-        WMSG1(" Sub: analysis failed (err=%d)\n", dierr);
+        LOGI(" Sub: analysis failed (err=%d)", dierr);
         goto bail;
     }
 
     if (pNewImg->GetFSFormat() == DiskImg::kFormatUnknown ||
         pNewImg->GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
-        WMSG0(" Sub: unable to identify filesystem\n");
+        LOGI(" Sub: unable to identify filesystem");
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
 
     /* open a DiskFS for the sub-image */
-    WMSG0(" Sub DiskImg succeeded, opening DiskFS\n");
+    LOGI(" Sub DiskImg succeeded, opening DiskFS");
     pNewFS = pNewImg->OpenAppropriateDiskFS();
     if (pNewFS == NULL) {
-        WMSG0(" Sub: OpenAppropriateDiskFS failed\n");
+        LOGI(" Sub: OpenAppropriateDiskFS failed");
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
@@ -1424,7 +1424,7 @@ DiskFSProDOS::FindSubVolume(long blockStart, long blockCount,
     /* load the files from the sub-image */
     dierr = pNewFS->Initialize(pNewImg, kInitFull);
     if (dierr != kDIErrNone) {
-        WMSG1(" Sub: error %d reading list of files from disk", dierr);
+        LOGE(" Sub: error %d reading list of files from disk", dierr);
         goto bail;
     }
 
@@ -1485,7 +1485,7 @@ DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
     assert(fpImg == NULL);
     SetDiskImg(pDiskImg);
 
-    WMSG0(" ProDOS formatting disk image\n");
+    LOGI(" ProDOS formatting disk image");
 
     /* write ProDOS blocks */
     dierr = fpImg->OverrideFormat(fpImg->GetPhysicalFormat(),
@@ -1495,12 +1495,12 @@ DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
 
     formatBlocks = pDiskImg->GetNumBlocks();
     if (formatBlocks > 65536) {
-        WMSG1(" ProDOS: rejecting format req blocks=%ld\n", formatBlocks);
+        LOGI(" ProDOS: rejecting format req blocks=%ld", formatBlocks);
         assert(false);
         return kDIErrInvalidArg;
     }
     if (formatBlocks == 65536) {
-        WMSG0(" ProDOS: trimming FS size from 65536 to 65535\n");
+        LOGI(" ProDOS: trimming FS size from 65536 to 65535");
         formatBlocks = 65535;
     }
 
@@ -1512,7 +1512,7 @@ DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
      * to skip it here.
      */
 //  dierr = fpImg->ZeroImage();
-    WMSG0(" ProDOS  (not zeroing blocks)\n");
+    LOGI(" ProDOS  (not zeroing blocks)");
 
     /*
      * Start by writing blocks 0 and 1 (the boot blocks).  This is done from
@@ -1541,7 +1541,7 @@ DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
 
         dierr = fpImg->WriteBlock(i, blkBuf);
         if (dierr != kDIErrNone) {
-            WMSG2(" Format: block %d write failed (err=%d)\n", i, dierr);
+            LOGI(" Format: block %d write failed (err=%d)", i, dierr);
             goto bail;
         }
     }
@@ -1581,7 +1581,7 @@ DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
     PutShortLE(&blkBuf[0x29], (unsigned short) formatBlocks); // total_blocks
     dierr = fpImg->WriteBlock(kVolHeaderBlock, blkBuf);
     if (dierr != kDIErrNone) {
-        WMSG2(" Format: block %d write failed (err=%d)\n",
+        LOGI(" Format: block %d write failed (err=%d)",
             kVolHeaderBlock, dierr);
         goto bail;
     }
@@ -1589,7 +1589,7 @@ DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
     /* check our work, and set some object fields, by reading what we wrote */
     dierr = LoadVolHeader();
     if (dierr != kDIErrNone) {
-        WMSG1(" GLITCH: couldn't read header we just wrote (err=%d)\n", dierr);
+        LOGI(" GLITCH: couldn't read header we just wrote (err=%d)", dierr);
         goto bail;
     }
 
@@ -1741,12 +1741,12 @@ DiskFSProDOS::WriteBootBlocks(void)
 
     dierr = fpImg->WriteBlock(0, block0);
     if (dierr != kDIErrNone) {
-        WMSG1(" WriteBootBlocks: block0 write failed (err=%d)\n", dierr);
+        LOGI(" WriteBootBlocks: block0 write failed (err=%d)", dierr);
         return dierr;
     }
     dierr = fpImg->WriteBlock(1, block1);
     if (dierr != kDIErrNone) {
-        WMSG1(" WriteBootBlocks: block1 write failed (err=%d)\n", dierr);
+        LOGI(" WriteBootBlocks: block1 write failed (err=%d)", dierr);
         return dierr;
     }
 
@@ -1806,7 +1806,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
            pParms->storageType == A2FileProDOS::kStorageExtended ||
            pParms->storageType == A2FileProDOS::kStorageDirectory);
     // kStorageVolumeDirHeader not allowed -- that's created by Format
-    WMSG1(" ProDOS ---v--- CreateFile '%s'\n", pParms->pathName);
+    LOGI(" ProDOS ---v--- CreateFile '%s'", pParms->pathName);
     *ppNewFile = NULL;
 
     /*
@@ -1837,18 +1837,18 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     normalizedPath = NULL;   // either fileName or basePath points here now
 
     assert(fileName != NULL);
-    //WMSG2(" ProDOS normalized to '%s':'%s'\n",
+    //LOGI(" ProDOS normalized to '%s':'%s'",
     //  basePath == NULL ? "" : basePath, fileName);
 
     /*
      * Open the base path.  If it doesn't exist, create it recursively.
      */
     if (basePath != NULL) {
-        WMSG2(" ProDOS  Creating '%s' in '%s'\n", fileName, basePath);
+        LOGI(" ProDOS  Creating '%s' in '%s'", fileName, basePath);
         /* open the named subdir, creating it if it doesn't exist */
         pSubdir = (A2FileProDOS*)GetFileByName(basePath);
         if (pSubdir == NULL) {
-            WMSG1("  ProDOS  Creating subdir '%s'\n", basePath);
+            LOGI("  ProDOS  Creating subdir '%s'", basePath);
             A2File* pNewSub;
             CreateParms newDirParms;
             newDirParms.pathName = basePath;
@@ -1911,14 +1911,14 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
             assert(basePathLen == -1);
     } else {
         /* open the volume directory */
-        WMSG1(" ProDOS  Creating '%s' in volume dir\n", fileName);
+        LOGI(" ProDOS  Creating '%s' in volume dir", fileName);
         /* volume dir must be first in the list */
         pSubdir = (A2FileProDOS*) GetNextFile(NULL);
         assert(pSubdir != NULL);
         assert(pSubdir->IsVolumeDirectory());
     }
     if (pSubdir == NULL) {
-        WMSG1(" ProDOS Unable to open subdir '%s'\n", basePath);
+        LOGI(" ProDOS Unable to open subdir '%s'", basePath);
         dierr = kDIErrFileNotFound;
         goto bail;
     }
@@ -2055,7 +2055,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      */
     dierr = pOpenSubdir->Write(subdirBuf, dirLen);
     if (dierr != kDIErrNone) {
-        WMSG1(" ProDOS directory write failed (dirLen=%ld)\n", dirLen);
+        LOGI(" ProDOS directory write failed (dirLen=%ld)", dirLen);
         goto bail;
     }
 
@@ -2103,7 +2103,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     if (pEntry->storageType == A2FileProDOS::kStorageExtended) {
         dierr = ReadExtendedInfo(pNewFile);
         if (dierr != kDIErrNone) {
-            WMSG0(" ProDOS GLITCH: readback of extended block failed!\n");
+            LOGI(" ProDOS GLITCH: readback of extended block failed!");
             delete pNewFile;
             goto bail;
         }
@@ -2133,7 +2133,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     if (prevDirEntryPtr == NULL) {
         /* previous entry is volume or subdir header */
         InsertFileInList(pNewFile, pNewFile->GetParent());
-        WMSG2("Inserted '%s' after '%s'\n",
+        LOGI("Inserted '%s' after '%s'",
             pNewFile->GetPathName(), pNewFile->GetParent()->GetPathName());
     } else {
         /* dig out the key block pointer and find the matching file */
@@ -2151,7 +2151,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
             InsertFileInList(pNewFile, pPrev);
         }
     }
-//  WMSG0("LIST NOW:\n");
+//  LOGI("LIST NOW:");
 //  DumpFileList();
 
     *ppNewFile = pNewFile;
@@ -2166,7 +2166,7 @@ bail:
     delete[] subdirBuf;
     delete[] fileName;
     delete[] basePath;
-    WMSG1(" ProDOS ---^--- CreateFile '%s' DONE\n", pParms->pathName);
+    LOGI(" ProDOS ---^--- CreateFile '%s' DONE", pParms->pathName);
     return dierr;
 }
 
@@ -2738,7 +2738,7 @@ DiskFSProDOS::DoNormalizePath(const char* path, char fssep,
         }
         partBuf[partIdx] = '\0';
 
-        //WMSG2(" ProDOS   Converted component '%s' to '%s'\n",
+        //LOGI(" ProDOS   Converted component '%s' to '%s'",
         //  origStart, partBuf);
 
         if (outPtr != outputBuf)
@@ -2756,7 +2756,7 @@ DiskFSProDOS::DoNormalizePath(const char* path, char fssep,
 
     *outPtr = '\0';
 
-    WMSG3(" ProDOS  Converted path '%s' to '%s' (fssep='%c')\n",
+    LOGI(" ProDOS  Converted path '%s' to '%s' (fssep='%c')",
         path, outputBuf, fssep);
     assert(*outputBuf != '\0');
 
@@ -2851,7 +2851,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
     pFile = (A2FileProDOS*) pOpenSubdir->GetFile();
     dirLen = (long) pFile->GetDataLength();
     if (dirLen < 512 || (dirLen % 512) != 0) {
-        WMSG2(" ProDOS GLITCH: funky dir EOF %ld (quality=%d)\n",
+        LOGI(" ProDOS GLITCH: funky dir EOF %ld (quality=%d)",
             dirLen, pFile->GetQuality());
         dierr = kDIErrBadFile;
         goto bail;
@@ -2869,7 +2869,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
     if (dirBuf[0x23] != kEntryLength ||
         dirBuf[0x24] != kEntriesPerBlock)
     {
-        WMSG1(" ProDOS GLITCH: funky entries per block %d\n", dirBuf[0x24]);
+        LOGI(" ProDOS GLITCH: funky entries per block %d", dirBuf[0x24]);
         dierr = kDIErrBadDirectory;
         goto bail;
     }
@@ -2893,7 +2893,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
                                         entryIdx++, pDirEntry += kEntryLength)
         {
             if ((pDirEntry[0x00] & 0xf0) == 0) {
-                WMSG1(" ProDOS  Found empty dir entry in slot %d\n", entryIdx);
+                LOGI(" ProDOS  Found empty dir entry in slot %d", entryIdx);
                 break;      // found one; break out of inner loop
             }
         }
@@ -2908,7 +2908,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
             goto bail;
         }
 
-        WMSG0(" ProDOS ran out of directory space, adding another block\n");
+        LOGI(" ProDOS ran out of directory space, adding another block");
 
         /*
          * Request an unused block from the system.  Point the "next" pointer
@@ -2918,7 +2918,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
         unsigned char* pBlock;
         pBlock = dirBuf + 512 * (blockIdx-1);
         if (pBlock[0x02] != 0) {
-            WMSG0(" ProDOS GLITCH: adding to block with nonzero next ptr!\n");
+            LOGI(" ProDOS GLITCH: adding to block with nonzero next ptr!");
             dierr = kDIErrBadDirectory;
             goto bail;
         }
@@ -3058,7 +3058,7 @@ DiskFSProDOS::MakeFileNameUnique(const unsigned char* dirBuf, long dirLen,
     if (!NameExistsInDir(dirBuf, dirLen, fileName))
         return kDIErrNone;
 
-    WMSG1(" ProDOS   found duplicate of '%s', making unique\n", fileName);
+    LOGI(" ProDOS   found duplicate of '%s', making unique", fileName);
 
     int nameLen = strlen(fileName);
     int dotOffset=0, dotLen=0;
@@ -3080,7 +3080,7 @@ DiskFSProDOS::MakeFileNameUnique(const unsigned char* dirBuf, long dirLen,
     if (cp != NULL) {
         int tmpOffset = cp - fileName;
         if (tmpOffset > 0 && nameLen - tmpOffset <= kMaxExtensionLen) {
-            WMSG1("  ProDOS   (keeping extension '%s')\n", cp);
+            LOGI("  ProDOS   (keeping extension '%s')", cp);
             assert(strlen(cp) <= kMaxExtensionLen);
             strcpy(dotBuf, cp);
             dotOffset = tmpOffset;
@@ -3110,7 +3110,7 @@ DiskFSProDOS::MakeFileNameUnique(const unsigned char* dirBuf, long dirLen,
             memcpy(fileName + copyOffset + digitLen, dotBuf, dotLen);
     } while (NameExistsInDir(dirBuf, dirLen, fileName));
 
-    WMSG1(" ProDOS  converted to unique name: %s\n", fileName);
+    LOGI(" ProDOS  converted to unique name: %s", fileName);
 
     return kDIErrNone;
 }
@@ -3192,13 +3192,13 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
      * ignore the request.
      */
     if (pGenericFile->IsVolumeDirectory()) {
-        WMSG0("ProDOS not deleting volume directory\n");
+        LOGI("ProDOS not deleting volume directory");
         return kDIErrNone;
     }
 
     A2FileProDOS* pFile = (A2FileProDOS*) pGenericFile;
 
-    WMSG1("    Deleting '%s'\n", pFile->GetPathName());
+    LOGI("    Deleting '%s'", pFile->GetPathName());
 
     dierr = LoadVolBitmap();
     if (dierr != kDIErrNone)
@@ -3256,7 +3256,7 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
         break;  // fall out
 
     default:
-        WMSG1("ProDOS can't delete unknown storage type %d\n",
+        LOGI("ProDOS can't delete unknown storage type %d",
             pFile->fDirEntry.storageType);
         dierr = kDIErrBadDirectory;
         break;  // fall out
@@ -3283,14 +3283,14 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
            pFile->fParentDirIdx < kEntriesPerBlock);
     dierr = fpImg->ReadBlock(pFile->fParentDirBlock, blkBuf);
     if (dierr != kDIErrNone) {
-        WMSG1("ProDOS unable to read directory block %u\n",
+        LOGI("ProDOS unable to read directory block %u",
             pFile->fParentDirBlock);
         goto bail;
     }
 
     ptr = blkBuf + 4 + pFile->fParentDirIdx * kEntryLength;
     if ((*ptr) >> 4 != pFile->fDirEntry.storageType) {
-        WMSG2("ProDOS GLITCH: mismatched storage types (%d vs %d)\n",
+        LOGI("ProDOS GLITCH: mismatched storage types (%d vs %d)",
             (*ptr) >> 4, pFile->fDirEntry.storageType);
         assert(false);
         dierr = kDIErrBadDirectory;
@@ -3299,7 +3299,7 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
     ptr[0x00] = 0;      // zap both storage type and name length
     dierr = fpImg->WriteBlock(pFile->fParentDirBlock, blkBuf);
     if (dierr != kDIErrNone) {
-        WMSG1("ProDOS unable to write directory block %u\n",
+        LOGI("ProDOS unable to write directory block %u",
             pFile->fParentDirBlock);
         goto bail;
     }
@@ -3331,7 +3331,7 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
     assert(pParent->fDirEntry.keyPointer >= kVolHeaderBlock);
     dierr = fpImg->ReadBlock(pParent->fDirEntry.keyPointer, blkBuf);
     if (dierr != kDIErrNone) {
-        WMSG1("ProDOS unable to read parent dir block %u\n",
+        LOGI("ProDOS unable to read parent dir block %u",
             pParent->fDirEntry.keyPointer);
         goto bail;
     }
@@ -3341,7 +3341,7 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
     if (storageType != A2FileProDOS::kStorageSubdirHeader &&
         storageType != A2FileProDOS::kStorageVolumeDirHeader)
     {
-        WMSG1("ProDOS invalid storage type %d in dir header block\n",
+        LOGI("ProDOS invalid storage type %d in dir header block",
             storageType);
         DebugBreak();
         dierr = kDIErrBadDirectory;
@@ -3353,7 +3353,7 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
     PutShortLE(&blkBuf[0x25], fileCount);
     dierr = fpImg->WriteBlock(pParent->fDirEntry.keyPointer, blkBuf);
     if (dierr != kDIErrNone) {
-        WMSG1("ProDOS unable to write parent dir block %u\n",
+        LOGI("ProDOS unable to write parent dir block %u",
             pParent->fDirEntry.keyPointer);
         goto bail;
     }
@@ -3381,7 +3381,7 @@ DiskFSProDOS::FreeBlocks(long blockCount, unsigned short* blockList)
     VolumeUsage::ChunkState cstate;
     int i;
 
-    //WMSG2(" +++ FreeBlocks (blockCount=%d blockList=0x%08lx)\n",
+    //LOGI(" +++ FreeBlocks (blockCount=%d blockList=0x%08lx)",
     //  blockCount, blockList);
     assert(blockCount >= 0 && blockCount < 65536);
     assert(blockList != NULL);
@@ -3395,7 +3395,7 @@ DiskFSProDOS::FreeBlocks(long blockCount, unsigned short* blockList)
             continue;
 
         if (!GetBlockUseEntry(blockList[i])) {
-            WMSG1("WARNING: freeing unallocated block %u\n", blockList[i]);
+            LOGI("WARNING: freeing unallocated block %u", blockList[i]);
             assert(false);  // impossible unless disk is "damaged"
         }
         SetBlockUseEntry(blockList[i], false);
@@ -3444,7 +3444,7 @@ DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
     if (!fDiskIsGood)
         return kDIErrBadDiskImage;
 
-    WMSG2(" ProDOS renaming '%s' to '%s'\n", pFile->GetPathName(), newName);
+    LOGI(" ProDOS renaming '%s' to '%s'", pFile->GetPathName(), newName);
 
     /*
      * Check for duplicates.  We do this by getting the parent subdir and
@@ -3466,7 +3466,7 @@ DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
             /* one of our siblings; see if the name matches */
             UpperCaseName(upperComp, pCur->GetFileName());
             if (strcmp(upperName, upperComp) == 0) {
-                WMSG0(" ProDOS rename dup found\n");
+                LOGI(" ProDOS rename dup found");
                 return kDIErrFileExists;
             }
         }
@@ -3525,7 +3525,7 @@ DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
            pFile->fParentDirIdx < kEntriesPerBlock);
     ptr = parentDirBuf + 4 + pFile->fParentDirIdx * kEntryLength;
     if ((*ptr) >> 4 != pFile->fDirEntry.storageType) {
-        WMSG2("ProDOS GLITCH: mismatched storage types (%d vs %d)\n",
+        LOGI("ProDOS GLITCH: mismatched storage types (%d vs %d)",
             (*ptr) >> 4, pFile->fDirEntry.storageType);
         assert(false);
         dierr = kDIErrBadDirectory;
@@ -3540,7 +3540,7 @@ DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
     if (pFile->IsDirectory()) {
         ptr = thisDirBuf + 4;
         if ((*ptr) >> 4 != A2FileProDOS::kStorageSubdirHeader) {
-            WMSG1("ProDOS GLITCH: bad storage type in subdir header (%d)\n",
+            LOGI("ProDOS GLITCH: bad storage type in subdir header (%d)",
                 (*ptr) >> 4);
             assert(false);
             dierr = kDIErrBadDirectory;
@@ -3592,7 +3592,7 @@ DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
         RegeneratePathName(pFile);
     }
 
-    WMSG0("Okay!\n");
+    LOGI("Okay!");
 
 bail:
     return dierr;
@@ -3650,7 +3650,7 @@ DiskFSProDOS::RegeneratePathName(A2FileProDOS* pFile)
         pParent = (A2FileProDOS*) pParent->GetParent();
     }
 
-    WMSG2("Replacing '%s' with '%s'\n", pFile->GetPathName(), buf);
+    LOGI("Replacing '%s' with '%s'", pFile->GetPathName(), buf);
     pFile->SetPathName("", buf);
     delete[] buf;
 
@@ -3690,11 +3690,11 @@ DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
         return kDIErrInvalidArg;
     }
     if (pFile->IsVolumeDirectory()) {
-        WMSG0(" ProDOS refusing to change file info for volume dir\n");
+        LOGI(" ProDOS refusing to change file info for volume dir");
         return kDIErrAccessDenied;      // not quite right
     }
 
-    WMSG4("ProDOS changing values for '%s' to 0x%02lx 0x%04lx 0x%02lx\n",
+    LOGI("ProDOS changing values for '%s' to 0x%02lx 0x%04lx 0x%02lx",
         pFile->GetPathName(), fileType, auxType, accessFlags);
 
     /* load the directory block for this file */
@@ -3709,14 +3709,14 @@ DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
            pFile->fParentDirIdx < kEntriesPerBlock);
     ptr = thisDirBuf + 4 + pFile->fParentDirIdx * kEntryLength;
     if ((*ptr) >> 4 != pFile->fDirEntry.storageType) {
-        WMSG2("ProDOS GLITCH: mismatched storage types (%d vs %d)\n",
+        LOGI("ProDOS GLITCH: mismatched storage types (%d vs %d)",
             (*ptr) >> 4, pFile->fDirEntry.storageType);
         assert(false);
         dierr = kDIErrBadDirectory;
         goto bail;
     }
     if ((size_t) (*ptr & 0x0f) != strlen(pFile->fDirEntry.fileName)) {
-        WMSG2("ProDOS GLITCH: wrong file?  (len=%d vs %d)\n",
+        LOGI("ProDOS GLITCH: wrong file?  (len=%d vs %d)",
             *ptr & 0x0f, strlen(pFile->fDirEntry.fileName));
         assert(false);
         dierr = kDIErrBadDirectory;
@@ -3767,7 +3767,7 @@ DiskFSProDOS::RenameVolume(const char* newName)
     assert(pFile != NULL);
     assert(strcmp(pFile->GetFileName(), fVolumeName) == 0);
 
-    WMSG2(" ProDOS renaming volume '%s' to '%s'\n",
+    LOGI(" ProDOS renaming volume '%s' to '%s'",
         pFile->GetPathName(), newName);
 
     /*
@@ -3796,7 +3796,7 @@ DiskFSProDOS::RenameVolume(const char* newName)
 
     ptr = thisDirBuf + 4;
     if ((*ptr) >> 4 != A2FileProDOS::kStorageVolumeDirHeader) {
-        WMSG1("ProDOS GLITCH: bad storage type in voldir header (%d)\n",
+        LOGI("ProDOS GLITCH: bad storage type in voldir header (%d)",
             (*ptr) >> 4);
         assert(false);
         dierr = kDIErrBadDirectory;
@@ -3918,7 +3918,7 @@ A2FileProDOS::ConvertProDate(time_t unixDate)
     if (year >= 100)
         year -= 100;
     if (year < 0 || year >= 128) {
-        WMSG2("WHOOPS: got year %d from %d\n", year, ptm->tm_year);
+        LOGI("WHOOPS: got year %d from %d", year, ptm->tm_year);
         year = 70;
     }
 
@@ -4042,7 +4042,7 @@ A2FileProDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     DIError dierr = kDIErrNone;
     A2FDProDOS* pOpenFile = NULL;
 
-    WMSG3(" ProDOS Open(ro=%d, rsrc=%d) on '%s'\n",
+    LOGI(" ProDOS Open(ro=%d, rsrc=%d) on '%s'",
         readOnly, rsrcFork, fPathName);
     //Dump();
 
@@ -4105,13 +4105,13 @@ A2FileProDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
         pOpenFile->fOpenBlocksUsed = fDirEntry.blocksUsed;
         pOpenFile->fOpenStorageType = fDirEntry.storageType;
     } else {
-        WMSG1("PrODOS can't open unknown storage type %d\n",
+        LOGI("PrODOS can't open unknown storage type %d",
             fDirEntry.storageType);
         dierr = kDIErrBadDirectory;
         goto bail;
     }
     if (dierr != kDIErrNone) {
-        WMSG0(" ProDOS open failed\n");
+        LOGI(" ProDOS open failed");
         goto bail;
     }
 
@@ -4172,7 +4172,7 @@ A2FileProDOS::LoadBlockList(int storageType, unsigned short keyBlock,
          * extended key block of a forked file.  Bad storage types on other
          * kinds of files are caught earlier.
          */
-        WMSG2(" ProDOS unexpected storageType %d in '%s'\n",
+        LOGI(" ProDOS unexpected storageType %d in '%s'",
             storageType, GetPathName());
         return kDIErrNotSupported;
     }
@@ -4246,7 +4246,7 @@ A2FileProDOS::LoadBlockList(int storageType, unsigned short keyBlock,
             idxBlock = blkBuf[idx] | (unsigned short) blkBuf[idx+256] << 8;
             if (idxBlock == 0) {
                 /* fully sparse index block */
-                //WMSG1(" ProDOS that's seriously sparse (%d)!\n", idx);
+                //LOGI(" ProDOS that's seriously sparse (%d)!", idx);
                 memset(listPtr, 0, blockCount * sizeof(unsigned short));
                 if (pIndexBlockList != NULL) {
                     *outIndexPtr++ = idxBlock;
@@ -4323,7 +4323,7 @@ A2FileProDOS::ValidateBlockList(const unsigned short* list, long count)
         if (*list > pImg->GetNumBlocks() ||
             (*list > 0 && *list <= 2))      // not enough, but it'll do
         {
-            WMSG2("Invalid block %d in '%s'\n", *list, fDirEntry.fileName);
+            LOGI("Invalid block %d in '%s'", *list, fDirEntry.fileName);
             SetQuality(kQualityDamaged);
             return kDIErrBadFile;
         }
@@ -4333,7 +4333,7 @@ A2FileProDOS::ValidateBlockList(const unsigned short* list, long count)
     }
 
     if (foundBad) {
-        WMSG1("  --- found out-of-range block in '%s'\n", GetPathName());
+        LOGI("  --- found out-of-range block in '%s'", GetPathName());
         SetQuality(kQualitySuspicious);
     }
 
@@ -4359,7 +4359,7 @@ A2FileProDOS::LoadIndexBlock(unsigned short block, unsigned short* list,
     if (dierr != kDIErrNone)
         goto bail;
 
-    //WMSG1("LOADING 0x%04x\n", block);
+    //LOGI("LOADING 0x%04x", block);
     for (i = 0; i < maxCount; i++) {
         *list++ = blkBuf[i] | (unsigned short) blkBuf[i+256] << 8;
     }
@@ -4404,7 +4404,7 @@ A2FileProDOS::LoadDirectoryBlockList(unsigned short keyBlock,
         if (keyBlock < 2 ||
             keyBlock >= fpDiskFS->GetDiskImg()->GetNumBlocks())
         {
-            WMSG1(" ProDOS ERROR: directory block %u out of range\n", keyBlock);
+            LOGI(" ProDOS ERROR: directory block %u out of range", keyBlock);
             dierr = kDIErrInvalidBlock;
             goto bail;
         }
@@ -4419,7 +4419,7 @@ A2FileProDOS::LoadDirectoryBlockList(unsigned short keyBlock,
         iterations++;
     }
     if (iterations == kMaxCatalogIterations) {
-        WMSG0(" ProDOS subdir iteration count exceeded\n");
+        LOGI(" ProDOS subdir iteration count exceeded");
         dierr = kDIErrDirectoryLoop;
         goto bail;
     }
@@ -4441,25 +4441,25 @@ bail:
 void
 A2FileProDOS::Dump(void) const
 {
-    WMSG2(" ProDOS file '%s' (path='%s')\n",
+    LOGI(" ProDOS file '%s' (path='%s')",
         fDirEntry.fileName, fPathName);
-    WMSG3("   fileType=0x%02x auxType=0x%04x storage=%d\n",
+    LOGI("   fileType=0x%02x auxType=0x%04x storage=%d",
         fDirEntry.fileType, fDirEntry.auxType, fDirEntry.storageType);
-    WMSG3("   keyPointer=%d blocksUsed=%d eof=%ld\n",
+    LOGI("   keyPointer=%d blocksUsed=%d eof=%ld",
         fDirEntry.keyPointer, fDirEntry.blocksUsed, fDirEntry.eof);
-    WMSG3("   access=0x%02x create=0x%08lx mod=0x%08lx\n",
+    LOGI("   access=0x%02x create=0x%08lx mod=0x%08lx",
         fDirEntry.access, fDirEntry.createWhen, fDirEntry.modWhen);
-    WMSG3("   version=%d minVersion=%d headerPtr=%d\n",
+    LOGI("   version=%d minVersion=%d headerPtr=%d",
         fDirEntry.version, fDirEntry.minVersion, fDirEntry.headerPointer);
     if (fDirEntry.storageType == kStorageExtended) {
-        WMSG4("   DATA storage=%d keyBlk=%d blkUsed=%d eof=%ld\n",
+        LOGI("   DATA storage=%d keyBlk=%d blkUsed=%d eof=%ld",
             fExtData.storageType, fExtData.keyBlock, fExtData.blocksUsed,
             fExtData.eof);
-        WMSG4("   RSRC storage=%d keyBlk=%d blkUsed=%d eof=%ld\n",
+        LOGI("   RSRC storage=%d keyBlk=%d blkUsed=%d eof=%ld",
             fExtRsrc.storageType, fExtRsrc.keyBlock, fExtRsrc.blocksUsed,
             fExtRsrc.eof);
     }
-    WMSG2("   * sparseData=%ld  sparseRsrc=%ld\n",
+    LOGI("   * sparseData=%ld  sparseRsrc=%ld",
         (long) fSparseDataEof, (long) fSparseRsrcEof);
 }
 
@@ -4476,7 +4476,7 @@ A2FileProDOS::Dump(void) const
 DIError
 A2FDProDOS::Read(void* buf, size_t len, size_t* pActual)
 {
-    WMSG3(" ProDOS reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" ProDOS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
     //if (fBlockList == NULL)
     //  return kDIErrNotReady;
@@ -4509,14 +4509,14 @@ A2FDProDOS::Read(void* buf, size_t len, size_t* pActual)
 
     while (len) {
         if (fBlockList[blockIndex] == 0) {
-            //WMSG1(" ProDOS sparse index %d\n", blockIndex);
+            //LOGI(" ProDOS sparse index %d", blockIndex);
             memset(blkBuf, 0, sizeof(blkBuf));
         } else {
-            //WMSG1(" ProDOS non-sparse index %d\n", blockIndex);
+            //LOGI(" ProDOS non-sparse index %d", blockIndex);
             dierr = fpFile->GetDiskFS()->GetDiskImg()->ReadBlock(fBlockList[blockIndex],
                         blkBuf);
             if (dierr != kDIErrNone) {
-                WMSG3(" ProDOS error reading block [%ld]=%d of '%s'\n",
+                LOGI(" ProDOS error reading block [%ld]=%d of '%s'",
                     blockIndex, fBlockList[blockIndex], fpFile->GetPathName());
                 return dierr;
             }
@@ -4684,7 +4684,7 @@ A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
         }
 
         if (newBlock < 0) {
-            WMSG0(" ProDOS disk full during write!\n");
+            LOGI(" ProDOS disk full during write!");
             dierr = kDIErrDiskFull;
             goto bail;
         }
@@ -4742,7 +4742,7 @@ A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
      * seedling form.  This can only happen for a completely empty file.
      */
     if (allZero) {
-        WMSG0("+++ ProDOS storing large but empty file as seedling\n");
+        LOGI("+++ ProDOS storing large but empty file as seedling");
         /* make sure key block is empty */
         memset(blkBuf, 0, sizeof(blkBuf));
         dierr = pDiskFS->GetDiskImg()->WriteBlock(keyBlock, blkBuf);
@@ -4859,7 +4859,7 @@ A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
 
-    WMSG2("ProDOS  writing %d bytes to directory '%s'\n",
+    LOGI("ProDOS  writing %d bytes to directory '%s'",
         len, fpFile->GetPathName());
 
     assert(len >= (size_t)kBlkSize);
@@ -4888,7 +4888,7 @@ A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
         delete[] fBlockList;
         fBlockList = newBlockList;
 
-        WMSG0(" ProDOS updated block list for subdir:\n");
+        LOGI(" ProDOS updated block list for subdir:");
         DumpBlockList();
     }
 
@@ -4902,7 +4902,7 @@ A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
         dierr = fpFile->GetDiskFS()->GetDiskImg()->WriteBlock(fBlockList[idx],
                     (unsigned char*)buf + idx * kBlkSize);
         if (dierr != kDIErrNone) {
-            WMSG1(" ProDOS failed writing dir, block=%d\n", fBlockList[idx]);
+            LOGI(" ProDOS failed writing dir, block=%d", fBlockList[idx]);
             goto bail;
         }
     }
@@ -5037,7 +5037,7 @@ A2FDProDOS::Close(void)
             assert(pParentPtr + kEntryLength < blkBuf + kBlkSize);
             if (toupper(pParentPtr[0x01]) != toupper(pFile->fDirEntry.fileName[0]))
             {
-                WMSG0("ProDOS ERROR: parent pointer has wrong entry??\n");
+                LOGI("ProDOS ERROR: parent pointer has wrong entry??");
                 assert(false);
                 dierr = kDIErrInternal;
                 goto bail;
@@ -5103,7 +5103,7 @@ A2FDProDOS::Close(void)
         }
         // update mod date?
         
-        //WMSG1("File '%s' closed\n", pFile->GetPathName());
+        //LOGI("File '%s' closed", pFile->GetPathName());
         //pFile->Dump();
     }
 
@@ -5176,10 +5176,10 @@ A2FDProDOS::DumpBlockList(void) const
 {
     long ll;
 
-    WMSG1(" ProDOS file block list (count=%ld)\n", fBlockCount);
+    LOGI(" ProDOS file block list (count=%ld)", fBlockCount);
     for (ll = 0; ll <= fBlockCount; ll++) {
         if (fBlockList[ll] != 0) {
-            WMSG2(" %5ld: 0x%04x\n", ll, fBlockList[ll]);
+            LOGI(" %5ld: 0x%04x", ll, fBlockList[ll]);
         }
     }
 }

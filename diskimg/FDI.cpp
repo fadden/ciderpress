@@ -76,13 +76,13 @@ WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
 
     dierr = pGFD->Seek(kMinHeaderLen, kSeekSet);
     if (dierr != kDIErrNone) {
-        WMSG1("FDI: track seek failed (offset=%d)\n", kMinHeaderLen);
+        LOGI("FDI: track seek failed (offset=%d)", kMinHeaderLen);
         goto bail;
     }
 
     for (trk = 0; trk < numCyls * numHeads; trk++) {
         GetTrackInfo(trk, &type, &length256);
-        WMSG5("%2d.%d: t=0x%02x l=%d (%d)\n", trk / numHeads, trk % numHeads,
+        LOGI("%2d.%d: t=0x%02x l=%d (%d)", trk / numHeads, trk % numHeads,
             type, length256, length256 * 256);
 
         /* if we have data to read, read it */
@@ -130,14 +130,14 @@ WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
                 goodTracks[trk] = true;
             }
             if (nibbleLen > kTrackAllocSize) {
-                WMSG2(" FDI: decoded %ld nibbles, buffer is only %d\n",
+                LOGI(" FDI: decoded %ld nibbles, buffer is only %d",
                     nibbleLen, kTrackAllocSize);
                 dierr = kDIErrBadRawData;
                 goto bail;
             }
             break;
         default:
-            WMSG1("FDI: unexpected track type 0x%04x\n", type);
+            LOGI("FDI: unexpected track type 0x%04x", type);
             dierr = kDIErrUnsupportedImageFeature;
             goto bail;
         }
@@ -151,16 +151,16 @@ WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
         dierr = pNewGFD->Write(nibbleBuf, nibbleLen);
         if (dierr != kDIErrNone)
             goto bail;
-        WMSG2("  FDI: track %d: wrote %ld nibbles\n", trk, nibbleLen);
+        LOGI("  FDI: track %d: wrote %ld nibbles", trk, nibbleLen);
 
         //offset += 256 * length256;
         //break;        // DEBUG DEBUG
     }
 
-    WMSG2(" FDI: %d of %d tracks bad or blank\n",
+    LOGI(" FDI: %d of %d tracks bad or blank",
         badTracks, numCyls * numHeads);
     if (badTracks > (numCyls * numHeads) / 2) {
-        WMSG0("FDI: too many bad tracks\n");
+        LOGI("FDI: too many bad tracks");
         dierr = kDIErrBadRawData;
         goto bail;
     }
@@ -180,7 +180,7 @@ WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
         }
     }
     if (!want40 && trk > kTrackCount525) {
-        WMSG2(" FDI: no good tracks past %d, reducing from %d\n",
+        LOGI(" FDI: no good tracks past %d, reducing from %d",
             kTrackCount525, trk);
         trk = kTrackCount525;       // nothing good out there, roll back
     }
@@ -241,7 +241,7 @@ WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
 
     dierr = pGFD->Seek(kMinHeaderLen, kSeekSet);
     if (dierr != kDIErrNone) {
-        WMSG1("FDI: track seek failed (offset=%d)\n", kMinHeaderLen);
+        LOGI("FDI: track seek failed (offset=%d)", kMinHeaderLen);
         goto bail;
     }
 
@@ -249,7 +249,7 @@ WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
 
     for (trk = 0; trk < numCyls * numHeads; trk++) {
         GetTrackInfo(trk, &type, &length256);
-        WMSG5("%2d.%d: t=0x%02x l=%d (%d)\n", trk / numHeads, trk % numHeads,
+        LOGI("%2d.%d: t=0x%02x l=%d (%d)", trk / numHeads, trk % numHeads,
             type, length256, length256 * 256);
 
         /* if we have data to read, read it */
@@ -295,19 +295,19 @@ WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
                 nibbleLen = kTrackLenNb2525;
             } 
             if (nibbleLen > kNibbleBufLen) {
-                WMSG2(" FDI: decoded %ld nibbles, buffer is only %d\n",
+                LOGI(" FDI: decoded %ld nibbles, buffer is only %d",
                     nibbleLen, kTrackAllocSize);
                 dierr = kDIErrBadRawData;
                 goto bail;
             }
             break;
         default:
-            WMSG1("FDI: unexpected track type 0x%04x\n", type);
+            LOGI("FDI: unexpected track type 0x%04x", type);
             dierr = kDIErrUnsupportedImageFeature;
             goto bail;
         }
 
-        WMSG2(" FDI: track %d got %ld nibbles\n", trk, nibbleLen);
+        LOGI(" FDI: track %d got %ld nibbles", trk, nibbleLen);
 
         /*
         fNibbleTrackInfo.offset[trk] = trk * kTrackAllocSize;
@@ -328,7 +328,7 @@ WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
         dierr = pNewGFD->Write(outputBuf,
                     kBlockSize * DiskImg::SectorsPerTrack35(trk / numHeads));
         if (dierr != kDIErrNone) {
-            WMSG2("FDI: failed writing disk blocks (%d * %d)\n",
+            LOGI("FDI: failed writing disk blocks (%d * %d)",
                 kBlockSize, DiskImg::SectorsPerTrack35(trk / numHeads));
             goto bail;
         }
@@ -358,7 +358,7 @@ WrapperFDI::BitRate35(int cyl)
     else if (cyl <= 79)
         return 250000;      // 590rpm
     else {
-        WMSG1(" FDI: invalid 3.5 cylinder %d\n", cyl);
+        LOGI(" FDI: invalid 3.5 cylinder %d", cyl);
         return 250000;
     }
 }
@@ -388,7 +388,7 @@ WrapperFDI::FixBadNibbles(unsigned char* nibbleBuf, long nibbleLen)
     }
 
     if (badCount != 0) {
-        WMSG1("   FDI: fixed %d bad nibbles\n", badCount);
+        LOGI("   FDI: fixed %d bad nibbles", badCount);
     }
 }
 
@@ -438,7 +438,7 @@ WrapperFDI::GetTrackInfo(int trk, int* pType, int* pLength256)
         /* raw MFM; for 0xf000, the value in 0n00 holds a bit rate index */
         break;
     default:
-        WMSG1("Unexpected trackDescr 0x%04x\n", trackDescr);
+        LOGI("Unexpected trackDescr 0x%04x", trackDescr);
         *pType = 0x7e;      // return an invalid value
         *pLength256 = 0;
         break;
@@ -486,18 +486,18 @@ WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
 
     if (hdr.numPulses < 64 || hdr.numPulses > 131072) {
         /* should be about 40,000 */
-        WMSG1(" FDI: bad pulse count %ld in track\n", hdr.numPulses);
+        LOGI(" FDI: bad pulse count %ld in track", hdr.numPulses);
         return false;
     }
 
     /* advance past the 16 hdr bytes; now pointing at "average" stream */
     inputBuf += kPulseStreamDataOffset;
 
-    WMSG1("  pulses: %ld\n", hdr.numPulses);
-    //WMSG2("  avg: len=%d comp=%d\n", hdr.avgStreamLen, hdr.avgStreamCompression);
-    //WMSG2("  min: len=%d comp=%d\n", hdr.minStreamLen, hdr.minStreamCompression);
-    //WMSG2("  max: len=%d comp=%d\n", hdr.maxStreamLen, hdr.maxStreamCompression);
-    //WMSG2("  idx: len=%d comp=%d\n", hdr.idxStreamLen, hdr.idxStreamCompression);
+    LOGI("  pulses: %ld", hdr.numPulses);
+    //LOGI("  avg: len=%d comp=%d", hdr.avgStreamLen, hdr.avgStreamCompression);
+    //LOGI("  min: len=%d comp=%d", hdr.minStreamLen, hdr.minStreamCompression);
+    //LOGI("  max: len=%d comp=%d", hdr.maxStreamLen, hdr.maxStreamCompression);
+    //LOGI("  idx: len=%d comp=%d", hdr.idxStreamLen, hdr.idxStreamCompression);
 
     /*
      * Uncompress or endian-swap the pulse streams.
@@ -590,10 +590,10 @@ WrapperFDI::UncompressPulseStream(const unsigned char* inputBuf, long inputLen,
     if (format == kCompUncompressed) {
         int i;
 
-        WMSG0("NOT TESTED\n");      // remove this when we've tested it
+        LOGI("NOT TESTED");      // remove this when we've tested it
 
         if (inputLen != numPulses * bytesPerPulse) {
-            WMSG2(" FDI: got unc inputLen=%ld, outputLen=%ld\n",
+            LOGI(" FDI: got unc inputLen=%ld, outputLen=%ld",
                 inputLen, numPulses * bytesPerPulse);
             return false;
         }
@@ -611,9 +611,9 @@ WrapperFDI::UncompressPulseStream(const unsigned char* inputBuf, long inputLen,
     } else if (format == kCompHuffman) {
         if (!ExpandHuffman(inputBuf, inputLen, outputBuf, numPulses))
             return false;
-        //WMSG0("  FDI: Huffman expansion succeeded\n");
+        //LOGI("  FDI: Huffman expansion succeeded");
     } else {
-        WMSG1(" FDI: got weird compression format %d\n", format);
+        LOGI(" FDI: got weird compression format %d", format);
         return false;
     }
 
@@ -646,7 +646,7 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
 
     while (subStreamShift != 0) {
         if (inputBuf - origInputBuf >= inputLen) {
-            WMSG0("  FDI: overran input(1)\n");
+            LOGI("  FDI: overran input(1)");
             return false;
         }
 
@@ -657,7 +657,7 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
         bits = *inputBuf++;
         sixteenBits = (bits & 0x80) != 0;       // ignore redundant high-order
 
-        //WMSG3("   FDI: shift=%d ext=%d sixt=%d\n",
+        //LOGI("   FDI: shift=%d ext=%d sixt=%d",
         //  subStreamShift, signExtend, sixteenBits);
 
         /* decode the Huffman tree structure */
@@ -666,7 +666,7 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
         bitMask = 0;
         inputBuf = HuffExtractTree(inputBuf, &root, &bits, &bitMask);
 
-        //WMSG1("    after tree: off=%d\n", inputBuf - origInputBuf);
+        //LOGI("    after tree: off=%d", inputBuf - origInputBuf);
 
         /* extract the Huffman node values */
         if (sixteenBits)
@@ -675,10 +675,10 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
             inputBuf = HuffExtractValues8(inputBuf, &root);
 
         if (inputBuf - origInputBuf >= inputLen) {
-            WMSG0("  FDI: overran input(2)\n");
+            LOGI("  FDI: overran input(2)");
             return false;
         }
-        //WMSG1("    after values: off=%d\n", inputBuf - origInputBuf);
+        //LOGI("    after values: off=%d", inputBuf - origInputBuf);
 
         /* decode the data over all pulses */
         bitMask = 0;
@@ -720,7 +720,7 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
     }
 
     if (inputBuf - origInputBuf != inputLen) {
-        WMSG2("  FDI: warning: Huffman input %d vs. %ld\n",
+        LOGI("  FDI: warning: Huffman input %d vs. %ld",
             inputBuf - origInputBuf, inputLen);
         return false;
     }
@@ -745,7 +745,7 @@ WrapperFDI::HuffExtractTree(const unsigned char* inputBuf, HuffNode* pNode,
     val = *pBits & *pBitMask;
     (*pBitMask) >>= 1;
 
-    //WMSG1("     val=%d\n", val);
+    //LOGI("     val=%d", val);
 
     if (val != 0) {
         assert(pNode->left == NULL);
@@ -883,11 +883,11 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
          * to replicate it here (and probably never test it either).  This
          * assumes that the original was written for a big-endian machine.
          */
-        WMSG0(" FDI: HEY: using fake index stream\n");
+        LOGI(" FDI: HEY: using fake index stream");
         DebugBreak();
         fakeIdxStream = new unsigned long[pHdr->numPulses];
         if (fakeIdxStream == NULL) {
-            WMSG0(" FDI: unable to alloc fake idx stream\n");
+            LOGI(" FDI: unable to alloc fake idx stream");
             goto bail;
         }
         for (i = 1; i < pHdr->numPulses; i++)
@@ -961,7 +961,7 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
         idxStream[i] = sum;
     }
 
-    WMSG4("     FDI: maxIndex=%lu indexOffset=%d totalAvg=%lu weakBits=%d\n",
+    LOGI("     FDI: maxIndex=%lu indexOffset=%d totalAvg=%lu weakBits=%d",
         maxIndex, indexOffset, totalAvg, weakBits);
 
     /*
@@ -977,13 +977,13 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
         pHdr->numPulses, maxIndex, indexOffset, totalAvg, bitRate,
         bitBuffer, &bitCount))
     {
-        WMSG0(" FDI: ConvertPulsesToBits() failed\n");
+        LOGI(" FDI: ConvertPulsesToBits() failed");
         goto bail;
     }
 
-    //WMSG1("  Got %d bits\n", bitCount);
+    //LOGI("  Got %d bits", bitCount);
     if (bitCount < 0) {
-        WMSG0(" FDI: overran output bit buffer\n");
+        LOGI(" FDI: overran output bit buffer");
         goto bail;
     }
 
@@ -995,7 +995,7 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
      */
     if (!ConvertBitsToNibbles(bitBuffer, bitCount, nibbleBuf, pNibbleLen))
     {
-        WMSG0(" FDI: ConvertBitsToNibbles() failed\n");
+        LOGI(" FDI: ConvertBitsToNibbles() failed");
         goto bail;
     }
 
@@ -1142,7 +1142,7 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
         i++;
     }
     if (i == numPulses) {
-        WMSG0(" FDI: no stable and long-enough pulse in track\n");
+        LOGI(" FDI: no stable and long-enough pulse in track");
         goto bail;
     }
 
@@ -1263,12 +1263,12 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
 
                 if (avgPulse < minPulse || avgPulse > maxPulse) {
                     /* this is bad -- we're out of bounds */
-                    WMSG3("  FDI: avgPulse out of bounds: avg=%lu min=%lu max=%lu\n",
+                    LOGI("  FDI: avgPulse out of bounds: avg=%lu min=%lu max=%lu",
                         avgPulse, minPulse, maxPulse);
                 }
                 if (avgPulse < refPulse) {
                     /* I guess this is also bad */
-                    WMSG2("  FDI: avgPulse < refPulse (%lu %lu)\n",
+                    LOGI("  FDI: avgPulse < refPulse (%lu %lu)",
                         avgPulse, refPulse);
                 }
                 pulse += avgPulse - refPulse;
@@ -1440,7 +1440,7 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
     }
 
     *pOutputLen = bitOutput.Finish();
-    WMSG1("     FDI: converted pulses to %d bits\n", *pOutputLen);
+    LOGI("     FDI: converted pulses to %d bits", *pOutputLen);
     result = true;
 
 bail:
@@ -1492,7 +1492,7 @@ WrapperFDI::ConvertBitsToNibbles(const unsigned char* bitBuffer, int bitCount,
             val = (val << 1) | inputBuffer.GetBit(&wrap);
         if ((val & 0x80) == 0) {
             // not allowed by GCR encoding, probably garbage between sectors
-            WMSG0(" FDI: WARNING: more than 2 consecutive zeroes (sync)\n");
+            LOGI(" FDI: WARNING: more than 2 consecutive zeroes (sync)");
         }
     }
 
@@ -1508,11 +1508,11 @@ WrapperFDI::ConvertBitsToNibbles(const unsigned char* bitBuffer, int bitCount,
         if ((val & 0x80) == 0)
             val = (val << 1) | inputBuffer.GetBit(&wrap);
         if ((val & 0x80) == 0) {
-            WMSG0(" FDI: WARNING: more than 2 consecutive zeroes (read)\n");
+            LOGI(" FDI: WARNING: more than 2 consecutive zeroes (read)");
         }
 
         if (nibbleBuf - nibbleBufStart >= outputBufSize) {
-            WMSG0(" FDI: bits overflowed nibble buffer\n");
+            LOGI(" FDI: bits overflowed nibble buffer");
             goto bail;
         }
         *nibbleBuf++ = val;
@@ -1524,11 +1524,11 @@ WrapperFDI::ConvertBitsToNibbles(const unsigned char* bitBuffer, int bitCount,
 
     if (inputBuffer.GetBitsConsumed() != bitCount) {
         /* we dropped some or double-counted some */
-        WMSG2(" FDI: WARNING: consumed %d of %d bits\n",
+        LOGI(" FDI: WARNING: consumed %d of %d bits",
             inputBuffer.GetBitsConsumed(), bitCount);
     }
 
-    WMSG4("   FDI: consumed %d of %d (first=0x%02x last=0x%02x)\n",
+    LOGI("   FDI: consumed %d of %d (first=0x%02x last=0x%02x)",
         inputBuffer.GetBitsConsumed(), bitCount,
         *nibbleBufStart, *(nibbleBuf-1));
 

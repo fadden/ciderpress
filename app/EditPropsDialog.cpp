@@ -142,7 +142,7 @@ EditPropsDialog::OnInitDialog(void)
     ASSERT(pWnd != NULL);
     FormatDate(fProps.modWhen, &dateStr);
     pWnd->SetWindowText(dateStr);
-    //WMSG2("USING DATE '%ls' from 0x%08lx\n", dateStr, fProps.modWhen);
+    //LOGI("USING DATE '%ls' from 0x%08lx", dateStr, fProps.modWhen);
 
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_PROPS_AUXTYPE);
     ASSERT(pEdit != NULL);
@@ -409,7 +409,7 @@ EditPropsDialog::UpdateHFSMode(void)
 
     if (pButton->GetCheck() == BST_CHECKED) {
         /* switch to HFS mode */
-        WMSG0("Switching to HFS mode\n");
+        LOGI("Switching to HFS mode");
         //fHFSMode = true;
 
         pWnd = GetDlgItem(IDC_PROPS_HFS_FILETYPE);
@@ -432,7 +432,7 @@ EditPropsDialog::UpdateHFSMode(void)
         OnHFSTypeChange();
     } else {
         /* switch to ProDOS mode */
-        WMSG0("Switching to ProDOS mode\n");
+        LOGI("Switching to ProDOS mode");
         //fHFSMode = false;
         pCombo = (CComboBox*) GetDlgItem(IDC_PROPS_FILETYPE);
         pCombo->EnableWindow(TRUE);
@@ -493,12 +493,12 @@ EditPropsDialog::GetAuxType(void)
     long val;
 
     if (str[0] == '\0') {
-        WMSG0(" HEY: blank aux type, returning -1\n");
+        LOGI(" HEY: blank aux type, returning -1");
         return -1;
     }
     val = wcstoul(aux, &end, 16);
     if (end != str + wcslen(str)) {
-        WMSG1(" HEY: found some garbage in aux type '%ls', returning -1\n",
+        LOGI(" HEY: found some garbage in aux type '%ls', returning -1",
             (LPCWSTR) aux);
         return -1;
     }

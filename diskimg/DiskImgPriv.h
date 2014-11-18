@@ -39,14 +39,6 @@ namespace DiskImgLib {
 #define LOGW(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
 #define LOGE(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
 
-// TODO: remove these
-#define WMSG0(fmt) LOGI(fmt)
-#define WMSG1(fmt, arg0) LOGI(fmt, arg0)
-#define WMSG2(fmt, arg0, arg1) LOGI(fmt, arg0, arg1)
-#define WMSG3(fmt, arg0, arg1, arg2) LOGI(fmt, arg0, arg1, arg2)
-#define WMSG4(fmt, arg0, arg1, arg2, arg3) LOGI(fmt, arg0, arg1, arg2, arg3)
-#define WMSG5(fmt, arg0, arg1, arg2, arg3, arg4) LOGI(fmt, arg0, arg1, arg2, arg3, arg4)
-
 /* put this in to break on interesting events when built debug */
 #if defined(_DEBUG)
 # define DebugBreak() { assert(false); }
@@ -173,7 +165,7 @@ public:
     void WriteBit(int val) {
         if (fBuf - fBufStart >= fBufSize) {
             if (!fOverflow) {
-                WMSG0("Overran bit output buffer\n");
+                LOGI("Overran bit output buffer");
                 DebugBreak();
                 fOverflow = true;
             }

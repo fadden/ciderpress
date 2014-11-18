@@ -36,7 +36,7 @@ CreateImageDialog::OnInitDialog(void)
 {
     // high bit set in signed short means key is down
     if (::GetKeyState(VK_SHIFT) < 0) {
-        WMSG0("Shift key is down, enabling extended options\n");
+        LOGI("Shift key is down, enabling extended options");
         fExtendedOpts = true;
     }
 
@@ -224,7 +224,7 @@ CreateImageDialog::OnFormatChangeRange(UINT nID)
     };
     int i;
     
-    WMSG1("OnFormatChangeRange id=%d\n", nID);
+    LOGI("OnFormatChangeRange id=%d", nID);
 
     /* reset so 140K is highlighted */
     NewDiskSize::EnableButtons_ProDOS(this, 32, 16);
@@ -269,7 +269,7 @@ CreateImageDialog::OnFormatChangeRange(UINT nID)
 void
 CreateImageDialog::OnSizeChangeRange(UINT nID)
 {
-    WMSG1("OnSizeChangeRange id=%d\n", nID);
+    LOGI("OnSizeChangeRange id=%d", nID);
 
     CButton* pButton = (CButton*) GetDlgItem(IDC_CONVDISK_SPECIFY);
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_CONVDISK_SPECIFY_EDIT);

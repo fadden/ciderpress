@@ -92,7 +92,7 @@ ShellTree::PopulateTree(int nFolder)
         // find the desired special folder
         hr = SHGetSpecialFolderLocation(m_hWnd, nFolder, &lpi);
         if (FAILED(hr)) {
-            WMSG0("BUG: could not find requested special folder\n");
+            LOGI("BUG: could not find requested special folder");
             goto bail;
         }
 
@@ -188,10 +188,10 @@ ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
             {   /* DEBUG */
                 CString name;
                 if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, &name)) {
-                    WMSG2(" Checking '%ls' 0x%08lx\n",
+                    LOGI(" Checking '%ls' 0x%08lx",
                         name, ulAttrs);
                 } else {
-                    WMSG1(" Checking <no-name> 0x%08lx\n",
+                    LOGI(" Checking <no-name> 0x%08lx",
                         ulAttrs);
                 }
             }
@@ -278,7 +278,7 @@ ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
                 gotOne = true;
 
                 if (!AddNode(lpsf, lpi, lpifq, ulAttrs, hParent, &hPrev)) {
-                    WMSG0("AddNode failed!\n");
+                    LOGI("AddNode failed!");
                     goto Done;
                 }
             }
@@ -297,14 +297,14 @@ ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
         tvi.hItem = hParent;
         tvi.mask = TVIF_CHILDREN;
         if (!GetItem(&tvi)) {
-            WMSG1("Could not get TV '%ls'\n", name);
+            LOGI("Could not get TV '%ls'", name);
             ASSERT(false);
         } else if (tvi.cChildren) {
-            WMSG2("Removing child count (%d) from '%ls'\n",
+            LOGI("Removing child count (%d) from '%ls'",
                 tvi.cChildren, name);
             tvi.cChildren = 0;
             if (!SetItem(&tvi)) {
-                WMSG1("Could not set TV '%ls'\n", name);
+                LOGI("Could not set TV '%ls'", name);
                 ASSERT(false);
             }
         }
@@ -322,7 +322,7 @@ Done:
     if (lpMalloc) 
         lpMalloc->Release();
 
-    //WMSG0("FillTreeView DONE\n");
+    //LOGI("FillTreeView DONE");
 }
 
 /*
@@ -350,11 +350,11 @@ ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
 
     //Now get the friendly name that we'll put in the treeview.
     if (!Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, &name)) {
-        WMSG0("HEY: failed getting friendly name\n");
+        LOGI("HEY: failed getting friendly name");
         goto bail; // Error - could not get friendly name.
     }
     wcscpy_s(szBuff, name);
-    //WMSG2("AddNode '%ls' ATTR=0x%08lx\n", szBuff, ulAttrs);
+    //LOGI("AddNode '%ls' ATTR=0x%08lx", szBuff, ulAttrs);
 
     lptvid = (TVItemData*)lpMalloc->Alloc(sizeof(TVItemData));
     if (!lptvid)
@@ -462,7 +462,7 @@ ShellTree::TreeViewCompareProc(LPARAM lparam1, LPARAM lparam2, LPARAM)
         if (Pidl::GetName(lptvid1->lpsfParent, lptvid1->lpi, SHGDN_NORMAL, buf1) &&
             Pidl::GetName(lptvid2->lpsfParent, lptvid2->lpi, SHGDN_NORMAL, buf2))
         {
-            WMSG3("COMPARING '%s' to '%s' (res=%d)\n", buf1, buf2,
+            LOGI("COMPARING '%s' to '%s' (res=%d)", buf1, buf2,
                 (short) HRESULT_CODE(hr));
             return stricmp(buf1, buf2);
         } else {
@@ -499,7 +499,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
     CString debugName;
     HRESULT hr;
 
-    WMSG1("AddFolderAtSelection '%ls'\n", name);
+    LOGI("AddFolderAtSelection '%ls'", name);
 
     // Allocate a shell memory object. 
     hr = ::SHGetMalloc(&lpMalloc);
@@ -508,7 +508,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
 
     hParent = GetSelectedItem();
     if (hParent == NULL) {
-        WMSG0("Nothing selected!\n");
+        LOGI("Nothing selected!");
         goto bail;
     }
 
@@ -534,26 +534,26 @@ ShellTree::AddFolderAtSelection(const CString& name)
     tvi.hItem = hParent;
     tvi.mask = TVIF_CHILDREN;
     if (!GetItem(&tvi)) {
-        WMSG1("Could not get TV '%ls'\n", debugName);
+        LOGI("Could not get TV '%ls'", debugName);
         ASSERT(false);
     } else {
         HTREEITEM child = GetChildItem(hParent);
         if (child == NULL && tvi.cChildren) {
-            WMSG1(" Found unexpanded node, not adding %ls\n", name);
+            LOGI(" Found unexpanded node, not adding %ls", name);
             result = TRUE;
             goto bail;
         } else if (child == NULL && !tvi.cChildren) {
-            WMSG1(" Found former leaf node, updating kids in %ls\n", debugName);
+            LOGI(" Found former leaf node, updating kids in %ls", debugName);
             tvi.cChildren = 1;
             if (!SetItem(&tvi)) {
-                WMSG1("Could not set TV '%ls'\n", debugName);
+                LOGI("Could not set TV '%ls'", debugName);
                 ASSERT(false);
             }
             result = TRUE;
             goto bail;
         } else {
             ASSERT(child != NULL && tvi.cChildren != 0);
-            WMSG2(" Found expanded branch node '%ls', adding new '%ls'\n",
+            LOGI(" Found expanded branch node '%ls', adding new '%ls'",
                 debugName, name);
         }
     }
@@ -566,7 +566,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
     hr = parentTvid->lpsfParent->BindToObject(parentTvid->lpi,
                 0, IID_IShellFolder, (LPVOID *)&lpsf);
     if (FAILED(hr)) {
-        WMSG0("Glitch: unable to get ShellFolder for selected folder\n");
+        LOGI("Glitch: unable to get ShellFolder for selected folder");
         goto bail;
     }
 
@@ -574,7 +574,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
     hr = lpsf->EnumObjects(hwnd, SHCONTF_FOLDERS | SHCONTF_INCLUDEHIDDEN,
             &lpe);
     if (FAILED(hr)) {
-        WMSG0("Glitch: unable to get enumerator for selected folder\n");
+        LOGI("Glitch: unable to get enumerator for selected folder");
         goto bail;
     }
 
@@ -585,7 +585,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
             if (name.CompareNoCase(pidlName) == 0) {
                 /* match! */
                 if (!AddNode(lpsf, lpi, parentTvid->lpifq, 0, hParent, &hPrev)) {
-                    WMSG0("AddNode failed!\n");
+                    LOGI("AddNode failed!");
                     goto bail;
                 }
                 result = TRUE;
@@ -623,7 +623,7 @@ void ShellTree::OnFolderExpanding(NMHDR* pNMHDR, LRESULT* pResult)
 
     NM_TREEVIEW* pnmtv = (NM_TREEVIEW*)pNMHDR;
     if (pnmtv->itemNew.state & TVIS_EXPANDEDONCE) {
-        WMSG0("Already expanded!\n");
+        LOGI("Already expanded!");
         return;
     }
         
@@ -743,9 +743,9 @@ ShellTree::OnFolderSelected(NMHDR* pNMHDR, LRESULT* pResult,
                 }
 
                 if (bRet) {
-                    WMSG1("Now selected: '%ls'\n", szBuff);
+                    LOGI("Now selected: '%ls'", szBuff);
                 } else {
-                    WMSG0("Now selected: <no path>\n");
+                    LOGI("Now selected: <no path>");
                 }
 
 #if 0
@@ -791,7 +791,7 @@ ShellTree::OnDeleteShellItem(NMHDR* pNMHDR, LRESULT* pResult)
     HRESULT hr;
     LPMALLOC lpMalloc;
 
-    //WMSG0("TVN_DELETEITEM\n");
+    //LOGI("TVN_DELETEITEM");
 
     NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
 
@@ -998,7 +998,7 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
     }
 
     CString drive = pathName.GetDriveOnly();
-    WMSG1("Searching for drive='%ls'\n", drive);
+    LOGI("Searching for drive='%ls'", drive);
 
     HTREEITEM node = FindDrive(myComputer, drive);
     if (node == NULL) {
@@ -1069,7 +1069,7 @@ ShellTree::FindMyComputer(void)
 
         hr = desktop->CompareIDs(0, myComputerPidl, pData->lpi);
         if (SUCCEEDED(hr) && HRESULT_CODE(hr) == 0) {
-            WMSG1("MATCHED on '%ls'\n", itemText);
+            LOGI("MATCHED on '%ls'", itemText);
             result = node;
             break;
         }
@@ -1077,7 +1077,7 @@ ShellTree::FindMyComputer(void)
     }
 
     if (result != NULL && !ItemHasChildren(result)) {
-        WMSG0("Glitch: My Computer has no children\n");
+        LOGI("Glitch: My Computer has no children");
         result = NULL;
     }
 
@@ -1125,9 +1125,9 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
         CString itemText = GetItemText(node);
         itemText.MakeUpper();
 
-        //WMSG2("COMPARING '%ls' vs '%ls'\n", (LPCWSTR) udrive, (LPCWSTR) itemText);
+        //LOGI("COMPARING '%ls' vs '%ls'", (LPCWSTR) udrive, (LPCWSTR) itemText);
         if (itemText.Find(udrive) != -1) {
-            WMSG2("MATCHED '%ls' in '%ls'\n", (LPCWSTR) udrive, (LPCWSTR) itemText);
+            LOGI("MATCHED '%ls' in '%ls'", (LPCWSTR) udrive, (LPCWSTR) itemText);
             break;
         }
         node = GetNextSiblingItem(node);
@@ -1146,7 +1146,7 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
 HTREEITEM
 ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
 {
-    WMSG2("SearchTree node=0x%08lx path='%ls'\n",
+    LOGI("SearchTree node=0x%08lx path='%ls'",
         treeNode, (LPCTSTR) path);
 
     HTREEITEM node;
@@ -1176,16 +1176,16 @@ ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
         while (node != NULL) {
             CString itemText = GetItemText(node);
 
-            //WMSG2("COMPARE '%s' '%s'\n", start, itemText);
+            //LOGI("COMPARE '%s' '%s'", start, itemText);
             if (itemText.CompareNoCase(start) == 0) {
-                //WMSG2("MATCHED '%s' '%s'\n", itemText, start);
+                //LOGI("MATCHED '%s' '%s'", itemText, start);
                 break;
             }
 
             node = GetNextSiblingItem(node);
         }
         if (node == NULL) {
-            WMSG2("NOT FOUND '%ls' '%ls'\n", (LPCTSTR) path, start);
+            LOGI("NOT FOUND '%ls' '%ls'", (LPCTSTR) path, start);
             break;
         }
 
@@ -1384,7 +1384,7 @@ bool ShellTree::SearchTree(HTREEITEM treeNode,
                             CSIDL_COMMON_DESKTOPDIRECTORY, FALSE);  
                         if( szCompare.Find( folder ) != -1 )
                             if( szSearchName.Find( szCompare ) == -1 ) {
-                                WMSG1("Magic match on '%s'\n", szCompare);
+                                LOGI("Magic match on '%s'", szCompare);
                                 return false;
                             }
 
@@ -1393,7 +1393,7 @@ bool ShellTree::SearchTree(HTREEITEM treeNode,
                             CSIDL_DESKTOPDIRECTORY, FALSE );    
                         if( szCompare.Find( folder ) != -1 )
                             if( szSearchName.Find( szCompare ) == -1 ) {
-                                WMSG4("MAGIC '%s'='%s' and '%s'='%s'\n",
+                                LOGI("MAGIC '%s'='%s' and '%s'='%s'",
                                     szCompare, folder, szSearchName, szCompare);
                                 return false;
                             }
@@ -1403,7 +1403,7 @@ bool ShellTree::SearchTree(HTREEITEM treeNode,
                             CSIDL_PERSONAL, FALSE ); 
                         if( szCompare.Find( folder ) != -1 )
                             if( szSearchName.Find( szCompare ) == -1 ) {
-                                WMSG1("Magic match on '%s'\n", szCompare);
+                                LOGI("Magic match on '%s'", szCompare);
                                 return false;
                             }
 
@@ -1472,7 +1472,7 @@ void ShellTree::TunnelTree(CString szFindPath)
     szPathHop=drive;
     do {
         CString currItem = GetItemText( root );
-        WMSG2("Scanning '%s' for drive '%s'\n", currItem, szPathHop);
+        LOGI("Scanning '%s' for drive '%s'", currItem, szPathHop);
         if (ItemHasChildren(root))
         {
             Expand(root, TVE_EXPAND);
@@ -1483,7 +1483,7 @@ void ShellTree::TunnelTree(CString szFindPath)
                 {
                     // we have a match on the drive; SearchTree will have
                     // left it as the selected item
-                    WMSG1("Tunnel match '%s' in subnode\n", szPathHop);
+                    LOGI("Tunnel match '%s' in subnode", szPathHop);
 
                     // break down subfolders and search
                     char* p = strtok(dir, delimiter);

@@ -37,8 +37,8 @@ public:
     /*
      * Write a message to the log file.
      *
-     * There doesn't seem to be a va_arg form of _CrtDbgReport, just "...",
-     * so we can't call that from here unless we snprintf to a buffer.
+     * The format string should not end with a newline.  Each log message
+     * will appear on its own line, possibly with a prefix.
      */
     void Log(LogSeverity severity, const char* file, int line,
         const char* format, ...);
@@ -50,6 +50,7 @@ private:
 
     FILE*   fLogFp;
     int     fPid;
+    bool    fDoCrtDebug;
 };
 
 extern DebugLog* gDebugLog;     // declare and allocate in app
@@ -57,13 +58,7 @@ extern DebugLog* gDebugLog;     // declare and allocate in app
 
 /* send the message to the log file (if open) and the CRT debug mechanism */
 #define LOG_BASE(severity, file, line, format, ...) \
-    { \
-        gDebugLog->Log((severity), (file), (line), (format), __VA_ARGS__); \
-        if (_CrtDbgReport(_CRT_WARN, (file), (line), NULL, (format), \
-                __VA_ARGS__) == 1) { \
-            _CrtDbgBreak(); \
-        } \
-    }
+    { gDebugLog->Log((severity), (file), (line), (format), __VA_ARGS__); }
 
 /*
  * Log macros, with priority specifier.  The output will be written to the
@@ -86,16 +81,6 @@ extern DebugLog* gDebugLog;     // declare and allocate in app
     LOG_BASE(DebugLog::LOG_WARN, __FILE__, __LINE__, format, __VA_ARGS__)
 #define LOGE(format, ...) \
     LOG_BASE(DebugLog::LOG_ERROR, __FILE__, __LINE__, format, __VA_ARGS__)
-
-// TODO: remove these
-#define WMSG0(fmt) LOGI(fmt)
-#define WMSG1(fmt, arg0) LOGI(fmt, arg0)
-#define WMSG2(fmt, arg0, arg1) LOGI(fmt, arg0, arg1)
-#define WMSG3(fmt, arg0, arg1, arg2) LOGI(fmt, arg0, arg1, arg2)
-#define WMSG4(fmt, arg0, arg1, arg2, arg3) LOGI(fmt, arg0, arg1, \
-             arg2, arg3)
-#define WMSG5(fmt, arg0, arg1, arg2, arg3, arg4) LOGI(fmt, arg0, \
-            arg1, arg2, arg3, arg4)
 
 /* make the memory leak test output more interesting */
 #ifdef _DEBUG

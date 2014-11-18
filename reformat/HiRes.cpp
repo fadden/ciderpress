@@ -236,7 +236,7 @@ ReformatHiRes::Process(const ReformatHolder* pHolder,
         fBlackWhite = true;
 
     if (srcLen > kExpectedSize+1 || srcLen < kExpectedSize-8) {
-        WMSG2(" HiRes file is not ~%d bytes long (got %d)\n",
+        LOGI(" HiRes file is not ~%d bytes long (got %d)",
             kExpectedSize, srcLen);
         goto bail;
     }

@@ -150,7 +150,7 @@ DreamGrafix::ScanDreamGrafix(ReformatHolder* pHolder)
     fHeight = Reformat::Get16LE(ptr + 2);
     fWidth = Reformat::Get16LE(ptr + 4);
     if (fWidth != 320 || fHeight != 200) {
-        WMSG2("ODD: strange height %dx%x in DG\n", fWidth, fHeight);
+        LOGI("ODD: strange height %dx%x in DG", fWidth, fHeight);
         return false;
     }
 
@@ -195,7 +195,7 @@ DreamGrafix::UnpackDG(const unsigned char* srcBuf, long srcLen,
 
     actual = UnpackLZW(srcBuf, srcLen, tmpBuf, expectedLen);
     if (actual != expectedLen && actual != (expectedLen-512)) {
-        WMSG2("UnpackLZW expected %d, got %d\n", expectedLen, actual);
+        LOGI("UnpackLZW expected %d, got %d", expectedLen, actual);
         free(tmpBuf);
         return false;
     }
@@ -287,7 +287,7 @@ DreamGrafix::UnpackLZW(const unsigned char* srcBuf, long srcLen,
 
     while (true) {
         if (dstBuf - pOrigDst > dstLen) {
-            WMSG0("LZW overrun\n");
+            LOGI("LZW overrun");
             return -1;
         }
 

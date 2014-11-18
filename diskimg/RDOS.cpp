@@ -70,7 +70,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
         if (dierr != kDIErrNone)
             goto bail;
     } else {
-        WMSG0(" RDOS neither 13 nor 16 sector, bailing\n");
+        LOGI(" RDOS neither 13 nor 16 sector, bailing");
         goto bail;
     }
 
@@ -82,7 +82,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
             sctBuf[4] == ' '+0x80) ||
         !(sctBuf[25] == 26 || sctBuf[25] == 32))
     {
-        WMSG1(" RDOS no signature found on (%d,0)\n", kCatTrack);
+        LOGI(" RDOS no signature found on (%d,0)", kCatTrack);
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -141,7 +141,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
             goto bail;
         }
 
-        WMSG2(" RDOS found '%s' signature (order=%d)\n", kCompare, imageOrder);
+        LOGI(" RDOS found '%s' signature (order=%d)", kCompare, imageOrder);
     }
 
     dierr = kDIErrNone;
@@ -158,11 +158,11 @@ DiskFSRDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     if (!pImg->GetHasSectors()) {
-        WMSG0(" RDOS - image doesn't have sectors, not trying\n");
+        LOGI(" RDOS - image doesn't have sectors, not trying");
         return kDIErrFilesystemNotFound;
     }
     if (pImg->GetNumTracks() != 35) {
-        WMSG0(" RDOS - not a 35-track disk, not trying\n");
+        LOGI(" RDOS - not a 35-track disk, not trying");
         return kDIErrFilesystemNotFound;
     }
     DiskImg::FSFormat formatFound;
@@ -182,7 +182,7 @@ DiskFSRDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         }
     }
 
-    WMSG0(" RDOS didn't find valid FS\n");
+    LOGI(" RDOS didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -201,7 +201,7 @@ DiskFSRDOS::TestFS33(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     if (dierr != kDIErrNone)
         return dierr;
     if (formatFound != DiskImg::kFormatRDOS33) {
-        WMSG0(" RDOS found RDOS but wrong type\n");
+        LOGI(" RDOS found RDOS but wrong type");
         return kDIErrFilesystemNotFound;
     }
 
@@ -222,7 +222,7 @@ DiskFSRDOS::TestFS32(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     if (dierr != kDIErrNone)
         return dierr;
     if (formatFound != DiskImg::kFormatRDOS32) {
-        WMSG0(" RDOS found RDOS but wrong type\n");
+        LOGI(" RDOS found RDOS but wrong type");
         return kDIErrFilesystemNotFound;
     }
 
@@ -243,7 +243,7 @@ DiskFSRDOS::TestFS3(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     if (dierr != kDIErrNone)
         return dierr;
     if (formatFound != DiskImg::kFormatRDOS3) {
-        WMSG0(" RDOS found RDOS but wrong type\n");
+        LOGI(" RDOS found RDOS but wrong type");
         return kDIErrFilesystemNotFound;
     }
 
@@ -370,7 +370,7 @@ DiskFSRDOS::ReadCatalog(void)
         if (pFile->fStartSector + pFile->fNumSectors >
             fpImg->GetNumTracks() * fOurSectPerTrack)
         {
-            WMSG4(" RDOS invalid start/count (%d + %d) (max %ld) '%s'\n",
+            LOGI(" RDOS invalid start/count (%d + %d) (max %ld) '%s'",
                 pFile->fStartSector, pFile->fNumSectors, fpImg->GetNumBlocks(),
                 pFile->fFileName);
             pFile->fStartSector = pFile->fNumSectors = 0;
@@ -428,7 +428,7 @@ DiskFSRDOS::SetSectorUsage(long track, long sector,
     fVolumeUsage.GetChunkState(track, sector, &cstate);
     if (cstate.isUsed) {
         cstate.purpose = VolumeUsage::kChunkPurposeConflict;
-        WMSG2(" RDOS conflicting uses for sct=(%ld,%ld)\n", track, sector);
+        LOGI(" RDOS conflicting uses for sct=(%ld,%ld)", track, sector);
     } else {
         cstate.isUsed = true;
         cstate.isMarkedUsed = true;
@@ -470,8 +470,8 @@ A2FileRDOS::GetFileType(void) const
 void
 A2FileRDOS::Dump(void) const
 {
-    WMSG2("A2FileRDOS '%s' (type=%d)\n", fFileName, fFileType);
-    WMSG4("  start=%d num=%d len=%d addr=0x%04x\n",
+    LOGI("A2FileRDOS '%s' (type=%d)", fFileName, fFileType);
+    LOGI("  start=%d num=%d len=%d addr=0x%04x",
         fStartSector, fNumSectors, fLength, fLoadAddr);
 }
 
@@ -550,7 +550,7 @@ A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
 DIError
 A2FDRDOS::Read(void* buf, size_t len, size_t* pActual)
 {
-    WMSG3(" RDOS reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" RDOS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
     //if (!fOpen)
     //  return kDIErrNotReady;
@@ -588,7 +588,7 @@ A2FDRDOS::Read(void* buf, size_t len, size_t* pActual)
         dierr = pFile->GetDiskFS()->GetDiskImg()->ReadTrackSector(block / ourSectPerTrack,
                     block % ourSectPerTrack, sctBuf);
         if (dierr != kDIErrNone) {
-            WMSG1(" RDOS error reading file '%s'\n", pFile->fFileName);
+            LOGI(" RDOS error reading file '%s'", pFile->fFileName);
             return dierr;
         }
         thisCount = kSctSize - bufOffset;

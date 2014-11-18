@@ -122,7 +122,7 @@ void
 MyRegistry::OneTimeInstall(void) const
 {
     /* start by stomping on our appIDs */
-    WMSG0(" Removing appIDs\n");
+    LOGI(" Removing appIDs");
     RegDeleteKeyNT(HKEY_CLASSES_ROOT, kAppIDNuFX);
     RegDeleteKeyNT(HKEY_CLASSES_ROOT, kAppIDDiskImage);
     RegDeleteKeyNT(HKEY_CLASSES_ROOT, kAppIDBinaryII);
@@ -137,13 +137,13 @@ MyRegistry::OneTimeInstall(void) const
         res = RegOpenKeyEx(HKEY_CLASSES_ROOT, kFileTypeAssoc[i].ext, 0,
                 KEY_READ, &hExtKey);
         if (res == ERROR_SUCCESS) {
-            WMSG1(" Found existing HKCR\\'%ls', leaving alone\n",
+            LOGI(" Found existing HKCR\\'%ls', leaving alone",
                 kFileTypeAssoc[i].ext);
             RegCloseKey(hExtKey);
         } else if (res == ERROR_FILE_NOT_FOUND) {
             OwnExtension(kFileTypeAssoc[i].ext, kFileTypeAssoc[i].appID);
         } else {
-            WMSG2(" Got error %ld opening HKCR\\'%ls', leaving alone\n",
+            LOGI(" Got error %ld opening HKCR\\'%ls', leaving alone",
                 res, kFileTypeAssoc[i].ext);
         }
     }
@@ -174,7 +174,7 @@ MyRegistry::OneTimeUninstall(void) const
     }
 
     /* remove our appIDs */
-    WMSG0(" Removing appIDs\n");
+    LOGI(" Removing appIDs");
     RegDeleteKeyNT(HKEY_CLASSES_ROOT, kAppIDNuFX);
     RegDeleteKeyNT(HKEY_CLASSES_ROOT, kAppIDDiskImage);
     RegDeleteKeyNT(HKEY_CLASSES_ROOT, kAppIDBinaryII);
@@ -232,7 +232,7 @@ MyRegistry::FixBasicSettings(void) const
     const WCHAR* exeName = gMyApp.GetExeFileName();
     ASSERT(exeName != NULL && wcslen(exeName) > 0);
 
-    WMSG0("Fixing any missing file type AppID entries in registry\n");
+    LOGI("Fixing any missing file type AppID entries in registry");
 
     ConfigureAppID(kAppIDNuFX, L"NuFX Archive (CiderPress)", exeName, 1);
     ConfigureAppID(kAppIDBinaryII, L"Binary II (CiderPress)", exeName, 2);
@@ -246,7 +246,7 @@ void
 MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
     const WCHAR* exeName, int iconIdx) const
 {
-    WMSG2(" Configuring '%ls' for '%ls'\n", appID, exeName);
+    LOGI(" Configuring '%ls' for '%ls'", appID, exeName);
 
     HKEY hAppKey = NULL;
     HKEY hIconKey = NULL;
@@ -269,7 +269,7 @@ MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
             size = sizeof(buf);     // size in bytes
             res = RegQueryValueEx(hIconKey, L"", NULL, &type, buf, &size);
             if (res == ERROR_SUCCESS && size > 1) {
-                WMSG1("  Icon for '%ls' already exists, not altering\n", appID);
+                LOGI("  Icon for '%ls' already exists, not altering", appID);
             } else {
                 CString iconStr;
                 iconStr.Format(L"%ls,%d", exeName, iconIdx);
@@ -278,18 +278,18 @@ MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
                     (const BYTE*)(LPCTSTR) iconStr,
                     wcslen(iconStr) * sizeof(WCHAR)) == ERROR_SUCCESS)
                 {
-                    WMSG2("  Set icon for '%ls' to '%ls'\n", appID,
+                    LOGI("  Set icon for '%ls' to '%ls'", appID,
                         (LPCWSTR) iconStr);
                 } else {
-                    WMSG2("  WARNING: unable to set DefaultIcon  for '%ls' to '%ls'\n",
+                    LOGI("  WARNING: unable to set DefaultIcon  for '%ls' to '%ls'",
                         appID, (LPCWSTR) iconStr);
                 }
             }
         } else {
-            WMSG1("WARNING: couldn't set up DefaultIcon for '%ls'\n", appID);
+            LOGI("WARNING: couldn't set up DefaultIcon for '%ls'", appID);
         }
     } else {
-        WMSG1("WARNING: couldn't create AppID='%ls'\n", appID);
+        LOGI("WARNING: couldn't create AppID='%ls'", appID);
     }
 
     RegCloseKey(hIconKey);
@@ -315,7 +315,7 @@ MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
     if (RegSetValueEx(hAppKey, L"", 0, REG_SZ, (const BYTE*) descr,
         wcslen(descr) * sizeof(WCHAR)) != ERROR_SUCCESS)
     {
-        WMSG1("  WARNING: unable to set description to '%ls'\n", descr);
+        LOGI("  WARNING: unable to set description to '%ls'", descr);
     }
 
     if (RegCreateKeyEx(hAppKey, L"shell", 0, REG_NONE,
@@ -338,7 +338,7 @@ MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
                 res = RegQueryValueEx(hCommandKey, L"", NULL, &type, (LPBYTE) buf,
                     &size);
                 if (res == ERROR_SUCCESS && size > 1) {
-                    WMSG1("  Command already exists, not altering ('%ls')\n", buf);
+                    LOGI("  Command already exists, not altering ('%ls')", buf);
                 } else {
                     CString openCmd;
 
@@ -347,9 +347,9 @@ MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
                         (LPBYTE)(LPCWSTR) openCmd,
                         wcslen(openCmd) * sizeof(WCHAR)) == ERROR_SUCCESS)
                     {
-                        WMSG1("  Set command to '%ls'\n", openCmd);
+                        LOGI("  Set command to '%ls'", openCmd);
                     } else {
-                        WMSG1("  WARNING: unable to set open cmd '%ls'\n", openCmd);
+                        LOGI("  WARNING: unable to set open cmd '%ls'", openCmd);
                     }
                 }
             }
@@ -391,10 +391,10 @@ MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
 
     HINSTANCE res = FindExecutable(*pExt, "\\", buf);
     if ((long) res > 32) {
-        WMSG1("Executable is '%s'\n", buf);
+        LOGI("Executable is '%s'", buf);
         *pHandler = buf;
     } else {
-        WMSG1("FindExecutable failed (err=%d)\n", res);
+        LOGI("FindExecutable failed (err=%d)", res);
         *pHandler = kNoAssociation;
     }
 }
@@ -433,16 +433,16 @@ MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
 
         res = RegQueryValueEx(hExtKey, L"", NULL, &type, (LPBYTE)buf, &size);
         if (res == ERROR_SUCCESS) {
-            WMSG1("  Got '%ls'\n", buf);
+            LOGI("  Got '%ls'", buf);
             appID = buf;
 
             if (GetAssocAppName(appID, pHandler) != 0)
                 *pHandler = appID;
         } else {
-            WMSG1("RegQueryValueEx failed on '%ls'\n", (LPCWSTR) *pExt);
+            LOGI("RegQueryValueEx failed on '%ls'", (LPCWSTR) *pExt);
         }
     } else {
-        WMSG1("  RegOpenKeyEx failed on '%ls'\n", *pExt);
+        LOGI("  RegOpenKeyEx failed on '%ls'", *pExt);
     }
 
     *pOurs = false;
@@ -492,13 +492,13 @@ MyRegistry::GetAssocAppName(const CString& appID, CString* pCmd) const
             *pCmd = cmd;
             result = 0;
         } else {
-            WMSG1("Unable to open shell\\open\\command for '%ls'\n", appID);
+            LOGI("Unable to open shell\\open\\command for '%ls'", appID);
         }
     } else {
         CString errBuf;
         GetWin32ErrorString(res, &errBuf);
 
-        WMSG2("Unable to open AppID key '%ls' (%ls)\n",
+        LOGI("Unable to open AppID key '%ls' (%ls)",
             keyName, (LPCWSTR) errBuf);
     }
 
@@ -545,18 +545,18 @@ MyRegistry::SetFileAssoc(int idx, bool wantIt) const
 
     ext = kFileTypeAssoc[idx].ext;
     weOwnIt = GetAssocState(ext);
-    WMSG3("SetFileAssoc: ext='%ls' own=%d want=%d\n", ext, weOwnIt, wantIt);
+    LOGI("SetFileAssoc: ext='%ls' own=%d want=%d", ext, weOwnIt, wantIt);
 
     if (weOwnIt && !wantIt) {
         /* reset it */
-        WMSG1(" SetFileAssoc: clearing '%ls'\n", ext);
+        LOGI(" SetFileAssoc: clearing '%ls'", ext);
         result = DisownExtension(ext);
     } else if (!weOwnIt && wantIt) {
         /* take it */
-        WMSG1(" SetFileAssoc: taking '%ls'\n", ext);
+        LOGI(" SetFileAssoc: taking '%ls'", ext);
         result = OwnExtension(ext, kFileTypeAssoc[idx].appID);
     } else {
-        WMSG1(" SetFileAssoc: do nothing with '%ls'\n", ext);
+        LOGI(" SetFileAssoc: do nothing with '%ls'", ext);
         /* do nothing */
     }
 
@@ -585,7 +585,7 @@ MyRegistry::GetAssocState(const WCHAR* ext) const
         res = RegQueryValueEx(hExtKey, L"", NULL, &type, (LPBYTE) buf, &size);
         if (res == ERROR_SUCCESS && type == REG_SZ) {
             /* compare it to known appID values */
-            WMSG2("  Found '%ls', testing '%ls'\n", ext, buf);
+            LOGI("  Found '%ls', testing '%ls'", ext, buf);
             if (IsOurAppID((WCHAR*)buf))
                 result = true;
         }
@@ -611,9 +611,9 @@ MyRegistry::DisownExtension(const WCHAR* ext) const
         return -1;
 
     if (RegDeleteKeyNT(HKEY_CLASSES_ROOT, ext) == ERROR_SUCCESS) {
-        WMSG1("    HKCR\\%ls subtree deleted\n", ext);
+        LOGI("    HKCR\\%ls subtree deleted", ext);
     } else {
-        WMSG1("    Failed deleting HKCR\\'%ls'\n", ext);
+        LOGI("    Failed deleting HKCR\\'%ls'", ext);
         return -1;
     }
 
@@ -640,11 +640,11 @@ MyRegistry::OwnExtension(const WCHAR* ext, const WCHAR* appID) const
     /* delete the old key (which might be a hierarchy) */
     res = RegDeleteKeyNT(HKEY_CLASSES_ROOT, ext);
     if (res == ERROR_SUCCESS) {
-        WMSG1("    HKCR\\%ls subtree deleted\n", ext);
+        LOGI("    HKCR\\%ls subtree deleted", ext);
     } else if (res == ERROR_FILE_NOT_FOUND) {
-        WMSG1("    No HKCR\\%ls subtree to delete\n", ext);
+        LOGI("    No HKCR\\%ls subtree to delete", ext);
     } else {
-        WMSG1("    Failed deleting HKCR\\'%ls'\n", ext);
+        LOGI("    Failed deleting HKCR\\'%ls'", ext);
         goto bail;
     }
 
@@ -656,10 +656,10 @@ MyRegistry::OwnExtension(const WCHAR* ext, const WCHAR* appID) const
         res = RegSetValueEx(hExtKey, L"", 0, REG_SZ,
                 (LPBYTE) appID, wcslen(appID) * sizeof(WCHAR));
         if (res == ERROR_SUCCESS) {
-            WMSG2("    Set '%ls' to '%ls'\n", ext, appID);
+            LOGI("    Set '%ls' to '%ls'", ext, appID);
             result = 0;
         } else {
-            WMSG3("Failed setting '%ls' to '%ls' (res=%d)\n", ext, appID, res);
+            LOGI("Failed setting '%ls' to '%ls' (res=%d)", ext, appID, res);
             goto bail;
         }
     }

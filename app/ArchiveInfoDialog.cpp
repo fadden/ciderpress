@@ -233,7 +233,7 @@ DiskArchiveInfoDialog::OnSubVolSelChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_AIDISK_SUBVOLSEL);
     ASSERT(pCombo != NULL);
-    //WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
+    //LOGI("+++ SELECTION IS NOW %d", pCombo->GetCurSel());
 
     const DiskFS* pDiskFS;
     pDiskFS = (DiskFS*) pCombo->GetItemData(pCombo->GetCurSel());

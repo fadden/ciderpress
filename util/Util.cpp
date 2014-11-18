@@ -73,7 +73,7 @@ RichEditXfer::EditStreamCallback(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG* p
     pThis->fBuf += copyLen;
     pThis->fLen -= copyLen;
 
-    //WMSG2("ESC: copyLen=%d, now fLen=%d\n", copyLen, pThis->fLen);
+    //LOGI("ESC: copyLen=%d, now fLen=%d", copyLen, pThis->fLen);
 
 bail:
     *pcb = copyLen;
@@ -138,7 +138,7 @@ ExpandBuffer::GrowWorkBuf(void)
     if (newIncr > kWorkBufMaxIncrement)
         newIncr = kWorkBufMaxIncrement;
 
-    //WMSG3("Extending buffer by %d (count=%d, max=%d)\n",
+    //LOGI("Extending buffer by %d (count=%d, max=%d)",
     //  newIncr, fWorkCount, fWorkMax);
 
     fWorkMax += newIncr;
@@ -148,7 +148,7 @@ ExpandBuffer::GrowWorkBuf(void)
 
     char* newBuf = new char[fWorkMax];
     if (newBuf == NULL) {
-        WMSG1("ALLOC FAILURE (%ld)\n", fWorkMax);
+        LOGI("ALLOC FAILURE (%ld)", fWorkMax);
         ASSERT(false);
         fWorkMax -= newIncr;    // put it back so we don't overrun
         return -1;
@@ -240,7 +240,7 @@ EnableControl(CDialog* pDlg, int id, bool enable)
 {
     CWnd* pWnd = pDlg->GetDlgItem(id);
     if (pWnd == NULL) {
-        WMSG1("GLITCH: control %d not found in dialog\n", id);
+        LOGI("GLITCH: control %d not found in dialog", id);
         ASSERT(false);
     } else {
         pWnd->EnableWindow(enable);
@@ -448,7 +448,7 @@ GetWin32ErrorString(DWORD err, CString* pStr)
     );
 
     if (!count) {
-        WMSG1("FormatMessage on err=0x%08lx failed\n", err);
+        LOGI("FormatMessage on err=0x%08lx failed", err);
         pStr->Format(L"system error 0x%08lx.\n", err);
     } else {
         *pStr = (LPCTSTR)lpMsgBuf;
@@ -519,14 +519,14 @@ GetPascalString(const char* buf, long maxLen, CString* pStr)
     *pStr = "";
 
     if (len > maxLen) {
-        WMSG2("Invalid pascal string -- len=%d, maxLen=%d\n", len, maxLen);
+        LOGI("Invalid pascal string -- len=%d, maxLen=%d", len, maxLen);
         return -1;
     }
 
     while (len--) {
         if (*buf == '\0') {
             /* this suggests that we're not reading a pascal string */
-            WMSG0("Found pascal string with '\\0' in it\n");
+            LOGI("Found pascal string with '\\0' in it");
             return -1;
         }
 
@@ -550,7 +550,7 @@ LogHexDump(const void* vbuf, long len)
     char* cp = NULL;
     int i;
 
-    WMSG2(" Memory at 0x%08lx %ld bytes:\n", buf, len);
+    LOGI(" Memory at 0x%08lx %ld bytes:", buf, len);
     if (len <= 0)
         return;
 
@@ -571,7 +571,7 @@ LogHexDump(const void* vbuf, long len)
             if (skipFirst) {
                 skipFirst = false;
             } else {
-                WMSG1("  %hs\n", outBuf);
+                LOGI("  %hs", outBuf);
                 addr += 16;
             }
             sprintf(outBuf, "%08lx: ", addr);
@@ -583,7 +583,7 @@ LogHexDump(const void* vbuf, long len)
     }
 
     /* output whatever is left */
-    WMSG1("  %hs\n", outBuf);
+    LOGI("  %hs", outBuf);
 }
 
 /*
@@ -711,7 +711,7 @@ VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc)
             if (inWhiteSpace) {
                 /* start of token */
                 if (idx >= *pArgc) {
-                    //WMSG2("Max #of args (%d) exceeded, ignoring '%ls'\n",
+                    //LOGI("Max #of args (%d) exceeded, ignoring '%ls'",
                     //  *pArgc, cp);
                     break;
                 }
@@ -731,7 +731,7 @@ VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc)
     }
 
     if (inQuote) {
-        WMSG0("WARNING: ended in quote\n");
+        LOGI("WARNING: ended in quote");
     }
 
     *pArgc = idx;
@@ -760,12 +760,12 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     int i;
 
     token = pStr->Mid(startPos, endPos - startPos);
-    //WMSG1("  TOKEN: '%ls'\n", (LPCWSTR) token);
+    //LOGI("  TOKEN: '%ls'", (LPCWSTR) token);
 
     /* these words are left alone */
     for (i = 0; i < NELEM(leaveAlone); i++) {
         if (token.CompareNoCase(leaveAlone[i]) == 0) {
-            //WMSG1("    Leaving alone '%ls'\n", (LPCWSTR) token);
+            //LOGI("    Leaving alone '%ls'", (LPCWSTR) token);
             return;
         }
     }
@@ -773,7 +773,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     /* words with specific capitalization */
     for (i = 0; i < NELEM(justLikeThis); i++) {
         if (token.CompareNoCase(justLikeThis[i]) == 0) {
-            WMSG2("    Setting '%ls' to '%ls'\n", token, justLikeThis[i]);
+            LOGI("    Setting '%ls' to '%ls'", token, justLikeThis[i]);
             for (int j = startPos; j < endPos; j++)
                 pStr->SetAt(j, justLikeThis[i][j - startPos]);
             return;
@@ -784,7 +784,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     if (prevWasSpace) {
         for (i = 0; i < NELEM(shortWords); i++) {
             if (token.CompareNoCase(shortWords[i]) == 0) {
-                //WMSG1("    No leading cap for '%ls'\n", token);
+                //LOGI("    No leading cap for '%ls'", token);
                 firstCap = false;
                 break;
             }
@@ -794,7 +794,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     /* check for roman numerals; we leave those capitalized */
     CString romanTest = token.SpanIncluding(L"IVX");
     if (romanTest.GetLength() == token.GetLength()) {
-        //WMSG1("    Looks like roman numerals '%ls'\n", token);
+        //LOGI("    Looks like roman numerals '%ls'", token);
         return;
     }
 
@@ -820,12 +820,12 @@ InjectLowercase(CString* pStr)
 
     //*pStr = "AND PRODOS FOR THE IIGS";
     //len = pStr->GetLength();
-    //WMSG1("InjectLowercase: '%ls'\n", (LPCWSTR) *pStr);
+    //LOGI("InjectLowercase: '%ls'", (LPCWSTR) *pStr);
 
     for (int i = 0; i < len; i++) {
         WCHAR ch = pStr->GetAt(i);
         if (ch >= 'a' && ch <= 'z') {
-            WMSG1("Found lowercase 0x%04x, skipping InjectLower\n", ch);
+            LOGI("Found lowercase 0x%04x, skipping InjectLower", ch);
             return;
         }
     }
@@ -885,7 +885,7 @@ MatchSemicolonList(const CString set, const CString match)
         if (wcsnicmp(cp, match, matchLen) == 0 &&
             (cp[matchLen] == ';' || cp[matchLen] == '\0'))
         {
-            WMSG2("+++ Found '%ls' at '%ls'\n", (LPCWSTR) match, cp);
+            LOGI("+++ Found '%ls' at '%ls'", (LPCWSTR) match, cp);
             return true;
         }
 
@@ -895,7 +895,7 @@ MatchSemicolonList(const CString set, const CString match)
             cp++;
     }
 
-    WMSG2("--- No match for '%ls' in '%ls'\n", (LPCWSTR) match, (LPCWSTR) set);
+    LOGI("--- No match for '%ls' in '%ls'", (LPCWSTR) match, (LPCWSTR) set);
     return false;
 }
 

@@ -71,7 +71,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
         *pFormatFound = DiskImg::kFormatUnknown;
     }
 
-    WMSG1("----- BEGIN CFFA SCAN (fmt=%d) -----\n", *pFormatFound);
+    LOGI("----- BEGIN CFFA SCAN (fmt=%d) -----", *pFormatFound);
 
     startBlock = 0;
     totalBlocksLeft = totalBlocks;
@@ -89,7 +89,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     dierr = OpenSubVolume(pImg, startBlock, maxBlocks, true,
                 &pNewImg, &pNewFS);
     if (dierr != kDIErrNone) {
-        WMSG0(" CFFA failed opening sub-volume #1\n");
+        LOGI(" CFFA failed opening sub-volume #1");
         goto bail;
     }
     fsNumBlocks = pNewFS->GetFSNumBlocks();
@@ -98,11 +98,11 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     if (fsNumBlocks != kEarlyVolExpectedSize &&
         fsNumBlocks != kEarlyVolExpectedSize-1)
     {
-        WMSG1("  CFFA found fsNumBlocks=%ld in slot #1\n", fsNumBlocks);
+        LOGI("  CFFA found fsNumBlocks=%ld in slot #1", fsNumBlocks);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
-    WMSG0("  CFFA found good volume in slot #1\n");
+    LOGI("  CFFA found good volume in slot #1");
 
     startBlock += maxBlocks;
     totalBlocksLeft -= maxBlocks;
@@ -122,7 +122,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     dierr = OpenSubVolume(pImg, startBlock, maxBlocks, true,
                 &pNewImg, &pNewFS);
     if (dierr != kDIErrNone) {
-        WMSG0(" CFFA failed opening sub-volume #2\n");
+        LOGI(" CFFA failed opening sub-volume #2");
         if (maxBlocks < kEarlyVolExpectedSize)
             goto bail;
         // otherwise, assume they just didn't format #2, and keep going
@@ -134,12 +134,12 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
         if (fsNumBlocks != kEarlyVolExpectedSize &&
             fsNumBlocks != kEarlyVolExpectedSize-1)
         {
-            WMSG1("  CFFA found fsNumBlocks=%ld in slot #2\n", fsNumBlocks);
+            LOGI("  CFFA found fsNumBlocks=%ld in slot #2", fsNumBlocks);
             dierr = kDIErrFilesystemNotFound;
             goto bail;
         }
 #endif
-        WMSG0("  CFFA found good volume in slot #2\n");
+        LOGI("  CFFA found good volume in slot #2");
     }
 
     startBlock += maxBlocks;
@@ -152,7 +152,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     /*
      * Skip #3 and #4.
      */
-    WMSG0("  CFFA skipping over slot #3\n");
+    LOGI("  CFFA skipping over slot #3");
     maxBlocks = kEarlyVolExpectedSize*2;
     if (maxBlocks > totalBlocksLeft)
         maxBlocks = totalBlocksLeft;
@@ -163,7 +163,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
         *pFormatFound = DiskImg::kFormatCFFA4;
         goto bail;
     }
-    WMSG0("  CFFA skipping over slot #4\n");
+    LOGI("  CFFA skipping over slot #4");
 
     /*
      * Partition #5.  We know where it starts, but not how large it is.
@@ -185,7 +185,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
          * Treat it like 4-partition; it'll look like somebody slapped a
          * 32MB volume into the first 1GB area.
          */
-        WMSG0("  CFFA assuming odd-sized slot #5\n");
+        LOGI("  CFFA assuming odd-sized slot #5");
         *pFormatFound = DiskImg::kFormatCFFA4;
         goto bail;
     }
@@ -205,7 +205,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     if (dierr != kDIErrNone) {
         if (dierr == kDIErrCancelled)
             goto bail;
-        WMSG0("  CFFA failed opening large sub-volume #5\n");
+        LOGI("  CFFA failed opening large sub-volume #5");
         // if we can't get #5, don't bother looking for #6
         // (we could try anyway, but it's easier to just skip it)
         dierr = kDIErrNone;
@@ -217,22 +217,22 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     delete pNewFS;
     delete pNewImg;
     if (fsNumBlocks < 2 || fsNumBlocks > maxBlocks) {
-        WMSG1("   CFFA WARNING: FSNumBlocks #5 reported blocks=%ld\n",
+        LOGI("   CFFA WARNING: FSNumBlocks #5 reported blocks=%ld",
             fsNumBlocks);
     }
     if (fsNumBlocks == kEarlyVolExpectedSize-1 ||
         fsNumBlocks == kEarlyVolExpectedSize)
     {
-        WMSG0("  CFFA #5 is a 32MB volume\n");
+        LOGI("  CFFA #5 is a 32MB volume");
         // tells us nothing -- could still be 4 or 8, so we keep going
         maxBlocks = kEarlyVolExpectedSize;
     } else if (fsNumBlocks > kEarlyVolExpectedSize) {
         // must be a GS/OS 1GB area
-        WMSG0("  CFFA #5 is larger than 32MB\n");
+        LOGI("  CFFA #5 is larger than 32MB");
         *pFormatFound = DiskImg::kFormatCFFA4;
         goto bail;
     } else {
-        WMSG1("  CFFA #5 was unexpectedly small (%ld blocks)\n", fsNumBlocks);
+        LOGI("  CFFA #5 was unexpectedly small (%ld blocks)", fsNumBlocks);
         // just stop now
         *pFormatFound = DiskImg::kFormatCFFA4;
         goto bail;
@@ -242,7 +242,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     totalBlocksLeft -= maxBlocks;
 
     if (!totalBlocksLeft) {
-        WMSG0(" CFFA got 5 volumes\n");
+        LOGI(" CFFA got 5 volumes");
         *pFormatFound = DiskImg::kFormatCFFA4;
         goto bail;
     }
@@ -266,7 +266,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
      * The difference between C and D/E can *usually* be determined by
      * opening up a 6th partition in the two expected locations.
      */
-    WMSG0(" CFFA probing 6th slot for 4-vs-8\n");
+    LOGI(" CFFA probing 6th slot for 4-vs-8");
     /*
      * Look in two different places.  If we find something at the
      * +32MB mark, assume it's in "8 mode".  If we find something at
@@ -284,7 +284,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     if (dierr != kDIErrNone) {
         if (dierr == kDIErrCancelled)
             goto bail;
-        WMSG0(" CFFA no vol #6 found at +32MB\n");
+        LOGI(" CFFA no vol #6 found at +32MB");
     } else {
         foundSmall = true;
         delete pNewFS;
@@ -302,7 +302,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
         if (dierr != kDIErrNone) {
             if (dierr == kDIErrCancelled)
                 goto bail;
-            WMSG0(" CFFA no vol #6 found at +1GB\n");
+            LOGI(" CFFA no vol #6 found at +1GB");
         } else {
             foundGig = true;
             delete pNewFS;
@@ -313,25 +313,25 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     dierr = kDIErrNone;
 
     if (!foundSmall && !foundGig) {
-        WMSG0(" CFFA no valid filesystem found in 6th position\n");
+        LOGI(" CFFA no valid filesystem found in 6th position");
         *pFormatFound = DiskImg::kFormatCFFA4;
         // don't bother looking for 7 and 8
     } else if (foundSmall && foundGig) {
-        WMSG0(" CFFA WARNING: found valid volumes at +32MB *and* +1GB\n");
+        LOGI(" CFFA WARNING: found valid volumes at +32MB *and* +1GB");
         // default to 4-partition mode
         if (*pFormatFound == DiskImg::kFormatUnknown)
             *pFormatFound = DiskImg::kFormatCFFA4;
     } else if (foundGig) {
-        WMSG0(" CFFA found 6th volume at +1GB, assuming 4-mode w/GSOS\n");
+        LOGI(" CFFA found 6th volume at +1GB, assuming 4-mode w/GSOS");
         if (fsNumBlocks < 2 || fsNumBlocks > kOneGB) {
-            WMSG1(" CFFA WARNING: FSNumBlocks #6 reported as %ld\n",
+            LOGI(" CFFA WARNING: FSNumBlocks #6 reported as %ld",
                 fsNumBlocks);
         }
         *pFormatFound = DiskImg::kFormatCFFA4;
     } else if (foundSmall) {
-        WMSG0(" CFFA found  6th volume at +32MB, assuming 8-mode\n");
+        LOGI(" CFFA found  6th volume at +32MB, assuming 8-mode");
         if (fsNumBlocks < 2 || fsNumBlocks > kEarlyVolExpectedSize) {
-            WMSG1(" CFFA WARNING: FSNumBlocks #6 reported as %ld\n",
+            LOGI(" CFFA WARNING: FSNumBlocks #6 reported as %ld",
                 fsNumBlocks);
         }
         *pFormatFound = DiskImg::kFormatCFFA8;
@@ -342,7 +342,7 @@ DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     // done!
 
 bail:
-    WMSG2("----- END CFFA SCAN (err=%d format=%d) -----\n",
+    LOGI("----- END CFFA SCAN (err=%d format=%d) -----",
         dierr, *pFormatFound);
     if (dierr == kDIErrNone) {
         assert(*pFormatFound != DiskImg::kFormatUnknown);
@@ -375,33 +375,33 @@ DiskFSCFFA::OpenSubVolume(DiskImg* pImg, long startBlock, long numBlocks,
 
     dierr = pNewImg->OpenImage(pImg, startBlock, numBlocks);
     if (dierr != kDIErrNone) {
-        WMSG3(" CFFASub: OpenImage(%ld,%ld) failed (err=%d)\n",
+        LOGI(" CFFASub: OpenImage(%ld,%ld) failed (err=%d)",
             startBlock, numBlocks, dierr);
         goto bail;
     }
-    //WMSG2("  +++ CFFASub: new image has ro=%d (parent=%d)\n",
+    //LOGI("  +++ CFFASub: new image has ro=%d (parent=%d)",
     //  pNewImg->GetReadOnly(), pImg->GetReadOnly());
 
     dierr = pNewImg->AnalyzeImage();
     if (dierr != kDIErrNone) {
-        WMSG1(" CFFASub: analysis failed (err=%d)\n", dierr);
+        LOGI(" CFFASub: analysis failed (err=%d)", dierr);
         goto bail;
     }
 
     if (pNewImg->GetFSFormat() == DiskImg::kFormatUnknown ||
         pNewImg->GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
-        WMSG1(" CFFASub: unable to identify filesystem at %ld\n",
+        LOGI(" CFFASub: unable to identify filesystem at %ld",
             startBlock);
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
 
     /* open a DiskFS for the sub-image */
-    WMSG2(" CFFASub (%ld,%ld) analyze succeeded!\n", startBlock, numBlocks);
+    LOGI(" CFFASub (%ld,%ld) analyze succeeded!", startBlock, numBlocks);
     pNewFS = pNewImg->OpenAppropriateDiskFS();
     if (pNewFS == NULL) {
-        WMSG0(" CFFASub: OpenAppropriateDiskFS failed\n");
+        LOGI(" CFFASub: OpenAppropriateDiskFS failed");
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
@@ -421,7 +421,7 @@ DiskFSCFFA::OpenSubVolume(DiskImg* pImg, long startBlock, long numBlocks,
         initMode = kInitFull;
     dierr = pNewFS->Initialize(pNewImg, initMode);
     if (dierr != kDIErrNone) {
-        WMSG1(" CFFASub: error %d reading list of files from disk\n", dierr);
+        LOGI(" CFFASub: error %d reading list of files from disk", dierr);
         goto bail;
     }
 
@@ -459,7 +459,7 @@ DiskFSCFFA::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     // make sure we didn't tamper with it
     assert(*pFormat == DiskImg::kFormatUnknown);
 
-    WMSG0("  FS didn't find valid CFFA\n");
+    LOGI("  FS didn't find valid CFFA");
     return kDIErrFilesystemNotFound;
 }
 
@@ -472,7 +472,7 @@ DiskFSCFFA::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
-    WMSG1("CFFA initializing (scanForSub=%d)\n", fScanForSubVolumes);
+    LOGI("CFFA initializing (scanForSub=%d)", fScanForSubVolumes);
 
     /* seems pointless *not* to, but we just do what we're told */
     if (fScanForSubVolumes != kScanSubDisabled) {
@@ -504,13 +504,13 @@ DiskFSCFFA::FindSubVolumes(void)
     blocksLeft = fpImg->GetNumBlocks();
 
     if (fpImg->GetFSFormat() == DiskImg::kFormatCFFA4) {
-        WMSG0(" CFFA opening 4+2 volumes\n");
+        LOGI(" CFFA opening 4+2 volumes");
         dierr = AddVolumeSeries(0, 4, kEarlyVolExpectedSize, /*ref*/startBlock,
                 /*ref*/blocksLeft);
         if (dierr != kDIErrNone)
             goto bail;
 
-        WMSG2(" CFFA after first 4, startBlock=%ld blocksLeft=%ld\n",
+        LOGI(" CFFA after first 4, startBlock=%ld blocksLeft=%ld",
             startBlock, blocksLeft);
         if (blocksLeft > 0) {
             dierr = AddVolumeSeries(4, 2, kOneGB, /*ref*/startBlock,
@@ -519,7 +519,7 @@ DiskFSCFFA::FindSubVolumes(void)
                 goto bail;
         }
     } else if (fpImg->GetFSFormat() == DiskImg::kFormatCFFA8) {
-        WMSG0(" CFFA opening 8 volumes\n");
+        LOGI(" CFFA opening 8 volumes");
         dierr = AddVolumeSeries(0, 8, kEarlyVolExpectedSize, /*ref*/startBlock,
             /*ref*/blocksLeft);
         if (dierr != kDIErrNone)
@@ -530,7 +530,7 @@ DiskFSCFFA::FindSubVolumes(void)
     }
 
     if (blocksLeft != 0) {
-        WMSG1("  CFFA ignoring leftover %ld blocks\n", blocksLeft);
+        LOGI("  CFFA ignoring leftover %ld blocks", blocksLeft);
     }
 
 bail:
@@ -566,21 +566,21 @@ DiskFSCFFA::AddVolumeSeries(int start, int count, long blocksPerVolume,
         if (dierr != kDIErrNone) {
             if (dierr == kDIErrCancelled)
                 goto bail;
-            WMSG1(" CFFA failed opening sub-volume %d (not formatted?)\n", i);
+            LOGI(" CFFA failed opening sub-volume %d (not formatted?)", i);
             /* create a fake one to represent the partition */
             dierr = CreatePlaceholder(startBlock, maxBlocks, NULL, NULL,
                         &pNewImg, &pNewFS);
             if (dierr == kDIErrNone) {
                 AddSubVolumeToList(pNewImg, pNewFS);
             } else {
-                WMSG3("  CFFA unable to create placeholder (%ld, %ld) (err=%d)\n",
+                LOGI("  CFFA unable to create placeholder (%ld, %ld) (err=%d)",
                     startBlock, maxBlocks, dierr);
                 goto bail;
             }
         } else {
             fsNumBlocks = pNewFS->GetFSNumBlocks();
             if (fsNumBlocks < 2 || fsNumBlocks > blocksPerVolume) {
-                WMSG2(" CFFA WARNING: FSNumBlocks #%d reported as %ld\n",
+                LOGI(" CFFA WARNING: FSNumBlocks #%d reported as %ld",
                     i, fsNumBlocks);
             }
             AddSubVolumeToList(pNewImg, pNewFS);

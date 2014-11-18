@@ -73,7 +73,7 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
     int err = 0;
 
     if (mFP != NULL) {
-        WMSG0("SoundFile object already created\n");
+        LOGI("SoundFile object already created");
         assert(false);
         return -1;
     }
@@ -102,7 +102,7 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
         fileHeader.fileLen > (unsigned long) len)
     {
         *pErrMsg = L"File is not a WAV file";
-        WMSG3("Not a valid WAV header (0x%08lx %d 0x%08lx)\n",
+        LOGI("Not a valid WAV header (0x%08lx %d 0x%08lx)",
             fileHeader.riff, fileHeader.fileLen, fileHeader.wav);
         err = -1;
         goto bail;
@@ -154,10 +154,10 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
     mSampleStart = ftell(mFP);
     mSampleLen = chunkLen;
 
-    WMSG4("WAV: chan=%d samples/sec=%d avgBPS=%d block=%d\n",
+    LOGI("WAV: chan=%d samples/sec=%d avgBPS=%d block=%d",
         mFormat.nChannels, mFormat.nSamplesPerSec, mFormat.nAvgBytesPerSec,
         mFormat.nBlockAlign);
-    WMSG3("  bits/sample=%d [start=%d len=%d]\n", mFormat.wBitsPerSample,
+    LOGI("  bits/sample=%d [start=%d len=%d]", mFormat.wBitsPerSample,
         mSampleStart, mSampleLen);
 
 bail:
@@ -181,7 +181,7 @@ SoundFile::SkipToHeader(unsigned long hdrID, unsigned long* pChunkLen)
     while (true) {
         if (fread(&chunkHeader, sizeof(chunkHeader), 1, mFP) != 1) {
             err = errno ? errno : -1;
-            WMSG1("Failed searching for chunk header 0x%08lx\n", hdrID);
+            LOGI("Failed searching for chunk header 0x%08lx", hdrID);
             break;
         }
 
@@ -193,7 +193,7 @@ SoundFile::SkipToHeader(unsigned long hdrID, unsigned long* pChunkLen)
         /* didn't match, skip contents */
         if (fseek(mFP, chunkHeader.chunkLen, SEEK_CUR) != 0) {
             err = errno;
-            WMSG1("Failed seeking past contents of 0x%08lx\n",
+            LOGI("Failed seeking past contents of 0x%08lx",
                 chunkHeader.chunkLen);
             break;
         }
@@ -209,7 +209,7 @@ int
 SoundFile::ReadData(void* buf, long sampleOffset, long len) const
 {
     if ((unsigned long)(sampleOffset+len) > mSampleLen) {
-        WMSG3("ERROR: invalid read request (%d bytes, %d into %d)\n",
+        LOGI("ERROR: invalid read request (%d bytes, %d into %d)",
             len, sampleOffset, mSampleLen);
         return -1;
     }
@@ -219,7 +219,7 @@ SoundFile::ReadData(void* buf, long sampleOffset, long len) const
 
     if (fread(buf, len, 1, mFP) != 1) {
         int err = errno ? errno : -1;
-        WMSG1("Failed reading %d bytes from sound file\n", len);
+        LOGI("Failed reading %d bytes from sound file", len);
         return err;
     }
 

@@ -43,7 +43,7 @@ ReformatDirectory::Process(const ReformatHolder* pHolder,
     fUseRTF = false;
 
     if (srcLen < 512 || (srcLen % 512) != 0) {
-        WMSG1("ReformatDirectory: invalid len %d\n", srcLen);
+        LOGI("ReformatDirectory: invalid len %d", srcLen);
         return -1;
     }
 

@@ -660,7 +660,7 @@ PathProposal::ArchiveToLocal(void)
             endp = wcschr(startp, fStoredFssep);
         if (endp != NULL && endp == startp) {
             /* zero-length subdir component */
-            WMSG1("WARNING: zero-length subdir component in '%ls'\n", startp);
+            LOGI("WARNING: zero-length subdir component in '%ls'", startp);
             startp++;
             continue;
         }
@@ -759,7 +759,7 @@ PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
             if (wcsnicmp(srcp, *ppcch, 3) == 0 &&
                 (srcp[3] == '.' || srcLen == 3))
             {
-                WMSG1("--- fixing '%ls'\n", *ppcch);
+                LOGI("--- fixing '%ls'", *ppcch);
                 if (fPreservation) {
                     *dstp++ = kForeignIndic;
                     *dstp++ = '0';
@@ -777,7 +777,7 @@ PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
             if (wcsnicmp(srcp, *ppcch, 4) == 0 &&
                 (srcp[4] == '.' || srcLen == 4))
             {
-                WMSG1("--- fixing '%ls'\n", *ppcch);
+                LOGI("--- fixing '%ls'", *ppcch);
                 if (fPreservation) {
                     *dstp++ = kForeignIndic;
                     *dstp++ = '0';
@@ -992,7 +992,7 @@ PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
         }
 
         /* if '#' appears in it, don't use it -- it'll confuse us */
-        //WMSG2("LOOKING FOR '%c' in '%ls'\n", kPreserveIndic, ccp);
+        //LOGI("LOOKING FOR '%c' in '%ls'", kPreserveIndic, ccp);
         const WCHAR* ccp = pWantedExt;
         while (*ccp != '\0') {
             if (*ccp == kPreserveIndic) {
@@ -1134,7 +1134,7 @@ PathProposal::LocalToArchive(const AddFilesDialog* pAddOpts)
     if ((livePathStr[0] == '.' && livePathStr[1] == '.') ||
         (wcsstr(livePathStr, slashDotDotSlash) != NULL))
     {
-        WMSG1("Found dot dot in '%ls', keeping only filename\n", livePathStr);
+        LOGI("Found dot dot in '%ls', keeping only filename", livePathStr);
         doJunk = true;
     }
 
@@ -1423,7 +1423,7 @@ PathProposal::StripDiskImageSuffix(WCHAR* pathName)
 
     for (i = 0; i < NELEM(diskExt); i++) {
         if (wcsicmp(pExt+1, diskExt[i]) == 0) {
-            WMSG2("Dropping '%ls' from '%ls'\n", pExt, pathName);
+            LOGI("Dropping '%ls' from '%ls'", pExt, pathName);
             *const_cast<WCHAR*>(pExt) = '\0';
             return;
         }

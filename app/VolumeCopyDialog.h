@@ -61,7 +61,7 @@ protected:
     // before we try to load any header images.
     void LoadListImages(void) {
         if (!fListImageList.Create(IDB_VOL_PICS, 16, 1, CLR_DEFAULT))
-            WMSG0("GLITCH: list image create failed\n");
+            LOGI("GLITCH: list image create failed");
         fListImageList.SetBkColor(::GetSysColor(COLOR_WINDOW));
     }
     enum {  // defs for IDB_VOL_PICS

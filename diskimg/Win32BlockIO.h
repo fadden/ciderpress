@@ -242,7 +242,7 @@ private:
             {}
         virtual ~LogicalBlockAccess(void) {
             if (fHandle != NULL) {
-                //WMSG0("HEY: LogicalBlockAccess: forcing close\n");
+                //LOGI("HEY: LogicalBlockAccess: forcing close");
                 Close();
             }
             delete[] fLastSectorCache;

@@ -63,14 +63,14 @@ NiftyList::AppInit(const WCHAR* fileName)
      */
     fp = _wfopen(fileName, L"rb");
     if (fp == NULL) {
-        WMSG1("NL Unable to open '%ls'\n", fileName);
+        LOGI("NL Unable to open '%ls'", fileName);
         goto bail;
     } else {
-        WMSG1("NL Reading '%ls'\n", fileName);
+        LOGI("NL Reading '%ls'", fileName);
     }
 
     if (fseek(fp, 0, SEEK_END) < 0) {
-        WMSG0("Seek failed\n");
+        LOGI("Seek failed");
         goto bail;
     }
     fileLen = ftell(fp);
@@ -78,12 +78,12 @@ NiftyList::AppInit(const WCHAR* fileName)
 
     fFileData = new char[fileLen];
     if (fFileData == NULL) {
-        WMSG1("Failed allocating %d bytes\n", fileLen);
+        LOGI("Failed allocating %d bytes", fileLen);
         goto bail;
     }
 
     if (fread(fFileData, fileLen, 1, fp) != 1) {
-        WMSG1("Failed reading NList.Data (%d bytes)\n", fileLen);
+        LOGI("Failed reading NList.Data (%d bytes)", fileLen);
         goto bail;
     }
 
@@ -113,7 +113,7 @@ NiftyList::AppInit(const WCHAR* fileName)
 
     fDataReady = true;
     result = true;
-    WMSG0("NL NiftyList data loaded\n");
+    LOGI("NL NiftyList data loaded");
 
 bail:
     if (fp != NULL)
@@ -170,7 +170,7 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
     while (1) {
         lineLen = ScanLine(pData, remLen);
         if (lineLen == 0) {
-            WMSG1("Failed scanning line, remLen=%ld\n", remLen);
+            LOGI("Failed scanning line, remLen=%ld", remLen);
             return false;
         }
         if (*pData == '*') {
@@ -185,12 +185,12 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
     }
 
     if (mode == kModeSkip) {
-        WMSG1(" NL Skipping %d entries in section\n", numLines);
+        LOGI(" NL Skipping %d entries in section", numLines);
         *ppData = pData;
         *pRemLen = remLen;
         return true;
     } else {
-        WMSG1(" NL Found %d entries in section\n", numLines);
+        LOGI(" NL Found %d entries in section", numLines);
     }
 
     /*
@@ -200,7 +200,7 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
 
     pSet->pEntries = new NameValue[numLines];
     if (pSet->pEntries == NULL) {
-        WMSG0("NameValue alloc failed\n");
+        LOGI("NameValue alloc failed");
         return false;
     }
     pSet->numEntries = numLines;
@@ -214,7 +214,7 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
     while (1) {
         lineLen = ScanLine(pData, remLen);
         if (lineLen == 0) {
-            WMSG1("Failed scanning line(2), remLen=%ld\n", remLen);
+            LOGI("Failed scanning line(2), remLen=%ld", remLen);
             return false;
         }
 
@@ -225,7 +225,7 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
         }
 
         if (lineLen < 6 || pData[4] != ' ') {
-            WMSG1("Found garbled line '%.80hs'\n", pData);
+            LOGI("Found garbled line '%.80hs'", pData);
             return false;
         }
         if (pData[lineLen-2] == '\r' || pData[lineLen-2] == '\n')
@@ -233,7 +233,7 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
         else if (pData[lineLen-1] == '\r' || pData[lineLen-1] == '\n')
             pData[lineLen-1] = '\0';
         else {
-            WMSG2("No EOL found on '%.80hs' (%d)\n", pData, lineLen);
+            LOGI("No EOL found on '%.80hs' (%d)", pData, lineLen);
         }
 
         assert(entry < numLines);
@@ -338,10 +338,10 @@ NiftyList::DumpSection(const DataSet& dataSet)
 {
     long ent;
 
-    WMSG1("Dumping section (count=%ld)\n", dataSet.numEntries);
+    LOGI("Dumping section (count=%ld)", dataSet.numEntries);
 
     for (ent = 0; ent < dataSet.numEntries; ent++) {
-        WMSG3("%4d: %04x '%hs'\n",
+        LOGI("%4d: %04x '%hs'",
             ent, dataSet.pEntries[ent].value, dataSet.pEntries[ent].name);
     }
 }

@@ -182,7 +182,7 @@ ExtractOptionsDialog::OnChooseFolder(void)
     chooseDir.SetPathName(editPath);
     if (chooseDir.DoModal() == IDOK) {
         const WCHAR* ccp = chooseDir.GetPathName();
-        WMSG1("New extract path chosen = '%ls'\n", ccp);
+        LOGI("New extract path chosen = '%ls'", ccp);
 
         pEditWnd->SetWindowText(ccp);
     }

@@ -127,13 +127,13 @@ AcuEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
         char* unsqBuf = NULL;
         long unsqLen = 0;
         expBuf.SeizeBuffer(&unsqBuf, &unsqLen);
-        WMSG2("Unsqueezed %ld bytes to %d\n",
+        LOGI("Unsqueezed %ld bytes to %d",
             (unsigned long) GetCompressedLen(), unsqLen);
         if (unsqLen == 0) {
             // some bonehead squeezed a zero-length file
             delete[] unsqBuf;
             ASSERT(*ppText == NULL);
-            WMSG0("Handling zero-length squeezed file!\n");
+            LOGI("Handling zero-length squeezed file!");
             if (needAlloc) {
                 *ppText = new char[1];
                 **ppText = '\0';
@@ -223,7 +223,7 @@ AcuEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
 
     len = (long) GetUncompressedLen();
     if (len == 0) {
-        WMSG0("Empty fork\n");
+        LOGI("Empty fork");
         result = IDOK;
         goto bail;
     }
@@ -260,12 +260,12 @@ AcuEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         }
 
         expBuf.SeizeBuffer(&buf, &uncLen);
-        WMSG2("Unsqueezed %ld bytes to %d\n", len, uncLen);
+        LOGI("Unsqueezed %ld bytes to %d", len, uncLen);
 
         // some bonehead squeezed a zero-length file
         if (uncLen == 0) {
             ASSERT(buf == NULL);
-            WMSG0("Handling zero-length squeezed file!\n");
+            LOGI("Handling zero-length squeezed file!");
             result = IDOK;
             goto bail;
         }
@@ -605,11 +605,11 @@ AcuArchive::ReadMasterHeader(int* pNumEntries)
         header.unknown1 != 1 ||
         strcmp((char*) header.fZink, "fZink") != 0)
     {
-        WMSG0("Not an ACU archive\n");
+        LOGI("Not an ACU archive");
         return -1;
     }
 
-    WMSG1("Looks like an ACU archive with %d entries\n", header.fileCount);
+    LOGI("Looks like an ACU archive with %d entries", header.fileCount);
 
     *pNumEntries = header.fileCount;
     return 0;
@@ -661,20 +661,20 @@ AcuArchive::ReadFileHeader(AcuFileEntry* pEntry)
 
     /* read the filename */
     if (pEntry->fileNameLen > kAcuMaxFileName) {
-        WMSG1("GLITCH: filename is too long (%d bytes)\n",
+        LOGI("GLITCH: filename is too long (%d bytes)",
             pEntry->fileNameLen);
         err = kNuErrGeneric;
         goto bail;
     }
     if (!pEntry->fileNameLen) {
-        WMSG0("GLITCH: filename missing\n");
+        LOGI("GLITCH: filename missing");
         err = kNuErrGeneric;
         goto bail;
     }
 
     /* don't know if this is possible or not */
     if (pEntry->storageType == 5) {
-        WMSG0("HEY: EXTENDED FILE\n");
+        LOGI("HEY: EXTENDED FILE");
     }
 
     err = AcuRead(pEntry->fileName, pEntry->fileNameLen);
@@ -702,15 +702,15 @@ AcuArchive::DumpFileHeader(const AcuFileEntry* pEntry)
     FormatDate(createWhen, &createStr);
     FormatDate(modWhen, &modStr);
 
-    WMSG1("  Header for file '%hs':\n", pEntry->fileName);
-    WMSG4("    dataStorageLen=%d eof=%d blockCount=%d checksum=0x%04x\n",
+    LOGI("  Header for file '%hs':", pEntry->fileName);
+    LOGI("    dataStorageLen=%d eof=%d blockCount=%d checksum=0x%04x",
         pEntry->dataStorageLen, pEntry->dataEof, pEntry->blockCount,
         pEntry->dataChecksum);
-    WMSG4("    fileType=0x%02x auxType=0x%04x storageType=0x%02x access=0x%04x\n",
+    LOGI("    fileType=0x%02x auxType=0x%04x storageType=0x%02x access=0x%04x",
         pEntry->fileType, pEntry->auxType, pEntry->storageType, pEntry->access);
-    WMSG2("    created %ls, modified %ls\n",
+    LOGI("    created %ls, modified %ls",
         (LPCWSTR) createStr, (LPCWSTR) modStr);
-    WMSG2("    fileNameLen=%d headerChecksum=0x%04x\n",
+    LOGI("    fileNameLen=%d headerChecksum=0x%04x",
         pEntry->fileNameLen, pEntry->headerChecksum);
 }
 
@@ -864,13 +864,13 @@ AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 
     ASSERT(fFp != NULL);
 
-    WMSG1("Testing %d entries\n", pSelSet->GetNumEntries());
+    LOGI("Testing %d entries", pSelSet->GetNumEntries());
 
     SelectionEntry* pSelEntry = pSelSet->IterNext();
     while (pSelEntry != NULL) {
         pEntry = (AcuEntry*) pSelEntry->GetEntry();
 
-        WMSG2("  Testing '%hs' (offset=%ld)\n", pEntry->GetDisplayName(),
+        LOGI("  Testing '%hs' (offset=%ld)", pEntry->GetDisplayName(),
             pEntry->GetOffset());
 
         SET_PROGRESS_UPDATE2(0, pEntry->GetDisplayName(), NULL);

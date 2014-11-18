@@ -186,7 +186,7 @@ DiskEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         len = fpFile->GetDataLength();
 
     if (len == 0) {
-        WMSG0("Empty fork\n");
+        LOGI("Empty fork");
         result = IDOK;
         goto bail;
     } else if (len < 0) {
@@ -376,7 +376,7 @@ DiskEntry::GetFeatureFlag(Feature feature) const
         }
     }
     default:
-        WMSG1("Unexpected feature flag %d\n", feature);
+        LOGI("Unexpected feature flag %d", feature);
         assert(false);
         return false;
     }
@@ -402,7 +402,7 @@ DiskArchive::AppInit(void)
     DIError dierr;
     long major, minor, bug;
 
-    WMSG0("Initializing DiskImg library\n");
+    LOGI("Initializing DiskImg library");
 
     // set this before initializing, so we can see init debug msgs
     DiskImgLib::Global::SetDebugMsgHandler(DebugMsgHandler);
@@ -464,7 +464,7 @@ DiskArchive::ProgressCallback(DiskImgLib::A2FileDescr* pFile,
     //::Sleep(10);
     status = SET_PROGRESS_UPDATE(ComputePercent(current, max));
     if (status == IDCANCEL) {
-        WMSG0("IDCANCEL returned from Main progress updater\n");
+        LOGI("IDCANCEL returned from Main progress updater");
         return false;
     }
 
@@ -492,7 +492,7 @@ DiskArchive::ScanProgressCallback(void* cookie, const char* str, int count)
     cont = SET_PROGRESS_COUNTER_2(fmt, count);
 
     if (!cont) {
-        WMSG0("cancelled\n");
+        LOGI("cancelled");
     }
 
     return cont;
@@ -538,7 +538,7 @@ DiskArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
         if (dierr == kDIErrAccessDenied && !readOnly && !isVolume) {
             // retry file open with read-only set
             // don't do that for volumes -- assume they know what they want
-            WMSG0("  Retrying open with read-only set\n");
+            LOGI("  Retrying open with read-only set");
             fIsReadOnly = readOnly = true;
             dierr = fDiskImg.OpenImage(filename, PathProposal::kLocalFssep, readOnly);
         }
@@ -572,7 +572,7 @@ DiskArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
         imf.SetAllowGenericFormats(false);
 
         if (imf.DoModal() != IDOK) {
-            WMSG0("User bailed on IMF dialog\n");
+            LOGI("User bailed on IMF dialog");
             result = kResultCancel;
             goto bail;
         }
@@ -580,7 +580,7 @@ DiskArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
         if (imf.fSectorOrder != fDiskImg.GetSectorOrder() ||
             imf.fFSFormat != fDiskImg.GetFSFormat())
         {
-            WMSG0("Initial values overridden, forcing img format\n");
+            LOGI("Initial values overridden, forcing img format");
             dierr = fDiskImg.OverrideFormat(fDiskImg.GetPhysicalFormat(),
                         imf.fFSFormat, imf.fSectorOrder);
             if (dierr != kDIErrNone) {
@@ -795,7 +795,7 @@ DiskArchive::New(const WCHAR* fileName, const void* vOptions)
         goto bail;
     }
 
-    WMSG4("DiskArchive: new '%ls' %ld %hs in '%ls'\n",
+    LOGI("DiskArchive: new '%ls' %ld %hs in '%ls'",
         (LPCWSTR) volName, numBlocks,
         DiskImg::ToString(pOptions->base.format), fileName);
 
@@ -908,7 +908,7 @@ CString
 DiskArchive::Close(void)
 {
     if (fpPrimaryDiskFS != NULL) {
-        WMSG0("DiskArchive shutdown closing disk image\n");
+        LOGI("DiskArchive shutdown closing disk image");
         delete fpPrimaryDiskFS;
         fpPrimaryDiskFS = NULL;
     }
@@ -922,7 +922,7 @@ DiskArchive::Close(void)
         msg.Format(L"Failed while closing disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
         failed.LoadString(IDS_FAILED);
-        WMSG1("During close: %ls\n", msg);
+        LOGI("During close: %ls", msg);
 
         pMainWin->MessageBox(msg, failed, MB_OK);
     }
@@ -996,7 +996,7 @@ DiskArchive::LoadContents(void)
 {
     int result;
 
-    WMSG0("DiskArchive LoadContents\n");
+    LOGI("DiskArchive LoadContents");
     ASSERT(fpPrimaryDiskFS != NULL);
 
     {
@@ -1087,8 +1087,8 @@ DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
 
     wantCoerceDOSFilenames = pPreferences->GetPrefBool(kPrCoerceDOSFilenames);
 
-    WMSG2("Notes for disk image '%ls':\n%hs",
-        volName, pDiskFS->GetDiskImg()->GetNotes());
+    LOGI("Notes for disk image '%ls':", volName);
+    LOGI("%hs", pDiskFS->GetDiskImg()->GetNotes());
 
     ASSERT(pDiskFS != NULL);
     pFile = pDiskFS->GetNextFile(NULL);
@@ -1311,9 +1311,9 @@ DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     WCHAR curDir[MAX_PATH] = L"";
     bool retVal = false;
 
-    WMSG2("Opts: '%ls' typePres=%d\n", (LPCWSTR) pAddOpts->fStoragePrefix,
+    LOGI("Opts: '%ls' typePres=%d", (LPCWSTR) pAddOpts->fStoragePrefix,
         pAddOpts->fTypePreservation);
-    WMSG3("      sub=%d strip=%d ovwr=%d\n",
+    LOGI("      sub=%d strip=%d ovwr=%d",
         pAddOpts->fIncludeSubfolders, pAddOpts->fStripFolderNames,
         pAddOpts->fOverwriteExisting);
 
@@ -1331,7 +1331,7 @@ DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
      * Save the current directory and change to the one from the file dialog.
      */
     const WCHAR* buf = pAddOpts->GetFileNames();
-    WMSG2("Selected path = '%ls' (offset=%d)\n", buf,
+    LOGI("Selected path = '%ls' (offset=%d)", buf,
         pAddOpts->GetFileNameOffset());
 
     if (GetCurrentDirectory(NELEM(curDir), curDir) == 0) {
@@ -1347,7 +1347,7 @@ DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
 
     buf += pAddOpts->GetFileNameOffset();
     while (*buf != '\0') {
-        WMSG1("  file '%ls'\n", buf);
+        LOGI("  file '%ls'", buf);
 
         /* add the file, calling DoAddFile via the generic AddFile */
         nerr = AddFile(pAddOpts, buf, &errMsg);
@@ -1440,7 +1440,7 @@ DiskArchive::DoAddFile(const AddFilesDialog* pAddOpts,
     int neededLen = 64;     // reasonable guess
     char* fsNormalBuf = NULL;    // name as it will appear on disk image
 
-    WMSG2("  +++ ADD file: orig='%ls' stor='%ls'\n",
+    LOGI("  +++ ADD file: orig='%ls' stor='%ls'",
         (LPCWSTR) pDetails->origName, (LPCWSTR) pDetails->storageName);
 
 retry:
@@ -1491,16 +1491,16 @@ retry:
             goto retry;
         } else if (result == kNuOverwrite) {
             /* delete the existing file immediately */
-            WMSG1(" Deleting existing file '%hs'\n", fsNormalBuf);
+            LOGI(" Deleting existing file '%hs'", fsNormalBuf);
             dierr = pDiskFS->DeleteFile(pExisting);
             if (dierr != kDIErrNone) {
                 // Would be nice to show a dialog and explain *why*, but
                 // I'm not sure we have a window here.
-                WMSG1("  Deletion failed (err=%d)\n", dierr);
+                LOGI("  Deletion failed (err=%d)", dierr);
                 goto bail;
             }
         } else {
-            WMSG1("GLITCH: bad return %d from HandleReplaceExisting\n",result);
+            LOGI("GLITCH: bad return %d from HandleReplaceExisting",result);
             assert(false);
             nuerr = kNuErrInternal;
             goto bail;
@@ -1518,7 +1518,7 @@ retry:
         goto bail;
     }
 
-    WMSG1("FSNormalized is '%hs'\n", pAddData->GetFSNormalPath());
+    LOGI("FSNormalized is '%hs'", pAddData->GetFSNormalPath());
 
     AddToAddDataList(pAddData);
 
@@ -1564,7 +1564,7 @@ DiskArchive::HandleReplaceExisting(const A2File* pExisting,
     confOvwr.fNewFileModWhen = srcPath.GetModWhen();
 
     if (confOvwr.DoModal() == IDCANCEL) {
-        WMSG0("User cancelled out of add-to-diskimg replace-existing\n");
+        LOGI("User cancelled out of add-to-diskimg replace-existing");
         return kNuAbort;
     }
 
@@ -1583,7 +1583,7 @@ DiskArchive::HandleReplaceExisting(const A2File* pExisting,
          * allow the FS normalizer to force the filename to be valid.
          */
         pDetails->storageName = confOvwr.fExistingFile;
-        WMSG1("Trying rename to '%ls'\n", (LPCWSTR) pDetails->storageName);
+        LOGI("Trying rename to '%ls'", (LPCWSTR) pDetails->storageName);
         return kNuRename;
     }
 
@@ -1618,7 +1618,7 @@ DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
     long dataLen, rsrcLen;
     MainWindow* pMainWin = (MainWindow*)::AfxGetMainWnd();
 
-    WMSG0("--- ProcessFileAddData\n");
+    LOGI("--- ProcessFileAddData");
 
     /* map the EOL conversion to something we can use */
     GenericEntry::ConvertEOL convEOL;
@@ -1695,7 +1695,7 @@ DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
             }
         }
 
-        WMSG2("Adding file '%ls' (%hs)\n",
+        LOGI("Adding file '%ls' (%hs)",
             (LPCWSTR) pDetails->storageName, typeStr);
         ASSERT(pDataDetails != NULL || pRsrcDetails != NULL);
 
@@ -1724,7 +1724,7 @@ DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
                 if (pDataDetails->fileType == kFileTypeTXT ||
                     pDataDetails->fileType == kFileTypeSRC)
                 {
-                    WMSG0("Enabling text conversion by type\n");
+                    LOGI("Enabling text conversion by type");
                     convEOL = GenericEntry::kConvertEOLOn;
                 } else {
                     convEOL = GenericEntry::kConvertEOLOff;
@@ -1871,12 +1871,12 @@ DiskArchive::LoadFile(const WCHAR* pathName, BYTE** pBuf, long* pLen,
 
         conv = GenericEntry::DetermineConversion(*pBuf, chunkLen,
                     &eolType, &dummy);
-        WMSG2("LoadFile DetermineConv returned conv=%d eolType=%d\n",
+        LOGI("LoadFile DetermineConv returned conv=%d eolType=%d",
             conv, eolType);
         if (conv == GenericEntry::kConvertEOLOn &&
             eolType == GenericEntry::kEOLCR)
         {
-            WMSG0("  (skipping conversion due to matching eolType)\n");
+            LOGI("  (skipping conversion due to matching eolType)");
             conv = GenericEntry::kConvertEOLOff;
         }
     }
@@ -1891,7 +1891,7 @@ DiskArchive::LoadFile(const WCHAR* pathName, BYTE** pBuf, long* pLen,
      */
     if (conv == GenericEntry::kConvertEOLOff) {
         /* fast path */
-        WMSG1("  +++ NOT converting text '%ls'\n", pathName);
+        LOGI("  +++ NOT converting text '%ls'", pathName);
         if (fread(*pBuf, fileLen, 1, fp) != 1) {
             errMsg.Format(L"Unable to read '%ls': %hs.", pathName, strerror(errno));
             delete[] *pBuf;
@@ -1919,7 +1919,7 @@ DiskArchive::LoadFile(const WCHAR* pathName, BYTE** pBuf, long* pLen,
         else
             mask = 0x00;
 
-        WMSG2("  +++ Converting text '%ls', mask=0x%02x\n", pathName, mask);
+        LOGI("  +++ Converting text '%ls', mask=0x%02x", pathName, mask);
 
         while (count--) {
             ic = getc(fp);
@@ -2028,7 +2028,7 @@ DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
                 dierr = kDIErrNone;     // dirs are not made unique
             goto bail;
         } else {
-            WMSG0(" Ignoring subdir create req on non-hierarchic FS\n");
+            LOGI(" Ignoring subdir create req on non-hierarchic FS");
             goto bail;
         }
     }
@@ -2041,7 +2041,7 @@ DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
 
             if (dataLen < 0) {
                 /* this was a resource-fork-only file */
-                WMSG1("--- nothing left to write for '%hs'\n",
+                LOGI("--- nothing left to write for '%hs'",
                     parmCopy.pathName);
                 goto bail;
             }
@@ -2058,7 +2058,7 @@ DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
             parmCopy.fileType == kFileTypeINT ||
             parmCopy.fileType == kFileTypeBAS)
         {
-            WMSG0("+++ switching DOS file type to $f2\n");
+            LOGI("+++ switching DOS file type to $f2");
             parmCopy.fileType = 0xf2;       // DOS 'S' file
         }
     }
@@ -2075,7 +2075,7 @@ DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
      */
     dierr = pDiskFS->CreateFile(&parmCopy, &pNewFile);
     if (dierr != kDIErrNone) {
-        WMSG1("  CreateFile failed: %hs\n", DiskImgLib::DIStrError(dierr));
+        LOGI("  CreateFile failed: %hs", DiskImgLib::DIStrError(dierr));
         goto bail;
     }
 
@@ -2143,7 +2143,7 @@ bail:
          * erase any subdirectories that were created to contain this file.
          * Not worth worrying about.
          */
-        WMSG1(" Deleting newly-created file '%hs'\n", parmCopy.pathName);
+        LOGI(" Deleting newly-created file '%hs'", parmCopy.pathName);
         (void) pDiskFS->DeleteFile(pNewFile);
     }
     return dierr;
@@ -2193,7 +2193,7 @@ DiskArchive::AddToAddDataList(FileAddData* pData)
      * 1000 in almost all cases).
      */
     //if (strcasecmp(pData->GetDetails()->storageName, "system\\finder") == 0)
-    //  WMSG0("whee\n");
+    //  LOGI("whee");
     FileAddData* pSearch = fpAddDataHead;
     FileDetails::FileKind dataKind, listKind;
 
@@ -2214,7 +2214,7 @@ DiskArchive::AddToAddDataList(FileAddData* pData)
                 (listKind == FileDetails::kFileKindDataFork || listKind == FileDetails::kFileKindRsrcFork))
             {
                 /* looks good, hook it in here instead of the list */
-                WMSG2("--- connecting forks of '%ls' and '%ls'\n",
+                LOGI("--- connecting forks of '%ls' and '%ls'",
                     pData->GetDetails()->origName,
                     pSearch->GetDetails()->origName);
                 pSearch->SetOtherFork(pData);
@@ -2384,7 +2384,7 @@ DiskArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         ASSERT(pEntry != NULL);
 
         entryArray[idx++] = pEntry;
-        WMSG2("Added 0x%08lx '%ls'\n", (long) entryArray[idx-1],
+        LOGI("Added 0x%08lx '%ls'", (long) entryArray[idx-1],
             (LPCWSTR) entryArray[idx-1]->GetDisplayName());
 
         pSelEntry = pSelSet->IterNext();
@@ -2419,7 +2419,7 @@ DiskArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
             goto bail;
         }
 
-        WMSG2("  Deleting '%ls' from '%hs'\n", (LPCWSTR) pEntry->GetPathName(),
+        LOGI("  Deleting '%ls' from '%hs'", (LPCWSTR) pEntry->GetPathName(),
             (LPCSTR) pFile->GetDiskFS()->GetVolumeName());
         SET_PROGRESS_UPDATE2(0, pEntry->GetPathName(), NULL);
 
@@ -2484,7 +2484,7 @@ DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     CString errMsg;
     bool retVal = false;
 
-    WMSG1("Renaming %d entries\n", pSelSet->GetNumEntries());
+    LOGI("Renaming %d entries", pSelSet->GetNumEntries());
 
     /*
      * For each item in the selection set, bring up the "rename" dialog,
@@ -2500,7 +2500,7 @@ DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         RenameEntryDialog renameDlg(pMsgWnd);
         DiskEntry* pEntry = (DiskEntry*) pSelEntry->GetEntry();
 
-        WMSG1("  Renaming '%ls'\n", pEntry->GetPathName());
+        LOGI("  Renaming '%ls'", pEntry->GetPathName());
         if (!SetRenameFields(pMsgWnd, pEntry, &renameDlg))
             break;
 
@@ -2525,14 +2525,14 @@ DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 goto bail;
             }
-            WMSG2("Rename of '%ls' to '%ls' succeeded\n",
+            LOGI("Rename of '%ls' to '%ls' succeeded",
                 pEntry->GetDisplayName(), renameDlg.fNewName);
         } else if (result == IDCANCEL) {
-            WMSG0("Canceling out of remaining renames\n");
+            LOGI("Canceling out of remaining renames");
             break;
         } else {
             /* 3rd possibility is IDIGNORE, i.e. skip this entry */
-            WMSG1("Skipping rename of '%ls'\n", pEntry->GetDisplayName());
+            LOGI("Skipping rename of '%ls'", pEntry->GetDisplayName());
         }
 
         pSelEntry = pSelSet->IterNext();
@@ -2782,7 +2782,7 @@ DiskArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
     DiskImg::FSFormat fsFormat;
     fsFormat = pFile->GetDiskFS()->GetDiskImg()->GetFSFormat();
     if (fsFormat == DiskImg::kFormatDOS32 || fsFormat == DiskImg::kFormatDOS33) {
-        WMSG0(" (reloading additional fields after DOS SFI)\n");
+        LOGI(" (reloading additional fields after DOS SFI)");
         pEntry->SetDataForkLen(pFile->GetDataLength());
         pEntry->SetCompressedLen(pFile->GetDataSparseLength());
         pEntry->SetSuspicious(pFile->GetQuality() == A2File::kQualitySuspicious);
@@ -2815,7 +2815,7 @@ GenericArchive::XferStatus
 DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
     ActionProgressDialog* pActionProgress, const XferFileOptions* pXferOpts)
 {
-    WMSG0("DiskArchive XferSelection!\n");
+    LOGI("DiskArchive XferSelection!");
     unsigned char* dataBuf = NULL;
     unsigned char* rsrcBuf = NULL;
     FileDetails fileDetails;
@@ -2836,7 +2836,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         ASSERT(rsrcBuf == NULL);
 
         if (pEntry->GetDamaged()) {
-            WMSG1("  XFER skipping damaged entry '%ls'\n",
+            LOGI("  XFER skipping damaged entry '%ls'",
                 pEntry->GetDisplayName());
             continue;
         }
@@ -2860,7 +2860,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
 
         if (pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir) {
             /* this is the volume dir */
-            WMSG1("  XFER not transferring volume dir '%ls'\n",
+            LOGI("  XFER not transferring volume dir '%ls'",
                 (LPCWSTR) fixedPathName);
             continue;
         } else if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory) {
@@ -2870,7 +2870,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                 cmpStr += (char)PathProposal::kDefaultStoredFssep;
 
                 if (pSelSet->CountMatchingPrefix(cmpStr) == 0) {
-                    WMSG1("FOUND empty dir '%ls'\n", (LPCWSTR) fixedPathName);
+                    LOGI("FOUND empty dir '%ls'", (LPCWSTR) fixedPathName);
                     cmpStr += kEmptyFolderMarker;
                     dataBuf = new unsigned char[1];
                     dataLen = 0;
@@ -2881,16 +2881,16 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                         pEntry->GetAccess() | GenericEntry::kAccessInvisible;
                     goto have_stuff2;
                 } else {
-                    WMSG1("NOT empty dir '%ls'\n", (LPCWSTR) fixedPathName);
+                    LOGI("NOT empty dir '%ls'", (LPCWSTR) fixedPathName);
                 }
             }
 
-            WMSG1("  XFER not transferring directory '%ls'\n",
+            LOGI("  XFER not transferring directory '%ls'",
                 (LPCWSTR) fixedPathName);
             continue;
         }
 
-        WMSG3("  Xfer '%ls' (data=%d rsrc=%d)\n",
+        LOGI("  Xfer '%ls' (data=%d rsrc=%d)",
             (LPCWSTR) fixedPathName, pEntry->GetHasDataFork(),
             pEntry->GetHasRsrcFork());
 
@@ -2899,7 +2899,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         result = pEntry->ExtractThreadToBuffer(GenericEntry::kDataThread,
                     (char**) &dataBuf, &dataLen, &extractErrMsg);
         if (result == IDCANCEL) {
-            WMSG0("Cancelled during data extract!\n");
+            LOGI("Cancelled during data extract!");
             goto bail;  /* abort anything that was pending */
         } else if (result != IDOK) {
             errMsg.Format(L"Failed while extracting '%ls': %ls.",
@@ -2919,7 +2919,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             long len;
             unsigned char* ucp;
 
-            WMSG1("  Converting DOS text in '%ls'\n", fixedPathName);
+            LOGI("  Converting DOS text in '%ls'", fixedPathName);
             for (ucp = dataBuf, len = dataLen; len > 0; len--, ucp++)
                 *ucp = *ucp & 0x7f;
         }
@@ -2930,7 +2930,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             pEntry->GetFSFormat() == DiskImg::kFormatPascal &&
             pEntry->GetFileType() == kFileTypePTX)
         {
-            WMSG1("WOULD CONVERT ptx '%ls'\n", fixedPathName);
+            LOGI("WOULD CONVERT ptx '%ls'", fixedPathName);
         }
 #endif
 
@@ -2940,7 +2940,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             result = pEntry->ExtractThreadToBuffer(GenericEntry::kRsrcThread,
                         (char**) &rsrcBuf, &rsrcLen, &extractErrMsg);
             if (result == IDCANCEL) {
-                WMSG0("Cancelled during rsrc extract!\n");
+                LOGI("Cancelled during rsrc extract!");
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
                 errMsg.Format(L"Failed while extracting '%ls': %ls.",
@@ -2992,7 +2992,7 @@ have_stuff2:
         errMsg = pXferOpts->fTarget->XferFile(&fileDetails, &dataBuf, dataLen,
             &rsrcBuf, rsrcLen);
         if (!errMsg.IsEmpty()) {
-            WMSG0("XferFile failed!\n");
+            LOGI("XferFile failed!");
             errMsg.Format(L"Failed while transferring '%ls': %ls.",
                 (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) errMsg);
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
@@ -3029,7 +3029,7 @@ bail:
 void
 DiskArchive::XferPrepare(const XferFileOptions* pXferOpts)
 {
-    WMSG0("DiskArchive::XferPrepare\n");
+    LOGI("DiskArchive::XferPrepare");
 
     //fpPrimaryDiskFS->SetParameter(DiskFS::kParmProDOS_AllowLowerCase,
     //  pXferOpts->fAllowLowerCase);
@@ -3064,7 +3064,7 @@ DiskArchive::XferFile(FileDetails* pDetails, BYTE** pDataBuf,
     CString errMsg;
     DIError dierr = kDIErrNone;
 
-    WMSG3(" XFER: transfer '%ls' (dataLen=%ld rsrcLen=%ld)\n",
+    LOGI(" XFER: transfer '%ls' (dataLen=%ld rsrcLen=%ld)",
         pDetails->storageName, dataLen, rsrcLen);
 
     ASSERT(pDataBuf != NULL);
@@ -3097,12 +3097,12 @@ DiskArchive::XferFile(FileDetails* pDetails, BYTE** pDataBuf,
         long len = dataLen;
 
         if (srcIsDOS && !dstIsDOS) {
-            WMSG1(" Stripping high ASCII from '%ls'\n", pDetails->storageName);
+            LOGI(" Stripping high ASCII from '%ls'", pDetails->storageName);
 
             while (len--)
                 *ucp++ &= 0x7f;
         } else if (!srcIsDOS && dstIsDOS) {
-            WMSG1(" Adding high ASCII to '%ls'\n", pDetails->storageName);
+            LOGI(" Adding high ASCII to '%ls'", pDetails->storageName);
 
             while (len--) {
                 if (*ucp != '\0')
@@ -3110,10 +3110,10 @@ DiskArchive::XferFile(FileDetails* pDetails, BYTE** pDataBuf,
                 ucp++;
             }
         } else if (srcIsDOS && dstIsDOS) {
-            WMSG1(" --- not altering DOS-to-DOS text '%ls'\n",
+            LOGI(" --- not altering DOS-to-DOS text '%ls'",
                 pDetails->storageName);
         } else {
-            WMSG1(" --- non-DOS transfer '%ls'\n", pDetails->storageName);
+            LOGI(" --- non-DOS transfer '%ls'", pDetails->storageName);
         }
     }
 
@@ -3150,7 +3150,7 @@ bail:
 void
 DiskArchive::XferAbort(CWnd* pMsgWnd)
 {
-    WMSG0("DiskArchive::XferAbort\n");
+    LOGI("DiskArchive::XferAbort");
     InternalReload(pMsgWnd);
 }
 
@@ -3160,6 +3160,6 @@ DiskArchive::XferAbort(CWnd* pMsgWnd)
 void
 DiskArchive::XferFinish(CWnd* pMsgWnd)
 {
-    WMSG0("DiskArchive::XferFinish\n");
+    LOGI("DiskArchive::XferFinish");
     InternalReload(pMsgWnd);
 }

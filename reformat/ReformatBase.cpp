@@ -176,7 +176,7 @@ ReformatText::CheckGSCharConv(void)
     memset(test, 0, sizeof(test));
     for (i = 0; i < sizeof(kGSCharConv); i++) {
         if (test[kGSCharConv[i]] && kGSCharConv[i] != kUnk) {
-            WMSG3("Character used twice: 0x%02x at %d (0x%02x)\n",
+            LOGI("Character used twice: 0x%02x at %d (0x%02x)",
                 kGSCharConv[i], i, i+128);
             assert(false);
         }
@@ -213,7 +213,7 @@ ReformatText::SetResultBuffer(ReformatOutput* pOutput, bool multiFont)
          * worry about NULL pointers.
          */
         pOutput->SetOutputKind(ReformatOutput::kOutputRaw);
-        WMSG0("ReformatText returning a null pointer\n");
+        LOGI("ReformatText returning a null pointer");
     } else {
         if (fUseRTF)
             pOutput->SetOutputKind(ReformatOutput::kOutputRTF);
@@ -508,14 +508,14 @@ ReformatText::RTFParaJustify(void)
 void
 ReformatText::RTFLeftMargin(int margin)
 {
-    //WMSG1("+++ Left margin now %d\n", margin);
+    //LOGI("+++ Left margin now %d", margin);
     fLeftMargin = margin;
     RTFSetPara();
 }
 void
 ReformatText::RTFRightMargin(int margin)
 {
-    //WMSG1("+++ Right margin now %d\n", margin);
+    //LOGI("+++ Right margin now %d", margin);
     fRightMargin = margin;
     RTFSetPara();
 }
@@ -611,7 +611,7 @@ ReformatText::RTFSetGSFont(unsigned short family)
         newMult = 1.5f;
         break;
     default:
-        WMSG1("Unrecognized font family 0x%04x\n", family);
+        LOGI("Unrecognized font family 0x%04x", family);
         RTFSetFont(kFontArial);
         newMult = 1.0f;
         break;
@@ -939,7 +939,7 @@ ReformatGraphics::UnpackBytes(unsigned char* dst, const unsigned char* src,
         case 0x00:
             for (i = 0; i < count; i++) {
                 if (srcLen == 0 || dstRem == 0) {
-                    WMSG2(" SHR unpack overrun1 (srcLen=%ld dstRem=%ld)\n",
+                    LOGI(" SHR unpack overrun1 (srcLen=%ld dstRem=%ld)",
                         srcLen, dstRem);
                     return -1;
                 }
@@ -950,17 +950,17 @@ ReformatGraphics::UnpackBytes(unsigned char* dst, const unsigned char* src,
             break;
         case 0x40:
             //if (count != 3 || count != 5 || count != 6 || count != 7) {
-            //  WMSG1(" SHR unpack funky len %d?\n", count);
+            //  LOGI(" SHR unpack funky len %d?", count);
             //}
             if (srcLen == 0) {
-                WMSG0(" SHR unpack underrun2\n");
+                LOGI(" SHR unpack underrun2");
                 return -1;
             }
             val = *src++;
             srcLen--;
             for (i = 0; i < count; i++) {
                 if (dstRem == 0) {
-                    WMSG3(" SHR unpack overrun2 (srcLen=%d, i=%d of %d)\n",
+                    LOGI(" SHR unpack overrun2 (srcLen=%d, i=%d of %d)",
                         srcLen, i, count);
                     return -1;
                 }
@@ -970,7 +970,7 @@ ReformatGraphics::UnpackBytes(unsigned char* dst, const unsigned char* src,
             break;
         case 0x80:
             if (srcLen < 4) {
-                WMSG0(" SHR unpack underrun3\n");
+                LOGI(" SHR unpack underrun3");
                 return -1;
             }
             valSet[0] = *src++;
@@ -980,7 +980,7 @@ ReformatGraphics::UnpackBytes(unsigned char* dst, const unsigned char* src,
             srcLen -= 4;
             for (i = 0; i < count; i++) {
                 if (dstRem < 4) {
-                    WMSG2(" SHR unpack overrun3 (srcLen=%ld dstRem=%ld)\n",
+                    LOGI(" SHR unpack overrun3 (srcLen=%ld dstRem=%ld)",
                         srcLen, dstRem);
                     return -1;
                 }
@@ -993,14 +993,14 @@ ReformatGraphics::UnpackBytes(unsigned char* dst, const unsigned char* src,
             break;
         case 0xc0:
             if (srcLen == 0) {
-                WMSG0(" SHR unpack underrun4\n");
+                LOGI(" SHR unpack underrun4");
                 return -1;
             }
             val = *src++;
             srcLen--;
             for (i = 0; i < count; i++) {
                 if (dstRem < 4) {
-                    WMSG3(" SHR unpack overrun4 (srcLen=%ld dstRem=%ld count=%d)\n",
+                    LOGI(" SHR unpack overrun4 (srcLen=%ld dstRem=%ld count=%d)",
                         srcLen, dstRem, count);
                     return -1;
                 }
@@ -1021,7 +1021,7 @@ ReformatGraphics::UnpackBytes(unsigned char* dst, const unsigned char* src,
 
     /* require that we completely fill the buffer */
     if (dstRem != 0) {
-        WMSG1(" SHR unpack dstRem at %d\n", dstRem);
+        LOGI(" SHR unpack dstRem at %d", dstRem);
         return -1;
     }
 
@@ -1085,7 +1085,7 @@ ReformatGraphics::UnPackBits(const unsigned char** pSrcBuf, long* pSrcLen,
     }
     if (pixByte != 72) {
         /* can happen if we run out of input early */
-        WMSG1("  MP unexpected pixByte=%d\n", pixByte);
+        LOGI("  MP unexpected pixByte=%d", pixByte);
         /* keep going */
     }
 

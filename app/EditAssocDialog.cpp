@@ -70,7 +70,7 @@ EditAssocDialog::OnInitDialog(void)
 void
 EditAssocDialog::Setup(bool loadAssoc)
 {
-    WMSG0("Setup!\n");
+    LOGI("Setup!");
 
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
     ASSERT(pListView != NULL);

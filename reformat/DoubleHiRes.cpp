@@ -78,7 +78,7 @@ ReformatDHR::Examine(ReformatHolder* pHolder)
         pHolder->SetApplicPreferred(ReformatHolder::kReformatDHR_Window);
         break;
     default:
-        WMSG1("GLITCH: DHR algorithm %d not recognized\n", dhrAlg);
+        LOGI("GLITCH: DHR algorithm %d not recognized", dhrAlg);
         break;
     }
 }
@@ -110,13 +110,13 @@ ReformatDHR::Process(const ReformatHolder* pHolder,
         fAlgorithm = kDHRWindow;
         break;
     default:
-        WMSG1("GLITCH: bad id %d\n", id);
+        LOGI("GLITCH: bad id %d", id);
         fAlgorithm = kDHRLatched;
         break;
     }
 
     if (srcLen > kExpectedSize || srcLen < kExpectedSize-8) {
-        WMSG2(" DHR file is not ~%d bytes long (got %d)\n",
+        LOGI(" DHR file is not ~%d bytes long (got %d)",
             kExpectedSize, srcLen);
         goto bail;
     }
@@ -330,7 +330,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
                     !bitPtr[idx+2] && !bitPtr[idx+3])
                 {
                     //if (line == 87 && idx > 200 && idx < 240) {
-                    //  WMSG1(" %4d ERASE\n", idx);
+                    //  LOGI(" %4d ERASE", idx);
                     //}
                     /*colorBuf[idx] =*/ colorBuf[idx+1] =
                         colorBuf[idx+2] = /*colorBuf[idx+3] =*/ kColorBlack;
@@ -371,7 +371,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
             for (idx = 0; idx < kPixelsPerLine; idx++, bitPtr++) {
                 //if (line == 98 && idx > 50 && idx < 80) {
                 //  if (!(idx % 4)) {
-                //      WMSG2(" idx %3d: bits=0x%02x  PPPPCNNN\n",
+                //      LOGI(" idx %3d: bits=0x%02x  PPPPCNNN",
                 //          idx, whole & 0xff);
                 //  }
                 //}
@@ -386,7 +386,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
                 newColor = fColorLookup[(idx+1) & 0x03][(whole & 0xf0) >> 4];
 
                 //if (line == 98 && idx > 50 && idx < 80) {
-                //  WMSG4(" idx %3d:   old=%-2d new=%-2d (bits=0x%02x)\n", idx,
+                //  LOGI(" idx %3d:   old=%-2d new=%-2d (bits=0x%02x)", idx,
                 //      oldColor, newColor, whole & 0xff);
                 //}
 
@@ -407,7 +407,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
                     else if (shift1 == 0 || shift2 == 0 || shift3 == 0)
                         newColor = kColorBlack;
                     //if (line == 98 && idx > 50 && idx < 80) {
-                    //  WMSG2(" idx %3d:    S new=%-2d\n", idx, newColor);
+                    //  LOGI(" idx %3d:    S new=%-2d", idx, newColor);
                     //}
                 }
 
@@ -504,7 +504,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
                         mergePix |= colorBuf1[idx+1] & 0x0c;
                         ASSERT((mergePix & 0xf0) == 0);
                         if (line == 191) {
-                            WMSG3("idx=0x%02x idx+1=0x%02x merge=0x%02x\n",
+                            LOGI("idx=0x%02x idx+1=0x%02x merge=0x%02x",
                                 colorBuf1[idx], colorBuf1[idx+1], mergePix);
                         }
                         colorBuf1[idx-1] = colorBuf1[idx] = colorBuf1[idx+1] =

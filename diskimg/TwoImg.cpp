@@ -36,7 +36,7 @@ TwoImgHeader::InitHeader(int imageFormat, long imageSize, long imageBlockCount)
     if (imageFormat != kImageFormatNibble &&
         imageSize != imageBlockCount * 512)
     {
-        WMSG3("2MG InitHeader: bad sizes %d %ld %ld\n", imageFormat,
+        LOGI("2MG InitHeader: bad sizes %d %ld %ld", imageFormat,
             imageSize, imageBlockCount);
         return -1;
     }
@@ -174,11 +174,11 @@ TwoImgHeader::ReadHeader(FILE* fp, long totalLength)
         if (GetChunk(fp, fCmtOffset - kOurHeaderLen, fCmtLen,
             (void**) &fComment) != 0)
         {
-            WMSG0("Throwing comment away\n");
+            LOGI("Throwing comment away");
             fCmtLen = 0;
             fCmtOffset = 0;
         } else {
-            WMSG1("Got comment: '%s'\n", fComment);
+            LOGI("Got comment: '%s'", fComment);
         }
     }
 
@@ -189,11 +189,11 @@ TwoImgHeader::ReadHeader(FILE* fp, long totalLength)
         if (GetChunk(fp, fCreatorOffset - kOurHeaderLen, fCreatorLen,
             (void**) &fCreatorChunk) != 0)
         {
-            WMSG0("Throwing creator chunk away\n");
+            LOGI("Throwing creator chunk away");
             fCreatorLen = 0;
             fCreatorOffset = 0;
         } else {
-            //WMSG1("Got creator chunk: '%s'\n", fCreatorChunk);
+            //LOGI("Got creator chunk: '%s'", fCreatorChunk);
         }
     }
 
@@ -225,11 +225,11 @@ TwoImgHeader::ReadHeader(GenericFD* pGFD, long totalLength)
         if (GetChunk(pGFD, fCmtOffset - kOurHeaderLen, fCmtLen,
             (void**) &fComment) != 0)
         {
-            WMSG0("Throwing comment away\n");
+            LOGI("Throwing comment away");
             fCmtLen = 0;
             fCmtOffset = 0;
         } else {
-            WMSG1("Got comment: '%s'\n", fComment);
+            LOGI("Got comment: '%s'", fComment);
         }
     }
 
@@ -240,11 +240,11 @@ TwoImgHeader::ReadHeader(GenericFD* pGFD, long totalLength)
         if (GetChunk(pGFD, fCreatorOffset - kOurHeaderLen, fCreatorLen,
             (void**) &fCreatorChunk) != 0)
         {
-            WMSG0("Throwing creator chunk away\n");
+            LOGI("Throwing creator chunk away");
             fCreatorLen = 0;
             fCreatorOffset = 0;
         } else {
-            //WMSG1("Got creator chunk: '%s'\n", fCreatorChunk);
+            //LOGI("Got creator chunk: '%s'", fCreatorChunk);
         }
     }
 
@@ -267,7 +267,7 @@ TwoImgHeader::GetChunk(GenericFD* pGFD, di_off_t relOffset, long len,
     /* seek out to chunk and grab it */
     dierr = pGFD->Seek(relOffset, kSeekCur);
     if (dierr != kDIErrNone) {
-        WMSG0("2MG seek to chunk failed\n");
+        LOGI("2MG seek to chunk failed");
         return -1;
     }
 
@@ -276,7 +276,7 @@ TwoImgHeader::GetChunk(GenericFD* pGFD, di_off_t relOffset, long len,
 
     dierr = pGFD->Read(*pBuf, len);
     if (dierr != kDIErrNone) {
-        WMSG0("2MG chunk read failed\n");
+        LOGI("2MG chunk read failed");
         delete[] (char*) (*pBuf);
         *pBuf = NULL;
         (void) pGFD->Seek(curPos, kSeekSet);
@@ -304,11 +304,11 @@ TwoImgHeader::GetChunk(FILE* fp, di_off_t relOffset, long len,
 
     /* remember current offset */
     curPos = ftell(fp);
-    WMSG1("Current offset=%ld\n", curPos);
+    LOGI("Current offset=%ld", curPos);
 
     /* seek out to chunk and grab it */
     if (fseek(fp, (long) relOffset, SEEK_CUR) == -1) {
-        WMSG0("2MG seek to chunk failed\n");
+        LOGI("2MG seek to chunk failed");
         return errno ? errno : -1;;
     }
 
@@ -317,7 +317,7 @@ TwoImgHeader::GetChunk(FILE* fp, di_off_t relOffset, long len,
 
     count = fread(*pBuf, len, 1, fp);
     if (!count || ferror(fp) || feof(fp)) {
-        WMSG0("2MG chunk read failed\n");
+        LOGI("2MG chunk read failed");
         delete[] (char*) (*pBuf);
         *pBuf = NULL;
         (void) fseek(fp, curPos, SEEK_SET);
@@ -373,12 +373,12 @@ TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
     fCreatorStr[4] = '\0';
 
     if (fMagic != kMagic) {
-        WMSG0("Magic number does not match 2IMG\n");
+        LOGI("Magic number does not match 2IMG");
         return -1;
     }
 
     if (fVersion > 1) {
-        WMSG1("ERROR: unsupported version=%d\n", fVersion);
+        LOGI("ERROR: unsupported version=%d", fVersion);
         return -1;      // bad header until I hear otherwise
     }
 
@@ -392,7 +392,7 @@ TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
         fImageFormat != kImageFormatNibble)
     {
         fDataLen = fNumBlocks * kBlockSize;
-        WMSG1("NOTE: fixing zero dataLen in 'WOOF' image (set to %ld)\n",
+        LOGI("NOTE: fixing zero dataLen in 'WOOF' image (set to %ld)",
             fDataLen);
     }
 
@@ -402,22 +402,22 @@ TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
     if (fImageFormat != kImageFormatNibble &&
         fNumBlocks * kBlockSize != fDataLen)
     {
-        WMSG2("numBlocks/dataLen mismatch (%ld vs %ld)\n",
+        LOGI("numBlocks/dataLen mismatch (%ld vs %ld)",
             fNumBlocks * kBlockSize, fDataLen);
         return -1;
     }
     if (fDataLen + fDataOffset > totalLength) {
-        WMSG3("Invalid dataLen/offset/fileLength (dl=%ld, off=%ld, tlen=%ld)\n",
+        LOGI("Invalid dataLen/offset/fileLength (dl=%ld, off=%ld, tlen=%ld)",
             fDataLen, fDataOffset, totalLength);
         return -1;
     }
     if (fImageFormat < kImageFormatDOS || fImageFormat > kImageFormatNibble) {
-        WMSG1("Invalid image format %ld\n", fImageFormat);
+        LOGI("Invalid image format %ld", fImageFormat);
         return -1;
     }
 
     if (fCmtOffset > 0 && fCmtOffset < fDataOffset + fDataLen) {
-        WMSG2("2MG comment is inside the data section (off=%ld, data end=%ld)\n",
+        LOGI("2MG comment is inside the data section (off=%ld, data end=%ld)",
             fCmtOffset, fDataOffset+fDataLen);
         DebugBreak();
         // ignore the comment
@@ -428,7 +428,7 @@ TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
         long prevEnd = fDataOffset + fDataLen + fCmtLen;
 
         if (fCreatorOffset < prevEnd) {
-            WMSG2("2MG creator chunk is inside prev data (off=%ld, data end=%ld)\n",
+            LOGI("2MG creator chunk is inside prev data (off=%ld, data end=%ld)",
                 fCreatorOffset, prevEnd);
             DebugBreak();
             // ignore the creator chunk
@@ -480,7 +480,7 @@ TwoImgHeader::WriteHeader(GenericFD* pGFD) const
 int
 TwoImgHeader::WriteFooter(FILE* fp) const
 {
-    WMSG1("Writing footer at offset=%ld\n", (long) ftell(fp));
+    LOGI("Writing footer at offset=%ld", (long) ftell(fp));
 
     if (fCmtLen) {
         fwrite(fComment, fCmtLen, 1, fp);
@@ -501,7 +501,7 @@ TwoImgHeader::WriteFooter(FILE* fp) const
 int
 TwoImgHeader::WriteFooter(GenericFD* pGFD) const
 {
-    WMSG1("Writing footer at offset=%ld\n", (long) pGFD->Tell());
+    LOGI("Writing footer at offset=%ld", (long) pGFD->Tell());
 
     if (fCmtLen) {
         if (pGFD->Write(fComment, fCmtLen) != kDIErrNone)
@@ -553,24 +553,24 @@ TwoImgHeader::PackHeader(unsigned char* buf) const
 void
 TwoImgHeader::DumpHeader(void) const
 {
-    WMSG0("--- header contents:\n");
-    WMSG2("\tmagic         = '%s' (0x%08lx)\n", fMagicStr, fMagic);
-    WMSG2("\tcreator       = '%s' (0x%08lx)\n", fCreatorStr, fCreator);
-    WMSG1("\theaderLen     = %d\n", fHeaderLen);
-    WMSG1("\tversion       = %d\n", fVersion);
-    WMSG1("\timageFormat   = %ld\n", fImageFormat);
-    WMSG1("\tflags         = 0x%08lx\n", fFlags);
-    WMSG1("\t  locked      = %s\n",
+    LOGI("--- header contents:");
+    LOGI("\tmagic         = '%s' (0x%08lx)", fMagicStr, fMagic);
+    LOGI("\tcreator       = '%s' (0x%08lx)", fCreatorStr, fCreator);
+    LOGI("\theaderLen     = %d", fHeaderLen);
+    LOGI("\tversion       = %d", fVersion);
+    LOGI("\timageFormat   = %ld", fImageFormat);
+    LOGI("\tflags         = 0x%08lx", fFlags);
+    LOGI("\t  locked      = %s",
         (fFlags & kFlagLocked) ? "true" : "false");
-    WMSG2("\t  DOS volume  = %s (%ld)\n",
+    LOGI("\t  DOS volume  = %s (%ld)",
         (fFlags & kDOSVolumeSet) ? "true" : "false",
         fFlags & kDOSVolumeMask);
-    WMSG1("\tnumBlocks     = %ld\n", fNumBlocks);
-    WMSG1("\tdataOffset    = %ld\n", fDataOffset);
-    WMSG1("\tdataLen       = %ld\n", fDataLen);
-    WMSG1("\tcmtOffset     = %ld\n", fCmtOffset);
-    WMSG1("\tcmtLen        = %ld\n", fCmtLen);
-    WMSG1("\tcreatorOffset = %ld\n", fCreatorOffset);
-    WMSG1("\tcreatorLen    = %ld\n", fCreatorLen);
-    WMSG0("\n");
+    LOGI("\tnumBlocks     = %ld", fNumBlocks);
+    LOGI("\tdataOffset    = %ld", fDataOffset);
+    LOGI("\tdataLen       = %ld", fDataLen);
+    LOGI("\tcmtOffset     = %ld", fCmtOffset);
+    LOGI("\tcmtLen        = %ld", fCmtLen);
+    LOGI("\tcreatorOffset = %ld", fCreatorOffset);
+    LOGI("\tcreatorLen    = %ld", fCreatorLen);
+    LOGI("");
 }

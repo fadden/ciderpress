@@ -230,7 +230,7 @@ ImageFormatDialog::LoadComboBox(int boxID, const ConvTable* pTable, int dflt)
         if (pTable == gFSFormats && !fAllowGenericFormats &&
             DiskImg::IsGenericFormat((DiskImg::FSFormat)pTable[idx].enumval))
         {
-            WMSG1("LoadComboBox skipping '%ls'\n", pTable[idx].name);
+            LOGI("LoadComboBox skipping '%ls'", pTable[idx].name);
             idxShift++;
         } else {
             // Note to self: AddString returns the combo box item ID;
@@ -246,10 +246,10 @@ ImageFormatDialog::LoadComboBox(int boxID, const ConvTable* pTable, int dflt)
     }
 
     if (current != -1) {
-        WMSG3(" Set default for %d/%d to %d\n", boxID, dflt, current);
+        LOGI(" Set default for %d/%d to %d", boxID, dflt, current);
         pCombo->SetCurSel(current);
     } else {
-        WMSG2(" No matching default for %d (%d)\n", boxID, dflt);
+        LOGI(" No matching default for %d (%d)", boxID, dflt);
     }
 
 }
@@ -281,7 +281,7 @@ ImageFormatDialog::ConvComboSel(int boxID, const ConvTable* pTable)
         ASSERT(enumval == pTable[idx].enumval);
     }
 
-    WMSG3(" Returning ev=%d for %d entry '%ls'\n",
+    LOGI(" Returning ev=%d for %d entry '%ls'",
         enumval, boxID, pTable[idx].name);
 
     return enumval;

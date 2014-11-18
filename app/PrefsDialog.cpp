@@ -65,7 +65,7 @@ PrefsGeneralPage::OnChangeRange(UINT nID)
 void
 PrefsGeneralPage::OnDefaults(void)
 {
-    WMSG0("DEFAULTS!\n");
+    LOGI("DEFAULTS!");
 
     CButton* pButton;
 
@@ -178,7 +178,7 @@ END_MESSAGE_MAP()
 BOOL
 PrefsDiskImagePage::OnInitDialog(void)
 {
-    //WMSG0("OnInit!\n");
+    //LOGI("OnInit!");
     return CPropertyPage::OnInitDialog();
 }
 
@@ -188,13 +188,13 @@ PrefsDiskImagePage::OnInitDialog(void)
 void
 PrefsDiskImagePage::OnChange(void)
 {
-    WMSG0("OnChange\n");
+    LOGI("OnChange");
     SetModified(TRUE);
 }
 //void
 //PrefsDiskImagePage::OnChangeRange(UINT nID)
 //{
-//  WMSG1("OnChangeRange id=%d\n", nID);
+//  LOGI("OnChangeRange id=%d", nID);
 //  SetModified(TRUE);
 //}
 
@@ -326,7 +326,7 @@ PrefsCompressionPage::OnChangeRange(UINT nID)
 void
 PrefsCompressionPage::DoDataExchange(CDataExchange* pDX)
 {
-    //WMSG0("OnInit comp!\n");
+    //LOGI("OnInit comp!");
     fReady = true;
     DDX_Radio(pDX, IDC_DEFC_UNCOMPRESSED, fCompressType);
 }
@@ -372,10 +372,10 @@ END_MESSAGE_MAP()
 BOOL
 PrefsFviewPage::OnInitDialog(void)
 {
-    //WMSG0("OnInit!\n");
+    //LOGI("OnInit!");
     CSpinButtonCtrl* pSpin;
 
-    //WMSG0("Configuring spin\n");
+    //LOGI("Configuring spin");
 
     pSpin = (CSpinButtonCtrl*) GetDlgItem(IDC_PVIEW_SIZE_SPIN);
     ASSERT(pSpin != NULL);
@@ -385,7 +385,7 @@ PrefsFviewPage::OnInitDialog(void)
     uda.nInc = 64;
     pSpin->SetRange(1, 32767);
     pSpin->SetAccel(1, &uda);
-    WMSG0("OnInit done!\n");
+    LOGI("OnInit done!");
 
     return CPropertyPage::OnInitDialog();
 }
@@ -396,13 +396,13 @@ PrefsFviewPage::OnInitDialog(void)
 void
 PrefsFviewPage::OnChange(void)
 {
-    WMSG0("OnChange\n");
+    LOGI("OnChange");
     SetModified(TRUE);
 }
 void
 PrefsFviewPage::OnChangeRange(UINT nID)
 {
-    WMSG1("OnChangeRange id=%d\n", nID);
+    LOGI("OnChangeRange id=%d", nID);
     SetModified(TRUE);
 }
 
@@ -547,7 +547,7 @@ PrefsFilesPage::OnChooseFolder(void)
     chooseDir.SetPathName(editPath);
     if (chooseDir.DoModal() == IDOK) {
         const WCHAR* ccp = chooseDir.GetPathName();
-        WMSG1("New temp path chosen = '%ls'\n", ccp);
+        LOGI("New temp path chosen = '%ls'", ccp);
 
         pEditWnd->SetWindowText(ccp);
 
@@ -614,7 +614,7 @@ PrefsSheet::PrefsSheet(CWnd* pParentWnd) :
 BOOL
 PrefsSheet::OnNcCreate(LPCREATESTRUCT cs)
 {
-    //WMSG0("PrefsSheet OnNcCreate\n");
+    //LOGI("PrefsSheet OnNcCreate");
     BOOL val = CPropertySheet::OnNcCreate(cs);
     ModifyStyleEx(0, WS_EX_CONTEXTHELP);
     return val;
@@ -634,39 +634,39 @@ PrefsSheet::OnApplyNow(void)
     BOOL result;
 
     if (fGeneralPage.fReady) {
-        //WMSG0("Apply to general?\n");
+        //LOGI("Apply to general?");
         result = fGeneralPage.UpdateData(TRUE);
         if (!result)
             return;
     }
     if (fDiskImagePage.fReady) {
-        //WMSG0("Apply to disk images?\n");
+        //LOGI("Apply to disk images?");
         result = fDiskImagePage.UpdateData(TRUE);
         if (!result)
             return;
     }
     if (fCompressionPage.fReady) {
-        //WMSG0("Apply to compression?\n");
+        //LOGI("Apply to compression?");
         result = fCompressionPage.UpdateData(TRUE);
         if (!result)
             return;
     }
     if (fFviewPage.fReady) {
-        //WMSG0("Apply to fview?\n");
+        //LOGI("Apply to fview?");
         result = fFviewPage.UpdateData(TRUE);
         if (!result)
             return;
     }
 
     if (fFilesPage.fReady) {
-        //WMSG0("Apply to fview?\n");
+        //LOGI("Apply to fview?");
         result = fFilesPage.UpdateData(TRUE);
         if (!result)
             return;
     }
 
     /* reset all to "unmodified" state */
-    WMSG0("All 'applies' were successful\n");
+    LOGI("All 'applies' were successful");
     ((MainWindow*) AfxGetMainWnd())->ApplyNow(this);
     fGeneralPage.SetModified(FALSE);
     fGeneralPage.fDefaultsPushed = false;
@@ -692,7 +692,7 @@ PrefsSheet::OnApplyNow(void)
 void
 PrefsSheet::OnIDHelp(void)
 {
-    WMSG0("PrefsSheet OnIDHelp\n");
+    LOGI("PrefsSheet OnIDHelp");
     SendMessage(WM_COMMANDHELP);
 }
 
@@ -705,7 +705,7 @@ PrefsSheet::OnHelp(UINT wParam, LONG lParam)
 {
     HELPINFO* lpHelpInfo = (HELPINFO*) lParam;
 
-    WMSG0("PrefsSheet OnHelp\n");
+    LOGI("PrefsSheet OnHelp");
     DWORD context = lpHelpInfo->iCtrlId;
     WinHelp(context, HELP_CONTEXTPOPUP);
 

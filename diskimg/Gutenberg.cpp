@@ -81,7 +81,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
                 foundGood++;
         }
         else if (catTrack >0x80) {
-            WMSG2(" Gutenberg detected end-of-catalog on cat (%d,%d)\n",
+            LOGI(" Gutenberg detected end-of-catalog on cat (%d,%d)",
                 catTrack, catSect);
             break;
         }
@@ -92,11 +92,11 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
     if (iterations >= DiskFSGutenberg::kMaxCatalogSectors) {
         /* possible cause: LF->CR conversion screws up link to sector $0a */
         dierr = kDIErrDirectoryLoop;
-        WMSG1("  Gutenberg directory links cause a loop (order=%d)\n", imageOrder);
+        LOGI("  Gutenberg directory links cause a loop (order=%d)", imageOrder);
         goto bail;
     }
 
-    WMSG2(" Gutenberg foundGood=%d order=%d\n", foundGood, imageOrder);
+    LOGI(" Gutenberg foundGood=%d order=%d", foundGood, imageOrder);
     *pGoodCount = foundGood;
 
 bail:
@@ -136,14 +136,14 @@ DiskFSGutenberg::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     if (bestCount >= 2 ||
         (leniency == kLeniencyVery && bestCount >= 1))
     {
-        WMSG2(" Gutenberg test: bestCount=%d for order=%d\n", bestCount, bestOrder);
+        LOGI(" Gutenberg test: bestCount=%d for order=%d", bestCount, bestOrder);
         assert(bestOrder != DiskImg::kSectorOrderUnknown);
         *pOrder = bestOrder;
         *pFormat = DiskImg::kFormatGutenberg;
         return kDIErrNone;
     }
 
-    WMSG0(" Gutenberg didn't find a valid filesystem.\n");
+    LOGI(" Gutenberg didn't find a valid filesystem.");
     return kDIErrFilesystemNotFound;
 }
 
@@ -216,7 +216,7 @@ DiskFSGutenberg::ReadCatalog(void)
 
     while (catTrack < 35 && catSect < 16 && iterations < kMaxCatalogSectors)
     {
-        WMSG2(" Gutenberg reading catalog sector T=%d S=%d\n", catTrack, catSect);
+        LOGI(" Gutenberg reading catalog sector T=%d S=%d", catTrack, catSect);
         dierr = fpImg->ReadTrackSector(catTrack, catSect, sctBuf);
         if (dierr != kDIErrNone)
             goto bail;
@@ -335,7 +335,7 @@ DiskFSGutenberg::GetFileLengths(void)
             tsCount ++;
             dierr = fpImg->ReadTrackSector(currentTrack, currentSector, sctBuf);
             if (dierr != kDIErrNone) {
-                WMSG1("Gutenberg failed loading track/sector for '%s'\n",
+                LOGI("Gutenberg failed loading track/sector for '%s'",
                     pFile->GetPathName());
                 goto bail;
             }
@@ -523,11 +523,11 @@ bail:
 void
 A2FileGutenberg::Dump(void) const
 {
-    WMSG1("A2FileGutenberg '%s'\n", fFileName);
-    WMSG2("  TS T=%-2d S=%-2d\n", fTrack, fSector);
-    WMSG2("  Cat T=%-2d S=%-2d\n", fCatTS.track, fCatTS.sector);
-    WMSG3("  type=%d lck=%d slen=%d\n", fFileType, fLocked, fLengthInSectors);
-    WMSG2("  auxtype=0x%04x length=%ld\n",
+    LOGI("A2FileGutenberg '%s'", fFileName);
+    LOGI("  TS T=%-2d S=%-2d", fTrack, fSector);
+    LOGI("  Cat T=%-2d S=%-2d", fCatTS.track, fCatTS.sector);
+    LOGI("  type=%d lck=%d slen=%d", fFileType, fLocked, fLengthInSectors);
+    LOGI("  auxtype=0x%04x length=%ld",
         fAuxType, (long) fLength);
 }
 
@@ -545,7 +545,7 @@ A2FileGutenberg::Dump(void) const
 DIError
 A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
 {
-    WMSG3(" Gutenberg reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" Gutenberg reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileGutenberg* pFile = (A2FileGutenberg*) fpFile;
@@ -569,7 +569,7 @@ A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
                 currentSector,
                 sctBuf);
         if (dierr != kDIErrNone) {
-            WMSG1(" Gutenberg error reading file '%s'\n", pFile->GetPathName());
+            LOGI(" Gutenberg error reading file '%s'", pFile->GetPathName());
             return dierr;
         }
         thisCount = kSctSize - bufOffset;

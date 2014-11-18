@@ -106,7 +106,7 @@ ConvDiskOptionsDialog::DoDataExchange(CDataExchange* pDX)
 void
 ConvDiskOptionsDialog::OnRadioChangeRange(UINT nID)
 {
-    WMSG1("OnChangeRange id=%d\n", nID);
+    LOGI("OnChangeRange id=%d", nID);
 
     CButton* pButton = (CButton*) GetDlgItem(IDC_CONVDISK_SPECIFY);
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_CONVDISK_SPECIFY_EDIT);
@@ -138,7 +138,7 @@ ConvDiskOptionsDialog::ResetSizeControls(void)
     CWnd* pWnd;
     CString spaceReq;
 
-    WMSG0("Resetting size controls\n");
+    LOGI("Resetting size controls");
     spaceReq.Format(IDS_CONVDISK_SPACEREQ, "(unknown)");
     pWnd = GetDlgItem(IDC_CONVDISK_SPACEREQ);
     ASSERT(pWnd != NULL);
@@ -164,8 +164,8 @@ ConvDiskOptionsDialog::ResetSizeControls(void)
 void
 ConvDiskOptionsDialog::LimitSizeControls(long totalBlocks, long blocksUsed)
 {
-    WMSG2("LimitSizeControls %ld %ld\n", totalBlocks, blocksUsed);
-    WMSG1("Full volume requires %ld bitmap blocks\n",
+    LOGI("LimitSizeControls %ld %ld", totalBlocks, blocksUsed);
+    LOGI("Full volume requires %ld bitmap blocks",
         NewDiskSize::GetNumBitmapBlocks_ProDOS(totalBlocks));
 
     CWnd* pWnd;
@@ -254,7 +254,7 @@ ConvDiskOptionsDialog::OnCompute(void)
     //xferOpts.fUseSparseBlocks =
     //  pPreferences->GetPrefBool(kPrProDOSUseSparse) != 0;
 
-    WMSG1("New volume name will be '%ls'\n", fVolName);
+    LOGI("New volume name will be '%ls'", fVolName);
 
     /*
      * Create a new disk image file.
@@ -271,7 +271,7 @@ ConvDiskOptionsDialog::OnCompute(void)
         ShowFailureMsg(this, errStr, IDS_FAILED);
         return;
     }
-    WMSG1(" Will xfer to file '%ls'\n", nameBuf);
+    LOGI(" Will xfer to file '%ls'", nameBuf);
     // annoying -- DiskArchive insists on creating it
     (void) _wunlink(nameBuf);
 
@@ -311,7 +311,7 @@ ConvDiskOptionsDialog::OnCompute(void)
             int unitSize;
             DIError dierr;
 
-            WMSG0("SUCCESS\n");
+            LOGI("SUCCESS");
 
             pDiskFS = ((DiskArchive*) xferOpts.fTarget)->GetDiskFS();
             ASSERT(pDiskFS != NULL);
@@ -328,10 +328,10 @@ ConvDiskOptionsDialog::OnCompute(void)
                 LimitSizeControls(totalBlocks, totalBlocks - freeBlocks);
             }
         } else if (result == GenericArchive::kXferCancelled) {
-            WMSG0("CANCEL - cancel button hit\n");
+            LOGI("CANCEL - cancel button hit");
             ResetSizeControls();
         } else {
-            WMSG1("FAILURE (result=%d)\n", result);
+            LOGI("FAILURE (result=%d)", result);
             ResetSizeControls();
         }
     }

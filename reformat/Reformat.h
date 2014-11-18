@@ -220,7 +220,7 @@ public:
         fNameExt = NULL;
     }
     ~ReformatHolder(void) {
-        WMSG0("In ~ReformatHolder\n");
+        LOGI("In ~ReformatHolder");
         for (int i = 0; i < kPartMAX; i++) {
             if (i == kPartUnknown)
                 continue;

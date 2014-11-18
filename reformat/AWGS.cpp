@@ -42,7 +42,7 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
 
     /* must at least have the doc header and globals */
     if (srcLen < kMinExpectedLen) {
-        WMSG0("Too short to be AWGS\n");
+        LOGI("Too short to be AWGS");
         return -1;
     }
 
@@ -53,13 +53,13 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
      */
     val = Get16LE(srcBuf + 0);
     if (val != kExpectedVersion1 && val != kExpectedVersion2) {
-        WMSG2("AWGS_WP: unexpected version number (got 0x%04x, wanted 0x%04x)\n",
+        LOGI("AWGS_WP: unexpected version number (got 0x%04x, wanted 0x%04x)",
             val, kExpectedVersion1);
         DebugBreak();
     }
     val = Get16LE(srcBuf + 2);
     if (val != kDocHeaderLen) {
-        WMSG2("Unexpected doc header len (got 0x%04x, wanted 0x%04x)\n",
+        LOGI("Unexpected doc header len (got 0x%04x, wanted 0x%04x)",
             val, kDocHeaderLen);
         return -1;
     }
@@ -73,13 +73,13 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
      */
     val = Get16LE(srcBuf + 0);
     if (val > kExpectedIntVersion) {
-        WMSG2("Unexpected internal version number (got %d, expected %d)\n",
+        LOGI("Unexpected internal version number (got %d, expected %d)",
             val, kExpectedIntVersion);
         return -1;
     }
 
     /* date/time are pascal strings */
-    WMSG2("File saved at '%.26hs' '%.10s'\n", srcBuf + 6, srcBuf + 32);
+    LOGI("File saved at '%.26hs' '%.10s'", srcBuf + 6, srcBuf + 32);
 
     srcBuf += kWPGlobalsLen;
     srcLen -= kWPGlobalsLen;
@@ -87,18 +87,18 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
     /*
      * Now come the three chunks, in order: main document, header, footer.
      */
-    WMSG0("AWGS_WP: scanning doc\n");
+    LOGI("AWGS_WP: scanning doc");
     if (!ReadChunk(&srcBuf, &srcLen, &doc))
         return -1;
-    WMSG0("AWGS_WP: scanning header\n");
+    LOGI("AWGS_WP: scanning header");
     if (!ReadChunk(&srcBuf, &srcLen, &header))
         return -1;
-    WMSG0("AWGS_WP: scanning footer\n");
+    LOGI("AWGS_WP: scanning footer");
     if (!ReadChunk(&srcBuf, &srcLen, &footer))
         return -1;
 
     if (srcLen != 0) {
-        WMSG1("AWGS NOTE: %ld bytes left in file\n", srcLen);
+        LOGI("AWGS NOTE: %ld bytes left in file", srcLen);
     }
 
     /*
@@ -136,7 +136,7 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
     RTFSetColor(kColorNone);
     RTFNewPara();
 
-    WMSG0("AWGS_WP: rendering document\n");
+    LOGI("AWGS_WP: rendering document");
     PrintChunk(&doc);
 
     RTFEnd();
@@ -156,7 +156,7 @@ ReformatAWGS_WP::ReadChunk(const unsigned char** pSrcBuf, long* pSrcLen,
     pChunk->saveArrayCount = Get16LE(*pSrcBuf);
     if (pChunk->saveArrayCount == 0) {
         /* AWGS always has at least 1 paragraph */
-        WMSG0("Save array is empty\n");
+        LOGI("Save array is empty");
         return false;
     }
 
@@ -169,7 +169,7 @@ ReformatAWGS_WP::ReadChunk(const unsigned char** pSrcBuf, long* pSrcLen,
     *pSrcBuf += pChunk->saveArrayCount * kSaveArrayEntryLen;
     *pSrcLen -= pChunk->saveArrayCount * kSaveArrayEntryLen;
     if (*pSrcLen <= 0) {
-        WMSG2("SaveArray exceeds file length (count=%d len now %ld)\n",
+        LOGI("SaveArray exceeds file length (count=%d len now %ld)",
             pChunk->saveArrayCount, *pSrcLen);
         return false;
     }
@@ -180,11 +180,11 @@ ReformatAWGS_WP::ReadChunk(const unsigned char** pSrcBuf, long* pSrcLen,
      */
     pChunk->numRulers = GetNumRulers(pChunk->saveArray, pChunk->saveArrayCount);
     if (*pSrcLen < pChunk->numRulers * kRulerEntryLen) {
-        WMSG2("Not enough room for rulers (rem=%ld, needed=%ld)\n",
+        LOGI("Not enough room for rulers (rem=%ld, needed=%ld)",
             *pSrcLen, pChunk->numRulers * kRulerEntryLen);
         return false;
     }
-    WMSG1("+++ found %d rulers\n", pChunk->numRulers);
+    LOGI("+++ found %d rulers", pChunk->numRulers);
 
     pChunk->rulers = *pSrcBuf;
     *pSrcBuf += pChunk->numRulers * kRulerEntryLen;
@@ -243,7 +243,7 @@ ReformatAWGS_WP::PrintChunk(const Chunk* pChunk)
             pRuler = pChunk->rulers + sae.rulerNum * kRulerEntryLen;
             rulerStatusBits = Get16LE(pRuler + 2);
         } else {
-            WMSG1("AWGS_WP GLITCH: invalid ruler index %d\n", sae.rulerNum);
+            LOGI("AWGS_WP GLITCH: invalid ruler index %d", sae.rulerNum);
             rulerStatusBits = kDefaultStatusBits;
         }
 
@@ -265,18 +265,18 @@ ReformatAWGS_WP::PrintChunk(const Chunk* pChunk)
          */
         blockPtr = FindTextBlock(pChunk, sae.textBlock);
         if (blockPtr == NULL) {
-            WMSG1("AWGS_WP bad textBlock %d\n", sae.textBlock);
+            LOGI("AWGS_WP bad textBlock %d", sae.textBlock);
             return;
         }
         blockLen = (long) Get32LE(blockPtr);
         if (blockLen <= 0 || blockLen > 65535) {
-            WMSG1("AWGS_WP invalid block len %d\n", blockLen);
+            LOGI("AWGS_WP invalid block len %d", blockLen);
             return;
         }
         blockPtr += 4;
 
         if (sae.offset >= blockLen) {
-            WMSG2("AWGS_WP bad offset: %d, blockLen=%ld\n",
+            LOGI("AWGS_WP bad offset: %d, blockLen=%ld",
                 sae.offset, blockLen);
             return;
         }
@@ -323,7 +323,7 @@ ReformatAWGS_WP::PrintParagraph(const unsigned char* ptr, long maxLen)
     unsigned char uch;
 
     if (maxLen < 7) {
-        WMSG1("AWGS_WP GLITCH: not enough storage for para header (%d)\n",
+        LOGI("AWGS_WP GLITCH: not enough storage for para header (%d)",
             maxLen);
         return 1;   // don't return zero or we might loop forever
     }
@@ -341,7 +341,7 @@ ReformatAWGS_WP::PrintParagraph(const unsigned char* ptr, long maxLen)
      * the size second, because the point size determines whether we
      * show underline.  Set the style last.
      */
-    //WMSG3("+++ Para start: font=0x%04x size=%d style=0x%02x\n",
+    //LOGI("+++ Para start: font=0x%04x size=%d style=0x%02x",
     //  firstFont, firstSize, firstStyle);
     RTFSetGSFont(firstFont);
     RTFSetGSFontSize(firstSize);
@@ -400,7 +400,7 @@ ReformatAWGS_WP::PrintParagraph(const unsigned char* ptr, long maxLen)
         }
     }
 
-    WMSG0("AWGS_WP: WARNING: ran out of data before hitting '\r'\n");
+    LOGI("AWGS_WP: WARNING: ran out of data before hitting '\r'");
     return ptr - startPtr;
 }
 
@@ -470,7 +470,7 @@ ReformatAWGS_WP::GetNumTextBlocks(const unsigned char* pSaveArray,
 
     /* verify our result */
     if (maxPara != maxTextBlock) {
-        WMSG2("Max para mismatch (%d vs %d)\n", maxPara, maxTextBlock);
+        LOGI("Max para mismatch (%d vs %d)", maxPara, maxTextBlock);
         assert(false);
     }
 #endif
@@ -492,7 +492,7 @@ ReformatAWGS_WP::UnpackSaveArrayEntry(const unsigned char* pSaveArray,
     pSAE->pixelHeight = Get16LE(pSaveArray + 8);
     pSAE->numLines = Get16LE(pSaveArray + 10);
 
-    //WMSG5("SA: textBlock=%d off=%d attr=%d ruler=%d lines=%d\n",
+    //LOGI("SA: textBlock=%d off=%d attr=%d ruler=%d lines=%d",
     //  pSAE->textBlock, pSAE->offset, pSAE->attributes, pSAE->rulerNum,
     //  pSAE->numLines);
 }
@@ -510,7 +510,7 @@ ReformatAWGS_WP::SkipTextBlocks(const unsigned char** pSrcBuf,
     const unsigned char* srcBuf = *pSrcBuf;
     long srcLen = *pSrcLen;
 
-    WMSG1("Scanning %d text blocks\n", textBlockCount);
+    LOGI("Scanning %d text blocks", textBlockCount);
 
     if (srcLen < 4)
         return false;
@@ -520,18 +520,18 @@ ReformatAWGS_WP::SkipTextBlocks(const unsigned char** pSrcBuf,
         srcBuf += 4;
         srcLen -= 4;
 
-        WMSG2("+++  blockSize=%lu srcLen=%ld\n", blockSize, srcLen);
+        LOGI("+++  blockSize=%lu srcLen=%ld", blockSize, srcLen);
         if ((long) blockSize < kMinTextBlockSize) {
-            WMSG2("Block size too small (%d - %d)\n",
+            LOGI("Block size too small (%d - %d)",
                 blockSize, Get16LE(srcBuf));
             return false;
         }
         if ((long) blockSize > srcLen) {
-            WMSG0("Ran off the end in doc text blocks\n");
+            LOGI("Ran off the end in doc text blocks");
             return false;
         }
         if (Get16LE(srcBuf) != blockSize || Get16LE(srcBuf+2) != blockSize) {
-            WMSG3("AWGS WARNING: inconsistent block size values (%ld vs %d/%d)\n",
+            LOGI("AWGS WARNING: inconsistent block size values (%ld vs %d/%d)",
                 blockSize, Get16LE(srcBuf), Get16LE(srcBuf+2));
             /* okay to ignore it, so long as everything else works out */
         }

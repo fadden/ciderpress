@@ -63,7 +63,7 @@ private:
 
     void LoadTreeImages(void) {
         if (!fTreeImageList.Create(IDB_TREE_PICS, 16, 1, CLR_DEFAULT))
-            WMSG0("GLITCH: list image create failed\n");
+            LOGI("GLITCH: list image create failed");
         fTreeImageList.SetBkColor(::GetSysColor(COLOR_WINDOW));
     }
     enum {  // defs for IDB_TREE_PICS

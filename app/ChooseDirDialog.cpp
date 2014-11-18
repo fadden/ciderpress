@@ -36,7 +36,7 @@ ChooseDirDialog::OnInitDialog(void)
 
     /* replace the tree control with a ShellTree */
     if (fShellTree.ReplaceDlgCtrl(this, IDC_CHOOSEDIR_TREE) != TRUE) {
-        WMSG0("WARNING: ShellTree replacement failed\n");
+        LOGI("WARNING: ShellTree replacement failed");
         ASSERT(false);
     }
 
@@ -53,7 +53,7 @@ ChooseDirDialog::OnInitDialog(void)
         fShellTree.TunnelTree(fPathName, &msg);
         if (!msg.IsEmpty()) {
             /* failed */
-            WMSG2("TunnelTree failed on '%ls' (%ls), using MyComputer instead\n",
+            LOGI("TunnelTree failed on '%ls' (%ls), using MyComputer instead",
                 (LPCWSTR) fPathName, (LPCWSTR) msg);
             fShellTree.ExpandMyComputer();
         }
@@ -72,7 +72,7 @@ ChooseDirDialog::PreTranslateMessage(MSG* pMsg)
     if (pMsg->message == WM_KEYDOWN &&
          pMsg->wParam == VK_RETURN)
     {
-        //WMSG0("RETURN!\n");
+        //LOGI("RETURN!");
         if (GetFocus() == GetDlgItem(IDC_CHOOSEDIR_PATHEDIT)) {
             OnExpandTree();
             return TRUE;
@@ -182,18 +182,18 @@ ChooseDirDialog::OnNewFolder(void)
              */
             if (fShellTree.AddFolderAtSelection(newFolderDlg.fNewFolder)) {
                 CString msg;
-                WMSG1("Success, tunneling to '%ls'\n",
+                LOGI("Success, tunneling to '%ls'",
                     (LPCWSTR) newFolderDlg.fNewFullPath);
                 fShellTree.TunnelTree(newFolderDlg.fNewFullPath, &msg);
                 if (!msg.IsEmpty()) {
-                    WMSG1("TunnelTree failed: %ls\n", (LPCWSTR) msg);
+                    LOGI("TunnelTree failed: %ls", (LPCWSTR) msg);
                 }
             } else {
-                WMSG0("AddFolderAtSelection FAILED\n");
+                LOGI("AddFolderAtSelection FAILED");
                 ASSERT(false);
             }
         } else {
-            WMSG0("NewFolderDialog returned IDOK but no create\n");
+            LOGI("NewFolderDialog returned IDOK but no create");
         }
     }
 }

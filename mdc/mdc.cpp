@@ -26,7 +26,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
     gDebugLog = new DebugLog(L"C:\\src\\mdclog.txt");
 
     time_t now = time(NULL);
-    LOGI("MDC v%d.%d.%d started at %.24hs\n",
+    LOGI("MDC v%d.%d.%d started at %.24hs",
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
         ctime(&now));
 
@@ -35,7 +35,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
     tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
     tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
     _CrtSetDbgFlag(tmpDbgFlag);
-    WMSG0("Leak detection enabled\n");
+    LOGI("Leak detection enabled");
 }
 
 /*
@@ -43,7 +43,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
  */
 MyApp::~MyApp(void)
 {
-    WMSG0("MDC SHUTTING DOWN\n\n");
+    LOGI("MDC SHUTTING DOWN");
     delete gDebugLog;
 }
 

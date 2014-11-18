@@ -126,7 +126,7 @@ ReformatApplesoft::Process(const ReformatHolder* pHolder,
      * BASIC program rather than a non-Applesoft file.
      */
     if (length < 2) {
-        WMSG0("  BAS truncated?\n");
+        LOGI("  BAS truncated?");
         //fExpBuf.CreateWorkBuf();
         BufPrintf("\r\n");
         goto done;
@@ -142,7 +142,7 @@ ReformatApplesoft::Process(const ReformatHolder* pHolder,
         if (nextAddr == 0) {
             /* ProDOS sticks an extra byte on the end? */
             if (length > 1) {
-                WMSG1("  BAS ended early; len is %d\n", length);
+                LOGI("  BAS ended early; len is %d", length);
             }
             break;
         }
@@ -205,7 +205,7 @@ ReformatApplesoft::Process(const ReformatHolder* pHolder,
         length--;
 
         if (!length) {
-            WMSG0("  BAS truncated in mid-line\n");
+            LOGI("  BAS truncated in mid-line");
             break;
         }
 
@@ -373,7 +373,7 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
      * BASIC program rather than a non-Integer file.
      */
     if (length < 2) {
-        WMSG0("  INT truncated?\n");
+        LOGI("  INT truncated?");
         BufPrintf("\r\n");
         goto done;
     }
@@ -388,7 +388,7 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
         lineLen = *srcPtr++;
         length--;
         if (lineLen == 0) {
-            WMSG0("  INT found zero-length line?\n");
+            LOGI("  INT found zero-length line?");
             break;
         }
 
@@ -414,7 +414,7 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
                     length--;
                 }
                 if (*srcPtr != 0x29) {
-                    WMSG0("  INT ended while in a string constant\n");
+                    LOGI("  INT ended while in a string constant");
                     break;
                 }
                 BufPrintf("\"");
@@ -438,7 +438,7 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
                 }
                 RTFSetColor(kDefaultColor);
                 if (*srcPtr != 0x01) {
-                    WMSG0("  INT ended while in a REM statement\n");
+                    LOGI("  INT ended while in a REM statement");
                     break;
                 }
             } else if (*srcPtr >= 0xb0 && *srcPtr <= 0xb9) {
@@ -446,7 +446,7 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
                 srcPtr++;
                 length--;
                 if (length < 2) {
-                    WMSG0("  INT ended while in an integer constant\n");
+                    LOGI("  INT ended while in an integer constant");
                     break;
                 }
                 int val;
@@ -491,7 +491,7 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
                 length--;
             } else {
                 /* should not happen */
-                WMSG2("  INT unexpected value 0x%02x at byte %d\n",
+                LOGI("  INT unexpected value 0x%02x at byte %d",
                     *srcPtr, srcPtr - pHolder->GetSourceBuf(part));
 
                 /* skip past it and keep trying */
@@ -505,7 +505,7 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
 
         /* skip past EOL token */
         if (*srcPtr != 0x01 && length > 0) {
-            WMSG0("bailing\n");     // must've failed during processing
+            LOGI("bailing");     // must've failed during processing
             goto bail;
         }
         srcPtr++;
@@ -643,7 +643,7 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
      * BASIC program rather than a non-BASIC file.
      */
     if (length < 2) {
-        WMSG0("  BA3 truncated?\n");
+        LOGI("  BA3 truncated?");
         //fExpBuf.CreateWorkBuf();
         BufPrintf("\r\n");
         goto done;
@@ -651,7 +651,7 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
 
     unsigned short fileLength;
     fileLength = Read16(&srcPtr, &length);
-    WMSG1("  BA3 internal file length is: %d\n", fileLength);
+    LOGI("  BA3 internal file length is: %d", fileLength);
 
     while (length > 0) {
         unsigned short increment;
@@ -663,11 +663,11 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
         bool literalYet = false;
 
         increment = Read8(&srcPtr, &length);
-        WMSG1("  BA3 increment to next line is: %d\n", increment);
+        LOGI("  BA3 increment to next line is: %d", increment);
         if (increment == 0) {
             /* ProDOS sticks an extra byte on the end? */
             if (length > 1) {
-                WMSG1("  BA3 ended early; len is %d\n", length);
+                LOGI("  BA3 ended early; len is %d", length);
             }
             break;
         }
@@ -675,7 +675,7 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
         /* print line number */
         RTFSetColor(kLineNumColor);
         lineNum = Read16(&srcPtr, &length);
-        WMSG1("  BA3 line number: %d\n", lineNum);
+        LOGI("  BA3 line number: %d", lineNum);
         BufPrintf(" %u   ", lineNum);
 
         RTFSetColor(kDefaultColor);
@@ -812,7 +812,7 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
         length--;
 
         if (!length) {
-            WMSG0("  BA3 truncated in mid-line\n");
+            LOGI("  BA3 truncated in mid-line");
             break;
         }
 

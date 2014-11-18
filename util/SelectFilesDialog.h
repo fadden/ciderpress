@@ -64,7 +64,7 @@ public:
         ASSERT(len > wcslen(fileNames));
         ASSERT(fileNames[len] == '\0');
         ASSERT(fileNames[len-1] == '\0');
-        WMSG3("SetFileNames '%ls' %d %d\n", fileNames, len, fileNameOffset);
+        LOGI("SetFileNames '%ls' %d %d", fileNames, len, fileNameOffset);
         delete[] fFileNames;
         fFileNames = wcsdup(fileNames);
         fFileNameOffset = fileNameOffset;
@@ -93,7 +93,7 @@ protected:
     virtual void DestroyItem(CWnd* pDlg, int id) {
         CWnd* pWnd = pDlg->GetDlgItem(id);
         if (pWnd == NULL) {
-            WMSG1("Could not find item %d\n", id);
+            LOGI("Could not find item %d", id);
             return;
         }
         pWnd->DestroyWindow();

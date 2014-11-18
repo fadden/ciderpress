@@ -34,14 +34,14 @@ ChooseAddTargetDialog::OnInitDialog(void)
     fDiskFSTree.fIncludeSubdirs = true;
     fDiskFSTree.fExpandDepth = -1;
     if (!fDiskFSTree.BuildTree(fpDiskFS, pTree)) {
-        WMSG0("Tree load failed!\n");
+        LOGI("Tree load failed!");
         OnCancel();
     }
 
     int count = pTree->GetCount();
-    WMSG1("ChooseAddTargetDialog tree has %d items\n", count);
+    LOGI("ChooseAddTargetDialog tree has %d items", count);
     if (count <= 1) {
-        WMSG0(" Skipping out of target selection\n");
+        LOGI(" Skipping out of target selection");
         // adding to root volume of the sole DiskFS
         fpChosenDiskFS = fpDiskFS;
         ASSERT(fpChosenSubdir == NULL);

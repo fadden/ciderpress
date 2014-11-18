@@ -243,7 +243,7 @@ DiskImg::DiskImg(void)
 DiskImg::~DiskImg(void)
 {
     if (fpDataGFD != NULL) {
-        WMSG0("~DiskImg closing GenericFD(s)\n");
+        LOGI("~DiskImg closing GenericFD(s)");
     }
     (void) CloseImage();
     delete[] fpNibbleDescrTable;
@@ -287,7 +287,7 @@ DiskImg::SetCustomNibbleDescr(const NibbleDescr* pDescr)
         fpNibbleDescr = NULL;
     } else {
         assert(fpNibbleDescrTable != NULL);
-        //WMSG2("Overwriting entry %d with new value (special=%d)\n",
+        //LOGI("Overwriting entry %d with new value (special=%d)",
         //  kNibbleDescrCustom, pDescr->special);
         fpNibbleDescrTable[kNibbleDescrCustom] = *pDescr;
         fpNibbleDescr = &fpNibbleDescrTable[kNibbleDescrCustom];
@@ -308,10 +308,10 @@ DiskImg::OpenImage(const char* pathName, char fssep, bool readOnly)
     bool isWinDevice = false;
 
     if (fpDataGFD != NULL) {
-        WMSG0(" DI already open!\n");
+        LOGI(" DI already open!");
         return kDIErrAlreadyOpen;
     }
-    WMSG3(" DI OpenImage '%s' '%.1s' ro=%d\n", pathName, &fssep, readOnly);
+    LOGI(" DI OpenImage '%s' '%.1s' ro=%d", pathName, &fssep, readOnly);
 
     fReadOnly = readOnly;
 
@@ -389,10 +389,10 @@ DIError
 DiskImg::OpenImage(const void* buffer, long length, bool readOnly)
 {
     if (fpDataGFD != NULL) {
-        WMSG0(" DI already open!\n");
+        LOGI(" DI already open!");
         return kDIErrAlreadyOpen;
     }
-    WMSG3(" DI OpenImage %08lx %ld ro=%d\n", (long) buffer, length, readOnly);
+    LOGI(" DI OpenImage %08lx %ld ro=%d", (long) buffer, length, readOnly);
 
     DIError dierr;
     GFDBuffer* pGFDBuffer;
@@ -436,10 +436,10 @@ DiskImg::OpenImage(const void* buffer, long length, bool readOnly)
 DIError
 DiskImg::OpenImage(DiskImg* pParent, long firstBlock, long numBlocks)
 {
-    WMSG3(" DI OpenImage parent=0x%08lx %ld %ld\n", (long) pParent, firstBlock,
+    LOGI(" DI OpenImage parent=0x%08lx %ld %ld", (long) pParent, firstBlock,
         numBlocks);
     if (fpDataGFD != NULL) {
-        WMSG0(" DI already open!\n");
+        LOGI(" DI already open!");
         return kDIErrAlreadyOpen;
     }
 
@@ -484,10 +484,10 @@ DIError
 DiskImg::OpenImage(DiskImg* pParent, long firstTrack, long firstSector,
     long numSectors)
 {
-    WMSG4(" DI OpenImage parent=0x%08lx %ld %ld %ld\n", (long) pParent,
+    LOGI(" DI OpenImage parent=0x%08lx %ld %ld %ld", (long) pParent,
         firstTrack, firstSector, numSectors);
     if (fpDataGFD != NULL) {
-        WMSG0(" DI already open!\n");
+        LOGI(" DI already open!");
         return kDIErrAlreadyOpen;
     }
 
@@ -569,11 +569,11 @@ DiskImg::CloseImage(void)
 {
     DIError dierr;
 
-    WMSG1("CloseImage %p\n", this);
+    LOGI("CloseImage %p", this);
 
     /* check for DiskFS objects that still point to us */
     if (fDiskFSRefCnt != 0) {
-        WMSG1("ERROR: CloseImage: fDiskFSRefCnt=%d\n", fDiskFSRefCnt);
+        LOGI("ERROR: CloseImage: fDiskFSRefCnt=%d", fDiskFSRefCnt);
         assert(false); //DebugBreak();
     }
 
@@ -638,7 +638,7 @@ DiskImg::FlushImage(FlushMode mode)
 {
     DIError dierr = kDIErrNone;
 
-    WMSG2(" DI FlushImage (dirty=%d mode=%d)\n", fDirty, mode);
+    LOGI(" DI FlushImage (dirty=%d mode=%d)", fDirty, mode);
     if (!fDirty)
         return kDIErrNone;
     if (fpDataGFD == NULL) {
@@ -649,7 +649,7 @@ DiskImg::FlushImage(FlushMode mode)
          * "dirty" flag is set because CreateImageCommon sets it almost
          * immediately.
          */
-        WMSG0("  (disk must've failed during creation)\n");
+        LOGI("  (disk must've failed during creation)");
         fDirty = false;
         return kDIErrNone;
     }
@@ -658,7 +658,7 @@ DiskImg::FlushImage(FlushMode mode)
         ((fpImageWrapper != NULL && !fpImageWrapper->HasFastFlush()) ||
          (fpOuterWrapper != NULL && !fpOuterWrapper->HasFastFlush()) ))
     {
-        WMSG0("DI fast flush requested, but one or both wrappers are slow\n");
+        LOGI("DI fast flush requested, but one or both wrappers are slow");
         return kDIErrNone;
     }
 
@@ -684,12 +684,12 @@ DiskImg::FlushImage(FlushMode mode)
      * so long as the "Flush" function has it figured out.)
      */
     if (fpWrapperGFD != NULL) {
-        WMSG2(" DI flushing data changes to wrapper (fLen=%ld fWrapLen=%ld)\n",
+        LOGI(" DI flushing data changes to wrapper (fLen=%ld fWrapLen=%ld)",
             (long) fLength, (long) fWrappedLength);
         dierr = fpImageWrapper->Flush(fpWrapperGFD, fpDataGFD, fLength,
                     &fWrappedLength);
         if (dierr != kDIErrNone) {
-            WMSG1(" ERROR: wrapper flush failed (err=%d)\n", dierr);
+            LOGI(" ERROR: wrapper flush failed (err=%d)", dierr);
             return dierr;
         }
         /* flush the GFD in case it's a Win32 volume with block caching */
@@ -703,13 +703,13 @@ DiskImg::FlushImage(FlushMode mode)
      * in fpWrapperGFD.
      */
     if (fpOuterWrapper != NULL) {
-        WMSG1(" DI saving wrapper to outer, fWrapLen=%ld\n",
+        LOGI(" DI saving wrapper to outer, fWrapLen=%ld",
             (long) fWrappedLength);
         assert(fpOuterGFD != NULL);
         dierr = fpOuterWrapper->Save(fpOuterGFD, fpWrapperGFD,
                     fWrappedLength);
         if (dierr != kDIErrNone) {
-            WMSG1(" ERROR: outer save failed (err=%d)\n", dierr);
+            LOGI(" ERROR: outer save failed (err=%d)", dierr);
             return dierr;
         }
     }
@@ -782,7 +782,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
     } else
         ext = "";
 
-    WMSG1(" DI AnalyzeImageFile ext='%s'\n", ext);
+    LOGI(" DI AnalyzeImageFile ext='%s'", ext);
 
     /* sanity check: nobody should have configured these yet */
     assert(fOuterFormat == kOuterFormatUnknown);
@@ -792,7 +792,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
     fLength = -1;
     dierr = fpWrapperGFD->Seek(0, kSeekEnd);
     if (dierr != kDIErrNone) {
-        WMSG0("  DI Couldn't seek to end of wrapperGFD\n");
+        LOGI("  DI Couldn't seek to end of wrapperGFD");
         goto bail;
     }
     fWrappedLength = fOuterLength = fpWrapperGFD->Tell();
@@ -817,7 +817,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
     if (strcasecmp(ext, "gz") == 0 &&
         OuterGzip::Test(fpWrapperGFD, fOuterLength) == kDIErrNone)
     {
-        WMSG0("  DI found gz outer wrapper\n");
+        LOGI("  DI found gz outer wrapper");
 
         fpOuterWrapper = new OuterGzip();
         if (fpOuterWrapper == NULL) {
@@ -842,14 +842,14 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
                 ext++;
             }
         }
-        WMSG1("  DI after gz, ext='%s'\n", ext == NULL ? "(NULL)" : ext);
+        LOGI("  DI after gz, ext='%s'", ext == NULL ? "(NULL)" : ext);
 
     } else if (strcasecmp(ext, "zip") == 0) {
         dierr = OuterZip::Test(fpWrapperGFD, fOuterLength);
         if (dierr != kDIErrNone)
             goto bail;
 
-        WMSG0("  DI found ZIP outer wrapper\n");
+        LOGI("  DI found ZIP outer wrapper");
 
         fpOuterWrapper = new OuterZip();
         if (fpOuterWrapper == NULL) {
@@ -870,7 +870,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
         dierr = fpOuterWrapper->Load(fpWrapperGFD, fOuterLength, fReadOnly,
                     &fWrappedLength, &pNewGFD);
         if (dierr != kDIErrNone) {
-            WMSG0("  DI outer prep failed\n");
+            LOGI("  DI outer prep failed");
             /* extensions are "reliable", so failure is unavoidable */
             goto bail;
         }
@@ -917,7 +917,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
         if (dierr2 == kDIErrNone)
             probableFormat = kFileFormatNuFX;
         else if (dierr2 == kDIErrFileArchive) {
-            WMSG0(" AnalyzeImageFile thinks it found a NuFX file archive\n");
+            LOGI(" AnalyzeImageFile thinks it found a NuFX file archive");
             dierr = dierr2;
             goto bail;
         }
@@ -970,7 +970,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
                 fOrder = kSectorOrderDOS;
             else
                 fOrder = kSectorOrderProDOS;    // po, dc6
-            WMSG1("  DI guessing order is %d by extension\n", fOrder);
+            LOGI("  DI guessing order is %d by extension", fOrder);
         }
     } else if (strcasecmp(ext, "cp-win-vol") == 0) {
         /* this is a Windows logical volume */
@@ -986,7 +986,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
         /*
          * Found a match.  Use "probableFormat" to open the file.
          */
-        WMSG1(" DI scored hit on extension '%s'\n", ext);
+        LOGI(" DI scored hit on extension '%s'", ext);
     } else {
         /*
          * Didn't work.  If the file extension was marked "reliable", then
@@ -1004,11 +1004,11 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
          * be looking at header checksums.)
          */
         if (reliableExt) {
-            WMSG1(" DI file extension '%s' did not match contents\n", ext);
+            LOGI(" DI file extension '%s' did not match contents", ext);
             dierr = kDIErrBadFileFormat;
             goto bail;
         } else {
-            WMSG1(" DI extension '%s' not useful, probing formats\n", ext);
+            LOGI(" DI extension '%s' not useful, probing formats", ext);
             dierr = WrapperNuFX::Test(fpWrapperGFD, fWrappedLength);
             if (dierr == kDIErrNone) {
                 probableFormat = kFileFormatNuFX;
@@ -1094,7 +1094,7 @@ gotit: ;
         }
         break;
     default:
-        WMSG0(" DI couldn't figure out the file format\n");
+        LOGI(" DI couldn't figure out the file format");
         dierr = kDIErrUnrecognizedFileFmt;
         break;
     }
@@ -1110,7 +1110,7 @@ gotit: ;
     }
 
     if (dierr != kDIErrNone) {
-        WMSG1(" DI wrapper prep failed (err=%d)\n", dierr);
+        LOGI(" DI wrapper prep failed (err=%d)", dierr);
         goto bail;
     }
 
@@ -1175,7 +1175,7 @@ DiskImg::AnalyzeImage(void)
      */
     if (IsSectorFormat(fPhysical)) {
         if (!fLength) {
-            WMSG0(" DI zero-length disk images not allowed\n");
+            LOGI(" DI zero-length disk images not allowed");
             return kDIErrOddLength;
         }
 
@@ -1195,7 +1195,7 @@ DiskImg::AnalyzeImage(void)
             /* sector pairing effectively cuts #of tracks in half */
             if (fSectorPairing) {
                 if ((fNumTracks & 0x01) != 0) {
-                    WMSG0(" DI error: bad attempt at sector pairing\n");
+                    LOGI(" DI error: bad attempt at sector pairing");
                     assert(false);
                     fSectorPairing = false;
                 }
@@ -1205,7 +1205,7 @@ DiskImg::AnalyzeImage(void)
                 fNumTracks /= 2;
         } else {
             if (fSectorPairing) {
-                WMSG1("GLITCH: sector pairing enabled, but fLength=%ld\n",
+                LOGI("GLITCH: sector pairing enabled, but fLength=%ld",
                     (long) fLength);
                 return kDIErrOddLength;
             }
@@ -1240,7 +1240,7 @@ DiskImg::AnalyzeImage(void)
             fOrder = kSectorOrderPhysical;
 
             if (!fReadOnly && !fpNibbleDescr->dataVerifyChecksum) {
-                WMSG0("DI nibbleDescr does not verify data checksum, disabling writes\n");
+                LOGI("DI nibbleDescr does not verify data checksum, disabling writes");
                 AddNote(kNoteInfo,
                     "Sectors use non-standard data checksums; writing disabled.");
                 fReadOnly = true;
@@ -1252,7 +1252,7 @@ DiskImg::AnalyzeImage(void)
             fHasSectors = false;
         }
     } else {
-        WMSG1("Unsupported physical %d\n", fPhysical);
+        LOGI("Unsupported physical %d", fPhysical);
         assert(false);
         return kDIErrGeneric;
     }
@@ -1280,7 +1280,7 @@ DiskImg::AnalyzeImage(void)
 
              if (fSectorPairing) {
                 if ((fNumBlocks & 0x01) != 0) {
-                    WMSG0(" DI error: bad attempt at sector pairing (blk)\n");
+                    LOGI(" DI error: bad attempt at sector pairing (blk)");
                     assert(false);
                     fSectorPairing = false;
                 } else
@@ -1294,7 +1294,7 @@ DiskImg::AnalyzeImage(void)
     } else if (fHasNibbles) {
         assert(fNumBlocks == -1);
     } else {
-        WMSG0(" DI none of fHasSectors/fHasBlocks/fHasNibbles are set\n");
+        LOGI(" DI none of fHasSectors/fHasBlocks/fHasNibbles are set");
         assert(false);
         return kDIErrInternal;
     }
@@ -1305,9 +1305,9 @@ DiskImg::AnalyzeImage(void)
      */
     AnalyzeImageFS();
 
-    WMSG4(" DI AnalyzeImage tracks=%ld sectors=%d blocks=%ld fileSysOrder=%d\n",
+    LOGI(" DI AnalyzeImage tracks=%ld sectors=%d blocks=%ld fileSysOrder=%d",
         fNumTracks, fNumSectPerTrack, fNumBlocks, fFileSysOrder);
-    WMSG3("    hasBlocks=%d hasSectors=%d hasNibbles=%d\n",
+    LOGI("    hasBlocks=%d hasSectors=%d hasNibbles=%d",
         fHasBlocks, fHasSectors, fHasNibbles);
 
     return kDIErrNone;
@@ -1332,15 +1332,15 @@ DiskImg::AnalyzeImageFS(void)
     if (DiskFSMacPart::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatMacPart);
-        WMSG1(" DI found MacPart, order=%d\n", fOrder);
+        LOGI(" DI found MacPart, order=%d", fOrder);
     } else if (DiskFSMicroDrive::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatMicroDrive);
-        WMSG1(" DI found MicroDrive, order=%d\n", fOrder);
+        LOGI(" DI found MicroDrive, order=%d", fOrder);
     } else if (DiskFSFocusDrive::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatFocusDrive);
-        WMSG1(" DI found FocusDrive, order=%d\n", fOrder);
+        LOGI(" DI found FocusDrive, order=%d", fOrder);
     } else if (DiskFSCFFA::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         // The CFFA format doesn't have a partition map, but we do insist
@@ -1349,7 +1349,7 @@ DiskImg::AnalyzeImageFS(void)
         // for MicroDrive will still look like valid CFFA unless you zero
         // out the blocks.
         assert(fFormat == kFormatCFFA4 || fFormat == kFormatCFFA8);
-        WMSG1(" DI found CFFA, order=%d\n", fOrder);
+        LOGI(" DI found CFFA, order=%d", fOrder);
     } else if (DiskFSFAT::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         // This is really just a trap to catch CFFA cards that were formatted
@@ -1357,11 +1357,11 @@ DiskImg::AnalyzeImageFS(void)
         // come before the ProDOS test.  It only works on larger volumes,
         // and can be overridden, so it's pretty safe.
         assert(fFormat == kFormatMSDOS);
-        WMSG1(" DI found MSDOS, order=%d\n", fOrder);
+        LOGI(" DI found MSDOS, order=%d", fOrder);
     } else if (DiskFSDOS33::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatDOS32 || fFormat == kFormatDOS33);
-        WMSG1(" DI found DOS3.x, order=%d\n", fOrder);
+        LOGI(" DI found DOS3.x, order=%d", fOrder);
         if (fNumSectPerTrack == 13)
             fFormat = kFormatDOS32;
     } else if (DiskFSUNIDOS::TestWideFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
@@ -1370,48 +1370,48 @@ DiskImg::AnalyzeImageFS(void)
         assert(fFormat == kFormatDOS33);
         fNumSectPerTrack = 32;
         fNumTracks /= 2;
-        WMSG1(" DI found 'wide' DOS3.3, order=%d\n", fOrder);
+        LOGI(" DI found 'wide' DOS3.3, order=%d", fOrder);
     } else if (DiskFSUNIDOS::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatUNIDOS);
         fNumSectPerTrack = 32;
         fNumTracks /= 2;
-        WMSG1(" DI found UNIDOS, order=%d\n", fOrder);
+        LOGI(" DI found UNIDOS, order=%d", fOrder);
     } else if (DiskFSOzDOS::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatOzDOS);
         fNumSectPerTrack = 32;
         fNumTracks /= 2;
-        WMSG1(" DI found OzDOS, order=%d\n", fOrder);
+        LOGI(" DI found OzDOS, order=%d", fOrder);
     } else if (DiskFSProDOS::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatProDOS);
-        WMSG1(" DI found ProDOS, order=%d\n", fOrder);
+        LOGI(" DI found ProDOS, order=%d", fOrder);
     } else if (DiskFSPascal::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatPascal);
-        WMSG1(" DI found Pascal, order=%d\n", fOrder);
+        LOGI(" DI found Pascal, order=%d", fOrder);
     } else if (DiskFSCPM::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatCPM);
-        WMSG1(" DI found CP/M, order=%d\n", fOrder);
+        LOGI(" DI found CP/M, order=%d", fOrder);
     } else if (DiskFSRDOS::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatRDOS33 ||
                fFormat == kFormatRDOS32 ||
                fFormat == kFormatRDOS3);
-        WMSG1(" DI found RDOS 3.3, order=%d\n", fOrder);
+        LOGI(" DI found RDOS 3.3, order=%d", fOrder);
     } else if (DiskFSHFS::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatMacHFS);
-        WMSG1(" DI found HFS, order=%d\n", fOrder);
+        LOGI(" DI found HFS, order=%d", fOrder);
     } else if (DiskFSGutenberg::TestFS(this, &fOrder, &fFormat, DiskFS::kLeniencyNot) == kDIErrNone)
     {
         assert(fFormat == kFormatGutenberg);
-        WMSG1(" DI found Gutenberg, order=%d\n", fOrder);
+        LOGI(" DI found Gutenberg, order=%d", fOrder);
     } else {
         fFormat = kFormatUnknown;
-        WMSG1(" DI no recognizeable filesystem found (fOrder=%d)\n",
+        LOGI(" DI no recognizeable filesystem found (fOrder=%d)",
             fOrder);
     }
 
@@ -1438,7 +1438,7 @@ DiskImg::OverrideFormat(PhysicalFormat physical, FSFormat format,
     SectorOrder newOrder;
     FSFormat newFormat;
 
-    WMSG3(" DI override: physical=%d format=%d order=%d\n",
+    LOGI(" DI override: physical=%d format=%d order=%d",
         physical, format, order);
 
     if (!IsSectorFormat(physical) && !IsNibbleFormat(physical))
@@ -1450,7 +1450,7 @@ DiskImg::OverrideFormat(PhysicalFormat physical, FSFormat format,
 
     /* optimization */
     if (physical == fPhysical && format == fFormat && order == fOrder) {
-        WMSG0("  DI override matches existing, ignoring\n");
+        LOGI("  DI override matches existing, ignoring");
         return kDIErrNone;
     }
 
@@ -1526,7 +1526,7 @@ DiskImg::OverrideFormat(PhysicalFormat physical, FSFormat format,
     }
 
     if (dierr != kDIErrNone) {
-        WMSG0(" DI override failed\n");
+        LOGI(" DI override failed");
         goto bail;
     }
 
@@ -1544,7 +1544,7 @@ DiskImg::OverrideFormat(PhysicalFormat physical, FSFormat format,
     fOrder = newOrder;
     fFileSysOrder = CalcFSSectorOrder();
 
-    WMSG0(" DI override accepted\n");
+    LOGI(" DI override accepted");
 
 bail:
     return dierr;
@@ -1565,7 +1565,7 @@ DiskImg::CalcFSSectorOrder(void) const
 {
     /* in the absence of information, just leave it alone */
     if (fFormat == kFormatUnknown || fOrder == kSectorOrderUnknown) {
-        WMSG0(" DI WARNING: FindSectorOrder but format not known\n");
+        LOGI(" DI WARNING: FindSectorOrder but format not known");
         return fOrder;
     }
 
@@ -1677,7 +1677,7 @@ DiskImg::FormatImage(FSFormat format, const char* volName)
     DiskFS* pDiskFS = NULL;
     FSFormat savedFormat;
 
-    WMSG1(" DI FormatImage '%s'\n", volName);
+    LOGI(" DI FormatImage '%s'", volName);
 
     /*
      * Open a temporary DiskFS for the requested format.  We do this via the
@@ -1699,7 +1699,7 @@ DiskImg::FormatImage(FSFormat format, const char* volName)
     if (dierr != kDIErrNone)
         goto bail;
 
-    WMSG0("DI format successful\n");
+    LOGI("DI format successful");
     fFormat = format;
 
 bail:
@@ -1723,7 +1723,7 @@ DiskImg::ZeroImage(void)
     unsigned char blkBuf[kBlockSize];
     long block;
 
-    WMSG1(" DI ZeroImage (%ld blocks)\n", GetNumBlocks());
+    LOGI(" DI ZeroImage (%ld blocks)", GetNumBlocks());
     memset(blkBuf, 0, sizeof(blkBuf));
 
     for (block = 0; block < GetNumBlocks(); block++) {
@@ -1838,11 +1838,11 @@ DiskImg::CalcSectorAndOffset(long track, int sector, SectorOrder imageOrder,
     };
 
     if (track < 0 || track >= fNumTracks) {
-        WMSG1(" DI read invalid track %ld\n", track);
+        LOGI(" DI read invalid track %ld", track);
         return kDIErrInvalidTrack;
     }
     if (sector < 0 || sector >= fNumSectPerTrack) {
-        WMSG1(" DI read invalid sector %d\n", sector);
+        LOGI(" DI read invalid sector %d", sector);
         return kDIErrInvalidSector;
     }
 
@@ -1934,7 +1934,7 @@ DiskImg::CalcSectorAndOffset(long track, int sector, SectorOrder imageOrder,
         offset += newSector * kSectorSize;
         if (imageOrder != fsOrder) {
             /* translation expected */
-            WMSG2("NOTE: CalcSectorAndOffset for nspt=13 with img=%d fs=%d\n",
+            LOGI("NOTE: CalcSectorAndOffset for nspt=13 with img=%d fs=%d",
                 imageOrder, fsOrder);
         }
     } else {
@@ -2007,13 +2007,13 @@ DiskImg::ReadTrackSectorSwapped(long track, int sector, void* buf,
     if (IsSectorFormat(fPhysical)) {
         assert(offset+kSectorSize <= fLength);
 
-        //WMSG2("  DI t=%d s=%d\n", track,
+        //LOGI("  DI t=%d s=%d", track,
         //  (offset - track * fNumSectPerTrack * kSectorSize) / kSectorSize);
 
         dierr = CopyBytesOut(buf, offset, kSectorSize);
     } else if (IsNibbleFormat(fPhysical)) {
         if (imageOrder != kSectorOrderPhysical) {
-            WMSG2("  NOTE: nibble imageOrder is %d (expected %d)\n",
+            LOGI("  NOTE: nibble imageOrder is %d (expected %d)",
                 imageOrder, kSectorOrderPhysical);
         }
         dierr = ReadNibbleSector(track, newSector, buf, fpNibbleDescr);
@@ -2062,13 +2062,13 @@ DiskImg::WriteTrackSector(long track, int sector, const void* buf)
     if (IsSectorFormat(fPhysical)) {
         assert(offset+kSectorSize <= fLength);
 
-        //WMSG2("  DI t=%d s=%d\n", track,
+        //LOGI("  DI t=%d s=%d", track,
         //  (offset - track * fNumSectPerTrack * kSectorSize) / kSectorSize);
 
         dierr = CopyBytesIn(buf, offset, kSectorSize);
     } else if (IsNibbleFormat(fPhysical)) {
         if (fOrder != kSectorOrderPhysical) {
-            WMSG2("  NOTE: nibble fOrder is %d (expected %d)\n",
+            LOGI("  NOTE: nibble fOrder is %d (expected %d)",
                 fOrder, kSectorOrderPhysical);
         }
         dierr = WriteNibbleSector(track, newSector, buf, fpNibbleDescr);
@@ -2118,7 +2118,7 @@ DiskImg::ReadBlockSwapped(long block, void* buf, SectorOrder imageOrder,
     } else if (fHasBlocks) {
         /* no sectors, so no swapping; must be linear blocks */
         if (imageOrder != fsOrder) {
-            WMSG2(" DI NOTE: ReadBlockSwapped on non-sector (%d/%d)\n",
+            LOGI(" DI NOTE: ReadBlockSwapped on non-sector (%d/%d)",
                 imageOrder, fsOrder);
         }
         dierr = CopyBytesOut(buf, (di_off_t) block * kBlockSize, kBlockSize);
@@ -2167,7 +2167,7 @@ DiskImg::ReadBlocks(long startBlock, int numBlocks, void* buf)
          * be an issue.
          */
         if (startBlock == 0) {
-            WMSG0(" ReadBlocks: nonlinear, not trying\n");
+            LOGI(" ReadBlocks: nonlinear, not trying");
         }
         while (numBlocks--) {
             dierr = ReadBlock(startBlock, buf);
@@ -2178,7 +2178,7 @@ DiskImg::ReadBlocks(long startBlock, int numBlocks, void* buf)
         }
     } else {
         if (startBlock == 0) {
-            WMSG0(" ReadBlocks: doing big linear reads\n");
+            LOGI(" ReadBlocks: doing big linear reads");
         }
         dierr = CopyBytesOut(buf,
                     (di_off_t) startBlock * kBlockSize, numBlocks * kBlockSize);
@@ -2243,7 +2243,7 @@ DiskImg::WriteBlock(long block, const void* buf)
     } else if (fHasBlocks) {
         /* no sectors, so no swapping; must be linear blocks */
         if (fOrder != fFileSysOrder) {
-            WMSG2(" DI NOTE: WriteBlock on non-sector (%d/%d)\n",
+            LOGI(" DI NOTE: WriteBlock on non-sector (%d/%d)",
                 fOrder, fFileSysOrder);
         }
         dierr = CopyBytesIn(buf, (di_off_t)block * kBlockSize, kBlockSize);
@@ -2280,7 +2280,7 @@ DiskImg::WriteBlocks(long startBlock, int numBlocks, const void* buf)
          * shouldn't be an issue.
          */
         if (startBlock == 0) {
-            WMSG0(" WriteBlocks: nonlinear, not trying\n");
+            LOGI(" WriteBlocks: nonlinear, not trying");
         }
         while (numBlocks--) {
             dierr = WriteBlock(startBlock, buf);
@@ -2291,7 +2291,7 @@ DiskImg::WriteBlocks(long startBlock, int numBlocks, const void* buf)
         }
     } else {
         if (startBlock == 0) {
-            WMSG0(" WriteBlocks: doing big linear writes\n");
+            LOGI(" WriteBlocks: doing big linear writes");
         }
         dierr = CopyBytesIn(buf,
                     (di_off_t) startBlock * kBlockSize, numBlocks * kBlockSize);
@@ -2314,13 +2314,13 @@ DiskImg::CopyBytesOut(void* buf, di_off_t offset, int size) const
 
     dierr = fpDataGFD->Seek(offset, kSeekSet);
     if (dierr != kDIErrNone) {
-        WMSG2(" DI seek off=%ld failed (err=%d)\n", (long) offset, dierr);
+        LOGI(" DI seek off=%ld failed (err=%d)", (long) offset, dierr);
         return dierr;
     }
 
     dierr = fpDataGFD->Read(buf, size);
     if (dierr != kDIErrNone) {
-        WMSG3(" DI read off=%ld size=%d failed (err=%d)\n",
+        LOGI(" DI read off=%ld size=%d failed (err=%d)",
             (long) offset, size, dierr);
         return dierr;
     }
@@ -2348,13 +2348,13 @@ DiskImg::CopyBytesIn(const void* buf, di_off_t offset, int size)
 
     dierr = fpDataGFD->Seek(offset, kSeekSet);
     if (dierr != kDIErrNone) {
-        WMSG2(" DI seek off=%ld failed (err=%d)\n", (long) offset, dierr);
+        LOGI(" DI seek off=%ld failed (err=%d)", (long) offset, dierr);
         return dierr;
     }
 
     dierr = fpDataGFD->Write(buf, size);
     if (dierr != kDIErrNone) {
-        WMSG3(" DI write off=%ld size=%d failed (err=%d)\n",
+        LOGI(" DI write off=%ld size=%d failed (err=%d)",
             (long) offset, size, dierr);
         return dierr;
     }
@@ -2390,7 +2390,7 @@ DiskImg::CreateImage(const char* pathName, const char* storageName,
     assert(fpDataGFD == NULL);       // should not be open already!
 
     if (numBlocks <= 0) {
-        WMSG1("ERROR: bad numBlocks %ld\n", numBlocks);
+        LOGI("ERROR: bad numBlocks %ld", numBlocks);
         assert(false);
         return kDIErrInvalidCreateReq;
     }
@@ -2416,7 +2416,7 @@ DiskImg::CreateImage(const char* pathName, const char* storageName,
     assert(fpDataGFD == NULL);       // should not be open already!
 
     if (numTracks <= 0 || numSectPerTrack == 0) {
-        WMSG2("ERROR: bad tracks/sectors %ld/%ld\n", numTracks, numSectPerTrack);
+        LOGI("ERROR: bad tracks/sectors %ld/%ld", numTracks, numSectPerTrack);
         assert(false);
         return kDIErrInvalidCreateReq;
     }
@@ -2434,11 +2434,11 @@ DiskImg::CreateImage(const char* pathName, const char* storageName,
     if (numSectPerTrack < 0) {
         /* nibble image with non-standard formatting */
         if (!IsNibbleFormat(fPhysical)) {
-            WMSG0("Whoa: expected nibble format here\n");
+            LOGI("Whoa: expected nibble format here");
             assert(false);
             return kDIErrInvalidCreateReq;
         }
-        WMSG0("Sector image w/o sectors, switching to nibble mode\n");
+        LOGI("Sector image w/o sectors, switching to nibble mode");
         fHasNibbles = true;
         fHasSectors = false;
         fpNibbleDescr = NULL;
@@ -2469,14 +2469,14 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
             fNumSectPerTrack = 16;
             fNumTracks = fNumBlocks / 8;
         } else {
-            WMSG0("NOTE: sector access to new image not possible\n");
+            LOGI("NOTE: sector access to new image not possible");
         }
     } else if (fHasSectors) {
         if ((fNumSectPerTrack & 0x01) == 0) {
             fHasBlocks = true;
             fNumBlocks = (fNumTracks * fNumSectPerTrack) / 2;
         } else {
-            WMSG0("NOTE: block access to new image not possible\n");
+            LOGI("NOTE: block access to new image not possible");
         }
     }
     if (fHasSectors && fPhysical != kPhysicalFormatSectors)
@@ -2492,7 +2492,7 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
      */
     dierr = ValidateCreateFormat();
     if (dierr != kDIErrNone) {
-        WMSG0("ERROR: CIC arg validation failed, bailing\n");
+        LOGI("ERROR: CIC arg validation failed, bailing");
         goto bail;
     }
 
@@ -2505,12 +2505,12 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
      * THOUGHT: should allow creation of an in-memory disk image.  This won't
      * work for NuFX, but will work for pretty much everything else.
      */
-    WMSG1(" CIC: creating '%s'\n", pathName);
+    LOGI(" CIC: creating '%s'", pathName);
     int fd;
     fd = open(pathName, O_CREAT | O_EXCL, 0644);
     if (fd < 0) {
         dierr = (DIError) errno;
-        WMSG2("ERROR: unable to create file '%s' (errno=%d)\n",
+        LOGI("ERROR: unable to create file '%s' (errno=%d)",
             pathName, dierr);
         goto bail;
     }
@@ -2651,7 +2651,7 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
     }
 
     if (fpImageWrapper == NULL) {
-        WMSG0(" DI couldn't figure out the file format\n");
+        LOGI(" DI couldn't figure out the file format");
         dierr = kDIErrUnrecognizedFileFmt;
         goto bail;
     }
@@ -2661,7 +2661,7 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
     dierr = fpImageWrapper->Create(fLength, fPhysical, fOrder,
                 fDOSVolumeNum, fpWrapperGFD, &fWrappedLength, &fpDataGFD);
     if (dierr != kDIErrNone) {
-        WMSG1("ImageWrapper Create failed, err=%d\n", dierr);
+        LOGI("ImageWrapper Create failed, err=%d", dierr);
         goto bail;
     }
     assert(fpDataGFD != NULL);
@@ -2682,7 +2682,7 @@ DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
         assert(!skipFormat);        // don't skip low-level nibble formatting!
         if (fDOSVolumeNum == kVolumeNumNotSet) {
             fDOSVolumeNum = kDefaultNibbleVolumeNum;
-            WMSG0("    Using default nibble volume num\n");
+            LOGI("    Using default nibble volume num");
         }
 
         dierr = FormatNibbles(fpDataGFD);   // write basic nibble stuff
@@ -2722,7 +2722,7 @@ DiskImg::ValidateCreateFormat(void) const
      */
     if (fHasBlocks && fNumBlocks >= 4194304) {  // 2GB or larger?
         if (fFileFormat != kFileFormatUnadorned) {
-            WMSG0("CreateImage: images >= 2GB can only be unadorned\n");
+            LOGI("CreateImage: images >= 2GB can only be unadorned");
             return kDIErrInvalidCreateReq;
         }
     }
@@ -2732,14 +2732,14 @@ DiskImg::ValidateCreateFormat(void) const
         fOrder == kSectorOrderUnknown ||
         fFormat == kFormatUnknown)
     {
-        WMSG0("CreateImage: ambiguous format\n");
+        LOGI("CreateImage: ambiguous format");
         return kDIErrInvalidCreateReq;
     }
     if (fOuterFormat != kOuterFormatNone &&
         fOuterFormat != kOuterFormatGzip &&
         fOuterFormat != kOuterFormatZip)
     {
-        WMSG1("CreateImage: unsupported outer format %d\n", fOuterFormat);
+        LOGI("CreateImage: unsupported outer format %d", fOuterFormat);
         return kDIErrInvalidCreateReq;
     }
     if (fFileFormat != kFileFormatUnadorned &&
@@ -2751,7 +2751,7 @@ DiskImg::ValidateCreateFormat(void) const
         fFileFormat != kFileFormatNuFX &&
         fFileFormat != kFileFormatDDD)
     {
-        WMSG1("CreateImage: unsupported file format %d\n", fFileFormat);
+        LOGI("CreateImage: unsupported file format %d", fFileFormat);
         return kDIErrInvalidCreateReq;
     }
     if (fFormat != kFormatGenericPhysicalOrd &&
@@ -2759,7 +2759,7 @@ DiskImg::ValidateCreateFormat(void) const
         fFormat != kFormatGenericDOSOrd &&
         fFormat != kFormatGenericCPMOrd)
     {
-        WMSG0("CreateImage: may only use 'generic' formats\n");
+        LOGI("CreateImage: may only use 'generic' formats");
         return kDIErrInvalidCreateReq;
     }
 
@@ -2768,25 +2768,25 @@ DiskImg::ValidateCreateFormat(void) const
      */
     if (fPhysical != kPhysicalFormatSectors) {
         if (fOrder != kSectorOrderPhysical) {
-            WMSG0("CreateImage: nibble images are always 'physical' order\n");
+            LOGI("CreateImage: nibble images are always 'physical' order");
             return kDIErrInvalidCreateReq;
         }
 
         if (GetHasSectors() == false && GetHasNibbles() == false) {
-            WMSG2("CreateImage: must set hasSectors(%d) or hasNibbles(%d)\n",
+            LOGI("CreateImage: must set hasSectors(%d) or hasNibbles(%d)",
                 GetHasSectors(), GetHasNibbles());
             return kDIErrInvalidCreateReq;
         }
 
         if (fpNibbleDescr == NULL && GetNumSectPerTrack() > 0) {
-            WMSG0("CreateImage: must provide NibbleDescr for non-sector\n");
+            LOGI("CreateImage: must provide NibbleDescr for non-sector");
             return kDIErrInvalidCreateReq;
         }
 
         if (fpNibbleDescr != NULL &&
             fpNibbleDescr->numSectors != GetNumSectPerTrack())
         {
-            WMSG2("CreateImage: ?? nd->numSectors=%d, GetNumSectPerTrack=%d\n",
+            LOGI("CreateImage: ?? nd->numSectors=%d, GetNumSectPerTrack=%d",
                 fpNibbleDescr->numSectors, GetNumSectPerTrack());
             return kDIErrInvalidCreateReq;
         }
@@ -2798,14 +2798,14 @@ DiskImg::ValidateCreateFormat(void) const
              fpNibbleDescr->encoding != kNibbleEnc62))
             )
         {
-            WMSG0("CreateImage: sector count/encoding mismatch\n");
+            LOGI("CreateImage: sector count/encoding mismatch");
             return kDIErrInvalidCreateReq;
         }
 
         if (GetNumTracks() != kTrackCount525 &&
             !(GetNumTracks() == 40 && fFileFormat == kFileFormatTrackStar))
         {
-            WMSG1("CreateImage: unexpected track count %ld\n", GetNumTracks());
+            LOGI("CreateImage: unexpected track count %ld", GetNumTracks());
             return kDIErrInvalidCreateReq;
         }
     }
@@ -2813,7 +2813,7 @@ DiskImg::ValidateCreateFormat(void) const
         if (fPhysical != kPhysicalFormatSectors &&
             fPhysical != kPhysicalFormatNib525_6656)
         {
-            WMSG1("CreateImage: 2MG can't handle physical %d\n", fPhysical);
+            LOGI("CreateImage: 2MG can't handle physical %d", fPhysical);
             return kDIErrInvalidCreateReq;
         }
 
@@ -2821,78 +2821,78 @@ DiskImg::ValidateCreateFormat(void) const
                 (fOrder != kSectorOrderProDOS &&
                 fOrder != kSectorOrderDOS))
         {
-            WMSG0("CreateImage: 2MG requires DOS or ProDOS ordering\n");
+            LOGI("CreateImage: 2MG requires DOS or ProDOS ordering");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatNuFX) {
         if (fOuterFormat != kOuterFormatNone) {
-            WMSG0("CreateImage: can't mix NuFX and outer wrapper\n");
+            LOGI("CreateImage: can't mix NuFX and outer wrapper");
             return kDIErrInvalidCreateReq;
         }
         if (fPhysical != kPhysicalFormatSectors) {
-            WMSG0("CreateImage: NuFX physical must be sectors\n");
+            LOGI("CreateImage: NuFX physical must be sectors");
             return kDIErrInvalidCreateReq;
         }
         if (fOrder != kSectorOrderProDOS) {
-            WMSG0("CreateImage: NuFX is always ProDOS-order\n");
+            LOGI("CreateImage: NuFX is always ProDOS-order");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatDiskCopy42) {
         if (fPhysical != kPhysicalFormatSectors) {
-            WMSG0("CreateImage: DC42 physical must be sectors\n");
+            LOGI("CreateImage: DC42 physical must be sectors");
             return kDIErrInvalidCreateReq;
         }
         if ((GetHasBlocks() && GetNumBlocks() != 1600) ||
             GetHasSectors() &&
                 (GetNumTracks() != 200 || GetNumSectPerTrack() != 16))
         {
-            WMSG0("CreateImage: DC42 only for 800K disks\n");
+            LOGI("CreateImage: DC42 only for 800K disks");
             return kDIErrInvalidCreateReq;
         }
         if (fOrder != kSectorOrderProDOS &&
             fOrder != kSectorOrderDOS)      // used for UNIDOS disks??
         {
-            WMSG0("CreateImage: DC42 is always ProDOS or DOS\n");
+            LOGI("CreateImage: DC42 is always ProDOS or DOS");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatSim2eHDV) {
         if (fPhysical != kPhysicalFormatSectors) {
-            WMSG0("CreateImage: Sim2eHDV physical must be sectors\n");
+            LOGI("CreateImage: Sim2eHDV physical must be sectors");
             return kDIErrInvalidCreateReq;
         }
         if (fOrder != kSectorOrderProDOS) {
-            WMSG0("CreateImage: Sim2eHDV is always ProDOS-order\n");
+            LOGI("CreateImage: Sim2eHDV is always ProDOS-order");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatTrackStar) {
         if (fPhysical != kPhysicalFormatNib525_Var) {
-            WMSG0("CreateImage: TrackStar physical must be var-nibbles\n");
+            LOGI("CreateImage: TrackStar physical must be var-nibbles");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatFDI) {
         if (fPhysical != kPhysicalFormatNib525_Var) {
-            WMSG0("CreateImage: FDI physical must be var-nibbles\n");
+            LOGI("CreateImage: FDI physical must be var-nibbles");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatDDD) {
         if (fPhysical != kPhysicalFormatSectors) {
-            WMSG0("CreateImage: DDD physical must be sectors\n");
+            LOGI("CreateImage: DDD physical must be sectors");
             return kDIErrInvalidCreateReq;
         }
         if (fOrder != kSectorOrderDOS) {
-            WMSG0("CreateImage: DDD is always DOS-order\n");
+            LOGI("CreateImage: DDD is always DOS-order");
             return kDIErrInvalidCreateReq;
         }
         if (!GetHasSectors() || GetNumTracks() != 35 ||
             GetNumSectPerTrack() != 16)
         {
-            WMSG0("CreateImage: DDD is only for 16-sector 35-track disks\n");
+            LOGI("CreateImage: DDD is only for 16-sector 35-track disks");
             return kDIErrInvalidCreateReq;
         }
     }
@@ -2926,20 +2926,20 @@ DiskImg::FormatSectors(GenericFD* pGFD, bool quickFormat) const
     if (quickFormat) {
         dierr = pGFD->Seek(fLength - sizeof(sctBuf), kSeekSet);
         if (dierr != kDIErrNone) {
-            WMSG2(" FormatSectors: GFD seek %ld failed (err=%d)\n",
+            LOGI(" FormatSectors: GFD seek %ld failed (err=%d)",
                 (long) fLength - sizeof(sctBuf), dierr);
             goto bail;
         }
         dierr = pGFD->Write(sctBuf, sizeof(sctBuf), NULL);
         if (dierr != kDIErrNone) {
-            WMSG1(" FormatSectors: GFD quick write failed (err=%d)\n", dierr);
+            LOGI(" FormatSectors: GFD quick write failed (err=%d)", dierr);
             goto bail;
         }
     } else {
         for (length = fLength ; length > 0; length -= sizeof(sctBuf)) {
             dierr = pGFD->Write(sctBuf, sizeof(sctBuf), NULL);
             if (dierr != kDIErrNone) {
-                WMSG1(" FormatSectors: GFD write failed (err=%d)\n", dierr);
+                LOGI(" FormatSectors: GFD write failed (err=%d)", dierr);
                 goto bail;
             }
         }
@@ -2974,14 +2974,14 @@ DiskImg::FormatBlocks(GenericFD* pGFD) const
     for (length = fLength ; length > 0; length -= sizeof(blkBuf)) {
         dierr = pGFD->Write(blkBuf, sizeof(blkBuf), NULL);
         if (dierr != kDIErrNone) {
-            WMSG1(" FormatBlocks: GFD write failed (err=%d)\n", dierr);
+            LOGI(" FormatBlocks: GFD write failed (err=%d)", dierr);
             return dierr;
         }
     }
     assert(length == 0);
 
     end = time(NULL);
-    WMSG1("FormatBlocks complete, time=%ld\n", end - start);
+    LOGI("FormatBlocks complete, time=%ld", end - start);
 
     return kDIErrNone;
 }
@@ -3047,12 +3047,12 @@ DiskImg::AddNote(NoteType type, const char* fmt, ...)
         len++;
     }
 
-    WMSG1("+++ adding note '%s'\n", buf);
+    LOGI("+++ adding note '%s'", buf);
 
     if (fNotes == NULL) {
         fNotes = new char[len +1];
         if (fNotes == NULL) {
-            WMSG1("Unable to create notes[%d]\n", len+1);
+            LOGI("Unable to create notes[%d]", len+1);
             assert(false);
             return;
         }
@@ -3061,7 +3061,7 @@ DiskImg::AddNote(NoteType type, const char* fmt, ...)
         int existingLen = strlen(fNotes);
         char* newNotes = new char[existingLen + len +1];
         if (newNotes == NULL) {
-            WMSG1("Unable to create newNotes[%d]\n", existingLen+len+1);
+            LOGI("Unable to create newNotes[%d]", existingLen+len+1);
             assert(false);
             return;
         }
@@ -3170,7 +3170,7 @@ DiskImg::OpenAppropriateDiskFS(bool allowUnknown)
         break;
 
     default:
-        WMSG1("WARNING: unhandled DiskFS case %d\n", GetFSFormat());
+        LOGI("WARNING: unhandled DiskFS case %d", GetFSFormat());
         assert(false);
         /* fall through */
     case DiskImg::kFormatGenericPhysicalOrd:

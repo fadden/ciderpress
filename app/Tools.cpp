@@ -57,15 +57,15 @@ MainWindow::TryDiskImgOverride(DiskImg* pImg, const WCHAR* fileSource,
         imf.fFSFormat = defaultFormat;
     }
 
-    WMSG2(" On entry, sectord=%d format=%d\n",
+    LOGI(" On entry, sectord=%d format=%d",
         imf.fSectorOrder, imf.fFSFormat);
 
     if (imf.DoModal() != IDOK) {
-        WMSG0(" User bailed on IMF dialog\n");
+        LOGI(" User bailed on IMF dialog");
         return IDCANCEL;
     }
 
-    WMSG2(" On exit, sectord=%d format=%d\n",
+    LOGI(" On exit, sectord=%d format=%d",
         imf.fSectorOrder, imf.fFSFormat);
 
     if (pDisplayFormat != NULL)
@@ -73,7 +73,7 @@ MainWindow::TryDiskImgOverride(DiskImg* pImg, const WCHAR* fileSource,
     if (imf.fSectorOrder != pImg->GetSectorOrder() ||
         imf.fFSFormat != pImg->GetFSFormat())
     {
-        WMSG0("Initial values overridden, forcing img format\n");
+        LOGI("Initial values overridden, forcing img format");
         DIError dierr;
         dierr = pImg->OverrideFormat(pImg->GetPhysicalFormat(), imf.fFSFormat,
                     imf.fSectorOrder);
@@ -168,12 +168,12 @@ MainWindow::OnToolsDiskEdit(void)
         loadName = fpOpenArchive->GetPathName();
         readOnly = fpOpenArchive->IsReadOnly();
     } else {
-        WMSG1("GLITCH: unexpected fOpenWhat %d\n", diskEditOpen.fOpenWhat);
+        LOGI("GLITCH: unexpected fOpenWhat %d", diskEditOpen.fOpenWhat);
         ASSERT(false);
         goto bail;
     }
 
-    WMSG3("Disk editor what=%d name='%ls' ro=%d\n",
+    LOGI("Disk editor what=%d name='%ls' ro=%d",
         diskEditOpen.fOpenWhat, (LPCWSTR) loadName, readOnly);
 
 
@@ -194,10 +194,10 @@ MainWindow::OnToolsDiskEdit(void)
     fseek(tmpfp, 0, SEEK_END);
     length = ftell(tmpfp);
     rewind(tmpfp);
-    WMSG1(" PHATBUF %d\n", length);
+    LOGI(" PHATBUF %d", length);
     phatbuf = new char[length];
     if (fread(phatbuf, length, 1, tmpfp) != 1)
-        WMSG1("FREAD FAILED %d\n", errno);
+        LOGI("FREAD FAILED %d", errno);
     fclose(tmpfp);
     dierr = img.OpenImage(phatbuf, length, true);
 #endif
@@ -308,7 +308,7 @@ MainWindow::OnToolsDiskEdit(void)
     DiskFS* pDiskFS;
     pDiskFS = img.OpenAppropriateDiskFS(true);
     if (pDiskFS == NULL) {
-        WMSG0("HEY: OpenAppropriateDiskFS failed!\n");
+        LOGI("HEY: OpenAppropriateDiskFS failed!");
         goto bail;
     }
 
@@ -440,11 +440,11 @@ MainWindow::OnToolsDiskConv(void)
         /* use filename as storageName (exception for DiskCopy42 later) */
         storageName = PathName::FilenameOnly(loadName, '\\');
     }
-    WMSG1("  Using '%ls' as storageName\n", (LPCWSTR) storageName);
+    LOGI("  Using '%ls' as storageName", (LPCWSTR) storageName);
 
     /* transfer the DOS volume num, if one was set */
     dstImg.SetDOSVolumeNum(srcImg.GetDOSVolumeNum());
-    WMSG1("DOS volume number set to %d\n", dstImg.GetDOSVolumeNum());
+    LOGI("DOS volume number set to %d", dstImg.GetDOSVolumeNum());
 
     DiskImg::FSFormat origFSFormat;
     origFSFormat = srcImg.GetFSFormat();
@@ -472,7 +472,7 @@ MainWindow::OnToolsDiskConv(void)
      */
     convDlg.Init(&srcImg);
     if (convDlg.DoModal() != IDOK) {
-        WMSG0(" User bailed out of convert dialog\n");
+        LOGI(" User bailed out of convert dialog");
         goto bail;
     }
 
@@ -507,7 +507,7 @@ MainWindow::OnToolsDiskConv(void)
                                 DiskImg::kNibbleDescrDOS33Std);
         }
     }
-    WMSG2(" NibbleDescr is 0x%08lx (%hs)\n", (long) pNibbleDescr,
+    LOGI(" NibbleDescr is 0x%08lx (%hs)", (long) pNibbleDescr,
         pNibbleDescr != NULL ? pNibbleDescr->description : "---");
 
     if (srcImg.GetFileFormat() == DiskImg::kFileFormatTrackStar &&
@@ -518,7 +518,7 @@ MainWindow::OnToolsDiskConv(void)
         msg.LoadString(IDS_TRACKSTAR_TO_OTHER_WARNING);
         appName.LoadString(IDS_MB_APP_NAME);
         if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK) {
-            WMSG0(" User bailed after trackstar-to-other warning\n");
+            LOGI(" User bailed after trackstar-to-other warning");
             goto bail;
         }
     } else if (srcImg.GetFileFormat() == DiskImg::kFileFormatFDI &&
@@ -530,7 +530,7 @@ MainWindow::OnToolsDiskConv(void)
         msg.LoadString(IDS_FDI_TO_OTHER_WARNING);
         appName.LoadString(IDS_MB_APP_NAME);
         if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK) {
-            WMSG0(" User bailed after fdi-to-other warning\n");
+            LOGI(" User bailed after fdi-to-other warning");
             goto bail;
         }
     } else if (srcImg.GetHasNibbles() && DiskImg::IsSectorFormat(physicalFormat))
@@ -540,7 +540,7 @@ MainWindow::OnToolsDiskConv(void)
         msg.LoadString(IDS_NIBBLE_TO_SECTOR_WARNING);
         appName.LoadString(IDS_MB_APP_NAME);
         if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK) {
-            WMSG0(" User bailed after nibble-to-sector warning\n");
+            LOGI(" User bailed after nibble-to-sector warning");
             goto bail;
         }
     } else if (srcImg.GetHasNibbles() &&
@@ -552,7 +552,7 @@ MainWindow::OnToolsDiskConv(void)
         msg.LoadString(IDS_DIFFERENT_NIBBLE_WARNING);
         appName.LoadString(IDS_MB_APP_NAME);
         if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK) {
-            WMSG0(" User bailed after differing-nibbles warning\n");
+            LOGI(" User bailed after differing-nibbles warning");
             goto bail;
         }
     }
@@ -565,13 +565,13 @@ MainWindow::OnToolsDiskConv(void)
     if (origFSFormat == DiskImg::kFormatUNIDOS &&
         fileFormat == DiskImg::kFileFormatDiskCopy42)
     {
-        WMSG0("  Switching to DOS sector ordering for UNIDOS/DiskCopy42");
+        LOGI("  Switching to DOS sector ordering for UNIDOS/DiskCopy42");
         sectorOrder = DiskImg::kSectorOrderDOS;
     }
     if (origFSFormat != DiskImg::kFormatProDOS &&
         fileFormat == DiskImg::kFileFormatDiskCopy42)
     {
-        WMSG0("  Nuking storage name for non-ProDOS DiskCopy42 image");
+        LOGI("  Nuking storage name for non-ProDOS DiskCopy42 image");
         storageName = L"";  // want to use "-not a mac disk" for non-ProDOS
     }
 
@@ -593,7 +593,7 @@ MainWindow::OnToolsDiskConv(void)
             fPreferences.GetPrefString(kPrConvertArchiveFolder);
     
         if (saveDlg.DoModal() != IDOK) {
-            WMSG0(" User bailed out of image save dialog\n");
+            LOGI(" User bailed out of image save dialog");
             goto bail;
         }
 
@@ -603,7 +603,7 @@ MainWindow::OnToolsDiskConv(void)
 
         saveName = saveDlg.GetPathName();
     }
-    WMSG1("File will be saved to '%ls'\n", (LPCWSTR) saveName);
+    LOGI("File will be saved to '%ls'", (LPCWSTR) saveName);
 
     /* DiskImgLib does not like it if file already exists */
     errMsg = RemoveFile(saveName);
@@ -754,7 +754,7 @@ MainWindow::OnToolsDiskConv(void)
         DoneOpenDialog doneOpen(this);
 
         if (doneOpen.DoModal() == IDOK) {
-            WMSG1(" At user request, opening '%ls'\n", (LPCWSTR) saveName);
+            LOGI(" At user request, opening '%ls'", (LPCWSTR) saveName);
 
             DoOpenArchive(saveName, convDlg.fExtension,
                 kFilterIndexDiskImage, false);
@@ -845,7 +845,7 @@ MainWindow::DetermineImageSettings(int convertIdx, bool addGzip,
         break;
     default:
         ASSERT(false);
-        WMSG1(" WHOA: invalid conv type %d\n", convertIdx);
+        LOGI(" WHOA: invalid conv type %d", convertIdx);
         return -1;
     }
 
@@ -898,7 +898,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
         }
         
         numTracks = MIN(pSrcImg->GetNumTracks(), pDstImg->GetNumTracks());
-        WMSG1("Nibble track copy (%d tracks)\n", numTracks);
+        LOGI("Nibble track copy (%d tracks)", numTracks);
         for (int track = 0; track < numTracks; track++) {
             dierr = pSrcImg->ReadNibbleTrack(track, dataBuf, &trackLen);
             if (dierr != kDIErrNone) {
@@ -938,13 +938,13 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
         numTracks = MIN(pSrcImg->GetNumTracks(), pDstImg->GetNumTracks());
         numSectPerTrack = MIN(pSrcImg->GetNumSectPerTrack(),
                               pDstImg->GetNumSectPerTrack());
-        WMSG2("Sector copy (%d tracks / %d sectors)\n",
+        LOGI("Sector copy (%d tracks / %d sectors)",
             numTracks, numSectPerTrack);
         for (int track = 0; track < numTracks; track++) {
             for (int sector = 0; sector < numSectPerTrack; sector++) {
                 dierr = pSrcImg->ReadTrackSector(track, sector, dataBuf);
                 if (dierr != kDIErrNone) {
-                    WMSG2("Bad sector T=%d S=%d\n", track, sector);
+                    LOGI("Bad sector T=%d S=%d", track, sector);
                     numBadSectors++;
                     dierr = kDIErrNone;
                     memset(dataBuf, 0, 256);
@@ -993,7 +993,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
             goto bail;
         }
 
-        WMSG2("--- BLOCK COPY (%ld blocks, %d per)\n",
+        LOGI("--- BLOCK COPY (%ld blocks, %d per)",
             numBlocks, blocksPerRead);
         for (long block = 0; block < numBlocks; ) {
             long blocksThisTime = blocksPerRead;
@@ -1006,7 +1006,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
                     /*
                      * Media with errors.  Drop to one block per read.
                      */
-                    WMSG2(" Bad sector encountered at %ld(%ld), slowing\n",
+                    LOGI(" Bad sector encountered at %ld(%ld), slowing",
                         block, blocksThisTime);
                     blocksThisTime = blocksPerRead = 1;
                     continue;   // retry this block
@@ -1085,7 +1085,7 @@ public:
 
 private:
     void OnOK(void) {
-        WMSG0("Ignoring BulkConvCancelDialog OnOK\n");
+        LOGI("Ignoring BulkConvCancelDialog OnOK");
     }
 
     MainWindow* GetMainWindow(void) const {
@@ -1142,7 +1142,7 @@ MainWindow::OnToolsBulkDiskConv(void)
         pathName = dlg.GetNextPathName(posn);
         nameCount++;
     }
-    WMSG1("BulkConv got nameCount=%d\n", nameCount);
+    LOGI("BulkConv got nameCount=%d", nameCount);
 
     /*
      * Choose the target directory.
@@ -1165,14 +1165,14 @@ MainWindow::OnToolsBulkDiskConv(void)
      */
     convDlg.Init(nameCount);
     if (convDlg.DoModal() != IDOK) {
-        WMSG0(" User bailed out of convert dialog\n");
+        LOGI(" User bailed out of convert dialog");
         goto bail;
     }
 
     /* initialize cancel dialog, and disable main window */
     EnableWindow(FALSE);
     if (pCancelDialog->Create(this) == FALSE) {
-        WMSG0("Cancel dialog init failed?!\n");
+        LOGI("Cancel dialog init failed?!");
         ASSERT(false);
         goto bail;
     }
@@ -1184,7 +1184,7 @@ MainWindow::OnToolsBulkDiskConv(void)
     while (posn != NULL) {
         CString pathName;
         pathName = dlg.GetNextPathName(posn);
-        WMSG1(" BulkConv: source path='%ls'\n", (LPCWSTR) pathName);
+        LOGI(" BulkConv: source path='%ls'", (LPCWSTR) pathName);
 
         pCancelDialog->SetCurrentFile(PathName::FilenameOnly(pathName, '\\'));
         PeekAndPump();
@@ -1290,7 +1290,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
 
     /* transfer the DOS volume num, if one was set */
     dstImg.SetDOSVolumeNum(srcImg.GetDOSVolumeNum());
-    WMSG1("DOS volume number set to %d\n", dstImg.GetDOSVolumeNum());
+    LOGI("DOS volume number set to %d", dstImg.GetDOSVolumeNum());
 
     DiskImg::FSFormat origFSFormat;
     origFSFormat = srcImg.GetFSFormat();
@@ -1341,7 +1341,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
                                 DiskImg::kNibbleDescrDOS33Std);
         }
     }
-    WMSG2(" NibbleDescr is 0x%08lx (%hs)\n", (long) pNibbleDescr,
+    LOGI(" NibbleDescr is 0x%08lx (%hs)", (long) pNibbleDescr,
         pNibbleDescr != NULL ? pNibbleDescr->description : "---");
 
     /*
@@ -1374,7 +1374,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
     storageName = PathName::FilenameOnly(saveName, '\\'); // grab this for SHK name
     saveName += '.';
     saveName += convDlg.fExtension;
-    WMSG2(" Bulk converting '%ls' to '%ls'\n", pathName, (LPCWSTR) saveName);
+    LOGI(" Bulk converting '%ls' to '%ls'", pathName, (LPCWSTR) saveName);
 
     /*
      * If this is a ProDOS volume, use the disk volume name as the default
@@ -1394,7 +1394,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
         if (fileFormat == DiskImg::kFileFormatDiskCopy42)
             storageName = L"";  // want to use "not a mac disk" for non-ProDOS
     }
-    WMSG1("  Using '%ls' as storageName\n", (LPCWSTR) storageName);
+    LOGI("  Using '%ls' as storageName", (LPCWSTR) storageName);
 
     /*
      * If the source is a UNIDOS volume and the target format is DiskCopy 4.2,
@@ -1404,7 +1404,7 @@ MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
     if (origFSFormat == DiskImg::kFormatUNIDOS &&
         fileFormat == DiskImg::kFileFormatDiskCopy42)
     {
-        WMSG0("  Switching to DOS sector ordering for UNIDOS/DiskCopy42");
+        LOGI("  Switching to DOS sector ordering for UNIDOS/DiskCopy42");
         sectorOrder = DiskImg::kSectorOrderDOS;
     }
 
@@ -1574,7 +1574,7 @@ MainWindow::OnToolsSSTMerge(void)
         goto bail;
     if (SSTLoadData(0, &srcImg0, trackBuf, &badCount) != 0)
         goto bail;
-    WMSG1("FOUND %ld bad bytes in part 0\n", badCount);
+    LOGI("FOUND %ld bad bytes in part 0", badCount);
     if (badCount > kBadCountThreshold) {
         errMsg.LoadString(IDS_BAD_SST_IMAGE);
         if (MessageBox(errMsg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK)
@@ -1586,7 +1586,7 @@ MainWindow::OnToolsSSTMerge(void)
         goto bail;
     if (SSTLoadData(1, &srcImg1, trackBuf, &badCount) != 0)
         goto bail;
-    WMSG1("FOUND %ld bad bytes in part 1\n", badCount);
+    LOGI("FOUND %ld bad bytes in part 1", badCount);
     if (badCount > kBadCountThreshold) {
         errMsg.LoadString(IDS_BAD_SST_IMAGE);
         if (MessageBox(errMsg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK)
@@ -1604,7 +1604,7 @@ MainWindow::OnToolsSSTMerge(void)
     saveDlg.m_ofn.lpstrTitle = L"Save .NIB disk image as...";
     saveDlg.m_ofn.lpstrInitialDir = fPreferences.GetPrefString(kPrOpenArchiveFolder);
     if (saveDlg.DoModal() != IDOK) {
-        WMSG0(" User bailed out of image save dialog\n");
+        LOGI(" User bailed out of image save dialog");
         goto bail;
     }
     saveFolder = saveDlg.m_ofn.lpstrFile;
@@ -1612,7 +1612,7 @@ MainWindow::OnToolsSSTMerge(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     saveName = saveDlg.GetPathName();
-    WMSG1("File will be saved to '%ls'\n", (LPCWSTR) saveName);
+    LOGI("File will be saved to '%ls'", (LPCWSTR) saveName);
 
     /* remove the file if it exists */
     errMsg = RemoveFile(saveName);
@@ -1650,7 +1650,7 @@ MainWindow::OnToolsSSTMerge(void)
         DoneOpenDialog doneOpen(this);
 
         if (doneOpen.DoModal() == IDOK) {
-            WMSG1(" At user request, opening '%ls'\n", (LPCWSTR) saveName);
+            LOGI(" At user request, opening '%ls'", (LPCWSTR) saveName);
 
             DoOpenArchive(saveName, L"nib", kFilterIndexDiskImage, false);
         }
@@ -1784,7 +1784,7 @@ MainWindow::SSTLoadData(int seqNum, DiskImg* pDiskImg, BYTE* trackBuf,
     for (track = 0; track < kSSTNumTracks; track++) {
         int virtualTrack = track + (seqNum * kSSTNumTracks);
         bufOffset = SSTGetBufOffset(virtualTrack);
-        //WMSG3("USING offset=%ld (track=%d / %d)\n",
+        //LOGI("USING offset=%ld (track=%d / %d)",
         //    bufOffset, track, virtualTrack);
 
         if (virtualTrack & 0x01) {
@@ -1792,7 +1792,7 @@ MainWindow::SSTLoadData(int seqNum, DiskImg* pDiskImg, BYTE* trackBuf,
             for (sector = 15; sector >= 4; sector--) {
                 dierr = pDiskImg->ReadTrackSector(track, sector, sctBuf);
                 if (dierr != kDIErrNone) {
-                    WMSG2("ERROR: on track=%d sector=%d\n",
+                    LOGI("ERROR: on track=%d sector=%d",
                         track, sector);
                     return -1;
                 }
@@ -1806,7 +1806,7 @@ MainWindow::SSTLoadData(int seqNum, DiskImg* pDiskImg, BYTE* trackBuf,
             for (sector = 13; sector >= 0; sector--) {
                 dierr = pDiskImg->ReadTrackSector(track, sector, sctBuf);
                 if (dierr != kDIErrNone) {
-                    WMSG2("ERROR: on track=%d sector=%d\n",
+                    LOGI("ERROR: on track=%d sector=%d",
                         track, sector);
                     return -1;
                 }
@@ -1923,10 +1923,10 @@ MainWindow::SSTProcessTrackData(unsigned char* trackBuf)
 
 
         if (longest == -1) {
-            WMSG1("HEY: couldn't find any 0x7f in track %d\n",
+            LOGI("HEY: couldn't find any 0x7f in track %d",
                 track);
         } else {
-            WMSG3("Found run of %d at %d in track %d\n",
+            LOGI("Found run of %d at %d in track %d",
                 longest, longestStart, track);
 
             int bkpt = longestStart + longest;
@@ -2173,7 +2173,7 @@ MainWindow::OnToolsDiskImageCreator(void)
         }
         break;
     default:
-        WMSG1("Invalid fDiskFormatIdx %d from CreateImageDialog\n",
+        LOGI("Invalid fDiskFormatIdx %d from CreateImageDialog",
             createDlg.fDiskFormatIdx);
         ASSERT(false);
         return;
@@ -2205,7 +2205,7 @@ MainWindow::OnToolsDiskImageCreator(void)
     saveDlg.m_ofn.nFilterIndex = filterIndex;
 
     if (saveDlg.DoModal() != IDOK) {
-        WMSG0(" User cancelled xfer from image create dialog\n");
+        LOGI(" User cancelled xfer from image create dialog");
         return;
     }
 
@@ -2214,7 +2214,7 @@ MainWindow::OnToolsDiskImageCreator(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     filename = saveDlg.GetPathName();
-    WMSG2(" Will xfer to file '%ls' (filterIndex=%d)\n",
+    LOGI(" Will xfer to file '%ls' (filterIndex=%d)",
         (LPCWSTR) filename, saveDlg.m_ofn.nFilterIndex);
 
     if (createDlg.fDiskFormatIdx == CreateImageDialog::kFmtDOS32) {
@@ -2255,7 +2255,7 @@ MainWindow::OnToolsDiskImageCreator(void)
         ShowFailureMsg(this, errStr, IDS_FAILED);
         (void) _wunlink(filename);
     } else {
-        WMSG0("Disk image created successfully\n");
+        LOGI("Disk image created successfully");
 #if 0
         SuccessBeep();
 
@@ -2263,7 +2263,7 @@ MainWindow::OnToolsDiskImageCreator(void)
         DoneOpenDialog doneOpen(this);
 
         if (doneOpen.DoModal() == IDOK) {
-            WMSG1(" At user request, opening '%ls'\n", filename);
+            LOGI(" At user request, opening '%ls'", filename);
 
             DoOpenArchive(filename, "dsk", kFilterIndexDiskImage, false);
         }
@@ -2309,7 +2309,7 @@ MainWindow::OnToolsEOLScanner(void)
     saveFolder = saveFolder.Left(fileDlg.m_ofn.nFileOffset);
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
-    WMSG1("Scanning '%ls'\n", (LPCWSTR) fileName);
+    LOGI("Scanning '%ls'", (LPCWSTR) fileName);
 
     FILE* fp = _wfopen(fileName, L"rb");
     if (fp == NULL) {
@@ -2354,7 +2354,7 @@ MainWindow::OnToolsEOLScanner(void)
     }
     fclose(fp);
 
-    WMSG4("Got CR=%ld LF=%ld CRLF=%ld (numChars=%ld)\n",
+    LOGI("Got CR=%ld LF=%ld CRLF=%ld (numChars=%ld)",
         numCR, numLF, numCRLF, numChars);
 
     EOLScanDialog output;
@@ -2434,7 +2434,7 @@ MainWindow::EditTwoImgProps(const WCHAR* fileName)
     long totalLength;
     bool readOnly = false;
 
-    WMSG1("EditTwoImgProps '%ls'\n", fileName);
+    LOGI("EditTwoImgProps '%ls'", fileName);
     fp = _wfopen(fileName, L"r+b");
     if (fp == NULL) {
         int firstError = errno;
@@ -2495,7 +2495,7 @@ MainWindow::EditTwoImgProps(const WCHAR* fileName)
             }
         }
 
-        WMSG0("2MG success!\n");
+        LOGI("2MG success!");
     }
 
 bail:

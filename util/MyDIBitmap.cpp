@@ -56,7 +56,7 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
     bool dibSection /*=false*/)
 {
     if (mhBitmap != NULL || mpPixels != NULL || mpFileBuffer != NULL) {
-        WMSG0(" DIB GLITCH: already created\n");
+        LOGI(" DIB GLITCH: already created");
         assert(false);
         return NULL;
     }
@@ -101,11 +101,11 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
             DWORD err = ::GetLastError();
             //CString msg;
             //GetWin32ErrorString(err, &msg);
-            //WMSG2(" DIB CreateDIBSection failed (err=%d msg='%ls')\n",
+            //LOGI(" DIB CreateDIBSection failed (err=%d msg='%ls')",
             //  err, (LPCWSTR) msg);
-            WMSG1(" DIB CreateDIBSection failed (err=%d)\n", err);
+            LOGI(" DIB CreateDIBSection failed (err=%d)", err);
             LogHexDump(&mBitmapInfoHdr, sizeof(BITMAPINFO));
-            WMSG1("&mpPixels = 0x%08lx\n", &mpPixels);
+            LOGI("&mpPixels = 0x%08lx", &mpPixels);
             DebugBreak();
             return NULL;
         }
@@ -140,7 +140,7 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
     assert(mpPixels != NULL);
     memset(mpPixels, 0, mPitchBytes * mBitmapInfoHdr.biHeight);
 
-    //WMSG2("+++  allocated %d bytes for bitmap pixels (mPitchBytes=%d)\n",
+    //LOGI("+++  allocated %d bytes for bitmap pixels (mPitchBytes=%d)",
     //  mPitchBytes * mBitmapInfoHdr.biHeight, mPitchBytes);
 
     return mpPixels;
@@ -158,7 +158,7 @@ MyDIBitmap::CreateFromFile(const WCHAR* fileName)
     fp = _wfopen(fileName, L"rb");
     if (fp == NULL) {
         err = errno ? errno : -1;
-        WMSG2("Unable to read bitmap from file '%ls' (err=%d)\n",
+        LOGI("Unable to read bitmap from file '%ls' (err=%d)",
             fileName, err);
         return err;
     }
@@ -188,7 +188,7 @@ MyDIBitmap::CreateFromFile(FILE* fp, long len)
 
     if (fread(buf, len, 1, fp) != 1) {
         err = errno ? errno : -1;
-        WMSG2(" DIB failed reading %ld bytes (err=%d)\n", len, err);
+        LOGI(" DIB failed reading %ld bytes (err=%d)", len, err);
         goto bail;
     }
 
@@ -249,7 +249,7 @@ MyDIBitmap::CreateFromNewBuffer(void* vbuf, long len)
     {
         return ImportTGA(vbuf, len);
     } else {
-        WMSG2(" DIB invalid bitmap file (type=0x%04x size=%ld)\n",
+        LOGI(" DIB invalid bitmap file (type=0x%04x size=%ld)",
             pHeader->bfType, pHeader->bfSize);
         delete[] vbuf;
         return -1;
@@ -302,7 +302,7 @@ MyDIBitmap::ImportBMP(void* vbuf, long len)
     mNumColorsUsed = mBitmapInfoHdr.biClrUsed;
     mPitchBytes = ((mWidth * mBitmapInfoHdr.biBitCount) +7) / 8;
     mPitchBytes = (mPitchBytes + 3) & ~(0x03);      // round up to mult of 4
-    //WMSG3(" DIB +++ width=%d bits=%d pitch=%d\n", mWidth,
+    //LOGI(" DIB +++ width=%d bits=%d pitch=%d", mWidth,
     //  mBitmapInfoHdr.biBitCount, mPitchBytes);
 
     /* prepare the color table, if any */
@@ -379,7 +379,7 @@ MyDIBitmap::ImportTGA(void* vbuf, long len)
     mPitchBytes = ((mWidth * mBitmapInfoHdr.biBitCount) +7) / 8;
     if ((mPitchBytes & 0x03) != 0) {
         /* should only be a problem if we try to save to BMP or conv to DIB */
-        WMSG1(" DIB WARNING: pitchBytes=%d in TGA may not work\n",
+        LOGI(" DIB WARNING: pitchBytes=%d in TGA may not work",
             mPitchBytes);
     }
 //  mPitchBytes = (mPitchBytes + 3) & ~(0x03);      // round up to power of 2
@@ -409,7 +409,7 @@ MyDIBitmap::ImportTGA(void* vbuf, long len)
     mpPixels = pBits;
     mpFileBuffer = vbuf;
     err = 0;
-    //WMSG1("+++ successfully imported %d-bit TGA\n", mBpp);
+    //LOGI("+++ successfully imported %d-bit TGA", mBpp);
 
     if (mBpp == 32) {
         /* 32-bit TGA is a full-alpha format */
@@ -437,7 +437,7 @@ MyDIBitmap::ConvertBufToDIBSection(void)
     assert(mhBitmap == NULL);
     assert(mpFileBuffer != NULL);
 
-    WMSG0(" DIB converting buf to DIB Section\n");
+    LOGI(" DIB converting buf to DIB Section");
 
     /* alloc storage */
     mpPixels = NULL;
@@ -445,9 +445,9 @@ MyDIBitmap::ConvertBufToDIBSection(void)
                     DIB_RGB_COLORS, &mpPixels, NULL, 0);
     if (mhBitmap == NULL) {
         DWORD err = ::GetLastError();
-        WMSG1(" DIB CreateDIBSection failed (err=%d)\n", err);
+        LOGI(" DIB CreateDIBSection failed (err=%d)", err);
         LogHexDump(&mBitmapInfoHdr, sizeof(BITMAPINFO));
-        WMSG1("&mpPixels = 0x%08lx\n", &mpPixels);
+        LOGI("&mpPixels = 0x%08lx", &mpPixels);
         DebugBreak();
         mpPixels = oldPixels;
         return -1;
@@ -492,9 +492,9 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
         DWORD err = ::GetLastError();
         //CString msg;
         //GetWin32ErrorString(err, &msg);
-        //WMSG2(" DIB CreateDIBSection failed (err=%d msg='%ls')\n",
+        //LOGI(" DIB CreateDIBSection failed (err=%d msg='%ls')",
         //  err, (LPCWSTR) msg);
-        WMSG1(" DIB LoadImage failed (err=%d)\n", err);
+        LOGI(" DIB LoadImage failed (err=%d)", err);
         return NULL;
     }
 
@@ -539,7 +539,7 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
             DWORD err = ::GetLastError();
             CString buf;
             GetWin32ErrorString(err, &buf);
-            WMSG2(" DIB GetDIBColorTable failed (err=0x%x '%ls')\n",
+            LOGI(" DIB GetDIBColorTable failed (err=0x%x '%ls')",
                 err, (LPCWSTR) buf);
         }
         SelectObject(memDC, oldBits);
@@ -554,7 +554,7 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
      * tweak mPitchBytes or we'll get garbage.
      */
     if (mPitchBytes & 0x03) {
-        WMSG1(" DIB altering LoadImage pitchBytes (currently %d)\n", mPitchBytes);
+        LOGI(" DIB altering LoadImage pitchBytes (currently %d)", mPitchBytes);
         mPitchBytes = (mPitchBytes + 3) & ~(0x03);
     }
 
@@ -596,7 +596,7 @@ MyDIBitmap::ClearPixels(void)
 {
     assert(mpPixels != NULL);
 
-    //WMSG1(" DIB clearing entire bitmap (%d bytes)\n", mPitchBytes * mHeight);
+    //LOGI(" DIB clearing entire bitmap (%d bytes)", mPitchBytes * mHeight);
     memset(mpPixels, 0, mPitchBytes * mHeight);
 }
 
@@ -616,7 +616,7 @@ MyDIBitmap::SetColorTable(const RGBQUAD* pColorTable)
              * PhotoShop v5.x sets rgbReserved to 1 on every 8th color table
              * entry on 8-bit images.  No idea why.
              */
-            //WMSG2(" DIB warning: bogus color entry %d (res=%d)\n", i,
+            //LOGI(" DIB warning: bogus color entry %d (res=%d)", i,
             //  pColorTable[i].rgbReserved);
             //DebugBreak();
         }
@@ -649,7 +649,7 @@ void
 MyDIBitmap::SetTransparentColor(const RGBQUAD* pColor)
 {
     if (mAlphaType == kAlphaFull) {
-        WMSG0(" NOTE: switching from full alpha to transparent-color alpha\n");
+        LOGI(" NOTE: switching from full alpha to transparent-color alpha");
     }
     mTransparentColor = *(const DWORD*)pColor;
     mTransparentColor &= ~kAlphaMask;   // strip alpha off, want color only
@@ -667,11 +667,11 @@ int
 MyDIBitmap::LookupColor(const RGBQUAD* pRgbQuad)
 {
     if (mBpp > 8) {
-        WMSG1(" DIB LookupColor on %d-bit image\n", mBpp);
+        LOGI(" DIB LookupColor on %d-bit image", mBpp);
         return -2;
     }
     if (!mColorTableInitialized) {
-        WMSG0(" DIB can't LookupColor, color table not initialized\n");
+        LOGI(" DIB can't LookupColor, color table not initialized");
         return -2;
     }
 
@@ -839,7 +839,7 @@ MyDIBitmap::SetPixelRGBA(int x, int y, const RGBQUAD* pRgbQuad)
     } else if (mBpp == 8 || mBpp == 4) {
         int idx = LookupColor(pRgbQuad);
         if (idx < 0) {
-            WMSG3(" DIB WARNING: unable to set pixel to (%d,%d,%d)\n",
+            LOGI(" DIB WARNING: unable to set pixel to (%d,%d,%d)",
                 pRgbQuad->rgbRed, pRgbQuad->rgbGreen, pRgbQuad->rgbBlue);
         } else {
             SetPixelIndex(x, (mHeight - y -1), idx);
@@ -885,8 +885,8 @@ void
 MyDIBitmap::SetPixelIndex(int x, int y, int idx)
 {
     if (x < 0 || x >= mWidth || y < 0 || y >= mHeight) {
-        WMSG3("BAD x=%d y=%d idx=%d\n", x, y, idx);
-        WMSG2("   width=%d height=%d\n", mWidth, mHeight);
+        LOGI("BAD x=%d y=%d idx=%d", x, y, idx);
+        LOGI("   width=%d height=%d", mWidth, mHeight);
     }
     assert(x >= 0 && x < mWidth && y >= 0 && y < mHeight);
     y = mHeight - y -1; // upside-down
@@ -926,23 +926,23 @@ MyDIBitmap::Blit(MyDIBitmap* pDstBits, const RECT* pDstRect,
     if (pDstRect->right - pDstRect->left !=
         pSrcRect->right - pSrcRect->left)
     {
-        WMSG0("DIB blit: widths differ\n");
+        LOGI("DIB blit: widths differ");
         return false;
     }
     if (pDstRect->bottom - pDstRect->top !=
         pSrcRect->bottom - pSrcRect->top)
     {
-        WMSG0("DIB blit: heights differ\n");
+        LOGI("DIB blit: heights differ");
         return false;
     }
     if (pSrcBits->mBpp != pDstBits->mBpp) {
-        WMSG0("DIB blit: different formats\n");
+        LOGI("DIB blit: different formats");
         return false;
     }
     if (pDstRect->right <= pDstRect->left ||
         pDstRect->bottom <= pDstRect->top)
     {
-        WMSG0("DIB blit: poorly formed rect\n");
+        LOGI("DIB blit: poorly formed rect");
         return false;
     }
 
@@ -1004,7 +1004,7 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
     HBITMAP hBitmap = NULL;
 
     if (mNumColorsUsed != 0 && !mColorTableInitialized) {
-        WMSG0(" DIB color table not initialized!\n");
+        LOGI(" DIB color table not initialized!");
         return NULL;
     }
 
@@ -1032,14 +1032,14 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
      */
     hBitmap = ::CreateDIBitmap(dc, &mBitmapInfoHdr, 0, NULL, NULL, 0);
     if (hBitmap == NULL) {
-        WMSG0(" DIB CreateDIBBitmap failed!\n");
+        LOGI(" DIB CreateDIBBitmap failed!");
         return NULL;
     }
 
-    WMSG4(" PARM hbit=0x%08lx hgt=%d fpPixels=0x%08lx pNewInfo=0x%08lx\n",
+    LOGI(" PARM hbit=0x%08lx hgt=%d fpPixels=0x%08lx pNewInfo=0x%08lx",
         hBitmap, mBitmapInfoHdr.biHeight, fpPixels, pNewInfo);
     LogHexDump(&mBitmapInfoHdr, sizeof(mBitmapInfoHdr));
-    WMSG("  pNewInfo (sz=%d colorTableSize=%d):\n", sizeof(BITMAPINFO),
+    LOGI("  pNewInfo (sz=%d colorTableSize=%d):\n", sizeof(BITMAPINFO),
         colorTableSize);
     LogHexDump(pNewInfo, sizeof(BITMAPINFO) + colorTableSize);
 
@@ -1052,13 +1052,13 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
     if (count != mBitmapInfoHdr.biHeight) {
         DWORD err = ::GetLastError();
 
-        WMSG1(" DIB SetDIBits failed, count was %d\n", count);
+        LOGI(" DIB SetDIBits failed, count was %d", count);
         ::DeleteObject(hBitmap);
         hBitmap = NULL;
 
         CString msg;
         GetWin32ErrorString(err, &msg);
-        WMSG2(" DIB CreateDIBSection failed (err=%d msg='%ls')\n",
+        LOGI(" DIB CreateDIBSection failed (err=%d msg='%ls')",
             err, (LPCWSTR) msg);
         //ASSERT(false);        // stop & examine this
         return NULL;
@@ -1070,7 +1070,7 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
     hBitmap = ::CreateDIBitmap(dc, &mBitmapInfoHdr, CBM_INIT, mpPixels,
                     pNewInfo, DIB_RGB_COLORS);
     if (hBitmap == NULL) {
-        WMSG0(" DIB CreateDIBBitmap failed!\n");
+        LOGI(" DIB CreateDIBBitmap failed!");
         return NULL;
     }
 #endif
@@ -1095,7 +1095,7 @@ MyDIBitmap::WriteToFile(const WCHAR* fileName) const
     fp = _wfopen(fileName, L"wb");
     if (fp == NULL) {
         err = errno ? errno : -1;
-        WMSG2("Unable to open bitmap file '%ls' (err=%d)\n", fileName, err);
+        LOGI("Unable to open bitmap file '%ls' (err=%d)", fileName, err);
         return err;
     }
 
@@ -1135,7 +1135,7 @@ MyDIBitmap::WriteToFile(FILE* fp) const
         sizeof(RGBQUAD) * mNumColorsUsed;
     fileHeader.bfSize = fileHeader.bfOffBits + pixelBufSize;
 
-    WMSG3(" DIB writing bfOffBits=%d, bfSize=%d, pixelBufSize=%d\n",
+    LOGI(" DIB writing bfOffBits=%d, bfSize=%d, pixelBufSize=%d",
         fileHeader.bfOffBits, fileHeader.bfSize, pixelBufSize);
 
     if (fwrite(&fileHeader, sizeof(fileHeader), 1, fp) != 1) {
@@ -1164,7 +1164,7 @@ MyDIBitmap::WriteToFile(FILE* fp) const
 
     /* verify the length; useful for detecting "w" vs "wb" */
     if (ftell(fp) - startOffset != (long) fileHeader.bfSize) {
-        WMSG2("DIB tried to write %ld, wrote %ld (check for \"wb\")\n",
+        LOGI("DIB tried to write %ld, wrote %ld (check for \"wb\")",
             fileHeader.bfSize, ftell(fp) - startOffset);
         assert(false);
     }

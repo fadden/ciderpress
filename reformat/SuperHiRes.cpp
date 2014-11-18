@@ -94,10 +94,10 @@ ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
     pDib->SetColorTable((RGBQUAD*)fColorTables);
 
     /*
-    WMSG0(" SHR color table 0\n");
+    LOGI(" SHR color table 0");
     int ii;
     for (ii = 0; ii < kNumEntriesPerColorTable; ii++) {
-        WMSG4("  %2d: 0x%02x %02x %02x\n",
+        LOGI("  %2d: 0x%02x %02x %02x",
             ii,
             fColorTables[0][ii].rgbRed,
             fColorTables[0][ii].rgbGreen,
@@ -122,11 +122,11 @@ ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
         colorTableOffset = (*pSCB & kSCBColorTableMask) * kNumEntriesPerColorTable;
 
         if (!line) {
-            WMSG1(" SHR line 0 mode640=%d\n", mode640);
+            LOGI(" SHR line 0 mode640=%d", mode640);
         }
         if (fillMode) {
             /* I doubt anyone uses this in still images */
-            WMSG0(" SHR FILL MODE!!\n");
+            LOGI(" SHR FILL MODE!!");
             DebugBreak();
         }
 
@@ -265,7 +265,7 @@ ReformatUnpackedSHR::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (pHolder->GetSourceLen(part) != kTotalSize) {
-        WMSG1(" SHR file is not %d bytes long!\n", kTotalSize);
+        LOGI(" SHR file is not %d bytes long!", kTotalSize);
         goto bail;
     }
 
@@ -336,7 +336,7 @@ ReformatJEQSHR::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (pHolder->GetSourceLen(part) != kExpectedLen) {
-        WMSG1(" SHR file is not %d bytes long!\n", kTotalSize);
+        LOGI(" SHR file is not %d bytes long!", kTotalSize);
         goto bail;
     }
 
@@ -422,7 +422,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
     int i, result;
 
     if (pHolder->GetSourceLen(part) < kMinSize) {
-        WMSG1(" SHR file too short!\n", pHolder->GetSourceLen(part));
+        LOGI(" SHR file too short!", pHolder->GetSourceLen(part));
         goto bail;
     }
 
@@ -451,7 +451,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
                 kPWOutputSize,
                 pHolder->GetSourceLen(part) - kPWDataOffset);
     if (result != 0) {
-        WMSG0("WARNING: UnpackBytes wasn't happy\n");
+        LOGI("WARNING: UnpackBytes wasn't happy");
 
 #if 0
         /* thd282.shk (rev76.2) has a large collection of these */
@@ -526,7 +526,7 @@ ReformatPackedSHR::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (pHolder->GetSourceLen(part) < 4) {
-        WMSG1(" SHR file too short!\n", pHolder->GetSourceLen(part));
+        LOGI(" SHR file too short!", pHolder->GetSourceLen(part));
         goto bail;
     }
 
@@ -536,7 +536,7 @@ ReformatPackedSHR::Process(const ReformatHolder* pHolder,
         pHolder->GetSourceBuf(part), kTotalSize,
         pHolder->GetSourceLen(part)) != 0)
     {
-        WMSG0(" SHR UnpackBytes failed\n");
+        LOGI(" SHR UnpackBytes failed");
         goto bail;
     }
 
@@ -606,7 +606,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (srcLen < 4) {
-        WMSG1(" SHR file too short!\n", srcLen);
+        LOGI(" SHR file too short!", srcLen);
         goto bail;
     }
 
@@ -620,7 +620,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
 
         blockLen = Read32(&srcPtr, &srcLen);
         if (blockLen > srcLen + 4) {
-            WMSG2(" APFSHR WARNING: found blockLen=%ld, remaining len=%ld\n",
+            LOGI(" APFSHR WARNING: found blockLen=%ld, remaining len=%ld",
                 blockLen, srcLen);
             break;
             //goto bail;
@@ -630,7 +630,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
 
         nameLen = ::GetPascalString((const char*)srcPtr, srcLen, &blockName);
         if (nameLen < 0) {
-            WMSG0(" APFSHR failed getting pascal name, bailing\n");
+            LOGI(" APFSHR failed getting pascal name, bailing");
             goto bail;
         }
 
@@ -639,7 +639,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
 
         dataLen = blockLen - (nameLen+1 + 4);
 
-        WMSG4(" APFSHR block='%ls' blockLen=%ld (dataLen=%ld) start=0x%08lx\n",
+        LOGI(" APFSHR block='%ls' blockLen=%ld (dataLen=%ld) start=0x%08lx",
             (LPCWSTR) blockName, blockLen, dataLen, srcPtr);
 
         if (blockName == "MAIN") {
@@ -652,7 +652,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
         } else if (blockName == "NOTE") {
             UnpackNote(srcPtr, dataLen);
         } else {
-            WMSG1(" APFSHR  (ignoring segment '%ls')\n", (LPCWSTR) blockName);
+            LOGI(" APFSHR  (ignoring segment '%ls')", (LPCWSTR) blockName);
         }
 
         srcPtr = nextBlock;
@@ -719,7 +719,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
 
     if (srcLen < 256) {
         /* can't possibly be this small */
-        WMSG1(" APFSHR unlikely srcLen %d\n", srcLen);
+        LOGI(" APFSHR unlikely srcLen %d", srcLen);
         goto bail;
     }
 
@@ -729,15 +729,15 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
     if (fPixelsPerScanLine < 8 || fPixelsPerScanLine > kMaxPixelsPerScan ||
         (fPixelsPerScanLine & 0x01) != 0)
     {
-        WMSG1(" APFSHR unsupported pixelsPerScanLine %d\n",
+        LOGI(" APFSHR unsupported pixelsPerScanLine %d",
             fPixelsPerScanLine);
         goto bail;
     }
 
-    WMSG3(" APFSHR  masterMode=0x%04x, ppsl=%d, nct=%d\n",
+    LOGI(" APFSHR  masterMode=0x%04x, ppsl=%d, nct=%d",
         masterMode, fPixelsPerScanLine, numColorTables);
     if (numColorTables <= 0 || numColorTables > kNumColorTables) {
-        WMSG1(" APFSHR unexpected numColorTables %d\n", numColorTables);
+        LOGI(" APFSHR unexpected numColorTables %d", numColorTables);
         goto bail;
     }
 
@@ -748,7 +748,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
     int i;
     for (i = 0; i < numColorTables; i++) {
         if (srcLen < kColorTableSize) {
-            WMSG0(" APFSHR ran out while copying color tables\n");
+            LOGI(" APFSHR ran out while copying color tables");
             goto bail;
         }
 
@@ -766,7 +766,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
      */
     fNumScanLines = Read16(&srcPtr, &srcLen);
     if (fNumScanLines < 8 || fNumScanLines > kMaxScanLines) {
-        WMSG1(" APFSHR unsupported numScanLines %d\n", fNumScanLines);
+        LOGI(" APFSHR unsupported numScanLines %d", fNumScanLines);
         goto bail;
     }
     if ((fPixelsPerScanLine == 320 || fPixelsPerScanLine == 640) &&
@@ -774,7 +774,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
     {
         /* standard-sized image, use fScreen */
         ASSERT(!fNonStandard);
-        WMSG0("  Assuming this is a standard, full-width SHR image\n");
+        LOGI("  Assuming this is a standard, full-width SHR image");
         fPixelBytesPerLine = kPixelBytesPerLine;        // 160
         fPixelStore = fScreen.pixels;
         fSCBStore = fScreen.scb;
@@ -785,7 +785,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
     } else {
         /* non-standard image, allocate storage */
         fNonStandard = true;
-        WMSG3("  NOTE: non-standard image size %dx%d, 2-bit-mode=%d\n",
+        LOGI("  NOTE: non-standard image size %dx%d, 2-bit-mode=%d",
             fPixelsPerScanLine, fNumScanLines,
             (masterMode & kSCBNumPixels) != 0);
 
@@ -810,18 +810,18 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
         fPixelBytesPerLine = ((fPixelBytesPerLine + 7) / 8) * 8;
         fPixelStore = new unsigned char[fPixelBytesPerLine * fNumScanLines];
         if (fPixelStore == NULL) {
-            WMSG1(" APFSHR ERROR: alloc of %d bytes fPixelStore failed\n",
+            LOGI(" APFSHR ERROR: alloc of %d bytes fPixelStore failed",
                 fPixelBytesPerLine * fNumScanLines);
             goto bail;
         }
         fSCBStore = new unsigned char[fNumScanLines];
         if (fSCBStore == NULL) {
-            WMSG1(" APFSHR ERROR: alloc of %d bytes fSCBStore failed\n",
+            LOGI(" APFSHR ERROR: alloc of %d bytes fSCBStore failed",
                 fNumScanLines);
             goto bail;
         }
     }
-    WMSG3(" APFSHR  numScanLines=%d, outputWidth=%d, pixelBytesPerLine=%d\n",
+    LOGI(" APFSHR  numScanLines=%d, outputWidth=%d, pixelBytesPerLine=%d",
         fNumScanLines, fOutputWidth, fPixelBytesPerLine);
 
     /*
@@ -836,7 +836,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
         packedDataLen[i] = Read16(&srcPtr, &srcLen);
         if (packedDataLen[i] > fPixelsPerScanLine) {
             /* each pixel is 2 or 4 bits, so this is a 2-4x expansion */
-            WMSG2(" APFSHR got funky packed len %d for line %d\n",
+            LOGI(" APFSHR got funky packed len %d for line %d",
                 packedDataLen, i);
             goto bail;
         }
@@ -845,7 +845,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
         if (mode >> 8 == 0)
             fSCBStore[i] = (unsigned char)mode;
         else {
-            WMSG2(" APFSHR odd mode 0x%04x on line %d\n", mode, i);
+            LOGI(" APFSHR odd mode 0x%04x on line %d", mode, i);
         }
     }
 
@@ -854,13 +854,13 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
      */
     for (i = 0; i < fNumScanLines; i++) {
         if (srcLen <= 0) {
-            WMSG0(" APFSHR ran out of data while unpacking pixels\n");
+            LOGI(" APFSHR ran out of data while unpacking pixels");
             goto bail;
         }
         if (UnpackBytes(&fPixelStore[i * fPixelBytesPerLine],
             srcPtr, fPixelBytesPerLine, packedDataLen[i]) != 0)
         {
-            WMSG1(" APFSHR UnpackBytes failed on line %d\n", i);
+            LOGI(" APFSHR UnpackBytes failed on line %d", i);
             goto bail;
         }
 
@@ -892,10 +892,10 @@ ReformatAPFSHR::UnpackMultipal(unsigned char* dstPtr,
 
     /* check the size; use (size+2) to factor in 16-bit count */
     if (srcLen < kMultipalSize+2) {
-        WMSG1("  APFSHR got too-small multipal size %ld\n", srcLen);
+        LOGI("  APFSHR got too-small multipal size %ld", srcLen);
         return -1;
     } else if (srcLen > kMultipalSize+2) {
-        WMSG2("  APFSHR WARNING: oversized multipal (%ld, expected %ld)\n",
+        LOGI("  APFSHR WARNING: oversized multipal (%ld, expected %ld)",
             srcLen, kMultipalSize);
         /* keep going */
     }
@@ -904,7 +904,7 @@ ReformatAPFSHR::UnpackMultipal(unsigned char* dstPtr,
     numColorTables = Read16(&srcPtr, &srcLen);
     if (numColorTables != kNumLines) {
         /* expecting one palette per line */
-        WMSG1("  APFSHR ignoring multipal with %d color tables\n",
+        LOGI("  APFSHR ignoring multipal with %d color tables",
             numColorTables);
         return -1;
     }
@@ -943,7 +943,7 @@ ReformatAPFSHR::UnpackNote(const unsigned char* srcPtr, long srcLen)
     numChars = Read16(&srcPtr, &srcLen);
 
     if (numChars != srcLen) {
-        WMSG2("  APFSHR note chunk has numChars=%d but dataLen=%ld, bailing\n",
+        LOGI("  APFSHR note chunk has numChars=%d but dataLen=%ld, bailing",
             numChars, srcLen);
         return;
     }
@@ -953,7 +953,7 @@ ReformatAPFSHR::UnpackNote(const unsigned char* srcPtr, long srcLen)
         str += *srcPtr++;
     }
 
-    WMSG1(" APFSHR   note: '%ls'\n", (LPCWSTR) str);
+    LOGI(" APFSHR   note: '%ls'", (LPCWSTR) str);
 }
 
 
@@ -1007,7 +1007,7 @@ Reformat3200SHR::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (pHolder->GetSourceLen(part) != kExtTotalSize) {
-        WMSG1(" SHR file is not %d bytes long!\n", kExtTotalSize);
+        LOGI(" SHR file is not %d bytes long!", kExtTotalSize);
         return retval;
     }
 
@@ -1081,7 +1081,7 @@ Reformat3200SHR::SHR3200ToBitmap24(void)
         for (int entry = 0; entry < kNumEntriesPerColorTable; entry++) {
             GSColor(*pClrTable++, &colorLookup[table][entry]);
             //if (!table) {
-            //  WMSG3(" table %2d entry %2d value=0x%04x\n",
+            //  LOGI(" table %2d entry %2d value=0x%04x",
             //      table, entry, *pClrTable);
             //}
         }
@@ -1177,12 +1177,12 @@ Reformat3201SHR::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (srcLen < 16 || srcLen > kExtTotalSize) {
-        WMSG1(" SHR3201 file funky length (%d)\n", srcLen);
+        LOGI(" SHR3201 file funky length (%d)", srcLen);
         return retval;
     }
     const long* pMagic = (const long*) pHolder->GetSourceBuf(part);
     if (*pMagic != 0x00d0d0c1) {    // "APP\0"
-        WMSG0(" SHR3201 didn't find magic 'APP'\n");
+        LOGI(" SHR3201 didn't find magic 'APP'");
         return retval;
     }
     srcBuf += 4;

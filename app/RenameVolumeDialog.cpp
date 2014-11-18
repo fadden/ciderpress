@@ -42,12 +42,12 @@ RenameVolumeDialog::OnInitDialog(void)
     fDiskFSTree.fIncludeSubdirs = false;
     fDiskFSTree.fExpandDepth = -1;
     if (!fDiskFSTree.BuildTree(pDiskFS, pTree)) {
-        WMSG0("Tree load failed!\n");
+        LOGI("Tree load failed!");
         OnCancel();
     }
 
     int count = pTree->GetCount();
-    WMSG1("ChooseAddTargetDialog tree has %d items\n", count);
+    LOGI("ChooseAddTargetDialog tree has %d items", count);
 
     /* select the default text and set the focus */
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_RENAMEVOL_NEW);

@@ -40,7 +40,7 @@ PrintStuff::InitBasics(CDC* pDC)
     fHorzRes = pDC->GetDeviceCaps(HORZRES);
     fLogPixelsX = pDC->GetDeviceCaps(LOGPIXELSX);
     fLogPixelsY = pDC->GetDeviceCaps(LOGPIXELSY);
-    WMSG4("+++ logPixelsX=%d logPixelsY=%d fHorzRes=%d fVertRes=%d\n",
+    LOGI("+++ logPixelsX=%d logPixelsY=%d fHorzRes=%d fVertRes=%d",
         fLogPixelsX, fLogPixelsY, fHorzRes, fVertRes);
 }
 
@@ -60,7 +60,7 @@ PrintStuff::CreateFontByNumLines(CFont* pFont, int numLines)
 
     /* magic fudge factor */
     int fudge = reqCharHeight / 24;
-    WMSG2("  Reducing reqCharHeight from %d to %d\n",
+    LOGI("  Reducing reqCharHeight from %d to %d",
         reqCharHeight, reqCharHeight - fudge);
     reqCharHeight -= fudge;
 
@@ -122,7 +122,7 @@ PrintStuff::TrimString(CString* pStr, int width, bool addOnLeft)
         }
 
         if (!addOnLeft) {
-            WMSG1("Now trying '%ls'\n", (LPCWSTR) newStr);
+            LOGI("Now trying '%ls'", (LPCWSTR) newStr);
         }
         strWidth = StringWidth(newStr);
     }
@@ -158,7 +158,7 @@ PrintContentList::Setup(CDC* pDC, CWnd* pParent)
     fCharHeight = metrics.tmHeight + metrics.tmExternalLeading;
     fLinesPerPage = fVertRes / fCharHeight;
 
-    WMSG2("fVertRes=%d, fCharHeight=%d\n", fVertRes, fCharHeight);
+    LOGI("fVertRes=%d, fCharHeight=%d", fVertRes, fCharHeight);
 
     /* set up our slightly reduced lines per page */
     ASSERT(fLinesPerPage > kHeaderLines+1);
@@ -179,7 +179,7 @@ PrintContentList::CalcNumPages(void)
     fNumPages = (numLines + fCLLinesPerPage -1) / fCLLinesPerPage;
     ASSERT(fNumPages > 0);
 
-    WMSG3("Using numLines=%d, fNumPages=%d, fCLLinesPerPage=%d\n",
+    LOGI("Using numLines=%d, fNumPages=%d, fCLLinesPerPage=%d",
         numLines, fNumPages, fCLLinesPerPage);
 }
 
@@ -234,7 +234,7 @@ PrintContentList::StartPrint(void)
     CancelDialog* pPCD = new CancelDialog;
     bres = pPCD->Create(&pMain->fAbortPrinting, IDD_PRINT_CANCEL, fpParentWnd);
     if (bres == FALSE) {
-        WMSG0("WARNING: PrintCancelDialog init failed\n");
+        LOGI("WARNING: PrintCancelDialog init failed");
     } else {
         fpDC->SetAbortProc(pMain->PrintAbortProc);
     }
@@ -251,17 +251,17 @@ PrintContentList::StartPrint(void)
 
     jobID = fpDC->StartDoc(&di);
     if (jobID <= 0) {
-        WMSG0("Got invalid jobID from StartDoc\n");
+        LOGI("Got invalid jobID from StartDoc");
         goto bail;
     }
-    WMSG1("Got jobID=%d\n", jobID);
+    LOGI("Got jobID=%d", jobID);
 
     // do the printing
     if (DoPrint() != 0) {
-        WMSG0("Printing was aborted\n");
+        LOGI("Printing was aborted");
         fpDC->AbortDoc();
     } else {
-        WMSG0("Printing was successful\n");
+        LOGI("Printing was successful");
         fpDC->EndDoc();
         result = 0;
     }
@@ -285,11 +285,11 @@ bail:
 int
 PrintContentList::DoPrint(void)
 {
-    WMSG2("Printing from page=%d to page=%d\n", fFromPage, fToPage);
+    LOGI("Printing from page=%d to page=%d", fFromPage, fToPage);
 
     for (int page = fFromPage; page <= fToPage; page++) {
         if (fpDC->StartPage() <= 0) {
-            WMSG0("StartPage returned <= 0, returning -1\n");
+            LOGI("StartPage returned <= 0, returning -1");
             return -1;
         }
 
@@ -303,7 +303,7 @@ PrintContentList::DoPrint(void)
 
 
         if (fpDC->EndPage() <= 0) {
-            WMSG0("EndPage returned <= 0, returning -1\n");
+            LOGI("EndPage returned <= 0, returning -1");
             return -1;
         }
     }
@@ -347,7 +347,7 @@ PrintContentList::DoPrintPage(int page)
         totalWidth += kColumnWidths[i].width;
 
     widthMult = (float) fHorzRes / totalWidth;
-    WMSG3("totalWidth=%d, fHorzRes=%d, mult=%.3f\n",
+    LOGI("totalWidth=%d, fHorzRes=%d, mult=%.3f",
         totalWidth, fHorzRes, widthMult);
 
     /*
@@ -570,7 +570,7 @@ PrintRichEdit::PrintPrep(FORMATRANGE* pFR)
     fpDC->GetTextMetrics(&metrics);
     fCharHeight = metrics.tmHeight + metrics.tmExternalLeading;
     fpDC->SelectObject(pOldFont);
-    //WMSG1("CHAR HEIGHT is %d\n", fCharHeight);
+    //LOGI("CHAR HEIGHT is %d", fCharHeight);
 
     /* compute fLeftMargin and fRightMargin */
     ComputeMargins();
@@ -598,9 +598,9 @@ PrintRichEdit::PrintPrep(FORMATRANGE* pFR)
     pFR->rc.left = pFR->rcPage.left + (fLeftMargin * kTwipsPerInch) / fLogPixelsX;
     pFR->rc.right = pFR->rcPage.right - (fRightMargin * kTwipsPerInch) / fLogPixelsX;
 
-    WMSG2("PRINTABLE AREA is %d wide x %d high (twips)\n",
+    LOGI("PRINTABLE AREA is %d wide x %d high (twips)",
         pFR->rc.right - pFR->rc.left, pFR->rc.bottom - pFR->rc.top);
-    WMSG2("FRAME is %d wide x %d high (twips)\n",
+    LOGI("FRAME is %d wide x %d high (twips)",
         pFR->rcPage.right - pFR->rcPage.left, pFR->rcPage.bottom - pFR->rcPage.top);
 
     pFR->chrg.cpMin = fStartChar;
@@ -637,7 +637,7 @@ PrintRichEdit::ComputeMargins(void)
     char80width = StringWidth(str);
     fpDC->SelectObject(pOldFont);
 
-    //WMSG1("char80 string width=%d\n", char80width);
+    //LOGI("char80 string width=%d", char80width);
 
     /*
      * If there's not enough room on the page, set the margins to zero.
@@ -646,10 +646,10 @@ PrintRichEdit::ComputeMargins(void)
      */
     totalMargin = fHorzRes - char80width;
     if (totalMargin < 0) {
-        WMSG0(" Page not wide enough, setting margins to zero\n");
+        LOGI(" Page not wide enough, setting margins to zero");
         fLeftMargin = fRightMargin = 0;
     } else if (totalMargin > fLogPixelsX * 2) {
-        WMSG0("  Page too wide, setting margins to 1 inch\n");
+        LOGI("  Page too wide, setting margins to 1 inch");
         fLeftMargin = fRightMargin = fLogPixelsX;
     } else {
         // try to get leftMargin equal to 1/2"
@@ -657,7 +657,7 @@ PrintRichEdit::ComputeMargins(void)
         if (fLeftMargin > fLogPixelsX / 2)
             fLeftMargin = fLogPixelsX / 2;
         fRightMargin = totalMargin - fLeftMargin -1;
-        WMSG3("  +++ Margins (in %d pixels/inch) are left=%ld right=%ld\n",
+        LOGI("  +++ Margins (in %d pixels/inch) are left=%ld right=%ld",
             fLogPixelsX, fLeftMargin, fRightMargin);
     }
 }
@@ -676,8 +676,8 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
     long textLength, textPrinted, lastTextPrinted;
     int pageNum;
 
-    WMSG2("DoPrint: title='%ls' doPrint=%d\n", title, doPrint);
-    WMSG4("         startChar=%d endChar=%d startPage=%d endPage=%d\n",
+    LOGI("DoPrint: title='%ls' doPrint=%d", title, doPrint);
+    LOGI("         startChar=%d endChar=%d startPage=%d endPage=%d",
         fStartChar, fEndChar, fStartPage, fEndPage);
 
     /*
@@ -723,7 +723,7 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
 #endif
     extdTextLength = (long)::SendMessage(pREC->m_hWnd, EM_GETTEXTLENGTHEX,
         (WPARAM) &exLenReq, (LPARAM) NULL);
-    WMSG2("RichEdit text length: std=%ld extd=%ld\n",
+    LOGI("RichEdit text length: std=%ld extd=%ld",
         basicTextLength, extdTextLength);
 
     if (fEndChar == -1) {
@@ -734,13 +734,13 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
     } else
         textLength = fEndChar - fStartChar;
 
-    WMSG1("  +++ starting while loop, textLength=%ld\n", textLength);
+    LOGI("  +++ starting while loop, textLength=%ld", textLength);
     pageNum = 0;
     lastTextPrinted = -1;
     do {
         bool skipPage = false;
         pageNum++;
-        WMSG1("  +++  while loop: pageNum is %d\n", pageNum);
+        LOGI("  +++  while loop: pageNum is %d", pageNum);
 
         if (fEndPage > 0) {
             if (pageNum < fStartPage)
@@ -771,17 +771,17 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
             fpDC->SelectObject(pOldPen);
         }
 
-        //WMSG1("  +++   calling FormatRange(%d)\n", doPrint && !skipPage);
+        //LOGI("  +++   calling FormatRange(%d)", doPrint && !skipPage);
         //LogHexDump(&fr, sizeof(fr));
 
         /* print a page full of RichEdit stuff */
         textPrinted = pREC->FormatRange(&fr, doPrint && !skipPage);
-        WMSG1("  +++    returned from FormatRange (textPrinted=%d)\n",
+        LOGI("  +++    returned from FormatRange (textPrinted=%d)",
             textPrinted);
         if (textPrinted <= lastTextPrinted) {
             /* the earlier StartPage can't be undone, so we'll get an
                extra blank page at the very end */
-            WMSG3("GLITCH: no new text printed (printed=%ld, last=%ld, len=%ld)\n",
+            LOGI("GLITCH: no new text printed (printed=%ld, last=%ld, len=%ld)",
                 textPrinted, lastTextPrinted, textLength);
             pageNum--;  // fix page count estimator
             break;
@@ -794,7 +794,7 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
         if (doPrint && !skipPage) {
             if (fpDC->EndPage() <= 0) {
                 /* the "cancel" button was hit */
-                WMSG0("EndPage returned <= 0 (cancelled)\n");
+                LOGI("EndPage returned <= 0 (cancelled)");
                 fpDC->AbortDoc();
                 return -1;
             }
@@ -806,9 +806,9 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
         }
     } while (textPrinted < textLength);
 
-    //WMSG0("  +++ calling FormatRange(NULL, FALSE)\n");
+    //LOGI("  +++ calling FormatRange(NULL, FALSE)");
     pREC->FormatRange(NULL, FALSE);
-    //WMSG0("  +++  returned from final FormatRange\n");
+    //LOGI("  +++  returned from final FormatRange");
 
     if (doPrint)
         fpDC->EndDoc();
@@ -816,7 +816,7 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
     if (pNumPages != NULL)
         *pNumPages = pageNum;
 
-    WMSG1("Printing completed (textPrinted=%ld)\n", textPrinted);
+    LOGI("Printing completed (textPrinted=%ld)", textPrinted);
 
     return 0;
 }

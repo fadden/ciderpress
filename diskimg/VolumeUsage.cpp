@@ -164,7 +164,7 @@ DiskFS::VolumeUsage::GetActualFreeChunks(void) const
         }
     }
 
-    WMSG3(" VU total=%ld free=%d funky=%d\n",
+    LOGI(" VU total=%ld free=%d funky=%d",
         fTotalChunks, freeCount, funkyCount);
 
     return freeCount;
@@ -222,11 +222,11 @@ DiskFS::VolumeUsage::Dump(void) const
 {
 #define kMapInit "--------------------------------"
     if (fList == NULL) {
-        WMSG0(" VU asked to dump empty list?\n");
+        LOGI(" VU asked to dump empty list?");
         return;
     }
 
-    WMSG1(" VU VolumeUsage dump (%ld free chunks):\n",
+    LOGI(" VU VolumeUsage dump (%ld free chunks):",
         GetActualFreeChunks());
 
     if (fByBlocks) {
@@ -243,13 +243,13 @@ DiskFS::VolumeUsage::Dump(void) const
 
             freemap[block % kEntriesPerLine] = StateToChar(&cstate);
             if ((block % kEntriesPerLine) == kEntriesPerLine-1) {
-                WMSG2("   0x%04x: %s\n", block-(kEntriesPerLine-1), freemap);
+                LOGI("   0x%04x: %s", block-(kEntriesPerLine-1), freemap);
             }
         }
         if ((block % kEntriesPerLine) != 0) {
             memset(freemap + (block % kEntriesPerLine), '-',
                 kEntriesPerLine - (block % kEntriesPerLine));
-            WMSG2("   0x%04x: %s\n", block-(kEntriesPerLine-1), freemap);
+            LOGI("   0x%04x: %s", block-(kEntriesPerLine-1), freemap);
         }
     } else {
         ChunkState cstate;
@@ -258,11 +258,11 @@ DiskFS::VolumeUsage::Dump(void) const
         int track, sector;
 
         if (fNumSectors > 32) {
-            WMSG1(" VU too many sectors (%ld)\n", fNumSectors);
+            LOGI(" VU too many sectors (%ld)", fNumSectors);
             return;
         }
 
-        WMSG0("   map 0123456789abcdef\n");
+        LOGI("   map 0123456789abcdef");
 
         for (track = 0; track < numTracks; track++) {
             for (sector = 0; sector < fNumSectors; sector++) {
@@ -272,7 +272,7 @@ DiskFS::VolumeUsage::Dump(void) const
                 }
                 freemap[sector] = StateToChar(&cstate);
             }
-            WMSG2("   %2d: %s\n", track, freemap);
+            LOGI("   %2d: %s", track, freemap);
         }
     }
 }

@@ -54,7 +54,7 @@ SPTI::GetDeviceCapacity(HANDLE handle, unsigned long* pLastBlock,
 
     if (!status) {
         DWORD lastError = ::GetLastError();
-        WMSG1("DeviceIoControl(SCSI READ CAPACITY) failed, err=%ld\n",
+        LOGI("DeviceIoControl(SCSI READ CAPACITY) failed, err=%ld",
             ::GetLastError());
         if (lastError == ERROR_IO_DEVICE)   // no disc in drive
             return kDIErrDeviceNotReady;
@@ -95,7 +95,7 @@ SPTI::ReadBlocks(HANDLE handle, long startBlock, short numBlocks,
     assert(numBlocks > 0);
     assert(buf != NULL);
 
-    //WMSG2(" SPTI phys read block (%ld) %d\n", startBlock, numBlocks);
+    //LOGI(" SPTI phys read block (%ld) %d", startBlock, numBlocks);
 
     memset(&sptd, 0, sizeof(sptd));
     sptd.Length = sizeof(sptd); // size of struct (+ request-sense buffer)
@@ -124,12 +124,12 @@ SPTI::ReadBlocks(HANDLE handle, long startBlock, short numBlocks,
         &sptd, sizeof(sptd), NULL, 0, &cb, NULL);
 
     if (!status) {
-        WMSG1("DeviceIoControl(SCSI READ(10)) failed, err=%ld\n",
+        LOGI("DeviceIoControl(SCSI READ(10)) failed, err=%ld",
             ::GetLastError());
         return kDIErrReadFailed;    // close enough
     }
     if (sptd.ScsiStatus != 0) {
-        WMSG1("SCSI READ(10) failed, status=%d\n", sptd.ScsiStatus);
+        LOGI("SCSI READ(10) failed, status=%d", sptd.ScsiStatus);
         return kDIErrReadFailed;
     }
 

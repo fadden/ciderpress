@@ -116,7 +116,7 @@ MainWindow::OnEditCopy(void)
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
-    WMSG1("myFormat = %u\n", myFormat);
+    LOGI("myFormat = %u", myFormat);
 
     /* open & empty the clipboard, even if we fail later */
     if (OpenClipboard() == false) {
@@ -154,12 +154,12 @@ MainWindow::OnEditCopy(void)
     size_t neededLen = (fileList.GetLength() + 1) * sizeof(WCHAR);
     hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, neededLen);
     if (hGlobal == NULL) {
-        WMSG1("Failed allocating %d bytes\n", neededLen);
+        LOGI("Failed allocating %d bytes", neededLen);
         errStr.LoadString(IDS_CLIPBOARD_ALLOCFAILED);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
-    WMSG1("  Allocated %ld bytes for file list on clipboard\n", neededLen);
+    LOGI("  Allocated %ld bytes for file list on clipboard", neededLen);
     pGlobal = ::GlobalLock(hGlobal);
     ASSERT(pGlobal != NULL);
     wcscpy((WCHAR*) pGlobal, fileList);
@@ -307,7 +307,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
         pEntry = pSelEntry->GetEntry();
         ASSERT(pEntry != NULL);
 
-        //WMSG1("+++ Examining '%s'\n", pEntry->GetDisplayName());
+        //LOGI("+++ Examining '%s'", pEntry->GetDisplayName());
 
         if (pEntry->GetRecordKind() != GenericEntry::kRecordKindVolumeDir) {
             totalLength += sizeof(FileCollectionEntry);
@@ -321,7 +321,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
 
         if (totalLength < 0) {
             DebugBreak();
-            WMSG0("Overflow\n");    // pretty hard to do right now!
+            LOGI("Overflow");    // pretty hard to do right now!
             return NULL;
         }
 
@@ -338,7 +338,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     }
 #endif
 
-    WMSG3("Total length required is %ld + %ld = %ld\n",
+    LOGI("Total length required is %ld + %ld = %ld",
         totalLength, priorLength, totalLength+priorLength);
     if (IsWin9x() && totalLength+priorLength >= kWin98ClipboardMax) {
         CString errMsg;
@@ -357,7 +357,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
         CString errMsg;
         errMsg.Format(L"ERROR: unable to allocate %ld bytes for copy",
             totalLength);
-        WMSG1("%ls\n", (LPCWSTR) errMsg);
+        LOGI("%ls", (LPCWSTR) errMsg);
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
@@ -365,7 +365,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
 
     ASSERT(pGlobal != NULL);
     ASSERT(GlobalSize(hGlobal) >= (DWORD) totalLength);
-    WMSG3("hGlobal=0x%08lx pGlobal=0x%08lx size=%ld\n",
+    LOGI("hGlobal=0x%08lx pGlobal=0x%08lx size=%ld",
         (long) hGlobal, (long) pGlobal, GlobalSize(hGlobal));
 
     /*
@@ -400,7 +400,7 @@ MainWindow::CreateFileCollection(SelectionSet* pSelSet)
             ShowFailureMsg(fpActionProgress, errStr, IDS_MB_APP_NAME);
             goto bail;
         }
-        //WMSG1("remainingLen now %ld\n", remainingLen);
+        //LOGI("remainingLen now %ld", remainingLen);
 
         pSelEntry = pSelSet->IterNext();
     }
@@ -460,7 +460,7 @@ MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf, long* pBufLen)
     errStr.LoadString(IDS_CLIPBOARD_WRITEFAILURE);
 
     if (pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir) {
-        WMSG0("Not copying volume dir to collection\n");
+        LOGI("Not copying volume dir to collection");
         return "";
     }
 
@@ -549,7 +549,7 @@ MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf, long* pBufLen)
             errStr.LoadString(IDS_CANCELLED);
             return errStr;
         } else if (result != IDOK) {
-            WMSG0("ExtractThreadToBuffer (data) failed\n");
+            LOGI("ExtractThreadToBuffer (data) failed");
             return errStr;
         }
 
@@ -571,7 +571,7 @@ MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf, long* pBufLen)
             errStr.LoadString(IDS_CANCELLED);
             return errStr;
         } else if (result != IDOK) {
-            WMSG0("ExtractThreadToBuffer (rsrc) failed\n");
+            LOGI("ExtractThreadToBuffer (rsrc) failed");
             return errStr;
         }
 
@@ -699,7 +699,7 @@ MainWindow::DoPaste(bool pasteJunkPaths)
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
-    WMSG1("myFormat = %u\n", myFormat);
+    LOGI("myFormat = %u", myFormat);
 
     if (OpenClipboard() == false) {
         errStr.LoadString(IDS_CLIPBOARD_OPENFAILED);
@@ -708,13 +708,13 @@ MainWindow::DoPaste(bool pasteJunkPaths)
     }
     isOpen = true;
 
-    WMSG1("Found %d clipboard formats\n", CountClipboardFormats());
+    LOGI("Found %d clipboard formats", CountClipboardFormats());
     while ((format = EnumClipboardFormats(format)) != 0) {
         CString tmpStr;
         tmpStr.Format(L" %u", format);
         buildStr += tmpStr;
     }
-    WMSG1("  %ls\n", (LPCWSTR) buildStr);
+    LOGI("  %ls", (LPCWSTR) buildStr);
 
 #if 0
     if (IsClipboardFormatAvailable(CF_HDROP)) {
@@ -731,7 +731,7 @@ MainWindow::DoPaste(bool pasteJunkPaths)
         goto bail;
     }
 
-    WMSG1("+++ total data on clipboard: %ld bytes\n",
+    LOGI("+++ total data on clipboard: %ld bytes",
         GetClipboardContentLen());
 
     HGLOBAL hGlobal;
@@ -781,7 +781,7 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
      * Pull the header out.
      */
     if (bufLen < sizeof(fileColl)) {
-        WMSG0("Clipboard contents too small!\n");
+        LOGI("Clipboard contents too small!");
         goto bail;
     }
     memcpy(&fileColl, buf, sizeof(fileColl));
@@ -791,13 +791,13 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
      * boundaries, which screws up our "bufLen > 0" while condition below.
      */
     if ((long) fileColl.length > bufLen) {
-        WMSG2("GLITCH: stored len=%ld, clip len=%ld\n",
+        LOGI("GLITCH: stored len=%ld, clip len=%ld",
             fileColl.length, bufLen);
         goto bail;
     }
     if (bufLen > (long) fileColl.length) {
         /* trim off extra */
-        WMSG2("NOTE: Windows reports excess length (%ld vs %ld)\n",
+        LOGI("NOTE: Windows reports excess length (%ld vs %ld)",
             fileColl.length, bufLen);
         bufLen = fileColl.length;
     }
@@ -805,7 +805,7 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
     buf += sizeof(fileColl);
     bufLen -= sizeof(fileColl);
 
-    WMSG4("FileCollection found: vers=%d off=%d len=%ld count=%ld\n",
+    LOGI("FileCollection found: vers=%d off=%d len=%ld count=%ld",
         fileColl.version, fileColl.dataOffset, fileColl.length,
         fileColl.count);
     if (fileColl.count == 0) {
@@ -830,7 +830,7 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
 
     if (pTargetSubdir != NULL) {
         storagePrefix = pTargetSubdir->GetPathName();
-        WMSG1("--- using storagePrefix '%ls'\n", (LPCWSTR) storagePrefix);
+        LOGI("--- using storagePrefix '%ls'", (LPCWSTR) storagePrefix);
     }
 
     /*
@@ -844,14 +844,14 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
     /*
      * Loop over all files.
      */
-    WMSG1("+++ Starting paste, bufLen=%ld\n", bufLen);
+    LOGI("+++ Starting paste, bufLen=%ld", bufLen);
     while (bufLen > 0) {
         FileCollectionEntry collEnt;
         CString fileName, processErrStr;
 
         /* read the entry info */
         if (bufLen < sizeof(collEnt)) {
-            WMSG2("GLITCH: bufLen=%ld, sizeof(collEnt)=%d\n",
+            LOGI("GLITCH: bufLen=%ld, sizeof(collEnt)=%d",
                 bufLen, sizeof(collEnt));
             ASSERT(false);
             goto bail;
@@ -879,7 +879,7 @@ MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
         buf += collEnt.fileNameLen;
         bufLen -= collEnt.fileNameLen;
 
-        //WMSG1("+++  pasting '%s'\n", fileName);
+        //LOGI("+++  pasting '%s'", fileName);
 
         /* strip the path (if requested) and prepend the storage prefix */
         ASSERT(fileName.GetLength() == collEnt.fileNameLen -1);
@@ -972,7 +972,7 @@ MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
     CString errMsg;
 
     entryKind = (GenericArchive::FileDetails::FileKind) pCollEnt->entryKind;
-    WMSG2(" Processing '%ls' (%d)\n", pathName, entryKind);
+    LOGI(" Processing '%ls' (%d)", pathName, entryKind);
 
     details.entryKind = entryKind;
     details.origName = L"Clipboard";

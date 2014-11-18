@@ -70,7 +70,7 @@ MainWindow::~MainWindow()
 {
 //  int cc;
 //  cc = ::WinHelp(m_hWnd, ::AfxGetApp()->m_pszHelpFilePath, HELP_QUIT, 0);
-//  WMSG1("Turning off WinHelp returned %d\n", cc);
+//  LOGI("Turning off WinHelp returned %d", cc);
 
     DiskImgLib::Global::AppCleanup();
 }
@@ -112,7 +112,7 @@ MainWindow::OnHelpAbout(void)
     AboutDlg dlg(this);
 
     result = dlg.DoModal();
-    WMSG1("HelpAbout returned %d\n", result);
+    LOGI("HelpAbout returned %d", result);
 }
 
 
@@ -188,7 +188,7 @@ MainWindow::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
     LOG_BASE(pErrorMessage->isDebug ? DebugLog::LOG_DEBUG : DebugLog::LOG_WARNING,
-        pErrorMessage->file, pErrorMessage->line, "<nufxlib> %hs\n",
+        pErrorMessage->file, pErrorMessage->line, "<nufxlib> %hs",
         pErrorMessage->message);
 
     return kNuOK;
@@ -223,7 +223,7 @@ MainWindow::ScanFiles(void)
     }
 
     const WCHAR* buf = chooseFiles.GetFileNames();
-    WMSG2("Selected path = '%ls' (offset=%d)\n", buf,
+    LOGI("Selected path = '%ls' (offset=%d)", buf,
         chooseFiles.GetFileNameOffset());
 
     /* choose output file */
@@ -239,7 +239,7 @@ MainWindow::ScanFiles(void)
     }
 
     outPath = dlg.GetPathName();
-    WMSG1("NEW FILE '%ls'\n", (LPCWSTR) outPath);
+    LOGI("NEW FILE '%ls'", (LPCWSTR) outPath);
 
     scanOpts.outfp = _wfopen(outPath, L"w");
     if (scanOpts.outfp == NULL) {
@@ -291,7 +291,7 @@ MainWindow::ScanFiles(void)
     scanOpts.pProgress->fpCancelFlag = &fCancelFlag;
     fCancelFlag = false;
     if (scanOpts.pProgress->Create(this) == FALSE) {
-        WMSG0("WARNING: ProgressDlg init failed\n");
+        LOGI("WARNING: ProgressDlg init failed");
         ASSERT(false);
     } else {
         scanOpts.pProgress->CenterWindow(this);
@@ -304,11 +304,11 @@ MainWindow::ScanFiles(void)
     buf += chooseFiles.GetFileNameOffset();
     while (*buf != '\0') {
         if (Process(buf, &scanOpts, &errMsg) != 0) {
-            WMSG2("Skipping '%ls': %ls.\n", buf, (LPCWSTR) errMsg);
+            LOGI("Skipping '%ls': %ls.", buf, (LPCWSTR) errMsg);
         }
 
         if (fCancelFlag) {
-            WMSG0("CANCELLED by user\n");
+            LOGI("CANCELLED by user");
             MessageBox(L"Cancelled!", L"MDC", MB_OK);
             goto bail;
         }
@@ -523,7 +523,7 @@ MainWindow::ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
     ASSERT(dirName != NULL);
     ASSERT(pErrMsg != NULL);
 
-    WMSG1("+++ DESCEND: '%ls'\n", (LPCWSTR) dirName);
+    LOGI("+++ DESCEND: '%ls'", (LPCWSTR) dirName);
 
     dirp = OpenDir(dirName);
     if (dirp == NULL) {
@@ -541,7 +541,7 @@ MainWindow::ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
 
         len = wcslen(dirName);
         if (len + wcslen(entry->d_name) + 2 > MAX_PATH) {
-            WMSG4("ERROR: Filename exceeds %d bytes: %ls%c%ls",
+            LOGE("ERROR: Filename exceeds %d bytes: %ls%c%ls",
                 MAX_PATH, dirName, fssep, entry->d_name);
             goto bail;
         }
@@ -818,7 +818,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
 
         if (recordKind == kRecordKindVolumeDir) {
             /* this is a volume directory */
-            WMSG1("Not displaying volume dir '%ls'\n", pFile->GetPathName());
+            LOGI("Not displaying volume dir '%ls'", pFile->GetPathName());
             continue;
         }
 

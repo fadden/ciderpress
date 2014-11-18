@@ -314,7 +314,7 @@ ReformatHolder::TestApplicability(void)
         }
         if (!fAllow[i]) {
             if (i != 0) {
-                WMSG1(" NOTE: Applic %d disallowed\n", i);
+                LOGI(" NOTE: Applic %d disallowed", i);
                 // did you update ConfigureReformatFromPreferences()?
             }
             fApplies[kPartData][i] = kApplicNot;
@@ -446,12 +446,12 @@ ReformatHolder::FindBest(ReformatPart part)
     }
 
     if (bestID == kReformatUnknown || bestApply == kApplicNot) {
-        WMSG0("Did you forget to call TestApplicability?\n");
+        LOGI("Did you forget to call TestApplicability?");
         assert(false);
         return kReformatRaw;
     }
 
-    WMSG2("Best is %d at lvl=%d\n", bestID, bestApply);
+    LOGI("Best is %d at lvl=%d", bestID, bestApply);
 
     return bestID;
 }
@@ -469,7 +469,7 @@ ReformatHolder::Apply(ReformatPart part, ReformatID id)
     if (id <= kReformatUnknown || id >= kReformatMAX ||
         part <= kPartUnknown || part >= kPartMAX)
     {
-        WMSG2("Invalid reformat request (part=%d id=%d)\n", part, id);
+        LOGI("Invalid reformat request (part=%d id=%d)", part, id);
         assert(false);
         return NULL;
     }
@@ -590,7 +590,7 @@ ReformatHolder::SetErrorMsg(ReformatPart part, const char* msg)
     assert(fErrorBuf[part] == NULL);
 
     fErrorBuf[part] = strdup(msg);
-    WMSG2("+++ set error message for part %d to '%hs'\n", part, msg);
+    LOGI("+++ set error message for part %d to '%hs'", part, msg);
 }
 
 void

@@ -72,12 +72,12 @@ ReformatPrintShop::Process(const ReformatHolder* pHolder,
     } else if (srcLen == 1716) {
         pDib = ConvertColor(srcBuf);
     } else {
-        WMSG1("PS shouldn't be here (len=%ld)\n", srcLen);
+        LOGI("PS shouldn't be here (len=%ld)", srcLen);
         return -1;
     }
 
     if (pDib == NULL) {
-        WMSG0("DIB creation failed\n");
+        LOGI("DIB creation failed");
         return -1;
     }
 

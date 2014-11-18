@@ -99,14 +99,14 @@ DiskFSMacPart::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
              * This is invalid, but it's the way floptical images formatted
              * by the C.V.Tech format utilities look.
              */
-            WMSG0(" MacPart NOTE: found zeroed-out DDR, continuing anyway\n");
+            LOGI(" MacPart NOTE: found zeroed-out DDR, continuing anyway");
         } else if (ddr.sbBlkSize == kBlkSize && ddr.sbBlkCount == 0) {
             /*
              * This showed up on a disc, so handle it too.
              */
-            WMSG0(" MacPart NOTE: found partially-zeroed-out DDR, continuing\n");
+            LOGI(" MacPart NOTE: found partially-zeroed-out DDR, continuing");
         } else {
-            WMSG2(" MacPart found 'ER' signature but blkSize=%d blkCount=%ld\n",
+            LOGI(" MacPart found 'ER' signature but blkSize=%d blkCount=%ld",
                 ddr.sbBlkSize, ddr.sbBlkCount);
             dierr = kDIErrFilesystemNotFound;
             goto bail;
@@ -121,13 +121,13 @@ DiskFSMacPart::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
         goto bail;
 
     if (GetShortBE(&blkBuf[0x00]) != kPartitionSignature) {
-        WMSG0(" MacPart partition signature not found in first part block\n");
+        LOGI(" MacPart partition signature not found in first part block");
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
     pmMapBlkCnt = GetLongBE(&blkBuf[0x04]);
     if (pmMapBlkCnt <= 0 || pmMapBlkCnt > 256) {
-        WMSG1(" MacPart unreasonable pmMapBlkCnt value %ld\n",
+        LOGI(" MacPart unreasonable pmMapBlkCnt value %ld",
             pmMapBlkCnt);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
@@ -137,7 +137,7 @@ DiskFSMacPart::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
        the format is pretty unambiguous, and we don't care about the order */
 
     // success!
-    WMSG1(" MacPart partition map block count = %ld\n", pmMapBlkCnt);
+    LOGI(" MacPart partition map block count = %ld", pmMapBlkCnt);
 
 bail:
     return dierr;
@@ -175,12 +175,12 @@ DiskFSMacPart::UnpackDDR(const unsigned char* buf,
 /*static*/ void
 DiskFSMacPart::DumpDDR(const DriverDescriptorRecord* pDDR)
 {
-    WMSG0(" MacPart driver descriptor record\n");
-    WMSG3("    sbSig=0x%04x sbBlkSize=%d sbBlkCount=%ld\n",
+    LOGI(" MacPart driver descriptor record");
+    LOGI("    sbSig=0x%04x sbBlkSize=%d sbBlkCount=%ld",
         pDDR->sbSig, pDDR->sbBlkSize, pDDR->sbBlkCount);
-    WMSG4("    sbDevType=%d sbDevId=%d sbData=%ld sbDrvrCount=%d\n",
+    LOGI("    sbDevType=%d sbDevId=%d sbData=%ld sbDrvrCount=%d",
         pDDR->sbDevType, pDDR->sbDevId, pDDR->sbData, pDDR->sbDrvrCount);
-    WMSG4("    (pad=%d) ddBlock=%ld ddSize=%d ddType=%d\n",
+    LOGI("    (pad=%d) ddBlock=%ld ddSize=%d ddType=%d",
         pDDR->hiddenPad, pDDR->ddBlock, pDDR->ddSize, pDDR->ddType);
 }
 
@@ -226,23 +226,23 @@ DiskFSMacPart::UnpackPartitionMap(const unsigned char* buf,
 /*static*/ void
 DiskFSMacPart::DumpPartitionMap(long block, const PartitionMap* pMap)
 {
-    WMSG1(" MacPart partition map: block=%ld\n", block);
-    WMSG3("    pmSig=0x%04x (pad=0x%04x)  pmMapBlkCnt=%ld\n",
+    LOGI(" MacPart partition map: block=%ld", block);
+    LOGI("    pmSig=0x%04x (pad=0x%04x)  pmMapBlkCnt=%ld",
         pMap->pmSig, pMap->pmSigPad, pMap->pmMapBlkCnt);
-    WMSG2("    pmPartName='%s' pmParType='%s'\n",
+    LOGI("    pmPartName='%s' pmParType='%s'",
         pMap->pmPartName, pMap->pmParType);
-    WMSG2("    pmPyPartStart=%ld pmPartBlkCnt=%ld\n",
+    LOGI("    pmPyPartStart=%ld pmPartBlkCnt=%ld",
         pMap->pmPyPartStart, pMap->pmPartBlkCnt);
-    WMSG2("    pmLgDataStart=%ld pmDataCnt=%ld\n",
+    LOGI("    pmLgDataStart=%ld pmDataCnt=%ld",
         pMap->pmLgDataStart, pMap->pmDataCnt);
-    WMSG1("    pmPartStatus=%ld\n",
+    LOGI("    pmPartStatus=%ld",
         pMap->pmPartStatus);
-    WMSG2("    pmLgBootStart=%ld pmBootSize=%ld\n",
+    LOGI("    pmLgBootStart=%ld pmBootSize=%ld",
         pMap->pmLgBootStart, pMap->pmBootSize);
-    WMSG4("    pmBootAddr=%ld pmBootAddr2=%ld pmBootEntry=%ld pmBootEntry2=%ld\n",
+    LOGI("    pmBootAddr=%ld pmBootAddr2=%ld pmBootEntry=%ld pmBootEntry2=%ld",
         pMap->pmBootAddr, pMap->pmBootAddr2,
         pMap->pmBootEntry, pMap->pmBootEntry2);
-    WMSG2("    pmBootCksum=%ld pmProcessor='%s'\n",
+    LOGI("    pmBootCksum=%ld pmProcessor='%s'",
         pMap->pmBootCksum, pMap->pmProcessor);
 }
 
@@ -263,16 +263,16 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
     startBlock = pMap->pmPyPartStart;
     numBlocks = pMap->pmPartBlkCnt;
 
-    WMSG4("Adding '%s' (%s) %ld +%ld\n",
+    LOGI("Adding '%s' (%s) %ld +%ld",
         pMap->pmPartName, pMap->pmParType, startBlock, numBlocks);
 
     if (startBlock > fpImg->GetNumBlocks()) {
-        WMSG2("MacPart start block out of range (%ld vs %ld)\n",
+        LOGI("MacPart start block out of range (%ld vs %ld)",
             startBlock, fpImg->GetNumBlocks());
         return kDIErrBadPartition;
     }
     if (startBlock + numBlocks > fpImg->GetNumBlocks()) {
-        WMSG2("MacPart partition too large (%ld vs %ld avail)\n",
+        LOGI("MacPart partition too large (%ld vs %ld avail)",
             numBlocks, fpImg->GetNumBlocks() - startBlock);
         fpImg->AddNote(DiskImg::kNoteInfo,
             "Reduced partition '%s' (%s) from %ld blocks to %ld.\n",
@@ -302,18 +302,18 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
 
     dierr = pNewImg->OpenImage(fpImg, startBlock, numBlocks);
     if (dierr != kDIErrNone) {
-        WMSG3(" MacPartSub: OpenImage(%ld,%ld) failed (err=%d)\n",
+        LOGI(" MacPartSub: OpenImage(%ld,%ld) failed (err=%d)",
             startBlock, numBlocks, dierr);
         goto bail;
     }
 
-    //WMSG2("  +++ CFFASub: new image has ro=%d (parent=%d)\n",
+    //LOGI("  +++ CFFASub: new image has ro=%d (parent=%d)",
     //  pNewImg->GetReadOnly(), pImg->GetReadOnly());
 
     /* the partition is typed; currently no way to give hints to analyzer */
     dierr = pNewImg->AnalyzeImage();
     if (dierr != kDIErrNone) {
-        WMSG1(" MacPartSub: analysis failed (err=%d)\n", dierr);
+        LOGI(" MacPartSub: analysis failed (err=%d)", dierr);
         goto bail;
     }
 
@@ -321,7 +321,7 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
     if (pNewImg->GetFSFormat() == DiskImg::kFormatUnknown ||
         pNewImg->GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
-        WMSG2(" MacPartSub (%ld,%ld): unable to identify filesystem\n",
+        LOGI(" MacPartSub (%ld,%ld): unable to identify filesystem",
             startBlock, numBlocks);
         DiskFSUnknown* pUnknownFS = new DiskFSUnknown;
         if (pUnknownFS == NULL) {
@@ -334,10 +334,10 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
             pMap->pmPartName, pMap->pmParType);
     } else {
         /* open a DiskFS for the sub-image */
-        WMSG2(" MacPartSub (%ld,%ld) analyze succeeded!\n", startBlock, numBlocks);
+        LOGI(" MacPartSub (%ld,%ld) analyze succeeded!", startBlock, numBlocks);
         pNewFS = pNewImg->OpenAppropriateDiskFS(true);
         if (pNewFS == NULL) {
-            WMSG0(" MacPartSub: OpenAppropriateDiskFS failed\n");
+            LOGI(" MacPartSub: OpenAppropriateDiskFS failed");
             dierr = kDIErrUnsupportedFSFmt;
             goto bail;
         }
@@ -362,7 +362,7 @@ DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
         initMode = kInitFull;
     dierr = pNewFS->Initialize(pNewImg, initMode);
     if (dierr != kDIErrNone) {
-        WMSG1(" MacPartSub: error %d reading list of files from disk\n", dierr);
+        LOGI(" MacPartSub: error %d reading list of files from disk", dierr);
         goto bail;
     }
 
@@ -396,7 +396,7 @@ DiskFSMacPart::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         return kDIErrNone;
     }
 
-    WMSG0("  FS didn't find valid MacPart\n");
+    LOGI("  FS didn't find valid MacPart");
     return kDIErrFilesystemNotFound;
 }
 
@@ -409,7 +409,7 @@ DiskFSMacPart::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
-    WMSG1("MacPart initializing (scanForSub=%d)\n", fScanForSubVolumes);
+    LOGI("MacPart initializing (scanForSub=%d)", fScanForSubVolumes);
 
     /* seems pointless *not* to, but we just do what we're told */
     if (fScanForSubVolumes != kScanSubDisabled) {
@@ -460,14 +460,14 @@ DiskFSMacPart::FindSubVolumes(void)
                 goto bail;
             DiskFS* pNewFS = NULL;
             DiskImg* pNewImg = NULL;
-            WMSG1(" MacPart failed opening sub-volume %d\n", i);
+            LOGI(" MacPart failed opening sub-volume %d", i);
             dierr = CreatePlaceholder(map.pmPyPartStart, map.pmPartBlkCnt,
                 (const char*)map.pmPartName, (const char*)map.pmParType,
                 &pNewImg, &pNewFS);
             if (dierr == kDIErrNone) {
                 AddSubVolumeToList(pNewImg, pNewFS);
             } else {
-                WMSG1("  MacPart unable to create placeholder (err=%d)\n",
+                LOGI("  MacPart unable to create placeholder (err=%d)",
                     dierr);
                 break;  // something's wrong -- bail out with error
             }

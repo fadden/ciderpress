@@ -38,9 +38,9 @@ ASPI::Init(void)
     if (fhASPI == NULL) {
         DWORD lastErr = ::GetLastError();
         if (lastErr == ERROR_MOD_NOT_FOUND) {
-            WMSG1("ASPI DLL '%s' not found\n", kASPIDllName);
+            LOGI("ASPI DLL '%s' not found", kASPIDllName);
         } else {
-            WMSG2("ASPI LoadLibrary(%s) failed (err=%ld)\n",
+            LOGI("ASPI LoadLibrary(%s) failed (err=%ld)",
                 kASPIDllName, GetLastError());
         }
         return kDIErrGeneric;
@@ -50,7 +50,7 @@ ASPI::Init(void)
     SendASPI32Command = (DWORD(*)(LPSRB))::GetProcAddress(fhASPI, "SendASPI32Command");
     GetASPI32DLLVersion = (DWORD(*)(void))::GetProcAddress(fhASPI, "GetASPI32DLLVersion");
     if (GetASPI32SupportInfo == NULL || SendASPI32Command == NULL) {
-        WMSG0("ASPI functions not found in dll\n");
+        LOGI("ASPI functions not found in dll");
         ::FreeLibrary(fhASPI);
         fhASPI = NULL;
         return kDIErrGeneric;
@@ -58,13 +58,13 @@ ASPI::Init(void)
 
     if (GetASPI32DLLVersion != NULL) {
         fASPIVersion = GetASPI32DLLVersion();
-        WMSG4(" ASPI version is %d.%d.%d.%d\n",
+        LOGI(" ASPI version is %d.%d.%d.%d",
             fASPIVersion & 0x0ff,
             (fASPIVersion >> 8) & 0xff,
             (fASPIVersion >> 16) & 0xff,
             (fASPIVersion >> 24) & 0xff);
     } else {
-        WMSG0("ASPI WARNING: couldn't find GetASPI32DLLVersion interface\n");
+        LOGI("ASPI WARNING: couldn't find GetASPI32DLLVersion interface");
     }
 
     /*
@@ -72,7 +72,7 @@ ASPI::Init(void)
      */
     aspiStatus = GetASPI32SupportInfo();
     if (HIBYTE(LOWORD(aspiStatus)) != SS_COMP) {
-        WMSG1("ASPI loaded but not working (status=%d)\n",
+        LOGI("ASPI loaded but not working (status=%d)",
             HIBYTE(LOWORD(aspiStatus)));
         ::FreeLibrary(fhASPI);
         fhASPI = NULL;
@@ -80,7 +80,7 @@ ASPI::Init(void)
     }
 
     fHostAdapterCount = LOBYTE(LOWORD(aspiStatus));
-    WMSG1("ASPI loaded successfully, hostAdapterCount=%d\n",
+    LOGI("ASPI loaded successfully, hostAdapterCount=%d",
         fHostAdapterCount);
 
     return kDIErrNone;
@@ -92,7 +92,7 @@ ASPI::Init(void)
 ASPI::~ASPI(void)
 {
     if (fhASPI != NULL) {
-        WMSG0("Unloading ASPI DLL\n");
+        LOGI("Unloading ASPI DLL");
         ::FreeLibrary(fhASPI);
         fhASPI = NULL;
     }
@@ -118,7 +118,7 @@ ASPI::HostAdapterInquiry(unsigned char adapter, AdapterInfo* pAdapterInfo)
 
     result = SendASPI32Command(&req);
     if (result != SS_COMP) {
-        WMSG2("ASPI(SC_HA_INQUIRY on %d) failed with result=0x%lx\n",
+        LOGI("ASPI(SC_HA_INQUIRY on %d) failed with result=0x%lx",
             adapter, result);
         return kDIErrASPIFailure;
     }
@@ -328,19 +328,19 @@ ASPI::TestUnitReady(unsigned char adapter, unsigned char target,
         {
             // expect pSense->additionalSenseCode to be
             //  kScsiAdSenseNoMediaInDevice; no need to check it really.
-            WMSG3(" ASPI TestUnitReady: drive %d:%d:%d is NOT ready\n",
+            LOGI(" ASPI TestUnitReady: drive %d:%d:%d is NOT ready",
                 adapter, target, lun);
         } else {
-            WMSG3(" ASPI TestUnitReady failed, status=0x%02x sense=0x%02x ASC=0x%02x\n",
+            LOGI(" ASPI TestUnitReady failed, status=0x%02x sense=0x%02x ASC=0x%02x",
                 srb.SRB_TargStat, pSense->senseKey,
                 pSense->additionalSenseCode);
         }
         *pReady = false;
     } else {
         const CDB_SenseData* pSense = (const CDB_SenseData*) srb.SenseArea;
-        WMSG3(" ASPI TestUnitReady: drive %d:%d:%d is ready\n",
+        LOGI(" ASPI TestUnitReady: drive %d:%d:%d is ready",
             adapter, target, lun);
-        //WMSG3("   status=0x%02x sense=0x%02x ASC=0x%02x\n",
+        //LOGI("   status=0x%02x sense=0x%02x ASC=0x%02x",
         //  srb.SRB_TargStat, pSense->senseKey, pSense->additionalSenseCode);
         *pReady = true;
     }
@@ -363,7 +363,7 @@ ASPI::ReadBlocks(unsigned char adapter, unsigned char target,
     SRB_ExecSCSICmd srb;
     CDB10* pCDB;
 
-    //WMSG3(" ASPI ReadBlocks start=%ld num=%d (size=%d)\n",
+    //LOGI(" ASPI ReadBlocks start=%ld num=%d (size=%d)",
     //  startBlock, numBlocks, blockSize);
 
     assert(sizeof(CDB10) == 10);
@@ -405,7 +405,7 @@ ASPI::WriteBlocks(unsigned char adapter, unsigned char target,
     SRB_ExecSCSICmd srb;
     CDB10* pCDB;
 
-    WMSG3(" ASPI WriteBlocks start=%ld num=%d (size=%d)\n",
+    LOGI(" ASPI WriteBlocks start=%ld num=%d (size=%d)",
         startBlock, numBlocks, blockSize);
 
     assert(sizeof(CDB10) == 10);
@@ -465,7 +465,7 @@ ASPI::ExecSCSICommand(SRB_ExecSCSICmd* pSRB)
 
     completionEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
     if (completionEvent == NULL) {
-        WMSG0("Failed creating a completion event?\n");
+        LOGI("Failed creating a completion event?");
         return kDIErrGeneric;
     }
 
@@ -477,16 +477,16 @@ ASPI::ExecSCSICommand(SRB_ExecSCSICmd* pSRB)
     (void)SendASPI32Command((LPSRB) pSRB);
     aspiStatus = pSRB->SRB_Status;
     if (aspiStatus == SS_PENDING) {
-        //WMSG0("  (waiting for completion)\n");
+        //LOGI("  (waiting for completion)");
         eventStatus = ::WaitForSingleObject(completionEvent, kTimeout * 1000);
 
         ::CloseHandle(completionEvent);
 
         if (eventStatus == WAIT_TIMEOUT) {
-            WMSG0("  ASPI exec timed out!\n");
+            LOGI("  ASPI exec timed out!");
             return kDIErrSCSIFailure;
         } else if (eventStatus != WAIT_OBJECT_0) {
-            WMSG1("  ASPI exec returned weird wait state %ld\n", eventStatus);
+            LOGI("  ASPI exec returned weird wait state %ld", eventStatus);
             return kDIErrGeneric;
         }
     }
@@ -501,14 +501,14 @@ ASPI::ExecSCSICommand(SRB_ExecSCSICmd* pSRB)
     } else if (aspiStatus == SS_ERR) {
         const CDB_SenseData* pSense = (const CDB_SenseData*) pSRB->SenseArea;
 
-        WMSG4("  ASPI SCSI command 0x%02x failed: scsiStatus=0x%02x"
+        LOGI("  ASPI SCSI command 0x%02x failed: scsiStatus=0x%02x"
               " senseKey=0x%02x ASC=0x%02x\n",
             pSRB->CDBByte[0], pSRB->SRB_TargStat,
             pSense->senseKey, pSense->additionalSenseCode);
         return kDIErrSCSIFailure;
     } else {
         // SS_ABORTED, SS_ABORT_FAIL, SS_NO_DEVICE, ...
-        WMSG3("  ASPI failed on command 0x%02x: aspiStatus=%d scsiStatus=%d\n",
+        LOGI("  ASPI failed on command 0x%02x: aspiStatus=%d scsiStatus=%d",
             pSRB->CDBByte[0], aspiStatus, pSRB->SRB_TargStat);
         return kDIErrASPIFailure;
     }
@@ -539,21 +539,21 @@ ASPI::GetAccessibleDevices(int deviceMask, ASPIDevice** ppDeviceArray,
     if (deviceArray == NULL)
         return kDIErrMalloc;
 
-    WMSG1("ASPI scanning %d host adapters\n", fHostAdapterCount);
+    LOGI("ASPI scanning %d host adapters", fHostAdapterCount);
 
     for (int ha = 0; ha < fHostAdapterCount; ha++) {
         AdapterInfo adi;
 
         dierr = HostAdapterInquiry(ha, &adi);
         if (dierr != kDIErrNone) {
-            WMSG1("  ASPI inquiry on %d failed\n", ha);
+            LOGI("  ASPI inquiry on %d failed", ha);
             continue;
         }
 
-        WMSG2(" ASPI host adapter %d (SCSI ID=%d)\n", ha, adi.adapterScsiID);
-        WMSG2("   identifier='%s' managerID='%s'\n",
+        LOGI(" ASPI host adapter %d (SCSI ID=%d)", ha, adi.adapterScsiID);
+        LOGI("   identifier='%s' managerID='%s'",
             adi.identifier, adi.managerID);
-        WMSG2("   maxTargets=%d bufferAlignment=%d\n",
+        LOGI("   maxTargets=%d bufferAlignment=%d",
             adi.maxTargets, adi.bufferAlignment);
 
         int maxTargets = adi.maxTargets;
@@ -578,12 +578,12 @@ ASPI::GetAccessibleDevices(int deviceMask, ASPIDevice** ppDeviceArray,
 
                 dierr = DeviceInquiry(ha, targ, lun, &inq);
                 if (dierr != kDIErrNone) {
-                    WMSG2(" ASPI DeviceInquiry for '%s' (type=%d) failed\n",
+                    LOGI(" ASPI DeviceInquiry for '%s' (type=%d) failed",
                         addrString, deviceType);
                     continue;
                 }
 
-                WMSG4("  Device %s is %s '%s' '%s'\n",
+                LOGI("  Device %s is %s '%s' '%s'",
                     addrString, DeviceTypeToString(deviceType),
                     inq.vendorID, inq.productID);
 
@@ -599,14 +599,14 @@ ASPI::GetAccessibleDevices(int deviceMask, ASPIDevice** ppDeviceArray,
                     continue;
 
                 if (idx >= kMaxAccessibleDrives) {
-                    WMSG0("GLITCH: ran out of places to stuff CD-ROM drives\n");
+                    LOGI("GLITCH: ran out of places to stuff CD-ROM drives");
                     assert(false);
                     goto done;
                 }
 
                 dierr = TestUnitReady(ha, targ, lun, &deviceReady);
                 if (dierr != kDIErrNone) {
-                    WMSG1(" ASPI TestUnitReady for '%s' failed\n", addrString);
+                    LOGI(" ASPI TestUnitReady for '%s' failed", addrString);
                     continue;
                 }
 

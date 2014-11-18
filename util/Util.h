@@ -49,7 +49,7 @@ public:
     }
     virtual ~ExpandBuffer(void) {
         if (fWorkBuf != NULL) {
-            WMSG0("ExpandBuffer: fWorkBuf not seized; freeing\n");
+            LOGI("ExpandBuffer: fWorkBuf not seized; freeing");
             delete[] fWorkBuf;
         }
     }

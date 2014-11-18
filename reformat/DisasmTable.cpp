@@ -624,7 +624,7 @@ ReformatDisasm65xxx::ValidateOpMap(void)
             (kOpMap[i].opAndAddr[kCPU65802] != kOpUnknown &&
              kOpMap[i].opAndAddr[kCPU65802] != kOpMap[i].opAndAddr[kCPU65816]))
         {
-            WMSG1("OpMap GLITCH: inconsistent values for entry 0x%02x\n", i);
+            LOGI("OpMap GLITCH: inconsistent values for entry 0x%02x", i);
             assert(false);
             return false;
         }
@@ -639,7 +639,7 @@ ReformatDisasm65xxx::ValidateOpMap(void)
                 continue;
             if (kOpMap[i].opAndAddr[kCPU65816] == kOpMap[j].opAndAddr[kCPU65816])
             {
-                WMSG2("OpMap GLITCH: entries 0x%02x and 0x%02x match\n", i, j);
+                LOGI("OpMap GLITCH: entries 0x%02x and 0x%02x match", i, j);
                 assert(false);
                 return false;
             }
@@ -758,7 +758,7 @@ bool
 ReformatDisasm65xxx::ValidateOpCodeDetails(void)
 {
     if (NELEM(kOpCodeDetails) != kOpCodeMAX) {
-        WMSG2("Found %d entries in details, max=%d\n",
+        LOGI("Found %d entries in details, max=%d",
             NELEM(kOpCodeDetails), kOpCodeMAX);
         assert(false);
         return false;
@@ -771,7 +771,7 @@ ReformatDisasm65xxx::ValidateOpCodeDetails(void)
             if (strcasecmp(kOpCodeDetails[i].mnemonic,
                            kOpCodeDetails[j].mnemonic) == 0)
             {
-                WMSG3("OpCodeDetails GLITCH: entries %d and %d match (%hs)\n",
+                LOGI("OpCodeDetails GLITCH: entries %d and %d match (%hs)",
                     i, j, kOpCodeDetails[i].mnemonic);
                 assert(false);
                 return false;

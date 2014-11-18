@@ -54,7 +54,7 @@ ReformatPascalCode::Process(const ReformatHolder* pHolder,
     int i;
 
     if (srcLen < kSegmentHeaderLen) {
-        WMSG0("  PCD truncated?\n");
+        LOGI("  PCD truncated?");
         goto bail;
     }
 
@@ -243,7 +243,7 @@ ReformatPascalText::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (srcLen < kPTXBlockSize) {
-        WMSG0("  PTX truncated?\n");
+        LOGI("  PTX truncated?");
         goto bail;
     }
 
@@ -290,7 +290,7 @@ ReformatPascalText::ProcessBlock(const unsigned char* srcBuf, long length)
     while (length) {
         if (*srcBuf == 0x00) {
             /* we've reached the end of the data for this block */
-            WMSG1(" PTX end of useful block with %d remaining\n", length);
+            LOGI(" PTX end of useful block with %d remaining", length);
 
             /* be paranoid */
             bool first = true;
@@ -313,12 +313,12 @@ ReformatPascalText::ProcessBlock(const unsigned char* srcBuf, long length)
             srcBuf++;
             length--;
             if (!length) {
-                WMSG0(" PTX end of block inside DLE\n");
+                LOGI(" PTX end of block inside DLE");
                 goto bail;
             }
             indent = *srcBuf - kIndentSub;
             if (indent < 0) {
-                WMSG1(" PTX odd indent (raw value %d)\n", *srcBuf);
+                LOGI(" PTX odd indent (raw value %d)", *srcBuf);
                 indent = 0;     /* fix it */
             }
             srcBuf++;
@@ -344,7 +344,7 @@ ReformatPascalText::ProcessBlock(const unsigned char* srcBuf, long length)
         linePtr = lineBuf;
         while (*srcBuf != 0x0d && length) {
             if (*srcBuf == 0x00) {
-                WMSG0(" PTX a null leaked into a line??\n");
+                LOGI(" PTX a null leaked into a line??");
                 /* keep going */
             }
 

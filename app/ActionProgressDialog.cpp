@@ -23,7 +23,7 @@ ActionProgressDialog::OnInitDialog(void)
 {
     CDialog::OnInitDialog();
 
-    WMSG1("Action is %d\n", fAction);
+    LOGI("Action is %d", fAction);
 
     CenterWindow(AfxGetMainWnd());
 

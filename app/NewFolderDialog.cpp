@@ -53,7 +53,7 @@ NewFolderDialog::DoDataExchange(CDataExchange* pDX)
             if (fNewFullPath.Right(1) != "\\")
                 fNewFullPath += "\\";
             fNewFullPath += fNewFolder;
-            WMSG1("CREATING '%ls'\n", (LPCWSTR) fNewFullPath);
+            LOGI("CREATING '%ls'", (LPCWSTR) fNewFullPath);
             if (!::CreateDirectory(fNewFullPath, NULL)) {
                 /* show the sometimes-bizarre Windows error string */
                 CString msg, errStr, failed;

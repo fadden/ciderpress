@@ -87,7 +87,7 @@ DiskEditDialog::OnInitDialog(void)
     cf.yHeight = 10 * 20;       // point size in twips
     BOOL cc = pEdit->SetDefaultCharFormat(cf);
     if (cc == FALSE) {
-        WMSG0("SetDefaultCharFormat failed?\n");
+        LOGI("SetDefaultCharFormat failed?");
         ASSERT(FALSE);
     }
 
@@ -164,7 +164,7 @@ DiskEditDialog::InitNibbleParmList(void)
 
         pTable = pDiskImg->GetNibbleDescrTable(&count);
         if (pTable == NULL || count <= 0) {
-            WMSG2("WHOOPS: nibble parm got table=0x%08lx, count=%d\n",
+            LOGI("WHOOPS: nibble parm got table=0x%08lx, count=%d",
                 (long) pTable, count);
             return;
         }
@@ -175,14 +175,14 @@ DiskEditDialog::InitNibbleParmList(void)
         if (pCurrent != NULL) {
             for (i = 0; i < count; i++) {
                 if (memcmp(&pTable[i], pCurrent, sizeof(*pCurrent)) == 0) {
-                    WMSG1("  NibbleParm match on entry %d\n", i);
+                    LOGI("  NibbleParm match on entry %d", i);
                     dflt = i;
                     break;
                 }
             }
 
             if (dflt == -1) {
-                WMSG0("  GLITCH: no match on nibble descr in table?!\n");
+                LOGI("  GLITCH: no match on nibble descr in table?!");
                 dflt = 0;
             }
         }
@@ -240,7 +240,7 @@ DiskEditDialog::PreTranslateMessage(MSG* pMsg)
     if (pMsg->message == WM_KEYDOWN &&
          pMsg->wParam == VK_RETURN)
     {
-        //WMSG0("RETURN!\n");
+        //LOGI("RETURN!");
         LoadData();
         return TRUE;
     }
@@ -255,7 +255,7 @@ DiskEditDialog::PreTranslateMessage(MSG* pMsg)
 BOOL
 DiskEditDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
-    WMSG4("HELP: size=%d contextType=%d ctrlID=0x%x contextID=0x%08lx\n",
+    LOGI("HELP: size=%d contextType=%d ctrlID=0x%x contextID=0x%08lx",
         lpHelpInfo->cbSize, lpHelpInfo->iContextType, lpHelpInfo->iCtrlId,
         lpHelpInfo->dwContextId);
 
@@ -292,7 +292,7 @@ DiskEditDialog::OnHelp(void)
 void
 DiskEditDialog::OnDone(void)
 {
-    WMSG0("DiskEditDialog OnDone\n");
+    LOGI("DiskEditDialog OnDone");
     EndDialog(IDOK);
 }
 
@@ -327,7 +327,7 @@ DiskEditDialog::OnSubVolume(void)
 
     subv.Setup(fpDiskFS);
     if (subv.DoModal() == IDOK) {
-        WMSG1("SELECTED subv %d\n", subv.fListBoxIndex);
+        LOGI("SELECTED subv %d", subv.fListBoxIndex);
         DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(NULL);
         if (pSubVol == NULL)
             return;
@@ -369,13 +369,13 @@ DiskEditDialog::SetSpinMode(int id, int base)
     MySpinCtrl* pSpin = (MySpinCtrl*) GetDlgItem(id);
     if (pSpin == NULL) {
         // expected behavior in "block" mode for sector button
-        WMSG1("Couldn't find spin button %d\n", id);
+        LOGI("Couldn't find spin button %d", id);
         return;
     }
 
     long val = pSpin->GetPos();
     if (val & 0xff000000) {
-        WMSG0("NOTE: hex transition while value is invalid\n");
+        LOGI("NOTE: hex transition while value is invalid");
         val = 0;
     }
 
@@ -386,7 +386,7 @@ DiskEditDialog::SetSpinMode(int id, int base)
 
     pSpin->SetBase(base);
     pSpin->GetBuddy()->SetWindowText(valStr);
-    WMSG2("Set spin button base to %d val=%d\n", base, val);
+    LOGI("Set spin button base to %d val=%d", base, val);
 }
 
 /*
@@ -610,7 +610,7 @@ DiskEditDialog::OpenFile(const WCHAR* fileName, bool openRsrc, A2File** ppFile,
     A2File* pFile;
     A2FileDescr* pOpenFile = NULL;
 
-    WMSG2(" OpenFile '%ls' rsrc=%d\n", fileName, openRsrc);
+    LOGI(" OpenFile '%ls' rsrc=%d", fileName, openRsrc);
     CStringA fileNameA(fileName);
     pFile = fpDiskFS->GetFileByName(fileNameA);
     if (pFile == NULL) {
@@ -663,7 +663,7 @@ DiskEditDialog::OnNibbleParms(void)
     if (sel == CB_ERR)
         return;
 
-    WMSG1(" OnNibbleParms: entry %d now selected\n", sel);
+    LOGI(" OnNibbleParms: entry %d now selected", sel);
     const DiskImg::NibbleDescr* pNibbleTable;
     int count;
     pNibbleTable = pDiskImg->GetNibbleDescrTable(&count);
@@ -755,7 +755,7 @@ SectorEditDialog::OnInitDialog(void)
 int
 SectorEditDialog::LoadData(void)
 {
-    //WMSG0("SED LoadData\n");
+    //LOGI("SED LoadData");
     ASSERT(fpDiskFS != NULL);
     ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
@@ -764,13 +764,13 @@ SectorEditDialog::LoadData(void)
     if (ReadSpinner(IDC_DISKEDIT_SECTORSPIN, &fSector) != 0)
         return -1;
 
-    WMSG2("LoadData reading t=%d s=%d\n", fTrack, fSector);
+    LOGI("LoadData reading t=%d s=%d", fTrack, fSector);
 
     fAlertMsg = "";
     DIError dierr;
     dierr = fpDiskFS->GetDiskImg()->ReadTrackSector(fTrack, fSector, fSectorData);
     if (dierr != kDIErrNone) {
-        WMSG1("SED sector read failed: %hs\n", DiskImgLib::DIStrError(dierr));
+        LOGI("SED sector read failed: %hs", DiskImgLib::DIStrError(dierr));
         //CString msg;
         //CString err;
         //err.LoadString(IDS_ERROR);
@@ -945,10 +945,10 @@ SectorFileEditDialog::LoadData(void)
     ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     DIError dierr;
-    WMSG1("SFED LoadData reading index=%d\n", fSectorIdx);
+    LOGI("SFED LoadData reading index=%d", fSectorIdx);
 
 #if 0
-    WMSG1("LoadData reading offset=%d\n", fOffset);
+    LOGI("LoadData reading offset=%d", fOffset);
     size_t actual = 0;
     dierr = fpFile->Seek(fOffset, EmbeddedFD::kSeekSet);
     if (dierr == kDIErrNone) {
@@ -964,7 +964,7 @@ SectorFileEditDialog::LoadData(void)
     }
 
     if (actual != kSectorSize) {
-        WMSG1(" SFED partial read of %d bytes\n", actual);
+        LOGI(" SFED partial read of %d bytes", actual);
         ASSERT(actual < kSectorSize && actual >= 0);
     }
 
@@ -996,11 +996,11 @@ SectorFileEditDialog::LoadData(void)
         return -1;
     } else {
         if (fTrack == 0 && fSector == 0) {
-            WMSG0("LoadData Sparse sector\n");
+            LOGI("LoadData Sparse sector");
             //FillWithPattern(fSectorData, sizeof(fSectorData), _T("SPARSE "));
             fAlertMsg.Format(IDS_DISKEDITMSG_SPARSE, fSectorIdx);
         } else {
-            WMSG2("LoadData reading T=%d S=%d\n", fTrack, fSector);
+            LOGI("LoadData reading T=%d S=%d", fTrack, fSector);
 
             dierr = fpDiskFS->GetDiskImg()->ReadTrackSector(fTrack, fSector,
                         fSectorData);
@@ -1142,7 +1142,7 @@ BlockEditDialog::OnInitDialog(void)
 
     /* give us something to look at */
     if (LoadData() != 0) {
-        WMSG0("WHOOPS: LoadData() failed, but we're in OnInitDialog\n");
+        LOGI("WHOOPS: LoadData() failed, but we're in OnInitDialog");
     }
 
     return TRUE;
@@ -1179,20 +1179,20 @@ BlockEditDialog::MoveControl(int id, int deltaX, int deltaY)
 int
 BlockEditDialog::LoadData(void)
 {
-    //WMSG0("BED LoadData\n");
+    //LOGI("BED LoadData");
     ASSERT(fpDiskFS != NULL);
     ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     if (ReadSpinner(IDC_DISKEDIT_TRACKSPIN, &fBlock) != 0)
         return -1;
 
-    WMSG1("LoadData reading block=%d\n", fBlock);
+    LOGI("LoadData reading block=%d", fBlock);
 
     fAlertMsg = "";
     DIError dierr;
     dierr = fpDiskFS->GetDiskImg()->ReadBlock(fBlock, fBlockData);
     if (dierr != kDIErrNone) {
-        WMSG1("BED block read failed: %hs\n", DiskImgLib::DIStrError(dierr));
+        LOGI("BED block read failed: %hs", DiskImgLib::DIStrError(dierr));
         //CString msg;
         //CString err;
         //err.LoadString(IDS_ERROR);
@@ -1343,10 +1343,10 @@ BlockFileEditDialog::LoadData(void)
     ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     DIError dierr;
-    WMSG1("BFED LoadData reading index=%d\n", fBlockIdx);
+    LOGI("BFED LoadData reading index=%d", fBlockIdx);
 
 #if 0
-    WMSG1("LoadData reading offset=%d\n", fOffset);
+    LOGI("LoadData reading offset=%d", fOffset);
     size_t actual = 0;
     dierr = fpFile->Seek(fOffset, EmbeddedFD::kSeekSet);
     if (dierr == kDIErrNone) {
@@ -1362,7 +1362,7 @@ BlockFileEditDialog::LoadData(void)
     }
 
     if (actual != kBlockSize) {
-        WMSG1(" BFED partial read of %d bytes\n", actual);
+        LOGI(" BFED partial read of %d bytes", actual);
         ASSERT(actual < kBlockSize && actual >= 0);
     }
 
@@ -1393,11 +1393,11 @@ BlockFileEditDialog::LoadData(void)
         return -1;
     } else {
         if (fBlock == 0) {
-            WMSG0("LoadData Sparse block\n");
+            LOGI("LoadData Sparse block");
             //FillWithPattern(fBlockData, sizeof(fBlockData), _T("SPARSE "));
             fAlertMsg.Format(IDS_DISKEDITMSG_SPARSE, fBlockIdx);
         } else {
-            WMSG1("LoadData reading B=%d\n", fBlock);
+            LOGI("LoadData reading B=%d", fBlock);
 
             dierr = fpDiskFS->GetDiskImg()->ReadBlock(fBlock, fBlockData);
             if (dierr != kDIErrNone) {
@@ -1572,21 +1572,21 @@ NibbleEditDialog::OnInitDialog(void)
 int
 NibbleEditDialog::LoadData(void)
 {
-    //WMSG0("BED LoadData\n");
+    //LOGI("BED LoadData");
     ASSERT(fpDiskFS != NULL);
     ASSERT(fpDiskFS->GetDiskImg() != NULL);
 
     if (ReadSpinner(IDC_DISKEDIT_TRACKSPIN, &fTrack) != 0)
         return -1;
 
-    WMSG1("LoadData reading track=%d\n", fTrack);
+    LOGI("LoadData reading track=%d", fTrack);
 
     fAlertMsg = "";
     DIError dierr;
     dierr = fpDiskFS->GetDiskImg()->ReadNibbleTrack(fTrack, fNibbleData,
                 &fNibbleDataLen);
     if (dierr != kDIErrNone) {
-        WMSG1("NED track read failed: %hs\n", DiskImgLib::DIStrError(dierr));
+        LOGI("NED track read failed: %hs", DiskImgLib::DIStrError(dierr));
         fAlertMsg.LoadString(IDS_DISKEDITMSG_BADTRACK);
     }
 

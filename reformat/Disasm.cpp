@@ -1070,13 +1070,13 @@ OMFSegmentHeader::Unpack(const unsigned char* srcBuf, long srcLen,
     int fileType)
 {
     if (srcLen < kHdrMinSize) {
-        WMSG1("OMF: Too short to be segment (%ld)\n", srcLen);
+        LOGI("OMF: Too short to be segment (%ld)", srcLen);
         return false;
     }
 
     fVersion = *(srcBuf + 0x0f);
     if (fVersion > kMaxVersion) {
-        WMSG1("OMF: Wrong version number to be OMF (%d)\n", fVersion);
+        LOGI("OMF: Wrong version number to be OMF (%d)", fVersion);
         return false;
     }
 
@@ -1137,7 +1137,7 @@ OMFSegmentHeader::Unpack(const unsigned char* srcBuf, long srcLen,
          * Special case type=LIB ($B2).
          */
         if (fileType == 0xb2) {
-            WMSG1("NOTE: switching blockCount=%ld to byte count\n", fBlockCnt);
+            LOGI("NOTE: switching blockCount=%ld to byte count", fBlockCnt);
             fByteCnt = fBlockCnt;
             fBlockCnt = 0;
         } else {
@@ -1176,31 +1176,31 @@ OMFSegmentHeader::Unpack(const unsigned char* srcBuf, long srcLen,
 
     /* validate fields */
     if (fByteCnt < kHdrMinSize || fByteCnt > (unsigned long) srcLen) {
-        WMSG3("OMF: Bad value for byteCnt (%ld, srcLen=%ld min=%d)\n",
+        LOGI("OMF: Bad value for byteCnt (%ld, srcLen=%ld min=%d)",
             fByteCnt, srcLen, kHdrMinSize);
         return false;
     }
     if (fDispName < 0x24 || fDispName > (srcLen - kLoadNameLen)) {
-        WMSG2("OMF: Bad value for dispName (%d, srcLen=%ld)\n",
+        LOGI("OMF: Bad value for dispName (%d, srcLen=%ld)",
             fDispName, srcLen);
         return false;
     }
     if (fDispData < 0x24 || fDispData > srcLen) {
-        WMSG2("OMF: Bad value for dispData (%d, srcLen=%ld)\n",
+        LOGI("OMF: Bad value for dispData (%d, srcLen=%ld)",
             fDispData, srcLen);
         return false;
     }
     if (fDispData < fDispName + kLoadNameLen) {
-        WMSG2("OMF: dispData is inside label region (%d / %d)\n",
+        LOGI("OMF: dispData is inside label region (%d / %d)",
             fDispData, fDispName);
         return false;
     }
     if (fBankSize != kExpectedBankSize && fBankSize != 0) {
-        WMSG1("OMF: NOTE: bankSize=%ld\n", fBankSize);
+        LOGI("OMF: NOTE: bankSize=%ld", fBankSize);
         /* allowed, just weird */
     }
     if (fNumLen != kExpectedNumLen || fNumSex != 0) {
-        WMSG2("OMF: WARNING: numLen=%d numSex=%d\n", fNumLen, fNumSex);
+        LOGI("OMF: WARNING: numLen=%d numSex=%d", fNumLen, fNumSex);
         /* big endian odd-sized numbers?? keep going, I guess */
     }
 
@@ -1221,13 +1221,13 @@ OMFSegmentHeader::Unpack(const unsigned char* srcBuf, long srcLen,
         segLabelLen = *segName++;
         memcpy(fSegName, segName, segLabelLen);
         fSegName[segLabelLen] = '\0';
-        WMSG1(" OMF: Pascal segment label '%hs'\n", fSegName);
+        LOGI(" OMF: Pascal segment label '%hs'", fSegName);
     } else {
         /* C-style or non-terminated string */
         segLabelLen = fLabLen;
         memcpy(fSegName, segName, segLabelLen);
         fSegName[segLabelLen] = '\0';
-        WMSG1(" OMF: Std segment label '%hs'\n", fSegName);
+        LOGI(" OMF: Std segment label '%hs'", fSegName);
     }
 
     fReady = true;
@@ -1298,18 +1298,18 @@ OMFSegmentHeader::GetSegmentFlag(SegmentFlag flag) const
 void
 OMFSegmentHeader::Dump(void) const
 {
-    WMSG0("OMF segment header:\n");
-    WMSG3("  segNum=%d loadName='%hs' segName='%hs'\n",
+    LOGI("OMF segment header:");
+    LOGI("  segNum=%d loadName='%hs' segName='%hs'",
         fSegNum, fLoadName, fSegName);
-    WMSG4("  blockCnt=%ld byteCnt=%ld resSpc=%ld length=%ld\n",
+    LOGI("  blockCnt=%ld byteCnt=%ld resSpc=%ld length=%ld",
         fBlockCnt, fByteCnt, fResSpc, fLength);
-    WMSG3("  version=%d type=0x%02x kind=0x%04x\n",
+    LOGI("  version=%d type=0x%02x kind=0x%04x",
         fVersion, fType, fKind);
-    WMSG4("  labLen=%d numLen=%d bankSize=%ld lcBank=%d\n",
+    LOGI("  labLen=%d numLen=%d bankSize=%ld lcBank=%d",
         fLabLen, fNumLen, fBankSize, fLCBank);
-    WMSG4("  align=%ld numSex=%d org=%ld tempOrg=%ld\n",
+    LOGI("  align=%ld numSex=%d org=%ld tempOrg=%ld",
         fAlign, fNumSex, fOrg, fTempOrg);
-    WMSG3("  entry=%ld dispName=%d dispData=%d\n",
+    LOGI("  entry=%ld dispName=%d dispData=%d",
         fEntry, fDispName, fDispData);
 }
 
@@ -1353,7 +1353,7 @@ OMFSegment::ProcessNextChunk(void)
 
     switch (*fCurPtr) {
     case kSegOpEND:
-        WMSG1("  OMF END reached, remaining len = %d\n",
+        LOGI("  OMF END reached, remaining len = %d",
             fSegLen - (fCurPtr - fSegBuf));
         assert(len == 1);
         break;
@@ -1432,7 +1432,7 @@ OMFSegment::ProcessNextChunk(void)
     case kSegOpExperimental3:
     case kSegOpExperimental4:
         subLen = Get32LE(fCurPtr+1);    // assumes fNumLen==4
-        WMSG2("  OMF found 'reserved' len=%lu (remLen=%ld)\n", subLen, remLen);
+        LOGI("  OMF found 'reserved' len=%lu (remLen=%ld)", subLen, remLen);
         if (subLen > (unsigned long) remLen)
             return NULL;
         len += subLen + fNumLen;

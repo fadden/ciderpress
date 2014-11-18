@@ -90,12 +90,12 @@ private:
     // implementation relies on the top left pixel color.)
     void LoadHeaderImages(void) {
         if (!fHdrImageList.Create(IDB_HDRBAR, 16, 1, CLR_DEFAULT))
-            WMSG0("GLITCH: header list create failed\n");
+            LOGI("GLITCH: header list create failed");
         fHdrImageList.SetBkColor(::GetSysColor(COLOR_BTNFACE));
     }
     void LoadListImages(void) {
         if (!fListImageList.Create(IDB_LIST_PICS, 16, 1, CLR_DEFAULT))
-            WMSG0("GLITCH: list image create failed\n");
+            LOGI("GLITCH: list image create failed");
         fListImageList.SetBkColor(::GetSysColor(COLOR_WINDOW));
     }
     enum {  // defs for IDB_LIST_PICS

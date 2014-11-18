@@ -86,7 +86,7 @@ Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
         if (dierr != kDIErrNone)
             goto bail;
     } else {
-        WMSG1(" Win32VA: '%s' isn't the name of a device\n", deviceName);
+        LOGI(" Win32VA: '%s' isn't the name of a device", deviceName);
         return kDIErrInternal;
     }
 
@@ -112,17 +112,17 @@ Win32VolumeAccess::Close(void)
 {
     if (fpBlockAccess != NULL) {
         DIError dierr;
-        WMSG0("  Win32VolumeAccess closing\n");
+        LOGI("  Win32VolumeAccess closing");
 
         dierr = FlushCache(true);
         if (dierr != kDIErrNone) {
-            WMSG1("WARNING: Win32VA Close: FlushCache failed (err=%ld)\n",
+            LOGI("WARNING: Win32VA Close: FlushCache failed (err=%ld)",
                 dierr);
             // not much we can do
         }
         dierr = fpBlockAccess->Close();
         if (dierr != kDIErrNone) {
-            WMSG1("WARNING: Win32VolumeAccess BlockAccess Close failed (err=%ld)\n",
+            LOGI("WARNING: Win32VolumeAccess BlockAccess Close failed (err=%ld)",
                 dierr);
         }
         delete fpBlockAccess;
@@ -260,7 +260,7 @@ Win32VolumeAccess::FlushCache(bool purge)
 {
     DIError dierr = kDIErrNone;
 
-    //WMSG1("  Win32VA: FlushCache (%d)\n", purge);
+    //LOGI("  Win32VA: FlushCache (%d)", purge);
 
     if (fBlockCache.IsDirty()) {
         long firstBlock;
@@ -269,11 +269,11 @@ Win32VolumeAccess::FlushCache(bool purge)
 
         fBlockCache.GetCachePointer(&firstBlock, &numBlocks, &buf);
 
-        WMSG3("FlushCache writing first=%d num=%d (purge=%d)\n",
+        LOGI("FlushCache writing first=%d num=%d (purge=%d)",
             firstBlock, numBlocks, purge);
         dierr = DoWriteBlocks(firstBlock, numBlocks, buf);
         if (dierr != kDIErrNone) {
-            WMSG1("  Win32VA: FlushCache write blocks failed (err=%d)\n",
+            LOGI("  Win32VA: FlushCache write blocks failed (err=%d)",
                 dierr);
             goto bail;
         }
@@ -321,11 +321,11 @@ Win32VolumeAccess::BlockAccess::DetectCapacitySPTI(HANDLE handle,
     if (dierr != kDIErrNone)
         goto bail;
 
-    WMSG3("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)\n",
+    LOGI("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)",
         lba, blockLen, lba*blockLen);
 
     if (isCDROM && blockLen != kCDROMSectorSize) {
-        WMSG1("Unacceptable CD-ROM blockLen=%ld, bailing\n", blockLen);
+        LOGI("Unacceptable CD-ROM blockLen=%ld, bailing", blockLen);
         dierr = kDIErrReadFailed;
         goto bail;
     }
@@ -334,7 +334,7 @@ Win32VolumeAccess::BlockAccess::DetectCapacitySPTI(HANDLE handle,
     // we need to add one.
 
     *pNumBlocks = (blockLen/512) * (lba+1);
-    WMSG1(" SPTI returning 512-byte block count %ld\n", *pNumBlocks);
+    LOGI(" SPTI returning 512-byte block count %ld", *pNumBlocks);
 
 bail:
     return dierr;
@@ -376,7 +376,7 @@ Win32VolumeAccess::BlockAccess::ScanCapacity(BlockAccess* pThis, long* pNumBlock
     // Trivial check to make sure *anything* works, and to establish block 0
     // as valid in case we have to bin-search.
     if (!CanReadBlock(pThis, 0)) {
-        WMSG0("  Win32VolumeAccess: can't read block 0\n");
+        LOGI("  Win32VolumeAccess: can't read block 0");
         dierr = kDIErrReadFailed;
         goto bail;
     }
@@ -390,7 +390,7 @@ Win32VolumeAccess::BlockAccess::ScanCapacity(BlockAccess* pThis, long* pNumBlock
                 break;
             } else {
                 /* we overshot, binary-search backwards */
-                WMSG1("OVERSHOT at %ld\n", kTypicalSizes[i]);
+                LOGI("OVERSHOT at %ld", kTypicalSizes[i]);
                 long good, bad;
                 if (i == 0)
                     good = 0;
@@ -419,17 +419,17 @@ Win32VolumeAccess::BlockAccess::ScanCapacity(BlockAccess* pThis, long* pNumBlock
             totalBlocks = kLargest;
         } else {
             /* we never found a good block */
-            WMSG0("  Win32VolumeAccess unable to determine size\n");
+            LOGI("  Win32VolumeAccess unable to determine size");
             dierr = kDIErrReadFailed;
             goto bail;
         }
     }
 
     if (totalBlocks > (3 * 1024 * 1024) / BlockAccess::kBlockSize) {
-        WMSG2("  GFDWinVolume: size is %ld (%.2fMB)\n",
+        LOGI("  GFDWinVolume: size is %ld (%.2fMB)",
             totalBlocks, (float) totalBlocks / (2048.0));
     } else {
-        WMSG2("  GFDWinVolume: size is %ld (%.2fKB)\n",
+        LOGI("  GFDWinVolume: size is %ld (%.2fKB)",
             totalBlocks, (float) totalBlocks / 2.0);
     }
     *pNumBlocks = totalBlocks;
@@ -449,10 +449,10 @@ Win32VolumeAccess::BlockAccess::CanReadBlock(BlockAccess* pThis, long blockNum)
 
     dierr = pThis->ReadBlocks(blockNum, 1, buf);
     if (dierr == kDIErrNone) {
-        WMSG1("    +++ Checked %ld (good)\n", blockNum);
+        LOGI("    +++ Checked %ld (good)", blockNum);
         return true;
     } else {
-        WMSG1("    +++ Checked %ld (bad)\n", blockNum);
+        LOGI("    +++ Checked %ld (bad)", blockNum);
         return false;
     }
 }
@@ -544,14 +544,14 @@ Win32VolumeAccess::BlockAccess::GetInt13Unit(HANDLE handle, int driveNum, int* p
                 &reg, sizeof(reg),
                 &reg, sizeof(reg), &cb, 0);
     if (result == 0) {
-        WMSG1("  DeviceIoControl(Int21h, 6fh) FAILED (err=%ld)\n",
+        LOGI("  DeviceIoControl(Int21h, 6fh) FAILED (err=%ld)",
             GetLastError());
         dierr = LastErrorToDIError();
         goto bail;
     }
 
     if (reg.reg_Flags & CARRY_FLAG) {
-        WMSG1("  --- retrying GDMI with alternate device category (ax=%ld)\n",
+        LOGI("  --- retrying GDMI with alternate device category (ax=%ld)",
             reg.reg_EAX);
         reg.reg_EAX = 0x440d;       // generic IOCTL
         reg.reg_EBX = driveNum;
@@ -562,22 +562,22 @@ Win32VolumeAccess::BlockAccess::GetInt13Unit(HANDLE handle, int driveNum, int* p
                     &reg, sizeof(reg), &cb, 0);
     }
     if (result == 0) {
-        WMSG1("  DeviceIoControl(Int21h, 6fh)(retry) FAILED (err=%ld)\n",
+        LOGI("  DeviceIoControl(Int21h, 6fh)(retry) FAILED (err=%ld)",
             GetLastError());
         dierr = LastErrorToDIError();
         goto bail;
     }
     if (reg.reg_Flags & CARRY_FLAG) {
-        WMSG1("  --- GetDriveMapInfo call (retry) failed (ax=%ld)\n",
+        LOGI("  --- GetDriveMapInfo call (retry) failed (ax=%ld)",
             reg.reg_EAX);
         dierr = kDIErrReadFailed;   // close enough
         goto bail;
     }
 
-    WMSG3("     +++ DriveMapInfo len=%d flags=%d unit=%d\n",
+    LOGI("     +++ DriveMapInfo len=%d flags=%d unit=%d",
         driveMapInfo.dmiInfoLength, driveMapInfo.dmiFlags,
         driveMapInfo.dmiInt13Unit);
-    WMSG3("     +++   driveMap=0x%08lx RBA=0x%08lx 0x%08lx\n",
+    LOGI("     +++   driveMap=0x%08lx RBA=0x%08lx 0x%08lx",
         driveMapInfo.dmiAssociatedDriveMap,
         driveMapInfo.dmiPartitionStartRBA_hi,
         driveMapInfo.dmiPartitionStartRBA_lo);
@@ -642,7 +642,7 @@ Win32VolumeAccess::BlockAccess::LookupFloppyGeometry(long totalBlocks,
             break;
 
     if (i == NELEM(floppyGeometry)) {
-        WMSG1(  "GetFloppyGeometry: no match for blocks=%ld\n", totalBlocks);
+        LOGI(  "GetFloppyGeometry: no match for blocks=%ld", totalBlocks);
         return false;
     }
 
@@ -711,7 +711,7 @@ Win32VolumeAccess::BlockAccess::GetFloppyDriveKind(HANDLE handle, int unitNum,
                 sizeof(reg), &reg, sizeof(reg), &cb, 0);
 
     if (result == 0 || (reg.reg_Flags & CARRY_FLAG)) {
-        WMSG3(" GetFloppyKind failed: result=%d flags=0x%04x AH=%d\n",
+        LOGI(" GetFloppyKind failed: result=%d flags=0x%04x AH=%d",
             result, reg.reg_Flags, HIBYTE(reg.reg_EAX));
         return kDIErrGeneric;
     }
@@ -720,7 +720,7 @@ Win32VolumeAccess::BlockAccess::GetFloppyDriveKind(HANDLE handle, int unitNum,
     if (bl > 0 && bl < 6)
         *pKind = (FloppyKind) bl;
     else {
-        WMSG1(" GetFloppyKind: unrecognized kind %d\n", bl);
+        LOGI(" GetFloppyKind: unrecognized kind %d", bl);
         return kDIErrGeneric;
     }
 
@@ -759,7 +759,7 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
         reg.reg_ECX = MAKEWORD(sector, cylinder);
         reg.reg_EDX = MAKEWORD(unitNum, head);
 
-        //WMSG4("   DIOC Int13h read c=%d h=%d s=%d rc=%d\n",
+        //LOGI("   DIOC Int13h read c=%d h=%d s=%d rc=%d",
         //  cylinder, head, sector, blockCount);
         result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
                     sizeof(reg), &reg, sizeof(reg), &cb, 0);
@@ -773,11 +773,11 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
         {
             break;
         }
-        WMSG1("   DIOC soft read failure, ax=0x%08lx\n", reg.reg_EAX);
+        LOGI("   DIOC soft read failure, ax=0x%08lx", reg.reg_EAX);
     }
     if (!result || (reg.reg_Flags & CARRY_FLAG)) {
         int ah = HIBYTE(reg.reg_EAX);
-        WMSG2("  DIOC read failed, result=%d ah=%ld\n", result, ah);
+        LOGI("  DIOC read failed, result=%d ah=%ld", result, ah);
         if (ah != 0)
             return ah;
         else
@@ -812,7 +812,7 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
     if (startBlock < 0 || blockCount <= 0)
         return kDIErrInvalidArg;
     if (startBlock + blockCount > pGeometry->blockCount) {
-        WMSG2(" ReadInt13h: invalid request for start=%ld count=%d\n",
+        LOGI(" ReadInt13h: invalid request for start=%ld count=%d",
             startBlock, blockCount);
         return kDIErrReadFailed;
     }
@@ -833,14 +833,14 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
         runCount = lastBlockOnTrack - startBlock +1;
         if (runCount > blockCount)
             runCount = blockCount;
-        //WMSG3("R runCount=%d lastBlkOnT=%d start=%d\n",
+        //LOGI("R runCount=%d lastBlkOnT=%d start=%d",
         //  runCount, lastBlockOnTrack, startBlock);
         assert(runCount > 0);
 
         status = ReadBlocksInt13h(handle, unitNum, cylinder, head, sector,
                     runCount, buf);
         if (status != 0) {
-            WMSG1("  DIOC read failed (status=%d)\n", status);
+            LOGI("  DIOC read failed (status=%d)", status);
             return kDIErrReadFailed;
         }
 
@@ -876,7 +876,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
         reg.reg_ECX = MAKEWORD(sector, cylinder);
         reg.reg_EDX = MAKEWORD(unitNum, head);
 
-        WMSG4("   DIOC Int13h write c=%d h=%d s=%d rc=%d\n",
+        LOGI("   DIOC Int13h write c=%d h=%d s=%d rc=%d",
             cylinder, head, sector, blockCount);
         result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
                     sizeof(reg), &reg, sizeof(reg), &cb, 0);
@@ -886,11 +886,11 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
 
         if (HIBYTE(reg.reg_EAX) == kInt13StatusWriteProtected)
             break;  // no point retrying this
-        WMSG1("    DIOC soft write failure, ax=0x%08lx\n", reg.reg_EAX);
+        LOGI("    DIOC soft write failure, ax=0x%08lx", reg.reg_EAX);
     }
     if (!result || (reg.reg_Flags & CARRY_FLAG)) {
         int ah = HIBYTE(reg.reg_EAX);
-        WMSG2("  DIOC write failed, result=%d ah=%ld\n", result, ah);
+        LOGI("  DIOC write failed, result=%d ah=%ld", result, ah);
         if (ah != 0)
             return ah;
         else
@@ -927,7 +927,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
     if (startBlock < 0 || blockCount <= 0)
         return kDIErrInvalidArg;
     if (startBlock + blockCount > pGeometry->blockCount) {
-        WMSG2(" WriteInt13h: invalid request for start=%ld count=%d\n",
+        LOGI(" WriteInt13h: invalid request for start=%ld count=%d",
             startBlock, blockCount);
         return kDIErrWriteFailed;
     }
@@ -941,14 +941,14 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
         runCount = lastBlockOnTrack - startBlock +1;
         if (runCount > blockCount)
             runCount = blockCount;
-        //WMSG3("W runCount=%d lastBlkOnT=%d start=%d\n",
+        //LOGI("W runCount=%d lastBlkOnT=%d start=%d",
         //  runCount, lastBlockOnTrack, startBlock);
         assert(runCount > 0);
 
         status = WriteBlocksInt13h(handle, unitNum, cylinder, head, sector,
                     runCount, buf);
         if (status != 0) {
-            WMSG1("  DIOC write failed (status=%d)\n", status);
+            LOGI("  DIOC write failed (status=%d)", status);
             if (status == kInt13StatusWriteProtected)
                 return kDIErrWriteProtected;
             else
@@ -988,7 +988,7 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle, int driveNum,
     reg.reg_EBX = (DWORD)&dio;
     reg.reg_ECX = 0xFFFF;       // use DISKIO struct
 
-    WMSG3("   Int25 read start=%d count=%d\n",
+    LOGI("   Int25 read start=%d count=%d",
         startBlock, blockCount);
     result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_INT25,
                 &reg, sizeof(reg),
@@ -997,7 +997,7 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle, int driveNum,
     // Determine if the DeviceIoControl call and the read succeeded.
     result = result && !(reg.reg_Flags & CARRY_FLAG);
 
-    WMSG2("     +++ read from block %ld (result=%d)\n", startBlock, result);
+    LOGI("     +++ read from block %ld (result=%d)", startBlock, result);
     if (!result)
         return kDIErrReadFailed;
 #else
@@ -1016,7 +1016,7 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle, int driveNum,
     reg.reg_EDX = driveNum; // Int 21h, fn 7305h drive numbers are 1-based
     assert(reg.reg_ESI == 0);   // read/write flag
 
-    WMSG2("   Int21/7305h read start=%d count=%d\n",
+    LOGI("   Int21/7305h read start=%d count=%d",
         startBlock, blockCount);
     result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_DRIVEINFO,
                 &reg, sizeof(reg),
@@ -1025,7 +1025,7 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle, int driveNum,
     // Determine if the DeviceIoControl call and the read succeeded.
     result = result && !(reg.reg_Flags & CARRY_FLAG);
 
-    WMSG4("     +++ RB21h %ld %d (result=%d lastError=%ld)\n",
+    LOGI("     +++ RB21h %ld %d (result=%d lastError=%ld)",
         startBlock, blockCount, result, GetLastError());
     if (!result)
         return kDIErrReadFailed;
@@ -1059,7 +1059,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt21h(HANDLE handle, int driveNum,
     reg.reg_EDX = driveNum; // Int 21h, fn 7305h drive numbers are 1-based
     reg.reg_ESI = 0x6001;       // write normal data (bit flags)
 
-    //WMSG2("   Int21/7305h write start=%d count=%d\n",
+    //LOGI("   Int21/7305h write start=%d count=%d",
     //  startBlock, blockCount);
     result = ::DeviceIoControl(handle, VWIN32_DIOC_DOS_DRIVEINFO,
                 &reg, sizeof(reg),
@@ -1068,7 +1068,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt21h(HANDLE handle, int driveNum,
     // Determine if the DeviceIoControl call and the read succeeded.
     result = result && !(reg.reg_Flags & CARRY_FLAG);
 
-    WMSG4("     +++ WB21h %ld %d (result=%d lastError=%ld)\n",
+    LOGI("     +++ WB21h %ld %d (result=%d lastError=%ld)",
         startBlock, blockCount, result, GetLastError());
     if (!result)
         return kDIErrWriteFailed;
@@ -1102,17 +1102,17 @@ Win32VolumeAccess::BlockAccess::ReadBlocksWin2K(HANDLE handle,
                 FILE_BEGIN);
     if (posn == INVALID_SET_FILE_POINTER) {
         DWORD lerr = GetLastError();
-        WMSG1("  GFDWinVolume ReadBlock: SFP failed (err=%ld)\n", lerr);
+        LOGI("  GFDWinVolume ReadBlock: SFP failed (err=%ld)", lerr);
         return LastErrorToDIError();
     }
 
-    //WMSG2("   ReadFile block start=%d count=%d\n", startBlock, blockCount);
+    //LOGI("   ReadFile block start=%d count=%d", startBlock, blockCount);
 
     BOOL result;
     result = ::ReadFile(handle, buf, blockCount * kBlockSize, &actual, NULL);
     if (!result) {
         DWORD lerr = GetLastError();
-        WMSG3("  ReadBlocksWin2K: ReadFile failed (start=%ld count=%d err=%ld)\n",
+        LOGI("  ReadBlocksWin2K: ReadFile failed (start=%ld count=%d err=%ld)",
             startBlock, blockCount, lerr);
         return LastErrorToDIError();
     }
@@ -1136,7 +1136,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
                 FILE_BEGIN);
     if (posn == INVALID_SET_FILE_POINTER) {
         DWORD lerr = GetLastError();
-        WMSG2("  GFDWinVolume ReadBlocks: SFP %ld failed (err=%ld)\n",
+        LOGI("  GFDWinVolume ReadBlocks: SFP %ld failed (err=%ld)",
             startBlock * kBlockSize, lerr);
         return LastErrorToDIError();
     }
@@ -1145,7 +1145,7 @@ Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
     result = ::WriteFile(handle, buf, blockCount * kBlockSize, &actual, NULL);
     if (!result) {
         DWORD lerr = GetLastError();
-        WMSG1("  GFDWinVolume WriteBlocks: WriteFile failed (err=%ld)\n",
+        LOGI("  GFDWinVolume WriteBlocks: WriteFile failed (err=%ld)",
             lerr);
         return LastErrorToDIError();
     }
@@ -1179,14 +1179,14 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOn
         deviceName[1] != ':' || deviceName[2] != '\\' ||
         deviceName[3] != '\0')
     {
-        WMSG1("  LogicalBlockAccess: invalid device name '%s'\n", deviceName);
+        LOGI("  LogicalBlockAccess: invalid device name '%s'", deviceName);
         assert(false);
         dierr = kDIErrInvalidArg;
         goto bail;
     }
     if (deviceName[0] == 'C') {
         if (readOnly == false) {
-            WMSG0("  REFUSING WRITE ACCESS TO C:\\ \n");
+            LOGI("  REFUSING WRITE ACCESS TO C:\\ ");
             return kDIErrVWAccessForbidden;
         }
     }
@@ -1216,7 +1216,7 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOn
                     OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
         if (fHandle == INVALID_HANDLE_VALUE) {
             DWORD lastError = GetLastError();
-            WMSG1("  Win32LVOpen: CreateFile(vwin32) failed (err=%ld)\n",
+            LOGI("  Win32LVOpen: CreateFile(vwin32) failed (err=%ld)",
                 lastError);
             dierr = LastErrorToDIError();
             goto bail;
@@ -1231,14 +1231,14 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOn
             goto bail;
         if (int13Unit < 4) {
             fFloppyUnit = int13Unit;
-            WMSG2(" Logical volume #%d looks like floppy unit %d\n",
+            LOGI(" Logical volume #%d looks like floppy unit %d",
                 fDriveNum, fFloppyUnit);
         }
 #endif
     } else {
         WCHAR device[7] = _T("\\\\.\\_:");
         device[4] = deviceName[0];
-        WMSG1("Opening '%s'\n", device);
+        LOGI("Opening '%s'", device);
 
         // If we're reading, allow others to write.  If we're writing, insist
         // upon exclusive access to the volume.
@@ -1265,7 +1265,7 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOn
                     ::CloseHandle(tmpHandle);
                 }
             }
-            WMSG2("  LBAccess Open: CreateFile failed (err=%ld dierr=%d)\n",
+            LOGI("  LBAccess Open: CreateFile failed (err=%ld dierr=%d)",
                 lastError, dierr);
             goto bail;
         }
@@ -1277,17 +1277,17 @@ Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOn
     if (fIsCDROM) {
         assert(Global::GetHasSPTI() || Global::GetHasASPI());
         if (Global::GetHasASPI() && (!Global::GetHasSPTI() || kPreferASPI)) {
-            WMSG0("  LBAccess using ASPI\n");
+            LOGI("  LBAccess using ASPI");
             fCDBaggage.fUseASPI = true;
         } else {
-            WMSG0("  LBAccess using SPTI\n");
+            LOGI("  LBAccess using SPTI");
             fCDBaggage.fUseASPI = false;
         }
 
         if (fCDBaggage.fUseASPI) {
             dierr = FindASPIDriveMapping(deviceName[0]);
             if (dierr != kDIErrNone) {
-                WMSG0("ERROR: couldn't find ASPI drive mapping\n");
+                LOGI("ERROR: couldn't find ASPI drive mapping");
                 dierr = kDIErrNoASPIMapping;
                 goto bail;
             }
@@ -1333,7 +1333,7 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
     assert(blockCount > 0);
     assert(buf != NULL);
 
-    //WMSG2(" CDROM read block %ld (%ld)\n", startBlock, block);
+    //LOGI(" CDROM read block %ld (%ld)", startBlock, block);
 
     /* alloc sector buffer on first use */
     if (fLastSectorCache == NULL) {
@@ -1378,7 +1378,7 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
             if (thisNumBlocks > blockCount)
                 thisNumBlocks = blockCount;
 
-            //WMSG3("  Small copy (sectIdx=%ld off=%d*512 size=%d*512)\n",
+            //LOGI("  Small copy (sectIdx=%ld off=%d*512 size=%d*512)",
             //  sectorIndex, sectorOffset, thisNumBlocks);
             memcpy(buf, fLastSectorCache + sectorOffset * kBlockSize,
                 thisNumBlocks * kBlockSize);
@@ -1394,7 +1394,7 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
             int numSectors;
             numSectors = blockCount / kFactor;  // rounds down
 
-            //WMSG2("  Big read (sectIdx=%ld numSect=%d)\n",
+            //LOGI("  Big read (sectIdx=%ld numSect=%d)",
             //  sectorIndex, numSectors);
             dierr = SPTI::ReadBlocks(handle, sectorIndex, numSectors,
                         kCDROMSectorSize, buf);
@@ -1442,7 +1442,7 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readO
         deviceName[2] != ':' || deviceName[3] != '\\' ||
         deviceName[4] != '\0')
     {
-        WMSG1("  PhysicalBlockAccess: invalid device name '%s'\n", deviceName);
+        LOGI("  PhysicalBlockAccess: invalid device name '%s'", deviceName);
         assert(false);
         dierr = kDIErrInvalidArg;
         goto bail;
@@ -1450,28 +1450,28 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readO
 
     if (deviceName[0] == '8' && deviceName[1] == '0') {
         if (!gAllowWritePhys0 && readOnly == false) {
-            WMSG0("  REFUSING WRITE ACCESS TO 80:\\ \n");
+            LOGI("  REFUSING WRITE ACCESS TO 80:\\ ");
             return kDIErrVWAccessForbidden;
         }
     }
 
     fInt13Unit = (deviceName[0] - '0') * 16 + deviceName[1] - '0';
     if (!fIsWin9x && fInt13Unit < 0x80) {
-        WMSG0("GLITCH: can't open floppy as physical unit in Win2K\n");
+        LOGI("GLITCH: can't open floppy as physical unit in Win2K");
         dierr = kDIErrInvalidArg;
         goto bail;
     }
     if (fIsWin9x && fInt13Unit >= 0x80) {
-        WMSG0("GLITCH: can't access physical HD in Win9x\n");
+        LOGI("GLITCH: can't access physical HD in Win9x");
         dierr = kDIErrInvalidArg;
         goto bail;
     }
     if ((fInt13Unit >= 0x00 && fInt13Unit < 0x04) ||
         (fInt13Unit >= 0x80 && fInt13Unit < 0x88))
     {
-        WMSG1("  Win32VA/P: opening unit %02xh\n", fInt13Unit);
+        LOGI("  Win32VA/P: opening unit %02xh", fInt13Unit);
     } else {
-        WMSG2("GLITCH: converted '%s' to %02xh\n", deviceName, fInt13Unit);
+        LOGI("GLITCH: converted '%s' to %02xh", deviceName, fInt13Unit);
         dierr = kDIErrInternal;
         goto bail;
     }
@@ -1487,7 +1487,7 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readO
                     OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
         if (fHandle == INVALID_HANDLE_VALUE) {
             DWORD lastError = GetLastError();
-            WMSG1("  Win32VA/PBOpen: CreateFile(vwin32) failed (err=%ld)\n",
+            LOGI("  Win32VA/PBOpen: CreateFile(vwin32) failed (err=%ld)",
                 lastError);
             dierr = LastErrorToDIError();
             goto bail;
@@ -1501,7 +1501,7 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readO
         WCHAR device[19] = _T("\\\\.\\PhysicalDrive_");
         assert(fInt13Unit >= 0x80 && fInt13Unit <= 0x89);
         device[17] = fInt13Unit - 0x80 + '0';
-        WMSG2("Opening '%s' (access=0x%02x)\n", device, access);
+        LOGI("Opening '%s' (access=0x%02x)", device, access);
 
         // If we're reading, allow others to write.  If we're writing, insist
         // upon exclusive access to the volume.
@@ -1514,7 +1514,7 @@ Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readO
         if (fHandle == INVALID_HANDLE_VALUE) {
             DWORD lastError = GetLastError();
             dierr = LastErrorToDIError();
-            WMSG2("  PBAccess Open: CreateFile failed (err=%ld dierr=%d)\n",
+            LOGI("  PBAccess Open: CreateFile failed (err=%ld dierr=%d)",
                 lastError, dierr);
             goto bail;
         }
@@ -1614,13 +1614,13 @@ Win32VolumeAccess::PhysicalBlockAccess::DetectFloppyGeometry(void)
         goto bail;
 
     default:
-        WMSG1(" Unknown driveKind %d\n", driveKind);
+        LOGI(" Unknown driveKind %d", driveKind);
         assert(false);
         dierr = kDIErrInternal;
         goto bail;
     }
 
-    WMSG1("PBA: floppy disk appears to be type=%d\n", fFloppyKind);
+    LOGI("PBA: floppy disk appears to be type=%d", fFloppyKind);
     fGeometry = floppyGeometry[fFloppyKind].geom;
 
 bail:
@@ -1638,7 +1638,7 @@ Win32VolumeAccess::PhysicalBlockAccess::FlushBlockDevice(void)
 
     if (::FlushFileBuffers(fHandle) == FALSE) {
         DWORD lastError = GetLastError();
-        WMSG1("  Win32VA/PBAFlush: FlushFileBuffers failed (err=%ld)\n",
+        LOGI("  Win32VA/PBAFlush: FlushFileBuffers failed (err=%ld)",
             lastError);
         dierr = LastErrorToDIError();
     }
@@ -1699,7 +1699,7 @@ Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName, bool readOnly)
     result |= ExtractInt(&cp, &target);
     result |= ExtractInt(&cp, &lun);
     if (result != 0) {
-        WMSG1(" Win32VA couldn't parse '%s'\n", deviceName);
+        LOGI(" Win32VA couldn't parse '%s'", deviceName);
         dierr = kDIErrInternal;
         goto bail;
     }
@@ -1713,7 +1713,7 @@ Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName, bool readOnly)
     if (dierr != kDIErrNone ||
         (deviceType != kScsiDevTypeCDROM && deviceType != kScsiDevTypeDASD))
     {
-        WMSG2(" Win32VA bad GetDeviceType err=%d type=%d\n",
+        LOGI(" Win32VA bad GetDeviceType err=%d type=%d",
             dierr, deviceType);
         dierr = kDIErrInternal;     // should not be here at all
         goto bail;
@@ -1723,7 +1723,7 @@ Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName, bool readOnly)
     else
         fReadOnly = readOnly;
 
-    WMSG4(" Win32VA successful 'open' of '%s' on %d:%d:%d\n",
+    LOGI(" Win32VA successful 'open' of '%s' on %d:%d:%d",
         deviceName, fAdapter, fTarget, fLun);
 
 bail:
@@ -1774,13 +1774,13 @@ Win32VolumeAccess::ASPIBlockAccess::DetectCapacity(long* pNumBlocks)
     if (dierr != kDIErrNone)
         goto bail;
 
-    WMSG3("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)\n",
+    LOGI("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)",
         lba, blockLen, lba*blockLen);
 
     fChunkSize = blockLen;
 
     if ((blockLen % 512) != 0) {
-        WMSG1("Unacceptable CD-ROM blockLen=%ld, bailing\n", blockLen);
+        LOGI("Unacceptable CD-ROM blockLen=%ld, bailing", blockLen);
         dierr = kDIErrReadFailed;
         goto bail;
     }
@@ -1789,7 +1789,7 @@ Win32VolumeAccess::ASPIBlockAccess::DetectCapacity(long* pNumBlocks)
     // we need to add one.
 
     *pNumBlocks = (blockLen/512) * (lba+1);
-    WMSG1(" ASPI returning 512-byte block count %ld\n", *pNumBlocks);
+    LOGI(" ASPI returning 512-byte block count %ld", *pNumBlocks);
 
 bail:
     return dierr;
@@ -1853,7 +1853,7 @@ Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount
             if (thisNumBlocks > blockCount)
                 thisNumBlocks = blockCount;
 
-            //WMSG3("  Small copy (chIdx=%ld off=%d*512 size=%d*512)\n",
+            //LOGI("  Small copy (chIdx=%ld off=%d*512 size=%d*512)",
             //  chunkIndex, chunkOffset, thisNumBlocks);
             memcpy(buf, fLastChunkCache + chunkOffset * kBlockSize,
                 thisNumBlocks * kBlockSize);
@@ -1869,7 +1869,7 @@ Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount
             int numChunks;
             numChunks = blockCount / kFactor;   // rounds down
 
-            //WMSG2("  Big read (chIdx=%ld numCh=%d)\n",
+            //LOGI("  Big read (chIdx=%ld numCh=%d)",
             //  chunkIndex, numChunks);
             dierr = fpASPI->ReadBlocks(fAdapter, fTarget, fLun, chunkIndex,
                         numChunks, fChunkSize, buf);
@@ -1936,7 +1936,7 @@ Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock, short blockCoun
             if (thisNumBlocks > blockCount)
                 thisNumBlocks = blockCount;
 
-            WMSG3("  Small copy out (chIdx=%ld off=%d*512 size=%d*512)\n",
+            LOGI("  Small copy out (chIdx=%ld off=%d*512 size=%d*512)",
                 chunkIndex, chunkOffset, thisNumBlocks);
             memcpy(fLastChunkCache + chunkOffset * kBlockSize, buf,
                 thisNumBlocks * kBlockSize);
@@ -1950,7 +1950,7 @@ Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock, short blockCoun
             int numChunks;
             numChunks = blockCount / kFactor;   // rounds down
 
-            WMSG2("  Big write (chIdx=%ld numCh=%d)\n",
+            LOGI("  Big write (chIdx=%ld numCh=%d)",
                 chunkIndex, numChunks);
             dierr = fpASPI->WriteBlocks(fAdapter, fTarget, fLun, chunkIndex,
                         numChunks, fChunkSize, buf);
@@ -2012,7 +2012,7 @@ CBCache::GetFromCache(long blockNum, void* buf)
         return kDIErrInternal;
     }
 
-    //WMSG1("   CBCache: getting block %d from cache\n", blockNum);
+    //LOGI("   CBCache: getting block %d from cache", blockNum);
     int offset = (blockNum - fFirstBlock) * kBlockSize;
     assert(offset >= 0);
 
@@ -2065,12 +2065,12 @@ CBCache::PutInCache(long blockNum, const void* buf, bool isDirty)
     }
 
     if (fFirstBlock == kEmpty) {
-        //WMSG1("   CBCache: starting anew with block %ld\n", blockNum);
+        //LOGI("   CBCache: starting anew with block %ld", blockNum);
         fFirstBlock = blockNum;
         fNumBlocks = 1;
         blockOffset = 0;
     } else if (blockNum == fFirstBlock + fNumBlocks) {
-        //WMSG1("   CBCache: appending block %ld\n", blockNum);
+        //LOGI("   CBCache: appending block %ld", blockNum);
         blockOffset = fNumBlocks;
         fNumBlocks++;
     } else if (blockNum >= fFirstBlock && blockNum < fFirstBlock + fNumBlocks) {
@@ -2083,14 +2083,14 @@ CBCache::PutInCache(long blockNum, const void* buf, bool isDirty)
     assert(blockOffset < kMaxCachedBlocks);
 
     if (fDirty[blockOffset] && !isDirty) {
-        WMSG1("BUG: CBCache trying to clear dirty flag for block %ld\n",
+        LOGI("BUG: CBCache trying to clear dirty flag for block %ld",
             blockNum);
         assert(false);
         return kDIErrInternal;
     }
     fDirty[blockOffset] = isDirty;
 
-    //WMSG2("   CBCache: adding block %d to cache at %d\n", blockNum, blockOffset);
+    //LOGI("   CBCache: adding block %d to cache at %d", blockNum, blockOffset);
     int offset = blockOffset * kBlockSize;
     assert(offset >= 0);
 
@@ -2110,12 +2110,12 @@ CBCache::IsDirty(void) const
     assert(fNumBlocks > 0);
     for (int i = 0; i < fNumBlocks; i++) {
         if (fDirty[i]) {
-            //WMSG0("   CBCache: dirty blocks found\n");
+            //LOGI("   CBCache: dirty blocks found");
             return true;
         }
     }
 
-    //WMSG0("   CBCache: no dirty blocks found\n");
+    //LOGI("   CBCache: no dirty blocks found");
     return false;
 }
 
@@ -2157,7 +2157,7 @@ CBCache::Purge(void)
 
     if (IsDirty()) {
         // Should only happen after a write failure causes us to clean up.
-        WMSG0("HEY: CBCache purging dirty blocks!\n");
+        LOGI("HEY: CBCache purging dirty blocks!");
         //assert(false);
     }
     Scrub();

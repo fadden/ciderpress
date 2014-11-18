@@ -91,7 +91,7 @@ TestImageHalf(DiskImg* pImg, int trackOffset, DiskImg::SectorOrder imageOrder,
         !(catTrack < numTracks && catSect < numSectors) ||
         0)
     {
-        WMSG0("  UNI/Wide DOS header test failed\n");
+        LOGI("  UNI/Wide DOS header test failed");
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
@@ -114,7 +114,7 @@ TestImageHalf(DiskImg* pImg, int trackOffset, DiskImg::SectorOrder imageOrder,
         if (catTrack == sctBuf[1] && catSect == sctBuf[2] +1)
             foundGood++;
         else if (catTrack == sctBuf[1] && catSect == sctBuf[2]) {
-            WMSG2(" WideDOS detected self-reference on cat (%d,%d)\n",
+            LOGI(" WideDOS detected self-reference on cat (%d,%d)",
                 catTrack, catSect);
             break;
         }
@@ -125,11 +125,11 @@ TestImageHalf(DiskImg* pImg, int trackOffset, DiskImg::SectorOrder imageOrder,
     }
     if (iterations >= DiskFSDOS33::kMaxCatalogSectors) {
         dierr = kDIErrDirectoryLoop;
-        WMSG0("  WideDOS directory links cause a loop\n");
+        LOGI("  WideDOS directory links cause a loop");
         goto bail;
     }
 
-    WMSG3(" WideDOS   foundGood=%d off=%d swap=%d\n", foundGood,
+    LOGI(" WideDOS   foundGood=%d off=%d swap=%d", foundGood,
         trackOffset, imageOrder);
     *pGoodCount = foundGood;
 
@@ -148,12 +148,12 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
 
     *pGoodCount = 0;
 
-    WMSG1(" UNIDOS checking first half (imageOrder=%d)\n", imageOrder);
+    LOGI(" UNIDOS checking first half (imageOrder=%d)", imageOrder);
     dierr = TestImageHalf(pImg, 0, imageOrder, &goodCount1);
     if (dierr != kDIErrNone)
         return dierr;
 
-    WMSG1(" UNIDOS checking second half (imageOrder=%d)\n", imageOrder);
+    LOGI(" UNIDOS checking second half (imageOrder=%d)", imageOrder);
     dierr = TestImageHalf(pImg, kExpectedTracks, imageOrder, &goodCount2);
     if (dierr != kDIErrNone)
         return dierr;
@@ -200,14 +200,14 @@ DiskFSUNIDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     if (bestCount >= 4 ||
         (leniency == kLeniencyVery && bestCount >= 2))
     {
-        WMSG2(" WideDOS test: bestCount=%d for order=%d\n", bestCount, bestOrder);
+        LOGI(" WideDOS test: bestCount=%d for order=%d", bestCount, bestOrder);
         assert(bestOrder != DiskImg::kSectorOrderUnknown);
         *pOrder = bestOrder;
         *pFormat = DiskImg::kFormatUNIDOS;
         return kDIErrNone;
     }
 
-    WMSG0(" UNIDOS didn't find valid FS\n");
+    LOGI(" UNIDOS didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -225,7 +225,7 @@ DiskFSUNIDOS::TestWideFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 {
     /* only on 400K "disks" */
     if (pImg->GetNumBlocks() != kExpectedNumBlocks/2) {
-        WMSG1("  WideDOS ignoring volume (numBlocks=%ld)\n",
+        LOGI("  WideDOS ignoring volume (numBlocks=%ld)",
             pImg->GetNumBlocks());
         return kDIErrFilesystemNotFound;
     }
@@ -253,7 +253,7 @@ DiskFSUNIDOS::TestWideFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     if (bestCount >= 4 ||
         (leniency == kLeniencyVery && bestCount >= 2))
     {
-        WMSG2(" UNI/Wide test: bestCount=%d for order=%d\n", bestCount, bestOrder);
+        LOGI(" UNI/Wide test: bestCount=%d for order=%d", bestCount, bestOrder);
         assert(bestOrder != DiskImg::kSectorOrderUnknown);
         *pOrder = bestOrder;
         *pFormat = DiskImg::kFormatDOS33;
@@ -261,7 +261,7 @@ DiskFSUNIDOS::TestWideFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         return kDIErrNone;
     }
 
-    WMSG0(" UNI/Wide didn't find valid FS\n");
+    LOGI(" UNI/Wide didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -283,7 +283,7 @@ DiskFSUNIDOS::Initialize(void)
         if (dierr != kDIErrNone)
             return dierr;
     } else {
-        WMSG0(" UNIDOS not scanning for sub-volumes\n");
+        LOGI(" UNIDOS not scanning for sub-volumes");
     }
 
     SetVolumeUsageMap();
@@ -310,30 +310,30 @@ DiskFSUNIDOS::OpenSubVolume(int idx)
     dierr = pNewImg->OpenImage(fpImg, kExpectedTracks * idx, 0,
                 kExpectedTracks * kExpectedSectors);
     if (dierr != kDIErrNone) {
-        WMSG3(" UNISub: OpenImage(%d,0,%d) failed (err=%d)\n",
+        LOGI(" UNISub: OpenImage(%d,0,%d) failed (err=%d)",
             kExpectedTracks * idx, kExpectedTracks * kExpectedSectors, dierr);
         goto bail;
     }
 
     dierr = pNewImg->AnalyzeImage();
     if (dierr != kDIErrNone) {
-        WMSG1(" UNISub: analysis failed (err=%d)\n", dierr);
+        LOGI(" UNISub: analysis failed (err=%d)", dierr);
         goto bail;
     }
 
     if (pNewImg->GetFSFormat() == DiskImg::kFormatUnknown ||
         pNewImg->GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
-        WMSG0(" UNISub: unable to identify filesystem\n");
+        LOGI(" UNISub: unable to identify filesystem");
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
 
     /* open a DiskFS for the sub-image */
-    WMSG1(" UNISub %d succeeded!\n", idx);
+    LOGI(" UNISub %d succeeded!", idx);
     pNewFS = pNewImg->OpenAppropriateDiskFS();
     if (pNewFS == NULL) {
-        WMSG0(" UNISub: OpenAppropriateDiskFS failed\n");
+        LOGI(" UNISub: OpenAppropriateDiskFS failed");
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
@@ -341,7 +341,7 @@ DiskFSUNIDOS::OpenSubVolume(int idx)
     /* load the files from the sub-image */
     dierr = pNewFS->Initialize(pNewImg, kInitFull);
     if (dierr != kDIErrNone) {
-        WMSG1(" UNISub: error %d reading list of files from disk", dierr);
+        LOGE(" UNISub: error %d reading list of files from disk", dierr);
         goto bail;
     }
 

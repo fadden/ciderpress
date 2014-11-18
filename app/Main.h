@@ -385,22 +385,22 @@ private:
     public:
         DeleteList(void) { fHead = NULL; }
         ~DeleteList(void) {
-            WMSG1("Processing DeleteList (head=0x%08lx)\n", fHead);
+            LOGI("Processing DeleteList (head=0x%08lx)", fHead);
             DeleteListNode* pNode = fHead;
             DeleteListNode* pNext;
 
             while (pNode != NULL) {
                 pNext = pNode->fNext;
                 if (_wunlink(pNode->fName) != 0) {
-                    WMSG2(" WARNING: delete of '%ls' failed, err=%d\n",
+                    LOGI(" WARNING: delete of '%ls' failed, err=%d",
                         pNode->fName, errno);
                 } else {
-                    WMSG1(" Deleted '%ls'\n", pNode->fName);
+                    LOGI(" Deleted '%ls'", pNode->fName);
                 }
                 delete pNode;
                 pNode = pNext;
             }
-            WMSG0("Processing DeleteList completed\n");
+            LOGI("Processing DeleteList completed");
         }
 
         void Add(const CString& name) {
@@ -410,7 +410,7 @@ private:
                 pNode->fNext = fHead;
             }
             fHead = pNode;
-            WMSG1("Delete-on-exit '%ls'\n", (LPCWSTR) name);
+            LOGI("Delete-on-exit '%ls'", (LPCWSTR) name);
         }
 
         DeleteListNode* fHead;

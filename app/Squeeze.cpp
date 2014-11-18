@@ -159,7 +159,7 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
         (!fullSqHeader && compRemaining < 3))
     {
         err = kNuErrBadData;
-        WMSG0("too short to be valid SQ data\n");
+        LOGI("too short to be valid SQ data");
         goto bail;
     }
 
@@ -191,7 +191,7 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
         ASSERT(getSize <= kSqBufferSize);
         err = SQRead(fp, usqState.dataPtr, getSize);
         if (err != kNuErrNone) {
-            WMSG1("failed reading compressed data (%ld bytes)\n", getSize);
+            LOGI("failed reading compressed data (%ld bytes)", getSize);
             goto bail;
         }
         usqState.dataInBuffer += getSize;
@@ -216,7 +216,7 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
             goto bail;
         if (magic != kNuSQMagic) {
             err = kNuErrBadData;
-            WMSG0("bad magic number in SQ block\n");
+            LOGI("bad magic number in SQ block");
             goto bail;
         }
 
@@ -237,7 +237,7 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
         goto bail;
     if (nodeCount < 0 || nodeCount >= kNuSQNumVals) {
         err = kNuErrBadData;
-        WMSG1("invalid decode tree in SQ (%d nodes)\n", nodeCount);
+        LOGI("invalid decode tree in SQ (%d nodes)", nodeCount);
         goto bail;
     }
     usqState.nodeCount = nodeCount;
@@ -253,7 +253,7 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
     }
     if (err != kNuErrNone) {
         err = kNuErrBadData;
-        WMSG0("SQ data looks truncated at tree\n");
+        LOGI("SQ data looks truncated at tree");
         goto bail;
     }
 
@@ -297,12 +297,12 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
                 getSize = compRemaining;
 
             ASSERT(getSize <= kSqBufferSize);
-            //WMSG2("Reading from offset=%ld (compRem=%ld)\n",
+            //LOGI("Reading from offset=%ld (compRem=%ld)",
             //  ftell(fp), compRemaining);
             err = SQRead(fp, usqState.dataPtr + usqState.dataInBuffer,
                         getSize);
             if (err != kNuErrNone) {
-                WMSG2("failed reading compressed data (%ld bytes, err=%d)\n",
+                LOGI("failed reading compressed data (%ld bytes, err=%d)",
                     getSize, err);
                 goto bail;
             }
@@ -318,7 +318,7 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
 
         err = USQDecodeHuffSymbol(&usqState, &val);
         if (err != kNuErrNone) {
-            WMSG0("failed decoding huff symbol\n");
+            LOGI("failed decoding huff symbol");
             goto bail;
         }
 
@@ -370,7 +370,7 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
 
     if (inrep) {
         err = kNuErrBadData;
-        WMSG0("got stop symbol when run length expected\n");
+        LOGI("got stop symbol when run length expected");
         goto bail;
     }
 
@@ -378,10 +378,10 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
         /* verify the checksum stored in the SQ file */
         if (checksum != fileChecksum) {
             err = kNuErrBadDataCRC;
-            WMSG2("expected 0x%04x, got 0x%04x (SQ)\n", fileChecksum, checksum);
+            LOGI("expected 0x%04x, got 0x%04x (SQ)", fileChecksum, checksum);
             goto bail;
         } else {
-            WMSG1("--- SQ checksums match (0x%04x)\n", checksum);
+            LOGI("--- SQ checksums match (0x%04x)", checksum);
         }
     }
 
@@ -391,14 +391,14 @@ UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
      */
     if (compRemaining > kSqBufferSize) {
         err = kNuErrBadData;
-        WMSG1("wow: found %ld bytes left over\n", compRemaining);
+        LOGI("wow: found %ld bytes left over", compRemaining);
         goto bail;
     }
     if (compRemaining) {
-        WMSG1("+++ slurping up last %ld bytes\n", compRemaining);
+        LOGI("+++ slurping up last %ld bytes", compRemaining);
         err = SQRead(fp, tmpBuf, compRemaining);
         if (err != kNuErrNone) {
-            WMSG0("failed reading leftovers\n");
+            LOGI("failed reading leftovers");
             goto bail;
         }
     }

@@ -125,7 +125,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
     rsrcBuf = pHolder->GetSourceBuf(ReformatHolder::kPartRsrc);
     rsrcLen = pHolder->GetSourceLen(ReformatHolder::kPartRsrc);
     if (dataBuf == NULL || rsrcBuf == NULL || dataLen <= 0 || rsrcLen <= 0) {
-        WMSG0("Teach reformatter missing one fork of the file\n");
+        LOGI("Teach reformatter missing one fork of the file");
         return -1;
     }
     CheckGSCharConv();
@@ -134,13 +134,13 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
     if (!ReformatResourceFork::GetResource(rsrcBuf, rsrcLen, 0x8012, 0x0001,
         &styleBlock, &styleLen))
     {
-        WMSG0("Resource fork of Teach Text file not found\n");
+        LOGI("Resource fork of Teach Text file not found");
         return -1;
     }
 
     RStyleBlock rStyleBlock;
     if (!rStyleBlock.Create(styleBlock, styleLen)) {
-        WMSG0("Unable to unpack rStyleBlock\n");
+        LOGI("Unable to unpack rStyleBlock");
         return -1;
     }
 
@@ -162,7 +162,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
     RStyleBlock::TERuler* pRuler = rStyleBlock.GetRuler(0);
     assert(pRuler != NULL);
     if (pRuler->GetJustification() != RStyleBlock::TERuler::kJustLeft) {
-        WMSG0("WARNING: not using left justified Teach text\n");
+        LOGI("WARNING: not using left justified Teach text");
         /* ignore it */
     }
 
@@ -201,7 +201,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
         unsigned char uch;
         while (numBytes--) {
             if (!dataLen) {
-                WMSG1("WARNING: Teach underrun (%ld wanted)\n", numBytes);
+                LOGI("WARNING: Teach underrun (%ld wanted)", numBytes);
                 break;
             }
             uch = *dataBuf;
@@ -217,7 +217,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
         }
     }
     if (dataLen) {
-        WMSG1("WARNING: Teach overrun (%ld remain)\n", dataLen);
+        LOGI("WARNING: Teach overrun (%ld remain)", dataLen);
         /* no big deal */
     }
 
@@ -247,13 +247,13 @@ RStyleBlock::Create(const unsigned char* buf, long len)
 
     assert(buf != NULL);
     if (len < kMinLen) {
-        WMSG1("Too short to be rStyleBlock (%d)\n", len);
+        LOGI("Too short to be rStyleBlock (%d)", len);
         return false;
     }
 
     version = Reformat::Read16(&buf, &len);
     if (version != kExpectedVersion) {
-        WMSG1("Bad rStyleBlock version (%d)\n", version);
+        LOGI("Bad rStyleBlock version (%d)", version);
         return false;
     }
 
@@ -261,7 +261,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
     partLen = Reformat::Read32(&buf, &len);
     if (partLen > (unsigned long) (len+8)) {
         /* not enough to satisfy data + two more counts */
-        WMSG2("Invalid part1 length (%d vs %d)\n", partLen, len);
+        LOGI("Invalid part1 length (%d vs %d)", partLen, len);
         return false;
     }
 
@@ -278,11 +278,11 @@ RStyleBlock::Create(const unsigned char* buf, long len)
     /* extract TEStyles */
     partLen = Reformat::Read32(&buf, &len);
     if (partLen > (unsigned long) (len+4)) {
-        WMSG2("Invalid part2 length (%d vs %d)\n", partLen, len);
+        LOGI("Invalid part2 length (%d vs %d)", partLen, len);
         return false;
     }
     if ((partLen % TEStyle::kDataLen) != 0) {
-        WMSG2("Invalid part2 length (%d mod %d)\n",
+        LOGI("Invalid part2 length (%d mod %d)",
             partLen, TEStyle::kDataLen);
         return false;
     }
@@ -301,7 +301,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
     fNumStyleItems = (int) Reformat::Read32(&buf, &len);
     partLen = fNumStyleItems * StyleItem::kDataLen;
     if (partLen > (unsigned long) len) {
-        WMSG2("Invalid part3 length (%d vs %d)\n", partLen, len);
+        LOGI("Invalid part3 length (%d vs %d)", partLen, len);
         return false;
     }
 
@@ -311,7 +311,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
     for (i = 0; i < fNumStyleItems; i++) {
         fpStyleItems[i].Create(buf);
         if ((fpStyleItems[i].GetOffset() % TEStyle::kDataLen) != 0) {
-            WMSG2("Invalid offset %d (mod %d)\n",
+            LOGI("Invalid offset %d (mod %d)",
                 fpStyleItems[i].GetOffset(), TEStyle::kDataLen);
             return false;
         }
@@ -320,7 +320,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
     }
 
     if (len != 0) {
-        WMSG1("WARNING: at end of rStyleBlock, len is %ld\n", len);
+        LOGI("WARNING: at end of rStyleBlock, len is %ld", len);
     }
 
     return true;
@@ -384,11 +384,11 @@ RStyleBlock::TERuler::Create(const unsigned char* buf, long len)
         }
         break;
     default:
-        WMSG1("Invalid tab type %d\n", fTabType);
+        LOGI("Invalid tab type %d", fTabType);
         return -1;
     }
 
-    WMSG2("TERuler consumed %ld bytes (%ld left over)\n", origLen - len, len);
+    LOGI("TERuler consumed %ld bytes (%ld left over)", origLen - len, len);
     return origLen - len;
 }
 
@@ -403,7 +403,7 @@ RStyleBlock::TEStyle::Create(const unsigned char* buf)
     fBackColor = Reformat::Get16LE(buf + 6);
     fUserData = Reformat::Get32LE(buf + 8);
 
-    WMSG4("  TEStyle: font fam=0x%04x size=%-2d style=0x%02x  fore=0x%04x\n",
+    LOGI("  TEStyle: font fam=0x%04x size=%-2d style=0x%02x  fore=0x%04x",
         GetFontFamily(), GetFontSize(), GetTextStyle(), fForeColor);
 }
 
@@ -416,5 +416,5 @@ RStyleBlock::StyleItem::Create(const unsigned char* buf)
     fLength = Reformat::Get32LE(buf);
     fOffset = Reformat::Get32LE(buf + 4);
 
-    WMSG2("  StyleItem: len=%ld off=%ld\n", fLength, fOffset);
+    LOGI("  StyleItem: len=%ld off=%ld", fLength, fOffset);
 }

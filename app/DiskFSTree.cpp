@@ -70,7 +70,7 @@ DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     tvins.hParent = parent;
     hLocalRoot = pTree->InsertItem(&tvins);
     if (hLocalRoot == NULL) {
-        WMSG0("Tree root InsertItem failed\n");
+        LOGI("Tree root InsertItem failed");
         return false;
     }
 
@@ -182,7 +182,7 @@ DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
         tvins.hParent = parent;
         hLocalRoot = pTree->InsertItem(&tvins);
         if (hLocalRoot == NULL) {
-            WMSG1("Tree insert '%ls' failed\n", tvi.pszText);
+            LOGI("Tree insert '%ls' failed", tvi.pszText);
             return NULL;
         }
     }

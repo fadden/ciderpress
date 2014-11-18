@@ -216,23 +216,23 @@ DiskFSFAT::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
     bool hasMBR, hasBS;
     hasMBR = UnpackMBR(blkBuf, &mbr);
     hasBS = UnpackBootSector(blkBuf, &bs);
-    WMSG2("  FAT hasMBR=%d hasBS=%d\n", hasMBR, hasBS);
+    LOGI("  FAT hasMBR=%d hasBS=%d", hasMBR, hasBS);
 
     if (!hasMBR && !hasBS) {
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
     if (hasMBR) {
-        WMSG0(" FAT partition table found:\n");
+        LOGI(" FAT partition table found:");
         for (int i = 0; i < 4; i++) {
-            WMSG4("   %d: type=0x%02x start LBA=%-9lu size=%lu\n",
+            LOGI("   %d: type=0x%02x start LBA=%-9lu size=%lu",
                 i, mbr.parTab[i].type,
                 mbr.parTab[i].startLBA, mbr.parTab[i].size);
         }
     }
     if (hasBS) {
-        WMSG0(" FAT boot sector found:\n");
-        WMSG1("   OEMName is '%.8s'\n", bs.oemName);
+        LOGI(" FAT boot sector found:");
+        LOGI("   OEMName is '%.8s'", bs.oemName);
     }
 
     // looks good!
@@ -268,7 +268,7 @@ DiskFSFAT::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         }
     }
 
-    WMSG0(" FAT didn't find valid FS\n");
+    LOGI(" FAT didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -365,7 +365,7 @@ DiskFSFAT::CreateFakeFile(void)
 void
 A2FileFAT::Dump(void) const
 {
-    WMSG1("A2FileFAT '%s'\n", fFileName);
+    LOGI("A2FileFAT '%s'", fFileName);
 }
 
 /*
@@ -404,7 +404,7 @@ A2FileFAT::Open(A2FileDescr** ppOpenFile, bool readOnly,
 DIError
 A2FDFAT::Read(void* buf, size_t len, size_t* pActual)
 {
-    WMSG3(" FAT reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" FAT reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileFAT* pFile = (A2FileFAT*) fpFile;

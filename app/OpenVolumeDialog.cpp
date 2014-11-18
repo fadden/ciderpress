@@ -62,7 +62,7 @@ OpenVolumeDialog::OnInitDialog(void)
     if (defaultFilter >= kBoth && defaultFilter <= kPhysical)
         pCombo->SetCurSel(defaultFilter);
     else {
-        WMSG1("GLITCH: invalid defaultFilter in prefs (%d)\n", defaultFilter);
+        LOGI("GLITCH: invalid defaultFilter in prefs (%d)", defaultFilter);
         pCombo->SetCurSel(kLogical);
     }
 
@@ -92,7 +92,7 @@ void
 OpenVolumeDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_Check(pDX, IDC_OPENVOL_READONLY, fReadOnly);
-    WMSG1("DoDataExchange: fReadOnly==%d\n", fReadOnly);
+    LOGI("DoDataExchange: fReadOnly==%d", fReadOnly);
 }
 
 /*
@@ -140,10 +140,10 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
 
     drivesAvailable = GetLogicalDrives();
     if (drivesAvailable == 0) {
-        WMSG1("GetLogicalDrives failed, err=0x%08lx\n", drivesAvailable);
+        LOGI("GetLogicalDrives failed, err=0x%08lx", drivesAvailable);
         return false;
     }
-    WMSG1("GetLogicalDrives returned 0x%08lx\n", drivesAvailable);
+    LOGI("GetLogicalDrives returned 0x%08lx", drivesAvailable);
 
     // SetErrorMode(SEM_FAILCRITICALERRORS)
 
@@ -188,13 +188,13 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
                 // The drive is a RAM disk.
                 break;
             default:
-                WMSG1("UNKNOWN DRIVE TYPE %d\n", driveType);
+                LOGI("UNKNOWN DRIVE TYPE %d", driveType);
                 break;
             }
 
             if (driveType == DRIVE_CDROM && !DiskImgLib::Global::GetHasSPTI()) {
                 /* use "physical" device via ASPI instead */
-                WMSG1("Not including CD-ROM '%ls' in logical drive list\n",
+                LOGI("Not including CD-ROM '%ls' in logical drive list",
                     driveName);
                 continue;
             }
@@ -216,7 +216,7 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
                 } else if (err == ERROR_NOT_READY) {
                     // Win2K: device exists but no media loaded
                     if (isWin9x) {
-                        WMSG1("Not showing drive '%ls': not ready\n",
+                        LOGI("Not showing drive '%ls': not ready",
                             driveName);
                         continue;   // safer not to show it
                     } else
@@ -225,12 +225,12 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
                            err == ERROR_INVALID_DATA /*Win98*/)
                 {
                     // Win2K/Win98: device letter not in use
-                    WMSG1("GetVolumeInformation '%ls': nothing there\n",
+                    LOGI("GetVolumeInformation '%ls': nothing there",
                         driveName);
                     continue;
                 } else if (err == ERROR_INVALID_PARAMETER) {
                     // Win2K: device is already open
-                    //WMSG1("GetVolumeInformation '%ls': currently open??\n",
+                    //LOGI("GetVolumeInformation '%ls': currently open??",
                     //  driveName);
                     errorComment = L"(currently open?)";
                     //continue;
@@ -241,7 +241,7 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
                     // Win98: floppy format not recognzied
                     // --> we don't want to access ProDOS floppies via A: in
                     //     Win98, so we skip it here
-                    WMSG1("GetVolumeInformation '%ls': general failure\n",
+                    LOGI("GetVolumeInformation '%ls': general failure",
                         driveName);
                     continue;
                 } else if (err == ERROR_INVALID_FUNCTION) {
@@ -251,7 +251,7 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
                     else
                         errorComment = L"(invalid disc?)";
                 } else {
-                    WMSG2("GetVolumeInformation '%ls' failed: %ld\n",
+                    LOGI("GetVolumeInformation '%ls' failed: %ld",
                         driveName, GetLastError());
                     continue;
                 }
@@ -274,10 +274,10 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
             pListView->InsertItem(itemIndex, entryName);
             pListView->SetItemText(itemIndex, 1, entryRemarks);
             pListView->SetItemData(itemIndex, (DWORD) i + 'A');
-//WMSG1("%%%% added logical %d\n", itemIndex);
+//LOGI("%%%% added logical %d", itemIndex);
             itemIndex++;
         } else {
-            WMSG1(" (drive %c not available)\n", i + 'A');
+            LOGI(" (drive %c not available)", i + 'A');
         }
     }
 
@@ -317,7 +317,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
                 pListView->InsertItem(itemIndex, driveName);
                 pListView->SetItemText(itemIndex, 1, remark);
                 pListView->SetItemData(itemIndex, (DWORD) i);
-//WMSG1("%%%% added floppy %d\n", itemIndex);
+//LOGI("%%%% added floppy %d", itemIndex);
                 itemIndex++;
             }
         }
@@ -331,7 +331,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
                 pListView->InsertItem(itemIndex, driveName);
                 pListView->SetItemText(itemIndex, 1, remark);
                 pListView->SetItemData(itemIndex, (DWORD) i + 128);
-//WMSG1("%%%% added HD %d\n", itemIndex);
+//LOGI("%%%% added HD %d", itemIndex);
                 itemIndex++;
             }
         }
@@ -352,7 +352,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
     }
 
     if (DiskImgLib::Global::GetHasASPI()) {
-        WMSG0("IGNORING ASPI");
+        LOGI("IGNORING ASPI");
 #if 0   // can we remove this?
         DIError dierr;
         DiskImgLib::ASPI* pASPI = DiskImgLib::Global::GetASPI();
@@ -363,7 +363,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
                     ASPI::kDevMaskCDROM | ASPI::kDevMaskHardDrive,
                     &deviceArray, &numDevices);
         if (dierr == kDIErrNone) {
-            WMSG1("Adding %d ASPI CD-ROM devices\n", numDevices);
+            LOGI("Adding %d ASPI CD-ROM devices", numDevices);
             for (i = 0; i < numDevices; i++) {
                 CString driveName, remark;
                 CString addr, vendor, product;
@@ -390,7 +390,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
                             (DWORD) deviceArray[i].GetAdapter() << 16 |
                             (DWORD) deviceArray[i].GetTarget() << 8 |
                             (DWORD) deviceArray[i].GetLun();
-                //WMSG2("ADDR for '%s' is 0x%08lx\n",
+                //LOGI("ADDR for '%s' is 0x%08lx",
                 //  (const char*) driveName, aspiAddr);
 
                 pListView->InsertItem(itemIndex, driveName);
@@ -442,7 +442,7 @@ OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
     handle = CreateFile(L"\\\\.\\vwin32", 0, 0, NULL,
                 OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
     if (handle == INVALID_HANDLE_VALUE) {
-        WMSG1(" Unable to open vwin32: %ld\n", ::GetLastError());
+        LOGI(" Unable to open vwin32: %ld", ::GetLastError());
         return false;
     }
 
@@ -451,7 +451,7 @@ OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
     reg.reg_EDX = MAKEWORD(unit, 0);    // specify driver
     result = DeviceIoControl(handle, VWIN32_DIOC_DOS_INT13, &reg,
                 sizeof(reg), &reg, sizeof(reg), &cb, 0);
-    WMSG3("  DriveReset(drive=0x%02x) result=%d carry=%d\n",
+    LOGI("  DriveReset(drive=0x%02x) result=%d carry=%d",
         unit, result, reg.reg_Flags & CARRY_FLAG);
 #endif
 
@@ -467,9 +467,9 @@ OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
 
     if (result == 0 || (reg.reg_Flags & CARRY_FLAG)) {
         int ah = HIBYTE(reg.reg_EAX);
-        WMSG4(" DevIoCtrl(unit=%02xh) failed: result=%d lastErr=%d Flags=0x%08lx\n",
+        LOGI(" DevIoCtrl(unit=%02xh) failed: result=%d lastErr=%d Flags=0x%08lx",
             unit, result, lastError, reg.reg_Flags);
-        WMSG3("   AH=%d (EAX=0x%08lx) byte=0x%02x\n", ah, reg.reg_EAX, buf[0]);
+        LOGI("   AH=%d (EAX=0x%08lx) byte=0x%02x", ah, reg.reg_EAX, buf[0]);
         if (ah != 1) {
             // failure code 1 means "invalid parameter", drive doesn't exist
             // mine returns 128, "timeout", when no disk is in the drive
@@ -531,8 +531,8 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
                 (LPOVERLAPPED) NULL);   // synchronous I/O
     if (result) {
         diskSize = dge.DiskSize.QuadPart;
-        WMSG1(" EX results for device %02xh\n", unit);
-        WMSG2("  Disk size = %I64d (bytes) = %I64d (MB)\n",
+        LOGI(" EX results for device %02xh", unit);
+        LOGI("  Disk size = %I64d (bytes) = %I64d (MB)",
             diskSize, diskSize / (1024*1024));
         if (diskSize > 1024*1024*1024)
             pRemark->Format(L"Size is %.2fGB",
@@ -542,7 +542,7 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
                 (double) diskSize / (1024.0 * 1024.0));
     } else {
         // Win2K shows ERROR_INVALID_FUNCTION or ERROR_NOT_SUPPORTED
-        WMSG1("IOCTL_DISK_GET_DRIVE_GEOMETRY_EX failed, error was %ld\n",
+        LOGI("IOCTL_DISK_GET_DRIVE_GEOMETRY_EX failed, error was %ld",
             GetLastError());
         result = ::DeviceIoControl(hDevice, // device to be queried
                     IOCTL_DISK_GET_DRIVE_GEOMETRY,  // operation to perform
@@ -552,15 +552,15 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
                     (LPOVERLAPPED) NULL);   // synchronous I/O
 
         if (result) {
-            WMSG1(" Results for device %02xh\n", unit);
-            WMSG1("  Cylinders = %I64d\n", dg.Cylinders);
-            WMSG1("  Tracks per cylinder = %ld\n", (ULONG) dg.TracksPerCylinder);
-            WMSG1("  Sectors per track = %ld\n", (ULONG) dg.SectorsPerTrack);
-            WMSG1("  Bytes per sector = %ld\n", (ULONG) dg.BytesPerSector);
+            LOGI(" Results for device %02xh", unit);
+            LOGI("  Cylinders = %I64d", dg.Cylinders);
+            LOGI("  Tracks per cylinder = %ld", (ULONG) dg.TracksPerCylinder);
+            LOGI("  Sectors per track = %ld", (ULONG) dg.SectorsPerTrack);
+            LOGI("  Bytes per sector = %ld", (ULONG) dg.BytesPerSector);
 
             diskSize = dg.Cylinders.QuadPart * (ULONG)dg.TracksPerCylinder *
                         (ULONG)dg.SectorsPerTrack * (ULONG)dg.BytesPerSector;
-            WMSG2("Disk size = %I64d (bytes) = %I64d (MB)\n", diskSize,
+            LOGI("Disk size = %I64d (bytes) = %I64d (MB)", diskSize,
                     diskSize / (1024 * 1024));
             if (diskSize > 1024*1024*1024)
                 pRemark->Format(L"Size is %.2fGB",
@@ -576,7 +576,7 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
     ::CloseHandle(hDevice);
 
     if (!result) {
-        WMSG1("DeviceIoControl(IOCTL_DISK_GET_DRIVE_GEOMETRY) failed (err=%ld)\n",
+        LOGI("DeviceIoControl(IOCTL_DISK_GET_DRIVE_GEOMETRY) failed (err=%ld)",
             err);
         *pRemark = "Not ready";
     }
@@ -594,7 +594,7 @@ OpenVolumeDialog::OnListChange(NMHDR*, LRESULT* pResult)
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUME_LIST);
     CButton* pButton = (CButton*) GetDlgItem(IDOK);
     pButton->EnableWindow(pListView->GetSelectedCount() != 0);
-    //WMSG1("ENABLE %d\n", pListView->GetSelectedCount() != 0);
+    //LOGI("ENABLE %d", pListView->GetSelectedCount() != 0);
 
     *pResult = 0;
 }
@@ -624,7 +624,7 @@ OpenVolumeDialog::OnVolumeFilterSelChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_VOLUME_FILTER);
     ASSERT(pCombo != NULL);
-    WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
+    LOGI("+++ SELECTION IS NOW %d", pCombo->GetCurSel());
     LoadDriveList();
 }
 
@@ -708,7 +708,7 @@ OpenVolumeDialog::OnOK(void)
         Preferences* pPreferences = GET_PREFERENCES_WR();
         CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_VOLUME_FILTER);
         pPreferences->SetPrefLong(kPrVolumeFilter, pCombo->GetCurSel());
-        WMSG1("SETTING PREF TO %ld\n", pCombo->GetCurSel());
+        LOGI("SETTING PREF TO %ld", pCombo->GetCurSel());
 
         CDialog::OnOK();
     }
@@ -738,5 +738,5 @@ OpenVolumeDialog::ForceReadOnly(bool readOnly) const
         pButton->SetCheck(BST_CHECKED);
     else
         pButton->SetCheck(BST_UNCHECKED);
-    WMSG1("FORCED READ ONLY %d\n", readOnly);
+    LOGI("FORCED READ ONLY %d", readOnly);
 }

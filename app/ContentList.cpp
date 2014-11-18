@@ -28,7 +28,7 @@ END_MESSAGE_MAP()
 afx_msg BOOL
 ContentList::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-    WMSG0("MOUSE WHEEL\n");
+    LOGI("MOUSE WHEEL");
     return CWnd::OnMouseWheel(nFlags, zDelta, pt);
 //  return TRUE;
 }
@@ -59,7 +59,7 @@ ContentList::PreCreateWindow(CREATESTRUCT& cs)
 void
 ContentList::PostNcDestroy(void)
 {
-    WMSG0("ContentList PostNcDestroy\n");
+    LOGI("ContentList PostNcDestroy");
     delete this;
 }
 
@@ -104,7 +104,7 @@ ContentList::OnCreate(LPCREATESTRUCT lpcs)
     LoadHeaderImages();
     CHeaderCtrl* pHeader = GetHeaderCtrl();
     if (pHeader == NULL)
-        WMSG0("GLITCH: couldn't get header ctrl\n");
+        LOGI("GLITCH: couldn't get header ctrl");
     ASSERT(pHeader != NULL);
     pHeader->SetImageList(&fHdrImageList);
 
@@ -133,7 +133,7 @@ ContentList::OnCreate(LPCREATESTRUCT lpcs)
 void
 ContentList::OnDestroy(void)
 {
-    WMSG0("ContentList OnDestroy\n");
+    LOGI("ContentList OnDestroy");
 
     ExportColumnWidths();
     CListCtrl::OnDestroy();
@@ -158,7 +158,7 @@ ContentList::OnColumnClick(NMHDR* pnmh, LRESULT* pResult)
 {
     NM_LISTVIEW* pnmlv = (NM_LISTVIEW*) pnmh;
 
-    WMSG0("OnColumnClick!!\n");
+    LOGI("OnColumnClick!!");
 
     if (fpLayout->GetSortColumn() == pnmlv->iSubItem)
         fpLayout->SetAscending(!fpLayout->GetAscending());
@@ -177,7 +177,7 @@ ContentList::OnColumnClick(NMHDR* pnmh, LRESULT* pResult)
 void
 ContentList::ExportColumnWidths(void)
 {
-    //WMSG0("ExportColumnWidths\n");
+    //LOGI("ExportColumnWidths");
     for (int i = 0; i < kNumVisibleColumns; i++)
         fpLayout->SetColumnWidth(i, GetColumnWidth(i));
 }
@@ -198,7 +198,7 @@ ContentList::NewColumnWidths(void)
         int width = fpLayout->GetColumnWidth(i);
         if (width == ColumnLayout::kWidthDefaulted) {
             width = GetDefaultWidth(i);
-            WMSG2("Defaulting width %d to %d\n", i, width);
+            LOGI("Defaulting width %d to %d", i, width);
             fpLayout->SetColumnWidth(i, width);
         }
         SetColumnWidth(i, width);
@@ -238,7 +238,7 @@ ContentList::Invalidate(void)
 void
 ContentList::Reload(bool saveSelection)
 {
-    WMSG0("Reloading ContentList\n");
+    LOGI("Reloading ContentList");
     CWaitCursor waitc;
 
 //  fInvalid = false;
@@ -284,7 +284,7 @@ ContentList::GetSelectionSerials(long* pSelCount)
     long maxCount;
 
     maxCount = GetSelectedCount();
-    WMSG1("GetSelectionSerials (maxCount=%d)\n", maxCount);
+    LOGI("GetSelectionSerials (maxCount=%d)", maxCount);
 
     if (maxCount > 0) {
         savedSel = new long[maxCount];
@@ -319,7 +319,7 @@ ContentList::GetSelectionSerials(long* pSelCount)
 void
 ContentList::RestoreSelection(const long* savedSel, long selCount)
 {
-    WMSG1("RestoreSelection (selCount=%d)\n", selCount);
+    LOGI("RestoreSelection (selCount=%d)", selCount);
     if (savedSel == NULL)
         return;
 
@@ -334,7 +334,7 @@ ContentList::RestoreSelection(const long* savedSel, long selCount)
             {
                 /* match! */
                 if (SetItemState(i, LVIS_SELECTED, LVIS_SELECTED) == FALSE) {
-                    WMSG1("WHOA: unable to set selected on item=%d\n", i);
+                    LOGI("WHOA: unable to set selected on item=%d", i);
                 }
                 break;
             }
@@ -528,7 +528,7 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
         return;
     }
 
-    //WMSG0("OnGetDispInfo\n");
+    //LOGI("OnGetDispInfo");
 
     if (plvdi->item.mask & LVIF_TEXT) {
         GenericEntry* pEntry = (GenericEntry*) plvdi->item.lParam;
@@ -609,7 +609,7 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
     }
 
     //if (plvdi->item.mask & LVIF_IMAGE) {
-    //  WMSG2("IMAGE req item=%d subitem=%d\n",
+    //  LOGI("IMAGE req item=%d subitem=%d",
     //      plvdi->item.iItem, plvdi->item.iSubItem);
     //}
 
@@ -766,7 +766,7 @@ ContentList::LoadData(void)
         pEntry = pEntry->GetNext();
     }
 
-    WMSG3("ContentList got %d entries (%d files + %d unseen directories)\n",
+    LOGI("ContentList got %d entries (%d files + %d unseen directories)",
         idx, idx - dirCount, dirCount);
     return 0;
 }
@@ -835,7 +835,7 @@ ContentList::SetSortIcon(void)
         if (fpLayout->GetSortColumn() != i) {
             curItem.fmt &= ~(HDF_IMAGE | HDF_BITMAP_ON_RIGHT);
         } else {
-            //WMSG1("  Sorting on %d\n", i);
+            //LOGI("  Sorting on %d", i);
             curItem.fmt |= HDF_IMAGE | HDF_BITMAP_ON_RIGHT;
             if (fpLayout->GetAscending())
                 curItem.iImage = 0;
@@ -866,7 +866,7 @@ ContentList::OnDoubleClick(NMHDR*, LRESULT* pResult)
     int idx = HitTest(point);
     if (idx != -1) {
         CString str = GetItemText(idx, 0);
-        WMSG1("%ls was double-clicked\n", (LPCWSTR) str);
+        LOGI("%ls was double-clicked", (LPCWSTR) str);
     }
 
     ((MainWindow*) ::AfxGetMainWnd())->HandleDoubleClick();
@@ -895,7 +895,7 @@ ContentList::OnRightClick(NMHDR*, LRESULT* pResult)
     int idx = HitTest(point);
     if (idx != -1) {
         CString str = GetItemText(idx, 0);
-        WMSG1("%ls was right-clicked\n", (LPCWSTR) str);
+        LOGI("%ls was right-clicked", (LPCWSTR) str);
 
         //fRightClickItem = idx;
 #else
@@ -922,7 +922,7 @@ ContentList::SelectAll(void)
 
     for (i = GetItemCount()-1; i >= 0; i--) {
         if (!SetItemState(i, LVIS_SELECTED, LVIS_SELECTED)) {
-            WMSG1("Glitch: SetItemState failed on %d\n", i);
+            LOGI("Glitch: SetItemState failed on %d", i);
         }
     }
 }
@@ -938,7 +938,7 @@ ContentList::InvertSelection(void)
     for (i = GetItemCount()-1; i >= 0; i--) {
         oldState = GetItemState(i, LVIS_SELECTED);
         if (!SetItemState(i, oldState ? 0 : LVIS_SELECTED, LVIS_SELECTED)) {
-            WMSG1("Glitch: SetItemState failed on %d\n", i);
+            LOGI("Glitch: SetItemState failed on %d", i);
         }
     }
 }
@@ -969,7 +969,7 @@ ContentList::SelectSubdirContents(void)
     POSITION posn;
     posn = GetFirstSelectedItemPosition();
     if (posn == NULL) {
-        WMSG0("SelectSubdirContents: nothing is selected\n");
+        LOGI("SelectSubdirContents: nothing is selected");
         return;
     }
     /* mark all selected items with LVIS_CUT */
@@ -996,7 +996,7 @@ ContentList::SelectSubdirContents(void)
         }
 
 //      if (!SetItemState(i, oldState ? 0 : LVIS_SELECTED, LVIS_SELECTED)) {
-//          WMSG1("GLITCH: SetItemState failed on %d\n", i);
+//          LOGI("GLITCH: SetItemState failed on %d", i);
 //      }
     }
 
@@ -1014,7 +1014,7 @@ ContentList::SelectSubdirContents(void)
 void
 ContentList::SelectSubdir(const WCHAR* displayPrefix)
 {
-    WMSG1(" ContentList selecting all in '%ls'\n", displayPrefix);
+    LOGI(" ContentList selecting all in '%ls'", displayPrefix);
     int len = wcslen(displayPrefix);
 
     for (int i = GetItemCount()-1; i >= 0; i--) {
@@ -1047,7 +1047,7 @@ ContentList::FindNext(const WCHAR* str, bool down, bool matchCase,
     int i, num;
     bool found = false;
 
-    WMSG4("FindNext '%ls' d=%d c=%d w=%d\n", str, down, matchCase, wholeWord);
+    LOGI("FindNext '%ls' d=%d c=%d w=%d", str, down, matchCase, wholeWord);
 
     posn = GetFirstSelectedItemPosition();
     num = GetNextSelectedItem(/*ref*/ posn);
@@ -1058,7 +1058,7 @@ ContentList::FindNext(const WCHAR* str, bool down, bool matchCase,
             num = GetItemCount();
     }
 
-    WMSG1("  starting search from entry %d\n", num);
+    LOGI("  starting search from entry %d", num);
 
     if (down) {
         for (i = num+1; i < GetItemCount(); i++) {
@@ -1089,12 +1089,12 @@ ContentList::FindNext(const WCHAR* str, bool down, bool matchCase,
     }
 
     if (found) {
-        WMSG1("Found, i=%d\n", i);
+        LOGI("Found, i=%d", i);
         ClearSelection();
         SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
         EnsureVisible(i, false);
     } else {
-        WMSG0("Not found\n");
+        LOGI("Not found");
         MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
         pMain->FailureBeep();
     }

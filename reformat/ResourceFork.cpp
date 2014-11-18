@@ -172,7 +172,7 @@ ReformatResourceFork::ReadHeader(const unsigned char* srcBuf, long srcLen,
     bool* pLittleEndian)
 {
     if (srcLen < 128) {
-        WMSG1("ReformatResource: invalid len %d\n", srcLen);
+        LOGI("ReformatResource: invalid len %d", srcLen);
         return false;
     }
 
@@ -241,12 +241,12 @@ ReformatResourceFork::GetResource(const unsigned char* srcBuf, long srcLen,
         resID = Get32(indexPtr + 0x02, littleEndian);
 
         if (resType == resourceType && resID == resourceID) {
-            WMSG2("Found resource with type=0x%04x id=0x%04x\n",
+            LOGI("Found resource with type=0x%04x id=0x%04x",
                 resType, resID);
             *pResource = srcBuf + Get32(indexPtr + 0x06, littleEndian);
             *pResourceLen = Get32(indexPtr + 0x0c, littleEndian);
             if (*pResource + *pResourceLen > srcBuf+srcLen) {
-                WMSG0(" Bad bounds on resource\n");
+                LOGI(" Bad bounds on resource");
                 DebugBreak();
                 return false;
             }
@@ -256,7 +256,7 @@ ReformatResourceFork::GetResource(const unsigned char* srcBuf, long srcLen,
         indexPtr += kRsrcMapEntryLen;
     }
 
-    WMSG2("Resource not found (type=0x%04x id=0x%04x)\n",
+    LOGI("Resource not found (type=0x%04x id=0x%04x)",
         resourceType, resourceID);
     return false;
 }

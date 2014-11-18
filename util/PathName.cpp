@@ -149,7 +149,7 @@ PathName::GetFileName(void)
         const WCHAR* ccp;
         ccp = FilenameOnly(fPathName, '\\');
         if (wcscmp(ccp, str) != 0) {
-            WMSG2("NOTE: got different filenames '%ls' vs '%ls'\n",
+            LOGI("NOTE: got different filenames '%ls' vs '%ls'",
                 ccp, (LPCTSTR) str);
         }
     }
@@ -208,7 +208,7 @@ PathName::GetExtension(void)
         if ((ccp == NULL && wcslen(fExt) > 0) ||
             (ccp != NULL && wcscmp(ccp, fExt) != 0))
         {
-            WMSG2("NOTE: got different extensions '%ls' vs '%ls'\n",
+            LOGI("NOTE: got different extensions '%ls' vs '%ls'",
                 ccp, (LPCTSTR) fExt);
         }
     }
@@ -240,7 +240,7 @@ PathName::SFNToLFN(void)
     len = GetFullPathName(fPathName, NELEM(buf), buf, &cp);
     if (len == 0 || len >= sizeof(buf))
         return -1;
-    //WMSG1("  FullPathName='%ls'\n", buf);
+    //LOGI("  FullPathName='%ls'", buf);
 
     if (buf[len-1] == '\\') {
         hadEndingSlash = true;
@@ -269,12 +269,12 @@ PathName::SFNToLFN(void)
                 hFind = ::FindFirstFile(buf, &findFileData);
                 if (hFind == INVALID_HANDLE_VALUE) {
                     DWORD err = ::GetLastError();
-                    WMSG2("FindFirstFile '%ls' failed, err=%d\n", buf, err);
+                    LOGI("FindFirstFile '%ls' failed, err=%d", buf, err);
                     return -1;
                 } else {
                     FindClose(hFind);
                 }
-                //WMSG2("  COMPONENT '%ls' [%ls]\n", findFileData.cFileName,
+                //LOGI("  COMPONENT '%ls' [%ls]", findFileData.cFileName,
                 //  findFileData.cAlternateFileName);
                 lfn += findFileData.cFileName;
                 lfn += "\\";
@@ -284,24 +284,24 @@ PathName::SFNToLFN(void)
 
         cp++;
     }
-    //WMSG1("  Interim name = '%ls'\n", (LPCTSTR) lfn);
+    //LOGI("  Interim name = '%ls'", (LPCTSTR) lfn);
 
     if (*(cp-1) != '\\') {
         /* there was some stuff after the last '\\'; handle it */
         hFind = ::FindFirstFile(buf, &findFileData);
         if (hFind == INVALID_HANDLE_VALUE) {
             DWORD err = ::GetLastError();
-            WMSG2("FindFirstFile '%ls' failed, err=%d\n", buf, err);
+            LOGI("FindFirstFile '%ls' failed, err=%d", buf, err);
             return -1;
         } else {
             FindClose(hFind);
         }
-        //WMSG2("  COMPONENT2 '%ls' [%ls]\n", findFileData.cFileName,
+        //LOGI("  COMPONENT2 '%ls' [%ls]", findFileData.cFileName,
         //  findFileData.cAlternateFileName);
         lfn += findFileData.cFileName;
     }
 
-    //WMSG1("  Almost done = '%ls'\n", (LPCTSTR) lfn);
+    //LOGI("  Almost done = '%ls'", (LPCTSTR) lfn);
     if (hadEndingSlash)
         lfn += "\\";
 
@@ -338,7 +338,7 @@ bool
 PathName::Exists(void)
 {
 //  if (strncmp(fPathName, "\\\\", 2) == 0) {
-//      WMSG1("Refusing to check for network path '%ls'\n", fPathName);
+//      LOGI("Refusing to check for network path '%ls'", fPathName);
 //      return false;
 //  }
 
@@ -527,7 +527,7 @@ PathName::SetModWhen(time_t when)
     struct _utimbuf utbuf;
 
     if (when == (time_t) -1 || when == kDateNone || when == kDateInvalid) {
-        WMSG1("NOTE: not setting invalid date (%ld)\n", when);
+        LOGI("NOTE: not setting invalid date (%ld)", when);
         return 0;
     }
 
@@ -566,7 +566,7 @@ PathName::CreateSubdirIFN(const WCHAR* pathStart, const WCHAR* pathEnd,
 
     err = GetFileInfo(tmpBuf, NULL, NULL, &exists, NULL, &isDirectory);
     if (err != 0) {
-        WMSG1("  Could not get file info for '%ls'\n", tmpBuf);
+        LOGI("  Could not get file info for '%ls'", tmpBuf);
         goto bail;
     } else if (!exists) {
         /* dir doesn't exist; move up a level and check parent */
@@ -586,7 +586,7 @@ PathName::CreateSubdirIFN(const WCHAR* pathStart, const WCHAR* pathEnd,
     } else {
         /* file does exist, make sure it's a directory */
         if (!isDirectory) {
-            WMSG1("Existing file '%ls' is not a directory\n", tmpBuf);
+            LOGI("Existing file '%ls' is not a directory", tmpBuf);
             err = ENOTDIR;
             goto bail;
         }

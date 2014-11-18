@@ -30,7 +30,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
 
     time_t now = time(NULL);
 
-    LOGI("CiderPress v%d.%d.%d%ls started at %.24hs\n",
+    LOGI("CiderPress v%d.%d.%d%ls started at %.24hs",
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
         kAppDevString, ctime(&now));
 
@@ -39,7 +39,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
     tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
     tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
     _CrtSetDbgFlag(tmpDbgFlag);
-    WMSG0("Leak detection enabled\n");
+    LOGI("Leak detection enabled");
 }
 
 /*
@@ -50,7 +50,7 @@ MyApp::~MyApp(void)
     DiskArchive::AppCleanup();
     NiftyList::AppCleanup();
 
-    WMSG0("SHUTTING DOWN\n\n");
+    LOGI("SHUTTING DOWN\n");
     delete gDebugLog;
 }
 
@@ -71,13 +71,13 @@ MyApp::InitInstance(void)
     m_pMainWnd->ShowWindow(m_nCmdShow);
     m_pMainWnd->UpdateWindow();
 
-    WMSG0("Happily in InitInstance!\n");
+    LOGI("Happily in InitInstance!");
 
     /* find our .EXE file */
     //HMODULE hModule = ::GetModuleHandle(NULL);
     WCHAR buf[MAX_PATH];
     if (::GetModuleFileName(NULL /*hModule*/, buf, NELEM(buf)) != 0) {
-        WMSG1("Module name is '%ls'\n", buf);
+        LOGI("Module name is '%ls'", buf);
         fExeFileName = buf;
 
         WCHAR* cp = wcsrchr(buf, '\\');
@@ -86,7 +86,7 @@ MyApp::InitInstance(void)
         else
             fExeBaseName = fExeFileName.Left(cp - buf +1);
     } else {
-        WMSG1("BIG problem: GetModuleFileName failed (err=%ld)\n",
+        LOGI("BIG problem: GetModuleFileName failed (err=%ld)",
             ::GetLastError());
     }
 
@@ -107,24 +107,24 @@ MyApp::InitInstance(void)
 
     free((void*)m_pszProfileName);
     m_pszProfileName = strdup(buf);
-    WMSG1("Profile name is '%ls'\n", m_pszProfileName);
+    LOGI("Profile name is '%ls'", m_pszProfileName);
 
     if (!WriteProfileString("SectionOne", "MyEntry", "test"))
-        WMSG0("WriteProfileString failed\n");
+        LOGI("WriteProfileString failed");
 #endif
 
     SetRegistryKey(fRegistry.GetAppRegistryKey());
 
-    //WMSG1("Registry key is '%ls'\n", m_pszRegistryKey);
-    //WMSG1("Profile name is '%ls'\n", m_pszProfileName);
-    WMSG1("Short command line is '%ls'\n", m_lpCmdLine);
-    //WMSG1("CP app name is '%ls'\n", m_pszAppName);
-    //WMSG1("CP exe name is '%ls'\n", m_pszExeName);
-    WMSG1("CP help file is '%ls'\n", m_pszHelpFilePath);
-    WMSG1("Command line is '%ls'\n", ::GetCommandLine());
+    //LOGI("Registry key is '%ls'", m_pszRegistryKey);
+    //LOGI("Profile name is '%ls'", m_pszProfileName);
+    LOGI("Short command line is '%ls'", m_lpCmdLine);
+    //LOGI("CP app name is '%ls'", m_pszAppName);
+    //LOGI("CP exe name is '%ls'", m_pszExeName);
+    LOGI("CP help file is '%ls'", m_pszHelpFilePath);
+    LOGI("Command line is '%ls'", ::GetCommandLine());
 
     //if (!WriteProfileString("SectionOne", "MyEntry", "test"))
-    //  WMSG0("WriteProfileString failed\n");
+    //  LOGI("WriteProfileString failed");
 
     /*
      * If we're installing or uninstalling, do what we need to and then
@@ -132,11 +132,11 @@ MyApp::InitInstance(void)
      * incredibly robust Windows environment will take it in stride.
      */
     if (wcscmp(m_lpCmdLine, L"-install") == 0) {
-        WMSG0("Invoked with INSTALL flag\n");
+        LOGI("Invoked with INSTALL flag");
         fRegistry.OneTimeInstall();
         exit(0);
     } else if (wcscmp(m_lpCmdLine, L"-uninstall") == 0) {
-        WMSG0("Invoked with UNINSTALL flag\n");
+        LOGI("Invoked with UNINSTALL flag");
         fRegistry.OneTimeUninstall();
         exit(1);    // tell DeployMaster to continue with uninstall
     }
@@ -161,9 +161,9 @@ MyApp::LogModuleLocation(const WCHAR* name)
         ::GetModuleFileName(hModule, fileNameBuf, NELEM(fileNameBuf)) != 0)
     {
         // GetModuleHandle does not increase ref count, so no need to release
-        WMSG2("Module '%ls' loaded from '%ls'\n", name, fileNameBuf);
+        LOGI("Module '%ls' loaded from '%ls'", name, fileNameBuf);
     } else {
-        WMSG1("Module '%ls' not loaded\n", name);
+        LOGI("Module '%ls' not loaded", name);
     }
 }
 
@@ -176,7 +176,7 @@ MyApp::OnIdle(LONG lCount)
     BOOL bMore = CWinApp::OnIdle(lCount);
 
     //if (lCount == 0) {
-    //  WMSG1("IDLE lcount=%d\n", lCount);
+    //  LOGI("IDLE lcount=%d", lCount);
     //}
 
     /*

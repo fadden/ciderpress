@@ -98,7 +98,7 @@ ImportBASDialog::OnInitDialog(void)
     CString fileNameOnly(path.GetFileName());
     CString ext(fileNameOnly.Right(4));
     if (ext.CompareNoCase(L".txt") == 0) {
-        WMSG1("removing extension from '%ls'\n", (LPCWSTR) fileNameOnly);
+        LOGI("removing extension from '%ls'", (LPCWSTR) fileNameOnly);
         fileNameOnly = fileNameOnly.Left(fileNameOnly.GetLength() - 4);
     }
 
@@ -356,16 +356,16 @@ ImportBASDialog::ProcessBASLine(const char* buf, int len,
      * Remove the CR, LF, or CRLF from the end of the line.
      */
     if (len > 1 && buf[len-2] == '\r' && buf[len-1] == '\n') {
-        //WMSG0("removed CRLF\n");
+        //LOGI("removed CRLF");
         len -= 2;
     } else if (buf[len-1] == '\r') {
-        //WMSG0("removed CR\n");
+        //LOGI("removed CR");
         len--;
     } else if (buf[len-1] == '\n') {
-        //WMSG0("removed LF\n");
+        //LOGI("removed LF");
         len--;
     } else {
-        //WMSG0("no EOL marker found\n");
+        //LOGI("no EOL marker found");
     }
 
     if (!len)
@@ -402,7 +402,7 @@ ImportBASDialog::ProcessBASLine(const char* buf, int len,
     }
     tokenBuf[tokenLen] = '\0';
     lineNum = atoi(tokenBuf);
-    WMSG1("FOUND line %d\n", lineNum);
+    LOGI("FOUND line %d", lineNum);
 
     pOutput->Putc((char) 0xcc);     // placeholder
     pOutput->Putc((char) 0xcc);
@@ -483,7 +483,7 @@ ImportBASDialog::ProcessBASLine(const char* buf, int len,
                 for (int j = 0; j < foundLen; j++)
                     GetNextNWC(&buf, &len, &ch);
 
-                //WMSG2("TOKEN '%s' (%d)\n",
+                //LOGI("TOKEN '%s' (%d)",
                 //  fBASLookup.GetToken(token), tokenLen);
 
                 /* special handling for REM or DATA */
@@ -553,7 +553,7 @@ ImportBASDialog::FixBASLinePointers(char* buf, long len, unsigned short addr)
         if (val == 0)
             break;
         if (val != 0xcccc) {
-            WMSG1("unexpected value 0x%04x found\n", val);
+            LOGI("unexpected value 0x%04x found", val);
             return false;
         }
 
@@ -568,7 +568,7 @@ ImportBASDialog::FixBASLinePointers(char* buf, long len, unsigned short addr)
             len--;
         }
         if (!len) {
-            WMSG0("ran off the end?\n");
+            LOGI("ran off the end?");
             return false;
         }
         buf++;

@@ -292,7 +292,7 @@ public:
         //fEntryIndex = NULL;
     }
     virtual ~GenericArchive(void) {
-        //WMSG0("Deleting GenericArchive\n");
+        //LOGI("Deleting GenericArchive");
         DeleteEntries();
         delete fPathName;
     }

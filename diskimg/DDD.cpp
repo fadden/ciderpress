@@ -266,7 +266,7 @@ WrapperDDD::PackDisk(GenericFD* pSrcGFD, GenericFD* pWrapperGFD,
 
         dierr = pSrcGFD->Read(trackBuf, kTrackLen);
         if (dierr != kDIErrNone) {
-            WMSG1(" DDD error during read (err=%d)\n", dierr);
+            LOGI(" DDD error during read (err=%d)", dierr);
             goto bail;
         }
 
@@ -394,7 +394,7 @@ WrapperDDD::ComputeFreqCounts(const unsigned char* trackBuf,
                 }
             }
 
-            //WMSG2("Found run of %d of 0x%02x\n", runLen, *ucp);
+            //LOGI("Found run of %d of 0x%02x", runLen, *ucp);
         } else {
             /* not a run, just update stats */
             freqCounts[*ucp]++;
@@ -428,10 +428,10 @@ WrapperDDD::ComputeFavorites(unsigned short* freqCounts,
         freqCounts[bestSym] = 0;
     }
 
-    //WMSG0("FAVORITES: ");
+    //LOGI("FAVORITES: ");
     //for (fav = 0; fav < kNumFavorites; fav++)
-    //    WMSG1("%02x\n", favorites[fav]);
-    //WMSG0("\n");
+    //    LOGI("%02x", favorites[fav]);
+    //LOGI("");
 }
 
 
@@ -477,25 +477,25 @@ WrapperDDD::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
 
     val = bitBuffer.GetBits(3);
     if (val != 0) {
-        WMSG1(" DDD bits not zero, this isn't a DDD II file (0x%02x)\n", val);
+        LOGI(" DDD bits not zero, this isn't a DDD II file (0x%02x)", val);
         dierr = kDIErrGeneric;
         goto bail;
     }
     val = bitBuffer.GetBits(8);
     *pDiskVolNum = bitBuffer.Reverse(val);
-    WMSG1(" DDD found disk volume num = %d\n", *pDiskVolNum);
+    LOGI(" DDD found disk volume num = %d", *pDiskVolNum);
 
     int track;
     for (track = 0; track < kNumTracks; track++) {
         unsigned char trackBuf[kTrackLen];
 
         if (!UnpackTrack(&bitBuffer, trackBuf)) {
-            WMSG1(" DDD failed unpacking track %d\n", track);
+            LOGI(" DDD failed unpacking track %d", track);
             dierr = kDIErrBadCompressedData;
             goto bail;
         }
         if (bitBuffer.IOFailure()) {
-            WMSG0(" DDD failure or EOF on input file\n");
+            LOGI(" DDD failure or EOF on input file");
             dierr = kDIErrBadCompressedData;
             goto bail;
         }
@@ -522,16 +522,16 @@ WrapperDDD::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
     dierr = pGFD->Read(&sctBuf, sizeof(sctBuf), &actual);
     if (dierr == kDIErrNone) {
         if (actual > /*kMaxExcessByteCount*/ 256) {
-            WMSG1(" DDD looks like too much data in input file (%d extra)\n",
+            LOGI(" DDD looks like too much data in input file (%d extra)",
                 actual);
             dierr = kDIErrBadCompressedData;
             goto bail;
         } else {
-            WMSG1(" DDD excess bytes (%d) within normal parameters\n", actual);
+            LOGI(" DDD excess bytes (%d) within normal parameters", actual);
         }
     }
 
-    WMSG0(" DDD looks like a DDD archive!\n");
+    LOGI(" DDD looks like a DDD archive!");
     dierr = kDIErrNone;
 
 bail:
@@ -617,14 +617,14 @@ WrapperDDD::UnpackTrack(BitBuffer* pBitBuffer, unsigned char* trackBuf)
                 rleChar = pBitBuffer->Reverse(val);
                 val = pBitBuffer->GetBits(8);
                 rleCount = pBitBuffer->Reverse(val);
-                //WMSG2(" DDD found run of %d of 0x%02x\n", rleCount, rleChar);
+                //LOGI(" DDD found run of %d of 0x%02x", rleCount, rleChar);
 
                 if (rleCount == 0)
                     rleCount = 256;
 
                 /* make sure we won't overrun */
                 if (trackPtr + rleCount > trackBuf + kTrackLen) {
-                    WMSG0(" DDD overrun in RLE\n");
+                    LOGI(" DDD overrun in RLE");
                     return false;
                 }
                 while (rleCount--)

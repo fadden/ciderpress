@@ -102,7 +102,7 @@ DiskConvertDialog::Init(const DiskImg* pDiskImg)
         } else if (pDiskImg->GetPhysicalFormat() == DiskImg::kPhysicalFormatNib525_6384)
         {
             /* don't currently allow .nb2 output */
-            WMSG0(" GLITCH: we don't allow self-convert of .nb2 files\n");
+            LOGI(" GLITCH: we don't allow self-convert of .nb2 files");
             ASSERT(false);
         } else {
             /* this should be impossible */
@@ -260,7 +260,7 @@ DiskConvertDialog::DoDataExchange(CDataExchange* pDX)
             fExtension += L".gz";
         }
 
-        WMSG1(" DCD recommending extension '%ls'\n", (LPCWSTR) fExtension);
+        LOGI(" DCD recommending extension '%ls'", (LPCWSTR) fExtension);
     }
 }
 

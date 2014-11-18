@@ -76,7 +76,7 @@ NufxEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
      * First check for a length of zero.
      */
     if (actualThreadEOF == 0) {
-        WMSG0("Empty thread\n");
+        LOGI("Empty thread");
         if (needAlloc) {
             *ppText = new char[1];
             **ppText = '\0';
@@ -178,7 +178,7 @@ NufxEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
 
     /* we've got the right thread, see if it's empty */
     if (actualThreadEOF == 0) {
-        WMSG0("Empty thread\n");
+        LOGI("Empty thread");
         result = IDOK;
         goto bail;
     }
@@ -397,7 +397,7 @@ NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
                 SetHasDataFork(true);
                 SetDataForkLen(pThread->actualThreadEOF);
             } else {
-                WMSG0("WARNING: ignoring second disk image / data fork\n");
+                LOGI("WARNING: ignoring second disk image / data fork");
             }
         }
         if (threadID == kNuThreadIDRsrcFork) {
@@ -405,7 +405,7 @@ NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
                 SetHasRsrcFork(true);
                 SetRsrcForkLen(pThread->actualThreadEOF);
             } else {
-                WMSG0("WARNING: ignoring second data fork\n");
+                LOGI("WARNING: ignoring second data fork");
             }
         }
         if (threadID == kNuThreadIDDiskImage) {
@@ -413,7 +413,7 @@ NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
                 SetHasDiskImage(true);
                 SetDataForkLen(pThread->actualThreadEOF);
             } else {
-                WMSG0("WARNING: ignoring second disk image / data fork\n");
+                LOGI("WARNING: ignoring second disk image / data fork");
             }
         }
         if (threadID == kNuThreadIDComment) {
@@ -470,7 +470,7 @@ NufxArchive::AppInit(void)
         goto bail;
     }
     if (bug != kNuVersionBug) {
-        WMSG2("Different 'bug' version (built vX.X.%d, dll vX.X.%d)\n",
+        LOGI("Different 'bug' version (built vX.X.%d, dll vX.X.%d)",
             kNuVersionBug, bug);
     }
 
@@ -536,7 +536,7 @@ NufxArchive::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
     LOG_BASE(pErrorMessage->isDebug ? DebugLog::LOG_DEBUG : DebugLog::LOG_WARNING,
-        pErrorMessage->file, pErrorMessage->line, "<nufxlib> %hs\n",
+        pErrorMessage->file, pErrorMessage->line, "<nufxlib> %hs",
         pErrorMessage->message);
 
     return kNuOK;
@@ -584,7 +584,7 @@ NufxArchive::ProgressUpdater(NuArchive* pArchive, void* vpProgress)
     if (pProgress->state == kNuProgressDone)
         perc = 100;
 
-    //WMSG3("Progress: %d%% '%hs' '%hs'\n", perc,
+    //LOGI("Progress: %d%% '%hs' '%hs'", perc,
     //  oldName == NULL ? "(null)" : oldName,
     //  newName == NULL ? "(null)" : newName);
 
@@ -595,12 +595,12 @@ NufxArchive::ProgressUpdater(NuArchive* pArchive, void* vpProgress)
 
     /* check to see if user hit the "cancel" button on the progress dialog */
     if (pProgress->state == kNuProgressAborted) {
-        WMSG0("(looks like we're aborting)\n");
+        LOGI("(looks like we're aborting)");
         ASSERT(status == IDCANCEL);
     }
     
     if (status == IDCANCEL) {
-        WMSG0("Signaling NufxLib to abort\n");
+        LOGI("Signaling NufxLib to abort");
         return kNuAbort;
     } else
         return kNuOK;
@@ -623,17 +623,17 @@ NufxArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
     CStringA filenameA(filename);
     if (!readOnly) {
         CString tmpname = GenDerivedTempName(filename);
-        WMSG2("Opening file '%ls' rw (tmp='%ls')\n", filename, (LPCWSTR) tmpname);
+        LOGI("Opening file '%ls' rw (tmp='%ls')", filename, (LPCWSTR) tmpname);
         fIsReadOnly = false;
         CStringA tmpnameA(tmpname);
         nerr = NuOpenRW(filenameA, tmpnameA, 0, &fpArchive);
     }
     if (nerr == kNuErrFileAccessDenied || nerr == EACCES) {
-        WMSG0("Read-write failed with access denied, trying read-only\n");
+        LOGI("Read-write failed with access denied, trying read-only");
         readOnly = true;
     }
     if (readOnly) {
-        WMSG1("Opening file '%ls' ro\n", (LPCWSTR) filename);
+        LOGI("Opening file '%ls' ro", (LPCWSTR) filename);
         fIsReadOnly = true;
         nerr = NuOpenRO(filenameA, &fpArchive);
     }
@@ -641,7 +641,7 @@ NufxArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
         errMsg.Format(L"Unable to open '%ls': %hs", filename, NuStrError(nerr));
         goto bail;
     } else {
-        //WMSG0("FILE OPEN SUCCESS\n");
+        //LOGI("FILE OPEN SUCCESS");
     }
 
     nerr = SetCallbacks();
@@ -682,7 +682,7 @@ NufxArchive::New(const WCHAR* filename, const void* options)
     ASSERT(options == NULL);
 
     CString tmpname = GenDerivedTempName(filename);
-    WMSG2("Creating file '%ls' (tmp='%ls')\n", filename, (LPCWSTR) tmpname);
+    LOGI("Creating file '%ls' (tmp='%ls')", filename, (LPCWSTR) tmpname);
     fIsReadOnly = false;
     CStringA filenameA(filename);
     CStringA tmpnameA(tmpname);
@@ -691,7 +691,7 @@ NufxArchive::New(const WCHAR* filename, const void* options)
         retmsg.Format(L"Unable to open '%ls': %hs", filename, NuStrError(nerr));
         goto bail;
     } else {
-        WMSG0("NEW FILE SUCCESS\n");
+        LOGI("NEW FILE SUCCESS");
     }
 
 
@@ -757,10 +757,10 @@ NufxArchive::PreferencesChanged(void)
     val = pPreferences->GetPrefBool(kPrMimicShrinkIt);
     nerr = NuSetValue(fpArchive, kNuValueMimicSHK, val);
     if (nerr != kNuErrNone) {
-        WMSG2("NuSetValue(kNuValueMimicSHK, %d) failed, err=%d\n", val, nerr);
+        LOGI("NuSetValue(kNuValueMimicSHK, %d) failed, err=%d", val, nerr);
         ASSERT(false);
     } else {
-        WMSG1("Set MimicShrinkIt to %d\n", val);
+        LOGI("Set MimicShrinkIt to %d", val);
     }
 
     val = pPreferences->GetPrefBool(kPrReduceSHKErrorChecks);
@@ -821,7 +821,7 @@ NufxArchive::LoadContents(void)
     long counter = 0;
     NuError result;
 
-    WMSG0("NufxArchive LoadContents\n");
+    LOGI("NufxArchive LoadContents");
     ASSERT(fpArchive != NULL);
 
     {
@@ -965,7 +965,7 @@ NufxArchive::DateTimeToSeconds(const NuDateTime* pDateTime)
          * assert won't be present in the shipping version, but it's annoying
          * during debugging.
          */
-        //WMSG1(" Ignoring funky year %ld\n", year);
+        //LOGI(" Ignoring funky year %ld", year);
         return kDateInvalid;
     }
     if (pDateTime->month > 11)
@@ -1016,9 +1016,9 @@ NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     WCHAR curDir[MAX_PATH] = L"";
     bool retVal = false;
 
-    WMSG2("Opts: '%ls' typePres=%d\n", (LPCWSTR) pAddOpts->fStoragePrefix,
+    LOGI("Opts: '%ls' typePres=%d", (LPCWSTR) pAddOpts->fStoragePrefix,
         pAddOpts->fTypePreservation);
-    WMSG3("      sub=%d strip=%d ovwr=%d\n",
+    LOGI("      sub=%d strip=%d ovwr=%d",
         pAddOpts->fIncludeSubfolders, pAddOpts->fStripFolderNames,
         pAddOpts->fOverwriteExisting);
 
@@ -1031,7 +1031,7 @@ NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     fNumAdded = 0;
 
     const WCHAR* buf = pAddOpts->GetFileNames();
-    WMSG2("Selected path = '%ls' (offset=%d)\n", buf,
+    LOGI("Selected path = '%ls' (offset=%d)", buf,
         pAddOpts->GetFileNameOffset());
 
     if (GetCurrentDirectory(NELEM(curDir), curDir) == 0) {
@@ -1047,7 +1047,7 @@ NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
 
     buf += pAddOpts->GetFileNameOffset();
     while (*buf != '\0') {
-        WMSG1("  file '%ls'\n", buf);
+        LOGI("  file '%ls'", buf);
 
         /* this just provides the list of files to NufxLib */
         nerr = AddFile(pAddOpts, buf, &errMsg);
@@ -1119,11 +1119,11 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     bool retVal = false;
     CStringA storageNameA, origNameA;
 
-    WMSG2("AddDisk: '%ls' %d\n", pAddOpts->GetFileNames(),
+    LOGI("AddDisk: '%ls' %d", pAddOpts->GetFileNames(),
         pAddOpts->GetFileNameOffset());
-    WMSG2("Opts: '%ls' type=%d\n", (LPCWSTR) pAddOpts->fStoragePrefix,
+    LOGI("Opts: '%ls' type=%d", (LPCWSTR) pAddOpts->fStoragePrefix,
         pAddOpts->fTypePreservation);
-    WMSG3("      sub=%d strip=%d ovwr=%d\n",
+    LOGI("      sub=%d strip=%d ovwr=%d",
         pAddOpts->fIncludeSubfolders, pAddOpts->fStripFolderNames,
         pAddOpts->fOverwriteExisting);
 
@@ -1144,7 +1144,7 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
 
     const WCHAR* buf;
     buf = pAddOpts->GetFileNames();
-    WMSG2("Selected path = '%ls' (offset=%d)\n", buf,
+    LOGI("Selected path = '%ls' (offset=%d)", buf,
         pAddOpts->GetFileNameOffset());
 
     if (GetCurrentDirectory(NELEM(curDir), curDir) == 0) {
@@ -1159,7 +1159,7 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     }
 
     buf += pAddOpts->GetFileNameOffset();
-    WMSG1("  file '%ls'\n", buf);
+    LOGI("  file '%ls'", buf);
 
     /* strip off preservation stuff, and ignore it */
     pathProp.Init(buf);
@@ -1300,7 +1300,7 @@ retry:
     } else if (err == kNuErrSkipped) {
         /* "maybe overwrite" UI causes this if user declines */
         // fall through with the error
-        WMSG1("DoAddFile: skipped '%ls'\n", (LPCWSTR) pDetails->origName);
+        LOGI("DoAddFile: skipped '%ls'", (LPCWSTR) pDetails->origName);
     } else if (err == kNuErrRecordExists) {
         AddClashDialog dlg;
 
@@ -1311,11 +1311,11 @@ retry:
             goto bail_quiet;
         }
         if (dlg.fDoRename) {
-            WMSG1("add clash: rename to '%ls'\n", (LPCWSTR) dlg.fNewName);
+            LOGD("add clash: rename to '%ls'", (LPCWSTR) dlg.fNewName);
             pDetails->storageName = dlg.fNewName;
             goto retry;
         } else {
-            WMSG0("add clash: skip");
+            LOGD("add clash: skip");
             err = kNuErrSkipped;
             // fall through with error
         }
@@ -1358,7 +1358,7 @@ NufxArchive::AddPrep(CWnd* pMsgWnd, const AddFilesDialog* pAddOpts)
     nerr = NuSetValue(fpArchive, kNuValueDataCompression,
             defaultCompression + kNuCompressNone);
     if (nerr != kNuErrNone) {
-        WMSG1("GLITCH: unable to set compression type to %d\n",
+        LOGI("GLITCH: unable to set compression type to %d",
             defaultCompression);
         /* keep going */
     }
@@ -1532,13 +1532,13 @@ NufxArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 
     ASSERT(fpArchive != NULL);
 
-    WMSG1("Testing %d entries\n", pSelSet->GetNumEntries());
+    LOGI("Testing %d entries", pSelSet->GetNumEntries());
 
     SelectionEntry* pSelEntry = pSelSet->IterNext();
     while (pSelEntry != NULL) {
         pEntry = (NufxEntry*) pSelEntry->GetEntry();
 
-        WMSG2("  Testing %ld '%ls'\n", pEntry->GetRecordIdx(),
+        LOGI("  Testing %ld '%ls'", pEntry->GetRecordIdx(),
             pEntry->GetPathName());
         nerr = NuTestRecord(fpArchive, pEntry->GetRecordIdx());
         if (nerr != kNuErrNone) {
@@ -1589,14 +1589,14 @@ NufxArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 
     ASSERT(fpArchive != NULL);
 
-    WMSG1("Deleting %d entries\n", pSelSet->GetNumEntries());
+    LOGI("Deleting %d entries", pSelSet->GetNumEntries());
 
     /* mark entries for deletion */
     SelectionEntry* pSelEntry = pSelSet->IterNext();
     while (pSelEntry != NULL) {
         pEntry = (NufxEntry*) pSelEntry->GetEntry();
 
-        WMSG2("  Deleting %ld '%ls'\n", pEntry->GetRecordIdx(),
+        LOGI("  Deleting %ld '%ls'", pEntry->GetRecordIdx(),
             pEntry->GetPathName());
         nerr = NuDeleteRecord(fpArchive, pEntry->GetRecordIdx());
         if (nerr != kNuErrNone) {
@@ -1647,7 +1647,7 @@ NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 
     ASSERT(fpArchive != NULL);
 
-    WMSG1("Renaming %d entries\n", pSelSet->GetNumEntries());
+    LOGI("Renaming %d entries", pSelSet->GetNumEntries());
 
     /*
      * Figure out if we're allowed to change the entire path.  (This is
@@ -1656,7 +1656,7 @@ NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     long cap = GetCapability(GenericArchive::kCapCanRenameFullPath);
     bool renameFullPath = (cap != 0);
 
-    WMSG1("Rename, fullpath=%d\n", renameFullPath);
+    LOGI("Rename, fullpath=%d", renameFullPath);
 
     /*
      * For each item in the selection set, bring up the "rename" dialog,
@@ -1670,7 +1670,7 @@ NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     SelectionEntry* pSelEntry = pSelSet->IterNext();
     while (pSelEntry != NULL) {
         NufxEntry* pEntry = (NufxEntry*) pSelEntry->GetEntry();
-        WMSG1("  Renaming '%ls'\n", pEntry->GetPathName());
+        LOGI("  Renaming '%ls'", pEntry->GetPathName());
 
         RenameEntryDialog renameDlg(pMsgWnd);
         renameDlg.SetCanRenameFullPath(renameFullPath);
@@ -1693,14 +1693,14 @@ NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 break;
             }
-            WMSG2("Rename of '%ls' to '%ls' succeeded\n",
+            LOGI("Rename of '%ls' to '%ls' succeeded",
                 pEntry->GetDisplayName(), (LPCWSTR) renameDlg.fNewName);
         } else if (result == IDCANCEL) {
-            WMSG0("Canceling out of remaining renames\n");
+            LOGI("Canceling out of remaining renames");
             break;
         } else {
             /* 3rd possibility is IDIGNORE, i.e. skip this entry */
-            WMSG1("Skipping rename of '%ls'\n", pEntry->GetDisplayName());
+            LOGI("Skipping rename of '%ls'", pEntry->GetDisplayName());
         }
 
         pSelEntry = pSelSet->IterNext();
@@ -1820,7 +1820,7 @@ NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
     nerr = NuSetValue(fpArchive, kNuValueDataCompression,
             pRecompOpts->fCompressionType + kNuCompressNone);
     if (nerr != kNuErrNone) {
-        WMSG1("GLITCH: unable to set compression type to %d\n",
+        LOGI("GLITCH: unable to set compression type to %d",
             pRecompOpts->fCompressionType);
         /* keep going */
     }
@@ -1877,7 +1877,7 @@ NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                         NuStrError(nerr));
                     ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 } else {
-                    WMSG0("Cancelled out of sub-flush/compress\n");
+                    LOGI("Cancelled out of sub-flush/compress");
                 }
 
                 /* see if it got converted to read-only status */
@@ -1911,7 +1911,7 @@ NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                 NuStrError(nerr));
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         } else {
-            WMSG0("Cancelled out of flush/compress\n");
+            LOGI("Cancelled out of flush/compress");
         }
 
         /* see if it got converted to read-only status */
@@ -1950,7 +1950,7 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     char* buf = NULL;
     long len = 0;
 
-    WMSG2("  Recompressing %ld '%ls'\n", pEntry->GetRecordIdx(),
+    LOGI("  Recompressing %ld '%ls'", pEntry->GetRecordIdx(),
         pEntry->GetDisplayName());
 
     /* get a copy of the thread header */
@@ -1964,7 +1964,7 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
 
     /* if it's already in the target format, skip it */
     if (thread.thThreadFormat == pRecompOpts->fCompressionType) {
-        WMSG2("Skipping (fmt=%d) '%ls'\n",
+        LOGI("Skipping (fmt=%d) '%ls'",
             pRecompOpts->fCompressionType, pEntry->GetDisplayName());
         return true;
     }
@@ -1973,7 +1973,7 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     int result;
     result = pEntry->ExtractThreadToBuffer(threadKind, &buf, &len, &subErrMsg);
     if (result == IDCANCEL) {
-        WMSG0("Cancelled during extract!\n");
+        LOGI("Cancelled during extract!");
         ASSERT(buf == NULL);
         goto bail;  /* abort anything that was pending */
     } else if (result != IDOK) {
@@ -1995,7 +1995,7 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     buf = NULL;      // data source owns it now
 
     /* delete the existing thread */
-    //WMSG1("+++ DELETE threadIdx=%d\n", thread.threadIdx);
+    //LOGI("+++ DELETE threadIdx=%d", thread.threadIdx);
     nerr = NuDeleteThread(fpArchive, thread.threadIdx);
     if (nerr != kNuErrNone) {
         pErrMsg->Format(L"Unable to delete thread %d: %hs",
@@ -2004,7 +2004,7 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     }
 
     /* mark the new thread for addition */
-    //WMSG1("+++ ADD threadID=0x%08lx\n", threadID);
+    //LOGI("+++ ADD threadID=0x%08lx", threadID);
     nerr = NuAddThread(fpArchive, pEntry->GetRecordIdx(), threadID,
                 pSource, NULL);
     if (nerr != kNuErrNone) {
@@ -2041,7 +2041,7 @@ GenericArchive::XferStatus
 NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
     ActionProgressDialog* pActionProgress, const XferFileOptions* pXferOpts)
 {
-    WMSG0("NufxArchive XferSelection!\n");
+    LOGI("NufxArchive XferSelection!");
     XferStatus retval = kXferFailed;
     unsigned char* dataBuf = NULL;
     unsigned char* rsrcBuf = NULL;
@@ -2061,12 +2061,12 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
 
         /* in case we start handling CRC errors better */
         if (pEntry->GetDamaged()) {
-            WMSG1("  XFER skipping damaged entry '%ls'\n",
+            LOGI("  XFER skipping damaged entry '%ls'",
                 pEntry->GetDisplayName());
             continue;
         }
 
-        WMSG1(" XFER converting '%ls'\n", pEntry->GetDisplayName());
+        LOGI(" XFER converting '%ls'", pEntry->GetDisplayName());
 
         fileDetails.storageName = pEntry->GetDisplayName();
         fileDetails.fileType = pEntry->GetFileType();
@@ -2104,7 +2104,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             result = pEntry->ExtractThreadToBuffer(GenericEntry::kDataThread,
                         (char**) &dataBuf, &dataLen, &errMsg);
             if (result == IDCANCEL) {
-                WMSG0("Cancelled during data extract!\n");
+                LOGI("Cancelled during data extract!");
                 retval = kXferCancelled;
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
@@ -2126,7 +2126,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             result = pEntry->ExtractThreadToBuffer(GenericEntry::kDiskImageThread,
                         (char**) &dataBuf, &dataLen, &errMsg);
             if (result == IDCANCEL) {
-                WMSG0("Cancelled during data extract!\n");
+                LOGI("Cancelled during data extract!");
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
                 dispMsg.Format(L"Failed while extracting '%ls': %ls.",
@@ -2149,7 +2149,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             result = pEntry->ExtractThreadToBuffer(GenericEntry::kRsrcThread,
                         (char**) &rsrcBuf, &rsrcLen, &errMsg);
             if (result == IDCANCEL) {
-                WMSG0("Cancelled during rsrc extract!\n");
+                LOGI("Cancelled during rsrc extract!");
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
                 dispMsg.Format(L"Failed while extracting '%ls': %ls.",
@@ -2164,7 +2164,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         }
 
         if (dataLen < 0 && rsrcLen < 0) {
-            WMSG1(" XFER: WARNING: nothing worth transferring in '%ls'\n",
+            LOGI(" XFER: WARNING: nothing worth transferring in '%ls'",
                 pEntry->GetDisplayName());
             continue;
         }
@@ -2172,7 +2172,7 @@ NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         errMsg = pXferOpts->fTarget->XferFile(&fileDetails, &dataBuf, dataLen,
                     &rsrcBuf, rsrcLen);
         if (!errMsg.IsEmpty()) {
-            WMSG0("XferFile failed!\n");
+            LOGI("XferFile failed!");
             errMsg.Format(L"Failed while transferring '%ls': %ls.",
                 pEntry->GetDisplayName(), (LPCWSTR) errMsg);
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
@@ -2208,7 +2208,7 @@ bail:
 void
 NufxArchive::XferPrepare(const XferFileOptions* pXferOpts)
 {
-    WMSG0("  NufxArchive::XferPrepare\n");
+    LOGI("  NufxArchive::XferPrepare");
     (void) NuSetValue(fpArchive, kNuValueAllowDuplicates, true);
 }
 
@@ -2231,8 +2231,8 @@ NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
     NuDataSource* pSource = NULL;
     CString errMsg;
 
-    WMSG1("  NufxArchive::XferFile '%ls'\n", (LPCWSTR) pDetails->storageName);
-    WMSG4("  dataBuf=0x%08lx dataLen=%ld rsrcBuf=0x%08lx rsrcLen=%ld\n",
+    LOGI("  NufxArchive::XferFile '%ls'", (LPCWSTR) pDetails->storageName);
+    LOGI("  dataBuf=0x%08lx dataLen=%ld rsrcBuf=0x%08lx rsrcLen=%ld",
         *pDataBuf, dataLen, *pRsrcBuf, rsrcLen);
     ASSERT(pDataBuf != NULL);
     ASSERT(pRsrcBuf != NULL);
@@ -2293,7 +2293,7 @@ NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
             pDetails->fileType == kFileTypeTXT &&
             DiskImg::UsesDOSFileStructure(pDetails->fileSysFmt))
         {
-            WMSG1(" Stripping high ASCII from '%ls'\n",
+            LOGI(" Stripping high ASCII from '%ls'",
                 (LPCWSTR) pDetails->storageName);
             unsigned char* ucp = *pDataBuf;
             long len = dataLen;
@@ -2369,7 +2369,7 @@ NufxArchive::XferAbort(CWnd* pMsgWnd)
     NuError nerr;
     CString errMsg;
 
-    WMSG0("  NufxArchive::XferAbort\n");
+    LOGI("  NufxArchive::XferAbort");
 
     nerr = NuAbort(fpArchive);
     if (nerr != kNuErrNone) {
@@ -2387,7 +2387,7 @@ NufxArchive::XferFinish(CWnd* pMsgWnd)
     NuError nerr;
     CString errMsg;
 
-    WMSG0("  NufxArchive::XferFinish\n");
+    LOGI("  NufxArchive::XferFinish");
 
     /* actually do the work */
     long statusFlags;
@@ -2441,7 +2441,7 @@ NufxArchive::GetComment(CWnd* pMsgWnd, const GenericEntry* pGenericEntry,
     result = pEntry->ExtractThreadToBuffer(GenericEntry::kCommentThread,
                 &buf, &len, &errMsg);
     if (result != IDOK) {
-        WMSG1("Failed getting comment: %hs\n", buf);
+        LOGI("Failed getting comment: %hs", buf);
         ASSERT(buf == NULL);
         return false;
     }
@@ -2569,7 +2569,7 @@ NufxArchive::SetComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
 bail:
     NuFreeDataSource(pSource);
     if (!retVal) {
-        WMSG1("FAILED: %ls\n", (LPCWSTR) errMsg);
+        LOGI("FAILED: %ls", (LPCWSTR) errMsg);
         NuAbort(fpArchive);
     }
     return retVal;
@@ -2616,7 +2616,7 @@ NufxArchive::DeleteComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry)
 
 bail:
     if (retVal != 0) {
-        WMSG1("FAILED: %ls\n", (LPCWSTR) errMsg);
+        LOGI("FAILED: %ls", (LPCWSTR) errMsg);
         NuAbort(fpArchive);
     }
     return retVal;
@@ -2643,12 +2643,12 @@ NufxArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
     const NuRecord* pRecord;
     NuRecordAttr recordAttr;
 
-    WMSG3(" SET fileType=0x%02x auxType=0x%04x access=0x%02x\n",
+    LOGI(" SET fileType=0x%02x auxType=0x%04x access=0x%02x",
         pProps->fileType, pProps->auxType, pProps->access);
 
     nerr = NuGetRecord(fpArchive, pNufxEntry->GetRecordIdx(), &pRecord);
     if (nerr != kNuErrNone) {
-        WMSG2("ERROR: couldn't find recordIdx %ld: %hs\n",
+        LOGI("ERROR: couldn't find recordIdx %ld: %hs",
             pNufxEntry->GetRecordIdx(), NuStrError(nerr));
         return false;
     }
@@ -2660,7 +2660,7 @@ NufxArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
 
     nerr = NuSetRecordAttr(fpArchive, pNufxEntry->GetRecordIdx(), &recordAttr);
     if (nerr != kNuErrNone) {
-        WMSG2("ERROR: couldn't set recordAttr %ld: %hs\n",
+        LOGI("ERROR: couldn't set recordAttr %ld: %hs",
             pNufxEntry->GetRecordIdx(), NuStrError(nerr));
         return false;
     }
@@ -2668,7 +2668,7 @@ NufxArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
     long statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
-        WMSG1("ERROR: NuFlush failed: %hs\n", NuStrError(nerr));
+        LOGI("ERROR: NuFlush failed: %hs", NuStrError(nerr));
 
         /* see if it got converted to read-only status */
         if (statusFlags & kNuFlushReadOnly)
@@ -2676,7 +2676,7 @@ NufxArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
         return false;
     }
 
-    WMSG0("Props set\n");
+    LOGI("Props set");
 
     /* do this in lieu of reloading GenericArchive */
     pEntry->SetFileType(pProps->fileType);

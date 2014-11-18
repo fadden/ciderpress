@@ -86,7 +86,7 @@ TestImageHalf(DiskImg* pImg, int sectorOffset, DiskImg::SectorOrder imageOrder)
         !(catTrack < numTracks && catSect < numSectors) ||
         0)
     {
-        WMSG1("  OzDOS header test %d failed\n", sectorOffset);
+        LOGI("  OzDOS header test %d failed", sectorOffset);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
@@ -114,7 +114,7 @@ TestImageHalf(DiskImg* pImg, int sectorOffset, DiskImg::SectorOrder imageOrder)
     }
 
 bail_ok:
-    WMSG3(" OzDOS foundGood=%d off=%d swap=%d\n", foundGood, sectorOffset,
+    LOGI(" OzDOS foundGood=%d off=%d swap=%d", foundGood, sectorOffset,
         imageOrder);
     /* foundGood hits 3 even when swap is wrong */
     if (foundGood > 4)
@@ -134,12 +134,12 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 {
     DIError dierr;
 
-    WMSG1(" OzDOS checking first half (swap=%d)\n", imageOrder);
+    LOGI(" OzDOS checking first half (swap=%d)", imageOrder);
     dierr = TestImageHalf(pImg, 0, imageOrder);
     if (dierr != kDIErrNone)
         return dierr;
 
-    WMSG1(" OzDOS checking second half (swap=%d)\n", imageOrder);
+    LOGI(" OzDOS checking second half (swap=%d)", imageOrder);
     dierr = TestImageHalf(pImg, 1, imageOrder);
     if (dierr != kDIErrNone)
         return dierr;
@@ -161,7 +161,7 @@ DiskFSOzDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     /* if a value is specified, try that first -- useful for OverrideFormat */
     if (*pOrder != DiskImg::kSectorOrderUnknown) {
         if (TestImage(pImg, *pOrder) == kDIErrNone) {
-            WMSG0(" OzDOS accepted FirstTry value\n");
+            LOGI(" OzDOS accepted FirstTry value");
             return kDIErrNone;
         }
     }
@@ -180,7 +180,7 @@ DiskFSOzDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         }
     }
 
-    WMSG0(" OzDOS didn't find valid FS\n");
+    LOGI(" OzDOS didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -201,7 +201,7 @@ DiskFS::TestOzWideDOS33(const DiskImg* pImg, DiskImg::SectorOrder* pOrder)
     /* if a value is specified, try that first -- useful for OverrideFormat */
     if (*pOrder != DiskImg::kSectorOrderUnknown) {
         if (TestImageHalf(pImg, 0, *pOrder) == kDIErrNone) {
-            WMSG0(" WideDOS accepted FirstTry value\n");
+            LOGI(" WideDOS accepted FirstTry value");
             return kDIErrNone;
         }
     }
@@ -213,7 +213,7 @@ DiskFS::TestOzWideDOS33(const DiskImg* pImg, DiskImg::SectorOrder* pOrder)
     } else if (TestImageHalf(pImg, 0, DiskImg::kSectorOrderPhysical) == kDIErrNone) {
         *pOrder = DiskImg::kSectorOrderPhysical;
     } else {
-        WMSG0("  FS didn't find valid 'wide' DOS3.3\n");
+        LOGI("  FS didn't find valid 'wide' DOS3.3");
         return kDIErrFilesystemNotFound;
     }
 
@@ -238,7 +238,7 @@ DiskFSOzDOS::Initialize(void)
         if (dierr != kDIErrNone)
             return dierr;
     } else {
-        WMSG0(" OzDOS not scanning for sub-volumes\n");
+        LOGI(" OzDOS not scanning for sub-volumes");
     }
 
     SetVolumeUsageMap();
@@ -266,7 +266,7 @@ DiskFSOzDOS::OpenSubVolume(int idx)
     dierr = pNewImg->OpenImage(fpImg, 0, 0,
                 2 * kExpectedTracks * kExpectedSectors);
     if (dierr != kDIErrNone) {
-        WMSG3(" OzSub: OpenImage(%d,0,%d) failed (err=%d)\n",
+        LOGI(" OzSub: OpenImage(%d,0,%d) failed (err=%d)",
             0, 2 * kExpectedTracks * kExpectedSectors, dierr);
         goto bail;
     }
@@ -274,26 +274,26 @@ DiskFSOzDOS::OpenSubVolume(int idx)
     assert(idx == 0 || idx == 1);
     pNewImg->SetPairedSectors(true, 1-idx);
 
-    WMSG1(" OzSub: testing for recognizable volume in idx=%d\n", idx);
+    LOGI(" OzSub: testing for recognizable volume in idx=%d", idx);
     dierr = pNewImg->AnalyzeImage();
     if (dierr != kDIErrNone) {
-        WMSG1(" OzSub: analysis failed (err=%d)\n", dierr);
+        LOGI(" OzSub: analysis failed (err=%d)", dierr);
         goto bail;
     }
 
     if (pNewImg->GetFSFormat() == DiskImg::kFormatUnknown ||
         pNewImg->GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
-        WMSG0(" OzSub: unable to identify filesystem\n");
+        LOGI(" OzSub: unable to identify filesystem");
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
 
     /* open a DiskFS for the sub-image */
-    WMSG1(" UNISub %d succeeded!\n", idx);
+    LOGI(" UNISub %d succeeded!", idx);
     pNewFS = pNewImg->OpenAppropriateDiskFS();
     if (pNewFS == NULL) {
-        WMSG0(" OzSub: OpenAppropriateDiskFS failed\n");
+        LOGI(" OzSub: OpenAppropriateDiskFS failed");
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
@@ -301,7 +301,7 @@ DiskFSOzDOS::OpenSubVolume(int idx)
     /* load the files from the sub-image */
     dierr = pNewFS->Initialize(pNewImg, kInitFull);
     if (dierr != kDIErrNone) {
-        WMSG1(" OzSub: error %d reading list of files from disk", dierr);
+        LOGE(" OzSub: error %d reading list of files from disk", dierr);
         goto bail;
     }
 

@@ -49,7 +49,7 @@ END_MESSAGE_MAP()
 BOOL
 ViewFilesDialog::OnInitDialog(void)
 {
-    WMSG0("Now in VFD OnInitDialog!\n");
+    LOGI("Now in VFD OnInitDialog!");
 
     ASSERT(fpSelSet != NULL);
 
@@ -88,7 +88,7 @@ ViewFilesDialog::OnInitDialog(void)
     long height = pPreferences->GetFileViewerHeight();
     CRect fullRect;
     GetWindowRect(&fullRect);
-    WMSG2(" VFD pre-size %dx%d\n", fullRect.Width(), fullRect.Height());
+    LOGI(" VFD pre-size %dx%d", fullRect.Width(), fullRect.Height());
     fullRect.right = fullRect.left + width;
     fullRect.bottom = fullRect.top + height;
     MoveWindow(fullRect, FALSE);
@@ -98,7 +98,7 @@ ViewFilesDialog::OnInitDialog(void)
     // the StreamIn call.  So don't do this until everything else is ready.
     CDialog::OnInitDialog();
 
-    WMSG0("VFD OnInitDialog done\n");
+    LOGI("VFD OnInitDialog done");
     return FALSE;   // don't let Windows set the focus
 }
 
@@ -109,7 +109,7 @@ ViewFilesDialog::OnInitDialog(void)
 int
 ViewFilesDialog::OnCreate(LPCREATESTRUCT lpcs)
 {
-    WMSG0("VFD OnCreate\n");
+    LOGI("VFD OnCreate");
 
     HICON hIcon;
     hIcon = ::AfxGetApp()->LoadIcon(IDI_FILE_VIEWER);
@@ -124,7 +124,7 @@ ViewFilesDialog::OnCreate(LPCREATESTRUCT lpcs)
                     SBS_SIZEBOX | SBS_SIZEBOXBOTTOMRIGHTALIGN | SBS_SIZEGRIP,
         initRect, this, AFX_IDW_SIZE_BOX);
 
-    WMSG0("VFD OnCreate done\n");
+    LOGI("VFD OnCreate done");
     return 0;
 }
 
@@ -159,7 +159,7 @@ ViewFilesDialog::OnOK(void)
         CRect rect;
 
         GetWindowRect(&rect);
-        WMSG2(" VFD size now %dx%d\n", rect.Width(), rect.Height());
+        LOGI(" VFD size now %dx%d", rect.Width(), rect.Height());
 
         CDialog::OnOK();
     }
@@ -193,19 +193,19 @@ ViewFilesDialog::OnSize(UINT nType, int cx, int cy)
 {
     CDialog::OnSize(nType, cx, cy);
 
-    //WMSG2("Dialog: old size %d,%d\n",
+    //LOGI("Dialog: old size %d,%d",
     //  fLastWinSize.Width(), fLastWinSize.Height());
-    WMSG2("Dialog: new size %d,%d\n", cx, cy);
+    LOGI("Dialog: new size %d,%d", cx, cy);
 
     if (fLastWinSize.Width() == cx && fLastWinSize.Height() == cy) {
-        WMSG0("VFD OnSize: no change\n");
+        LOGI("VFD OnSize: no change");
         return;
     }
 
     int deltaX, deltaY;
     deltaX = cx - fLastWinSize.Width();
     deltaY = cy - fLastWinSize.Height();
-    //WMSG2("Delta is %d,%d\n", deltaX, deltaY);
+    //LOGI("Delta is %d,%d", deltaX, deltaY);
 
     ShiftControls(deltaX, deltaY);
 
@@ -248,7 +248,7 @@ ViewFilesDialog::ShiftControls(int deltaX, int deltaY)
     hdwp = StretchControl(hdwp, this, IDC_FVIEW_EDITBOX, deltaX, deltaY);
     hdwp = MoveControl(hdwp, this, IDOK, deltaX, deltaY);
     if (!EndDeferWindowPos(hdwp)) {
-        WMSG0("EndDeferWindowPos failed\n");
+        LOGI("EndDeferWindowPos failed");
     }
 
     /*
@@ -283,9 +283,9 @@ ViewFilesDialog::DoDataExchange(CDataExchange* pDX)
     CDialog::DoDataExchange(pDX);
 
     if (pDX->m_bSaveAndValidate) {
-        WMSG0("COPY OUT\n");
+        LOGI("COPY OUT");
     } else {
-        WMSG0("COPY IN\n");
+        LOGI("COPY IN");
         OnFviewNext();
     }
 }
@@ -299,13 +299,13 @@ DumpBitmapInfo(HBITMAP hBitmap)
 
     gotten = pBitmap->GetObject(sizeof(info), &info);
 
-    WMSG2("DumpBitmapInfo: gotten=%d of %d\n", gotten, sizeof(info));
-    WMSG1("  bmType = %d\n", info.bmType);
-    WMSG2("  bmWidth=%d, bmHeight=%d\n", info.bmWidth, info.bmHeight);
-    WMSG1("  bmWidthBytes=%d\n", info.bmWidthBytes);
-    WMSG1("  bmPlanes=%d\n", info.bmPlanes);
-    WMSG1("  bmBitsPixel=%d\n", info.bmBitsPixel);
-    WMSG1("  bmPits = 0x%08lx\n", info.bmBits);
+    LOGI("DumpBitmapInfo: gotten=%d of %d", gotten, sizeof(info));
+    LOGI("  bmType = %d", info.bmType);
+    LOGI("  bmWidth=%d, bmHeight=%d", info.bmWidth, info.bmHeight);
+    LOGI("  bmWidthBytes=%d", info.bmWidthBytes);
+    LOGI("  bmPlanes=%d", info.bmPlanes);
+    LOGI("  bmBitsPixel=%d", info.bmBitsPixel);
+    LOGI("  bmPits = 0x%08lx", info.bmBits);
 
 }
 
@@ -419,14 +419,14 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
         
         hBitmap = fpOutput->GetDIB()->ConvertToDDB(dcScreen.m_hDC);
         if (hBitmap == NULL) {
-            WMSG0("ConvertToDDB failed!\n");
+            LOGI("ConvertToDDB failed!");
             pEdit->SetWindowText(L"Internal error.");
             errFlg = true;
         } else {
             //DumpBitmapInfo(hBitmap);
             //DumpBitmapInfo(pDib->GetHandle());
 
-            WMSG0("Inserting bitmap\n");
+            LOGI("Inserting bitmap");
             pEdit->SetWindowText(L"");
             CImageDataObject::InsertBitmap(fpRichEditOle, hBitmap);
 
@@ -463,7 +463,7 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
 
         /* make sure the control will hold everything we throw at it */
         pEdit->LimitText(textLen+1);
-        WMSG2("Streaming %ld bytes (kind=%d)\n",
+        LOGI("Streaming %ld bytes (kind=%d)",
             textLen, fpOutput->GetOutputKind());
 
         /* clear this early to avoid loading onto yellow */
@@ -481,7 +481,7 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
         es.pfnCallback = RichEditXfer::EditStreamCallback;
         long count;
         count = pEdit->StreamIn(streamFormat, es);
-        WMSG2("StreamIn returned count=%ld dwError=%d\n", count, es.dwError);
+        LOGI("StreamIn returned count=%ld dwError=%d", count, es.dwError);
 
         if (es.dwError != 0) {
             /* a -16 error can happen if the type is RTF but contents are not */
@@ -496,7 +496,7 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
             es.dwError = 0;
 
             count = pEdit->StreamIn(SF_TEXT, es);
-            WMSG2("Error StreamIn returned count=%ld dwError=%d\n", count, es.dwError);
+            LOGI("Error StreamIn returned count=%ld dwError=%d", count, es.dwError);
 
             errFlg = true;
         }
@@ -570,7 +570,7 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
         long height = pPreferences->GetPrefLong(kPrFileViewerHeight);
         CRect fullRect;
         GetWindowRect(&fullRect);
-        //WMSG2(" VFD pre-size %dx%d\n", fullRect.Width(), fullRect.Height());
+        //LOGI(" VFD pre-size %dx%d", fullRect.Width(), fullRect.Height());
         fullRect.right = fullRect.left + width;
         fullRect.bottom = fullRect.top + height;
         MoveWindow(fullRect, TRUE);
@@ -638,7 +638,7 @@ ViewFilesDialog::OnFviewNext(void)
     int result;
 
     if (fBusy) {
-        WMSG0("BUSY!\n");
+        LOGI("BUSY!");
         return;
     }
 
@@ -695,7 +695,7 @@ ViewFilesDialog::OnFviewPrev(void)
     int result;
 
     if (fBusy) {
-        WMSG0("BUSY!\n");
+        LOGI("BUSY!");
         return;
     }
 
@@ -835,7 +835,7 @@ ViewFilesDialog::ReformatPrep(GenericEntry* pEntry)
 
     result = pMainWindow->GetFileParts(pEntry, &fpHolder);
     if (result != 0) {
-        WMSG0("GetFileParts(prev) failed!\n");
+        LOGI("GetFileParts(prev) failed!");
         ASSERT(fpHolder == NULL);
         return -1;
     }
@@ -851,7 +851,7 @@ ViewFilesDialog::ReformatPrep(GenericEntry* pEntry)
         pEntry->GetFileNameExtensionA());
 
     /* figure out which reformatters apply to this file */
-    WMSG0("Testing reformatters\n");
+    LOGI("Testing reformatters");
     fpHolder->TestApplicability();
 
     return 0;
@@ -926,13 +926,13 @@ ViewFilesDialog::ConfigureFormatSel(ReformatHolder::ReformatPart part)
     ReformatHolder::ReformatID returnID = ReformatHolder::kReformatRaw;
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_FVIEW_FORMATSEL);
 
-    WMSG0("--- ConfigureFormatSel\n");
+    LOGI("--- ConfigureFormatSel");
 
     //int sel;
     //sel = pCombo->GetCurSel();
     //if (sel != CB_ERR)
     //  prevID = (ReformatHolder::ReformatID) pCombo->GetItemData(sel);
-    //WMSG1("  prevID = %d\n", prevID);
+    //LOGI("  prevID = %d", prevID);
 
     EnableFormatSelection(TRUE);
     pCombo->ResetContent();
@@ -971,7 +971,7 @@ ViewFilesDialog::ConfigureFormatSel(ReformatHolder::ReformatPart part)
             if ((int) applies == testApplies) {
                 /* match! */
                 CString str;
-                //WMSG2("MATCH at %d (0x%02x)\n", idIdx, testApplies);
+                //LOGI("MATCH at %d (0x%02x)", idIdx, testApplies);
                 str.Format(L"%ls", ReformatHolder::GetReformatName(
                                         (ReformatHolder::ReformatID) idIdx));
                 comboIdx = pCombo->AddString(str);
@@ -984,7 +984,7 @@ ViewFilesDialog::ConfigureFormatSel(ReformatHolder::ReformatPart part)
                 //if (idIdx == (int) prevID &&
                 //  applyIdx == ReformatHolder::kApplicAlways)
                 //{
-                //  WMSG0("  Found 'always' prevID, selecting\n");
+                //  LOGI("  Found 'always' prevID, selecting");
                 //  pCombo->SetCurSel(comboIdx);
                 //}
             }
@@ -998,7 +998,7 @@ skip:
 
     /* return whatever we now have selected */
     int sel = pCombo->GetCurSel();
-    WMSG1("  At end, sel is %d\n", sel);
+    LOGI("  At end, sel is %d", sel);
     if (sel != CB_ERR)
         returnID = (ReformatHolder::ReformatID) pCombo->GetItemData(sel);
 
@@ -1015,7 +1015,7 @@ ViewFilesDialog::OnFormatSelChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_FVIEW_FORMATSEL);
     ASSERT(pCombo != NULL);
-    WMSG1("+++ SELECTION IS NOW %d\n", pCombo->GetCurSel());
+    LOGI("+++ SELECTION IS NOW %d", pCombo->GetCurSel());
 
     SelectionEntry* pSelEntry = fpSelSet->IterCurrent();
     GenericEntry* pEntry = pSelEntry->GetEntry();
@@ -1053,7 +1053,7 @@ ViewFilesDialog::ForkSelectCommon(ReformatHolder::ReformatPart part)
     GenericEntry* pEntry;
     ReformatHolder::ReformatID id;
 
-    WMSG1("Switching to file part=%d\n", part);
+    LOGI("Switching to file part=%d", part);
     ASSERT(fpHolder != NULL);
     ASSERT(fpSelSet != NULL);
     ASSERT(fpSelSet->IterCurrent() != NULL);
@@ -1162,7 +1162,7 @@ ViewFilesDialog::OnFviewFont(void)
         //fontDlg.GetCurrentFont(&logFont);
         fTypeFace = fontDlg.GetFaceName();
         fPointSize = fontDlg.GetSize() / 10;
-        WMSG2("Now using %d-point '%ls'\n", fPointSize, (LPCWSTR) fTypeFace);
+        LOGI("Now using %d-point '%ls'", fPointSize, (LPCWSTR) fTypeFace);
 
         NewFontSelected(false);
     }
@@ -1229,7 +1229,7 @@ ViewFilesDialog::OnFviewPrint(void)
             }
             pre.Setup(&countDC, this);
             pre.PrintPreflight(&fEditCtrl, &numPages);
-            WMSG1("Default printer generated %d pages\n", numPages);
+            LOGI("Default printer generated %d pages", numPages);
 
             dlg.m_pd.nToPage = dlg.m_pd.nMaxPage = numPages;
         }
@@ -1242,7 +1242,7 @@ ViewFilesDialog::OnFviewPrint(void)
     fEditCtrl.GetSel(/*ref*/startChar, /*ref*/endChar);
 
     if (endChar != startChar) {
-        WMSG2("GetSel returned start=%ld end=%ld\n", startChar, endChar);
+        LOGI("GetSel returned start=%ld end=%ld", startChar, endChar);
         dlg.m_pd.Flags &= ~(PD_NOSELECTION);
     }
 
@@ -1329,7 +1329,7 @@ ViewFilesDialog::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
     fFindMatchWholeWord = (fpFindDialog->MatchWholeWord() != 0);
 
     if (fpFindDialog->IsTerminating()) {
-        WMSG0("VFD find dialog closing\n");
+        LOGI("VFD find dialog closing");
         fpFindDialog = NULL;
         return 0;
     }
@@ -1338,7 +1338,7 @@ ViewFilesDialog::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
         fFindLastStr = fpFindDialog->GetFindString();
         FindNext(fFindLastStr, fFindDown, fFindMatchCase, fFindMatchWholeWord);
     } else {
-        WMSG0("Unexpected find dialog activity\n");
+        LOGI("Unexpected find dialog activity");
     }
 
     return 0;
@@ -1352,7 +1352,7 @@ void
 ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
     bool wholeWord)
 {
-    WMSG4("FindText '%ls' d=%d c=%d w=%d\n", str, down, matchCase, wholeWord);
+    LOGI("FindText '%ls' d=%d c=%d w=%d", str, down, matchCase, wholeWord);
 
     FINDTEXTEX findTextEx = { 0 };
     CHARRANGE selChrg;
@@ -1365,7 +1365,7 @@ ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
         flags |= FR_WHOLEWORD;
 
     fEditCtrl.GetSel(selChrg);
-    WMSG2("  selection is %ld,%ld\n",
+    LOGI("  selection is %ld,%ld",
         selChrg.cpMin, selChrg.cpMax);
     if (selChrg.cpMin == selChrg.cpMax)
         start = selChrg.cpMin;      // start at caret
@@ -1390,7 +1390,7 @@ ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
             (LPARAM) &findTextEx);
     }
 
-    WMSG3("  result=%ld min=%ld max=%ld\n", result,
+    LOGI("  result=%ld min=%ld max=%ld", result,
         findTextEx.chrgText.cpMin, findTextEx.chrgText.cpMax);
     if (result != -1) {
         /* select the text we found */

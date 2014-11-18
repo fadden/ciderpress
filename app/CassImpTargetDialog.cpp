@@ -139,12 +139,12 @@ CassImpTargetDialog::GetStartAddr(void) const
     long val;
 
     if (str[0] == '\0') {
-        WMSG0(" HEY: blank addr, returning -1\n");
+        LOGI(" HEY: blank addr, returning -1");
         return -1;
     }
     val = wcstoul(aux, &end, 16);
     if (end != str + wcslen(str)) {
-        WMSG1(" HEY: found some garbage in addr '%ls', returning -1\n",
+        LOGI(" HEY: found some garbage in addr '%ls', returning -1",
             (LPCWSTR) aux);
         return -1;
     }

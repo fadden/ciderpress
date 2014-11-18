@@ -248,21 +248,21 @@ MainWindow::MainWindow()
  */
 MainWindow::~MainWindow()
 {
-    WMSG0("~MainWindow\n");
+    LOGI("~MainWindow");
 
-    //WMSG0("MainWindow destructor\n");
+    //LOGI("MainWindow destructor");
     CloseArchiveWOControls();
 
     int cc;
     cc = ::WinHelp(m_hWnd, ::AfxGetApp()->m_pszHelpFilePath, HELP_QUIT, 0);
-    WMSG1("Turning off WinHelp returned %d\n", cc);
+    LOGI("Turning off WinHelp returned %d", cc);
 
     // free stuff used by print dialog
     ::GlobalFree(fhDevMode);
     ::GlobalFree(fhDevNames);
 
     fPreferences.SaveToRegistry();
-    WMSG0("MainWindow destructor complete\n");
+    LOGI("MainWindow destructor complete");
 }
 
 
@@ -293,7 +293,7 @@ MainWindow::GetClientRect(LPRECT lpRect) const
     fStatusBar.GetWindowRect(&sizeRect);
     statusBarHeight = sizeRect.bottom - sizeRect.top;
 
-    //WMSG2("HEIGHTS = %d/%d\n", toolBarHeight, statusBarHeight);
+    //LOGI("HEIGHTS = %d/%d", toolBarHeight, statusBarHeight);
     CFrameWnd::GetClientRect(lpRect);
     lpRect->top += toolBarHeight;
     lpRect->bottom -= statusBarHeight;
@@ -320,7 +320,7 @@ MainWindow::DoIdle(void)
         if (width >= 0 && width < ColumnLayout::kMinCol0Width) {
             /* column is too small, but don't change it until user lets mouse up */
             if (::GetAsyncKeyState(VK_LBUTTON) >= 0) {
-                WMSG0("Resetting column 0 width\n");
+                LOGI("Resetting column 0 width");
                 fPreferences.GetColumnLayout()->SetColumnWidth(0,
                     ColumnLayout::kMinCol0Width);
                 fpContentList->NewColumnWidths();
@@ -375,14 +375,14 @@ MainWindow::ProcessCommandLine(void)
     if (mangle == NULL)
         return;
 
-    WMSG1("Mangling '%ls'\n", mangle);
+    LOGI("Mangling '%ls'", mangle);
     WCHAR* argv[8];
     int argc = 8;
     VectorizeString(mangle, argv, &argc);
 
-    WMSG0("Args:\n");
+    LOGI("Args:");
     for (int i = 0; i < argc; i++) {
-        WMSG2("  %d '%ls'\n", i, argv[i]);
+        LOGI("  %d '%ls'", i, argv[i]);
     }
 
     /*
@@ -397,7 +397,7 @@ MainWindow::ProcessCommandLine(void)
         if (argv[i][0] == '-') {
             if (wcsicmp(argv[i], L"-mode") == 0) {
                 if (i == argc-1) {
-                    WMSG0("WARNING: -mode specified without mode\n");
+                    LOGI("WARNING: -mode specified without mode");
                 } else
                     i++;
                 if (wcsicmp(argv[i], kModeNuFX) == 0)
@@ -409,11 +409,11 @@ MainWindow::ProcessCommandLine(void)
                 else if (wcsicmp(argv[i], kModeDiskImage) == 0)
                     filterIndex = kFilterIndexDiskImage;
                 else {
-                    WMSG1("WARNING: unrecognized mode '%ls'\n", argv[i]);
+                    LOGI("WARNING: unrecognized mode '%ls'", argv[i]);
                 }
             } else if (wcsicmp(argv[i], L"-dispname") == 0) {
                 if (i == argc-1) {
-                    WMSG0("WARNING: -dispname specified without name\n");
+                    LOGI("WARNING: -dispname specified without name");
                 } else
                     i++;
                 dispName = argv[i];
@@ -421,17 +421,17 @@ MainWindow::ProcessCommandLine(void)
                 temp = true;
             } else if (wcsicmp(argv[i], L"-install") == 0) {
                 // see MyApp::InitInstance
-                WMSG0("Got '-install' flag, doing nothing\n");
+                LOGI("Got '-install' flag, doing nothing");
             } else if (wcsicmp(argv[i], L"-uninstall") == 0) {
                 // see MyApp::InitInstance
-                WMSG0("Got '-uninstall' flag, doing nothing\n");
+                LOGI("Got '-uninstall' flag, doing nothing");
             } else {
-                WMSG1("WARNING: unrecognized flag '%ls'\n", argv[i]);
+                LOGI("WARNING: unrecognized flag '%ls'", argv[i]);
             }
         } else {
             /* must be the filename */
             if (i != argc-1) {
-                WMSG1("WARNING: ignoring extra arguments (e.g. '%ls')\n",
+                LOGI("WARNING: ignoring extra arguments (e.g. '%ls')",
                     argv[i+1]);
             }
             filename = argv[i];
@@ -439,11 +439,11 @@ MainWindow::ProcessCommandLine(void)
         }
     }
     if (argc != 1 && filename == NULL) {
-        WMSG0("WARNING: args specified but no filename found\n");
+        LOGI("WARNING: args specified but no filename found");
     }
 
-    WMSG0("Argument handling:\n");
-    WMSG3(" index=%d temp=%d filename='%ls'\n",
+    LOGI("Argument handling:");
+    LOGI(" index=%d temp=%d filename='%ls'",
         filterIndex, temp, filename == NULL ? L"(null)" : filename);
 
     if (filename != NULL) {
@@ -473,7 +473,7 @@ MainWindow::ProcessCommandLine(void)
             if (len > 4 && wcsicmp(filename + (len-4), L".tmp") == 0) {
                 fDeleteList.Add(filename);
             } else {
-                WMSG1("NOT adding '%ls' to DeleteList -- does not end in '.tmp'\n",
+                LOGI("NOT adding '%ls' to DeleteList -- does not end in '.tmp'",
                     filename);
             }
         }
@@ -497,7 +497,7 @@ const int kProgressPane = 1;
 int
 MainWindow::OnCreate(LPCREATESTRUCT lpcs)
 {
-    WMSG0("Now in OnCreate!\n");
+    LOGI("Now in OnCreate!");
     if (CFrameWnd::OnCreate(lpcs) == -1)
         return -1;
 
@@ -547,7 +547,7 @@ MainWindow::OnLateInit(UINT, LONG)
 
     appName.LoadString(IDS_MB_APP_NAME);
 
-    WMSG0("----- late init begins -----\n");
+    LOGI("----- late init begins -----");
 
     /*
      * Handle all other messages.  This gives the framework a chance to dim
@@ -593,7 +593,7 @@ MainWindow::OnLateInit(UINT, LONG)
     MyRegistry::RegStatus regStatus;
     //regStatus = gMyApp.fRegistry.CheckRegistration(&result);
     regStatus = MyRegistry::kRegValid;
-    WMSG1("CheckRegistration returned %d\n", regStatus);
+    LOGI("CheckRegistration returned %d", regStatus);
     switch (regStatus) {
     case MyRegistry::kRegNotSet:
     case MyRegistry::kRegValid:
@@ -602,7 +602,7 @@ MainWindow::OnLateInit(UINT, LONG)
     case MyRegistry::kRegExpired:
     case MyRegistry::kRegInvalid:
         MessageBox(result, appName, MB_OK|MB_ICONINFORMATION);
-        WMSG0("FORCING REG\n");
+        LOGI("FORCING REG");
 #if 0
         if (EnterRegDialog::GetRegInfo(this) != 0) {
             result = "";
@@ -647,7 +647,7 @@ fail:
 BOOL
 MainWindow::OnQueryEndSession(void)
 {
-    WMSG0("Got QueryEndSession\n");
+    LOGI("Got QueryEndSession");
     return TRUE;
 }
 
@@ -657,7 +657,7 @@ MainWindow::OnQueryEndSession(void)
 void
 MainWindow::OnEndSession(BOOL bEnding)
 {
-    WMSG1("Got EndSession (bEnding=%d)\n", bEnding);
+    LOGI("Got EndSession (bEnding=%d)", bEnding);
 
     if (bEnding) {
         CloseArchiveWOControls();
@@ -738,7 +738,7 @@ MainWindow::OnPaint(void)
 afx_msg BOOL
 MainWindow::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-    WMSG0("MOUSE WHEEL\n");
+    LOGI("MOUSE WHEEL");
     return FALSE;
 
     WPARAM wparam;
@@ -760,7 +760,7 @@ void
 MainWindow::OnSetFocus(CWnd* /*pOldWnd*/)
 {
     if (fpContentList != NULL) {
-        WMSG0("Returning focus to ContentList\n");
+        LOGI("Returning focus to ContentList");
         fpContentList->SetFocus();
     }
 }
@@ -787,7 +787,7 @@ MainWindow::OnHelp(UINT wParam, LONG lParam)
     HELPINFO* lpHelpInfo = (HELPINFO*) lParam;
 
     DWORD context = lpHelpInfo->iCtrlId;
-    WMSG1("MainWindow OnHelp (context=%d)\n", context);
+    LOGI("MainWindow OnHelp (context=%d)", context);
     WinHelp(context, HELP_CONTEXTPOPUP);
 
     return TRUE;    // yes, we handled it
@@ -880,13 +880,13 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
 {
     bool mustReload = false;
 
-    //WMSG0("APPLY CHANGES\n");
+    //LOGI("APPLY CHANGES");
 
     ColumnLayout* pColLayout = fPreferences.GetColumnLayout();
 
     if (pPS->fGeneralPage.fDefaultsPushed) {
         /* reset all sizes to defaults, then factor in checkboxes */
-        WMSG0(" Resetting all widths to defaults\n");
+        LOGI(" Resetting all widths to defaults");
 
         /* copy defaults over */
         for (int i = 0; i < kNumVisibleColumns; i++)
@@ -899,13 +899,13 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
             pPS->fGeneralPage.fColumn[i])
         {
             /* restore column */
-            WMSG1(" Column %d restored\n", i);
+            LOGI(" Column %d restored", i);
             pColLayout->SetColumnWidth(i, ColumnLayout::kWidthDefaulted);
         } else if (pColLayout->GetColumnWidth(i) != 0 &&
             !pPS->fGeneralPage.fColumn[i])
         {
             /* disable column */
-            WMSG1(" Column %d hidden\n", i);
+            LOGI(" Column %d hidden", i);
             pColLayout->SetColumnWidth(i, 0);
         }
     }
@@ -919,7 +919,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
     if (fPreferences.GetPrefBool(kPrCoerceDOSFilenames)!=
         (pPS->fGeneralPage.fCoerceDOSFilenames != 0))
     {
-        WMSG1("DOS filename coercion pref now %d\n",
+        LOGI("DOS filename coercion pref now %d",
             pPS->fGeneralPage.fCoerceDOSFilenames);
         fPreferences.SetPrefBool(kPrCoerceDOSFilenames,
             pPS->fGeneralPage.fCoerceDOSFilenames != 0);
@@ -928,7 +928,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
     if (fPreferences.GetPrefBool(kPrSpacesToUnder) !=
         (pPS->fGeneralPage.fSpacesToUnder != 0))
     {
-        WMSG1("Spaces-to-underscores now %d\n", pPS->fGeneralPage.fSpacesToUnder);
+        LOGI("Spaces-to-underscores now %d", pPS->fGeneralPage.fSpacesToUnder);
         fPreferences.SetPrefBool(kPrSpacesToUnder, pPS->fGeneralPage.fSpacesToUnder != 0);
         mustReload = true;
     }
@@ -936,7 +936,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
     fPreferences.SetPrefBool(kPrBeepOnSuccess, pPS->fGeneralPage.fBeepOnSuccess != 0);
 
     if (pPS->fGeneralPage.fOurAssociations != NULL) {
-        WMSG0("NEW ASSOCIATIONS!\n");
+        LOGI("NEW ASSOCIATIONS!");
 
         for (int assoc = 0; assoc < gMyApp.fRegistry.GetNumFileAssocs(); assoc++)
         {
@@ -991,7 +991,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
     fPreferences.SetPrefBool(kPrConvResources, pPS->fFviewPage.fConvResources != 0);
 
     fPreferences.SetPrefString(kPrTempPath, pPS->fFilesPage.fTempPath);
-    WMSG1("--- Temp path now '%ls'\n", fPreferences.GetPrefString(kPrTempPath));
+    LOGI("--- Temp path now '%ls'", fPreferences.GetPrefString(kPrTempPath));
     fPreferences.SetPrefString(kPrExtViewerExts, pPS->fFilesPage.fExtViewerExts);
 
 
@@ -1006,7 +1006,7 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
         fpOpenArchive->PreferencesChanged();
 
     if (mustReload) {
-        WMSG0("Preferences apply requesting GA/CL reload\n");
+        LOGI("Preferences apply requesting GA/CL reload");
         if (fpOpenArchive != NULL)
             fpOpenArchive->Reload();
         if (fpContentList != NULL)
@@ -1073,7 +1073,7 @@ MainWindow::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
         fpContentList->FindNext(fFindLastStr, fFindDown, fFindMatchCase,
             fFindMatchWholeWord);
     } else {
-        WMSG0("Unexpected find dialog activity\n");
+        LOGI("Unexpected find dialog activity");
     }
 
     return 0;
@@ -1088,7 +1088,7 @@ MainWindow::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
 void
 MainWindow::OnEditSort(UINT id)
 {
-    WMSG1("EDIT SORT %d\n", id);
+    LOGI("EDIT SORT %d", id);
 
     ASSERT(id >= IDM_SORT_PATHNAME && id <= IDM_SORT_ORIGINAL);
     fPreferences.GetColumnLayout()->SetSortColumn(id - IDM_SORT_PATHNAME);
@@ -1157,7 +1157,7 @@ MainWindow::OnHelpAbout(void)
     AboutDialog dlg(this);
 
     result = dlg.DoModal();
-    WMSG1("HelpAbout returned %d\n", result);
+    LOGI("HelpAbout returned %d", result);
 
     /*
      * User could've changed registration.  If we're showing the registered
@@ -1192,7 +1192,7 @@ MainWindow::OnFileNewArchive(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     filename = dlg.GetPathName();
-    WMSG1("NEW FILE '%ls'\n", (LPCWSTR) filename);
+    LOGI("NEW FILE '%ls'", (LPCWSTR) filename);
 
     /* remove file if it already exists */
     errMsg = RemoveFile(filename);
@@ -1216,7 +1216,7 @@ MainWindow::OnFileNewArchive(void)
     }
 
 bail:
-    WMSG0("--- OnFileNewArchive done\n");
+    LOGI("--- OnFileNewArchive done");
 }
 
 
@@ -1254,7 +1254,7 @@ MainWindow::OnFileOpen(void)
         dlg.m_ofn.nFilterIndex, dlg.GetReadOnlyPref() != 0);
 
 bail:
-    WMSG0("--- OnFileOpen done\n");
+    LOGI("--- OnFileOpen done");
 }
 
 /*
@@ -1263,7 +1263,7 @@ bail:
 void
 MainWindow::OnFileOpenVolume(void)
 {
-    WMSG0("--- OnFileOpenVolume\n");
+    LOGI("--- OnFileOpenVolume");
 
     int result;
 
@@ -1360,7 +1360,7 @@ MainWindow::OnFileClose(void)
 {
     CloseArchive();
     //SetCPTitle();
-    WMSG0("--- OnFileClose done\n");
+    LOGI("--- OnFileClose done");
 }
 void
 MainWindow::OnUpdateFileClose(CCmdUI* pCmdUI)
@@ -1392,7 +1392,7 @@ MainWindow::OnFileArchiveInfo(void)
         pDlg = new AcuArchiveInfoDialog((AcuArchive*) fpOpenArchive, this);
         break;
     default:
-        WMSG1("Unexpected archive type %d\n", fpOpenArchive->GetArchiveKind());
+        LOGI("Unexpected archive type %d", fpOpenArchive->GetArchiveKind());
         ASSERT(false);
         return;
     };
@@ -1526,7 +1526,7 @@ MainWindow::GetSelectedItem(ContentList* pContentList)
     int num = pContentList->GetNextSelectedItem(/*ref*/ posn);
     GenericEntry* pEntry = (GenericEntry*) pContentList->GetItemData(num);
     if (pEntry == NULL) {
-        WMSG1(" Glitch: couldn't find entry %d\n", num);
+        LOGI(" Glitch: couldn't find entry %d", num);
         ASSERT(false);
     }
 
@@ -1547,7 +1547,7 @@ MainWindow::HandleDoubleClick(void)
     ASSERT(fpContentList != NULL);
     if (fpContentList->GetSelectedCount() == 0) {
         /* nothing selected, they double-clicked outside first column */
-        WMSG0("Double-click but nothing selected\n");
+        LOGI("Double-click but nothing selected");
         return;
     }
     if (fpContentList->GetSelectedCount() != 1) {
@@ -1563,7 +1563,7 @@ MainWindow::HandleDoubleClick(void)
     if (pEntry == NULL)
         return;
 
-    WMSG1(" Double-click GOT '%ls'\n", pEntry->GetPathName());
+    LOGI(" Double-click GOT '%ls'", pEntry->GetPathName());
     const WCHAR* ext;
     long fileType, auxType;
 
@@ -1594,7 +1594,7 @@ MainWindow::HandleDoubleClick(void)
     CString extViewerExts;
     extViewerExts = fPreferences.GetPrefString(kPrExtViewerExts);
     if (ext != NULL && MatchSemicolonList(extViewerExts, ext+1)) {
-        WMSG1(" Launching external viewer for '%ls'\n", ext);
+        LOGI(" Launching external viewer for '%ls'", ext);
         TmpExtractForExternal(pEntry);
         handled = true;
     } else if (pEntry->GetRecordKind() == GenericEntry::kRecordKindFile) {
@@ -1604,7 +1604,7 @@ MainWindow::HandleDoubleClick(void)
                 wcsicmp(ext, L".bxy") == 0)) ||
             (fileType == 0xe0 && auxType == 0x8002))
         {
-            WMSG0(" Guessing NuFX\n");
+            LOGI(" Guessing NuFX");
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeNuFX);
             handled = true;
         } else
@@ -1613,7 +1613,7 @@ MainWindow::HandleDoubleClick(void)
                 wcsicmp(ext, L".bqy") == 0)) ||
             (fileType == 0xe0 && auxType == 0x8000))
         {
-            WMSG0(" Guessing Binary II\n");
+            LOGI(" Guessing Binary II");
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeBinaryII);
             handled = true;
         } else
@@ -1621,7 +1621,7 @@ MainWindow::HandleDoubleClick(void)
                 wcsicmp(ext, L".acu") == 0)) ||
             (fileType == 0xe0 && auxType == 0x8001))
         {
-            WMSG0(" Guessing ACU\n");
+            LOGI(" Guessing ACU");
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeACU);
             handled = true;
         } else
@@ -1629,12 +1629,12 @@ MainWindow::HandleDoubleClick(void)
             pEntry->GetUncompressedLen() == 819284)
         {
             /* type is dImg, creator is dCpy, length is 800K + DC stuff */
-            WMSG0(" Looks like a disk image\n");
+            LOGI(" Looks like a disk image");
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeDiskImage);
             handled = true;
         }
     } else if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDisk) {
-        WMSG0(" Opening archived disk image\n");
+        LOGI(" Opening archived disk image");
         TmpExtractAndOpen(pEntry, GenericEntry::kDiskImageThread, kModeDiskImage);
         handled = true;
     }
@@ -1679,7 +1679,7 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
                 L"CPfile", 0, nameBuf);
     if (unique == 0) {
         DWORD dwerr = ::GetLastError();
-        WMSG2("GetTempFileName failed on '%ls' (err=%ld)\n",
+        LOGI("GetTempFileName failed on '%ls' (err=%ld)",
             fPreferences.GetPrefString(kPrTempPath), dwerr);
         return dwerr;
     }
@@ -1694,7 +1694,7 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
 
     fp = _wfopen(nameBuf, L"wb");
     if (fp != NULL) {
-        WMSG2("Extracting to '%ls' (unique=%d)\n", nameBuf, unique);
+        LOGI("Extracting to '%ls' (unique=%d)", nameBuf, unique);
         result = pEntry->ExtractThreadToFile(threadKind, fp,
                     GenericEntry::kConvertEOLOff, GenericEntry::kConvertHAOff,
                     &errMsg);
@@ -1716,7 +1716,7 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
                 ShowFailureMsg(this, msg, IDS_FAILED);
             } else {
                 /* during dev, "missing DLL" causes false-positive success */
-                WMSG0("Successfully launched CiderPress\n");
+                LOGI("Successfully launched CiderPress");
                 mustDelete = false;     // up to newly-launched app
             }
         } else {
@@ -1729,7 +1729,7 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
     }
 
     if (mustDelete) {
-        WMSG1("Deleting '%ls'\n", nameBuf);
+        LOGI("Deleting '%ls'", nameBuf);
         _wunlink(nameBuf);
     }
 
@@ -1767,7 +1767,7 @@ MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
                 L"CPfile", 0, nameBuf);
     if (unique == 0) {
         DWORD dwerr = ::GetLastError();
-        WMSG2("GetTempFileName failed on '%ls' (err=%ld)\n",
+        LOGI("GetTempFileName failed on '%ls' (err=%ld)",
             fPreferences.GetPrefString(kPrTempPath), dwerr);
         return dwerr;
     }
@@ -1785,7 +1785,7 @@ MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
     fp = _wfopen(nameBuf, L"wb");
     if (fp != NULL) {
         fDeleteList.Add(nameBuf);   // second file created by fopen
-        WMSG2("Extracting to '%ls' (unique=%d)\n", nameBuf, unique);
+        LOGI("Extracting to '%ls' (unique=%d)", nameBuf, unique);
         result = pEntry->ExtractThreadToFile(GenericEntry::kDataThread, fp,
                     GenericEntry::kConvertEOLOff, GenericEntry::kConvertHAOff,
                     &errMsg);
@@ -1801,7 +1801,7 @@ MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
                 msg.Format(L"Unable to launch external viewer (err=%d).", err);
                 ShowFailureMsg(this, msg, IDS_FAILED);
             } else {
-                WMSG0("Successfully launched external viewer\n");
+                LOGI("Successfully launched external viewer");
             }
         } else {
             ShowFailureMsg(this, errMsg, IDS_FAILED);
@@ -1830,7 +1830,7 @@ MainWindow::OnRtClkDefault(void)
 
     idx = fpContentList->GetRightClickItem();
     ASSERT(idx != -1);
-    WMSG1("OnRtClkDefault %d\n", idx);
+    LOGI("OnRtClkDefault %d", idx);
 
     fpContentList->ClearRightClickItem();
 }
@@ -1858,7 +1858,7 @@ MainWindow::SetProgressBegin(void)
         fpActionProgress->SetProgress(0);
     else
         fStatusBar.SetPaneText(kProgressPane, L"--%");
-    //WMSG0("  Complete: BEGIN\n");
+    //LOGI("  Complete: BEGIN");
 
     /* redraw stuff with the changes */
     (void) PeekAndPump();
@@ -1880,11 +1880,11 @@ MainWindow::SetProgressUpdate(int percent, const WCHAR* oldName,
         WCHAR buf[8];
         wsprintf(buf, L"%d%%", percent);
         fStatusBar.SetPaneText(kProgressPane, buf);
-        //WMSG1("  Complete: %ls\n", buf);
+        //LOGI("  Complete: %ls", buf);
     }
 
     if (!PeekAndPump()) {
-        WMSG0("SetProgressUpdate: shutdown?!\n");
+        LOGI("SetProgressUpdate: shutdown?!");
     }
 
     //EventPause(10);       // DEBUG DEBUG
@@ -1899,7 +1899,7 @@ MainWindow::SetProgressEnd(void)
     else
         fStatusBar.SetPaneText(kProgressPane, L"");
 //  EventPause(100);        // DEBUG DEBUG
-    //WMSG0("  Complete: END\n");
+    //LOGI("  Complete: END");
 }
 
 
@@ -1919,7 +1919,7 @@ MainWindow::SetProgressCounter(const WCHAR* str, long val)
     ASSERT(!IsWindowEnabled());
 
     if (fpProgressCounter != NULL) {
-        //WMSG2("SetProgressCounter '%ls' %d\n", str, val);
+        //LOGI("SetProgressCounter '%ls' %d", str, val);
         CString msg;
 
         if (str != NULL)
@@ -1936,7 +1936,7 @@ MainWindow::SetProgressCounter(const WCHAR* str, long val)
     }
 
     if (!PeekAndPump()) {
-        WMSG0("SetProgressCounter: shutdown?!\n");
+        LOGI("SetProgressCounter: shutdown?!");
     }
     //EventPause(10);       // DEBUG DEBUG
 
@@ -2008,10 +2008,10 @@ MainWindow::PrintAbortProc(HDC hDC, int nCode)
 
     pMain->PeekAndPump();
     if (pMain->GetAbortPrinting()) {
-        WMSG0("PrintAbortProc returning FALSE (abort printing)\n");
+        LOGI("PrintAbortProc returning FALSE (abort printing)");
         return FALSE;
     }
-    WMSG0("  PrintAbortProc returning TRUE (continue printing)\n");
+    LOGI("  PrintAbortProc returning TRUE (continue printing)");
     return TRUE;
 }
 
@@ -2083,7 +2083,7 @@ MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
 
     appName.LoadString(IDS_MB_APP_NAME);
 
-    WMSG3("LoadArchive: '%ls' ro=%d idx=%d\n", fileName, readOnly, filterIndex);
+    LOGI("LoadArchive: '%ls' ro=%d idx=%d", fileName, readOnly, filterIndex);
 
     /* close any existing archive to avoid weirdness from re-open */
     CloseArchive();
@@ -2117,7 +2117,7 @@ try_again:
     if (filterIndex == kFilterIndexBinaryII) {
         /* try Binary II and nothing else */
         ASSERT(!createFile);
-        WMSG0("  Trying Binary II\n");
+        LOGI("  Trying Binary II");
         pOpenArchive = new BnyArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
         if (openResult != GenericArchive::kResultSuccess) {
@@ -2130,7 +2130,7 @@ try_again:
     if (filterIndex == kFilterIndexACU) {
         /* try ACU and nothing else */
         ASSERT(!createFile);
-        WMSG0("  Trying ACU\n");
+        LOGI("  Trying ACU");
         pOpenArchive = new AcuArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
         if (openResult != GenericArchive::kResultSuccess) {
@@ -2143,7 +2143,7 @@ try_again:
     if (filterIndex == kFilterIndexDiskImage) {
         /* try various disk image formats */
         ASSERT(!createFile);
-        WMSG0("  Trying disk images\n");
+        LOGI("  Trying disk images");
 
         pOpenArchive = new DiskArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
@@ -2182,7 +2182,7 @@ try_again:
     } else
     if (filterIndex == kFilterIndexNuFX) {
         /* try NuFX (including its embedded-in-BNY form) */
-        WMSG0("  Trying NuFX\n");
+        LOGI("  Trying NuFX");
 
         pOpenArchive = new NufxArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
@@ -2233,7 +2233,7 @@ MainWindow::DoOpenVolume(CString drive, bool readOnly)
     //char filename[4] = "_:\\";
     //filename[0] = driveLetter;
 
-    WMSG2("FileOpenVolume '%ls' %d\n", (LPCWSTR)drive, readOnly);
+    LOGI("FileOpenVolume '%ls' %d", (LPCWSTR)drive, readOnly);
 
     /* close existing archive */
     CloseArchive();
@@ -2295,7 +2295,7 @@ MainWindow::ReopenArchive(void)
     CString errStr;
 
     /* if the open fails we *don't* want to leave the previous content up */
-    WMSG3("Reopening '%ls' ro=%d kind=%d\n",
+    LOGI("Reopening '%ls' ro=%d kind=%d",
         (LPCWSTR) pathName, readOnly, archiveKind);
     CloseArchive();
 
@@ -2324,7 +2324,7 @@ MainWindow::ReopenArchive(void)
         goto bail;
     }
 
-    WMSG0(" Reopen was successful\n");
+    LOGI(" Reopen was successful");
     SwitchContentList(pOpenArchive);
     pOpenArchive = NULL;
     SetCPTitle(pathName, fpOpenArchive);
@@ -2412,7 +2412,7 @@ MainWindow::CloseArchiveWOControls(void)
 {
     if (fpOpenArchive != NULL) {
         //fpOpenArchive->Close();
-        WMSG0("Deleting OpenArchive\n");
+        LOGI("Deleting OpenArchive");
         delete fpOpenArchive;
         fpOpenArchive = NULL;
     }
@@ -2429,7 +2429,7 @@ MainWindow::CloseArchive(void)
 
     // destroy the ContentList
     if (fpContentList != NULL) {
-        WMSG0("Destroying ContentList\n");
+        LOGI("Destroying ContentList");
         fpContentList->DestroyWindow(); // auto-cleanup invokes "delete"
         fpContentList = NULL;
     }
@@ -2538,7 +2538,7 @@ MainWindow::SuccessBeep(void)
     const Preferences* pPreferences = GET_PREFERENCES();
 
     if (pPreferences->GetPrefBool(kPrBeepOnSuccess)) {
-        WMSG0("<happy-beep>\n");
+        LOGI("<happy-beep>");
         ::MessageBeep(MB_OK);
     }
 }
@@ -2552,7 +2552,7 @@ MainWindow::FailureBeep(void)
     const Preferences* pPreferences = GET_PREFERENCES();
 
     if (pPreferences->GetPrefBool(kPrBeepOnSuccess)) {
-        WMSG0("<failure-beep>\n");
+        LOGI("<failure-beep>");
         ::MessageBeep(MB_ICONEXCLAMATION);  // maybe MB_ICONHAND?
     }
 }
@@ -2571,7 +2571,7 @@ MainWindow::RemoveFile(const WCHAR* fileName)
     cc = _wunlink(fileName);
     if (cc < 0 && errno != ENOENT) {
         int err = errno;
-        WMSG2("Failed removing file '%ls', errno=%d\n", fileName, err);
+        LOGI("Failed removing file '%ls', errno=%d", fileName, err);
         errMsg.Format(L"Unable to remove '%ls': %hs.",
             fileName, strerror(err));
         if (err == EACCES)

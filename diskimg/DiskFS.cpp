@@ -63,10 +63,10 @@ void
 DiskFS::SetDiskImg(DiskImg* pImg)
 {
     if (pImg == NULL && fpImg == NULL) {
-        WMSG0("SetDiskImg: no-op (both NULL)\n");
+        LOGI("SetDiskImg: no-op (both NULL)");
         return;
     } else if (fpImg == pImg) {
-        WMSG0("SetDiskImg: no-op (old == new)\n");
+        LOGI("SetDiskImg: no-op (old == new)");
         return;
     }
 
@@ -283,7 +283,7 @@ DiskFS::DeleteFileFromList(A2File* pFile)
         }
 
         if (pCur == NULL) {
-            WMSG0("GLITCH: couldn't find element to delete!\n");
+            LOGI("GLITCH: couldn't find element to delete!");
             assert(false);
         }
     }
@@ -350,11 +350,11 @@ DiskFS::DumpFileList(void)
 {
     A2File* pFile;
 
-    WMSG0("DiskFS file list contents:\n");
+    LOGI("DiskFS file list contents:");
 
     pFile = GetNextFile(NULL);
     while (pFile != NULL) {
-        WMSG1(" %s\n", pFile->GetPathName());
+        LOGI(" %s", pFile->GetPathName());
         pFile = GetNextFile(pFile);
     }
 }
@@ -404,18 +404,18 @@ DiskFS::AddSubVolumeToList(DiskImg* pDiskImg, DiskFS* pDiskFS)
      * Check the arguments.
      */
     if (pDiskImg == NULL || pDiskFS == NULL) {
-        WMSG2(" DiskFS bogus sub volume ptrs %08lx %08lx\n",
+        LOGI(" DiskFS bogus sub volume ptrs %08lx %08lx",
             (long) pDiskImg, (long) pDiskFS);
         assert(false);
         return;
     }
     if (pDiskImg == fpImg || pDiskFS == this) {
-        WMSG0(" DiskFS attempt to add self to sub-vol list\n");
+        LOGI(" DiskFS attempt to add self to sub-vol list");
         assert(false);
         return;
     }
     if (pDiskFS->GetDiskImg() == NULL) {
-        WMSG0(" DiskFS lacks a DiskImg pointer\n");
+        LOGI(" DiskFS lacks a DiskImg pointer");
         assert(false);
         return;
     }
@@ -424,7 +424,7 @@ DiskFS::AddSubVolumeToList(DiskImg* pDiskImg, DiskFS* pDiskFS)
         if (pSubVol->GetDiskImg() == pDiskImg ||
             pSubVol->GetDiskFS() == pDiskFS)
         {
-            WMSG0(" DiskFS multiple adds on diskimg or diskfs\n");
+            LOGI(" DiskFS multiple adds on diskimg or diskfs");
             assert(false);
             return;
         }

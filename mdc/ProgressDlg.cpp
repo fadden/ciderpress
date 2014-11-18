@@ -70,7 +70,7 @@ ProgressDlg::SetCurrentFile(const WCHAR* fileName)
 void ProgressDlg::OnCancel() 
 {
     // TODO: Add extra cleanup here
-    WMSG0("Cancel button pushed\n");
+    LOGI("Cancel button pushed");
     ASSERT(fpCancelFlag != NULL);
     *fpCancelFlag = true;
     

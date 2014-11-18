@@ -116,7 +116,7 @@ ReformatEOL_HA::Process(const ReformatHolder* pHolder,
 {
     fUseRTF = false;
 
-    //WMSG0("Reformatting EOL (testing for high-ASCII too)\n");
+    //LOGI("Reformatting EOL (testing for high-ASCII too)");
 
     //bool isHighASCII = false;
 

@@ -79,13 +79,13 @@ NewDiskSize::EnableButtons_ProDOS(CDialog* pDialog, long totalBlocks,
     long usedWithoutBitmap = blocksUsed - GetNumBitmapBlocks_ProDOS(totalBlocks);
     bool first = true;
 
-    WMSG3("EnableButtons_ProDOS total=%ld used=%ld usedw/o=%ld\n",
+    LOGI("EnableButtons_ProDOS total=%ld used=%ld usedw/o=%ld",
         totalBlocks, blocksUsed, usedWithoutBitmap);
 
     for (int i = 0; i < NELEM(kCtrlMap); i++) {
         pButton = (CButton*) pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
         if (pButton == NULL) {
-            WMSG1("WARNING: couldn't find ctrlID %d\n", kCtrlMap[i].ctrlID);
+            LOGI("WARNING: couldn't find ctrlID %d", kCtrlMap[i].ctrlID);
             continue;
         }
 
@@ -145,7 +145,7 @@ NewDiskSize::UpdateSpecifyEdit(CDialog* pDialog)
     for (i = 0; i < NELEM(kCtrlMap); i++) {
         CButton* pButton = (CButton*) pDialog->GetDlgItem(kCtrlMap[i].ctrlID);
         if (pButton == NULL) {
-            WMSG1("WARNING: couldn't find ctrlID %d\n", kCtrlMap[i].ctrlID);
+            LOGI("WARNING: couldn't find ctrlID %d", kCtrlMap[i].ctrlID);
             continue;
         }
 
@@ -156,7 +156,7 @@ NewDiskSize::UpdateSpecifyEdit(CDialog* pDialog)
         }
     }
     if (i == NELEM(kCtrlMap)) {
-        WMSG0("WARNING: couldn't find a checked radio button\n");
+        LOGI("WARNING: couldn't find a checked radio button");
         return;
     }
 

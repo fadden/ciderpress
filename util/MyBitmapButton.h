@@ -19,7 +19,7 @@ public:
         fBitmapID = -1;
     }
     virtual ~MyBitmapButton(void) {
-        //WMSG0("~MyBitmapButton()\n");
+        //LOGI("~MyBitmapButton()");
         Detach();   // it's not really our window
         ::DeleteObject(fhBitmap);
     }

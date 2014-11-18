@@ -124,7 +124,7 @@ public:
 private:
     virtual CString Close(void) {
         if (fpArchive != NULL) {
-            WMSG0("Closing archive (aborting any un-flushed changes)\n");
+            LOGI("Closing archive (aborting any un-flushed changes)");
             NuAbort(fpArchive);
             NuClose(fpArchive);
             fpArchive = NULL;

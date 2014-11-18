@@ -43,11 +43,11 @@ DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
     DiskFS* pNewFS = NULL;
     DiskImg* pNewImg = NULL;
 
-    WMSG3(" %s/CrPl creating placeholder for %ld +%ld\n", GetDebugName(),
+    LOGI(" %s/CrPl creating placeholder for %ld +%ld", GetDebugName(),
         startBlock, numBlocks);
 
     if (startBlock > fpImg->GetNumBlocks()) {
-        WMSG3(" %s/CrPl start block out of range (%ld vs %ld)\n",
+        LOGI(" %s/CrPl start block out of range (%ld vs %ld)",
             GetDebugName(), startBlock, fpImg->GetNumBlocks());
         return kDIErrBadPartition;
     }
@@ -69,7 +69,7 @@ DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
 
     dierr = pNewImg->OpenImage(fpImg, startBlock, numBlocks);
     if (dierr != kDIErrNone) {
-        WMSG4(" %s/CrPl: OpenImage(%ld,%ld) failed (err=%d)\n",
+        LOGI(" %s/CrPl: OpenImage(%ld,%ld) failed (err=%d)",
             GetDebugName(), startBlock, numBlocks, dierr);
         goto bail;
     }
@@ -82,14 +82,14 @@ DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
      */
     dierr = pNewImg->AnalyzeImage();
     if (dierr != kDIErrNone) {
-        WMSG2(" %s/CrPl: analysis failed (err=%d)\n", GetDebugName(), dierr);
+        LOGI(" %s/CrPl: analysis failed (err=%d)", GetDebugName(), dierr);
         goto bail;
     }
     if (pNewImg->GetFSFormat() != DiskImg::kFormatUnknown) {
         dierr = pNewImg->OverrideFormat(pNewImg->GetPhysicalFormat(),
                     DiskImg::kFormatUnknown, pNewImg->GetSectorOrder());
         if (dierr != kDIErrNone) {
-            WMSG1(" %s/CrPl: unable to override to unknown\n",
+            LOGI(" %s/CrPl: unable to override to unknown",
                 GetDebugName());
             goto bail;
         }
@@ -98,7 +98,7 @@ DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
     /* open a DiskFS for the sub-image, allowing "unknown" */
     pNewFS = pNewImg->OpenAppropriateDiskFS(true);
     if (pNewFS == NULL) {
-        WMSG1(" %s/CrPl: OpenAppropriateDiskFS failed\n", GetDebugName());
+        LOGI(" %s/CrPl: OpenAppropriateDiskFS failed", GetDebugName());
         dierr = kDIErrUnsupportedFSFmt;
         goto bail;
     }
@@ -106,7 +106,7 @@ DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
     /* sets the DiskImg ptr (and very little else) */
     dierr = pNewFS->Initialize(pNewImg, kInitFull);
     if (dierr != kDIErrNone) {
-        WMSG2(" %s/CrPl: init failed (err=%d)\n", GetDebugName(), dierr);
+        LOGI(" %s/CrPl: init failed (err=%d)", GetDebugName(), dierr);
         goto bail;
     }
 

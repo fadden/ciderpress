@@ -149,13 +149,13 @@ DiskFSHFS::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
     }
     if ((mdb.drAlBlkSiz & 0x1ff) != 0) {
         // allocation block size must be a multiple of 512
-        WMSG1(" HFS: found allocation block size = %lu, rejecting\n",
+        LOGI(" HFS: found allocation block size = %lu, rejecting",
             mdb.drAlBlkSiz);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
     if (mdb.drVN[0] == 0 || mdb.drVN[0] > kMaxVolumeName) {
-        WMSG1(" HFS: volume name has len = %d, rejecting\n", mdb.drVN[0]);
+        LOGI(" HFS: volume name has len = %d, rejecting", mdb.drVN[0]);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
@@ -166,7 +166,7 @@ DiskFSHFS::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
         // We're probably trying to open a 1GB volume as if it were only
         // 32MB.  Maybe this is a full HFS partition and we're trying to
         // see if it's a CFFA image.  Whatever the case, we can't do this.
-        WMSG2("HFS: volume exceeds disk image size (%ld vs %ld)\n",
+        LOGI("HFS: volume exceeds disk image size (%ld vs %ld)",
             minBlocks, pImg->GetNumBlocks());
         dierr = kDIErrFilesystemNotFound;
         goto bail;
@@ -205,7 +205,7 @@ DiskFSHFS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         }
     }
 
-    WMSG0(" HFS didn't find valid FS\n");
+    LOGI(" HFS didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -238,7 +238,7 @@ DiskFSHFS::LoadVolHeader(void)
         } else
             fLocalTimeOffset = 0;
 
-        WMSG1(" HFS computed local time offset = %.3f hours\n",
+        LOGI(" HFS computed local time offset = %.3f hours",
             fLocalTimeOffset / 3600.0);
     }
 
@@ -308,7 +308,7 @@ DiskFSHFS::LoadVolHeader(void)
         (time_t) (fModifiedDateTime - kDateTimeOffset) - fLocalTimeOffset;
     pFile->fAccess = DiskFS::kFileAccessUnlocked;
 
-    //WMSG2("GOT *** '%s' '%s'\n", pFile->fFileName, pFile->fPathName);
+    //LOGI("GOT *** '%s' '%s'", pFile->fFileName, pFile->fPathName);
 
     AddFileToList(pFile);
 
@@ -352,18 +352,18 @@ DiskFSHFS::SetVolumeUsageMap(void)
 void
 DiskFSHFS::DumpVolHeader(void)
 {
-    WMSG0("HFS volume header read:\n");
-    WMSG1("  volume name = '%s'\n", fVolumeName);
-    WMSG4("  total blocks = %ld (allocSize=%ld [x%lu], numAllocs=%lu)\n",
+    LOGI("HFS volume header read:");
+    LOGI("  volume name = '%s'", fVolumeName);
+    LOGI("  total blocks = %ld (allocSize=%ld [x%lu], numAllocs=%lu)",
         fTotalBlocks, fAllocationBlockSize, fAllocationBlockSize / kBlkSize,
         fNumAllocationBlocks);
-    WMSG2("  num directories=%ld, num files=%ld\n",
+    LOGI("  num directories=%ld, num files=%ld",
         fNumDirectories, fNumFiles);
     time_t when;
     when = (time_t) (fCreatedDateTime - kDateTimeOffset - fLocalTimeOffset);
-    WMSG2("  cre date=0x%08lx %.24s\n", fCreatedDateTime, ctime(&when));
+    LOGI("  cre date=0x%08lx %.24s", fCreatedDateTime, ctime(&when));
     when = (time_t) (fModifiedDateTime - kDateTimeOffset - fLocalTimeOffset);
-    WMSG2("  mod date=0x%08lx %.24s\n", fModifiedDateTime, ctime(&when));
+    LOGI("  mod date=0x%08lx %.24s", fModifiedDateTime, ctime(&when));
 }
 
 
@@ -388,13 +388,13 @@ DiskFSHFS::Initialize(InitMode initMode)
     DumpVolHeader();
 
     if (initMode == kInitHeaderOnly) {
-        WMSG0(" HFS - headerOnly set, skipping file load\n");
+        LOGI(" HFS - headerOnly set, skipping file load");
         goto bail;
     }
 
     sprintf(msg, "Scanning %s", fVolumeName);
     if (!fpImg->UpdateScanProgress(msg)) {
-        WMSG0(" HFS cancelled by user\n");
+        LOGI(" HFS cancelled by user");
         dierr = kDIErrCancelled;
         goto bail;
     }
@@ -411,7 +411,7 @@ DiskFSHFS::Initialize(InitMode initMode)
     fHfsVol = hfs_callback_open(LibHFSCB, this, /*HFS_OPT_NOCACHE |*/
                 (fpImg->GetReadOnly() ? HFS_MODE_RDONLY : HFS_MODE_RDWR));
     if (fHfsVol == NULL) {
-        WMSG1("ERROR: hfs_opencallback failed: %s\n", hfs_error);
+        LOGI("ERROR: hfs_opencallback failed: %s", hfs_error);
         return kDIErrGeneric;
     }
 
@@ -453,34 +453,34 @@ DiskFSHFS::LibHFSCB(void* vThis, int op, unsigned long arg1, void* arg2)
 
     switch (op) {
     case HFS_CB_VOLSIZE:
-        //WMSG1("  HFSCB vol size = %ld blocks\n", pThis->fTotalBlocks);
+        //LOGI("  HFSCB vol size = %ld blocks", pThis->fTotalBlocks);
         result = pThis->fTotalBlocks;
         break;
     case HFS_CB_READ:       // arg1=block, arg2=buffer
-        //WMSG1("  HFSCB read block %lu\n", arg1);
+        //LOGI("  HFSCB read block %lu", arg1);
         if (arg1 < pThis->fTotalBlocks && arg2 != NULL) {
             DIError err = pThis->fpImg->ReadBlock(arg1, arg2);
             if (err == kDIErrNone)
                 result = 0;
             else {
-                WMSG1("  HFSCB read %lu failed\n", arg1);
+                LOGI("  HFSCB read %lu failed", arg1);
             }
         }
         break;
     case HFS_CB_WRITE:
-        WMSG1("  HFSCB write block %lu\n", arg1);
+        LOGI("  HFSCB write block %lu", arg1);
         if (arg1 < pThis->fTotalBlocks && arg2 != NULL) {
             DIError err = pThis->fpImg->WriteBlock(arg1, arg2);
             if (err == kDIErrNone)
                 result = 0;
             else {
-                WMSG1("  HFSCB write %lu failed\n", arg1);
+                LOGI("  HFSCB write %lu failed", arg1);
             }
         }
         break;
     case HFS_CB_SEEK:       // arg1=block, arg2=unused
         /* just verify that the seek is legal */
-        //WMSG1("  HFSCB seek block %lu\n", arg1);
+        //LOGI("  HFSCB seek block %lu", arg1);
         if (arg1 < pThis->fTotalBlocks)
             result = arg1;
         break;
@@ -488,7 +488,7 @@ DiskFSHFS::LibHFSCB(void* vThis, int op, unsigned long arg1, void* arg2)
         assert(false);
     }
 
-    //WMSG1("--- HFSCB returning %lu\n", result);
+    //LOGI("--- HFSCB returning %lu", result);
     return result;
 }
 
@@ -531,11 +531,11 @@ DiskFSHFS::RecursiveDirAdd(A2File* pParent, const char* basePath, int depth)
         goto bail;
     }
 
-    //WMSG1(" HFS RecursiveDirAdd '%s'\n", basePath);
+    //LOGI(" HFS RecursiveDirAdd '%s'", basePath);
     dir = hfs_opendir(fHfsVol, basePath);
     if (dir == NULL) {
         printf("  HFS unable to open dir '%s'\n", basePath);
-        WMSG1("  HFS unable to open dir '%s'\n", basePath);
+        LOGI("  HFS unable to open dir '%s'", basePath);
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -565,7 +565,7 @@ DiskFSHFS::RecursiveDirAdd(A2File* pParent, const char* basePath, int depth)
         AddFileToList(pFile);
 
         if (!fpImg->UpdateScanProgress(NULL)) {
-            WMSG0(" HFS cancelled by user\n");
+            LOGI(" HFS cancelled by user");
             dierr = kDIErrCancelled;
             goto bail;
         }
@@ -702,7 +702,7 @@ DiskFSHFS::Format(DiskImg* pDiskImg, const char* volName)
 
     // need HFS_OPT_2048 for CD-ROM?
     if (hfs_callback_format(LibHFSCB, this, 0, volName) != 0) {
-        WMSG1("hfs_callback_format failed (%s)\n", hfs_error);
+        LOGI("hfs_callback_format failed (%s)", hfs_error);
         return kDIErrGeneric;
     }
 
@@ -833,7 +833,7 @@ DiskFSHFS::DoNormalizePath(const char* path, char fssep,
         }
         partBuf[partIdx] = '\0';
 
-        //WMSG2(" HFS   Converted component '%s' to '%s'\n",
+        //LOGI(" HFS   Converted component '%s' to '%s'",
         //  origStart, partBuf);
 
         if (outPtr != outputBuf)
@@ -851,7 +851,7 @@ DiskFSHFS::DoNormalizePath(const char* path, char fssep,
 
     *outPtr = '\0';
 
-    WMSG3(" HFS  Converted path '%s' to '%s' (fssep='%c')\n",
+    LOGI(" HFS  Converted path '%s' to '%s' (fssep='%c')",
         path, outputBuf, fssep);
     assert(*outputBuf != '\0');
 
@@ -949,7 +949,7 @@ DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
     if (cp != NULL) {
         int tmpOffset = cp - fileName;
         if (tmpOffset > 0 && nameLen - tmpOffset <= kMaxExtensionLen) {
-            WMSG1("  HFS   (keeping extension '%s')\n", cp);
+            LOGI("  HFS   (keeping extension '%s')", cp);
             assert(strlen(cp) <= kMaxExtensionLen);
             strcpy(dotBuf, cp);
             dotOffset = tmpOffset;
@@ -978,7 +978,7 @@ DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
             memcpy(fileName + copyOffset + digitLen, dotBuf, dotLen);
     } while (GetFileByName(uniqueName+1) != NULL);
 
-    WMSG1(" HFS  converted to unique name: %s\n", uniqueName);
+    LOGI(" HFS  converted to unique name: %s", uniqueName);
 
     *pUniqueName = uniqueName;
     return kDIErrNone;
@@ -1018,7 +1018,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
            pParms->storageType == A2FileProDOS::kStorageExtended ||
            pParms->storageType == A2FileProDOS::kStorageDirectory);
     // kStorageVolumeDirHeader not allowed -- that's created by Format
-    WMSG1(" HFS ---v--- CreateFile '%s'\n", pParms->pathName);
+    LOGI(" HFS ---v--- CreateFile '%s'", pParms->pathName);
 
     /*
      * Normalize the pathname so that all components are HFS-safe
@@ -1092,7 +1092,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
         basePath[dirNameLen] = '\0';
     }
 
-    WMSG2("SPLIT: '%s' '%s'\n", basePath, fileName);
+    LOGI("SPLIT: '%s' '%s'", basePath, fileName);
 
     assert(fileName != NULL);
 
@@ -1100,7 +1100,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      * Open the base path.  If it doesn't exist, create it recursively.
      */
     if (basePath != NULL) {
-        WMSG2(" HFS  Creating '%s' in '%s'\n", fileName, basePath);
+        LOGI(" HFS  Creating '%s' in '%s'", fileName, basePath);
         /*
          * Open the named subdir, creating it if it doesn't exist.  We need
          * to check basePath+1 because we're comparing against what's in our
@@ -1108,7 +1108,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
          */
         pSubdir = (A2FileHFS*)GetFileByName(basePath+1, CompareMacFileNames);
         if (pSubdir == NULL) {
-            WMSG1("  HFS  Creating subdir '%s'\n", basePath);
+            LOGI("  HFS  Creating subdir '%s'", basePath);
             A2File* pNewSub;
             CreateParms newDirParms;
             newDirParms.pathName = basePath;
@@ -1170,14 +1170,14 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
             assert(basePathLen == 0);
     } else {
         /* open the volume directory */
-        WMSG1(" HFS  Creating '%s' in volume dir\n", fileName);
+        LOGI(" HFS  Creating '%s' in volume dir", fileName);
         /* volume dir must be first in the list */
         pSubdir = (A2FileHFS*) GetNextFile(NULL);
         assert(pSubdir != NULL);
         assert(pSubdir->IsVolumeDirectory());
     }
     if (pSubdir == NULL) {
-        WMSG1(" HFS Unable to open subdir '%s'\n", basePath);
+        LOGI(" HFS Unable to open subdir '%s'", basePath);
         dierr = kDIErrFileNotFound;
         goto bail;
     }
@@ -1195,12 +1195,12 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     if (pParms->storageType == A2FileProDOS::kStorageDirectory) {
         /* create the directory */
         if (hfs_mkdir(fHfsVol, fullPath) != 0) {
-            WMSG2(" HFS mkdir '%s' failed: %s\n", fullPath, hfs_error);
+            LOGI(" HFS mkdir '%s' failed: %s", fullPath, hfs_error);
             dierr = kDIErrGeneric;
             goto bail;
         }
         if (hfs_stat(fHfsVol, fullPath, &dirEnt) != 0) {
-            WMSG1(" HFS stat on new dir failed: %s\n", hfs_error);
+            LOGI(" HFS stat on new dir failed: %s", hfs_error);
             dierr = kDIErrGeneric;
             goto bail;
         }
@@ -1209,12 +1209,12 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
         /* create, and open, the file */
         pHfsFile = hfs_create(fHfsVol, fullPath, typeStr, creatorStr);
         if (pHfsFile == NULL) {
-            WMSG1(" HFS create failed: %s\n", hfs_error);
+            LOGI(" HFS create failed: %s", hfs_error);
             dierr = kDIErrGeneric;
             goto bail;
         }
         if (hfs_fstat(pHfsFile, &dirEnt) != 0) {
-            WMSG1(" HFS fstat on new file failed: %s\n", hfs_error);
+            LOGI(" HFS fstat on new file failed: %s", hfs_error);
             dierr = kDIErrGeneric;
             goto bail;
         }
@@ -1279,7 +1279,7 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
             {
                 /* passed it; insert new after previous file */
                 pLastSubdirFile = pPrevFile;
-                WMSG2("  HFS Found '%s' > cur(%s)\n", pNextFile->GetPathName(),
+                LOGI("  HFS Found '%s' > cur(%s)", pNextFile->GetPathName(),
                     pNewFile->GetPathName());
                 break;
             }
@@ -1292,10 +1292,10 @@ DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     }
 
     /* insert us after last file we saw that was part of the same subdir */
-    WMSG2("  HFS inserting '%s' after '%s'\n", pNewFile->GetPathName(),
+    LOGI("  HFS inserting '%s' after '%s'", pNewFile->GetPathName(),
         pLastSubdirFile->GetPathName());
     InsertFileInList(pNewFile, pLastSubdirFile);
-    //WMSG0("LIST NOW:\n");
+    //LOGI("LIST NOW:");
     //DumpFileList();
 
     *ppNewFile = pNewFile;
@@ -1308,7 +1308,7 @@ bail:
     delete[] fileName;
     delete[] fullPath;
     hfs_flush(fHfsVol);
-    WMSG1(" HFS ---^--- CreateFile '%s' DONE\n", pParms->pathName);
+    LOGI(" HFS ---^--- CreateFile '%s' DONE", pParms->pathName);
     return dierr;
 }
 
@@ -1332,17 +1332,17 @@ DiskFSHFS::DeleteFile(A2File* pGenericFile)
 
     A2FileHFS* pFile = (A2FileHFS*) pGenericFile;
     pathName = pFile->GetLibHFSPathName();
-    WMSG1("    Deleting '%s'\n", pathName);
+    LOGI("    Deleting '%s'", pathName);
 
     if (pFile->IsDirectory()) {
         if (hfs_rmdir(fHfsVol, pathName) != 0) {
-            WMSG2(" HFS rmdir failed '%s': '%s'\n", pathName, hfs_error);
+            LOGI(" HFS rmdir failed '%s': '%s'", pathName, hfs_error);
             dierr = kDIErrGeneric;
             goto bail;
         }
     } else {
         if (hfs_delete(fHfsVol, pathName) != 0) {
-            WMSG2(" HFS delete failed '%s': '%s'\n", pathName, hfs_error);
+            LOGI(" HFS delete failed '%s': '%s'", pathName, hfs_error);
             dierr = kDIErrGeneric;
             goto bail;
         }
@@ -1410,10 +1410,10 @@ DiskFSHFS::RenameFile(A2File* pGenericFile, const char* newName)
         strcpy(colonNewName+len, newName);
     }
 
-    WMSG2(" HFS renaming '%s' to '%s'\n", colonOldName, colonNewName);
+    LOGI(" HFS renaming '%s' to '%s'", colonOldName, colonNewName);
 
     if (hfs_rename(fHfsVol, colonOldName, colonNewName) != 0) {
-        WMSG3(" HFS rename('%s','%s') failed: %s\n",
+        LOGI(" HFS rename('%s','%s') failed: %s",
             colonOldName, colonNewName, hfs_error);
         dierr = kDIErrGeneric;
         goto bail;
@@ -1518,7 +1518,7 @@ DiskFSHFS::RegeneratePathName(A2FileHFS* pFile)
         pParent = (A2FileHFS*) pParent->GetParent();
     }
 
-    WMSG2("Replacing '%s' with '%s'\n", pFile->GetPathName(), buf);
+    LOGI("Replacing '%s' with '%s'", pFile->GetPathName(), buf);
     pFile->SetPathName("", buf);
     delete[] buf;
 
@@ -1557,7 +1557,7 @@ DiskFSHFS::RenameVolume(const char* newName)
     strcat(newNameColon, ":");
 
     if (hfs_rename(fHfsVol, oldNameColon, newNameColon) != 0) {
-        WMSG3(" HFS rename '%s' -> '%s' failed: %s\n",
+        LOGI(" HFS rename '%s' -> '%s' failed: %s",
             oldNameColon, newNameColon, hfs_error);
         dierr = kDIErrGeneric;
         goto bail;
@@ -1598,7 +1598,7 @@ DiskFSHFS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     colonPath = pFile->GetLibHFSPathName();
 
     if (hfs_stat(fHfsVol, colonPath, &dirEnt) != 0) {
-        WMSG2(" HFS unable to stat '%s': %s\n", colonPath, hfs_error);
+        LOGI(" HFS unable to stat '%s': %s", colonPath, hfs_error);
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -1616,12 +1616,12 @@ DiskFSHFS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     else
         dirEnt.flags &= ~HFS_ISLOCKED;
 
-    WMSG3(" HFS setting '%s' to fdflags=0x%04x flags=0x%04x\n",
+    LOGI(" HFS setting '%s' to fdflags=0x%04x flags=0x%04x",
         colonPath, dirEnt.fdflags, dirEnt.flags);
-    WMSG2("  type=0x%08lx creator=0x%08lx\n", fileType, auxType);
+    LOGI("  type=0x%08lx creator=0x%08lx", fileType, auxType);
 
     if (hfs_setattr(fHfsVol, colonPath, &dirEnt) != 0) {
-        WMSG2(" HFS setattr '%s' failed: %s\n", colonPath, hfs_error);
+        LOGI(" HFS setattr '%s' failed: %s", colonPath, hfs_error);
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -1652,7 +1652,7 @@ bail:
 void
 A2FileHFS::Dump(void) const
 {
-    WMSG1("A2FileHFS '%s'\n", fFileName);
+    LOGI("A2FileHFS '%s'", fFileName);
 }
 
 /* convert hex to decimal */
@@ -1695,7 +1695,7 @@ long A2FileHFS::GetFileType(void) const
         digit1 = FromHex((char) (fType >> 24));
         digit2 = FromHex((char) (fType >> 16));
         if (digit1 < 0 || digit2 < 0) {
-            WMSG1("  Unexpected: pdos + %08lx\n", fType);
+            LOGI("  Unexpected: pdos + %08lx", fType);
             return 0x00;
         }
         return digit1 << 4 | digit2;
@@ -1859,7 +1859,7 @@ A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     DiskFSHFS* pDiskFS = (DiskFSHFS*) GetDiskFS();
     pHfsFile = hfs_open(pDiskFS->GetHfsVol(), nameBuf);
     if (pHfsFile == NULL) {
-        WMSG2(" HFS hfs_open(%s) failed: %s\n", nameBuf, hfs_error);
+        LOGI(" HFS hfs_open(%s) failed: %s", nameBuf, hfs_error);
         dierr = kDIErrGeneric;  // better value might be in errno
         goto bail;
     }
@@ -1890,7 +1890,7 @@ A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
 {
     long result;
 
-    WMSG3(" HFS reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" HFS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), hfs_seek(fHfsFile, 0, HFS_SEEK_CUR));
 
     //A2FileHFS* pFile = (A2FileHFS*) fpFile;
@@ -1932,7 +1932,7 @@ A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
 {
     long result;
 
-    WMSG3(" HFS writing %d bytes to '%s' (offset=%ld)\n",
+    LOGI(" HFS writing %d bytes to '%s' (offset=%ld)",
         len, fpFile->GetPathName(), hfs_seek(fHfsFile, 0, HFS_SEEK_CUR));
 
     fModified = true;       // assume something gets changed
@@ -2021,10 +2021,10 @@ A2FDHFS::Close(void)
             pFile->fRsrcLength = dirEnt.u.file.rsize;
             if (pFile->fRsrcLength == 0)
                 pFile->fRsrcLength = -1;
-            WMSG2(" HFS close set dataLen=%ld rsrcLen=%ld\n",
+            LOGI(" HFS close set dataLen=%ld rsrcLen=%ld",
                 (long) pFile->fDataLength, (long) pFile->fRsrcLength);
         } else {
-            WMSG1(" HFS Close fstat failed: %s\n", hfs_error);
+            LOGI(" HFS Close fstat failed: %s", hfs_error);
             // close it anyway
         }
     }
@@ -2037,7 +2037,7 @@ A2FDHFS::Close(void)
         DiskFSHFS* pDiskFS = (DiskFSHFS*) fpFile->GetDiskFS();
 
         if (hfs_flush(pDiskFS->GetHfsVol()) != 0) {
-            WMSG0("HEY: Close flush failed!\n");
+            LOGI("HEY: Close flush failed!");
             DebugBreak();
         }
     }
@@ -2147,7 +2147,7 @@ DiskFSHFS::CreateFakeFile(void)
         (time_t) (fModifiedDateTime - kDateTimeOffset - fLocalTimeOffset);
     timeStr = ctime(&when);
     if (timeStr == NULL) {
-        WMSG2("Invalid date %ld (orig=%ld)\n", when, fModifiedDateTime);
+        LOGI("Invalid date %ld (orig=%ld)", when, fModifiedDateTime);
         strcpy(dateBuf, "<no date>");
     } else
         strncpy(dateBuf, timeStr, sizeof(dateBuf));
@@ -2227,7 +2227,7 @@ A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
 DIError
 A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
 {
-    WMSG3(" HFS reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" HFS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileHFS* pFile = (A2FileHFS*) fpFile;

@@ -48,7 +48,7 @@ public:
 
 private:
     void OnOK(void) {
-        WMSG0("Ignoring VolumeXferProgressDialog OnOK\n");
+        LOGI("Ignoring VolumeXferProgressDialog OnOK");
     }
 
     MainWindow* GetMainWindow(void) const {
@@ -68,7 +68,7 @@ VolumeCopyDialog::OnInitDialog(void)
     CRect rect;
 
     //this->GetWindowRect(&rect);
-    //WMSG4("RECT is %d, %d, %d, %d\n", rect.left, rect.top, rect.bottom, rect.right);
+    //LOGI("RECT is %d, %d, %d, %d", rect.left, rect.top, rect.bottom, rect.right);
 
     ASSERT(fpDiskImg != NULL);
     ScanDiskInfo(false);
@@ -148,7 +148,7 @@ VolumeCopyDialog::OnCancel(void)
 void
 VolumeCopyDialog::Cleanup(void)
 {
-    WMSG0("  VolumeCopyDialog is done, cleaning up DiskFS\n");
+    LOGI("  VolumeCopyDialog is done, cleaning up DiskFS");
     delete fpDiskFS;
     fpDiskFS = NULL;
 }
@@ -161,7 +161,7 @@ VolumeCopyDialog::OnListChange(NMHDR*, LRESULT* pResult)
 {
     //CRect rect;
     //this->GetWindowRect(&rect);
-    //WMSG4("RECT is %d, %d, %d, %d\n", rect.left, rect.top, rect.bottom, rect.right);
+    //LOGI("RECT is %d, %d, %d, %d", rect.left, rect.top, rect.bottom, rect.right);
 
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUMECOPYSEL_LIST);
     ASSERT(pListView != NULL);
@@ -244,10 +244,10 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
      */
     bool deferDestroy = false;
     if (!IsWindowVisible() || !IsWindowEnabled()) {
-        WMSG0("  Deferring destroy on wait dialog\n");
+        LOGI("  Deferring destroy on wait dialog");
         deferDestroy = true;
     } else {
-        WMSG0("  Not deferring destroy on wait dialog\n");
+        LOGI("  Not deferring destroy on wait dialog");
     }
 
     fpWaitDlg = new ExclusiveModelessDialog;
@@ -263,7 +263,7 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
      */
     fpDiskFS = fpDiskImg->OpenAppropriateDiskFS(true);
     if (fpDiskFS == NULL) {
-        WMSG0("HEY: OpenAppropriateDiskFS failed!\n");
+        LOGI("HEY: OpenAppropriateDiskFS failed!");
         /* this is fatal, but there's no easy way to die */
         /* (could we do a DestroyWindow from here?) */
         /* at any rate, with "allowUnknown" set, this shouldn't happen */
@@ -297,7 +297,7 @@ LONG
 VolumeCopyDialog::OnDialogReady(UINT, LONG)
 {
     if (fpWaitDlg != NULL) {
-        WMSG0("OnDialogReady found active window, destroying\n");
+        LOGI("OnDialogReady found active window, destroying");
         fpWaitDlg->DestroyWindow();
         fpWaitDlg = NULL;
     }
@@ -333,7 +333,7 @@ VolumeCopyDialog::LoadList(void)
     pSubVolume = fpDiskFS->GetNextSubVolume(NULL);
     while (pSubVolume != NULL) {
         if (pSubVolume->GetDiskFS() == NULL) {
-            WMSG0("WARNING: sub-volume DiskFS is NULL?!\n");
+            LOGI("WARNING: sub-volume DiskFS is NULL?!");
             assert(false);
         } else {
             AddToList(pListView, pSubVolume->GetDiskImg(),
@@ -460,7 +460,7 @@ VolumeCopyDialog::OnCopyToFile(void)
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
-    WMSG2("Logical volume '%ls' has %d 512-byte blocks\n",
+    LOGI("Logical volume '%ls' has %d 512-byte blocks",
         (LPCWSTR) srcName, pSrcImg->GetNumBlocks());
 
     /*
@@ -478,7 +478,7 @@ VolumeCopyDialog::OnCopyToFile(void)
             pPreferences->GetPrefString(kPrOpenArchiveFolder);
     
         if (saveDlg.DoModal() != IDOK) {
-            WMSG0(" User bailed out of image save dialog\n");
+            LOGI(" User bailed out of image save dialog");
             goto bail;
         }
 
@@ -488,7 +488,7 @@ VolumeCopyDialog::OnCopyToFile(void)
 
         saveName = saveDlg.GetPathName();
     }
-    WMSG1("File will be saved to '%ls'\n", (LPCWSTR) saveName);
+    LOGI("File will be saved to '%ls'", (LPCWSTR) saveName);
 
     /* DiskImgLib does not like it if file already exists */
     errMsg = pMain->RemoveFile(saveName);
@@ -535,7 +535,7 @@ VolumeCopyDialog::OnCopyToFile(void)
     pProgressDialog = new VolumeXferProgressDialog;
     EnableWindow(FALSE);
     if (pProgressDialog->Create(this) == FALSE) {
-        WMSG0("Progress dialog init failed?!\n");
+        LOGI("Progress dialog init failed?!");
         ASSERT(false);
         goto bail;
     }
@@ -579,7 +579,7 @@ VolumeCopyDialog::OnCopyToFile(void)
     msg.Format(L"Copied %ld blocks in %ld seconds (%.2fKB/sec)",
         pSrcImg->GetNumBlocks(), endWhen - startWhen,
         (pSrcImg->GetNumBlocks() / 2.0) / elapsed);
-    WMSG1("%ls\n", (LPCWSTR) msg);
+    LOGI("%ls", (LPCWSTR) msg);
 #ifdef _DEBUG
     pProgressDialog->MessageBox(msg, L"DEBUG: elapsed time", MB_OK);
 #endif
@@ -599,7 +599,7 @@ bail:
         dierr = pSrcImg->OverrideFormat(pSrcImg->GetPhysicalFormat(),
                     originalFormat, pSrcImg->GetSectorOrder());
         if (dierr != kDIErrNone) {
-            WMSG1("ERROR: couldn't un-override source image (dierr=%d)\n", dierr);
+            LOGI("ERROR: couldn't un-override source image (dierr=%d)", dierr);
             // not much else to do; should be okay
         }
     }
@@ -714,10 +714,10 @@ VolumeCopyDialog::OnCopyFromFile(void)
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
-    WMSG2("Source image '%ls' has %d 512-byte blocks\n",
+    LOGI("Source image '%ls' has %d 512-byte blocks",
         (LPCWSTR) loadName, srcImg.GetNumBlocks());
 
-    WMSG1("Target volume has %d 512-byte blocks\n", pDstImg->GetNumBlocks());
+    LOGI("Target volume has %d 512-byte blocks", pDstImg->GetNumBlocks());
 
     if (srcImg.GetNumBlocks() > pDstImg->GetNumBlocks()) {
         errMsg.Format(L"Error: the disk image file has %ld blocks, but the"
@@ -745,7 +745,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
             srcImg.GetNumBlocks(), pDstImg->GetNumBlocks());
         result = MessageBox(errMsg, warning, MB_OKCANCEL | MB_ICONQUESTION);
         if (result != IDOK) {
-            WMSG0("User chickened out of oversized disk copy\n");
+            LOGI("User chickened out of oversized disk copy");
             goto bail;
         }
         isPartial = true;
@@ -758,7 +758,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
         (LPCWSTR) targetName, (LPCWSTR) loadName, (LPCWSTR) targetName);
     result = MessageBox(errMsg, warning, MB_OKCANCEL | MB_ICONEXCLAMATION);
     if (result != IDOK) {
-        WMSG0("User chickened out of disk copy\n");
+        LOGI("User chickened out of disk copy");
         goto bail;
     }
 
@@ -782,7 +782,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
     pProgressDialog = new VolumeXferProgressDialog;
     EnableWindow(FALSE);
     if (pProgressDialog->Create(this) == FALSE) {
-        WMSG0("Progress dialog init failed?!\n");
+        LOGI("Progress dialog init failed?!");
         ASSERT(false);
         return;
     }
@@ -834,7 +834,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
     errMsg.Format(L"Copied %ld blocks in %ld seconds (%.2fKB/sec)",
         srcImg.GetNumBlocks(), endWhen - startWhen,
         (srcImg.GetNumBlocks() / 2.0) / elapsed);
-    WMSG1("%ls\n", (LPCWSTR) errMsg);
+    LOGI("%ls", (LPCWSTR) errMsg);
 #ifdef _DEBUG
     pProgressDialog->MessageBox(errMsg, L"DEBUG: elapsed time", MB_OK);
 #endif
@@ -869,7 +869,7 @@ bail:
      * handed, but it's reliable.
      */
     if (needReload) {
-        WMSG0("RELOAD dialog\n");
+        LOGI("RELOAD dialog");
         ScanDiskInfo(true);     // reopens fpDiskFS
         LoadList();
 

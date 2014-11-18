@@ -31,7 +31,7 @@ public:
         fOverwriteExisting = FALSE;
     }
     virtual ~ExtractOptionsDialog(void) {
-        //WMSG0("~ExtractOptionsDialog()\n");
+        //LOGI("~ExtractOptionsDialog()");
     }
 
     CString fExtractPath;

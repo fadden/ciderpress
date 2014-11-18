@@ -87,13 +87,13 @@ ReformatSCAssem::IsSCAssem(const ReformatHolder* pHolder)
     if (len == 0 || len > srcLen)
         return false;       // should return an error, really
     if (ptr[len-1] == 0x00) {
-        WMSG0("  Found 0x00, looks like S-C assembler\n");
+        LOGI("  Found 0x00, looks like S-C assembler");
         return true;
     } else if (ptr[len-1] == 0x01) {
-        WMSG0("  Found 0x01, looks like Integer BASIC\n");
+        LOGI("  Found 0x01, looks like Integer BASIC");
         return false;
     } else {
-        WMSG1("  Got strange value 0x%02x during S-C test\n", ptr[len-1]);
+        LOGI("  Got strange value 0x%02x during S-C test", ptr[len-1]);
         return false;       // again, should return an error
     }
 }
@@ -126,7 +126,7 @@ ReformatSCAssem::Process(const ReformatHolder* pHolder,
      * BASIC program rather than a non-Integer file.
      */
     if (length < 2) {
-        WMSG0("  SCAssem truncated?\n");
+        LOGI("  SCAssem truncated?");
         BufPrintf("\r\n");
         goto done;
     }
@@ -139,7 +139,7 @@ ReformatSCAssem::Process(const ReformatHolder* pHolder,
         lineLen = *srcPtr++;
         length--;
         if (lineLen == 0) {
-            WMSG0("  SCAssem found zero-length line?\n");
+            LOGI("  SCAssem found zero-length line?");
             break;
         }
 
@@ -162,12 +162,12 @@ ReformatSCAssem::Process(const ReformatHolder* pHolder,
                     while (count--)
                         BufPrintf("%c", ch);
                 } else {
-                    WMSG1("  SCAssem GLITCH: RLE but only %d chars left\n",
+                    LOGI("  SCAssem GLITCH: RLE but only %d chars left",
                         length);
                     BufPrintf("?!?");
                 }
             } else {
-                WMSG1("  SCAssem invalid char 0x%02x\n", *srcPtr);
+                LOGI("  SCAssem invalid char 0x%02x", *srcPtr);
                 BufPrintf("?");
             }
 
@@ -283,7 +283,7 @@ ReformatMerlin::IsMerlin(const ReformatHolder* pHolder)
     lineCount = spaceLineCount = commentLineCount = 0;
     while (srcLen--) {
         if ((*ptr & 0x80) == 0 && (*ptr != 0x20)) {
-            WMSG1("  Merlin: not, found 0x%02x\n", *ptr);
+            LOGI("  Merlin: not, found 0x%02x", *ptr);
             return false;
         }
 
@@ -307,8 +307,8 @@ ReformatMerlin::IsMerlin(const ReformatHolder* pHolder)
     if (!lineCount)
         return false;       // don't divide by zero
 
-    WMSG1("  Merlin: found %d lines\n", lineCount);
-    WMSG4("    %d start with spaces (%.3f%%), %d with comments (%.3f%%)\n",
+    LOGI("  Merlin: found %d lines", lineCount);
+    LOGI("    %d start with spaces (%.3f%%), %d with comments (%.3f%%)",
         spaceLineCount, (spaceLineCount * 100.0) / lineCount,
         commentLineCount, (commentLineCount * 100.0) / lineCount);
 
@@ -531,7 +531,7 @@ ReformatLISA2::Process(const ReformatHolder* pHolder,
     fUseRTF = false;
 
     if (srcLen < 8) {
-        WMSG0("  LISA truncated?\n");
+        LOGI("  LISA truncated?");
         goto bail;
     }
 
@@ -540,10 +540,10 @@ ReformatLISA2::Process(const ReformatHolder* pHolder,
     version = Read16(&srcPtr, &srcLen);     // usually 0x1800; maybe "2.4"?
     actualLen = Read16(&srcPtr, &srcLen);
 
-    WMSG2("  LISA version 0x%04x, len=%d\n", version, actualLen);
+    LOGI("  LISA version 0x%04x, len=%d", version, actualLen);
 
     if (actualLen > srcLen) {
-        WMSG2("  LISA bad length (len=%ld actual=%ld)\n", srcLen, actualLen);
+        LOGI("  LISA bad length (len=%ld actual=%ld)", srcLen, actualLen);
         goto bail;
     }
 
@@ -552,7 +552,7 @@ ReformatLISA2::Process(const ReformatHolder* pHolder,
     while (actualLen > 0) {
         int lineLen = *srcPtr;
         if (lineLen == 0) {
-            WMSG1("  LISA bad line len (%ld)\n", lineLen);
+            LOGI("  LISA bad line len (%ld)", lineLen);
             break;
         } else if (lineLen == 255) {
             // used as end-of-file marker
@@ -598,7 +598,7 @@ ReformatLISA2::ProcessLine(const unsigned char* buf)
         for (int i = 0; i < 8; i++) {
             uch = *buf;
             if (uch < 0x20 || uch >= 0x80) {
-                WMSG1("  LISA funky char 0x%02x in label\n", uch);
+                LOGI("  LISA funky char 0x%02x in label", uch);
                 break;
             } else if (uch == 0x20) {
                 doPrint = false;
@@ -635,7 +635,7 @@ ReformatLISA2::ProcessLine(const unsigned char* buf)
         } else if (uch == 0x0d) {
             // don't output CR to line buf
             if (len) {
-                WMSG0("WARNING: got early CR\n");
+                LOGI("WARNING: got early CR");
             }
         } else if (mnemonicDone) {
             // Values >= 0x80 are mnemonics, but we've already seen it.
@@ -799,15 +799,15 @@ ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
     symLen = srcPtr[0x02] | srcPtr[0x03] << 8;
 
     if ((symLen & 0x0003) != 0 || symLen > 512*8 || symLen > srcLen) {
-        WMSG0("  LISA3 bad symLen\n");
+        LOGI("  LISA3 bad symLen");
         return false;
     }
     if (codeLen > srcLen) {
-        WMSG0("  LISA3 funky codeLen\n");
+        LOGI("  LISA3 funky codeLen");
         return false;
     }
     if (codeLen + symLen + kHeaderLen > srcLen) {
-        WMSG0("  LISA3 bad combined len\n");
+        LOGI("  LISA3 bad combined len");
         return false;
     }
 
@@ -827,7 +827,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (srcLen < kHeaderLen+2) {
-        WMSG0("  LISA3 too short\n");
+        LOGI("  LISA3 too short");
         goto bail;
     }
 
@@ -841,15 +841,15 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
     printf("codeLen=%d, symLen=%d\n", codeLen, symLen);
 
     if ((symLen & 0x0003) != 0 || symLen > 512*8 || symLen > srcLen) {
-        WMSG0("  LISA3 bad symLen\n");
+        LOGI("  LISA3 bad symLen");
         goto bail;
     }
     if (codeLen > srcLen) {
-        WMSG0("  LISA3 funky codeLen\n");
+        LOGI("  LISA3 funky codeLen");
         goto bail;
     }
     if (codeLen + symLen + kHeaderLen > srcLen) {
-        WMSG0("  LISA3 bad combined len\n");
+        LOGI("  LISA3 bad combined len");
         goto bail;
     }
 
@@ -861,7 +861,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
         OutputStart();
         PrintSymEntry(ii);
         OutputFinish();
-        WMSG2("%d: %hs\n", ii, GetOutBuf());
+        LOGI("%d: %hs", ii, GetOutBuf());
     }
 #endif
 
@@ -951,8 +951,8 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
         codePtr += lineLen-1;
     }
 
-    WMSG3("codePtr=%p endPtr=%p numLines=%d\n", codePtr, endPtr, lineNum-1);
-    WMSG1("extra = %d\n", endPtr - codePtr);
+    LOGI("codePtr=%p endPtr=%p numLines=%d", codePtr, endPtr, lineNum-1);
+    LOGI("extra = %d", endPtr - codePtr);
 
     SetResultBuffer(pOutput);
     retval = 0;
@@ -1045,7 +1045,7 @@ ConvtOperand:
 
 bail:
     //if (len > 0)
-    //    WMSG1("{LEN=%d}", len);
+    //    LOGI("{LEN=%d}", len);
 
     return;
 }
@@ -1320,7 +1320,7 @@ ReformatLISA3::PrintSymEntry(int ent)
 {
     if (ent < 0 || ent >= fSymCount) {
         Output("!BAD SYM!");
-        WMSG2("invalid entry %d (max %d)\n", ent, fSymCount);
+        LOGI("invalid entry %d (max %d)", ent, fSymCount);
         DebugBreak();
         return;
     }
@@ -1466,11 +1466,11 @@ ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
     symCount = srcPtr[0x04] | srcPtr[0x05] << 8;
 
     if (symEnd > srcLen) {
-        WMSG0("  LISA4 bad symEnd\n");
+        LOGI("  LISA4 bad symEnd");
         return false;
     }
     if (symCount > symEnd) {
-        WMSG2("  LISA4 funky symCount (count=%d end=%d)\n",
+        LOGI("  LISA4 funky symCount (count=%d end=%d)",
             symCount, symEnd);
         return false;;
     }
@@ -1481,11 +1481,11 @@ ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
     comTab = srcPtr[0x08];
 
     if (opTab < 1 || adTab < 2 || comTab < 3) {
-        WMSG0("  LISA4 missing tabs\n");
+        LOGI("  LISA4 missing tabs");
         return false;
     }
     if (opTab >= 128 || adTab >= 128 || comTab >= 128) {
-        WMSG0("  LISA4 huge tabs\n");
+        LOGI("  LISA4 huge tabs");
         return false;
     }
 
@@ -1568,7 +1568,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (srcLen < kHeaderLen+2) {
-        WMSG0("  LISA4 too short\n");
+        LOGI("  LISA4 too short");
         goto bail;
     }
 
@@ -1585,17 +1585,17 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     fComTab = srcPtr[0x08];
     fCpuType = srcPtr[0x09];
 
-    WMSG3("  LISA4 version = 0x%04x  symEnd=%d  symCount=%d\n",
+    LOGI("  LISA4 version = 0x%04x  symEnd=%d  symCount=%d",
         version, symEnd, fSymCount);
-    WMSG4("  LISA4  opTab=%d adTab=%d comTab=%d cpuType=%d\n",
+    LOGI("  LISA4  opTab=%d adTab=%d comTab=%d cpuType=%d",
         fOpTab, fAdTab, fComTab, fCpuType);
 
     if (symEnd > srcLen) {
-        WMSG0("  LISA4 bad symEnd\n");
+        LOGI("  LISA4 bad symEnd");
         goto bail;
     }
     if (fSymCount > symEnd) {
-        WMSG0("  LISA4 funky symCount\n");
+        LOGI("  LISA4 funky symCount");
         goto bail;
     }
     if (fSymCount > 0) {
@@ -1611,7 +1611,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     symPtr = srcPtr + kHeaderLen;
     endPtr = srcPtr + symEnd;
     if (symPtr > endPtr) {
-        WMSG0("  LISA4 GLITCH: bad symEnd\n");
+        LOGI("  LISA4 GLITCH: bad symEnd");
         goto bail;
     }
 
@@ -1627,11 +1627,11 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
         symPtr++;
     }
     if (symIdx != fSymCount) {
-        WMSG2("  LISA4 err: symIdx is %d, symCount is %d\n", symIdx, fSymCount);
+        LOGI("  LISA4 err: symIdx is %d, symCount is %d", symIdx, fSymCount);
         goto bail;
     }
 
-    WMSG3("  LISA4 symPtr=%p endPtr=%p symIdx=%d\n", symPtr, endPtr, symIdx);
+    LOGI("  LISA4 symPtr=%p endPtr=%p symIdx=%d", symPtr, endPtr, symIdx);
 
     /*
      * Process source lines.
@@ -1718,9 +1718,9 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
         codePtr += lineLen-1;
     }
 
-    WMSG3("  LISA4 codePtr=%p endPtr=%p numLines=%d\n",
+    LOGI("  LISA4 codePtr=%p endPtr=%p numLines=%d",
         codePtr, endPtr, lineNum-1);
-    WMSG1("  LISA4 extra = %d\n", endPtr - codePtr);
+    LOGI("  LISA4 extra = %d", endPtr - codePtr);
 
     SetResultBuffer(pOutput);
     retval = 0;
@@ -1804,7 +1804,7 @@ ReformatLISA4::ProcessLine(const unsigned char* codePtr, int len)
             Output(gMnemonics4[mnemonic]);
         else {
             Output("!BAD MNEMONIC!");
-            WMSG1("  LISA4 bad mnemonic 0x%02x\n", mnemonic);
+            LOGI("  LISA4 bad mnemonic 0x%02x", mnemonic);
             DebugBreak();
         }
         if (mnemonic >= kSS) {

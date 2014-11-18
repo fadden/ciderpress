@@ -86,7 +86,7 @@ SelectFilesDialog::OFNHookProc(HWND hDlg, UINT uiMsg, WPARAM wParam,
 
     switch (uiMsg) {
     case WM_INITDIALOG:
-        WMSG1("WM_INITDIALOG, OFN=0x%08lx\n", lParam);
+        LOGI("WM_INITDIALOG, OFN=0x%08lx", lParam);
         SetWindowLong(hDlg, GWL_USERDATA, lParam);
         break;
     case WM_NOTIFY:     // 0x4e
@@ -102,8 +102,8 @@ SelectFilesDialog::OFNHookProc(HWND hDlg, UINT uiMsg, WPARAM wParam,
         ASSERT(pSFD != NULL);
         return pSFD->HandleHelp(hDlg, (LPHELPINFO) lParam);
     default:
-        //WMSG4("OFNHookProc: hDlg=0x%08lx uiMsg=0x%08lx "
-        //      "wParam=0x%08lx lParam=0x%08lx\n",
+        //LOGI("OFNHookProc: hDlg=0x%08lx uiMsg=0x%08lx "
+        //      "wParam=0x%08lx lParam=0x%08lx",
         //  hDlg, uiMsg, wParam, lParam);
         break;
     }
@@ -127,43 +127,43 @@ SelectFilesDialog::HandleNotify(HWND hDlg, LPOFNOTIFY pofn)
         MyOnInitDone();
         return 1;
     case CDN_SELCHANGE:
-        WMSG0("  CDN_SELCHANGE\n");
+        LOGI("  CDN_SELCHANGE");
         MyOnFileNameChange(/*&count*/);
         //ClearFileName();
         return 1;
     case CDN_FOLDERCHANGE:
-        WMSG0("  CDN_FOLDERCHANGE\n");
+        LOGI("  CDN_FOLDERCHANGE");
         break;
     case CDN_SHAREVIOLATION:
-        WMSG0("  CDN_SHAREVIOLATION\n");
+        LOGI("  CDN_SHAREVIOLATION");
         break;
     case CDN_HELP:
-        WMSG0("  CDN_HELP!\n");
+        LOGI("  CDN_HELP!");
         break;
     case CDN_FILEOK:
-        WMSG0("  CDN_FILEOK\n");
+        LOGI("  CDN_FILEOK");
         /* act like they hit the Accept button */
 //      MyOnFileNameChange(&count);
         //ClearFileName();
 //      if (count != 0) {
-//          WMSG1("Count = %d, accepting CDN_FILEOK\n", count);
+//          LOGI("Count = %d, accepting CDN_FILEOK", count);
 //          MyOnAccept();
 //      } else {
 //          OPENFILENAME* pOfn;
 //          pOfn = (OPENFILENAME*) GetWindowLong(hDlg, GWL_USERDATA);
-//          WMSG1("Count=0, name='%ls'\n", pOfn->lpstrFile);
+//          LOGI("Count=0, name='%ls'", pOfn->lpstrFile);
 //      }
         PrepEndDialog();
         /* must do this every time, or it fails in funky ways */
         SetWindowLong(hDlg, DWL_MSGRESULT, 1);
         return 1;
     case CDN_TYPECHANGE:
-        WMSG0("  CDN_TYPECHANGE\n");
+        LOGI("  CDN_TYPECHANGE");
         break;
     case CDN_INCLUDEITEM:
-        WMSG0("  CDN_INCLUDEITEM\n");
+        LOGI("  CDN_INCLUDEITEM");
     default:
-        WMSG2("  HandleNotify, code=%d, pOfn=0x%08lx\n", pofn->hdr.code, pofn);
+        LOGI("  HandleNotify, code=%d, pOfn=0x%08lx", pofn->hdr.code, pofn);
         break;
     }
 
@@ -176,7 +176,7 @@ SelectFilesDialog::HandleNotify(HWND hDlg, LPOFNOTIFY pofn)
 UINT
 SelectFilesDialog::HandleCommand(HWND hDlg, WPARAM wParam, LPARAM lParam)
 {
-    WMSG2("  HandleCommand wParam=%d lParam=0x%08lx\n", wParam, lParam);
+    LOGI("  HandleCommand wParam=%d lParam=0x%08lx", wParam, lParam);
 
     if ((int) wParam == fAcceptButtonID) {
         MyOnAccept();
@@ -195,9 +195,9 @@ SelectFilesDialog::HandleCommand(HWND hDlg, WPARAM wParam, LPARAM lParam)
 UINT
 SelectFilesDialog::HandleSize(HWND hDlg, UINT nType, int cx, int cy)
 {
-    //WMSG3("Dialog: old size %d,%d  (ready=%d)\n",
+    //LOGI("Dialog: old size %d,%d  (ready=%d)",
     //  fLastWinSize.Width(), fLastWinSize.Height(), fReady);
-    //WMSG2("Dialog: new size %d,%d\n", cx, cy);
+    //LOGI("Dialog: new size %d,%d", cx, cy);
 
     // we get called once before we have a chance to initialize
     if (!fReady)
@@ -206,7 +206,7 @@ SelectFilesDialog::HandleSize(HWND hDlg, UINT nType, int cx, int cy)
     int deltaX, deltaY;
     deltaX = cx - fLastWinSize.Width();
     deltaY = cy - fLastWinSize.Height();
-    //WMSG2("Delta is %d,%d\n", deltaX, deltaY);
+    //LOGI("Delta is %d,%d", deltaX, deltaY);
 
     ShiftControls(deltaX, 0 /*deltaY*/);
 
@@ -227,10 +227,10 @@ SelectFilesDialog::HandleHelp(HWND hDlg, LPHELPINFO lpHelpInfo)
     DWORD context = lpHelpInfo->iCtrlId;
     BOOL result;
 
-    //WMSG1("Handling help with context %ld\n", context);
+    //LOGI("Handling help with context %ld", context);
     result = ::WinHelp(pWndMain->m_hWnd, pAppMain->m_pszHelpFilePath,
                 HELP_CONTEXTPOPUP, context);
-    //WMSG1("SFD WinHelp returned %d\n", result);
+    //LOGI("SFD WinHelp returned %d", result);
     return TRUE;    // yes, we handled it
 }
 
@@ -246,7 +246,7 @@ SelectFilesDialog::HandleHelp(HWND hDlg, LPHELPINFO lpHelpInfo)
 void
 SelectFilesDialog::MyOnInitDone(void)
 {
-    WMSG0("OnInitDone!\n");
+    LOGI("OnInitDone!");
     CWnd* pParent = GetParent();
     CWnd* pWnd;
     CRect okRect, cancelRect, acceptRect;
@@ -265,7 +265,7 @@ SelectFilesDialog::MyOnInitDone(void)
     pWnd->GetWindowRect(&cancelRect);
 
     vertDiff = acceptRect.top - okRect.top;
-    WMSG2("vertDiff = %d (horizDiff=%d)\n", vertDiff,
+    LOGI("vertDiff = %d (horizDiff=%d)", vertDiff,
         acceptRect.left - okRect.left);
 
     ShiftControls(0, -vertDiff);
@@ -297,10 +297,10 @@ void
 SelectFilesDialog::ShiftControls(int deltaX, int deltaY)
 {
     if (deltaX == 0 && deltaY == 0) {
-        WMSG0("SFD OnSize: no meaningful change\n");
+        LOGI("SFD OnSize: no meaningful change");
         return;
     } else {
-        WMSG2("ShiftControls x=%d y=%d\n", deltaX, deltaY);
+        LOGI("ShiftControls x=%d y=%d", deltaX, deltaY);
     }
     MoveControl(this, fAcceptButtonID, deltaX, deltaY, false);
     MoveControl(this, IDCANCEL, deltaX, deltaY, false);
@@ -341,18 +341,18 @@ SelectFilesDialog::GetListCtrl(void)
 void
 SelectFilesDialog::MyOnFileNameChange(void)
 {
-    //WMSG1("OnFileNameChange\n");
+    //LOGI("OnFileNameChange");
 
     CListCtrl* pList;
 
     pList = (CListCtrl*) GetListCtrl();
     if (pList == NULL) {
-        WMSG0("GLITCH: could not get list control\n");
+        LOGI("GLITCH: could not get list control");
         return;
     }
     ASSERT(pList != NULL);
 
-    //WMSG1("Selected count=%d\n", pList->GetSelectedCount());
+    //LOGI("Selected count=%d", pList->GetSelectedCount());
     //*pCount = pList->GetSelectedCount();
 
     //CWnd* pItem;
@@ -367,7 +367,7 @@ SelectFilesDialog::MyOnFileNameChange(void)
 void
 SelectFilesDialog::MyOnAccept(void)
 {
-    //WMSG0("OnAccept!\n");
+    //LOGI("OnAccept!");
     PrepEndDialog();
 }
 
@@ -386,7 +386,7 @@ SelectFilesDialog::PrepEndDialog(void)
 
     // let sub-classes copy data out
     if (!MyDataExchange(true)) {
-        WMSG0("MyDataExchange failed!\n");
+        LOGI("MyDataExchange failed!");
         return false;
     }
 
@@ -406,14 +406,14 @@ SelectFilesDialog::PrepEndDialog(void)
      * Fortunately I believe the world is divided into "typers" and
      * "clickers", and so long as their paths don't cross we're fine.
      */
-    WMSG2("PrepEndDialog: got max=%d off=%d\n", m_ofn.nMaxFile, m_ofn.nFileOffset);
+    LOGI("PrepEndDialog: got max=%d off=%d", m_ofn.nMaxFile, m_ofn.nFileOffset);
     if (m_ofn.nFileOffset != 0) {
         WCHAR* buf = m_ofn.lpstrFile;
         buf += m_ofn.nFileOffset;
         while (*buf != '\0') {
             if (buf > m_ofn.lpstrFile)
                 *(buf-1) = '\\';
-            WMSG1("    File '%ls'\n", buf);
+            LOGI("    File '%ls'", buf);
             buf += wcslen(buf) +1;
         }
         //Sleep(1000);
@@ -424,7 +424,7 @@ SelectFilesDialog::PrepEndDialog(void)
         /* stick a '\' on the very end, so we get double-null action later */
         *(m_ofn.lpstrFile + nextSpot) = '\\';
     }
-    WMSG1("Last offset was %d\n", nextSpot);
+    LOGI("Last offset was %d", nextSpot);
 
 #if 0
     /* make it clear that they're only getting one */
@@ -446,7 +446,7 @@ SelectFilesDialog::PrepEndDialog(void)
      */
     pList = (CListCtrl*) GetListCtrl();
     if (pList == NULL) {
-        WMSG0("GLITCH: could not get list control\n");
+        LOGI("GLITCH: could not get list control");
         return false;
     }
     ASSERT(pList != NULL);
@@ -508,33 +508,33 @@ SelectFilesDialog::PrepEndDialog(void)
                 PathName path(buf);
                 compareName += path.GetFileName();
                 compareName += L"\\";
-                //WMSG1("  Checking name='%ls'\n", compareName);
+                //LOGI("  Checking name='%ls'", compareName);
 
                 if (compare && Stristr(tailStr, compareName) != NULL) {
-                    WMSG1("    Matched '%ls', not adding\n", compareName);
+                    LOGI("    Matched '%ls', not adding", compareName);
                 } else {
                     if (compare) {
-                        WMSG1("    No match on '%ls', adding\n", compareName);
+                        LOGI("    No match on '%ls', adding", compareName);
                     } else {
-                        WMSG1("    Found '%ls', adding\n", compareName);
+                        LOGI("    Found '%ls', adding", compareName);
                     }
                     fileNames += path.GetFileName();
                     fileNames += L"\\";
                 }
             } else {
                 /* expected, for things like "Control Panels" or "My Network" */
-                WMSG1("  No path for '%ls'\n",
+                LOGI("  No path for '%ls'",
                     (LPCTSTR) pList->GetItemText(num, 0));
             }
         }
 
         if (fileNames.GetLength() >= (int)m_ofn.nMaxFile) {
-            WMSG0("GLITCH: excessively long file name list\n");
+            LOGI("GLITCH: excessively long file name list");
             return false;
         }
     }
 
-    WMSG3("Final result: names at %d, len=%d, str='%ls'\n",
+    LOGI("Final result: names at %d, len=%d, str='%ls'",
         fFileNameOffset, wcslen(fileNames), fileNames);
 
     /*

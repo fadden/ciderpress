@@ -347,13 +347,13 @@ DiskImgLib::LastErrorToDIError(void)
         // ERROR_SEM_TIMEOUT seen read bad blocks from floptical under Win2K
 
     case ERROR_INVALID_HANDLE:                                      // 6
-        WMSG0("HEY: got ERROR_INVALID_HANDLE!\n");
+        LOGI("HEY: got ERROR_INVALID_HANDLE!");
         return kDIErrInternal;
     case ERROR_NEGATIVE_SEEK:                                       // 131
-        WMSG0("HEY: got ERROR_NEGATIVE_SEEK!\n");
+        LOGI("HEY: got ERROR_NEGATIVE_SEEK!");
         return kDIErrInternal;
     default:
-        WMSG2("LastErrorToDIError: not converting 0x%08lx (%ld)\n",
+        LOGI("LastErrorToDIError: not converting 0x%08lx (%ld)",
             lastErr, lastErr);
         return kDIErrGeneric;
     }

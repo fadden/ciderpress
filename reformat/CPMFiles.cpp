@@ -74,7 +74,7 @@ ReformatCPMText::Examine(ReformatHolder* pHolder)
 
     /* allow, but don't default to, text conversion of ".com" files */
     if (strcasecmp(nameExt, ".com") == 0) {
-        WMSG0("Not reformatting '.com' file as text\n");
+        LOGI("Not reformatting '.com' file as text");
         goto done;
     }
 
@@ -93,7 +93,7 @@ ReformatCPMText::Examine(ReformatHolder* pHolder)
             /* do nothing -- 0x00 is okay if it comes after Ctrl-Z */
         } else {
             if (gIsBinary[*ptr]) {
-                WMSG2("CP/M found binary char 0x%02x at offset 0x%04x\n",
+                LOGI("CP/M found binary char 0x%02x at offset 0x%04x",
                     *ptr,
                     ptr - pHolder->GetSourceBuf(ReformatHolder::kPartData));
                 break;

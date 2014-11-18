@@ -65,7 +65,7 @@ ReformatAWP::Process(const ReformatHolder* pHolder,
 
     /* expect header plus EOF bytes at least */
     if (srcLen <= kFileHeaderSize) {
-        WMSG0("  AWP truncated?\n");
+        LOGI("  AWP truncated?");
         goto bail;
     }
 
@@ -82,12 +82,12 @@ ReformatAWP::Process(const ReformatHolder* pHolder,
 
     /* do some quick sanity checks */
     if (fFileHeader.seventyNine != kSeventyNine) {
-        WMSG2("ERROR: expected %d in signature byte, found %d\n",
+        LOGI("ERROR: expected %d in signature byte, found %d",
             kSeventyNine, fFileHeader.seventyNine);
         goto bail;
     }
     if (fFileHeader.sfMinVers && fFileHeader.sfMinVers != kSFMinVers30) {
-        WMSG1("WARNING: unexpected value %d for sfMinVers\n",
+        LOGI("WARNING: unexpected value %d for sfMinVers",
             fFileHeader.sfMinVers);
         /* keep going */
     }
@@ -108,18 +108,18 @@ ReformatAWP::Process(const ReformatHolder* pHolder,
      */
     while (1) {
         if (length < 0) {
-            WMSG0(" AWP truncated file\n");
+            LOGI(" AWP truncated file");
             goto bail;
         }
         lineRecData = Read8(&srcPtr, &length);
         if (length < 0) {
-            WMSG0(" AWP truncated file\n");
+            LOGI(" AWP truncated file");
             goto bail;
         }
         lineRecCode = Read8(&srcPtr, &length);
 
         if (length < 0) {
-            WMSG0(" AWP truncated file\n");
+            LOGI(" AWP truncated file");
             goto bail;
         }
 
@@ -134,7 +134,7 @@ ReformatAWP::Process(const ReformatHolder* pHolder,
 
         if (ProcessLineRecord(lineRecData, lineRecCode, &srcPtr, &length) != 0)
         {
-            WMSG0("ProcessLineRecord failed, bailing\n");
+            LOGI("ProcessLineRecord failed, bailing");
             goto bail;
         }
     }
@@ -173,7 +173,7 @@ ReformatAWP::ProcessLineRecord(uchar lineRecData, uchar lineRecCode,
 {
     int err = 0;
 
-    //WMSG2(" AWP line rec <0x%02x><0x%02x>\n", lineRecCode, lineRecData);
+    //LOGI(" AWP line rec <0x%02x><0x%02x>", lineRecCode, lineRecData);
 
     if (lineRecCode == kLineRecordCarriageReturn) {
         /* ignore the horizontal offset for now */
@@ -281,16 +281,16 @@ ReformatAWP::ProcessLineRecord(uchar lineRecData, uchar lineRecCode,
         case kLineRecordCommandPageBreakPara:
         case kLineRecordCommandPageBreakPara256:
         default:
-            WMSG2(" AWP cmd <0x%02x><0x%02x>\n", lineRecCode, lineRecData);
+            LOGI(" AWP cmd <0x%02x><0x%02x>", lineRecCode, lineRecData);
             break;
         }
     } else {
         /* bad command */
-        WMSG2("WARNING: unrecognized code 0x%02x at 0x%08lx\n", lineRecCode,
+        LOGI("WARNING: unrecognized code 0x%02x at 0x%08lx", lineRecCode,
             *pSrcPtr);
         fDocState.softFailures++;
         if (fDocState.softFailures > kMaxSoftFailures) {
-            WMSG0("ERROR: too many failures, giving up\n");
+            LOGI("ERROR: too many failures, giving up");
             err = -1;
         }
     }
@@ -325,13 +325,13 @@ ReformatAWP::HandleTextRecord(uchar lineRecData,
     }
 
     if (byteCount <= 0) {
-        WMSG2("WARNING: line %ld: short line (%d)\n",
+        LOGI("WARNING: line %ld: short line (%d)",
             fDocState.line, byteCount);
         /* this is bad, but keep going anyway */
     }
 
     if ((byteCountPlusCR & ~kCRatEOL) != byteCount) {
-        WMSG3("WARNING: line %ld: byteCount now %d, offset 3 count %d\n",
+        LOGI("WARNING: line %ld: byteCount now %d, offset 3 count %d",
             fDocState.line, byteCount, byteCountPlusCR & ~kCRatEOL);
         /* not sure why this would legally happen */
     }
@@ -424,7 +424,7 @@ ReformatAWP::HandleTextRecord(uchar lineRecData,
                 BufPrintf(" ");
                 break;
             default:
-                WMSG1(" AWP unhandled special char 0x%02x\n", ic);
+                LOGI(" AWP unhandled special char 0x%02x", ic);
                 if (fShowEmbeds) {
                     RTFSetColor(kColorBlue);
                     BufPrintf("^");
@@ -503,13 +503,13 @@ ReformatADB::Process(const ReformatHolder* pHolder,
 
     /* expect header plus EOF bytes at least */
     if (srcLen <= kMinHeaderLen) {
-        WMSG0("  ADB truncated?\n");
+        LOGI("  ADB truncated?");
         goto bail;
     }
 
     headerLen = Get16LE(srcPtr);
     if (headerLen < kMinHeaderLen || headerLen > length) {
-        WMSG2("  ADB bad headerLen %d, file len is %d\n", headerLen,
+        LOGI("  ADB bad headerLen %d, file len is %d", headerLen,
             srcLen);
         goto bail;
     }
@@ -519,18 +519,18 @@ ReformatADB::Process(const ReformatHolder* pHolder,
     /* offset +035: #of categories in file */
     numCats = *(srcPtr + 35);
     if (numCats < 1 || numCats > 0x1e) {
-        WMSG1("  ADB GLITCH: unexpected numCats %d\n", numCats);
+        LOGI("  ADB GLITCH: unexpected numCats %d", numCats);
         /* keep going... */
     }
-    WMSG1("  ADB should be %d categories\n", numCats);
+    LOGI("  ADB should be %d categories", numCats);
 
     /* offset +036-037: #of records in file */
     numRecs = Get16LE(srcPtr + 36) & 0x7fff;
-    WMSG1("  ADB should be %d records\n", numRecs);
+    LOGI("  ADB should be %d records", numRecs);
 
     /* offset +038: #of reports in file */
     numReports = *(srcPtr + 38);
-    WMSG1("  ADB should be %d reports\n", numReports);
+    LOGI("  ADB should be %d reports", numReports);
 
     /* dump category names as first record */
     const unsigned char* catPtr;
@@ -576,9 +576,9 @@ ReformatADB::Process(const ReformatHolder* pHolder,
     int offsetToData;
     offsetToData = kOffsetToFirstCatHeader +
                 numCats*kCatHeaderLen + numReports*kReportRecordLen;
-    WMSG1("  ADB data records begin at offset 0x%08lx\n", offsetToData);
+    LOGI("  ADB data records begin at offset 0x%08lx", offsetToData);
     if (offsetToData >= length) {
-        WMSG1("  ADB GLITCH: offset >= length %ld\n", length);
+        LOGI("  ADB GLITCH: offset >= length %ld", length);
         goto bail;
     }
 
@@ -593,7 +593,7 @@ ReformatADB::Process(const ReformatHolder* pHolder,
             srcPtr += recordRem;
             length -= recordRem;
             if (*(srcPtr-1) != 0xff) {
-                WMSG1("  ADB GLITCH: first record skipped past 0x%02x\n",
+                LOGI("  ADB GLITCH: first record skipped past 0x%02x",
                     *(srcPtr-1));
                 /* keep going, I guess */
             }
@@ -666,7 +666,7 @@ ReformatADB::Process(const ReformatHolder* pHolder,
                 }
                 catNum--;   // don't double-count this category
             } else {
-                WMSG1("  ADB GLITCH: invalid ctrl byte 0x%02x\n", ctrl);
+                LOGI("  ADB GLITCH: invalid ctrl byte 0x%02x", ctrl);
                 break;
                 /* keep going anyway? */
             }
@@ -682,14 +682,14 @@ ReformatADB::Process(const ReformatHolder* pHolder,
         /* end of record */
         RTFNewPara();
     }
-    WMSG2("  ADB at exit rr=%d numRecs=%d\n", rr, numRecs);
+    LOGI("  ADB at exit rr=%d numRecs=%d", rr, numRecs);
 
     int checkEnd;
     checkEnd = Read16(&srcPtr, &length);
     if (checkEnd != 0xffff) {
-        WMSG1("  ADB GLITCH: last read returned 0x%04x\n", checkEnd);
+        LOGI("  ADB GLITCH: last read returned 0x%04x", checkEnd);
     } else {
-        WMSG0("  ADB found EOF; success\n");
+        LOGI("  ADB found EOF; success");
     }
 
     /* 
@@ -764,7 +764,7 @@ ReformatASP::Process(const ReformatHolder* pHolder,
 
     /* must at least have the header */
     if (length < kFileHeaderSize) {
-        WMSG0("  ADB truncated?\n");
+        LOGI("  ADB truncated?");
         goto bail;
     }
 
@@ -774,7 +774,7 @@ ReformatASP::Process(const ReformatHolder* pHolder,
     aw30flag = false;
     if (pFileHeader->ssMinVers != 0)
         aw30flag = true;
-    WMSG2("  ASP ssMinVers=0x%02x, aw30flag=%d\n",
+    LOGI("  ASP ssMinVers=0x%02x, aw30flag=%d",
         pFileHeader->ssMinVers, aw30flag);
 
     /*
@@ -804,12 +804,12 @@ ReformatASP::Process(const ReformatHolder* pHolder,
         /* row length or EOF marker */
         rowLen = Read16(&srcPtr, &length);
         if (rowLen == 0xffff) {
-            WMSG0("  ASP found EOF marker, we're done\n");
+            LOGI("  ASP found EOF marker, we're done");
             break;
         }
 
         rowNum = Read16(&srcPtr, &length);
-        //WMSG2("  ASP  process row %d (cur=%d)\n", rowNum, currentRow);
+        //LOGI("  ASP  process row %d (cur=%d)", rowNum, currentRow);
 
         /* fill out empty rows */
         ASSERT(fCurrentRow <= rowNum);
@@ -859,7 +859,7 @@ ReformatASP::ProcessRow(int rowNum, const unsigned char** pSrcPtr,
                 first = false;
             /* read cell entry contents */
             if (ctrl > *pLength) {
-                WMSG2("  ASP GLITCH: cell len exceeds file len (%d %d)\n",
+                LOGI("  ASP GLITCH: cell len exceeds file len (%d %d)",
                     *pLength, ctrl);
                 break;
             }
@@ -884,7 +884,7 @@ ReformatASP::ProcessRow(int rowNum, const unsigned char** pSrcPtr,
             break;
         } else {
             /* unexpected 0x00 or 0x80 */
-            WMSG1("  ASP GLITCH: unexpected ctrl byte 0x%02x\n", ctrl);
+            LOGI("  ASP GLITCH: unexpected ctrl byte 0x%02x", ctrl);
             break;
         }
 
@@ -925,7 +925,7 @@ ReformatASP::ProcessCell(const unsigned char* srcPtr, long cellLength)
                 /* this is a "value label", AW30+ only */
                 /* skip over cached string result */
                 if (*srcPtr >= cellLength) {
-                    WMSG0("  ASP GLITCH: invalid value label str len\n");
+                    LOGI("  ASP GLITCH: invalid value label str len");
                     BufPrintf("GLITCH");
                 } else {
                     srcPtr += *srcPtr +1;
@@ -938,7 +938,7 @@ ReformatASP::ProcessCell(const unsigned char* srcPtr, long cellLength)
                 //dval = ConvertSANEDouble(srcPtr);
                 /* skip over cached computation result */
                 if (cellLength <= kSANELen) {
-                    WMSG0("  ASP GLITCH: invalid value formula len\n");
+                    LOGI("  ASP GLITCH: invalid value formula len");
                     BufPrintf("GLITCH");
                 } else {
                     srcPtr += kSANELen;
@@ -997,7 +997,7 @@ ReformatASP::PrintToken(const unsigned char** pSrcPtr, long* pLength)
 
     token = Read8(pSrcPtr, pLength);
     if (token < kTokenStart) {
-        WMSG1("  ASP GLITCH: funky token 0x%02x\n", token);
+        LOGI("  ASP GLITCH: funky token 0x%02x", token);
         return;
     }
 
@@ -1005,7 +1005,7 @@ ReformatASP::PrintToken(const unsigned char** pSrcPtr, long* pLength)
     if (token == 0xe0 || token == 0xe7) {
         /* @Error and @NA followed by three zero bytes */
         if (*pLength < 3) {
-            WMSG0("  ASP GLITCH: ran off end processing tokens\n");
+            LOGI("  ASP GLITCH: ran off end processing tokens");
             return;
         }
         *pSrcPtr += 3;
@@ -1013,7 +1013,7 @@ ReformatASP::PrintToken(const unsigned char** pSrcPtr, long* pLength)
     } else if (token == 0xfd) {
         /* SANE double number */
         if (*pLength < 8) {
-            WMSG0("  ASP GLITCH: not enough left to grab a SANE\n");
+            LOGI("  ASP GLITCH: not enough left to grab a SANE");
             return;
         }
         double dval = ConvertSANEDouble(*pSrcPtr);
@@ -1035,7 +1035,7 @@ ReformatASP::PrintToken(const unsigned char** pSrcPtr, long* pLength)
         int i;
         i = Read8(pSrcPtr, pLength);
         if (i > *pLength) {
-            WMSG0("  ASP GLITCH: string exceeds cell len\n");
+            LOGI("  ASP GLITCH: string exceeds cell len");
             return;
         }
         while (i--) {
@@ -1053,7 +1053,7 @@ const char*
 ReformatASP::PrintCol(int col)
 {
     if (col < 0 || col >= 702) {
-        WMSG1("  ASP can't PrintCol(%d)\n", col);
+        LOGI("  ASP can't PrintCol(%d)", col);
         fPrintColBuf[0] = fPrintColBuf[1] = '?';
         fPrintColBuf[2] = '\0';
     } else if (col < 26) {

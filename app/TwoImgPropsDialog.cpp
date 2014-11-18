@@ -97,7 +97,7 @@ TwoImgPropsDialog::DoDataExchange(CDataExchange* pDX)
         DDX_Text(pDX, IDC_TWOIMG_COMMENT, comment);
         DDX_Text(pDX, IDC_TWOIMG_DOSVOLNUM, dosVolNum);
 
-        WMSG1("GOT dosVolNum = %d\n", dosVolNum);
+        LOGI("GOT dosVolNum = %d", dosVolNum);
 
         fpHeader->fFlags &= ~(TwoImgHeader::kFlagLocked);
         if (locked)

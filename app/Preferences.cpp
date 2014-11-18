@@ -152,7 +152,7 @@ const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
  */
 Preferences::Preferences(void)
 {
-    WMSG0("Initializing Preferences\n");
+    LOGI("Initializing Preferences");
 
     ScanPrefMaps();     // sanity-check the table
     memset(fValues, 0, sizeof(fValues));
@@ -327,22 +327,22 @@ Preferences::InitTempPath(void)
     len = ::GetTempPath(NELEM(buf), buf);
     if (len == 0) {
         DWORD err = ::GetLastError();
-        WMSG1("GetTempPath failed, err=%d\n", err);
+        LOGI("GetTempPath failed, err=%d", err);
         tempPath = kDefaultTempPath;
     } else if (len >= NELEM(buf)) {
         /* sheesh! */
-        WMSG1("GetTempPath wants a %d-unit buffer\n", len);
+        LOGI("GetTempPath wants a %d-unit buffer", len);
         tempPath = kDefaultTempPath;
     } else {
         tempPath = buf;
     }
 
     PathName path(tempPath);
-    WMSG1("Temp path is '%ls'\n", tempPath);
+    LOGI("Temp path is '%ls'", tempPath);
     path.SFNToLFN();
     tempPath = path.GetPathName();
 
-    WMSG1("Temp path (long form) is '%ls'\n", tempPath);
+    LOGI("Temp path (long form) is '%ls'", tempPath);
 
     SetPrefString(kPrTempPath, tempPath);
 
@@ -375,7 +375,7 @@ Preferences::InitFolders(void)
         SetPrefString(kPrOpenWAVFolder, buf);
     }
 
-    WMSG1("Default folder is '%ls'\n", GetPrefString(kPrExtractFileFolder));
+    LOGI("Default folder is '%ls'", GetPrefString(kPrExtractFileFolder));
 }
 
 /*
@@ -395,13 +395,13 @@ Preferences::GetMyDocuments(CString* pPath)
 
     hr = SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl);
     if (FAILED(hr)) {
-        WMSG0("WARNING: unable to get CSIDL_PERSONAL\n");
+        LOGI("WARNING: unable to get CSIDL_PERSONAL");
         goto bail;
     }
 
     result = (Pidl::GetPath(pidl, pPath) != FALSE);
     if (!result) {
-        WMSG0("WARNING: unable to convert CSIDL_PERSONAL to path\n");
+        LOGI("WARNING: unable to convert CSIDL_PERSONAL to path");
         /* fall through with "result" */
     }
 
@@ -507,7 +507,7 @@ Preferences::ScanPrefMaps(void)
     /* scan PrefNum */
     for (i = 0; i < kPrefNumLastEntry; i++) {
         if (fPrefMaps[i].num != i) {
-            WMSG2("HEY: PrefMaps[%d] has num=%d\n", i, fPrefMaps[i].num);
+            LOGI("HEY: PrefMaps[%d] has num=%d", i, fPrefMaps[i].num);
             ASSERT(false);
             break;
         }
@@ -526,7 +526,7 @@ Preferences::ScanPrefMaps(void)
                 wcsicmp(fPrefMaps[i].registrySection,
                         fPrefMaps[j].registrySection) == 0)
             {
-                WMSG4("HEY: PrefMaps[%d] and [%d] both have '%ls'/'%ls'\n",
+                LOGI("HEY: PrefMaps[%d] and [%d] both have '%ls'/'%ls'",
                     i, j, fPrefMaps[i].registrySection,
                     fPrefMaps[i].registryKey);
                 ASSERT(false);
@@ -546,7 +546,7 @@ Preferences::LoadFromRegistry(void)
     bool bval;
     long lval;
 
-    WMSG0("Loading preferences from registry\n");
+    LOGI("Loading preferences from registry");
 
     fColumnLayout.LoadFromRegistry(kColumnSect);
 
@@ -572,7 +572,7 @@ Preferences::LoadFromRegistry(void)
                 GetString(fPrefMaps[i].registrySection, fPrefMaps[i].registryKey, sval));
             break;
         default:
-            WMSG2("Invalid type %d on num=%d\n", fPrefMaps[i].type, i);
+            LOGI("Invalid type %d on num=%d", fPrefMaps[i].type, i);
             ASSERT(false);
             break;
         }
@@ -587,7 +587,7 @@ Preferences::LoadFromRegistry(void)
 int
 Preferences::SaveToRegistry(void)
 {
-    WMSG0("Saving preferences to registry\n");
+    LOGI("Saving preferences to registry");
 
     fColumnLayout.SaveToRegistry(kColumnSect);
 
@@ -610,7 +610,7 @@ Preferences::SaveToRegistry(void)
                 GetPrefString(fPrefMaps[i].num));
             break;
         default:
-            WMSG2("Invalid type %d on num=%d\n", fPrefMaps[i].type, i);
+            LOGI("Invalid type %d on num=%d", fPrefMaps[i].type, i);
             ASSERT(false);
             break;
         }

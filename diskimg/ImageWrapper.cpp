@@ -47,7 +47,7 @@ Wrapper2MG::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     TwoImgHeader header;
 
-    WMSG0("Testing for 2MG\n");
+    LOGI("Testing for 2MG");
 
     // HEY: should test for wrappedLength > 2GB; if so, skip
 
@@ -55,7 +55,7 @@ Wrapper2MG::Test(GenericFD* pGFD, di_off_t wrappedLength)
     if (header.ReadHeader(pGFD, (long) wrappedLength) != 0)
         return kDIErrGeneric;
 
-    WMSG0("Looks like valid 2MG\n");
+    LOGI("Looks like valid 2MG");
     return kDIErrNone;
 }
 
@@ -71,7 +71,7 @@ Wrapper2MG::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     TwoImgHeader header;
     long offset;
 
-    WMSG0("Prepping for 2MG\n");
+    LOGI("Prepping for 2MG");
     pGFD->Rewind();
     if (header.ReadHeader(pGFD, (long) wrappedLength) != 0)
         return kDIErrGeneric;
@@ -90,13 +90,13 @@ Wrapper2MG::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     else if (header.fImageFormat == TwoImgHeader::kImageFormatNibble) {
         *pOrder = DiskImg::kSectorOrderPhysical;
         if (*pLength == kTrackCount525 * kTrackLenNib525) {
-            WMSG0("  Prepping for 6656-byte 2MG-NIB\n");
+            LOGI("  Prepping for 6656-byte 2MG-NIB");
             *pPhysical = DiskImg::kPhysicalFormatNib525_6656;
         } else if (*pLength == kTrackCount525 * kTrackLenNb2525) {
-            WMSG0("  Prepping for 6384-byte 2MG-NB2\n");
+            LOGI("  Prepping for 6384-byte 2MG-NB2");
             *pPhysical = DiskImg::kPhysicalFormatNib525_6384;
         } else {
-            WMSG1("  NIB 2MG with length=%ld rejected\n", (long) *pLength);
+            LOGI("  NIB 2MG with length=%ld rejected", (long) *pLength);
             return kDIErrOddLength;
         }
     }
@@ -119,7 +119,7 @@ Wrapper2MG::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     switch (physical) {
     case DiskImg::kPhysicalFormatNib525_6656:
         if (length != kTrackLenNib525 * kTrackCount525) {
-            WMSG1("Invalid 2MG nibble length %ld\n", (long) length);
+            LOGI("Invalid 2MG nibble length %ld", (long) length);
             return kDIErrInvalidArg;
         }
         header.InitHeader(TwoImgHeader::kImageFormatNibble, (long) length,
@@ -127,7 +127,7 @@ Wrapper2MG::Create(di_off_t length, DiskImg::PhysicalFormat physical,
         break;
     case DiskImg::kPhysicalFormatSectors:
         if ((length % 512) != 0) {
-            WMSG1("Invalid 2MG length %ld\n", (long) length);
+            LOGI("Invalid 2MG length %ld", (long) length);
             return kDIErrInvalidArg;
         }
         if (order == DiskImg::kSectorOrderProDOS)
@@ -137,16 +137,16 @@ Wrapper2MG::Create(di_off_t length, DiskImg::PhysicalFormat physical,
             cc = header.InitHeader(TwoImgHeader::kImageFormatDOS,
                 (long) length, (long) length / 512);
         else {
-            WMSG1("Invalid 2MG sector order %d\n", order);
+            LOGI("Invalid 2MG sector order %d", order);
             return kDIErrInvalidArg;
         }
         if (cc != 0) {
-            WMSG1("TwoImg InitHeader failed (len=%ld)\n", (long) length);
+            LOGI("TwoImg InitHeader failed (len=%ld)", (long) length);
             return kDIErrInvalidArg;
         }
         break;
     default:
-        WMSG1("Invalid 2MG physical %d\n", physical);
+        LOGI("Invalid 2MG physical %d", physical);
         return kDIErrInvalidArg;
     }
 
@@ -155,7 +155,7 @@ Wrapper2MG::Create(di_off_t length, DiskImg::PhysicalFormat physical,
 
     cc = header.WriteHeader(pWrapperGFD);
     if (cc != 0) {
-        WMSG1("ERROR: 2MG header write failed (cc=%d)\n", cc);
+        LOGI("ERROR: 2MG header write failed (cc=%d)", cc);
         return kDIErrGeneric;
     }
 
@@ -241,7 +241,7 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
     const NuThread* pThread = NULL;
     int idx;
 
-    WMSG1("Opening file '%s' to test for NuFX\n", pathName);
+    LOGI("Opening file '%s' to test for NuFX", pathName);
 
     /*
      * Open the archive.
@@ -249,7 +249,7 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
     if (readOnly) {
         nerr = NuOpenRO(pathName, &pArchive);
         if (nerr != kNuErrNone) {
-            WMSG1(" NuFX unable to open archive (err=%d)\n", nerr);
+            LOGI(" NuFX unable to open archive (err=%d)", nerr);
             goto bail;
         }
     } else {
@@ -263,7 +263,7 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
 
         nerr = NuOpenRW(pathName, tmpPath, 0, &pArchive);
         if (nerr != kNuErrNone) {
-            WMSG1(" NuFX OpenRW failed (nerr=%d)\n", nerr);
+            LOGI(" NuFX OpenRW failed (nerr=%d)", nerr);
             nerr = kNuErrGeneric;
             delete[] tmpPath;
             goto bail;
@@ -275,11 +275,11 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
 
     nerr = NuGetAttr(pArchive, kNuAttrNumRecords, &attr);
     if (nerr != kNuErrNone) {
-        WMSG1(" NuFX unable to get record count (err=%d)\n", nerr);
+        LOGI(" NuFX unable to get record count (err=%d)", nerr);
         goto bail;
     }
     if (attr != 1) {
-        WMSG1(" NuFX archive has %ld entries, not disk-only\n", attr);
+        LOGI(" NuFX archive has %ld entries, not disk-only", attr);
         nerr = kNuErrGeneric;
         if (attr > 1)
             goto file_archive;
@@ -290,12 +290,12 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
     /* get the first record */
     nerr = NuGetRecordIdxByPosition(pArchive, 0, &recordIdx);
     if (nerr != kNuErrNone) {
-        WMSG1(" NuFX unable to get first recordIdx (err=%d)\n", nerr);
+        LOGI(" NuFX unable to get first recordIdx (err=%d)", nerr);
         goto bail;
     }
     nerr = NuGetRecord(pArchive, recordIdx, &pRecord);
     if (nerr != kNuErrNone) {
-        WMSG1(" NuFX unable to get first record (err=%d)\n", nerr);
+        LOGI(" NuFX unable to get first record (err=%d)", nerr);
         goto bail;
     }
 
@@ -307,7 +307,7 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
             break;
     }
     if (idx == (int)NuRecordGetNumThreads(pRecord)) {
-        WMSG0(" NuFX no disk image found in first record\n");
+        LOGI(" NuFX no disk image found in first record");
         nerr = kNuErrGeneric;
         goto file_archive;
     }
@@ -319,7 +319,7 @@ WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
      */
     *pLength = pThread->actualThreadEOF;
     if (!*pLength) {
-        WMSG1(" NuFX length of disk image is bad (%ld)\n", *pLength);
+        LOGI(" NuFX length of disk image is bad (%ld)", *pLength);
         nerr = kNuErrGeneric;
         goto bail;
     }
@@ -381,13 +381,13 @@ WrapperNuFX::GetNuFXDiskImage(NuArchive* pArchive, NuThreadIdx threadIdx,
     err = NuCreateDataSinkForBuffer(true, kNuConvertOff, buf, length,
             &pDataSink);
     if (err != kNuErrNone) {
-        WMSG1(" NuFX: unable to create data sink (err=%d)\n", err);
+        LOGI(" NuFX: unable to create data sink (err=%d)", err);
         goto bail;
     }
 
     err = NuExtractThread(pArchive, threadIdx, pDataSink);
     if (err != kNuErrNone) {
-        WMSG1(" NuFX: unable to extract thread (err=%d)\n", err);
+        LOGI(" NuFX: unable to extract thread (err=%d)", err);
         goto bail;
     }
 
@@ -398,7 +398,7 @@ WrapperNuFX::GetNuFXDiskImage(NuArchive* pArchive, NuThreadIdx threadIdx,
 bail:
     NuFreeDataSink(pDataSink);
     if (err != kNuErrNone) {
-        WMSG1(" NuFX GetNuFXDiskImage returning after nuerr=%d\n", err);
+        LOGI(" NuFX GetNuFXDiskImage returning after nuerr=%d", err);
         delete buf;
     }
     if (err == kNuErrNone)
@@ -428,10 +428,10 @@ WrapperNuFX::Test(GenericFD* pGFD, di_off_t wrappedLength)
 
     imagePath = pGFD->GetPathName();
     if (imagePath == NULL) {
-        WMSG0("Can't test NuFX on non-file\n");
+        LOGI("Can't test NuFX on non-file");
         return kDIErrNotSupported;
     }
-    WMSG0("Testing for NuFX\n");
+    LOGI("Testing for NuFX");
     dierr = OpenNuFX(imagePath, &pArchive, &threadIdx, &length, true);
     if (dierr != kDIErrNone)
         return dierr;
@@ -488,7 +488,7 @@ WrapperNuFX::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     *pPhysical = DiskImg::kPhysicalFormatSectors;
     *pOrder = DiskImg::kSectorOrderProDOS;
 
-    WMSG1(" NuFX is ready, threadIdx=%ld\n", threadIdx);
+    LOGI(" NuFX is ready, threadIdx=%ld", threadIdx);
     fThreadIdx = threadIdx;
 
 bail:
@@ -539,7 +539,7 @@ WrapperNuFX::GenTempPath(const char* path)
 
     strcpy(cp, kTmpTemplate);
 
-    WMSG2("  NuFX GenTempPath '%s' -> '%s'\n", path, tmpPath);
+    LOGI("  NuFX GenTempPath '%s' -> '%s'", path, tmpPath);
 
     return tmpPath;
 }
@@ -585,7 +585,7 @@ WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
 
     nerr = NuOpenRW(imagePath, tmpPath, kNuOpenCreat, &pArchive);
     if (nerr != kNuErrNone) {
-        WMSG1(" NuFX OpenRW failed (nerr=%d)\n", nerr);
+        LOGI(" NuFX OpenRW failed (nerr=%d)", nerr);
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -635,7 +635,7 @@ WrapperNuFX::CloseNuFX(void)
 
     nerr = NuClose(fpArchive);
     if (nerr != kNuErrNone) {
-        WMSG0("WARNING: NuClose failed\n");
+        LOGI("WARNING: NuClose failed");
         return kDIErrGeneric;
     }
     return kDIErrNone;
@@ -666,12 +666,12 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
          */
         nerr = NuGetRecordIdxByPosition(fpArchive, 0, &recordIdx);
         if (nerr != kNuErrNone) {
-            WMSG1(" NuFX unable to get first recordIdx (err=%d)\n", nerr);
+            LOGI(" NuFX unable to get first recordIdx (err=%d)", nerr);
             goto bail;
         }
         nerr = NuDeleteRecord(fpArchive, recordIdx);
         if (nerr != kNuErrNone) {
-            WMSG1(" NuFX unable to delete first record (err=%d)\n", nerr);
+            LOGI(" NuFX unable to delete first record (err=%d)", nerr);
             goto bail;
         }
     }
@@ -681,11 +681,11 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     nerr = NuSetValue(fpArchive, kNuValueDataCompression,
                 fCompressType + kNuCompressNone);
     if (nerr != kNuErrNone) {
-        WMSG1("WARNING: unable to set compression to format %d\n",
+        LOGI("WARNING: unable to set compression to format %d",
             fCompressType);
         nerr = kNuErrNone;
     } else {
-        WMSG2(" NuFX set compression to %d/%d\n", fCompressType,
+        LOGI(" NuFX set compression to %d/%d", fCompressType,
             fCompressType + kNuCompressNone);
     }
 
@@ -715,7 +715,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
      */
     nerr = NuAddRecord(fpArchive, &fileDetails, &recordIdx);
     if (nerr != kNuErrNone) {
-        WMSG1(" NuFX AddRecord failed (nerr=%d)\n", nerr);
+        LOGI(" NuFX AddRecord failed (nerr=%d)", nerr);
         goto bail;
     }
 
@@ -730,7 +730,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
             (const unsigned char*) ((GFDBuffer*) pDataGFD)->GetBuffer(),
             0, (long) dataLen, NULL, &pDataSource);
     if (nerr != kNuErrNone) {
-        WMSG1(" NuFX unable to create NufxLib data source (nerr=%d)", nerr);
+        LOGI(" NuFX unable to create NufxLib data source (nerr=%d)", nerr);
         goto bail;
     }
 
@@ -740,11 +740,11 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     nerr = NuAddThread(fpArchive, recordIdx, kNuThreadIDDiskImage,
             pDataSource, &threadIdx);
     if (nerr != kNuErrNone) {
-        WMSG1(" NuFX AddThread failed (nerr=%d)\n", nerr);
+        LOGI(" NuFX AddThread failed (nerr=%d)", nerr);
         goto bail;
     }
     pDataSource = NULL;      // now owned by NufxLib
-    WMSG2(" NuFX added thread %ld in record %ld, flushing changes\n",
+    LOGI(" NuFX added thread %ld in record %ld, flushing changes",
         threadIdx, recordIdx);
 
     /*
@@ -753,7 +753,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     long status;
     nerr = NuFlush(fpArchive, &status);
     if (nerr != kNuErrNone) {
-        WMSG2(" NuFX flush failed (nerr=%d, status=%ld)\n", nerr, status);
+        LOGI(" NuFX flush failed (nerr=%d, status=%ld)", nerr, status);
         goto bail;
     }
 
@@ -807,7 +807,7 @@ WrapperDDD::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DIError dierr;
     GenericFD* pNewGFD = NULL;
-    WMSG0("Testing for DDD\n");
+    LOGI("Testing for DDD");
 
     pGFD->Rewind();
 
@@ -874,9 +874,9 @@ WrapperDDD::CheckForRuns(GenericFD* pGFD)
         dierr = pGFD->Read(buf, bufCount);
         if (dierr != kDIErrNone)
             goto bail;
-        //WMSG1(" DDD READ %d bytes\n", bufCount);
+        //LOGI(" DDD READ %d bytes", bufCount);
         if (dierr != kDIErrNone) {
-            WMSG1(" DDD CheckForRuns read failed (err=%d)\n", dierr);
+            LOGI(" DDD CheckForRuns read failed (err=%d)", dierr);
             return dierr;
         }
 
@@ -885,7 +885,7 @@ WrapperDDD::CheckForRuns(GenericFD* pGFD)
             if (buf[i] == 0 && buf[i] == buf[i-1]) {
                 runLen++;
                 if (runLen == kRunThreshold && buf[i] != 0xff) {
-                    WMSG2(" DDD found run of >= %d of 0x%02x, bailing\n",
+                    LOGI(" DDD found run of >= %d of 0x%02x, bailing",
                         runLen+1, buf[i]);
                     return kDIErrGeneric;
                 }
@@ -895,7 +895,7 @@ WrapperDDD::CheckForRuns(GenericFD* pGFD)
         }
     }
 
-    WMSG0(" DDD CheckForRuns scan complete, no long runs found\n");
+    LOGI(" DDD CheckForRuns scan complete, no long runs found");
 
 bail:
     return dierr;
@@ -911,7 +911,7 @@ WrapperDDD::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
     DIError dierr;
-    WMSG0("Prepping for DDD\n");
+    LOGI("Prepping for DDD");
 
     assert(*ppNewGFD == NULL);
 
@@ -1036,7 +1036,7 @@ WrapperDDD::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
         return dierr;
 
     *pWrappedLen = pWrapperGFD->Tell();
-    WMSG2("  DDD compressed from %d to %ld\n",
+    LOGI("  DDD compressed from %d to %ld",
         kNumTracks * kTrackLen, (long) *pWrappedLen);
 
     return kDIErrNone;
@@ -1079,16 +1079,16 @@ typedef struct DiskImgLib::DC42Header {
 /*static*/ void
 WrapperDiskCopy42::DumpHeader(const DC42Header* pHeader)
 {
-    WMSG0("--- header contents:\n");
-    WMSG1("\tdiskName      = '%s'\n", pHeader->diskName);
-    WMSG2("\tdataSize      = %ld (%ldK)\n", pHeader->dataSize,
+    LOGI("--- header contents:");
+    LOGI("\tdiskName      = '%s'", pHeader->diskName);
+    LOGI("\tdataSize      = %ld (%ldK)", pHeader->dataSize,
         pHeader->dataSize / 1024);
-    WMSG1("\ttagSize       = %ld\n", pHeader->tagSize);
-    WMSG1("\tdataChecksum  = 0x%08lx\n", pHeader->dataChecksum);
-    WMSG1("\ttagChecksum   = 0x%08lx\n", pHeader->tagChecksum);
-    WMSG1("\tdiskFormat    = %d\n", pHeader->diskFormat);
-    WMSG1("\tformatByte    = 0x%02x\n", pHeader->formatByte);
-    WMSG1("\tprivateWord   = 0x%04x\n", pHeader->privateWord);
+    LOGI("\ttagSize       = %ld", pHeader->tagSize);
+    LOGI("\tdataChecksum  = 0x%08lx", pHeader->dataChecksum);
+    LOGI("\ttagChecksum   = 0x%08lx", pHeader->tagChecksum);
+    LOGI("\tdiskFormat    = %d", pHeader->diskFormat);
+    LOGI("\tformatByte    = 0x%02x", pHeader->formatByte);
+    LOGI("\tprivateWord   = 0x%04x", pHeader->privateWord);
 }
 
 /*
@@ -1195,7 +1195,7 @@ WrapperDiskCopy42::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DC42Header header;
 
-    WMSG0("Testing for DiskCopy\n");
+    LOGI("Testing for DiskCopy");
 
     if (wrappedLength < 800 * 1024 + kDC42DataOffset)
         return kDIErrGeneric;
@@ -1232,7 +1232,7 @@ WrapperDiskCopy42::ComputeChecksum(GenericFD* pGFD,
 
         dierr = pGFD->Read(buf, sizeof(buf));
         if (dierr != kDIErrNone) {
-            WMSG2(" DC42 read failed, dataRem=%ld (err=%d)\n", dataRem, dierr);
+            LOGI(" DC42 read failed, dataRem=%ld (err=%d)", dataRem, dierr);
             return dierr;
         }
 
@@ -1266,7 +1266,7 @@ WrapperDiskCopy42::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     DIError dierr;
     DC42Header header;
 
-    WMSG0("Prepping for DiskCopy 4.2\n");
+    LOGI("Prepping for DiskCopy 4.2");
     pGFD->Rewind();
     if (ReadHeader(pGFD, &header) != 0)
         return kDIErrGeneric;
@@ -1280,12 +1280,12 @@ WrapperDiskCopy42::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         return dierr;
 
     if (checksum != header.dataChecksum) {
-        WMSG2(" DC42 checksum mismatch (got 0x%08lx, expected 0x%08lx)\n",
+        LOGI(" DC42 checksum mismatch (got 0x%08lx, expected 0x%08lx)",
             checksum, header.dataChecksum);
         fBadChecksum = true;
         //return kDIErrBadChecksum;
     } else {
-        WMSG0(" DC42 checksum matches!\n");
+        LOGI(" DC42 checksum matches!");
     }
 
 
@@ -1318,7 +1318,7 @@ WrapperDiskCopy42::Create(di_off_t length, DiskImg::PhysicalFormat physical,
 
     dierr = WriteHeader(pWrapperGFD, &header);
     if (dierr != kDIErrNone) {
-        WMSG1("ERROR: 2MG header write failed (err=%d)\n", dierr);
+        LOGI("ERROR: 2MG header write failed (err=%d)", dierr);
         return dierr;
     }
 
@@ -1345,7 +1345,7 @@ WrapperDiskCopy42::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
 
     dierr = ComputeChecksum(pWrapperGFD, &checksum);
     if (dierr != kDIErrNone) {
-        WMSG1(" DC42 failed while computing checksum (err=%d)\n", dierr);
+        LOGI(" DC42 failed while computing checksum (err=%d)", dierr);
         goto bail;
     }
 
@@ -1416,7 +1416,7 @@ WrapperSim2eHDV::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     char buf[kSim2eHeaderLen];
 
-    WMSG0("Testing for Sim2e HDV\n");
+    LOGI("Testing for Sim2e HDV");
 
     if (wrappedLength < 512 ||
         ((wrappedLength - kSim2eHeaderLen) % 4096) != 0)
@@ -1467,7 +1467,7 @@ WrapperSim2eHDV::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     assert(order == DiskImg::kSectorOrderProDOS);
 
     if (blocks < 4 || blocks > 65536) {
-        WMSG1("  Sim2e invalid blocks %ld\n", blocks);
+        LOGI("  Sim2e invalid blocks %ld", blocks);
         return kDIErrInvalidArg;
     }
     if (blocks == 65536)        // 32MB volumes are actually 31.9
@@ -1478,7 +1478,7 @@ WrapperSim2eHDV::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     header[14] = (unsigned char) ((blocks & 0xff00) >> 8);
     DIError dierr = pWrapperGFD->Write(header, kSim2eHeaderLen);
     if (dierr != kDIErrNone) {
-        WMSG1(" Sim2eHDV header write failed (err=%d)\n", dierr);
+        LOGI(" Sim2eHDV header write failed (err=%d)", dierr);
         return dierr;
     }
 
@@ -1557,7 +1557,7 @@ WrapperSim2eHDV::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
 WrapperTrackStar::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DIError dierr = kDIErrNone;
-    WMSG0("Testing for TrackStar\n");
+    LOGI("Testing for TrackStar");
     int numTracks;
 
     /* check the length */
@@ -1568,7 +1568,7 @@ WrapperTrackStar::Test(GenericFD* pGFD, di_off_t wrappedLength)
     else
         return kDIErrGeneric;
 
-    WMSG1("  Checking for %d-track image\n", numTracks);
+    LOGI("  Checking for %d-track image", numTracks);
 
     /* verify each track */
     unsigned char trackBuf[kFileTrackStorageLen];
@@ -1581,7 +1581,7 @@ WrapperTrackStar::Test(GenericFD* pGFD, di_off_t wrappedLength)
         if (dierr != kDIErrNone)
             goto bail;
     }
-    WMSG0("  TrackStar tracks verified\n");
+    LOGI("  TrackStar tracks verified");
 
 bail:
     return dierr;
@@ -1596,13 +1596,13 @@ WrapperTrackStar::VerifyTrack(int track, const unsigned char* trackBuf)
     unsigned int dataLen;
 
     if (trackBuf[0x80] != 0) {
-        WMSG1("   TrackStar track=%d found nonzero at 129\n", track);
+        LOGI("   TrackStar track=%d found nonzero at 129", track);
         return kDIErrGeneric;
     }
 
     dataLen = GetShortLE(trackBuf + 0x19fe);
     if (dataLen > kMaxTrackLen) {
-        WMSG3("   TrackStar track=%d len=%d exceeds max (%d)\n",
+        LOGI("   TrackStar track=%d len=%d exceeds max (%d)",
             track, dataLen, kMaxTrackLen);
         return kDIErrGeneric;
     }
@@ -1612,14 +1612,14 @@ WrapperTrackStar::VerifyTrack(int track, const unsigned char* trackBuf)
     unsigned int i;
     for (i = 0; i < dataLen; i++) {
         if ((trackBuf[0x81 + i] & 0x80) == 0) {
-            WMSG3("   TrackStar track=%d found invalid data 0x%02x at %d\n",
+            LOGI("   TrackStar track=%d found invalid data 0x%02x at %d",
                 track, trackBuf[0x81+i], i);
             return kDIErrGeneric;
         }
     }
 
     if (track == 0) {
-        WMSG1("   TrackStar msg='%s'\n", trackBuf);
+        LOGI("   TrackStar msg='%s'", trackBuf);
     }
 
     return kDIErrNone;
@@ -1634,7 +1634,7 @@ WrapperTrackStar::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
-    WMSG0("Prepping for TrackStar\n");
+    LOGI("Prepping for TrackStar");
     DIError dierr = kDIErrNone;
 
     if (wrappedLength == kFileTrackStorageLen * 40)
@@ -1851,7 +1851,7 @@ WrapperTrackStar::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
             trackLen = fNibbleTrackInfo.length[track];
             assert(fNibbleTrackInfo.offset[track] == kTrackLenTrackStar525 * track);
         } else {
-            WMSG1("   TrackStar faking track %d\n", track);
+            LOGI("   TrackStar faking track %d", track);
             memset(dataBuf, 0xff, sizeof(dataBuf));
             trackLen = kMaxTrackLen;
         }
@@ -1904,7 +1904,7 @@ WrapperTrackStar::SetNibbleTrackLength(int track, int length)
     assert(length > 0 && length <= kMaxTrackLen);
     assert(track < fNibbleTrackInfo.numTracks);
 
-    WMSG2("  TrackStar: set length of track %d to %d\n", track, length);
+    LOGI("  TrackStar: set length of track %d to %d", track, length);
     fNibbleTrackInfo.length[track] = length;
 }
 
@@ -1937,7 +1937,7 @@ WrapperFDI::Test(GenericFD* pGFD, di_off_t wrappedLength)
     unsigned char headerBuf[kMinHeaderLen];
     FDIHeader hdr;
 
-    WMSG0("Testing for FDI\n");
+    LOGI("Testing for FDI");
 
     pGFD->Rewind();
     dierr = pGFD->Read(headerBuf, sizeof(headerBuf));
@@ -1946,11 +1946,11 @@ WrapperFDI::Test(GenericFD* pGFD, di_off_t wrappedLength)
 
     UnpackHeader(headerBuf, &hdr);
     if (strcmp(hdr.signature, kFDIMagic) != 0) {
-        WMSG0("FDI: FDI signature not found\n");
+        LOGI("FDI: FDI signature not found");
         return kDIErrGeneric;
     }
     if (hdr.version < kMinVersion) {
-        WMSG1("FDI: bad version 0x%.04x\n", hdr.version);
+        LOGI("FDI: bad version 0x%.04x", hdr.version);
         return kDIErrGeneric;
     }
 
@@ -1995,25 +1995,25 @@ WrapperFDI::DumpHeader(const FDIHeader* pHdr)
         "48", "67", "96", "100", "135", "192"
     };
 
-    WMSG0(" FDI header contents:\n");
-    WMSG1("  signature: '%s'\n", pHdr->signature);
-    WMSG1("  creator  : '%s'\n", pHdr->creator);
-    WMSG1("  comment  : '%s'\n", pHdr->comment);
-    WMSG2("  version  : %d.%d\n", pHdr->version >> 8, pHdr->version & 0xff);
-    WMSG1("  lastTrack: %d\n", pHdr->lastTrack);
-    WMSG1("  lastHead : %d\n", pHdr->lastHead);
-    WMSG2("  type     : %d (%s)\n", pHdr->type,
+    LOGI(" FDI header contents:");
+    LOGI("  signature: '%s'", pHdr->signature);
+    LOGI("  creator  : '%s'", pHdr->creator);
+    LOGI("  comment  : '%s'", pHdr->comment);
+    LOGI("  version  : %d.%d", pHdr->version >> 8, pHdr->version & 0xff);
+    LOGI("  lastTrack: %d", pHdr->lastTrack);
+    LOGI("  lastHead : %d", pHdr->lastHead);
+    LOGI("  type     : %d (%s)", pHdr->type,
         (/*pHdr->type >= 0 &&*/ pHdr->type < NELEM(kTypes)) ?
         kTypes[pHdr->type] : "???");
-    WMSG1("  rotSpeed : %drpm\n", pHdr->rotSpeed + 128);
-    WMSG1("  flags    : 0x%02x\n", pHdr->flags);
-    WMSG2("  tpi      : %d (%s)\n", pHdr->tpi,
+    LOGI("  rotSpeed : %drpm", pHdr->rotSpeed + 128);
+    LOGI("  flags    : 0x%02x", pHdr->flags);
+    LOGI("  tpi      : %d (%s)", pHdr->tpi,
         (/*pHdr->tpi >= 0 &&*/ pHdr->tpi < NELEM(kTPI)) ?
         kTPI[pHdr->tpi] : "???");
-    WMSG2("  headWidth: %d (%s)\n", pHdr->headWidth,
+    LOGI("  headWidth: %d (%s)", pHdr->headWidth,
         (/*pHdr->headWidth >= 0 &&*/ pHdr->headWidth < NELEM(kTPI)) ?
         kTPI[pHdr->headWidth] : "???");
-    WMSG1("  reserved : %d\n", pHdr->reserved);
+    LOGI("  reserved : %d", pHdr->reserved);
 }
 
 /*
@@ -2025,7 +2025,7 @@ WrapperFDI::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
-    WMSG0("Prepping for FDI\n");
+    LOGI("Prepping for FDI");
     DIError dierr = kDIErrNone;
     FDIHeader hdr;
 
@@ -2049,15 +2049,15 @@ WrapperFDI::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
      * have 80 double-sided tracks.
      */
     if (hdr.type == kDiskType525) {
-        WMSG0("FDI: decoding 5.25\" disk\n");
+        LOGI("FDI: decoding 5.25\" disk");
         if (hdr.lastHead != 0 || hdr.lastTrack >= kMaxNibbleTracks525 + 10) {
-            WMSG2("FDI: bad params head=%d ltrack=%d\n",
+            LOGI("FDI: bad params head=%d ltrack=%d",
                 hdr.lastHead, hdr.lastTrack);
             dierr = kDIErrUnsupportedImageFeature;
             goto bail;
         }
         if (hdr.lastTrack >= kMaxNibbleTracks525) {
-            WMSG2("FDI: reducing hdr.lastTrack from %d to %d\n",
+            LOGI("FDI: reducing hdr.lastTrack from %d to %d",
                 hdr.lastTrack, kMaxNibbleTracks525-1);
             hdr.lastTrack = kMaxNibbleTracks525-1;
         }
@@ -2075,15 +2075,15 @@ WrapperFDI::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         *pPhysical = DiskImg::kPhysicalFormatNib525_Var;
         *pOrder = DiskImg::kSectorOrderPhysical;
     } else if (hdr.type == kDiskType35) {
-        WMSG0("FDI: decoding 3.5\" disk\n");
+        LOGI("FDI: decoding 3.5\" disk");
         if (hdr.lastHead != 1 || hdr.lastTrack >= kMaxNibbleTracks35 + 10) {
-            WMSG2("FDI: bad params head=%d ltrack=%d\n",
+            LOGI("FDI: bad params head=%d ltrack=%d",
                 hdr.lastHead, hdr.lastTrack);
             dierr = kDIErrUnsupportedImageFeature;
             goto bail;
         }
         if (hdr.lastTrack >= kMaxNibbleTracks35) {
-            WMSG2("FDI: reducing hdr.lastTrack from %d to %d\n",
+            LOGI("FDI: reducing hdr.lastTrack from %d to %d",
                 hdr.lastTrack, kMaxNibbleTracks35-1);
             hdr.lastTrack = kMaxNibbleTracks35-1;
         }
@@ -2101,7 +2101,7 @@ WrapperFDI::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         *pPhysical = DiskImg::kPhysicalFormatSectors;
         *pOrder = DiskImg::kSectorOrderProDOS;
     } else {
-        WMSG0("FDI: unsupported disk type\n");
+        LOGI("FDI: unsupported disk type");
         dierr = kDIErrUnsupportedImageFeature;
         goto bail;
     }
@@ -2296,7 +2296,7 @@ WrapperFDI::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
             trackLen = fNibbleTrackInfo.length[track];
             assert(fNibbleTrackInfo.offset[track] == kTrackLenTrackStar525 * track);
         } else {
-            WMSG1("   TrackStar faking track %d\n", track);
+            LOGI("   TrackStar faking track %d", track);
             memset(dataBuf, 0xff, sizeof(dataBuf));
             trackLen = kMaxTrackLen;
         }
@@ -2346,7 +2346,7 @@ WrapperFDI::SetNibbleTrackLength(int track, int length)
     assert(length > 0 && length <= kMaxTrackLen);
     assert(track < fNibbleTrackInfo.numTracks);
 
-    WMSG2("  FDI: set length of track %d to %d\n", track, length);
+    LOGI("  FDI: set length of track %d to %d", track, length);
     fNibbleTrackInfo.length[track] = length;
 #endif
 }
@@ -2364,7 +2364,7 @@ WrapperFDI::SetNibbleTrackLength(int track, int length)
 /*static*/ DIError
 WrapperUnadornedNibble::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
-    WMSG0("Testing for unadorned nibble\n");
+    LOGI("Testing for unadorned nibble");
 
     /* test length */
     if (wrappedLength != kTrackCount525 * kTrackLenNib525 &&
@@ -2389,11 +2389,11 @@ WrapperUnadornedNibble::Test(GenericFD* pGFD, di_off_t wrappedLength)
      */
     for (int i = 0; i < kScanSize; i++) {
         if (buf[i] < 0x80) {
-            WMSG2("  Disqualifying len=%ld from nibble, byte=0x%02x\n",
+            LOGI("  Disqualifying len=%ld from nibble, byte=0x%02x",
                 (long) wrappedLength, buf[i]);
             return kDIErrGeneric;
         } else if (buf[i] < 0x96) {
-            WMSG1("  Warning: funky byte 0x%02x in file\n", buf[i]);
+            LOGI("  Warning: funky byte 0x%02x in file", buf[i]);
         }
     }
 
@@ -2409,16 +2409,16 @@ WrapperUnadornedNibble::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readO
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
-    WMSG0("Prep for unadorned nibble\n");
+    LOGI("Prep for unadorned nibble");
 
     if (wrappedLength == kTrackCount525 * kTrackLenNib525) {
-        WMSG0("  Prepping for 6656-byte NIB\n");
+        LOGI("  Prepping for 6656-byte NIB");
         *pPhysical = DiskImg::kPhysicalFormatNib525_6656;
     } else if (wrappedLength == kTrackCount525 * kTrackLenNb2525) {
-        WMSG0("  Prepping for 6384-byte NB2\n");
+        LOGI("  Prepping for 6384-byte NB2");
         *pPhysical = DiskImg::kPhysicalFormatNib525_6384;
     } else {
-        WMSG1("  Unexpected wrappedLength %ld for unadorned nibble\n",
+        LOGI("  Unexpected wrappedLength %ld for unadorned nibble",
             (long) wrappedLength);
         assert(false);
     }
@@ -2438,7 +2438,7 @@ WrapperUnadornedNibble::Create(di_off_t length, DiskImg::PhysicalFormat physical
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
-    WMSG0("Create unadorned nibble\n");
+    LOGI("Create unadorned nibble");
 
     *pWrappedLength = length;
     *pDataFD = new GFDGFD;
@@ -2476,7 +2476,7 @@ WrapperUnadornedNibble::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
 /*static*/ DIError
 WrapperUnadornedSector::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
-    WMSG2("Testing for unadorned sector (wrappedLength=%ld/%lu)\n",
+    LOGI("Testing for unadorned sector (wrappedLength=%ld/%lu)",
         (long) (wrappedLength >> 32), (unsigned long) wrappedLength);
     if (wrappedLength >= 1536 && (wrappedLength % 512) == 0)
         return kDIErrNone;
@@ -2495,7 +2495,7 @@ WrapperUnadornedSector::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readO
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
-    WMSG0("Prepping for unadorned sector\n");
+    LOGI("Prepping for unadorned sector");
     assert(wrappedLength > 0);
     *pLength = wrappedLength;
     *pPhysical = DiskImg::kPhysicalFormatSectors;
@@ -2513,7 +2513,7 @@ WrapperUnadornedSector::Create(di_off_t length, DiskImg::PhysicalFormat physical
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
-    WMSG0("Create unadorned sector\n");
+    LOGI("Create unadorned sector");
 
     *pWrappedLength = length;
     *pDataFD = new GFDGFD;

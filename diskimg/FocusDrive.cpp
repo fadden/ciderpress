@@ -64,20 +64,20 @@ DiskFSFocusDrive::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
         goto bail;
 
     if (memcmp(blkBuf, kSignature, kSignatureLen) != 0) {
-        WMSG0(" FocusDrive partition signature not found in first part block\n");
+        LOGI(" FocusDrive partition signature not found in first part block");
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
 
     partCount = blkBuf[0x0f];
     if (partCount == 0 || partCount > kMaxPartitions) {
-        WMSG1(" FocusDrive partition count looks bad (%d)\n", partCount);
+        LOGI(" FocusDrive partition count looks bad (%d)", partCount);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
 
     // success!
-    WMSG1(" Looks like FocusDrive with %d partitions\n", partCount);
+    LOGI(" Looks like FocusDrive with %d partitions", partCount);
 
 bail:
     return dierr;
@@ -126,9 +126,9 @@ DiskFSFocusDrive::DumpPartitionMap(const PartitionMap* pMap)
 {
     int i;
 
-    WMSG1(" FocusDrive partition map (%d partitions):\n", pMap->partCount);
+    LOGI(" FocusDrive partition map (%d partitions):", pMap->partCount);
     for (i = 0; i < pMap->partCount; i++) {
-        WMSG4("  %2d: %8ld %8ld '%s'\n", i, pMap->entry[i].startBlock,
+        LOGI("  %2d: %8ld %8ld '%s'", i, pMap->entry[i].startBlock,
             pMap->entry[i].blockCount, pMap->entry[i].name);
     }
 }
@@ -146,15 +146,15 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
     DiskImg* pNewImg = NULL;
     //bool tweaked = false;
 
-    WMSG2("Adding %ld +%ld\n", startBlock, numBlocks);
+    LOGI("Adding %ld +%ld", startBlock, numBlocks);
 
     if (startBlock > fpImg->GetNumBlocks()) {
-        WMSG2("FocusDrive start block out of range (%ld vs %ld)\n",
+        LOGI("FocusDrive start block out of range (%ld vs %ld)",
             startBlock, fpImg->GetNumBlocks());
         return kDIErrBadPartition;
     }
     if (startBlock + numBlocks > fpImg->GetNumBlocks()) {
-        WMSG2("FocusDrive partition too large (%ld vs %ld avail)\n",
+        LOGI("FocusDrive partition too large (%ld vs %ld avail)",
             numBlocks, fpImg->GetNumBlocks() - startBlock);
         fpImg->AddNote(DiskImg::kNoteInfo,
             "Reduced partition from %ld blocks to %ld.\n",
@@ -171,18 +171,18 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
 
     dierr = pNewImg->OpenImage(fpImg, startBlock, numBlocks);
     if (dierr != kDIErrNone) {
-        WMSG3(" FocusDriveSub: OpenImage(%ld,%ld) failed (err=%d)\n",
+        LOGI(" FocusDriveSub: OpenImage(%ld,%ld) failed (err=%d)",
             startBlock, numBlocks, dierr);
         goto bail;
     }
 
-    //WMSG2("  +++ CFFASub: new image has ro=%d (parent=%d)\n",
+    //LOGI("  +++ CFFASub: new image has ro=%d (parent=%d)",
     //  pNewImg->GetReadOnly(), pImg->GetReadOnly());
 
     /* figure out what the format is */
     dierr = pNewImg->AnalyzeImage();
     if (dierr != kDIErrNone) {
-        WMSG1(" FocusDriveSub: analysis failed (err=%d)\n", dierr);
+        LOGI(" FocusDriveSub: analysis failed (err=%d)", dierr);
         goto bail;
     }
 
@@ -190,7 +190,7 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
     if (pNewImg->GetFSFormat() == DiskImg::kFormatUnknown ||
         pNewImg->GetSectorOrder() == DiskImg::kSectorOrderUnknown)
     {
-        WMSG2(" FocusDriveSub (%ld,%ld): unable to identify filesystem\n",
+        LOGI(" FocusDriveSub (%ld,%ld): unable to identify filesystem",
             startBlock, numBlocks);
         DiskFSUnknown* pUnknownFS = new DiskFSUnknown;
         if (pUnknownFS == NULL) {
@@ -201,10 +201,10 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
         pNewFS = pUnknownFS;
     } else {
         /* open a DiskFS for the sub-image */
-        WMSG2(" FocusDriveSub (%ld,%ld) analyze succeeded!\n", startBlock, numBlocks);
+        LOGI(" FocusDriveSub (%ld,%ld) analyze succeeded!", startBlock, numBlocks);
         pNewFS = pNewImg->OpenAppropriateDiskFS(true);
         if (pNewFS == NULL) {
-            WMSG0(" FocusDriveSub: OpenAppropriateDiskFS failed\n");
+            LOGI(" FocusDriveSub: OpenAppropriateDiskFS failed");
             dierr = kDIErrUnsupportedFSFmt;
             goto bail;
         }
@@ -230,7 +230,7 @@ DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
         initMode = kInitFull;
     dierr = pNewFS->Initialize(pNewImg, initMode);
     if (dierr != kDIErrNone) {
-        WMSG1(" FocusDriveSub: error %d reading list of files from disk", dierr);
+        LOGE(" FocusDriveSub: error %d reading list of files from disk", dierr);
         goto bail;
     }
 
@@ -264,7 +264,7 @@ DiskFSFocusDrive::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         return kDIErrNone;
     }
 
-    WMSG0("  FS didn't find valid FocusDrive\n");
+    LOGI("  FS didn't find valid FocusDrive");
     return kDIErrFilesystemNotFound;
 }
 
@@ -277,7 +277,7 @@ DiskFSFocusDrive::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
-    WMSG1("FocusDrive initializing (scanForSub=%d)\n", fScanForSubVolumes);
+    LOGI("FocusDrive initializing (scanForSub=%d)", fScanForSubVolumes);
 
     /* seems pointless *not* to, but we just do what we're told */
     if (fScanForSubVolumes != kScanSubDisabled) {
@@ -345,13 +345,13 @@ DiskFSFocusDrive::OpenVol(int idx, long startBlock, long numBlocks,
         DiskFS* pNewFS = NULL;
         DiskImg* pNewImg = NULL;
 
-        WMSG1(" FocusDrive failed opening sub-volume %d\n", idx);
+        LOGI(" FocusDrive failed opening sub-volume %d", idx);
         dierr = CreatePlaceholder(startBlock, numBlocks, name, NULL,
                     &pNewImg, &pNewFS);
         if (dierr == kDIErrNone) {
             AddSubVolumeToList(pNewImg, pNewFS);
         } else {
-            WMSG1("  FocusDrive unable to create placeholder (err=%d)\n",
+            LOGI("  FocusDrive unable to create placeholder (err=%d)",
                 dierr);
             // fall out with error
         }

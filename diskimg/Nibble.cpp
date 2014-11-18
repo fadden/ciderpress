@@ -106,7 +106,7 @@ DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
                 &hdrChksum);
 
             if (pNibbleDescr->addrVerifyTrack && track != hdrTrack) {
-                WMSG3("  Track mismatch (T=%d) got T=%d,S=%d\n",
+                LOGI("  Track mismatch (T=%d) got T=%d,S=%d",
                     track, hdrTrack, hdrSector);
                 continue;
             }
@@ -115,8 +115,8 @@ DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
                 if ((pNibbleDescr->addrChecksumSeed ^
                     hdrVol ^ hdrTrack ^ hdrSector ^ hdrChksum) != 0)
                 {
-                    WMSG4("   Addr checksum mismatch (want T=%d,S=%d, got "
-                          "T=%d,S=%d)\n",
+                    LOGW("   Addr checksum mismatch (want T=%d,S=%d, got "
+                          "T=%d,S=%d)",
                         track, sector, hdrTrack, hdrSector);
                     continue;
                 }
@@ -127,7 +127,7 @@ DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
             int j;
             for (j = 0; j < pNibbleDescr->addrEpilogVerifyCount; j++) {
                 if (buffer[i+8+j] != pNibbleDescr->addrEpilog[j]) {
-                    //WMSG3("   Bad epilog byte %d (%02x vs %02x)\n",
+                    //LOGI("   Bad epilog byte %d (%02x vs %02x)",
                     //    j, buffer[i+8+j], pNibbleDescr->addrEpilog[j]);
                     break;
                 }
@@ -136,7 +136,7 @@ DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
                 continue;
 
 #ifdef NIB_VERBOSE_DEBUG
-            WMSG4("    Good header, T=%d,S=%d (looking for T=%d,S=%d)\n",
+            LOGI("    Good header, T=%d,S=%d (looking for T=%d,S=%d)",
                 hdrTrack, hdrSector, track, sector);
 #endif
 
@@ -170,7 +170,7 @@ DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
     }
 
 #ifdef NIB_VERBOSE_DEBUG
-    WMSG2("   Couldn't find T=%d,S=%d\n", track, sector);
+    LOGI("   Couldn't find T=%d,S=%d", track, sector);
 #endif
     return -1;
 }
@@ -285,7 +285,7 @@ DiskImg::DecodeNibble62(const CircularBufferAccess& buffer, int idx,
     chksum ^= decodedVal;
 
     if (pNibbleDescr->dataVerifyChecksum && chksum != 0) {
-        WMSG0("    NIB bad data checksum\n");
+        LOGI("    NIB bad data checksum");
         return kDIErrBadChecksum;
     }
     return kDIErrNone;
@@ -384,7 +384,7 @@ DiskImg::DecodeNibble53(const CircularBufferAccess& buffer, int idx,
     chksum ^= decodedVal;
 
     if (pNibbleDescr->dataVerifyChecksum && chksum != 0) {
-        WMSG1("    NIB bad data checksum (0x%02x)\n", chksum);
+        LOGI("    NIB bad data checksum (0x%02x)", chksum);
         return kDIErrBadChecksum;
     }
 
@@ -537,22 +537,22 @@ DiskImg::DumpNibbleDescr(const NibbleDescr* pNibDescr) const
     default:            encodingStr = "???";    break;
     }
 
-    WMSG1("NibbleDescr '%s':\n", pNibDescr->description);
-    WMSG1("  Nibble encoding is %s\n", encodingStr);
+    LOGI("NibbleDescr '%s':", pNibDescr->description);
+    LOGI("  Nibble encoding is %s", encodingStr);
     DumpBytes(pNibDescr->addrProlog, sizeof(pNibDescr->addrProlog), outBuf1);
     DumpBytes(pNibDescr->dataProlog, sizeof(pNibDescr->dataProlog), outBuf2);
-    WMSG2("  Addr prolog: %s          Data prolog: %s\n", outBuf1, outBuf2);
+    LOGI("  Addr prolog: %s          Data prolog: %s", outBuf1, outBuf2);
     DumpBytes(pNibDescr->addrEpilog, sizeof(pNibDescr->addrEpilog), outBuf1);
     DumpBytes(pNibDescr->dataEpilog, sizeof(pNibDescr->dataEpilog), outBuf2);
-    WMSG4("  Addr epilog: %s (%d)      Data epilog: %s (%d)\n",
+    LOGI("  Addr epilog: %s (%d)      Data epilog: %s (%d)",
         outBuf1, pNibDescr->addrEpilogVerifyCount,
         outBuf2, pNibDescr->dataEpilogVerifyCount);
-    WMSG2("  Addr checksum: %s          Data checksum: %s\n",
+    LOGI("  Addr checksum: %s          Data checksum: %s",
         VerifyStr(pNibDescr->addrVerifyChecksum),
         VerifyStr(pNibDescr->dataVerifyChecksum));
-    WMSG2("  Addr checksum seed: 0x%02x       Data checksum seed: 0x%02x\n",
+    LOGI("  Addr checksum seed: 0x%02x       Data checksum seed: 0x%02x",
         pNibDescr->addrChecksumSeed, pNibDescr->dataChecksumSeed);
-    WMSG1("  Addr check track: %s\n",
+    LOGI("  Addr check track: %s",
         VerifyStr(pNibDescr->addrVerifyTrack));
 }
 
@@ -574,11 +574,11 @@ DiskImg::LoadNibbleTrack(long track, long* pTrackLen)
 
     if (track == fNibbleTrackLoaded) {
 #ifdef NIB_VERBOSE_DEBUG
-        WMSG1("  DI track %d already loaded\n", track);
+        LOGI("  DI track %d already loaded", track);
 #endif
         return kDIErrNone;
     } else {
-        WMSG1("  DI loading track %ld\n", track);
+        LOGI("  DI loading track %ld", track);
     }
 
     /* invalidate in case we fail with partial read */
@@ -610,7 +610,7 @@ DIError
 DiskImg::SaveNibbleTrack(void)
 {
     if (fNibbleTrackLoaded < 0) {
-        WMSG0("ERROR: tried to save track without loading it first\n");
+        LOGI("ERROR: tried to save track without loading it first");
         return kDIErrInternal;
     }
     assert(fNibbleTrackBuf != NULL);
@@ -641,7 +641,7 @@ DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
     assert(pNibbleDescr != NULL);
 
     if (LoadNibbleTrack(track, &trackLen) != kDIErrNone) {
-        WMSG0("   DI FindNibbleSectorStart: LoadNibbleTrack failed\n");
+        LOGI("   DI FindNibbleSectorStart: LoadNibbleTrack failed");
         return 0;
     }
 
@@ -661,7 +661,7 @@ DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
         }
     }
 
-    WMSG3("   Tests on track=%d with '%s' returning count=%d\n",
+    LOGI("   Tests on track=%d with '%s' returning count=%d",
         track, pNibbleDescr->description, count);
 
     return count;
@@ -703,10 +703,10 @@ DiskImg::AnalyzeNibbleData(void)
     for (i = 0; i < fNumNibbleDescrEntries; i++) {
         if (fpNibbleDescrTable[i].numSectors == 0) {
             /* uninitialized "custom" entry */
-            WMSG1("  Skipping '%s'\n", fpNibbleDescrTable[i].description);
+            LOGI("  Skipping '%s'", fpNibbleDescrTable[i].description);
             continue;
         }
-        WMSG1("  Trying '%s'\n", fpNibbleDescrTable[i].description);
+        LOGI("  Trying '%s'", fpNibbleDescrTable[i].description);
         goodTracks = 0;
 
         good = TestNibbleTrack(1, &fpNibbleDescrTable[i], NULL);
@@ -723,7 +723,7 @@ DiskImg::AnalyzeNibbleData(void)
             goodTracks++;
 
         if (goodTracks >= 3) {
-            WMSG3("  Looks like '%s' (%d-sector), vol=%d\n",
+            LOGI("  Looks like '%s' (%d-sector), vol=%d",
                 fpNibbleDescrTable[i].description,
                 fpNibbleDescrTable[i].numSectors, protoVol);
             fpNibbleDescr = &fpNibbleDescrTable[i];
@@ -732,7 +732,7 @@ DiskImg::AnalyzeNibbleData(void)
         }
     }
     if (i == fNumNibbleDescrEntries) {
-        WMSG0("AnalyzeNibbleData did not find matching NibbleDescr\n");
+        LOGI("AnalyzeNibbleData did not find matching NibbleDescr");
         return kDIErrBadNibbleSectors;
     }
 
@@ -752,12 +752,12 @@ DiskImg::ReadNibbleSector(long track, int sector, void* buf,
 {
     if (pNibbleDescr == NULL) {
         /* disk has no recognizable sectors */
-        WMSG0(" DI ReadNibbleSector: pNibbleDescr is NULL, returning failure\n");
+        LOGI(" DI ReadNibbleSector: pNibbleDescr is NULL, returning failure");
         return kDIErrBadNibbleSectors;
     }
     if (sector >= pNibbleDescr->numSectors) {
         /* e.g. trying to read sector 14 on a 13-sector disk */
-        WMSG0(" DI ReadNibbleSector: bad sector number request\n");
+        LOGI(" DI ReadNibbleSector: bad sector number request");
         return kDIErrInvalidSector;
     }
 
@@ -772,7 +772,7 @@ DiskImg::ReadNibbleSector(long track, int sector, void* buf,
 
     dierr = LoadNibbleTrack(track, &trackLen);
     if (dierr != kDIErrNone) {
-        WMSG1("   DI ReadNibbleSector: LoadNibbleTrack %ld failed\n", track);
+        LOGI("   DI ReadNibbleSector: LoadNibbleTrack %ld failed", track);
         return dierr;
     }
 
@@ -807,7 +807,7 @@ DiskImg::WriteNibbleSector(long track, int sector, const void* buf,
 
     dierr = LoadNibbleTrack(track, &trackLen);
     if (dierr != kDIErrNone) {
-        WMSG1("   DI ReadNibbleSector: LoadNibbleTrack %ld failed\n", track);
+        LOGI("   DI ReadNibbleSector: LoadNibbleTrack %ld failed", track);
         return dierr;
     }
 
@@ -821,7 +821,7 @@ DiskImg::WriteNibbleSector(long track, int sector, const void* buf,
 
     dierr = SaveNibbleTrack();
     if (dierr != kDIErrNone) {
-        WMSG1("   DI ReadNibbleSector: SaveNibbleTrack %ld failed\n", track);
+        LOGI("   DI ReadNibbleSector: SaveNibbleTrack %ld failed", track);
         return dierr;
     }
 
@@ -841,7 +841,7 @@ DiskImg::ReadNibbleTrack(long track, unsigned char* buf, long* pTrackLen)
 
     dierr = LoadNibbleTrack(track, pTrackLen);
     if (dierr != kDIErrNone) {
-        WMSG1("   DI ReadNibbleTrack: LoadNibbleTrack %ld failed\n", track);
+        LOGI("   DI ReadNibbleTrack: LoadNibbleTrack %ld failed", track);
         return dierr;
     }
 
@@ -865,12 +865,12 @@ DiskImg::WriteNibbleTrack(long track, const unsigned char* buf, long trackLen)
     /* load the track to set the "current track" stuff */
     dierr = LoadNibbleTrack(track, &oldTrackLen);
     if (dierr != kDIErrNone) {
-        WMSG1("   DI WriteNibbleTrack: LoadNibbleTrack %ld failed\n", track);
+        LOGI("   DI WriteNibbleTrack: LoadNibbleTrack %ld failed", track);
         return dierr;
     }
 
     if (trackLen > GetNibbleTrackAllocLength()) {
-        WMSG2("ERROR: tried to write too-long track len (%ld vs %d)\n",
+        LOGI("ERROR: tried to write too-long track len (%ld vs %d)",
             trackLen, GetNibbleTrackAllocLength());
         return kDIErrInvalidArg;
     }
@@ -882,7 +882,7 @@ DiskImg::WriteNibbleTrack(long track, const unsigned char* buf, long trackLen)
 
     dierr = SaveNibbleTrack();
     if (dierr != kDIErrNone) {
-        WMSG1("   DI ReadNibbleSector: SaveNibbleTrack %ld failed\n", track);
+        LOGI("   DI ReadNibbleSector: SaveNibbleTrack %ld failed", track);
         return dierr;
     }
 
@@ -972,7 +972,7 @@ DiskImg::FormatNibbles(GenericFD* pGFD) const
      * sectors, then write the data to the GFD.
      */
     for (track = 0; track < GetNumTracks(); track++) {
-        //WMSG1("Formatting track %d\n", track);
+        //LOGI("Formatting track %d", track);
         unsigned char* trackPtr = trackBuf;
 
         /*

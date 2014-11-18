@@ -84,7 +84,7 @@ DiskFSPascal::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         }
     }
 
-    WMSG0(" Pascal didn't find valid FS\n");
+    LOGI(" Pascal didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -166,7 +166,7 @@ DiskFSPascal::LoadVolHeader(void)
 
     if (fTotalBlocks != fpImg->GetNumBlocks()) {
         // saw this most recently on a 40-track .APP image; not a problem
-        WMSG2(" Pascal WARNING: total (%u) != img (%ld)\n",
+        LOGI(" Pascal WARNING: total (%u) != img (%ld)",
             fTotalBlocks, fpImg->GetNumBlocks());
     }
 
@@ -212,18 +212,18 @@ DiskFSPascal::DumpVolHeader(void)
 {
     time_t access, dateSet;
 
-    WMSG1(" Pascal volume header for '%s'\n", fVolumeName);
-    WMSG2("   startBlock=%d nextBlock=%d\n",
+    LOGI(" Pascal volume header for '%s'", fVolumeName);
+    LOGI("   startBlock=%d nextBlock=%d",
         fStartBlock, fNextBlock);
-    WMSG4("   totalBlocks=%d numFiles=%d access=0x%04x dateSet=0x%04x\n",
+    LOGI("   totalBlocks=%d numFiles=%d access=0x%04x dateSet=0x%04x",
         fTotalBlocks, fNumFiles, fAccessWhen, fDateSetWhen);
 
     access = A2FilePascal::ConvertPascalDate(fAccessWhen);
     dateSet = A2FilePascal::ConvertPascalDate(fDateSetWhen);
-    WMSG1("   -->access %.24s\n", ctime(&access));
-    WMSG1("   -->dateSet %.24s\n", ctime(&dateSet));
+    LOGI("   -->access %.24s", ctime(&access));
+    LOGI("   -->dateSet %.24s", ctime(&dateSet));
 
-    //WMSG2("Unconvert access=0x%04x dateSet=0x%04x\n",
+    //LOGI("Unconvert access=0x%04x dateSet=0x%04x",
     //  A2FilePascal::ConvertPascalDate(access),
     //  A2FilePascal::ConvertPascalDate(dateSet));
 }
@@ -347,7 +347,7 @@ DiskFSPascal::ProcessCatalog(void)
 
         /* check bytesRem before setting length field */
         if (pFile->fBytesRemaining > kBlkSize) {
-            WMSG2(" Pascal found strange bytesRem %u on '%s', trimming\n",
+            LOGI(" Pascal found strange bytesRem %u on '%s', trimming",
                 pFile->fBytesRemaining, pFile->fFileName);
             pFile->fBytesRemaining = kBlkSize;
             pFile->SetQuality(A2File::kQualitySuspicious);
@@ -360,23 +360,23 @@ DiskFSPascal::ProcessCatalog(void)
          * Check values.
          */
         if (pFile->fStartBlock == pFile->fNextBlock) {
-            WMSG1(" Pascal found zero-block file '%s'\n", pFile->fFileName);
+            LOGI(" Pascal found zero-block file '%s'", pFile->fFileName);
             pFile->SetQuality(A2File::kQualityDamaged);
         }
         if (pFile->fStartBlock < prevNextBlock) {
-            WMSG3(" Pascal start of '%s' (%d) overlaps previous end (%d)\n",
+            LOGI(" Pascal start of '%s' (%d) overlaps previous end (%d)",
                 pFile->fFileName, pFile->fStartBlock, prevNextBlock);
             pFile->SetQuality(A2File::kQualityDamaged);
         }
 
         if (pFile->fNextBlock > fpImg->GetNumBlocks()) {
-            WMSG3(" Pascal invalid 'next' block %d (max %ld) '%s'\n",
+            LOGI(" Pascal invalid 'next' block %d (max %ld) '%s'",
                 pFile->fNextBlock, fpImg->GetNumBlocks(), pFile->fFileName);
             pFile->fStartBlock = pFile->fNextBlock = 0;
             pFile->fLength = 0;
             pFile->SetQuality(A2File::kQualityDamaged);
         } else if (pFile->fNextBlock > fTotalBlocks) {
-            WMSG3(" Pascal 'next' block %d exceeds max (%d) '%s'\n",
+            LOGI(" Pascal 'next' block %d exceeds max (%d) '%s'",
                 pFile->fNextBlock, fTotalBlocks, pFile->fFileName);
             pFile->SetQuality(A2File::kQualitySuspicious);
         }
@@ -434,7 +434,7 @@ DiskFSPascal::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
     fVolumeUsage.GetChunkState(block, &cstate);
     if (cstate.isUsed) {
         cstate.purpose = VolumeUsage::kChunkPurposeConflict;
-        WMSG1(" Pascal conflicting uses for bl=%ld\n", block);
+        LOGI(" Pascal conflicting uses for bl=%ld", block);
     } else {
         cstate.isUsed = true;
         cstate.isMarkedUsed = true;
@@ -513,7 +513,7 @@ DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
     assert(fpImg == NULL);
     SetDiskImg(pDiskImg);
 
-    WMSG0(" Pascal formatting disk image\n");
+    LOGI(" Pascal formatting disk image");
 
     /* write ProDOS-style blocks */
     dierr = fpImg->OverrideFormat(fpImg->GetPhysicalFormat(),
@@ -523,7 +523,7 @@ DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
 
     formatBlocks = pDiskImg->GetNumBlocks();
     if (formatBlocks != 280 && formatBlocks != 1600) {
-        WMSG1(" Pascal: rejecting format req blocks=%ld\n", formatBlocks);
+        LOGI(" Pascal: rejecting format req blocks=%ld", formatBlocks);
         assert(false);
         return kDIErrInvalidArg;
     }
@@ -533,7 +533,7 @@ DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
      * on new disk images, so there's no need to do it here.
      */
 //  dierr = fpImg->ZeroImage();
-    WMSG0(" Pascal  (not zeroing blocks)\n");
+    LOGI(" Pascal  (not zeroing blocks)");
 
     /*
      * Start by writing blocks 0 and 1 (the boot blocks).  The file
@@ -558,7 +558,7 @@ DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
     PutShortLE(&blkBuf[0x14], 0xa87b);  // last date set (Nov 7 1984)
     dierr = fpImg->WriteBlock(kVolHeaderBlock, blkBuf);
     if (dierr != kDIErrNone) {
-        WMSG2(" Format: block %d write failed (err=%d)\n",
+        LOGI(" Format: block %d write failed (err=%d)",
             kVolHeaderBlock, dierr);
         goto bail;
     }
@@ -566,7 +566,7 @@ DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
     /* check our work, and set some object fields, by reading what we wrote */
     dierr = LoadVolHeader();
     if (dierr != kDIErrNone) {
-        WMSG1(" GLITCH: couldn't read header we just wrote (err=%d)\n", dierr);
+        LOGI(" GLITCH: couldn't read header we just wrote (err=%d)", dierr);
         goto bail;
     }
 
@@ -738,7 +738,7 @@ DiskFSPascal::WriteBootBlocks(void)
     else if (fpImg->GetNumBlocks() == 1600)
         is525 = false;
     else {
-        WMSG1(" Pascal boot blocks for blocks=%ld unknown\n",
+        LOGI(" Pascal boot blocks for blocks=%ld unknown",
             fpImg->GetNumBlocks());
         return kDIErrInternal;
     }
@@ -753,12 +753,12 @@ DiskFSPascal::WriteBootBlocks(void)
 
     dierr = fpImg->WriteBlock(0, block0);
     if (dierr != kDIErrNone) {
-        WMSG1(" WriteBootBlocks: block0 write failed (err=%d)\n", dierr);
+        LOGI(" WriteBootBlocks: block0 write failed (err=%d)", dierr);
         return dierr;
     }
     dierr = fpImg->WriteBlock(1, block1);
     if (dierr != kDIErrNone) {
-        WMSG1(" WriteBootBlocks: block1 write failed (err=%d)\n", dierr);
+        LOGI(" WriteBootBlocks: block1 write failed (err=%d)", dierr);
         return dierr;
     }
 
@@ -928,13 +928,13 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     assert(pParms != NULL);
     assert(pParms->pathName != NULL);
     assert(pParms->storageType == A2FileProDOS::kStorageSeedling);
-    WMSG1(" Pascal ---v--- CreateFile '%s'\n", pParms->pathName);
+    LOGI(" Pascal ---v--- CreateFile '%s'", pParms->pathName);
 
     /* compute maxFiles, which includes the vol dir header */
     int maxFiles =
         ((fNextBlock - kVolHeaderBlock) * kBlkSize) / kDirectoryEntryLen;
     if (fNumFiles >= maxFiles-1) {
-        WMSG1("Pascal volume directory full (%d entries)\n", fNumFiles);
+        LOGI("Pascal volume directory full (%d entries)", fNumFiles);
         return kDIErrVolumeDirFull;
     }
 
@@ -952,7 +952,7 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
         MakeFileNameUnique(normalName);
     } else {
         if (GetFileByName(normalName) != NULL) {
-            WMSG1(" Pascal create: normalized name '%s' already exists\n",
+            LOGI(" Pascal create: normalized name '%s' already exists",
                 normalName);
             dierr = kDIErrFileExists;
             goto bail;
@@ -1005,7 +1005,7 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
         goto bail;
 
     if (fNumFiles > prevIdx) {
-        WMSG1("  Pascal sliding last %d entries down a slot\n",
+        LOGI("  Pascal sliding last %d entries down a slot",
             fNumFiles - prevIdx);
         memmove(fDirectory + (prevIdx+2) * kDirectoryEntryLen,
                 fDirectory + (prevIdx+1) * kDirectoryEntryLen,
@@ -1074,7 +1074,7 @@ DiskFSPascal::MakeFileNameUnique(char* fileName)
     if (GetFileByName(fileName) == NULL)
         return kDIErrNone;
 
-    WMSG1(" Pascal   found duplicate of '%s', making unique\n", fileName);
+    LOGI(" Pascal   found duplicate of '%s', making unique", fileName);
 
     int nameLen = strlen(fileName);
     int dotOffset=0, dotLen=0;
@@ -1091,7 +1091,7 @@ DiskFSPascal::MakeFileNameUnique(char* fileName)
     if (cp != NULL) {
         int tmpOffset = cp - fileName;
         if (tmpOffset > 0 && nameLen - tmpOffset <= kMaxExtensionLen) {
-            WMSG1("  Pascal   (keeping extension '%s')\n", cp);
+            LOGI("  Pascal   (keeping extension '%s')", cp);
             assert(strlen(cp) <= kMaxExtensionLen);
             strcpy(dotBuf, cp);
             dotOffset = tmpOffset;
@@ -1121,7 +1121,7 @@ DiskFSPascal::MakeFileNameUnique(char* fileName)
             memcpy(fileName + copyOffset + digitLen, dotBuf, dotLen);
     } while (GetFileByName(fileName) != NULL);
 
-    WMSG1(" Pascal  converted to unique name: %s\n", fileName);
+    LOGI(" Pascal  converted to unique name: %s", fileName);
 
     return kDIErrNone;
 }
@@ -1170,7 +1170,7 @@ DiskFSPascal::FindLargestFreeArea(int *pPrevIdx, A2FilePascal** ppPrevFile)
         *ppPrevFile = pPrevFile;
     }
 
-    WMSG3("Pascal largest gap after entry %d '%s' (size=%d)\n",
+    LOGI("Pascal largest gap after entry %d '%s' (size=%d)",
         maxIndex,
         *ppPrevFile != NULL ? (*ppPrevFile)->GetPathName() : "(root)",
         maxGap);
@@ -1206,7 +1206,7 @@ DiskFSPascal::DeleteFile(A2File* pGenericFile)
     if (pGenericFile->IsFileOpen())
         return kDIErrFileOpen;
 
-    WMSG1("  Pascal deleting '%s'\n", pFile->GetPathName());
+    LOGI("  Pascal deleting '%s'", pFile->GetPathName());
 
     dierr = LoadCatalog();
     if (dierr != kDIErrNone)
@@ -1221,7 +1221,7 @@ DiskFSPascal::DeleteFile(A2File* pGenericFile)
     dirLen = (fNumFiles+1) * kDirectoryEntryLen;
     offsetToNextEntry = (pEntry - fDirectory) + kDirectoryEntryLen;
     if (dirLen == offsetToNextEntry) {
-        WMSG0("+++ removing last entry\n");
+        LOGI("+++ removing last entry");
     } else {
         memmove(pEntry, pEntry+kDirectoryEntryLen, dirLen - offsetToNextEntry);
     }
@@ -1269,7 +1269,7 @@ DiskFSPascal::RenameFile(A2File* pGenericFile, const char* newName)
 
     DoNormalizePath(newName, '\0', normalName);
 
-    WMSG2(" Pascal renaming '%s' to '%s'\n", pFile->GetPathName(), normalName);
+    LOGI(" Pascal renaming '%s' to '%s'", pFile->GetPathName(), normalName);
 
     dierr = LoadCatalog();
     if (dierr != kDIErrNone)
@@ -1317,7 +1317,7 @@ DiskFSPascal::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     if (!fDiskIsGood)
         return kDIErrBadDiskImage;
 
-    WMSG2("Pascal SetFileInfo '%s' fileType=0x%04lx\n",
+    LOGI("Pascal SetFileInfo '%s' fileType=0x%04lx",
         pFile->GetPathName(), fileType);
 
     dierr = LoadCatalog();
@@ -1402,7 +1402,7 @@ DiskFSPascal::FindDirEntry(A2FilePascal* pFile)
         if (GetShortLE(&ptr[0x00]) == pFile->fStartBlock) {
             if (memcmp(&ptr[0x07], pFile->fFileName, ptr[0x06]) != 0) {
                 assert(false);
-                WMSG2("name/block mismatch on '%s' %d\n",
+                LOGI("name/block mismatch on '%s' %d",
                     pFile->GetPathName(), pFile->fStartBlock);
                 return NULL;
             }
@@ -1437,7 +1437,7 @@ A2FilePascal::GetFileType(void) const
     case kTypeFoto:         return 0x08;        // FOT
     case kTypeSecurdir:     return 0xf5;        // no idea
     default:
-        WMSG1("Pascal WARNING: found invalid file type %d\n", fFileType);
+        LOGI("Pascal WARNING: found invalid file type %d", fFileType);
         return 0;
     }
 }
@@ -1495,7 +1495,7 @@ A2FilePascal::ConvertPascalDate(PascalDate pascalDate)
     year = (pascalDate >> 9) & 0x7f;
     if (year == 100) {
         // ought to mark the file as "suspicious"?
-        WMSG0("Pascal WARNING: date with year=100\n");
+        LOGI("Pascal WARNING: date with year=100");
     }
     if (year < 40)
         year += 100;
@@ -1541,7 +1541,7 @@ A2FilePascal::ConvertPascalDate(time_t unixDate)
     if (year >= 100)
         year -= 100;
     if (year < 0 || year >= 100) {
-        WMSG2("WHOOPS: got year %lu from %d\n", year, ptm->tm_year);
+        LOGI("WHOOPS: got year %lu from %d", year, ptm->tm_year);
         year = 70;
     }
     date = year << 9 | (ptm->tm_mon+1) | ptm->tm_mday << 4;
@@ -1564,10 +1564,10 @@ A2FilePascal::GetModWhen(void) const
 void
 A2FilePascal::Dump(void) const
 {
-    WMSG1("A2FilePascal '%s'\n", fFileName);
-    WMSG3("  start=%d next=%d type=%d\n",
+    LOGI("A2FilePascal '%s'", fFileName);
+    LOGI("  start=%d next=%d type=%d",
         fStartBlock, fNextBlock, fFileType);
-    WMSG2("  bytesRem=%d modWhen=0x%04x\n",
+    LOGI("  bytesRem=%d modWhen=0x%04x",
         fBytesRemaining, fModWhen);
 }
 
@@ -1617,7 +1617,7 @@ A2FilePascal::Open(A2FileDescr** ppOpenFile, bool readOnly,
 DIError
 A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
 {
-    WMSG3(" Pascal reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" Pascal reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FilePascal* pFile = (A2FilePascal*) fpFile;
@@ -1647,7 +1647,7 @@ A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
 
         dierr = pFile->GetDiskFS()->GetDiskImg()->ReadBlock(block, blkBuf);
         if (dierr != kDIErrNone) {
-            WMSG1(" Pascal error reading file '%s'\n", pFile->fFileName);
+            LOGI(" Pascal error reading file '%s'", pFile->fFileName);
             return dierr;
         }
         thisCount = kBlkSize - bufOffset;
@@ -1683,7 +1683,7 @@ A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
     unsigned char blkBuf[kBlkSize];
     size_t origLen = len;
 
-    WMSG2("   DOS Write len=%u %s\n", len, pFile->GetPathName());
+    LOGI("   DOS Write len=%u %s", len, pFile->GetPathName());
 
     if (len >= 0x01000000) {    // 16MB
         assert(false);
@@ -1708,7 +1708,7 @@ A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
         blocksAvail = pNextFile->fStartBlock - pFile->fStartBlock;
 
     blocksNeeded = (len + kBlkSize -1) / kBlkSize;
-    WMSG4("Pascal write '%s' %d bytes: avail=%ld needed=%ld\n",
+    LOGI("Pascal write '%s' %d bytes: avail=%ld needed=%ld",
         pFile->GetPathName(), len, blocksAvail, blocksNeeded);
     if (blocksAvail < blocksNeeded)
         return kDIErrDiskFull;

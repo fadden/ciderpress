@@ -49,14 +49,14 @@ ReformatMacPaint::Examine(ReformatHolder* pHolder)
     long version;
 
     if (fileLen < kMinSize) {
-        WMSG2("  MP: not long enough to be MacPaint (%d vs min %d)\n",
+        LOGI("  MP: not long enough to be MacPaint (%d vs min %d)",
             fileLen, kMinSize);
         goto done;
     } 
 
     version = Get32BE(ptr);
     if (strcasecmp(nameExt, ".mac") == 0 && version >= 0 && version <= 3) {
-        WMSG0("  MP: found w/o MacBinary header\n");
+        LOGI("  MP: found w/o MacBinary header");
         applies = ReformatHolder::kApplicProbably;
         goto done;
     }
@@ -65,7 +65,7 @@ ReformatMacPaint::Examine(ReformatHolder* pHolder)
     if (version >= 0 && version <= 3 &&
         ptr[65] == 'P' && ptr[66] == 'N' && ptr[67] == 'T' && ptr[68] == 'G')
     {
-        WMSG0("  MP: found inside MacBinary header\n");
+        LOGI("  MP: found inside MacBinary header");
         applies = ReformatHolder::kApplicProbably;
         goto done;
     }
@@ -89,7 +89,7 @@ ReformatMacPaint::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (srcLen < kMinSize || srcLen > kMaxSize) {
-        WMSG1(" MacPaint file is only %d bytes long\n", srcLen);
+        LOGI(" MacPaint file is only %d bytes long", srcLen);
         goto bail;
     }
 
@@ -132,7 +132,7 @@ ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
     {
         offset = 128;
     } else {
-        WMSG0("  MP couldn't determine picture offset!\n");
+        LOGI("  MP couldn't determine picture offset!");
         goto bail;
     }
     
@@ -144,7 +144,7 @@ ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
     srcBuf += kLeadingJunkCount;
     length -= offset;
     length -= kLeadingJunkCount;
-    WMSG1("Adjusted len is %d\n", length);
+    LOGI("Adjusted len is %d", length);
 
     outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
                                     1, kNumColors);
@@ -175,7 +175,7 @@ ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
             break;
     }
     if (length != 0) {
-        WMSG1("  MP found %d unused bytes at end\n", length);
+        LOGI("  MP found %d unused bytes at end", length);
     }
 
 bail:

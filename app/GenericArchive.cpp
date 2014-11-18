@@ -220,7 +220,7 @@ GenericEntry::CheckHighASCII(const unsigned char* buffer,
     isHighASCII = true;
     while (count--) {
         if ((*buffer & 0x80) == 0 && *buffer != 0x20 && *buffer != 0x00) {
-            WMSG1("Flunking CheckHighASCII on 0x%02x\n", *buffer);
+            LOGI("Flunking CheckHighASCII on 0x%02x", *buffer);
             isHighASCII = false;
             break;
         }
@@ -320,10 +320,10 @@ GenericEntry::DetermineConversion(const unsigned char* buffer, long count,
      */
     if (wantConvHA == kConvertHAOn || wantConvHA == kConvertHAAuto) {
         isHighASCII = CheckHighASCII(buffer, count);
-        WMSG1(" +++ Determined isHighASCII=%d\n", isHighASCII);
+        LOGI(" +++ Determined isHighASCII=%d", isHighASCII);
     } else {
         isHighASCII = false;
-        WMSG0(" +++ Not even checking isHighASCII\n");
+        LOGI(" +++ Not even checking isHighASCII");
     }
 
     bufCount = count;
@@ -407,10 +407,10 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
 {
     int err = 0;
 
-    WMSG2("+++ WriteConvert conv=%d convHA=%d\n", *pConv, *pConvHA);
+    LOGI("+++ WriteConvert conv=%d convHA=%d", *pConv, *pConvHA);
 
     if (len == 0) {
-        WMSG0("WriteConvert asked to write 0 bytes; returning\n");
+        LOGI("WriteConvert asked to write 0 bytes; returning");
         return err;
     }
 
@@ -420,10 +420,10 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
         *pConv = DetermineConversion((unsigned char*)buf, len, &sourceType,
                     pConvHA);
         if (*pConv == kConvertEOLOn && sourceType == kEOLCRLF) {
-            WMSG0(" Auto-detected text conversion from CRLF; disabling\n");
+            LOGI(" Auto-detected text conversion from CRLF; disabling");
             *pConv = kConvertEOLOff;
         }
-        WMSG2(" Auto-detected EOL conv=%d ha=%d\n", *pConv, *pConvHA);
+        LOGI(" Auto-detected EOL conv=%d ha=%d", *pConv, *pConvHA);
     } else if (*pConvHA == kConvertHAAuto) {
         if (*pConv == kConvertEOLOn) {
             /* definitely converting EOL, test for high ASCII */
@@ -436,7 +436,7 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
             *pConvHA = kConvertHAOff;
         }
     }
-    WMSG2("+++  After auto, conv=%d convHA=%d\n", *pConv, *pConvHA);
+    LOGI("+++  After auto, conv=%d convHA=%d", *pConv, *pConvHA);
     ASSERT(*pConv == kConvertEOLOn || *pConv == kConvertEOLOff);
     ASSERT(*pConvHA == kConvertHAOn || *pConvHA == kConvertHAOff);
 
@@ -444,7 +444,7 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
     if (*pConv == kConvertEOLOff) {
         if (fwrite(buf, len, 1, fp) != 1) {
             err = errno;
-            WMSG1("WriteConvert failed, err=%d\n", errno);
+            LOGI("WriteConvert failed, err=%d", errno);
         }
     } else {
         ASSERT(*pConv == kConvertEOLOn);
@@ -510,7 +510,7 @@ GenericArchive::AddEntry(GenericEntry* pEntry)
     fNumEntries++;
 
     //if (fEntryIndex != NULL) {
-    //  WMSG0("Resetting fEntryIndex\n");
+    //  LOGI("Resetting fEntryIndex");
     //  delete [] fEntryIndex;
     //  fEntryIndex = NULL;
     //}
@@ -525,7 +525,7 @@ GenericArchive::DeleteEntries(void)
     GenericEntry* pEntry;
     GenericEntry* pNext;
 
-    WMSG1("Deleting %d archive entries\n", fNumEntries);
+    LOGI("Deleting %d archive entries", fNumEntries);
 
     pEntry = GetEntries();
     while (pEntry != NULL) {
@@ -549,7 +549,7 @@ GenericArchive::CreateIndex(void)
     GenericEntry* pEntry;
     int num;
 
-    WMSG1("Creating entry index (%d entries)\n", fNumEntries);
+    LOGI("Creating entry index (%d entries)", fNumEntries);
 
     ASSERT(fNumEntries != 0);
 
@@ -597,7 +597,7 @@ GenericArchive::GenDerivedTempName(const WCHAR* filename)
         mangle.Delete(idx+1, len-(idx+1));  /* delete out to the end */
         mangle += kTmpTemplate;
     }
-    WMSG2("GenDerived: passed '%ls' returned '%ls'\n", filename, (LPCWSTR) mangle);
+    LOGI("GenDerived: passed '%ls' returned '%ls'", filename, (LPCWSTR) mangle);
 
     return mangle;
 }
@@ -912,7 +912,7 @@ GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
     ASSERT(pAddOpts != NULL);
     ASSERT(dirName != NULL);
 
-    WMSG1("+++ DESCEND: '%ls'\n", dirName);
+    LOGI("+++ DESCEND: '%ls'", dirName);
 
     dirp = OpenDir(dirName);
     if (dirp == NULL) {
@@ -939,7 +939,7 @@ GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
         len = wcslen(dirName);
         if (len + wcslen(entry->d_name) +2 > MAX_PATH) {
             err = kNuErrInternal;
-            WMSG4("ERROR: Filename exceeds %d bytes: %ls%c%ls",
+            LOGE("ERROR: Filename exceeds %d bytes: %ls%c%ls",
                 MAX_PATH, dirName, fssep, entry->d_name);
             goto bail;
         }
@@ -1010,7 +1010,7 @@ GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
      * filetype and auxtype it has, and whether or not it's actually the
      * resource fork of another file.
      */
-    WMSG1("+++ ADD '%ls'\n", pathname);
+    LOGI("+++ ADD '%ls'", pathname);
 
     /*
      * Fill out the "details" structure.  The class has an automatic
@@ -1099,7 +1099,7 @@ GenericArchive::FileDetails::operator const NuFileDetails() const
         break;
     case kFileKindDirectory:
     default:
-        WMSG1("Invalid entryKind (%d) for NuFileDetails conversion\n",
+        LOGI("Invalid entryKind (%d) for NuFileDetails conversion",
             entryKind);
         ASSERT(false);
         details.threadID = 0;       // that makes it an old-style comment?!
@@ -1196,7 +1196,7 @@ GenericArchive::FileDetails::CopyFields(FileDetails* pDst,
 void
 SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask)
 {
-    WMSG1("CreateFromSelection (threadMask=0x%02x)\n", threadMask);
+    LOGI("CreateFromSelection (threadMask=0x%02x)", threadMask);
 
     POSITION posn;
     posn = pContentList->GetFirstSelectedItemPosition();
@@ -1217,7 +1217,7 @@ SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask)
 void
 SelectionSet::CreateFromAll(ContentList* pContentList, int threadMask)
 {
-    WMSG1("CreateFromAll (threadMask=0x%02x)\n", threadMask);
+    LOGI("CreateFromAll (threadMask=0x%02x)", threadMask);
 
     int count = pContentList->GetItemCount();
     for (int idx = 0; idx < count; idx++) {
@@ -1236,13 +1236,13 @@ SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
 {
     SelectionEntry* pSelEntry;
 
-    //WMSG1("  Sel '%ls'\n", pEntry->GetPathName());
+    //LOGI("  Sel '%ls'", pEntry->GetPathName());
 
     if (!(threadMask & GenericEntry::kAllowVolumeDir) &&
          pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir)
     {
         /* only include volume dir if specifically requested */
-        //WMSG1(" Excluding volume dir '%ls' from set\n", pEntry->GetPathName());
+        //LOGI(" Excluding volume dir '%ls' from set", pEntry->GetPathName());
         return;
     }
 
@@ -1250,7 +1250,7 @@ SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
         pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory)
     {
         /* only include directories if specifically requested */
-        //WMSG1(" Excluding folder '%ls' from set\n", pEntry->GetPathName());
+        //LOGI(" Excluding folder '%ls' from set", pEntry->GetPathName());
         return;
     }
 
@@ -1313,7 +1313,7 @@ SelectionSet::DeleteEntries(void)
     SelectionEntry* pEntry;
     SelectionEntry* pNext;
 
-    WMSG0("Deleting selection entries\n");
+    LOGI("Deleting selection entries");
 
     pEntry = GetEntries();
     while (pEntry != NULL) {
@@ -1354,11 +1354,11 @@ SelectionSet::Dump(void)
 {
     const SelectionEntry* pEntry;
 
-    WMSG1("SelectionSet: %d entries\n", fNumEntries);
+    LOGI("SelectionSet: %d entries", fNumEntries);
 
     pEntry = fEntryHead;
     while (pEntry != NULL) {
-        WMSG1("  : name='%ls'\n", pEntry->GetEntry()->GetPathName());
+        LOGI("  : name='%ls'", pEntry->GetEntry()->GetPathName());
         pEntry = pEntry->GetNext();
     }
 }

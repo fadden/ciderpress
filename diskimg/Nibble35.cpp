@@ -98,7 +98,7 @@ DiskImg::CylHeadSect35ToBlock(int cyl, int head, int sect)
         block += SectorsPerTrack35(i);
     block += sect;
 
-    //WMSG4("Nib35: c/h/s %d/%d/%d --> block %d\n", cyl, head, sect, block);
+    //LOGI("Nib35: c/h/s %d/%d/%d --> block %d", cyl, head, sect, block);
     assert(block >= 0 && block < 1600);
     return block;
 }
@@ -132,7 +132,7 @@ DiskImg::UnpackNibbleTrack35(const unsigned char* nibbleBuf,
 
         assert(sector >= 0 && sector < SectorsPerTrack35(cyl));
         if (foundSector[sector]) {
-            WMSG3("Nib35: WARNING: found two copies of sect %d on cyl=%d head=%d\n",
+            LOGI("Nib35: WARNING: found two copies of sect %d on cyl=%d head=%d",
                 sector, cyl, head);
         } else {
             memset(sectorBuf, 0xa9, sizeof(sectorBuf));
@@ -147,10 +147,10 @@ DiskImg::UnpackNibbleTrack35(const unsigned char* nibbleBuf,
                     calcSum[1] != readSum[1] ||
                     calcSum[2] != readSum[2])
                 {
-                    WMSG2("Nib35: checksum mismatch: 0x%06x vs. 0x%06x\n",
+                    LOGI("Nib35: checksum mismatch: 0x%06x vs. 0x%06x",
                         calcSum[0] << 16 | calcSum[1] << 8 | calcSum[2],
                         readSum[0] << 16 | readSum[1] << 8 | readSum[2]);
-                    WMSG4("Nib35:  marking cyl=%d head=%d sect=%d (block=%d)\n",
+                    LOGI("Nib35:  marking cyl=%d head=%d sect=%d (block=%d)",
                         cyl, head, sector,
                         CylHeadSect35ToBlock(cyl, head, sector));
                     pBadBlockMap->Set(CylHeadSect35ToBlock(cyl, head, sector));
@@ -165,7 +165,7 @@ DiskImg::UnpackNibbleTrack35(const unsigned char* nibbleBuf,
      */
     for (i = SectorsPerTrack35(cyl)-1; i >= 0; i--) {
         if (!foundSector[i]) {
-            WMSG4("Nib35: didn't find cyl=%d head=%d sect=%d (block=%d)\n",
+            LOGI("Nib35: didn't find cyl=%d head=%d sect=%d (block=%d)",
                 cyl, head, i, CylHeadSect35ToBlock(cyl, head, i));
             pBadBlockMap->Set(CylHeadSect35ToBlock(cyl, head, i));
         }
@@ -176,7 +176,7 @@ DiskImg::UnpackNibbleTrack35(const unsigned char* nibbleBuf,
             (head == (cyl & 0x01)) &&
             (i == 1 || i == 7))
         {
-            WMSG4("DEBUG: setting bad %d/%d/%d (%d)\n",
+            LOGI("DEBUG: setting bad %d/%d/%d (%d)",
                 cyl, head, i, CylHeadSect35ToBlock(cyl, head, i));
             pBadBlockMap->Set(CylHeadSect35ToBlock(cyl, head, i));
         }
@@ -221,23 +221,23 @@ DiskImg::FindNextSector35(const CircularBufferAccess& buffer, int start,
                 format == kInvInvalidValue ||
                 checksum == kInvInvalidValue)
             {
-                WMSG0("Nib35: garbled address header found\n");
+                LOGI("Nib35: garbled address header found");
                 continue;
             }
-            //WMSG5(" Nib35: got addr: track=%2d sect=%2d side=%d format=%d sum=0x%02x\n",
+            //LOGI(" Nib35: got addr: track=%2d sect=%2d side=%d format=%d sum=0x%02x",
             //  trackNum, sectNum, side, format, checksum);
             if (side != ((head * 0x20) | (cyl >> 6))) {
-                WMSG3("Nib35: unexpected value for side: %d on cyl=%d head=%d\n",
+                LOGI("Nib35: unexpected value for side: %d on cyl=%d head=%d",
                     side, cyl, head);
             }
             if (sectNum >= SectorsPerTrack35(cyl)) {
-                WMSG2("Nib35: invalid value for sector: %d (cyl=%d)\n",
+                LOGI("Nib35: invalid value for sector: %d (cyl=%d)",
                     sectNum, cyl);
                 continue;
             }
             /* format seems to be 0x22 or 0x24 */
             if (checksum != (trackNum ^ sectNum ^ side ^ format)) {
-                WMSG2("Nib35: unexpected checksum: 0x%02x vs. 0x%02x\n",
+                LOGI("Nib35: unexpected checksum: 0x%02x vs. 0x%02x",
                     checksum, trackNum ^ sectNum ^ side ^ format);
                 continue;
             }
@@ -246,7 +246,7 @@ DiskImg::FindNextSector35(const CircularBufferAccess& buffer, int start,
             if (buffer[i+8] != kAddrEpilog0 ||
                 buffer[i+9] != kAddrEpilog1)
             {
-                WMSG0("Nib35: invalid address epilog\n");
+                LOGI("Nib35: invalid address epilog");
                 /* maybe we allow this anyway? */
             }
 
@@ -300,7 +300,7 @@ DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
         }
     }
     if (off == start + kMaxDataReach35) {
-        WMSG0("nib25: could not find start of data field\n");
+        LOGI("nib25: could not find start of data field");
         return false;
     }
 
@@ -323,9 +323,9 @@ DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
             nib2 == kInvInvalidValue)
         {
             // junk found
-            WMSG1("Nib25: found invalid disk byte in sector data at %d\n",
+            LOGI("Nib25: found invalid disk byte in sector data at %d",
                 off - start);
-            WMSG4("       (one of 0x%02x 0x%02x 0x%02x 0x%02x)\n",
+            LOGI("       (one of 0x%02x 0x%02x 0x%02x 0x%02x)",
                 buffer[off-4], buffer[off-3], buffer[off-2], buffer[off-1]);
             return false;
             //if (twos == kInvInvalidValue)
@@ -380,7 +380,7 @@ DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
 
         i++;
         assert(i < kChunkSize35);
-        //WMSG2("i = %d, diff=%d\n", i, sectorBuf - sectorBufStart);
+        //LOGI("i = %d, diff=%d", i, sectorBuf - sectorBufStart);
     }
 
     calcChecksum[0] = chk0;
@@ -388,14 +388,14 @@ DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
     calcChecksum[2] = chk2;
 
     if (!UnpackChecksum35(buffer, off, readChecksum)) {
-        WMSG0("Nib35: failure reading checksum\n");
+        LOGI("Nib35: failure reading checksum");
         readChecksum[0] = calcChecksum[0] ^ 0xff;   // force a failure
         return false;
     }
     off += 4;       // skip past checksum bytes
 
     if (buffer[off] != kDataEpilog0 || buffer[off+1] != kDataEpilog1) {
-        WMSG0("nib25: WARNING: data epilog not found\n");
+        LOGI("nib25: WARNING: data epilog not found");
         // allow it, if the checksum matches
     }
 
@@ -420,13 +420,13 @@ DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
                     val1 = kInvDiskBytes62[buffer[start + i]];
                     val2 = kInvDiskBytes62[nibBuf[i]];
                     if ((val1 & 0xfc) != (val2 & 0xfc)) {
-                        WMSG5("Nib35 DEBUG: output differs at byte %d"
-                              " (0x%02x vs 0x%02x / 0x%02x vs 0x%02x)\n",
+                        LOGI("Nib35 DEBUG: output differs at byte %d"
+                              " (0x%02x vs 0x%02x / 0x%02x vs 0x%02x)",
                             i, buffer[start+i], nibBuf[i], val1, val2);
                     }
                 } else {
                     // note: checksum is 699-702
-                    WMSG3("Nib35 DEBUG: output differs at byte %d (0x%02x vs 0x%02x)\n",
+                    LOGI("Nib35 DEBUG: output differs at byte %d (0x%02x vs 0x%02x)",
                         i, buffer[start+i], nibBuf[i]);
                 }
             }
@@ -460,7 +460,7 @@ DiskImg::UnpackChecksum35(const CircularBufferAccess& buffer, int offset,
         nib1 == kInvInvalidValue ||
         nib2 == kInvInvalidValue)
     {
-        WMSG0("nib25: found invalid disk byte in checksum\n");
+        LOGI("nib25: found invalid disk byte in checksum");
         return false;
     }
 

@@ -88,7 +88,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
         dptr += DiskFSCPM::kDirectoryEntryLen;
     }
     if (dierr == kDIErrNone) {
-        WMSG1(" CPM found clean directory, imageOrder=%d\n", imageOrder);
+        LOGI(" CPM found clean directory, imageOrder=%d", imageOrder);
     }
 
 bail:
@@ -109,7 +109,7 @@ DiskFSCPM::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     if (pImg->GetNumBlocks() == 0 ||
         (pImg->GetNumBlocks() & 0x01) != 0)
     {
-        WMSG1(" CPM rejecting image with numBlocks=%ld\n",
+        LOGI(" CPM rejecting image with numBlocks=%ld",
             pImg->GetNumBlocks());
         return kDIErrFilesystemNotFound;
     }
@@ -128,7 +128,7 @@ DiskFSCPM::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         }
     }
 
-    WMSG0(" CPM didn't find valid FS\n");
+    LOGI(" CPM didn't find valid FS");
     return kDIErrFilesystemNotFound;
 }
 
@@ -218,7 +218,7 @@ DiskFSCPM::ReadCatalog(void)
             continue;
         if (fDirEntry[i].userNumber > kMaxUserNumber) {
             /* skip over volume label, date stamps, etc */
-            WMSG1("Skipping entry with userNumber=0x%02x\n",
+            LOGI("Skipping entry with userNumber=0x%02x",
                 fDirEntry[i].userNumber);
         }
 
@@ -246,7 +246,7 @@ DiskFSCPM::ReadCatalog(void)
             continue;
         for (int j = 0; j < kDirEntryBlockCount; j++) {
             if (fDirEntry[i].blocks[j] >= maxCpmBlock) {
-                WMSG2(" CPM invalid block %d in file '%s'\n",
+                LOGI(" CPM invalid block %d in file '%s'",
                     fDirEntry[i].blocks[j], fDirEntry[i].fileName);
                 //pFile->SetQuality(A2File::kQualityDamaged);
                 fDirEntry[i].badBlockList = true;
@@ -324,7 +324,7 @@ DiskFSCPM::ComputeLength(A2FileCPM* pFile)
     }
 
     if (maxExtent < 0 || best < 0) {
-        WMSG1("  CPM couldn't find existing file '%s'!\n", pFile->fFileName);
+        LOGI("  CPM couldn't find existing file '%s'!", pFile->fFileName);
         assert(false);
         return kDIErrInternal;
     }
@@ -385,13 +385,13 @@ DiskFSCPM::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
     VolumeUsage::ChunkState cstate;
 
     if (fVolumeUsage.GetChunkState(block, &cstate) != kDIErrNone) {
-        WMSG1(" CPM ERROR: unable to set state on block %ld\n", block);
+        LOGI(" CPM ERROR: unable to set state on block %ld", block);
         return;
     }
 
     if (cstate.isUsed) {
         cstate.purpose = VolumeUsage::kChunkPurposeConflict;
-        WMSG1(" CPM conflicting uses for block=%ld\n", block);
+        LOGI(" CPM conflicting uses for block=%ld", block);
     } else {
         cstate.isUsed = true;
         cstate.isMarkedUsed = true;     // no volume bitmap
@@ -530,7 +530,7 @@ A2FileCPM::GetBlockList(long* pBlockCount, unsigned char* blockBuf) const
             /* this entry is part of the file */
             for (j = 0; j < DiskFSCPM::kDirEntryBlockCount; j++) {
                 if (fpDirEntry[i].blocks[j] == 0) {
-                    WMSG2(" CPM found sparse block %d/%d\n", i, j);
+                    LOGI(" CPM found sparse block %d/%d", i, j);
                 }
                 blockCount++;
 
@@ -548,11 +548,11 @@ A2FileCPM::GetBlockList(long* pBlockCount, unsigned char* blockBuf) const
     }
 
     if (length > 0) {
-        WMSG1(" CPM WARNING: can't account for %ld bytes!\n", (long) length);
+        LOGI(" CPM WARNING: can't account for %ld bytes!", (long) length);
         //assert(false);
     }
 
-    //WMSG2(" Returning blockCount=%d for '%s'\n", blockCount,
+    //LOGI(" Returning blockCount=%d for '%s'", blockCount,
     //  fpDirEntry[fDirIdx].fileName);
     if (pBlockCount != NULL) {
         assert(blockBuf == NULL || *pBlockCount == blockCount);
@@ -568,7 +568,7 @@ A2FileCPM::GetBlockList(long* pBlockCount, unsigned char* blockBuf) const
 void
 A2FileCPM::Dump(void) const
 {
-    WMSG2("A2FileCPM '%s' length=%ld\n", fFileName, (long) fLength);
+    LOGI("A2FileCPM '%s' length=%ld", fFileName, (long) fLength);
 }
 
 
@@ -584,7 +584,7 @@ A2FileCPM::Dump(void) const
 DIError
 A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
 {
-    WMSG3(" CP/M reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" CP/M reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileCPM* pFile = (A2FileCPM*) fpFile;
@@ -638,13 +638,13 @@ A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
             dierr = fpFile->GetDiskFS()->GetDiskImg()->ReadBlock(prodosBlock,
                         blkBuf);
             if (dierr != kDIErrNone) {
-                WMSG1(" CP/M error1 reading file '%s'\n", pFile->fFileName);
+                LOGI(" CP/M error1 reading file '%s'", pFile->fFileName);
                 return dierr;
             }
             dierr = fpFile->GetDiskFS()->GetDiskImg()->ReadBlock(prodosBlock+1,
                         blkBuf + kBlkSize);
             if (dierr != kDIErrNone) {
-                WMSG1(" CP/M error2 reading file '%s'\n", pFile->fFileName);
+                LOGI(" CP/M error2 reading file '%s'", pFile->fFileName);
                 return dierr;
             }
         }

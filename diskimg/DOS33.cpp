@@ -99,7 +99,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
         !(catTrack < numTracks && catSect < numSectors) ||
         0)
     {
-        WMSG1("  DOS header test failed (order=%d)\n", imageOrder);
+        LOGI("  DOS header test failed (order=%d)", imageOrder);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
     }
@@ -122,7 +122,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
         if (catTrack == sctBuf[1] && catSect == sctBuf[2] +1)
             foundGood++;
         else if (catTrack == sctBuf[1] && catSect == sctBuf[2]) {
-            WMSG2(" DOS detected self-reference on cat (%d,%d)\n",
+            LOGI(" DOS detected self-reference on cat (%d,%d)",
                 catTrack, catSect);
             break;
         }
@@ -133,11 +133,11 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
     if (iterations >= DiskFSDOS33::kMaxCatalogSectors) {
         /* possible cause: LF->CR conversion screws up link to sector $0a */
         dierr = kDIErrDirectoryLoop;
-        WMSG1("  DOS directory links cause a loop (order=%d)\n", imageOrder);
+        LOGI("  DOS directory links cause a loop (order=%d)", imageOrder);
         goto bail;
     }
 
-    WMSG2(" DOS    foundGood=%d order=%d\n", foundGood, imageOrder);
+    LOGI(" DOS    foundGood=%d order=%d", foundGood, imageOrder);
     *pGoodCount = foundGood;
 
 bail:
@@ -177,7 +177,7 @@ DiskFSDOS33::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     if (bestCount >= 4 ||
         (leniency == kLeniencyVery && bestCount >= 2))
     {
-        WMSG2(" DOS test: bestCount=%d for order=%d\n", bestCount, bestOrder);
+        LOGI(" DOS test: bestCount=%d for order=%d", bestCount, bestOrder);
         assert(bestOrder != DiskImg::kSectorOrderUnknown);
         *pOrder = bestOrder;
         *pFormat = DiskImg::kFormatDOS33;
@@ -186,7 +186,7 @@ DiskFSDOS33::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         return kDIErrNone;
     }
 
-    WMSG0(" DOS33 didn't find valid DOS3.2 or DOS3.3\n");
+    LOGI(" DOS33 didn't find valid DOS3.2 or DOS3.3");
     return kDIErrFilesystemNotFound;
 }
 
@@ -215,7 +215,7 @@ DiskFSDOS33::Initialize(InitMode initMode)
         goto bail;
 
     if (initMode == kInitHeaderOnly) {
-        WMSG0(" DOS - headerOnly set, skipping file load\n");
+        LOGI(" DOS - headerOnly set, skipping file load");
         goto bail;
     }
 
@@ -271,11 +271,11 @@ DiskFSDOS33::ReadVTOC(void)
         return kDIErrBadDiskImage;
 
     if (fVTOCNumTracks != fpImg->GetNumTracks()) {
-        WMSG2(" DOS33 warning: VTOC numtracks %d vs %ld\n",
+        LOGI(" DOS33 warning: VTOC numtracks %d vs %ld",
             fVTOCNumTracks, fpImg->GetNumTracks());
     }
     if (fVTOCNumSectors != fpImg->GetNumSectPerTrack()) {
-        WMSG2(" DOS33 warning: VTOC numsect %d vs %d\n",
+        LOGI(" DOS33 warning: VTOC numsect %d vs %d",
             fVTOCNumSectors, fpImg->GetNumSectPerTrack());
     }
 
@@ -300,7 +300,7 @@ DiskFSDOS33::UpdateVolumeNum(void)
     else
         SetDiskVolumeNum(fpImg->GetDOSVolumeNum());
     if (fDiskVolumeNum != fVTOCVolumeNumber) {
-        WMSG2("  NOTE: ignoring VTOC vol (%d) in favor of embedded (%d)\n",
+        LOGI("  NOTE: ignoring VTOC vol (%d) in favor of embedded (%d)",
             fVTOCVolumeNumber, fDiskVolumeNum);
     }
 }
@@ -334,9 +334,9 @@ void
 DiskFSDOS33::DumpVTOC(void)
 {
 
-    WMSG2("VTOC catalog: track=%d sector=%d\n",
+    LOGI("VTOC catalog: track=%d sector=%d",
         fFirstCatTrack, fFirstCatSector);
-    WMSG3("  volnum=%d numTracks=%d numSects=%d\n",
+    LOGI("  volnum=%d numTracks=%d numSects=%d",
         fVTOCVolumeNumber, fVTOCNumTracks, fVTOCNumSectors);
 }
 
@@ -349,12 +349,12 @@ DiskFSDOS33::SetSectorUsage(long track, long sector,
 {
     VolumeUsage::ChunkState cstate;
 
-    //WMSG3(" DOS setting usage %d,%d to %d\n", track, sector, purpose);
+    //LOGI(" DOS setting usage %d,%d to %d", track, sector, purpose);
 
     fVolumeUsage.GetChunkState(track, sector, &cstate);
     if (cstate.isUsed) {
         cstate.purpose = VolumeUsage::kChunkPurposeConflict;
-//      WMSG2(" DOS conflicting uses for t=%d s=%d\n", track, sector);
+//      LOGI(" DOS conflicting uses for t=%d s=%d", track, sector);
     } else {
         cstate.isUsed = true;
         cstate.purpose = purpose;
@@ -393,7 +393,7 @@ DiskFSDOS33::ScanVolBitmap(void)
     if (dierr != kDIErrNone)
         goto bail;
 
-    WMSG0("  map 0123456789abcdef\n");
+    LOGI("  map 0123456789abcdef");
 
     int i;
     for (i = 0; i < kMaxTracks; i++) {
@@ -418,7 +418,7 @@ DiskFSDOS33::ScanVolBitmap(void)
             }
             val <<= 1;
         }
-        WMSG3("  %2d: %s (0x%08lx)\n", i, freemap, origVal);
+        LOGI("  %2d: %s (0x%08lx)", i, freemap, origVal);
     }
 
     /* we know the VTOC is used, so mark it now */
@@ -539,7 +539,7 @@ DiskFSDOS33::AllocSector(TrackSector* pTS)
                 break;
         }
         if (track == numTracks) {
-            WMSG0("DOS33 AllocSector unable to find empty sector\n");
+            LOGI("DOS33 AllocSector unable to find empty sector");
             return kDIErrDiskFull;
         }
     }
@@ -551,7 +551,7 @@ DiskFSDOS33::AllocSector(TrackSector* pTS)
     sector = numSectPerTrack-1;
     while (sector >= 0) {
         if (val & 0x80000000) {
-            //WMSG2("+++ allocating T=%d S=%d\n", track, sector);
+            //LOGI("+++ allocating T=%d S=%d", track, sector);
             SetSectorUseEntry(track, sector, true);
             break;
         }
@@ -767,7 +767,7 @@ DiskFSDOS33::ReadCatalog(void)
     {
         SetSectorUsage(catTrack, catSect, VolumeUsage::kChunkPurposeVolumeDir);
 
-        WMSG2(" DOS33 reading catalog sector T=%d S=%d\n", catTrack, catSect);
+        LOGI(" DOS33 reading catalog sector T=%d S=%d", catTrack, catSect);
         dierr = fpImg->ReadTrackSector(catTrack, catSect, sctBuf);
         if (dierr != kDIErrNone)
             goto bail;
@@ -776,7 +776,7 @@ DiskFSDOS33::ReadCatalog(void)
          * Watch for flaws that the DOS detector allows.
          */
         if (catTrack == sctBuf[0x01] && catSect == sctBuf[0x02]) {
-            WMSG2(" DOS detected self-reference on cat (%d,%d)\n",
+            LOGI(" DOS detected self-reference on cat (%d,%d)",
                 catTrack, catSect);
             break;
         }
@@ -789,7 +789,7 @@ DiskFSDOS33::ReadCatalog(void)
         if (sctBuf[0x01] >= fpImg->GetNumTracks() ||
             sctBuf[0x02] >= fpImg->GetNumSectPerTrack())
         {
-            WMSG0(" DOS bailing out early on catalog read due to funky T/S\n");
+            LOGI(" DOS bailing out early on catalog read due to funky T/S");
             break;
         }
 
@@ -851,7 +851,7 @@ DiskFSDOS33::ProcessCatalogSector(int catTrack, int catSect,
             case 0x40:  pFile->fFileType = A2FileDOS::kTypeB;           break;
             default:
                 /* some odd arrangement of bit flags? */
-                WMSG1(" DOS33 peculiar filetype byte 0x%02x\n", pEntry[0x02]);
+                LOGI(" DOS33 peculiar filetype byte 0x%02x", pEntry[0x02]);
                 pFile->fFileType = A2FileDOS::kTypeUnknown;
                 pFile->SetQuality(A2File::kQualitySuspicious);
                 break;
@@ -1008,21 +1008,21 @@ DiskFSDOS33::GetFileLengths(void)
         DIError dierr;
         dierr = pFile->LoadTSList(&tsList, &tsCount, &indexList, &indexCount);
         if (dierr != kDIErrNone) {
-            WMSG1("DOS failed loading TS list for '%s'\n",
+            LOGI("DOS failed loading TS list for '%s'",
                 pFile->GetPathName());
             pFile->SetQuality(A2File::kQualityDamaged);
         } else {
             MarkFileUsage(pFile, tsList, tsCount, indexList, indexCount);
             dierr = ComputeLength(pFile, tsList, tsCount);
             if (dierr != kDIErrNone) {
-                WMSG1("DOS unable to get length for '%s'\n",
+                LOGI("DOS unable to get length for '%s'",
                     pFile->GetPathName());
                 pFile->SetQuality(A2File::kQualityDamaged);
             }
         }
 
         if (pFile->fLengthInSectors != indexCount + tsCount) {
-            WMSG3("DOS NOTE: file '%s' has len-in-sect=%d but actual=%d\n",
+            LOGI("DOS NOTE: file '%s' has len-in-sect=%d but actual=%d",
                 pFile->GetPathName(), pFile->fLengthInSectors,
                 indexCount + tsCount);
             // expected on sparse random-access text files
@@ -1102,7 +1102,7 @@ DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
         pFile->fFileType == A2FileDOS::kTypeBinary)
     {
         /* read first sector and analyze it */
-        //WMSG0(" DOS reading first file sector\n");
+        //LOGI(" DOS reading first file sector");
         dierr = fpImg->ReadTrackSector(tsList[0].track, tsList[0].sector,
                     sctBuf);
         if (dierr != kDIErrNone)
@@ -1126,12 +1126,12 @@ DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
             strchr(pFile->fFileName, '<') != NULL &&
             strchr(pFile->fFileName, '>') != NULL)
         {
-            WMSG2(" DOS found probable DDD archive, tweaking '%s' (lis=%u)\n",
+            LOGI(" DOS found probable DDD archive, tweaking '%s' (lis=%u)",
                 pFile->GetPathName(), pFile->fLengthInSectors);
             //dierr = TrimLastSectorDown(pFile, tsBuf, WrapperDDD::kMaxDDDZeroCount);
             //if (dierr != kDIErrNone)
             //  goto bail;
-            //WMSG3(" DOS scanned DDD file '%s' to length %ld (tsCount=%d)\n",
+            //LOGI(" DOS scanned DDD file '%s' to length %ld (tsCount=%d)",
             //  pFile->fFileName, pFile->fLength, pFile->fTSListCount);
             pFile->fLength = tsCount * kSctSize;
             pFile->fDataOffset = 0;
@@ -1139,7 +1139,7 @@ DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
 
         /* catch bogus lengths in damaged A/I/B files */
         if (pFile->fLength > tsCount * kSctSize) {
-            WMSG3(" DOS33 capping max len from %ld to %d in '%s'\n",
+            LOGI(" DOS33 capping max len from %ld to %d in '%s'",
                 (long) pFile->fLength, tsCount * kSctSize,
                 pFile->fFileName);
             pFile->fLength = tsCount * kSctSize - pFile->fDataOffset;
@@ -1163,7 +1163,7 @@ DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
         if (dierr != kDIErrNone)
             goto bail;
 
-        WMSG4(" DOS scanned text file '%s' down to %d+%ld = %ld\n",
+        LOGI(" DOS scanned text file '%s' down to %d+%ld = %ld",
             pFile->fFileName,
             (tsCount-1) * kSctSize,
             (long)pFile->fLength - (tsCount-1) * kSctSize,
@@ -1220,7 +1220,7 @@ DiskFSDOS33::TrimLastSectorUp(A2FileDOS* pFile, TrackSector lastTS)
         return kDIErrNone;
     }
 
-    //WMSG0(" DOS reading LAST file sector\n");
+    //LOGI(" DOS reading LAST file sector");
     dierr = fpImg->ReadTrackSector(lastTS.track, lastTS.sector, sctBuf);
     if (dierr != kDIErrNone)
         goto bail;
@@ -1290,7 +1290,7 @@ DiskFSDOS33::TrimLastSectorDown(A2FileDOS* pFile, unsigned short* tsBuf,
     unsigned char sctBuf[kSctSize];
     int i;
 
-    //WMSG0(" DOS reading LAST file sector\n");
+    //LOGI(" DOS reading LAST file sector");
     dierr = fpImg->ReadTrackSector(
                 pFile->TSTrack(tsBuf[pFile->fTSListCount-1]),
                 pFile->TSSector(tsBuf[pFile->fTSListCount-1]),
@@ -1428,14 +1428,14 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
     if (pDiskImg->GetNumTracks() < kMinTracks ||
         pDiskImg->GetNumTracks() > kMaxTracks)
     {
-        WMSG1(" DOS33 can't format numTracks=%ld\n", pDiskImg->GetNumTracks());
+        LOGI(" DOS33 can't format numTracks=%ld", pDiskImg->GetNumTracks());
         return kDIErrInvalidArg;
     }
     if (pDiskImg->GetNumSectPerTrack() != 13 &&
         pDiskImg->GetNumSectPerTrack() != 16 &&
         pDiskImg->GetNumSectPerTrack() != 32)
     {
-        WMSG1(" DOS33 can't format sectors=%d\n",
+        LOGI(" DOS33 can't format sectors=%d",
             pDiskImg->GetNumSectPerTrack());
         return kDIErrInvalidArg;
     }
@@ -1444,7 +1444,7 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
         if (pDiskImg->GetNumSectPerTrack() != 16 &&
             pDiskImg->GetNumSectPerTrack() != 13)
         {
-            WMSG1("NOTE: numSectPerTrack = %d, can't write DOS tracks\n",
+            LOGI("NOTE: numSectPerTrack = %d, can't write DOS tracks",
                 pDiskImg->GetNumSectPerTrack());
             return kDIErrInvalidArg;
         }
@@ -1455,7 +1455,7 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
     assert(fpImg == NULL);
     SetDiskImg(pDiskImg);
 
-    WMSG1(" DOS33 formatting disk image (sectorOrder=%d)\n",
+    LOGI(" DOS33 formatting disk image (sectorOrder=%d)",
         fpImg->GetSectorOrder());
 
     /* write DOS sectors */
@@ -1472,7 +1472,7 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
      * to skip it here.
      */
 //  dierr = fpImg->ZeroImage();
-    WMSG0(" DOS33  (not zeroing blocks)\n");
+    LOGI(" DOS33  (not zeroing blocks)");
 
     if (addDOS) {
         dierr = WriteDOSTracks(pDiskImg->GetNumSectPerTrack());
@@ -1535,7 +1535,7 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
     /* check our work, and set some object fields, by reading what we wrote */
     dierr = ReadVTOC();
     if (dierr != kDIErrNone) {
-        WMSG1(" GLITCH: couldn't read header we just wrote (err=%d)\n", dierr);
+        LOGI(" GLITCH: couldn't read header we just wrote (err=%d)", dierr);
         goto bail;
     }
 
@@ -1562,7 +1562,7 @@ DiskFSDOS33::WriteDOSTracks(int sectPerTrack)
     const unsigned char* buf = gDOS33Tracks;
 
     if (sectPerTrack == 13) {
-        WMSG0("  DOS33 writing DOS 3.3 tracks\n");
+        LOGI("  DOS33 writing DOS 3.3 tracks");
         buf = gDOS32Tracks;
 
         for (track = 0; track < 3; track++) {
@@ -1574,7 +1574,7 @@ DiskFSDOS33::WriteDOSTracks(int sectPerTrack)
             }
         }
     } else if (sectPerTrack == 16) {
-        WMSG0("  DOS33 writing DOS 3.3 tracks\n");
+        LOGI("  DOS33 writing DOS 3.3 tracks");
         buf = gDOS33Tracks;
 
         // this should be used for 32-sector disks
@@ -1588,7 +1588,7 @@ DiskFSDOS33::WriteDOSTracks(int sectPerTrack)
             }
         }
     } else {
-        WMSG1("  DOS33 *not* writing DOS tracks to %d-sector disk\n",
+        LOGI("  DOS33 *not* writing DOS tracks to %d-sector disk",
             sectPerTrack);
         assert(false);
     }
@@ -1702,7 +1702,7 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
     assert(pParms != NULL);
     assert(pParms->pathName != NULL);
     assert(pParms->storageType == A2FileProDOS::kStorageSeedling);
-    WMSG1(" DOS33 ---v--- CreateFile '%s'\n", pParms->pathName);
+    LOGI(" DOS33 ---v--- CreateFile '%s'", pParms->pathName);
 
     *ppNewFile = NULL;
 
@@ -1718,7 +1718,7 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
         MakeFileNameUnique(normalName);
     } else {
         if (GetFileByName(normalName) != NULL) {
-            WMSG1(" DOS33 create: normalized name '%s' already exists\n",
+            LOGI(" DOS33 create: normalized name '%s' already exists",
                 normalName);
             dierr = kDIErrFileExists;
             goto bail;
@@ -1756,10 +1756,10 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
      */
     dierr = GetFreeCatalogEntry(&catSect, &catEntry, sctBuf, &pPrevEntry);
     if (dierr != kDIErrNone) {
-        WMSG0("DOS unable to find an empty entry in the catalog\n");
+        LOGI("DOS unable to find an empty entry in the catalog");
         goto bail;
     }
-    WMSG4(" DOS found free catalog entry T=%d S=%d ent=%d prev=0x%08lx\n",
+    LOGI(" DOS found free catalog entry T=%d S=%d ent=%d prev=0x%08lx",
         catSect.track, catSect.sector, catEntry, (long) pPrevEntry);
 
     /* create the new dir entry at the specified location */
@@ -1852,7 +1852,7 @@ DiskFSDOS33::MakeFileNameUnique(char* fileName)
     if (GetFileByName(fileName) == NULL)
         return kDIErrNone;
 
-    WMSG1(" DOS   found duplicate of '%s', making unique\n", fileName);
+    LOGI(" DOS   found duplicate of '%s', making unique", fileName);
 
     int nameLen = strlen(fileName);
     int dotOffset=0, dotLen=0;
@@ -1869,7 +1869,7 @@ DiskFSDOS33::MakeFileNameUnique(char* fileName)
     if (cp != NULL) {
         int tmpOffset = cp - fileName;
         if (tmpOffset > 0 && nameLen - tmpOffset <= kMaxExtensionLen) {
-            WMSG1("  DOS   (keeping extension '%s')\n", cp);
+            LOGI("  DOS   (keeping extension '%s')", cp);
             assert(strlen(cp) <= kMaxExtensionLen);
             strcpy(dotBuf, cp);
             dotOffset = tmpOffset;
@@ -1899,7 +1899,7 @@ DiskFSDOS33::MakeFileNameUnique(char* fileName)
             memcpy(fileName + copyOffset + digitLen, dotBuf, dotLen);
     } while (GetFileByName(fileName) != NULL);
 
-    WMSG1(" DOS  converted to unique name: %s\n", fileName);
+    LOGI(" DOS  converted to unique name: %s", fileName);
 
     return kDIErrNone;
 }
@@ -1925,7 +1925,7 @@ DiskFSDOS33::GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
             fCatalogSectors[sct].sector == 0)
         {
             /* end of list reached */
-            WMSG0("DOS catalog is full\n");
+            LOGI("DOS catalog is full");
             dierr = kDIErrVolumeDirFull;
             goto bail;
         }
@@ -2053,7 +2053,7 @@ DiskFSDOS33::DeleteFile(A2File* pGenericFile)
     if (pGenericFile->IsFileOpen())
         return kDIErrFileOpen;
 
-    WMSG1("    Deleting '%s'\n", pFile->GetPathName());
+    LOGI("    Deleting '%s'", pFile->GetPathName());
 
     /*
      * Update the block usage map.  Nothing is permanent until we flush
@@ -2065,7 +2065,7 @@ DiskFSDOS33::DeleteFile(A2File* pGenericFile)
 
     dierr = pFile->LoadTSList(&tsList, &tsCount, &indexList, &indexCount);
     if (dierr != kDIErrNone) {
-        WMSG1("Failed loading TS lists while deleting '%s'\n",
+        LOGI("Failed loading TS lists while deleting '%s'",
             pFile->GetPathName());
         goto bail;
     }
@@ -2125,7 +2125,7 @@ DiskFSDOS33::FreeTrackSectors(TrackSector* pList, int count)
             continue;       // sparse file
 
         if (!GetSectorUseEntry(pList[i].track, pList[i].sector)) {
-            WMSG2("WARNING: freeing unallocated sector T=%d S=%d\n",
+            LOGI("WARNING: freeing unallocated sector T=%d S=%d",
                 pList[i].track, pList[i].sector);
             assert(false);  // impossible unless disk is "damaged"
         }
@@ -2159,7 +2159,7 @@ DiskFSDOS33::RenameFile(A2File* pGenericFile, const char* newName)
     if (!fDiskIsGood)
         return kDIErrBadDiskImage;
 
-    WMSG2(" DOS renaming '%s' to '%s'\n", pFile->GetPathName(), newName);
+    LOGI(" DOS renaming '%s' to '%s'", pFile->GetPathName(), newName);
 
     /*
      * Update the disk catalog entry.
@@ -2221,7 +2221,7 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
 
-    WMSG4("DOS SetFileInfo '%s' type=0x%02lx aux=0x%04lx access=0x%02lx\n",
+    LOGI("DOS SetFileInfo '%s' type=0x%02lx aux=0x%04lx access=0x%02lx",
         pFile->GetPathName(), fileType, auxType, accessFlags);
 
     /*
@@ -2230,13 +2230,13 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
      * the API a little more communicative.
      */
     if (!A2FileDOS::IsValidType(fileType)) {
-        WMSG0("DOS SetFileInfo invalid file type\n");
+        LOGI("DOS SetFileInfo invalid file type");
         dierr = kDIErrInvalidArg;
         goto bail;
     }
     if (auxType != pFile->GetAuxType() && fileType != 0x06) {
         /* this only makes sense for BIN files */
-        WMSG0("DOS SetFileInfo aux type mismatch; ignoring\n");
+        LOGI("DOS SetFileInfo aux type mismatch; ignoring");
         //dierr = kDIErrNotSupported;
         //goto bail;
     }
@@ -2252,7 +2252,7 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
         unsigned char sctBuf[kSctSize];
         unsigned char* pEntry;
 
-        WMSG1("Updating file '%s'\n", pFile->GetPathName());
+        LOGI("Updating file '%s'", pFile->GetPathName());
 
         dierr = fpImg->ReadTrackSector(pFile->fCatTS.track, pFile->fCatTS.sector,
                     sctBuf);
@@ -2302,7 +2302,7 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
 
     dierr = pFile->LoadTSList(&tsList, &tsCount);
     if (dierr != kDIErrNone) {
-        WMSG1(" DOS SFI: unable to load TS list (err=%d)\n", dierr);
+        LOGI(" DOS SFI: unable to load TS list (err=%d)", dierr);
         goto bail;
     }
 
@@ -2312,23 +2312,23 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
         dierr = fpImg->ReadTrackSector(tsList[0].track,
                     tsList[0].sector, sctBuf);
         if (dierr != kDIErrNone) {
-            WMSG0("DOS SFI: unable to get first sector of file\n");
+            LOGI("DOS SFI: unable to get first sector of file");
             goto bail;
         }
 
         if (auxType == pFile->GetAuxType()) {
             newAuxType = GetShortLE(&sctBuf[0x00]);
-            WMSG1("  Aux type not changed, extracting from file (0x%04x)\n",
+            LOGI("  Aux type not changed, extracting from file (0x%04x)",
                 newAuxType);
         } else {
-            WMSG1("  Aux type changed (to 0x%04x), changing file\n",
+            LOGI("  Aux type changed (to 0x%04x), changing file",
                 newAuxType);
 
             PutShortLE(&sctBuf[0x00], newAuxType);
             dierr = fpImg->WriteTrackSector(tsList[0].track,
                         tsList[0].sector, sctBuf);
             if (dierr != kDIErrNone) {
-                WMSG0("DOS SFI: unable to write first sector of file\n");
+                LOGI("DOS SFI: unable to write first sector of file");
                 goto bail;
             }
         }
@@ -2514,7 +2514,7 @@ A2FileDOS::ConvertFileType(long prodosType, di_off_t fileLen)
         (newType == kTypeInteger || newType == kTypeApplesoft ||
         newType == kTypeBinary))
     {
-        WMSG0("  DOS setting type for large A/I/B file to S\n");
+        LOGI("  DOS setting type for large A/I/B file to S");
         newType = kTypeS;
     }
 
@@ -2636,7 +2636,7 @@ A2FileDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     dierr = LoadTSList(&pOpenFile->fTSList, &pOpenFile->fTSCount,
                 &pOpenFile->fIndexList, &pOpenFile->fIndexCount);
     if (dierr != kDIErrNone) {
-        WMSG1("DOS33 unable to load TS for '%s' open\n", GetPathName());
+        LOGI("DOS33 unable to load TS for '%s' open", GetPathName());
         goto bail;
     }
 
@@ -2659,11 +2659,11 @@ bail:
 void
 A2FileDOS::Dump(void) const
 {
-    WMSG1("A2FileDOS '%s'\n", fFileName);
-    WMSG2("  TS T=%-2d S=%-2d\n", fTSListTrack, fTSListSector);
-    WMSG2("  Cat T=%-2d S=%-2d\n", fCatTS.track, fCatTS.sector);
-    WMSG3("  type=%d lck=%d slen=%d\n", fFileType, fLocked, fLengthInSectors);
-    WMSG2("  auxtype=0x%04x length=%ld\n",
+    LOGI("A2FileDOS '%s'", fFileName);
+    LOGI("  TS T=%-2d S=%-2d", fTSListTrack, fTSListSector);
+    LOGI("  Cat T=%-2d S=%-2d", fCatTS.track, fCatTS.sector);
+    LOGI("  type=%d lck=%d slen=%d", fFileType, fLocked, fLengthInSectors);
+    LOGI("  auxtype=0x%04x length=%ld",
         fAuxType, (long) fLength);
 }
 
@@ -2705,7 +2705,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
     unsigned char sctBuf[kSctSize];
     int track, sector, iterations;
 
-    WMSG1("--- DOS loading T/S list for '%s'\n", GetPathName());
+    LOGI("--- DOS loading T/S list for '%s'", GetPathName());
 
     /* over-alloc for small files to reduce reallocs */
     tsAlloc = kMaxTSPairs * kDefaultTSAlloc;
@@ -2731,7 +2731,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
     if (track >= pDiskImg->GetNumTracks() ||
         sector >= pDiskImg->GetNumSectPerTrack())
     {
-        WMSG3(" DOS33 invalid initial T/S %d,%d in '%s'\n", track, sector,
+        LOGI(" DOS33 invalid initial T/S %d,%d in '%s'", track, sector,
             fFileName);
         dierr = kDIErrBadFile;
         goto bail;
@@ -2749,7 +2749,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
          * Add the current T/S sector to the index list.
          */
         if (indexCount == indexAlloc) {
-            WMSG0("+++ expanding index list\n");
+            LOGI("+++ expanding index list");
             TrackSector* newList;
             indexAlloc += kDefaultIndexAlloc;
             newList = new TrackSector[indexAlloc];
@@ -2766,7 +2766,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
         indexCount++;
 
 
-        //WMSG2("+++ scanning T/S at T=%d S=%d\n", track, sector);
+        //LOGI("+++ scanning T/S at T=%d S=%d", track, sector);
         dierr = pDiskImg->ReadTrackSector(track, sector, sctBuf);
         if (dierr != kDIErrNone)
             goto bail;
@@ -2781,13 +2781,13 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
             sector >= pDiskImg->GetNumSectPerTrack())
         {
             // bogus T/S, mark file as damaged and stop
-            WMSG3(" DOS33 invalid T/S link %d,%d in '%s'\n", track, sector,
+            LOGI(" DOS33 invalid T/S link %d,%d in '%s'", track, sector,
                 GetPathName());
             dierr = kDIErrBadFile;
             goto bail;
         }
         if ((sectorOffset % kMaxTSPairs) != 0) {
-            WMSG2(" DOS33 invalid T/S header sector offset %u in '%s'\n",
+            LOGI(" DOS33 invalid T/S header sector offset %u in '%s'",
                 sectorOffset, GetPathName());
             // not fatal, just weird
         }
@@ -2797,7 +2797,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
          * T/S pairs in the list.
          */
         if (tsCount + kMaxTSPairs > tsAlloc) {
-            WMSG0("+++ expanding ts list\n");
+            LOGI("+++ expanding ts list");
             TrackSector* newList;
             tsAlloc += kMaxTSPairs * kDefaultTSAlloc;
             newList = new TrackSector[tsAlloc];
@@ -2827,7 +2827,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
             /* this was the last one */
             if (lastNonZero == -1) {
                 /* this is ALWAYS the case for a newly-created file */
-                //WMSG1(" DOS33 odd -- last T/S sector of '%s' was empty\n",
+                //LOGI(" DOS33 odd -- last T/S sector of '%s' was empty",
                 //  GetPathName());
             }
             tsCount += lastNonZero +1;
@@ -2898,11 +2898,11 @@ A2FileDOS::ExtractTSPairs(const unsigned char* sctBuf, TrackSector* tsList,
              sector >= pDiskImg->GetNumSectPerTrack() ||
              (track == 0 && sector != 0)))
         {
-            WMSG3(" DOS33 invalid T/S %d,%d in '%s'\n", track, sector,
+            LOGI(" DOS33 invalid T/S %d,%d in '%s'", track, sector,
                 fFileName);
 
             if (i > 0 && tsList[i-1].track == 0 && tsList[i-1].sector == 0) {
-                WMSG0("  T/S list looks partially valid\n");
+                LOGI("  T/S list looks partially valid");
                 SetQuality(kQualitySuspicious);
                 goto bail;  // quit immediately
             } else {
@@ -2938,7 +2938,7 @@ bail:
 DIError
 A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
 {
-    WMSG3(" DOS reading %d bytes from '%s' (offset=%ld)\n",
+    LOGI(" DOS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileDOS* pFile = (A2FileDOS*) fpFile;
@@ -2975,12 +2975,12 @@ A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
         if (tsIndex >= fTSCount) {
             /* should've caught this earlier */
             assert(false);
-            WMSG1(" DOS ran off the end (fTSCount=%d)\n", fTSCount);
+            LOGI(" DOS ran off the end (fTSCount=%d)", fTSCount);
             return kDIErrDataUnderrun;
         }
 
         if (fTSList[tsIndex].track == 0 && fTSList[tsIndex].sector == 0) {
-            //WMSG2(" DOS sparse sector T=%d S=%d\n",
+            //LOGI(" DOS sparse sector T=%d S=%d",
             //  TSTrack(fTSList[tsIndex]), TSSector(fTSList[tsIndex]));
             memset(sctBuf, 0, sizeof(sctBuf));
         } else {
@@ -2989,7 +2989,7 @@ A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
                         fTSList[tsIndex].sector,
                         sctBuf);
             if (dierr != kDIErrNone) {
-                WMSG1(" DOS error reading file '%s'\n", pFile->GetPathName());
+                LOGI(" DOS error reading file '%s'", pFile->GetPathName());
                 return dierr;
             }
         }
@@ -3031,7 +3031,7 @@ A2FDDOS::Write(const void* buf, size_t len, size_t* pActual)
     DiskFSDOS33* pDiskFS = (DiskFSDOS33*) fpFile->GetDiskFS();
     unsigned char sctBuf[kSctSize];
 
-    WMSG2("   DOS Write len=%u %s\n", len, pFile->GetPathName());
+    LOGI("   DOS Write len=%u %s", len, pFile->GetPathName());
 
     if (len >= 0x01000000) {    // 16MB
         assert(false);
@@ -3307,14 +3307,14 @@ A2FDDOS::Close(void)
             assert(pFile->fDataOffset > 0);
             //assert(fOpenEOF < 65536);
             if (fOpenEOF > 65535) {
-                WMSG1("WARNING: DOS Close trimming A/I/B file from %ld to 65535\n",
+                LOGI("WARNING: DOS Close trimming A/I/B file from %ld to 65535",
                     (long) fOpenEOF);
                 fOpenEOF = 65535;
             }
             dierr = pDiskFS->GetDiskImg()->ReadTrackSector(fTSList[0].track,
                         fTSList[0].sector, sctBuf);
             if (dierr != kDIErrNone) {
-                WMSG0("DOS Close: unable to get first sector of file\n");
+                LOGI("DOS Close: unable to get first sector of file");
                 goto bail;
             }
 
@@ -3330,7 +3330,7 @@ A2FDDOS::Close(void)
             dierr = pDiskFS->GetDiskImg()->WriteTrackSector(fTSList[0].track,
                         fTSList[0].sector, sctBuf);
             if (dierr != kDIErrNone) {
-                WMSG0("DOS Close: unable to write first sector of file\n");
+                LOGI("DOS Close: unable to write first sector of file");
                 goto bail;
             }
         } else if (pFile->fFileType == A2FileDOS::kTypeText) {
@@ -3437,11 +3437,11 @@ void
 A2FDDOS::DumpTSList(void) const
 {
     //A2FileDOS* pFile = (A2FileDOS*) fpFile;
-    WMSG2(" DOS T/S list for '%s' (count=%d)\n",
+    LOGI(" DOS T/S list for '%s' (count=%d)",
         ((A2FileDOS*)fpFile)->fFileName, fTSCount);
 
     int i;
     for (i = 0; i <= fTSCount; i++) {
-        WMSG3(" %3d: T=%-2d S=%d\n", i, fTSList[i].track, fTSList[i].sector);
+        LOGI(" %3d: T=%-2d S=%d", i, fTSList[i].track, fTSList[i].sector);
     }
 }

@@ -31,7 +31,7 @@ GenericFD::CopyFile(GenericFD* pDst, GenericFD* pSrc, di_off_t length,
     unsigned char* copyBuf = NULL;
     int copySize;
 
-    WMSG1("+++ CopyFile: %ld bytes\n", (long) length);
+    LOGI("+++ CopyFile: %ld bytes", (long) length);
 
     if (pDst == NULL || pSrc == NULL || length < 0)
         return kDIErrInvalidArg;
@@ -111,7 +111,7 @@ GFDFile::Open(const char* filename, bool readOnly)
             dierr = kDIErrAccessDenied;
         else
             dierr = ErrnoOrGeneric();
-        WMSG3("  GDFile Open failed opening '%s', ro=%d (err=%d)\n",
+        LOGI("  GDFile Open failed opening '%s', ro=%d (err=%d)",
             filename, readOnly, dierr);
         return dierr;
     }
@@ -135,14 +135,14 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
             dierr = ErrnoOrGeneric();
             return dierr;
         }
-        WMSG0("MYSTERY FREAD RESULT\n");
+        LOGI("MYSTERY FREAD RESULT");
         return kDIErrInternal;
     }
 
     if (pActual == NULL) {
         if (actual != length) {
             dierr = ErrnoOrGeneric();
-            WMSG3("  GDFile Read failed on %d bytes (actual=%d, err=%d)\n",
+            LOGI("  GDFile Read failed on %d bytes (actual=%d, err=%d)",
                 length, actual, dierr);
             return dierr;
         }
@@ -164,7 +164,7 @@ GFDFile::Write(const void* buf, size_t length, size_t* pActual)
     assert(pActual == NULL);     // not handling this yet
     if (::fwrite(buf, length, 1, fFp) != 1) {
         dierr = ErrnoOrGeneric();
-        WMSG2("  GDFile Write failed on %d bytes (err=%d)\n", length, dierr);
+        LOGI("  GDFile Write failed on %d bytes (err=%d)", length, dierr);
         return dierr;
     }
     return dierr;
@@ -183,7 +183,7 @@ GFDFile::Seek(di_off_t offset, DIWhence whence)
     //if (::fseek(fFp, (long) offset, whence) != 0) {
     if (::fseeko(fFp, offset, whence) != 0) {
         dierr = ErrnoOrGeneric();
-        WMSG1("  GDFile Seek failed (err=%d)\n", dierr);
+        LOGI("  GDFile Seek failed (err=%d)", dierr);
         return dierr;
     }
     return dierr;
@@ -201,7 +201,7 @@ GFDFile::Tell(void)
     result = ::ftello(fFp);
     if (result == -1) {
         dierr = ErrnoOrGeneric();
-        WMSG1("  GDFile Tell failed (err=%d)\n", dierr);
+        LOGI("  GDFile Tell failed (err=%d)", dierr);
         return result;
     }
     return result;
@@ -233,7 +233,7 @@ GFDFile::Close(void)
     if (fFp == NULL)
         return kDIErrNotReady;
 
-    WMSG1("  GFDFile closing '%s'\n", fPathName);
+    LOGI("  GFDFile closing '%s'", fPathName);
     fclose(fFp);
     fFp = NULL;
     return kDIErrNone;
@@ -263,7 +263,7 @@ GFDFile::Open(const char* filename, bool readOnly)
             dierr = kDIErrAccessDenied;
         else
             dierr = ErrnoOrGeneric();
-        WMSG3("  GDFile Open failed opening '%s', ro=%d (err=%d)\n",
+        LOGI("  GDFile Open failed opening '%s', ro=%d (err=%d)",
             filename, readOnly, dierr);
         return dierr;
     }
@@ -284,14 +284,14 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
         return kDIErrEOF;
     if (actual < 0) {
         dierr = ErrnoOrGeneric();
-        WMSG3("  GDFile Read failed on %d bytes (actual=%d, err=%d)\n",
+        LOGI("  GDFile Read failed on %d bytes (actual=%d, err=%d)",
             length, actual, dierr);
         return dierr;
     }
 
     if (pActual == NULL) {
         if (actual != (ssize_t) length) {
-            WMSG2("  GDFile Read partial (wanted=%d actual=%d)\n",
+            LOGI("  GDFile Read partial (wanted=%d actual=%d)",
                 length, actual);
             return kDIErrReadFailed;
         }
@@ -315,7 +315,7 @@ GFDFile::Write(const void* buf, size_t length, size_t* pActual)
     actual = ::write(fFd, buf, length);
     if (actual != (ssize_t) length) {
         dierr = ErrnoOrGeneric();
-        WMSG3("  GDFile Write failed on %d bytes (actual=%d err=%d)\n",
+        LOGI("  GDFile Write failed on %d bytes (actual=%d err=%d)",
             length, actual, dierr);
         return dierr;
     }
@@ -342,7 +342,7 @@ GFDFile::Seek(di_off_t offset, DIWhence whence)
     if (newPosn == kFailure) {
         assert((unsigned long) offset != 0xccccccccUL); // uninitialized data!
         dierr = ErrnoOrGeneric();
-        WMSG3("  GDFile Seek %ld-%lu failed (err=%d)\n",
+        LOGI("  GDFile Seek %ld-%lu failed (err=%d)",
             (long) (offset >> 32), (unsigned long) offset, dierr);
     }
     return dierr;
@@ -365,7 +365,7 @@ GFDFile::Tell(void)
 
     if (result == -1) {
         dierr = ErrnoOrGeneric();
-        WMSG1("  GDFile Tell failed (err=%d)\n", dierr);
+        LOGI("  GDFile Tell failed (err=%d)", dierr);
         return result;
     }
     return result;
@@ -396,7 +396,7 @@ GFDFile::Close(void)
     if (fFd < 0)
         return kDIErrNotReady;
 
-    WMSG1("  GFDFile closing '%s'\n", fPathName);
+    LOGI("  GFDFile closing '%s'", fPathName);
     ::close(fFd);
     fFd = -1;
     return kDIErrNone;
@@ -420,7 +420,7 @@ GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
         return kDIErrInvalidArg;
     if (length > kMaxReasonableSize) {
         // be reasonable
-        WMSG1(" GFDBuffer refusing to allocate buffer size(long)=%ld bytes\n",
+        LOGI(" GFDBuffer refusing to allocate buffer size(long)=%ld bytes",
             (long) length);
         return kDIErrInvalidArg;
     }
@@ -454,7 +454,7 @@ GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
 
     if (fCurrentOffset + (long)length > fLength) {
         if (pActual == NULL) {
-            WMSG3("  GFDBuffer underrrun off=%ld len=%d flen=%ld\n",
+            LOGI("  GFDBuffer underrrun off=%ld len=%d flen=%ld",
                 (long) fCurrentOffset, length, (long) fLength);
             return kDIErrDataUnderrun;
         } else {
@@ -484,7 +484,7 @@ GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
     assert(pActual == NULL);     // not handling this yet
     if (fCurrentOffset + (long)length > fLength) {
         if (!fDoExpand) {
-            WMSG3("  GFDBuffer overrun off=%ld len=%d flen=%ld\n",
+            LOGI("  GFDBuffer overrun off=%ld len=%d flen=%ld",
                 (long) fCurrentOffset, length, (long) fLength);
             return kDIErrDataOverrun;
         }
@@ -503,7 +503,7 @@ GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
         } else {
             /* does not fit, realloc buffer */
             fAllocLength = (long) fCurrentOffset + (long)length + 8*1024;
-            WMSG1("Reallocating buffer (new size = %ld)\n", fAllocLength);
+            LOGI("Reallocating buffer (new size = %ld)", fAllocLength);
             assert(fAllocLength < kMaxReasonableSize);
             char* newBuf = new char[(int) fAllocLength];
             if (newBuf == NULL)
@@ -576,10 +576,10 @@ GFDBuffer::Close(void)
         return kDIErrNone;
 
     if (fDoDelete) {
-        WMSG0("  GFDBuffer closing and deleting\n");
+        LOGI("  GFDBuffer closing and deleting");
         delete[] (char*) fBuffer;
     } else {
-        WMSG0("  GFDBuffer closing\n");
+        LOGI("  GFDBuffer closing");
     }
     fBuffer = NULL;
 
@@ -661,7 +661,7 @@ GFDWinVolume::Read(void* buf, size_t length, size_t* pActual)
     DIError dierr = kDIErrNone;
     unsigned char* blkBuf = NULL;
 
-    //WMSG2(" GFDWinVolume: reading %ld bytes from offset %ld\n", length,
+    //LOGI(" GFDWinVolume: reading %ld bytes from offset %ld", length,
     //  fCurrentOffset);
 
     if (!fVolAccess.Ready())
@@ -705,7 +705,7 @@ GFDWinVolume::Read(void* buf, size_t length, size_t* pActual)
             if (thisCount > length)
                 thisCount = length;
 
-            //WMSG2("    Copying %d bytes from block %d\n",
+            //LOGI("    Copying %d bytes from block %d",
             //  thisCount, blockIndex);
 
             memcpy(buf, blkBuf + bufOffset, thisCount);
@@ -745,7 +745,7 @@ GFDWinVolume::Write(const void* buf, size_t length, size_t* pActual)
     DIError dierr = kDIErrNone;
     unsigned char* blkBuf = NULL;
 
-    //WMSG2(" GFDWinVolume: writing %ld bytes at offset %ld\n", length,
+    //LOGI(" GFDWinVolume: writing %ld bytes at offset %ld", length,
     //  fCurrentOffset);
 
     if (!fVolAccess.Ready())
@@ -791,7 +791,7 @@ GFDWinVolume::Write(const void* buf, size_t length, size_t* pActual)
             if (thisCount > length)
                 thisCount = length;
 
-            //WMSG3("    Copying %d bytes into block %d (off=%d)\n",
+            //LOGI("    Copying %d bytes into block %d (off=%d)",
             //  thisCount, blockIndex, bufOffset);
 
             memcpy(blkBuf + bufOffset, buf, thisCount);
@@ -877,7 +877,7 @@ GFDWinVolume::Close(void)
     if (!fVolAccess.Ready())
         return kDIErrNotReady;
 
-    WMSG0("  GFDWinVolume closing\n");
+    LOGI("  GFDWinVolume closing");
     fVolAccess.Close();
     return kDIErrNone;
 }

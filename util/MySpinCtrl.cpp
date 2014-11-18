@@ -110,7 +110,7 @@ MySpinCtrl::SetPos(int nPos)
     CString buddyStr;
 
     if (nPos < fLow || nPos > fHigh) {
-        //WMSG0(" MSP setpos out of range\n");
+        //LOGI(" MSP setpos out of range");
         return -1;
     }
 
@@ -173,7 +173,7 @@ MySpinCtrl::GetRange32(int& lower, int& upper) const
 {
     lower = fLow;
     upper = fHigh;
-    //WMSG2(" MSP getting lower=%d upper=%d\n", lower, upper);
+    //LOGI(" MSP getting lower=%d upper=%d", lower, upper);
 }
 
 /*
@@ -187,5 +187,5 @@ MySpinCtrl::SetRange32(int nLo, int nHi)
 
     fLow = nLo;
     fHigh = nHi;
-    //WMSG2(" MSP setting lower=%d upper=%d\n", fLow, fHigh);
+    //LOGI(" MSP setting lower=%d upper=%d", fLow, fHigh);
 }
