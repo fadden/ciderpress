@@ -21,9 +21,6 @@
 
 #include "../app/targetver.h"
 
-// TODO: use the "secure" versions?
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <stdio.h>
 #include <assert.h>
 #include <afxwin.h>
