@@ -475,7 +475,7 @@ ContentList::MakeAuxTypeDisplayString(const GenericEntry* pEntry, WCHAR* buf)
         MakeMacTypeString(pEntry->GetAuxType(), buf);
     } else {
         if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDisk)
-            wsprintf(buf, L"%dk", pEntry->GetUncompressedLen() / 1024);
+            wsprintf(buf, L"%I64dk", pEntry->GetUncompressedLen() / 1024);
         else
             wsprintf(buf, L"$%04lX", pEntry->GetAuxType());
     }
@@ -578,14 +578,14 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
             wcscpy(plvdi->item.pszText, pEntry->GetFormatStr());
             break;
         case 5:     // size
-            wsprintf(plvdi->item.pszText, L"%ld", pEntry->GetUncompressedLen());
+            wsprintf(plvdi->item.pszText, L"%I64d", pEntry->GetUncompressedLen());
             break;
         case 6:     // ratio
             int crud;
             MakeRatioDisplayString(pEntry, plvdi->item.pszText, &crud);
             break;
         case 7:     // packed
-            wsprintf(plvdi->item.pszText, L"%ld", pEntry->GetCompressedLen());
+            wsprintf(plvdi->item.pszText, L"%I64d", pEntry->GetCompressedLen());
             break;
         case 8:     // access
             WCHAR bitLabels[sizeof(kAccessBits)];

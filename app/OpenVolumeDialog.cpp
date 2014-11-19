@@ -553,7 +553,7 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
 
         if (result) {
             LOGI(" Results for device %02xh", unit);
-            LOGI("  Cylinders = %I64d", dg.Cylinders);
+            LOGI("  Cylinders = %I64d", dg.Cylinders.QuadPart);
             LOGI("  Tracks per cylinder = %ld", (ULONG) dg.TracksPerCylinder);
             LOGI("  Sectors per track = %ld", (ULONG) dg.SectorsPerTrack);
             LOGI("  Bytes per sector = %ld", (ULONG) dg.BytesPerSector);

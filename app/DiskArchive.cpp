@@ -106,7 +106,7 @@ DiskEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
     if (needAlloc) {
         dataBuf = new char[(int) len];
         if (dataBuf == NULL) {
-            pErrMsg->Format(L"ERROR: allocation of %ld bytes failed", len);
+            pErrMsg->Format(L"ERROR: allocation of %I64d bytes failed", len);
             goto bail;
         }
     } else {
@@ -922,7 +922,7 @@ DiskArchive::Close(void)
         msg.Format(L"Failed while closing disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
         failed.LoadString(IDS_FAILED);
-        LOGI("During close: %ls", msg);
+        LOGE("During close: %ls", (LPCWSTR) msg);
 
         pMainWin->MessageBox(msg, failed, MB_OK);
     }
@@ -2214,9 +2214,9 @@ DiskArchive::AddToAddDataList(FileAddData* pData)
                 (listKind == FileDetails::kFileKindDataFork || listKind == FileDetails::kFileKindRsrcFork))
             {
                 /* looks good, hook it in here instead of the list */
-                LOGI("--- connecting forks of '%ls' and '%ls'",
-                    pData->GetDetails()->origName,
-                    pSearch->GetDetails()->origName);
+                LOGD("--- connecting forks of '%ls' and '%ls'",
+                    (LPCWSTR) pData->GetDetails()->origName,
+                    (LPCWSTR) pSearch->GetDetails()->origName);
                 pSearch->SetOtherFork(pData);
                 return;
             }
@@ -2520,13 +2520,13 @@ DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
             dierr = pDiskFS->RenameFile(pFile, newNameA);
             if (dierr != kDIErrNone) {
                 errMsg.Format(L"Unable to rename '%ls' to '%ls': %hs.",
-                    pEntry->GetPathName(), renameDlg.fNewName,
+                    pEntry->GetPathName(), (LPCWSTR) renameDlg.fNewName,
                     DiskImgLib::DIStrError(dierr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 goto bail;
             }
             LOGI("Rename of '%ls' to '%ls' succeeded",
-                pEntry->GetDisplayName(), renameDlg.fNewName);
+                pEntry->GetDisplayName(), (LPCWSTR) renameDlg.fNewName);
         } else if (result == IDCANCEL) {
             LOGI("Canceling out of remaining renames");
             break;
@@ -2904,7 +2904,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
             goto bail;  /* abort anything that was pending */
         } else if (result != IDOK) {
             errMsg.Format(L"Failed while extracting '%ls': %ls.",
-                fixedPathName, extractErrMsg);
+                (LPCWSTR) fixedPathName, (LPCWSTR) extractErrMsg);
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }
@@ -2945,7 +2945,7 @@ DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
                 errMsg.Format(L"Failed while extracting '%ls': %ls.",
-                    fixedPathName, extractErrMsg);
+                    (LPCWSTR) fixedPathName, (LPCWSTR) extractErrMsg);
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 goto bail;
             }
@@ -3066,7 +3066,7 @@ DiskArchive::XferFile(FileDetails* pDetails, BYTE** pDataBuf,
     DIError dierr = kDIErrNone;
 
     LOGI(" XFER: transfer '%ls' (dataLen=%ld rsrcLen=%ld)",
-        pDetails->storageName, dataLen, rsrcLen);
+        (LPCWSTR) pDetails->storageName, dataLen, rsrcLen);
 
     ASSERT(pDataBuf != NULL);
     ASSERT(pRsrcBuf != NULL);
@@ -3098,12 +3098,13 @@ DiskArchive::XferFile(FileDetails* pDetails, BYTE** pDataBuf,
         long len = dataLen;
 
         if (srcIsDOS && !dstIsDOS) {
-            LOGI(" Stripping high ASCII from '%ls'", pDetails->storageName);
+            LOGD(" Stripping high ASCII from '%ls'",
+                (LPCWSTR) pDetails->storageName);
 
             while (len--)
                 *ucp++ &= 0x7f;
         } else if (!srcIsDOS && dstIsDOS) {
-            LOGI(" Adding high ASCII to '%ls'", pDetails->storageName);
+            LOGD(" Adding high ASCII to '%ls'", (LPCWSTR) pDetails->storageName);
 
             while (len--) {
                 if (*ucp != '\0')
@@ -3111,10 +3112,10 @@ DiskArchive::XferFile(FileDetails* pDetails, BYTE** pDataBuf,
                 ucp++;
             }
         } else if (srcIsDOS && dstIsDOS) {
-            LOGI(" --- not altering DOS-to-DOS text '%ls'",
-                pDetails->storageName);
+            LOGD(" --- not altering DOS-to-DOS text '%ls'",
+                (LPCWSTR) pDetails->storageName);
         } else {
-            LOGI(" --- non-DOS transfer '%ls'", pDetails->storageName);
+            LOGD(" --- non-DOS transfer '%ls'", (LPCWSTR) pDetails->storageName);
         }
     }
 

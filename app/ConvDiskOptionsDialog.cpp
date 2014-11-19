@@ -254,7 +254,7 @@ ConvDiskOptionsDialog::OnCompute(void)
     //xferOpts.fUseSparseBlocks =
     //  pPreferences->GetPrefBool(kPrProDOSUseSparse) != 0;
 
-    LOGI("New volume name will be '%ls'", fVolName);
+    LOGI("New volume name will be '%ls'", (LPCWSTR) fVolName);
 
     /*
      * Create a new disk image file.

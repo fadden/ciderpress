@@ -277,7 +277,7 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
             pWnd = GetDlgItem(IDC_AIDISK_CAPACITY);
             GetReducedSize(totalUnits, unitSize, &reducedSize);
             tmpStr.Format(L"%ld blocks (%ls)",
-                totalUnits, reducedSize);
+                totalUnits, (LPCWSTR) reducedSize);
             if (totalUnits != pDiskImg->GetNumBlocks()) {
                 CString tmpStr2;
                 tmpStr2.Format(L", image has room for %ld blocks",
@@ -289,7 +289,7 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
             pWnd = GetDlgItem(IDC_AIDISK_FREESPACE);
             GetReducedSize(freeUnits, unitSize, &reducedSize);
             tmpStr.Format(L"%ld blocks (%ls)",
-                freeUnits, reducedSize);
+                freeUnits, (LPCWSTR) reducedSize);
             pWnd->SetWindowText(tmpStr);
         } else {
             ASSERT(unitSize == DiskImgLib::kSectorSize);
@@ -297,13 +297,13 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
             pWnd = GetDlgItem(IDC_AIDISK_CAPACITY);
             GetReducedSize(totalUnits, unitSize, &reducedSize);
             tmpStr.Format(L"%ld sectors (%ls)",
-                totalUnits, reducedSize);
+                totalUnits, (LPCWSTR) reducedSize);
             pWnd->SetWindowText(tmpStr);
 
             pWnd = GetDlgItem(IDC_AIDISK_FREESPACE);
             GetReducedSize(freeUnits, unitSize, &reducedSize);
             tmpStr.Format(L"%ld sectors (%ls)",
-                freeUnits, reducedSize);
+                freeUnits, (LPCWSTR) reducedSize);
             pWnd->SetWindowText(tmpStr);
         }
     } else {
@@ -313,7 +313,7 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
             totalUnits = pDiskImg->GetNumBlocks();
             GetReducedSize(totalUnits, DiskImgLib::kBlockSize, &reducedSize);
             tmpStr.Format(L"%ld blocks (%ls)",
-                totalUnits, reducedSize);
+                totalUnits, (LPCWSTR) reducedSize);
         } else if (pDiskImg->GetHasSectors()) {
             tmpStr.Format(L"%ld tracks, %d sectors per track",
                 pDiskImg->GetNumTracks(), pDiskImg->GetNumSectPerTrack());

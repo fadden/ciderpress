@@ -187,7 +187,7 @@ MainWindow::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
 {
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
-    LOG_BASE(pErrorMessage->isDebug ? DebugLog::LOG_DEBUG : DebugLog::LOG_WARNING,
+    LOG_BASE(pErrorMessage->isDebug ? DebugLog::LOG_DEBUG : DebugLog::LOG_WARN,
         pErrorMessage->file, pErrorMessage->line, "<nufxlib> %hs",
         pErrorMessage->message);
 
@@ -317,7 +317,7 @@ MainWindow::ScanFiles(void)
     }
     end = time(NULL);
     fprintf(scanOpts.outfp, "\nScan completed in %ld seconds.\n",
-        end - start);
+        (long) (end - start));
 
     {
         SetWindowText(L"MDC Done!");
@@ -818,7 +818,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
 
         if (recordKind == kRecordKindVolumeDir) {
             /* this is a volume directory */
-            LOGI("Not displaying volume dir '%ls'", pFile->GetPathName());
+            LOGI("Not displaying volume dir '%hs'", pFile->GetPathName());
             continue;
         }
 
@@ -869,7 +869,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
                 pFile->GetAuxType());
             break;
         case kRecordKindDisk:
-            sprintf(tmpbuf, "%ldk", totalLen / 1024);
+            sprintf(tmpbuf, "%I64dk", totalLen / 1024);
             fprintf(pScanOpts->outfp, "Disk %-6hs ", tmpbuf);
             break;
         case kRecordKindFile:
@@ -940,7 +940,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
             FormatDate(kDateNone, &date);
         else
             FormatDate(pFile->GetModWhen(), &date);
-        fprintf(pScanOpts->outfp, "%-15s  ", (LPCTSTR) date);
+        fprintf(pScanOpts->outfp, "%-15ls  ", (LPCWSTR) date);
 
         const char* fmtStr;
         switch (pFile->GetFSFormat()) {
@@ -997,7 +997,7 @@ MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         if (!totalLen && totalCompLen)
             fprintf(pScanOpts->outfp, "   ????");      /* weird */
         else
-            fprintf(pScanOpts->outfp, "%8ld", totalLen);
+            fprintf(pScanOpts->outfp, "%8I64d", totalLen);
 
         fprintf(pScanOpts->outfp, "\n");
     }

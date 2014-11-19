@@ -165,6 +165,7 @@ MainWindow::OnToolsDiskEdit(void)
         readOnly = (dlg.fReadOnly != 0);
     } else if (diskEditOpen.fOpenWhat == DiskEditOpenDialog::kOpenCurrent) {
         // get values from currently open archive
+        assert(fpOpenArchive != NULL);
         loadName = fpOpenArchive->GetPathName();
         readOnly = fpOpenArchive->IsReadOnly();
     } else {

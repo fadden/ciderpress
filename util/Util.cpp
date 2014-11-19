@@ -546,16 +546,16 @@ LogHexDump(const void* vbuf, long len)
     const unsigned char* buf = (const unsigned char*) vbuf;
     char outBuf[10 + 16*3 +1 +8];   // addr: 00 11 22 ... + 8 bytes slop
     bool skipFirst;
-    long addr;
+    uintptr_t addr;
     char* cp = NULL;
     int i;
 
-    LOGI(" Memory at 0x%08lx %ld bytes:", buf, len);
+    LOGI(" Memory at 0x%p %ld bytes:", buf, len);
     if (len <= 0)
         return;
 
-    addr = (int)buf & ~0x0f;
-    if (addr != (int) buf) {
+    addr = (uintptr_t)buf & ~0x0f;
+    if (addr != (uintptr_t) buf) {
         sprintf(outBuf, "%08lx: ", addr);
         for (i = addr; i < (int) buf; i++)
             strcat(outBuf, "   ");
@@ -566,7 +566,7 @@ LogHexDump(const void* vbuf, long len)
     }
 
     while (len--) {
-        if (((int) buf & 0x0f) == 0) {
+        if (((uintptr_t) buf & 0x0f) == 0) {
             /* output the old, start a new line */
             if (skipFirst) {
                 skipFirst = false;
@@ -731,7 +731,7 @@ VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc)
     }
 
     if (inQuote) {
-        LOGI("WARNING: ended in quote");
+        LOGW("WARNING: ended in quote");
     }
 
     *pArgc = idx;
@@ -760,12 +760,12 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     int i;
 
     token = pStr->Mid(startPos, endPos - startPos);
-    //LOGI("  TOKEN: '%ls'", (LPCWSTR) token);
+    LOGV("  TOKEN: '%ls'", (LPCWSTR) token);
 
     /* these words are left alone */
     for (i = 0; i < NELEM(leaveAlone); i++) {
         if (token.CompareNoCase(leaveAlone[i]) == 0) {
-            //LOGI("    Leaving alone '%ls'", (LPCWSTR) token);
+            LOGV("    Leaving alone '%ls'", (LPCWSTR) token);
             return;
         }
     }
@@ -773,7 +773,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     /* words with specific capitalization */
     for (i = 0; i < NELEM(justLikeThis); i++) {
         if (token.CompareNoCase(justLikeThis[i]) == 0) {
-            LOGI("    Setting '%ls' to '%ls'", token, justLikeThis[i]);
+            LOGI("    Setting '%ls' to '%ls'", (LPCWSTR) token, justLikeThis[i]);
             for (int j = startPos; j < endPos; j++)
                 pStr->SetAt(j, justLikeThis[i][j - startPos]);
             return;
@@ -784,7 +784,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     if (prevWasSpace) {
         for (i = 0; i < NELEM(shortWords); i++) {
             if (token.CompareNoCase(shortWords[i]) == 0) {
-                //LOGI("    No leading cap for '%ls'", token);
+                LOGV("    No leading cap for '%ls'", token);
                 firstCap = false;
                 break;
             }
@@ -794,7 +794,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     /* check for roman numerals; we leave those capitalized */
     CString romanTest = token.SpanIncluding(L"IVX");
     if (romanTest.GetLength() == token.GetLength()) {
-        //LOGI("    Looks like roman numerals '%ls'", token);
+        LOGV("    Looks like roman numerals '%ls'", token);
         return;
     }
 

@@ -385,22 +385,22 @@ private:
     public:
         DeleteList(void) { fHead = NULL; }
         ~DeleteList(void) {
-            LOGI("Processing DeleteList (head=0x%08lx)", fHead);
+            LOGD("Processing DeleteList (head=0x%p)", fHead);
             DeleteListNode* pNode = fHead;
             DeleteListNode* pNext;
 
             while (pNode != NULL) {
                 pNext = pNode->fNext;
                 if (_wunlink(pNode->fName) != 0) {
-                    LOGI(" WARNING: delete of '%ls' failed, err=%d",
-                        pNode->fName, errno);
+                    LOGW(" WARNING: delete of '%ls' failed, err=%d",
+                        (LPCWSTR) pNode->fName, errno);
                 } else {
-                    LOGI(" Deleted '%ls'", pNode->fName);
+                    LOGI(" Deleted '%ls'", (LPCWSTR) pNode->fName);
                 }
                 delete pNode;
                 pNode = pNext;
             }
-            LOGI("Processing DeleteList completed");
+            LOGD("Processing DeleteList completed");
         }
 
         void Add(const CString& name) {

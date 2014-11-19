@@ -1043,7 +1043,7 @@ PathProposal::LocalToArchive(const AddFilesDialog* pAddOpts)
     WCHAR slashDotDotSlash[5] = L"_.._";
 
     fStoredPathName = fLocalPathName;
-    WCHAR* livePathStr = fStoredPathName.GetBuffer(0);
+    WCHAR* livePathStr = fStoredPathName.GetBuffer(1);
 
     fStoredFssep = kDefaultStoredFssep;
 

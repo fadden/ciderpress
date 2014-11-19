@@ -422,7 +422,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
     int i, result;
 
     if (pHolder->GetSourceLen(part) < kMinSize) {
-        LOGI(" SHR file too short!", pHolder->GetSourceLen(part));
+        LOGW(" SHR file too short (%ld)", pHolder->GetSourceLen(part));
         goto bail;
     }
 
@@ -526,7 +526,7 @@ ReformatPackedSHR::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (pHolder->GetSourceLen(part) < 4) {
-        LOGI(" SHR file too short!", pHolder->GetSourceLen(part));
+        LOGW(" SHR file too short (%ld)", pHolder->GetSourceLen(part));
         goto bail;
     }
 
@@ -536,7 +536,7 @@ ReformatPackedSHR::Process(const ReformatHolder* pHolder,
         pHolder->GetSourceBuf(part), kTotalSize,
         pHolder->GetSourceLen(part)) != 0)
     {
-        LOGI(" SHR UnpackBytes failed");
+        LOGW(" SHR UnpackBytes failed");
         goto bail;
     }
 
@@ -606,7 +606,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
     int retval = -1;
 
     if (srcLen < 4) {
-        LOGI(" SHR file too short!", srcLen);
+        LOGW(" SHR file too short (%ld)", srcLen);
         goto bail;
     }
 
@@ -639,7 +639,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
 
         dataLen = blockLen - (nameLen+1 + 4);
 
-        LOGI(" APFSHR block='%ls' blockLen=%ld (dataLen=%ld) start=0x%08lx",
+        LOGI(" APFSHR block='%ls' blockLen=%ld (dataLen=%ld) start=0x%p",
             (LPCWSTR) blockName, blockLen, dataLen, srcPtr);
 
         if (blockName == "MAIN") {
@@ -837,7 +837,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
         if (packedDataLen[i] > fPixelsPerScanLine) {
             /* each pixel is 2 or 4 bits, so this is a 2-4x expansion */
             LOGI(" APFSHR got funky packed len %d for line %d",
-                packedDataLen, i);
+                packedDataLen[i], i);
             goto bail;
         }
 

@@ -951,7 +951,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
         codePtr += lineLen-1;
     }
 
-    LOGI("codePtr=%p endPtr=%p numLines=%d", codePtr, endPtr, lineNum-1);
+    LOGI("codePtr=0x%p endPtr=%p numLines=%d", codePtr, endPtr, lineNum-1);
     LOGI("extra = %d", endPtr - codePtr);
 
     SetResultBuffer(pOutput);
@@ -1631,7 +1631,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
         goto bail;
     }
 
-    LOGI("  LISA4 symPtr=%p endPtr=%p symIdx=%d", symPtr, endPtr, symIdx);
+    LOGI("  LISA4 symPtr=0x%p endPtr=0x%p symIdx=%d", symPtr, endPtr, symIdx);
 
     /*
      * Process source lines.
@@ -1718,7 +1718,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
         codePtr += lineLen-1;
     }
 
-    LOGI("  LISA4 codePtr=%p endPtr=%p numLines=%d",
+    LOGI("  LISA4 codePtr=0x%p endPtr=0x%p numLines=%d",
         codePtr, endPtr, lineNum-1);
     LOGI("  LISA4 extra = %d", endPtr - codePtr);
 

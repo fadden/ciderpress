@@ -569,7 +569,7 @@ DiskImg::CloseImage(void)
 {
     DIError dierr;
 
-    LOGI("CloseImage %p", this);
+    LOGI("CloseImage 0x%p", this);
 
     /* check for DiskFS objects that still point to us */
     if (fDiskFSRefCnt != 0) {

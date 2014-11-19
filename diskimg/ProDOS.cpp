@@ -4431,7 +4431,7 @@ A2FileProDOS::LoadDirectoryBlockList(unsigned short keyBlock,
 
 bail:
     if (dierr != kDIErrNone)
-        delete list;
+        delete[] list;
     return dierr;
 }
 

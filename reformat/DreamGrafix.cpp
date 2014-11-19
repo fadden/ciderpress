@@ -196,7 +196,7 @@ DreamGrafix::UnpackDG(const unsigned char* srcBuf, long srcLen,
     actual = UnpackLZW(srcBuf, srcLen, tmpBuf, expectedLen);
     if (actual != expectedLen && actual != (expectedLen-512)) {
         LOGI("UnpackLZW expected %d, got %d", expectedLen, actual);
-        free(tmpBuf);
+        delete[] tmpBuf;
         return false;
     }
 
@@ -221,7 +221,7 @@ DreamGrafix::UnpackDG(const unsigned char* srcBuf, long srcLen,
         }
     }
 
-    free(tmpBuf);
+    delete[] tmpBuf;
     return true;
 }
 

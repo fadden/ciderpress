@@ -577,7 +577,7 @@ VolumeCopyDialog::OnCopyToFile(void)
     else
         elapsed = (float) (endWhen - startWhen);
     msg.Format(L"Copied %ld blocks in %ld seconds (%.2fKB/sec)",
-        pSrcImg->GetNumBlocks(), endWhen - startWhen,
+        pSrcImg->GetNumBlocks(), (long) (endWhen - startWhen),
         (pSrcImg->GetNumBlocks() / 2.0) / elapsed);
     LOGI("%ls", (LPCWSTR) msg);
 #ifdef _DEBUG
@@ -832,7 +832,7 @@ VolumeCopyDialog::OnCopyFromFile(void)
     else
         elapsed = (float) (endWhen - startWhen);
     errMsg.Format(L"Copied %ld blocks in %ld seconds (%.2fKB/sec)",
-        srcImg.GetNumBlocks(), endWhen - startWhen,
+        srcImg.GetNumBlocks(), (long) (endWhen - startWhen),
         (srcImg.GetNumBlocks() / 2.0) / elapsed);
     LOGI("%ls", (LPCWSTR) errMsg);
 #ifdef _DEBUG

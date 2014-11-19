@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -16,13 +16,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -31,14 +29,14 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_MDC                 ICON    DISCARDABLE     "mdc.ICO"
+IDI_MDC                 ICON                    "mdc.ICO"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDC_MDC MENU DISCARDABLE 
+IDC_MDC MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -58,7 +56,7 @@ END
 // Accelerator
 //
 
-IDC_MDC ACCELERATORS MOVEABLE PURE 
+IDC_MDC ACCELERATORS
 BEGIN
     "?",            IDM_ABOUT,              ASCII,  ALT
     "/",            IDM_ABOUT,              ASCII,  ALT
@@ -70,35 +68,31 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  22, 17, 156, 111
-STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 22, 17, 156, 111
+STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 10, "MS Sans Serif"
 BEGIN
     ICON            IDI_MDC,IDC_MYICON,7,7,20,20
-    LTEXT           "MDC version %d.%d.%d",IDC_ABOUT_VERS,33,7,116,8,
-                    SS_NOPREFIX
-    LTEXT           "Copyright © 2009 by CiderPress project authors.\rAll Rights Reserved.",
-                    IDC_STATIC,7,31,142,19
+    LTEXT           "MDC version %d.%d.%d",IDC_ABOUT_VERS,33,7,116,8,SS_NOPREFIX
+    LTEXT           "Copyright © 2009 by CiderPress project authors.\rAll Rights Reserved.",IDC_STATIC,7,31,142,19
     DEFPUSHBUTTON   "OK",IDOK,53,90,50,14
-    LTEXT           "This utility scans Apple II disk images and creates formatted listings of the files in them.",
-                    IDC_STATIC,7,58,142,26
+    LTEXT           "This utility scans Apple II disk images and creates formatted listings of the files in them.",IDC_STATIC,7,58,142,26
     LTEXT           "Multi-Disk Catalog",IDC_STATIC,33,15,55,8
 END
 
 IDD_CHOOSE_FILES DIALOGEX 0, 0, 272, 131
-STYLE DS_3DLOOK | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
+STYLE DS_SETFONT | DS_3DLOOK | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     LTEXT           "",1119,0,0,272,87,NOT WS_GROUP,WS_EX_STATICEDGE
     PUSHBUTTON      "&Accept",IDC_SELECT_ACCEPT,220,88,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,220,107,50,14
-    LTEXT           "Select the disk images to scan.  If you select a folder, all files in that folder will be processed.",
-                    IDC_CHOOSEFILES_STATIC1,7,104,199,17
+    LTEXT           "Select the disk images to scan.  If you select a folder, all files in that folder will be processed.",IDC_CHOOSEFILES_STATIC1,7,104,199,17
 END
 
-IDD_PROGRESS DIALOG DISCARDABLE  0, 0, 250, 66
-STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION
+IDD_PROGRESS DIALOG 0, 0, 250, 66
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION
 CAPTION "Progress..."
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -114,7 +108,7 @@ END
 // TEXTINCLUDE
 //
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
     "#include ""afxres.h""\r\n"
@@ -123,13 +117,13 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
 END
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
@@ -143,7 +137,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -176,7 +170,7 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "MDC"
     IDC_MDC                 "MDC"
@@ -184,13 +178,13 @@ BEGIN
     IDS_FAILED              "Failed"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDM_FILE_SCAN           "Select disk images to scan"
     IDM_HELP_WEBSITE        "Visit the CiderPress web site\nGo to web site"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

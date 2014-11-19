@@ -52,7 +52,7 @@ DebugLog::~DebugLog() {
 }
 
 void DebugLog::Log(LogSeverity severity, const char* file, int line,
-    const char* format, ...)
+    _Printf_format_string_ const char* format, ...)
 {
 #ifndef _DEBUG
     if (fLogFp == NULL) {

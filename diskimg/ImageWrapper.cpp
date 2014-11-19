@@ -399,7 +399,7 @@ bail:
     NuFreeDataSink(pDataSink);
     if (err != kNuErrNone) {
         LOGI(" NuFX GetNuFXDiskImage returning after nuerr=%d", err);
-        delete buf;
+        delete[] buf;
     }
     if (err == kNuErrNone)
         return kDIErrNone;

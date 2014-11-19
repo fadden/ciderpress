@@ -11,6 +11,7 @@
 
 #include "PathName.h"
 #include "FaddenStd.h"
+#include <sal.h>
 
 /*
  * Debug log output.
@@ -41,7 +42,7 @@ public:
      * will appear on its own line, possibly with a prefix.
      */
     void Log(LogSeverity severity, const char* file, int line,
-        const char* format, ...);
+        _Printf_format_string_ const char* format, ...);
 
 private:
     DECLARE_COPY_AND_OPEQ(DebugLog)

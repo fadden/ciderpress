@@ -197,7 +197,7 @@ Pidl::GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi)
     WCHAR pathBuf[MAX_PATH];
     LPSHELLFOLDER lpsfDeskTop;
     LPITEMIDLIST lpifq;
-    ULONG ulEaten, ulAttribs;
+    ULONG ulAttribs = 0;
     HRESULT hr;
     
     if (!GetName(lpsf, lpi, SHGDN_FORPARSING, &name))
@@ -213,7 +213,7 @@ Pidl::GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi)
     wcscpy_s(pathBuf, name);
     
     hr = lpsfDeskTop->ParseDisplayName(NULL, NULL, pathBuf,
-            &ulEaten, &lpifq, &ulAttribs);
+            NULL, &lpifq, &ulAttribs);
     
     lpsfDeskTop->Release();
     
@@ -345,7 +345,7 @@ Pidl::DoTheMenuThing(HWND hwnd, LPSHELLFOLDER lpsfParent,
 int
 Pidl::GetItemIcon(LPITEMIDLIST lpi, UINT uFlags)
 {
-    SHFILEINFO sfi;
+    SHFILEINFO sfi = { 0 };
     
     uFlags |= SHGFI_PIDL;   // we're passing a PIDL, not a pathname, in 1st arg
     SHGetFileInfo((LPCWSTR)lpi, 0, &sfi, sizeof(SHFILEINFO), uFlags);

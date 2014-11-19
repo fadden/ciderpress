@@ -163,7 +163,7 @@ SelectFilesDialog::HandleNotify(HWND hDlg, LPOFNOTIFY pofn)
     case CDN_INCLUDEITEM:
         LOGI("  CDN_INCLUDEITEM");
     default:
-        LOGI("  HandleNotify, code=%d, pOfn=0x%08lx", pofn->hdr.code, pofn);
+        LOGI("  HandleNotify, code=%d, pOfn=0x%p", pofn->hdr.code, pofn);
         break;
     }
 
@@ -511,12 +511,12 @@ SelectFilesDialog::PrepEndDialog(void)
                 //LOGI("  Checking name='%ls'", compareName);
 
                 if (compare && Stristr(tailStr, compareName) != NULL) {
-                    LOGI("    Matched '%ls', not adding", compareName);
+                    LOGI("    Matched '%ls', not adding", (LPCWSTR) compareName);
                 } else {
                     if (compare) {
-                        LOGI("    No match on '%ls', adding", compareName);
+                        LOGI("    No match on '%ls', adding", (LPCWSTR) compareName);
                     } else {
-                        LOGI("    Found '%ls', adding", compareName);
+                        LOGI("    Found '%ls', adding", (LPCWSTR) compareName);
                     }
                     fileNames += path.GetFileName();
                     fileNames += L"\\";
@@ -524,18 +524,18 @@ SelectFilesDialog::PrepEndDialog(void)
             } else {
                 /* expected, for things like "Control Panels" or "My Network" */
                 LOGI("  No path for '%ls'",
-                    (LPCTSTR) pList->GetItemText(num, 0));
+                    (LPCWSTR) pList->GetItemText(num, 0));
             }
         }
 
         if (fileNames.GetLength() >= (int)m_ofn.nMaxFile) {
-            LOGI("GLITCH: excessively long file name list");
+            LOGW("GLITCH: excessively long file name list");
             return false;
         }
     }
 
     LOGI("Final result: names at %d, len=%d, str='%ls'",
-        fFileNameOffset, wcslen(fileNames), fileNames);
+        fFileNameOffset, wcslen(fileNames), (LPCWSTR) fileNames);
 
     /*
      * Null-terminate with extreme prejudice.  Every filename should be

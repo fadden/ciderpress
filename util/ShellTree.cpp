@@ -188,11 +188,9 @@ ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
             {   /* DEBUG */
                 CString name;
                 if (Pidl::GetName(lpsf, lpi, SHGDN_NORMAL, &name)) {
-                    LOGI(" Checking '%ls' 0x%08lx",
-                        name, ulAttrs);
+                    LOGD(" Checking '%ls' %08lx", (LPCWSTR) name, ulAttrs);
                 } else {
-                    LOGI(" Checking <no-name> 0x%08lx",
-                        ulAttrs);
+                    LOGD(" Checking <no-name> 0x%08lx", ulAttrs);
                 }
             }
 #endif
@@ -297,14 +295,14 @@ ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
         tvi.hItem = hParent;
         tvi.mask = TVIF_CHILDREN;
         if (!GetItem(&tvi)) {
-            LOGI("Could not get TV '%ls'", name);
+            LOGW("Could not get TV '%ls'", (LPCWSTR) name);
             ASSERT(false);
         } else if (tvi.cChildren) {
             LOGI("Removing child count (%d) from '%ls'",
-                tvi.cChildren, name);
+                tvi.cChildren, (LPCWSTR) name);
             tvi.cChildren = 0;
             if (!SetItem(&tvi)) {
-                LOGI("Could not set TV '%ls'", name);
+                LOGW("Could not set TV '%ls'", (LPCWSTR) name);
                 ASSERT(false);
             }
         }
@@ -499,7 +497,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
     CString debugName;
     HRESULT hr;
 
-    LOGI("AddFolderAtSelection '%ls'", name);
+    LOGI("AddFolderAtSelection '%ls'", (LPCWSTR) name);
 
     // Allocate a shell memory object. 
     hr = ::SHGetMalloc(&lpMalloc);
@@ -534,27 +532,28 @@ ShellTree::AddFolderAtSelection(const CString& name)
     tvi.hItem = hParent;
     tvi.mask = TVIF_CHILDREN;
     if (!GetItem(&tvi)) {
-        LOGI("Could not get TV '%ls'", debugName);
+        LOGW("Could not get TV '%ls'", (LPCWSTR) debugName);
         ASSERT(false);
     } else {
         HTREEITEM child = GetChildItem(hParent);
         if (child == NULL && tvi.cChildren) {
-            LOGI(" Found unexpanded node, not adding %ls", name);
+            LOGD(" Found unexpanded node, not adding %ls", (LPCWSTR) name);
             result = TRUE;
             goto bail;
         } else if (child == NULL && !tvi.cChildren) {
-            LOGI(" Found former leaf node, updating kids in %ls", debugName);
+            LOGD(" Found former leaf node, updating kids in %ls",
+                (LPCWSTR) debugName);
             tvi.cChildren = 1;
             if (!SetItem(&tvi)) {
-                LOGI("Could not set TV '%ls'", debugName);
+                LOGW("Could not set TV '%ls'", (LPCWSTR) debugName);
                 ASSERT(false);
             }
             result = TRUE;
             goto bail;
         } else {
             ASSERT(child != NULL && tvi.cChildren != 0);
-            LOGI(" Found expanded branch node '%ls', adding new '%ls'",
-                debugName, name);
+            LOGD(" Found expanded branch node '%ls', adding new '%ls'",
+                (LPCWSTR) debugName, (LPCWSTR) name);
         }
     }
 
@@ -566,7 +565,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
     hr = parentTvid->lpsfParent->BindToObject(parentTvid->lpi,
                 0, IID_IShellFolder, (LPVOID *)&lpsf);
     if (FAILED(hr)) {
-        LOGI("Glitch: unable to get ShellFolder for selected folder");
+        LOGW("Glitch: unable to get ShellFolder for selected folder");
         goto bail;
     }
 
@@ -574,7 +573,7 @@ ShellTree::AddFolderAtSelection(const CString& name)
     hr = lpsf->EnumObjects(hwnd, SHCONTF_FOLDERS | SHCONTF_INCLUDEHIDDEN,
             &lpe);
     if (FAILED(hr)) {
-        LOGI("Glitch: unable to get enumerator for selected folder");
+        LOGW("Glitch: unable to get enumerator for selected folder");
         goto bail;
     }
 
@@ -821,7 +820,7 @@ ShellTree::EnableImages()
 {
     // Get the handle to the system image list, for our icons
     HIMAGELIST hImageList;
-    SHFILEINFO sfi;
+    SHFILEINFO sfi = { 0 };
 
     hImageList = (HIMAGELIST)SHGetFileInfo(L"C:\\", 
                     0, &sfi, sizeof(SHFILEINFO), 
@@ -998,12 +997,12 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
     }
 
     CString drive = pathName.GetDriveOnly();
-    LOGI("Searching for drive='%ls'", drive);
+    LOGI("Searching for drive='%ls'", (LPCWSTR) drive);
 
     HTREEITEM node = FindDrive(myComputer, drive);
     if (node == NULL) {
         /* unexpected -- couldn't find the drive */
-        pResultStr->Format(L"Unable to find drive %ls.", drive);
+        pResultStr->Format(L"Unable to find drive %ls.", (LPCWSTR) drive);
         return;
     }
 
@@ -1069,7 +1068,7 @@ ShellTree::FindMyComputer(void)
 
         hr = desktop->CompareIDs(0, myComputerPidl, pData->lpi);
         if (SUCCEEDED(hr) && HRESULT_CODE(hr) == 0) {
-            LOGI("MATCHED on '%ls'", itemText);
+            LOGD("MATCHED on '%ls'", (LPCWSTR) itemText);
             result = node;
             break;
         }
@@ -1077,7 +1076,7 @@ ShellTree::FindMyComputer(void)
     }
 
     if (result != NULL && !ItemHasChildren(result)) {
-        LOGI("Glitch: My Computer has no children");
+        LOGW("Glitch: My Computer has no children");
         result = NULL;
     }
 
@@ -1146,8 +1145,7 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
 HTREEITEM
 ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
 {
-    LOGI("SearchTree node=0x%08lx path='%ls'",
-        treeNode, (LPCTSTR) path);
+    LOGI("SearchTree node=0x%p path='%ls'", treeNode, (LPCWSTR) path);
 
     HTREEITEM node;
     CString mangle(path);

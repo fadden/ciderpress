@@ -307,6 +307,7 @@ NufxEntry::FindThreadInfo(int which, NuThread* pRetThread,
     pThread = NULL;
     for (i = 0; i < (int)NuRecordGetNumThreads(pRecord); i++) {
         pThread = NuGetThread(pRecord, i);
+        assert(pThread != NULL);
         if (NuGetThreadID(pThread) == wantedThreadID)
             break;
     }
@@ -317,6 +318,7 @@ NufxEntry::FindThreadInfo(int which, NuThread* pRetThread,
         goto bail;
     }
 
+    assert(pThread != NULL);
     memcpy(pRetThread, pThread, sizeof(*pRetThread));
 
 bail:
@@ -1269,7 +1271,7 @@ bail:
     NuAbort(fpArchive);     // abort anything that didn't get flushed
     NuFreeDataSource(pSource);
     if (SetCurrentDirectory(curDir) == false) {
-        errMsg.Format(L"Unable to reset current directory to '%hs'.\n", buf);
+        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", buf);
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
         // bummer
     }
@@ -2233,7 +2235,7 @@ NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
     CString errMsg;
 
     LOGI("  NufxArchive::XferFile '%ls'", (LPCWSTR) pDetails->storageName);
-    LOGI("  dataBuf=0x%08lx dataLen=%ld rsrcBuf=0x%08lx rsrcLen=%ld",
+    LOGI("  dataBuf=0x%p dataLen=%ld rsrcBuf=0x%p rsrcLen=%ld",
         *pDataBuf, dataLen, *pRsrcBuf, rsrcLen);
     ASSERT(pDataBuf != NULL);
     ASSERT(pRsrcBuf != NULL);

@@ -925,9 +925,9 @@ SectorFileEditDialog::OnInitDialog(void)
     CString title;
     CString rsrcIndic;
     rsrcIndic.LoadString(IDS_INDIC_RSRC);
-    title.Format(L"Disk Viewer - %hs%ls (%ld bytes)",
+    title.Format(L"Disk Viewer - %hs%ls (%I64d bytes)",
         (LPCSTR) fpFile->GetPathName(),  // use fpFile version to get case
-        fOpenRsrcFork ? (LPCWSTR)rsrcIndic : L"", fLength);
+        fOpenRsrcFork ? (LPCWSTR)rsrcIndic : L"", (LONGLONG) fLength);
     SetWindowText(title);
 
     return retval;
@@ -1323,9 +1323,9 @@ BlockFileEditDialog::OnInitDialog(void)
     CString title;
     CString rsrcIndic;
     rsrcIndic.LoadString(IDS_INDIC_RSRC);
-    title.Format(L"Disk Viewer - %hs%ls (%ld bytes)",
+    title.Format(L"Disk Viewer - %hs%ls (%I64d bytes)",
         (LPCSTR) fpFile->GetPathName(),  // use fpFile version to get case
-        fOpenRsrcFork ? (LPCWSTR)rsrcIndic : L"", fLength);
+        fOpenRsrcFork ? (LPCWSTR)rsrcIndic : L"", (LONGLONG) fLength);
     SetWindowText(title);
 
     return retval;

@@ -389,7 +389,7 @@ MainWindow::OnActionsAddDisks(void)
 
     if (img.AnalyzeImage() != kDIErrNone) {
         errMsg.Format(L"The file '%ls' doesn't seem to hold a valid disk image.",
-            dlg.GetPathName());
+            (LPCWSTR) dlg.GetPathName());
         MessageBox(errMsg, failed, MB_OK|MB_ICONSTOP);
         goto bail;
     }
@@ -869,7 +869,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
             {
                 extractAs2MG = true;
             } else {
-                LOGI("Not extracting funky image '%ls' as 2MG (len=%ld)",
+                LOGI("Not extracting funky image '%ls' as 2MG (len=%I64d)",
                     pEntry->GetPathName(), pEntry->GetUncompressedLen());
             }
         }
@@ -1017,7 +1017,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
     /* update the display in case we renamed it */
     if (outputPath != fpActionProgress->GetFileName()) {
         LOGI(" Renamed our output, from '%ls' to '%ls'",
-            (LPCTSTR) fpActionProgress->GetFileName(), outputPath);
+            (LPCWSTR) fpActionProgress->GetFileName(), (LPCWSTR) outputPath);
         fpActionProgress->SetFileName(outputPath);
     }
 
@@ -1027,7 +1027,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
     fpActionProgress->SetArcName(pathProp.fStoredPathName);
     fpActionProgress->SetFileName(outputPath);
     LOGI("Extracting from '%ls' to '%ls'",
-        pathProp.fStoredPathName, outputPath);
+        (LPCWSTR) pathProp.fStoredPathName, (LPCWSTR) outputPath);
     SET_PROGRESS_BEGIN();
 
     /*
@@ -1049,7 +1049,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
     /* update the display in case they renamed the file */
     if (outputPath != fpActionProgress->GetFileName()) {
         LOGI(" Detected rename, from '%ls' to '%ls'",
-            (LPCWSTR) fpActionProgress->GetFileName(), outputPath);
+            (LPCWSTR) fpActionProgress->GetFileName(), (LPCWSTR) outputPath);
         fpActionProgress->SetFileName(outputPath);
     }
 
@@ -1083,7 +1083,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
         err = header.WriteHeader(fp);
         if (err != 0) {
             errMsg.Format(L"Unable to save 2MG file '%ls': %hs\n",
-                outputPath, strerror(err));
+                (LPCWSTR) outputPath, strerror(err));
             fpActionProgress->MessageBox(errMsg, failed,
                 MB_OK | MB_ICONERROR);
             goto open_file_fail;
@@ -1167,7 +1167,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
                 err = errno;
             if (err != 0) {
                 errMsg.Format(L"Unable to save reformatted file '%ls': %hs\n",
-                    outputPath, strerror(err));
+                    (LPCWSTR) outputPath, strerror(err));
                 fpActionProgress->MessageBox(errMsg, failed,
                     MB_OK | MB_ICONERROR);
                 writeFailed = true;
@@ -1180,7 +1180,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
             int err = pOutput->GetDIB()->WriteToFile(fp);
             if (err != 0) {
                 errMsg.Format(L"Unable to save bitmap '%ls': %hs\n",
-                    outputPath, strerror(err));
+                    (LPCWSTR) outputPath, strerror(err));
                 fpActionProgress->MessageBox(errMsg, failed,
                     MB_OK | MB_ICONERROR);
                 writeFailed = true;
@@ -1206,7 +1206,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
                     pOutput->GetTextLen(), &thisConv, &thisConvHA, &lastCR);
             if (err != 0) {
                 errMsg.Format(L"Unable to write file '%ls': %hs\n",
-                    outputPath, strerror(err));
+                    (LPCWSTR) outputPath, strerror(err));
                 fpActionProgress->MessageBox(errMsg, failed,
                     MB_OK | MB_ICONERROR);
                 writeFailed = true;
@@ -1231,7 +1231,7 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
         int result;
         ASSERT(fpActionProgress != NULL);
         LOGI("Extracting '%ls', requesting thisConv=%d, convHA=%d",
-            outputPath, thisConv, convHA);
+            (LPCWSTR) outputPath, thisConv, convHA);
         result = pEntry->ExtractThreadToFile(thread, fp,
                     thisConv, convHA, &msg);
         if (result != IDOK) {
@@ -1241,9 +1241,10 @@ MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
                 fpActionProgress->MessageBox(msg, 
                     L"CiderPress", MB_OK | MB_ICONEXCLAMATION);
             } else {
-                LOGI("  FAILED on '%ls': %ls", outputPath, msg);
+                LOGI("  FAILED on '%ls': %ls",
+                    (LPCWSTR) outputPath, (LPCWSTR) msg);
                 errMsg.Format(L"Unable to extract file '%ls': %ls\n",
-                    outputPath, msg);
+                    (LPCWSTR) outputPath, (LPCWSTR) msg);
                 fpActionProgress->MessageBox(errMsg, failed,
                     MB_OK | MB_ICONERROR);
             }
@@ -1371,13 +1372,13 @@ bail:
         /* part of the output path exists, but isn't a directory */
         msg.Format(L"Unable to create folders for '%ls': part of the path "
                    L"already exists but is not a folder.\n",
-            *pOutputPath);
+            (LPCWSTR) *pOutputPath);
         fpActionProgress->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
         return IDCANCEL;
     } else if (err == EINVAL) {
         /* invalid argument; assume it's an invalid filename */
         msg.Format(L"Unable to create file '%ls': invalid filename.\n",
-            *pOutputPath);
+            (LPCWSTR) *pOutputPath);
         fpActionProgress->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
         return IDCANCEL;
     } else if (err == kUserCancel) {
@@ -1386,7 +1387,7 @@ bail:
         return IDCANCEL;
     } else if (err != 0) {
         msg.Format(L"Unable to create file '%ls': %hs\n",
-            *pOutputPath, strerror(err));
+            (LPCWSTR) *pOutputPath, strerror(err));
         fpActionProgress->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
         return IDCANCEL;
     }
@@ -2028,7 +2029,7 @@ MainWindow::OnActionsConvDisk(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     filename = dlg.GetPathName();
-    LOGI(" Will xfer to file '%ls'", filename);
+    LOGI(" Will xfer to file '%ls'", (LPCWSTR) filename);
 
     /* remove file if it already exists */
     CString errMsg;
@@ -2181,7 +2182,7 @@ MainWindow::OnActionsConvFile(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     filename = dlg.GetPathName();
-    LOGI(" Will xfer to file '%ls'", filename);
+    LOGI(" Will xfer to file '%ls'", (LPCWSTR) filename);
 
     /* remove file if it already exists */
     CString errMsg;
@@ -2286,7 +2287,7 @@ MainWindow::OnActionsConvFromWav(void)
     fPreferences.SetPrefString(kPrOpenWAVFolder, saveFolder);
 
     fileName = fileDlg.GetPathName();
-    LOGI("Opening WAV file '%ls'", fileName);
+    LOGI("Opening WAV file '%ls'", (LPCWSTR) fileName);
 
     dlg.fFileName = fileName;
     // pass in fpOpenArchive?
@@ -2368,7 +2369,7 @@ MainWindow::SaveToArchive(GenericArchive::FileDetails* pDetails,
     }
     if (pTargetSubdir != NULL) {
         storagePrefix = pTargetSubdir->GetPathName();
-        LOGI("--- using storagePrefix '%ls'", storagePrefix);
+        LOGD(" using storagePrefix '%ls'", (LPCWSTR) storagePrefix);
     }
     if (!storagePrefix.IsEmpty()) {
         CString tmpStr, tmpFileName;
@@ -2434,7 +2435,7 @@ MainWindow::OnActionsImportBAS(void)
     fPreferences.SetPrefString(kPrAddFileFolder, saveFolder);
 
     fileName = fileDlg.GetPathName();
-    LOGI("Opening TXT file '%ls'", fileName);
+    LOGI("Opening TXT file '%ls'", (LPCWSTR) fileName);
 
     dlg.fFileName = fileName;
     // pass in fpOpenArchive?

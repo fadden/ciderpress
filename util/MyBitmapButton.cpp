@@ -95,6 +95,6 @@ MyBitmapButton::UpdateBitmap(void)
 void
 MyBitmapButton::OnSysColorChange(void)
 {
-    LOGI("MyBitmapButton 0x%08lx tracking color change", this);
+    LOGD("MyBitmapButton 0x%p tracking color change", this);
     UpdateBitmap();
 }

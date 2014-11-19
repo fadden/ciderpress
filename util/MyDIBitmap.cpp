@@ -103,9 +103,9 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
             //GetWin32ErrorString(err, &msg);
             //LOGI(" DIB CreateDIBSection failed (err=%d msg='%ls')",
             //  err, (LPCWSTR) msg);
-            LOGI(" DIB CreateDIBSection failed (err=%d)", err);
+            LOGE(" DIB CreateDIBSection failed (err=%d)", err);
             LogHexDump(&mBitmapInfoHdr, sizeof(BITMAPINFO));
-            LOGI("&mpPixels = 0x%08lx", &mpPixels);
+            LOGI("  &mpPixels = 0x%p", &mpPixels);
             DebugBreak();
             return NULL;
         }
@@ -447,7 +447,7 @@ MyDIBitmap::ConvertBufToDIBSection(void)
         DWORD err = ::GetLastError();
         LOGI(" DIB CreateDIBSection failed (err=%d)", err);
         LogHexDump(&mBitmapInfoHdr, sizeof(BITMAPINFO));
-        LOGI("&mpPixels = 0x%08lx", &mpPixels);
+        LOGI("  &mpPixels = 0x%p", &mpPixels);
         DebugBreak();
         mpPixels = oldPixels;
         return -1;

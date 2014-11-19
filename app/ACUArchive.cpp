@@ -870,7 +870,7 @@ AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     while (pSelEntry != NULL) {
         pEntry = (AcuEntry*) pSelEntry->GetEntry();
 
-        LOGI("  Testing '%hs' (offset=%ld)", pEntry->GetDisplayName(),
+        LOGI("  Testing '%ls' (offset=%ld)", pEntry->GetDisplayName(),
             pEntry->GetOffset());
 
         SET_PROGRESS_UPDATE2(0, pEntry->GetDisplayName(), NULL);
@@ -883,7 +883,7 @@ AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
                 errMsg = "Cancelled.";
                 pMsgWnd->MessageBox(errMsg, title, MB_OK);
             } else {
-                errMsg.Format(L"Failed while testing '%hs': %hs.",
+                errMsg.Format(L"Failed while testing '%ls': %hs.",
                     pEntry->GetPathName(), NuStrError(nerr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             }

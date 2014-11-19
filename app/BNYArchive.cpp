@@ -976,7 +976,7 @@ BnyArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
                 errMsg = "Cancelled.";
                 pMsgWnd->MessageBox(errMsg, title, MB_OK);
             } else {
-                errMsg.Format(L"Failed while testing '%hs': %hs.",
+                errMsg.Format(L"Failed while testing '%ls': %hs.",
                     pEntry->GetPathName(), NuStrError(nerr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             }

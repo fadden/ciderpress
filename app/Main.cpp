@@ -1704,7 +1704,7 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
             CString parameters;
 
             parameters.Format(L"-mode %ls -dispname \"%ls\" -temparc \"%ls\"",
-                modeStr, dispName, nameBuf);
+                modeStr, (LPCWSTR) dispName, nameBuf);
             int err;
 
             err = (int) ::ShellExecute(m_hWnd, L"open",

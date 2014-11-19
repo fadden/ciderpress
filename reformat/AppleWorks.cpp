@@ -281,16 +281,16 @@ ReformatAWP::ProcessLineRecord(uchar lineRecData, uchar lineRecCode,
         case kLineRecordCommandPageBreakPara:
         case kLineRecordCommandPageBreakPara256:
         default:
-            LOGI(" AWP cmd <0x%02x><0x%02x>", lineRecCode, lineRecData);
+            LOGD(" AWP cmd <0x%02x><0x%02x>", lineRecCode, lineRecData);
             break;
         }
     } else {
         /* bad command */
-        LOGI("WARNING: unrecognized code 0x%02x at 0x%08lx", lineRecCode,
+        LOGW("WARNING: unrecognized code 0x%02x at 0x%p", lineRecCode,
             *pSrcPtr);
         fDocState.softFailures++;
         if (fDocState.softFailures > kMaxSoftFailures) {
-            LOGI("ERROR: too many failures, giving up");
+            LOGE("ERROR: too many failures, giving up");
             err = -1;
         }
     }

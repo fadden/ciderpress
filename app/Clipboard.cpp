@@ -220,8 +220,10 @@ MainWindow::CreateFileList(SelectionSet* pSelSet)
         format = pEntry->GetFormatStr();
         length.Format(L"%I64d", (LONGLONG) pEntry->GetUncompressedLen());
 
-        tmpStr.Format(L"\"%hs\"\t%hs\t\"%hs\"\t\"%hs\"\t%hs\t%hs\t%hs\r\n",
-            fileName, subVol, fileType, auxType, modDate, format, length);
+        tmpStr.Format(L"\"%ls\"\t%ls\t\"%ls\"\t\"%ls\"\t%ls\t%ls\t%ls\r\n",
+            (LPCWSTR) fileName, (LPCWSTR) subVol, (LPCWSTR) fileType,
+            (LPCWSTR) auxType, (LPCWSTR) modDate, (LPCWSTR) format,
+            (LPCWSTR) length);
         fullStr += tmpStr;
 
         pSelEntry = pSelSet->IterNext();

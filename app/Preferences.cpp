@@ -338,11 +338,11 @@ Preferences::InitTempPath(void)
     }
 
     PathName path(tempPath);
-    LOGI("Temp path is '%ls'", tempPath);
+    LOGD("Temp path is '%ls'", (LPCWSTR) tempPath);
     path.SFNToLFN();
     tempPath = path.GetPathName();
 
-    LOGI("Temp path (long form) is '%ls'", tempPath);
+    LOGD("Temp path (long form) is '%ls'", (LPCWSTR) tempPath);
 
     SetPrefString(kPrTempPath, tempPath);
 

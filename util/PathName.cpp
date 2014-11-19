@@ -317,7 +317,7 @@ CString
 PathName::GetDescription()
 {
     CString     szTypeName;
-    SHFILEINFO  sfi;
+    SHFILEINFO  sfi = { 0 };
 
     SHGetFileInfo(fPathName, 0, &sfi, sizeof(SHFILEINFO), SHGFI_TYPENAME);
 
@@ -527,7 +527,7 @@ PathName::SetModWhen(time_t when)
     struct _utimbuf utbuf;
 
     if (when == (time_t) -1 || when == kDateNone || when == kDateInvalid) {
-        LOGI("NOTE: not setting invalid date (%ld)", when);
+        LOGI("NOTE: not setting invalid date (%I64d)", (long long) when);
         return 0;
     }
 
@@ -616,7 +616,7 @@ PathName::CreatePathIFN(void)
 
     ASSERT(fFssep != '\0');
 
-    pathStart = pathName.GetBuffer(0);
+    pathStart = pathName.GetBuffer(1);
     /* BAD: network paths begin with "\\", not a drive letter */
 //  if (pathStart[0] == fFssep)
 //      pathStart++;

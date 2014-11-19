@@ -98,7 +98,7 @@ ConfirmOverwriteDialog::OnInitDialog(void)
     pWnd = GetDlgItem(IDC_OVWR_EXIST_INFO);
     ASSERT(pWnd != NULL);
     FormatDate(fExistingFileModWhen, &dateStr);
-    tmpStr.Format(L"Modified %ls", dateStr);
+    tmpStr.Format(L"Modified %ls", (LPCWSTR) dateStr);
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_OVWR_NEW_NAME);
@@ -108,7 +108,7 @@ ConfirmOverwriteDialog::OnInitDialog(void)
     pWnd = GetDlgItem(IDC_OVWR_NEW_INFO);
     ASSERT(pWnd != NULL);
     FormatDate(fNewFileModWhen, &dateStr);
-    tmpStr.Format(L"Modified %ls", dateStr);
+    tmpStr.Format(L"Modified %ls", (LPCWSTR) dateStr);
     pWnd->SetWindowText(tmpStr);
 
     pWnd = GetDlgItem(IDC_OVWR_RENAME);

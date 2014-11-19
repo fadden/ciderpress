@@ -305,7 +305,7 @@ DumpBitmapInfo(HBITMAP hBitmap)
     LOGI("  bmWidthBytes=%d", info.bmWidthBytes);
     LOGI("  bmPlanes=%d", info.bmPlanes);
     LOGI("  bmBitsPixel=%d", info.bmBitsPixel);
-    LOGI("  bmPits = 0x%08lx", info.bmBits);
+    LOGI("  bmPits = 0x%p", info.bmBits);
 
 }
 

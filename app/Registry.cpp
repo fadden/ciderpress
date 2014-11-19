@@ -347,18 +347,18 @@ MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
                         (LPBYTE)(LPCWSTR) openCmd,
                         wcslen(openCmd) * sizeof(WCHAR)) == ERROR_SUCCESS)
                     {
-                        LOGI("  Set command to '%ls'", openCmd);
+                        LOGI("  Set command to '%ls'", (LPCWSTR) openCmd);
                     } else {
-                        LOGI("  WARNING: unable to set open cmd '%ls'", openCmd);
+                        LOGW("  WARNING: unable to set open cmd '%ls'",
+                            (LPCWSTR) openCmd);
                     }
                 }
+                RegCloseKey(hCommandKey);
             }
+            RegCloseKey(hOpenKey);
         }
+        RegCloseKey(hShellKey);
     }
-
-    RegCloseKey(hCommandKey);
-    RegCloseKey(hOpenKey);
-    RegCloseKey(hShellKey);
 }
 
 
@@ -442,7 +442,7 @@ MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
             LOGI("RegQueryValueEx failed on '%ls'", (LPCWSTR) *pExt);
         }
     } else {
-        LOGI("  RegOpenKeyEx failed on '%ls'", *pExt);
+        LOGW("  RegOpenKeyEx failed on '%ls'", (LPCWSTR) *pExt);
     }
 
     *pOurs = false;
@@ -492,14 +492,15 @@ MyRegistry::GetAssocAppName(const CString& appID, CString* pCmd) const
             *pCmd = cmd;
             result = 0;
         } else {
-            LOGI("Unable to open shell\\open\\command for '%ls'", appID);
+            LOGW("Unable to open shell\\open\\command for '%ls'",
+                (LPCWSTR) appID);
         }
     } else {
         CString errBuf;
         GetWin32ErrorString(res, &errBuf);
 
-        LOGI("Unable to open AppID key '%ls' (%ls)",
-            keyName, (LPCWSTR) errBuf);
+        LOGW("Unable to open AppID key '%ls' (%ls)",
+            (LPCWSTR) keyName, (LPCWSTR) errBuf);
     }
 
     RegCloseKey(hAppKey);
@@ -589,9 +590,9 @@ MyRegistry::GetAssocState(const WCHAR* ext) const
             if (IsOurAppID((WCHAR*)buf))
                 result = true;
         }
+        RegCloseKey(hExtKey);
     }
 
-    RegCloseKey(hExtKey);
     return result;
 }
 

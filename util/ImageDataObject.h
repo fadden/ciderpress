@@ -77,6 +77,7 @@ public:
         if (--m_ulRefCnt == 0)
         {
             delete this;
+            return 0;
         }
 
         return m_ulRefCnt;
