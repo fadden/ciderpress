@@ -338,17 +338,17 @@ NiftyList::DumpSection(const DataSet& dataSet)
 {
     long ent;
 
-    LOGI("Dumping section (count=%ld)", dataSet.numEntries);
+    LOGD("Dumping section (count=%ld)", dataSet.numEntries);
 
     for (ent = 0; ent < dataSet.numEntries; ent++) {
-        LOGI("%4d: %04x '%hs'",
+        LOGD("%4d: %04x '%hs'",
             ent, dataSet.pEntries[ent].value, dataSet.pEntries[ent].name);
     }
 }
 
 
 /*
- * Look up a value in the specified table.  Returns the name, or "NULL" if
+ * Look up a value in the specified table.  Returns the name, or NULL if
  * not found.
  *
  * This uses a binary search, so the entries must be in sorted order.
@@ -356,6 +356,9 @@ NiftyList::DumpSection(const DataSet& dataSet)
 /*static*/ const char*
 NiftyList::Lookup(const DataSet& dataSet, unsigned short key)
 {
+    if (!fDataReady) {
+        return NULL;
+    }
     assert(dataSet.numEntries > 0);
 
     int high = dataSet.numEntries-1;

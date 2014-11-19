@@ -535,7 +535,7 @@ NufxArchive::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
 {
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
-    LOG_BASE(pErrorMessage->isDebug ? DebugLog::LOG_DEBUG : DebugLog::LOG_WARNING,
+    LOG_BASE(pErrorMessage->isDebug ? DebugLog::LOG_DEBUG : DebugLog::LOG_WARN,
         pErrorMessage->file, pErrorMessage->line, "<nufxlib> %hs",
         pErrorMessage->message);
 
@@ -627,10 +627,11 @@ NufxArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
         fIsReadOnly = false;
         CStringA tmpnameA(tmpname);
         nerr = NuOpenRW(filenameA, tmpnameA, 0, &fpArchive);
-    }
-    if (nerr == kNuErrFileAccessDenied || nerr == EACCES) {
-        LOGI("Read-write failed with access denied, trying read-only");
-        readOnly = true;
+
+        if (nerr == kNuErrFileAccessDenied || nerr == EACCES) {
+            LOGI("Read-write failed with access denied, trying read-only");
+            readOnly = true;
+        }
     }
     if (readOnly) {
         LOGI("Opening file '%ls' ro", (LPCWSTR) filename);

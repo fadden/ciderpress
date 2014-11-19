@@ -768,7 +768,7 @@ ReformatDisasm65xxx::ValidateOpCodeDetails(void)
     /* O(n^2) duplicate string check */
     for (int i = 0; i < NELEM(kOpCodeDetails)-1; i++) {
         for (int j = i+1; j < NELEM(kOpCodeDetails); j++) {
-            if (strcasecmp(kOpCodeDetails[i].mnemonic,
+            if (stricmp(kOpCodeDetails[i].mnemonic,
                            kOpCodeDetails[j].mnemonic) == 0)
             {
                 LOGI("OpCodeDetails GLITCH: entries %d and %d match (%hs)",

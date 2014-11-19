@@ -73,7 +73,7 @@ ReformatCPMText::Examine(ReformatHolder* pHolder)
     applies = ReformatHolder::kApplicProbablyNot;
 
     /* allow, but don't default to, text conversion of ".com" files */
-    if (strcasecmp(nameExt, ".com") == 0) {
+    if (stricmp(nameExt, ".com") == 0) {
         LOGI("Not reformatting '.com' file as text");
         goto done;
     }

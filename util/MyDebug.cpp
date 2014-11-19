@@ -79,9 +79,11 @@ void DebugLog::Log(LogSeverity severity, const char* file, int line,
         time_t now = time(NULL);
         localtime_s(&tmbuf, &now);
 
-        // also had %05u fPid before; not sure that's useful
-        fprintf(fLogFp, "%02d:%02d:%02d %c %s\n", tmbuf.tm_hour,
-            tmbuf.tm_min, tmbuf.tm_sec, kSeverityChars[severity],
+        // The pid is useful when we spawn a new instance of CiderPress
+        // to handle a disk image or NuFX archive inside an archive.  The
+        // file is opened in "append" mode, so we shouldn't collide.
+        fprintf(fLogFp, "%02d:%02d:%02d %05u %c %s\n", tmbuf.tm_hour,
+            tmbuf.tm_min, tmbuf.tm_sec, fPid, kSeverityChars[severity],
             textBuf);
     }
 #ifdef _DEBUG

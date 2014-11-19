@@ -31,7 +31,7 @@ public:
 
     typedef enum {
         LOG_UNKNOWN=0, LOG_VERBOSE=1, LOG_DEBUG=2,
-        LOG_INFO=3, LOG_WARNING=4, LOG_ERROR=5
+        LOG_INFO=3, LOG_WARN=4, LOG_ERROR=5
     } LogSeverity;
 
     /*

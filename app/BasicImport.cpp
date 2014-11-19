@@ -63,7 +63,7 @@ BASTokenLookup::Lookup(const char* str, int len, int* pFoundLen)
     longestIndex = longestLen = -1;
     for (i = 0; i < fNumTokens; i++) {
         if (fTokenLen[i] <= len && fTokenLen[i] > longestLen &&
-            strncasecmp(str, fTokenPtr[i], fTokenLen[i]) == 0)
+            strnicmp(str, fTokenPtr[i], fTokenLen[i]) == 0)
         {
             longestIndex = i;
             longestLen = fTokenLen[i];

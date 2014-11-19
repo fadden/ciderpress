@@ -227,7 +227,7 @@ ReformatMerlin::Examine(ReformatHolder* pHolder)
 {
     if (pHolder->GetFileType() == kTypeTXT) {
         bool isAsm = ReformatMerlin::IsMerlin(pHolder);
-        bool isDotS = strcasecmp(pHolder->GetNameExt(), ".S") == 0;
+        bool isDotS = stricmp(pHolder->GetNameExt(), ".S") == 0;
 
         if (isAsm && isDotS) {
             /* gotta be */

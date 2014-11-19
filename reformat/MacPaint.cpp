@@ -55,7 +55,7 @@ ReformatMacPaint::Examine(ReformatHolder* pHolder)
     } 
 
     version = Get32BE(ptr);
-    if (strcasecmp(nameExt, ".mac") == 0 && version >= 0 && version <= 3) {
+    if (stricmp(nameExt, ".mac") == 0 && version >= 0 && version <= 3) {
         LOGI("  MP: found w/o MacBinary header");
         applies = ReformatHolder::kApplicProbably;
         goto done;

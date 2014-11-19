@@ -9,7 +9,7 @@
 #ifndef UTIL_FADDENSTD_H
 #define UTIL_FADDENSTD_H
 
-#define NELEM(x) ((int) (sizeof(x) / sizeof(x[0])))
+#define NELEM(x) (sizeof(x) / sizeof(x[0]))
 
 /*
  * Declare copy construction and operator=.  Put this in a private section
@@ -18,9 +18,5 @@
 #define DECLARE_COPY_AND_OPEQ(_TYPE) \
     _TYPE(const _TYPE&); \
     _TYPE& operator= (const _TYPE&);
-
-// Windows equivalents
-#define strcasecmp      stricmp
-#define strncasecmp     strnicmp
 
 #endif /*UTIL_FADDENSTD_H*/

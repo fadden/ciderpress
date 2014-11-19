@@ -538,7 +538,7 @@ BnyArchive::LoadContentsCallback(BnyFileEntry* pEntry)
     if (isSqueezed && strlen(fileName) > 3) {
         char* ext;
         ext = fileName + strlen(fileName) -3;
-        if (strcasecmp(ext, ".qq") == 0)
+        if (stricmp(ext, ".qq") == 0)
             *ext = '\0';
     }
 

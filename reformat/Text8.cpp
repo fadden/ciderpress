@@ -42,7 +42,7 @@ ReformatMagicWindow::Examine(ReformatHolder* pHolder)
 {
     if (pHolder->GetFileType() == kTypeBIN) {
         bool isMW = ReformatMagicWindow::IsFormatted(pHolder);
-        bool isDotMW = strcasecmp(pHolder->GetNameExt(), ".MW") == 0;
+        bool isDotMW = stricmp(pHolder->GetNameExt(), ".MW") == 0;
 
         if (isMW && isDotMW) {
             /* gotta be */

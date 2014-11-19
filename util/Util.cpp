@@ -519,14 +519,14 @@ GetPascalString(const char* buf, long maxLen, CString* pStr)
     *pStr = "";
 
     if (len > maxLen) {
-        LOGI("Invalid pascal string -- len=%d, maxLen=%d", len, maxLen);
+        LOGW("Invalid pascal string -- len=%d, maxLen=%d", len, maxLen);
         return -1;
     }
 
     while (len--) {
         if (*buf == '\0') {
             /* this suggests that we're not reading a pascal string */
-            LOGI("Found pascal string with '\\0' in it");
+            LOGW("Found pascal string with '\\0' in it");
             return -1;
         }
 
