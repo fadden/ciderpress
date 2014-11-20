@@ -1,0 +1,168 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>CiderPress Hardware Compatibility</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>CiderPress Hardware Compatibility</h1>
+<p>CiderPress can access floppy disks, CD-ROMs, CF cards, hard drives, and other
+devices.&nbsp; Whether or not it can do so on your system depends on the
+specific set of devices you have and what version of Windows you're running.&nbsp;
+<a href="index.htm">Return to main page</a>.</p>
+<h3>General Rules</h3>
+<ul>
+  <li>3.5&quot; floppy disks
+    <ul>
+      <li>Requires a 3.5&quot; floppy drive in your PC.&nbsp; Works under both
+        Win98/ME and Win2K/XP.</li>
+      <li>Only 720KB and 1.4MB PC-format floppy disks are supported.&nbsp;
+        Apple-format 800KB and 1.6MB disks are not, due to hardware
+        differences.&nbsp; Apple-format 140K 5.25&quot; disks are not supported
+        either.</li>
+    </ul>
+  </li>
+  <li>CompactFlash (CF) cards
+    <ul>
+      <li>Requires a CF card reader.</li>
+      <li>Your ability to read CF cards in CiderPress depends upon your exact
+        model of reader and which operating system you're running.&nbsp; Check
+        the compatibility list, below.</li>
+      <li>Cards can use CFFA fixed-partition format or the custom partitioning
+        from SHH Systeme's MicroDrive system.</li>
+      <li>CiderPress does not
+        currently provide formatting or partitioning facilities.&nbsp; You must
+        prepare the card on the Apple II.</li>
+    </ul>
+  </li>
+  <li>CD-ROMs
+    <ul>
+      <li>Requires a CD-ROM drive.&nbsp; Internal SCSI and IDE drives have been
+        tested successfully under Win98/ME and Win2K/XP.&nbsp; External USB
+        CD-ROM drives may not work.</li>
+      <li>Works for Macintosh-partitioned CD-ROMs.</li>
+      <li>CiderPress does not record discs.</li>
+    </ul>
+  </li>
+  <li>Hard drives
+    <ul>
+      <li>Requires an appropriate interface to connect the hard drive, e.g. you
+        need a SCSI adapter in your PC to read a SCSI hard drive.</li>
+      <li>Under Win2K/XP, the device must be recognized by the BIOS (SCSI or
+        IDE; FireWire might work but has not been tested).</li>
+      <li>Under Win98/ME, it must be recognized by ASPI (usually SCSI
+        only).&nbsp; See Win98/ME notes below.</li>
+    </ul>
+  </li>
+  <li>ZIP drives
+    <ul>
+      <li>ZIP disks have been used successfully.&nbsp; Make sure you partition
+        the disk, e.g. with ADU or RamFAST utilities on the Apple II.&nbsp; If
+        you insert a blank disk in a IIgs, and let the Finder format it as a
+        simple ProDOS volume, the disk won't work if you eject and re-insert it.</li>
+      <li>You may need drivers to use a ZIP drive on a PC.&nbsp; SCSI drives
+        will probably work without them.</li>
+      <li>Parallel-port ZIP drives do not work well with CiderPress under
+        Win9x/ME.&nbsp; You can read from them, but writing fails.</li>
+    </ul>
+  </li>
+  <li>Other devices
+    <ul>
+      <li>Insite SCSI &quot;floptical&quot; drives, made popular on the Apple II by
+        Tulin, have been successfully tested under Win98 and Win2K.&nbsp; No
+        additional drivers needed on the PC.</li>
+      <li>Tape drives are not supported.</li>
+    </ul>
+  </li>
+  <li>Win2K/XP
+    <ul>
+      <li>You need &quot;administrator&quot; privileges to access devices other
+        than floppy disk drives.&nbsp; This is a general OS limitation on
+        low-level access to devices.</li>
+    </ul>
+  </li>
+  <li>Win98/ME
+    <ul>
+      <li>Access to CD-ROM drives and hard drives is limited to what your ASPI
+        layer is capable of handling.&nbsp; &quot;ASPI&quot; is an acronym for
+        Advanced SCSI Programming Interface, and provides a layer between
+        applications and SCSI devices.&nbsp; It also provides an interface for
+        IDE CD-ROM drives, and may work for other devices depending on which
+        ASPI implementation you have.</li>
+      <li>Microsoft provides a generic ASPI layer that is commonly replaced when
+        CD recording software is installed.&nbsp; Adaptec/Roxio provides one
+        implementation, Ahead's Nero provides another.&nbsp; All of these will
+        work just fine with CD-ROM drives, but access to other devices may be
+        affected by the currently installed version.</li>
+      <li>Your SCSI card must be ASPI-compliant.&nbsp; Nearly all cards
+        are.&nbsp; Adaptec 2940-series cards have been tested, as have some
+        older Symbios/LSI Logic cards (e.g. Diamond FirePort).</li>
+    </ul>
+  </li>
+</ul>
+<p>As the saying goes, &quot;your mileage may vary&quot;.&nbsp; The only way to
+know for certain if something will work is to try it and see.</p>
+<h3>CompactFlash Card Reader Compatibility List</h3>
+<table border="1" width="100%">
+  <tr>
+    <td width="33%"><b>Device</b></td>
+    <td width="33%"><b>Win2K/XP</b></td>
+    <td width="34%"><b>Win98/ME</b></td>
+  </tr>
+  <tr>
+    <td width="33%">Lexar Universal Card Reader (USB, model #GS-UFD-20SA-TP)</td>
+    <td width="33%"><font color="#008000">Works</font>.&nbsp; Card size in Open
+      Volume dialog is way off.</td>
+    <td width="34%"><font color="#FF0000">Does not work</font>.</td>
+  </tr>
+  <tr>
+    <td width="33%">SanDisk ImageMate SDDR-31</td>
+    <td width="33%"><font color="#008000">Works</font>.</td>
+    <td width="34%"><font color="#000080">Partially working</font>.&nbsp; Data
+      can be read, but writes only pretend to succeed.</td>
+  </tr>
+  <tr>
+    <td width="33%">ETI card reader (USB, model # unknown)</td>
+    <td width="33%">(not tested)</td>
+    <td width="34%"><font color="#000080">Partially working</font>.&nbsp; Data
+      can be read, but writes fail.</td>
+  </tr>
+  <tr>
+    <td width="33%">SanDisk 6-in-1 reader</td>
+    <td width="33%"><font color="#008000">Works</font>.</td>
+    <td width="34%">(not tested)</td>
+  </tr>
+  <tr>
+    <td width="33%">IBM PCMCIA card adapter</td>
+    <td width="33%"><font color="#008000">Works</font><font color="#000080">.</font></td>
+    <td width="34%">(not tested)</td>
+  </tr>
+  <tr>
+    <td width="33%">SanDisk CompactFlash PC Card Adapter (model #SDAD-38-A10)</td>
+    <td width="33%"><font color="#008000">Works</font><font color="#000080">.</font></td>
+    <td width="34%">(not tested)</td>
+  </tr>
+</table>
+<p>One common problem in Win98 is refusal by the CF reader driver to allow
+access to unrecognized logical volumes (&quot;logical volumes&quot; are lettered
+drives, like &quot;C:&quot;).&nbsp; In such cases, the card will not even show
+up in the logical volume list.&nbsp; Win2K and WinXP are usually better about
+this.</p>
+<p>Depending on your hardware and software configuration, you may be able to
+open your card reader by name (e.g. &quot;SanDisk Imagemate II        Direct-access
+device&quot;), rather than drive letter.&nbsp; In this case
+you're actually using the ASPI layer to access the device, which is a little
+strange since CF card readers aren't SCSI and don't work like CD-ROM
+drives.&nbsp; This does appear to work for reading, but fails for writing.&nbsp;
+Depending on which ASPI implementation you have installed, writes may be
+rejected or may appear to succeed but not actually go through.</p>
+<p>Thus far, no fully-functioning CF configuration for Win98/ME has been found.</p>
+
+</body>
+
+</html>

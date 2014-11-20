@@ -1,0 +1,480 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>CiderPress Change Log</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>CiderPress Change Log</h1>
+<p><a href="index.htm">Return to main page</a>.</p>
+<p>CiderPress has five distinct components:</p>
+<ol>
+  <li>[app] - the main Windows application.&nbsp; Holds MFC user interface code and an abstraction layer that makes SHK archives, BNY
+    archives, and disk images look alike.</li>
+  <li>[reformat] - file converters.&nbsp; Reformat text and graphics into
+    formats more easily accessible under Windows.&nbsp; (This was part of [app]
+    until v2.0.)</li>
+  <li>[mdc] - the Multi-Disk Catalog application.&nbsp; A small bit of UI code
+    that drives the DiskImg library.</li>
+  <li>[util] - a library of functions shared between [app] and [mdc].</li>
+  <li>[diskimg] - the disk image DLL.&nbsp; All access to disk images goes
+    through two classes exported by this library.&nbsp; The DiskImg class
+    imitates a device driver layer, abstracting away the different image formats and
+    allowing access via
+    track/sector, block, or nibble track.&nbsp; The DiskFS class imitates a File
+    System Translator (FST), abstracting
+    filesystem differences away to provide ProDOS-like file access on all
+    supported filesystems.&nbsp; This library also runs under Linux.</li>
+</ol>
+<p>In addition, CiderPress uses the NufxLib library to access NuFX (ShrinkIt)
+archives, and zlib to compress and expand &quot;.gz&quot; and &quot;.zip&quot; files.</p>
+<h2>v3.0.1 - 4-Jan-2009</h2>
+<ul>
+  <li>[reformat] Added Apple /// Business Basic support (David Schmidt)</li>
+  <li>[diskimg] Fixed CP/M 3.x disk recognition, and added support for
+  disks that store data in the first 3 tracks.</li>
+</ul>
+<h2>v3.0.0 - 25-Mar-2007</h2>
+<ul>
+  <li>[app] Removed shareware registration screens.</li>
+  <li>[reformat] Added support for DreamGrafix images (thanks to Jason
+    Andersen).</li>
+</ul>
+<h2>v2.4.6 - 19-Feb-2007</h2>
+<ul>
+  <li>[app] Corrected handling of &quot;AT&quot; and &quot;TO&quot; keywords
+    when importing Applesoft BASIC from text.</li>
+  <li>[app] Added preference to enable &quot;bad Mac&quot; archive handling.</li>
+  <li>[general] Updated to NufxLib v2.2.0.</li>
+</ul>
+<h2>v2.4.5 - 3-Dec-2006</h2>
+<ul>
+  <li>[diskimg] Fixed a bug that deferred some floppy disk writes until the
+    volume was closed.&nbsp; The bug increased the likelihood of a floppy being
+    ejected while the filesystem was in a bad state.</li>
+</ul>
+<h2>v2.4.4 - 7-Oct-2006</h2>
+<ul>
+  <li>[app] Fixed bug in Applesoft BASIC import that caused it to use the
+    shortest matching keyword instead of the longest (ON ERR vs. ONERR, HGR 2 vs. HGR2).</li>
+  <li>[app] Applesoft import now capitalizes characters not in DATA/REM
+    statements or quoted text (e.g. variable names).</li>
+  <li>[reformat] Added recognition and conversion of &quot;formatted&quot; Magic
+    Window documents.</li>
+  <li>[reformat] Tweaked Merlin assembly source reformatter to track quoted text
+    in operand field.&nbsp; This avoids inserting spaces into string constants
+    for &quot;laundered&quot; Merlin sources and DOS ED/ASM sources.</li>
+</ul>
+<h2>v2.4.3 - 3-Sep-2006</h2>
+<ul>
+  <li>[app] Fixed a bug that prevented ShrinkIt archives on read-only volumes,
+    such as a write-protected floppy disk, from being opened.</li>
+  <li>[app] Fixed a bug that prevented files from being extracted to the root
+    directory of a volume, e.g. &quot;C:\&quot;.</li>
+  <li>[diskimg] Fixed a bug that prevented ShrinkIt archives with odd extensions
+    (e.g. &quot;archive.txt&quot;) from being opened.</li>
+</ul>
+<h2>v2.4.2 - 16-Jul-2006</h2>
+<ul>
+  <li>[app] Use disk geometry call added in WinXP to get accurate sizes of
+    physical disks for &quot;open volume&quot; display.</li>
+  <li>[app] Added option to allow writes to physical disk 0.&nbsp; Needed on
+    some Windows systems.</li>
+  <li>[diskimg] Added support for Parsons Engineering FocusDrive partitioning.&nbsp;
+    (Thanks go to Ranger Harke for providing detailed information.)</li>
+</ul>
+<h2>v2.4.1 - 17-Jun-2006</h2>
+<ul>
+  <li>[app] Disable HFS types for non-HFS disk images.</li>
+  <li>[app] Don't crash on zero-length text files in Merlin format detector.</li>
+  <li>[diskimg] Various cleanups.</li>
+</ul>
+<h2>v2.4 - 20-Feb-2006</h2>
+<ul>
+  <li>[app] Handle HFS file type and creator type in the &quot;Edit
+    Attributes&quot; dialog.&nbsp; Applies to HFS disks and ShrinkIt archives.</li>
+  <li>[app] Allow creation of HFS disk images.</li>
+  <li>[app] Sanitize filenames for file list.&nbsp; This is mainly for HFS
+    filenames with &quot;Macintosh Roman&quot; high-ASCII characters, but it
+    also helps for some sector-edited ProDOS disks.</li>
+  <li>[app] Added &quot;Tab&quot; as keyboard accelerator for file viewer.</li>
+  <li>[app] Added &quot;Paste Special&quot; to Edit menu.</li>
+  <li>[app] Show progress/cancel dialog when scanning disks.&nbsp; Especially
+    handy for CD-ROMs with lots of ProDOS volumes.</li>
+  <li>[app] Fixed handling of unquoted text in DATA statements for Applesoft BASIC import.</li>
+  <li>[app] Fixed handling of &quot;reserved&quot; MS-DOS filenames (CON, PRN,
+    etc).&nbsp; In
+    addition to stuff like &quot;con&quot; we now fix up names like
+    &quot;con.1.txt&quot;.</li>
+  <li>[reformat] Added reformatting of Merlin source code (tabbing the fields
+    properly).&nbsp; It does a reasonable job of telling the difference between
+    Merlin source and other kinds of text files.</li>
+  <li>[diskimg] Added support for HFS volumes up to 2GB.</li>
+  <li>[diskimg] Recognize certain not-quite-standard MacPart images.&nbsp;</li>
+</ul>
+<h2>v2.3.2 - 10-Jan-2006</h2>
+<ul>
+  <li>[app] Added &quot;find file&quot; in file listing, and &quot;find
+    text&quot; in file viewer.</li>
+  <li>[app] Added D13 to Disk Image Converter and Bulk Disk Image Converter
+    tools.</li>
+  <li>[app] Added D13 to New Disk Image.</li>
+  <li>[app] Fixed &quot;Reopen&quot; so it works with volumes.</li>
+  <li>[diskimg] Added D13 support.</li>
+  <li>[reformat] Added converters for LISA tokenized assembly source code.&nbsp;
+    Three different versions, corresponding to LISA v2.x, v3.x, and v4.x/5.x,
+    are supported.</li>
+</ul>
+<h2>v2.3.1 - 11-Dec-2005</h2>
+<ul>
+  <li>[app] Added Applesoft program import from text file.</li>
+  <li>[app] Added &quot;Reopen&quot; to file menu.</li>
+  <li>[app] Fixed filename handling bug in paste function.</li>
+  <li>[app] Fixed &quot;overwrite all/none&quot; feature (file extraction).</li>
+  <li>[reformat] Fixed wayward assertion in BASIC conversion.</li>
+</ul>
+<h2>v2.3.0 - 17-Oct-2005</h2>
+<ul>
+  <li>[diskimg] Don't try to create disk images &gt;= 2GB unless they're
+    unadorned ProDOS.</li>
+  <li>[diskimg] Correctly identify HFS images with close to 65535 allocation
+    units.</li>
+  <li>[diskimg] Handle a couple of weird ProDOS cases that were causing assert
+    failures on specific disks.</li>
+  <li>[app] Set up the &quot;new disk&quot; dialog properly after a blank disk
+    image is created.</li>
+  <li>[app] Added &quot;reduce error checking&quot; option for ShrinkIt
+    archives.&nbsp; This enables &quot;ignore CRC&quot; and &quot;ignore LZW/II
+    length&quot;.</li>
+  <li>[app] Added AppleLink Compression Utility (.ACU) support.&nbsp; This was
+    done by reverse-engineering the file format, so there may be some
+    unsupported features.&nbsp; For example, the format appears to support some
+    sort of checksum on the data, but the method isn't yet known.</li>
+  <li>[reformat] Identify and convert PrintShop GS monochrome clip art.</li>
+  <li>[general] Update to latest versions of NufxLib and zlib DLLs.</li>
+</ul>
+<h2>v2.2.0 - 5-Jun-2005</h2>
+<ul>
+  <li>[app] If we're trying to add two files with the same name to a NuFX
+    archive, allow the user to rename the second one.&nbsp; (Note this is
+    different from adding a file to an archive in which the file already
+    exists.&nbsp; The fix is for a situation that can only happen when pathnames
+    or file attribute strings are stripped;
+    otherwise, CiderPress just stores the full Windows pathname.)</li>
+  <li>[app] Conversion between fixed-length and variable-length nibble formats
+    is done by converting to and from 16-sector data.&nbsp; This doesn't work
+    for 13-sector disks, so don't allow it in the UI.</li>
+  <li>[diskimg] Added basic support for FDI &quot;raw&quot; disk images (these are
+    Apple II disks read on a PC floppy drive).&nbsp; 5.25&quot; and 3.5&quot;
+    images are supported.&nbsp; Currently read-only.</li>
+  <li>[mdc] Show approximate volume size, in KB.</li>
+</ul>
+<h2>v2.1.4 - 21-Mar-2005</h2>
+<ul>
+  <li>[diskimg] Scan for MicroDrive and Macintosh partitioning before CFFA.&nbsp;
+    (Otherwise a CFFA-formatted volume that is re-partitioned for MicroDrive
+    could still be recognized as CFFA until the original volume directories are
+    overwritten.)</li>
+  <li>[diskimg] Corrected MicroDrive partition length handling.</li>
+</ul>
+<h2>v2.1.3 - 16-Feb-2005</h2>
+<ul>
+  <li>[diskimg] Added support for ///SHH Systeme's MicroDrive partitioning.</li>
+  <li>[diskimg] Detect and report ProDOS volume bitmap entries that indicate
+    used blocks past the end of the disk.</li>
+  <li>[app] Under Win9x/ME, newly-created disk images are now explicitly zeroed
+    out.&nbsp; (Under Win2K/XP, new files are automatically filled with zeroes.)</li>
+  <li>[app] Fixed a null reference when creating &quot;blank&quot; (unformatted)
+    disk images.</li>
+</ul>
+<h2>v2.1.2 - 23-Dec-2004</h2>
+<ul>
+  <li>[app] Increased maximum expected number of programs on cassette (was set
+    to 8).</li>
+  <li>[app] Don't allow spaces to be typed when entering registration key.</li>
+  <li>[app] Added Ctrl-W as an alias for File-&gt;Close.</li>
+</ul>
+<h2>v2.1.1 - 2-Dec-2004</h2>
+<ul>
+  <li>[diskimg] Correctly handle ZIP archives with truncated
+    post-end-of-central-dir area.</li>
+  <li>[app] Tweaked cassette decoder slightly.&nbsp; Added new conversion mode.</li>
+  <li>[app] Allow changing of filename separator character in NuFX archives.</li>
+  <li>[app] Allow changing file type and aux type on DOS 3.2/3.3 disks.&nbsp;
+    (Use at your own risk.)</li>
+  <li>[app] Fixed display of file type description in &quot;edit
+    attributes&quot; dialog for DOS and Pascal disks.</li>
+  <li>[reformat] Corrected spacing on &quot;illegal&quot; keywords in Integer
+    BASIC output.</li>
+</ul>
+<h2>v2.1 - 16-Nov-2004</h2>
+<ul>
+  <li>[diskimg] Added support for 160K DOS.MASTER partitions embedded in 800K ProDOS
+    disks.</li>
+  <li>[diskimg] Binary files added or pasted to DOS disks no longer lose their
+    aux type.</li>
+  <li>[diskimg] Zero-length binary files are now properly created on DOS disks.</li>
+  <li>[app] Added cassette tape WAV decoder.</li>
+  <li>[app] Double-clicking on a file without a data fork now correctly opens the resource
+    fork for viewing.</li>
+  <li>[app] Fixed bug that caused cutting &amp; pasting DOS files into a ProDOS
+    directory to be named incorrectly.</li>
+  <li>[reformat] Added CP/M text conversion (stops at first Ctrl-Z).</li>
+  <li>[reformat] Added monitor-style machine code listing (//e and IIgs
+    modes).&nbsp; Includes NiftyList annotation.</li>
+  <li>[reformat] Added generic IIgs text file (GWP) conversion.&nbsp; Accented
+    characters and some symbols are converted from the IIgs font to the Windows
+    font.</li>
+  <li>[reformat] Added Teach (GWP $5445) conversion.&nbsp; Found a font mapping
+    that looks pretty reasonable.</li>
+  <li>[reformat] Added AppleWorksGS Word Processor (GWP $8010) conversion.</li>
+  <li>[reformat] Added Print Shop and Print Shop GS clip art to BMP conversion.</li>
+  <li>[reformat] Fixed yet another bug related to AWP margins.</li>
+</ul>
+<h2>v2.0.1 - 18-Oct-2004</h2>
+<ul>
+  <li>[diskimg] Improved CP/M disk image recognition.</li>
+  <li>[diskimg] CP/M files with bad block lists are now displayed as
+    &quot;damaged&quot;.</li>
+  <li>[diskimg] Corrected handling of CP/M files with the same name but
+    different user numbers.</li>
+  <li>[app] Corrected version-dependent behavior in Rich Edit control that was
+    causing the file viewer &quot;print&quot; function to hang, particularly
+    when used to print &quot;raw&quot; files.&nbsp; (Thanks go to Allan Sutton
+    for some marathon e-mail ping-pong sessions while tracking this down.)</li>
+  <li>[app] Don't try to copy damaged files.</li>
+  <li>[app] Added OFN_HIDEREADONLY to all &quot;save&quot; dialogs.&nbsp; For
+    some reason Win98 was allowing the user to set the &quot;open as read
+    only&quot; flag, which makes no sense when saving a file.</li>
+</ul>
+<h2>v2.0.0 - 13-Oct-2004</h2>
+<ul>
+  <li>[diskimg] Added access to logical and physical volumes under Win2K/XP and
+    Win9x/ME.</li>
+  <li>[diskimg] Added SPTI and ASPI interfaces for reading CD-ROM drives.</li>
+  <li>[diskimg] Added CFFA-partitioned volume support for CF cards.</li>
+  <li>[diskimg] Added Macintosh disk partition support for CD-ROMs and hard
+    drives.</li>
+  <li>[diskimg] Added HFS and MS-DOS FAT recognition.</li>
+  <li>[diskimg] Added ability to delete and rename files, rename volumes, set
+    file info, and create directories in ProDOS.&nbsp; Generalized support for adding files.</li>
+  <li>[diskimg] Added add/delete/rename/set-file-info/rename-volume for DOS3.3.</li>
+  <li>[diskimg] Added add/delete/rename/set-file-info/rename-volume for UCSD
+    Pascal.</li>
+  <li>[diskimg] Switched to 64-bit file offsets throughout, for access to images
+    of 2GB+ hard drives.</li>
+  <li>[diskimg] Upgraded to zlib DLL v1.2.1.&nbsp; Added workaround for damaged gzip
+    files that zlib v1.1.4 didn't complain about.</li>
+  <li>[diskimg] Upgraded to NufxLib DLL v2.0.3.&nbsp; Minor bug fixes and
+    feature tweaking.</li>
+  <li>[diskimg] Added support for single-entry ZIP archives with disk images
+    inside.</li>
+  <li>[diskimg] Corrected handling of ProDOS volume name capitalization flags.</li>
+  <li>[diskimg] Added notes to disk image objects, so that warnings and comments
+    about filesystem damage can be presented in the &quot;archive info&quot;
+    screen.&nbsp; Added notation of &quot;suspicious&quot; files, e.g. ProDOS
+    files whose blocks fall within the limits of the image file but outside the
+    claimed number of blocks in the ProDOS volume header.</li>
+  <li>[diskimg] Updated 2MG handling to support comments and &quot;creator&quot;
+    chunks.</li>
+  <li>[diskimg] Improved recognition of DOS 3.2/3.3 disks with short catalog
+    tracks.</li>
+  <li>[app] Added &quot;open volume&quot; command for CF cards, floppies, CD-ROM
+    drives, and Apple II hard drives.</li>
+  <li>[app] Added tool to copy whole disks or partitions to and from Windows volumes.</li>
+  <li>[app] Added disk image creation tool (DOS33, Pascal, ProDOS, blank).</li>
+  <li>[app] Added a dialog to the disk sector viewer that lets the user choose to open
+    a disk image file, a Windows volume, or open the image that's currently
+    being viewed by the main application.</li>
+  <li>[app] Added menu interaction for adding, deleting, and renaming files to
+    &quot;disk archive&quot; interface layer.</li>
+  <li>[app] Added copy &amp; paste between archives and disk images, with
+    automatic DOS text conversion.</li>
+  <li>[app] Added &quot;archive info&quot; feature.&nbsp; Displays information
+    about currently open archive or disk image.</li>
+  <li>[app] Added &quot;save changes&quot; feature.&nbsp; Useful for flushing
+    changes to compressed disk images.</li>
+  <li>[app] Make a &quot;ding&quot; sound after successful completion of most
+    operations.</li>
+  <li>[app] Moved disk image preferences to their own tab.&nbsp; Moved &quot;use
+    sparse allocation&quot; and &quot;allow lower case&quot; from the
+    file-to-disk converter to the main Preferences section, since they now apply
+    to other operations (like adding files to ProDOS disks, and creating blank
+    ProDOS disks).</li>
+  <li>[app] Redesigned file viewer.&nbsp; Added buttons for
+    data/resource/comment parts, and a drop list from which format options can
+    be selected.&nbsp; Added a &quot;print&quot; button.</li>
+  <li>[app] Fixed a long-standing bug that would occasionally prevent a graphic
+    from being displayed as a bitmap.</li>
+  <li>[app] Added UI for renaming volumes and creating subdirectories.</li>
+  <li>[app] Added EOL conversion to Add Files dialog when adding
+    files to disk images.&nbsp; Added a fourth option, &quot;convert by
+    type&quot;, to Add Files and Extract Files.</li>
+  <li>[app] Added EOL Scanner tool.</li>
+  <li>[app] Added 2MG properties edit tool.</li>
+  <li>[app] Show name of registered user in title bar, or
+    &quot;(unregistered)&quot;.&nbsp; Subtle reminder to
+    register the product.</li>
+  <li>[app] Hitting DEL with no files selected no longer offers to delete all
+    files.</li>
+  <li>[reformat] Created [reformat] library by splitting the code out of the
+    main application.&nbsp; Redesigned the API.</li>
+  <li>[reformat] Added a formatter for Pascal code files (PCD).&nbsp; It just breaks
+    the file into segments and dumps each individually.</li>
+  <li>[reformat] Added converter for Paintworks PNT/$0000 SHR graphics.</li>
+  <li>[reformat] Added color syntax highlighting to Applesoft/Integer converters
+    (it used to show keywords in boldface; this is better).</li>
+  <li>[reformat] AppleWorks WP embedded codes, like &quot;insert today's date
+    here&quot;, are now displayed in blue text.</li>
+  <li>[reformat] AppleWorks WP left/right margin commands now work better.&nbsp;
+    &quot;Full justify&quot; has been added, though you won't see it unless you
+    paste the text into Microsoft Word.</li>
+</ul>
+<h2>v1.2.5 - 7-May-2004</h2>
+<ul>
+  <li>[diskimg] Added support for TrackStar 40-track &quot;.app&quot; nibble
+    images.</li>
+  <li>[diskimg] Added workaround for slightly broken 'WOOF' 2mg files.</li>
+  <li>[diskimg] Added &quot;DOS 3.3 ignore checksum&quot; to set of parameters
+    available in the sector viewer.&nbsp; Useful for looking at nibble formats
+    with bad (but perhaps partially recoverable) sectors with failing data
+    checksums.</li>
+  <li>[app] Added TrackStar to disk conversion tools.&nbsp; Added warning when
+    converting between nibble formats with differing track lengths.</li>
+</ul>
+<h2>v1.2.4 - 10-Mar-2004</h2>
+<ul>
+  <li>[diskimg] Updated creation of DiskCopy 4.2 images to match output from
+    Mac.&nbsp; Specifics: volume name of ProDOS disk is now stored (instead of
+    &quot;not a Macintosh disk&quot;); dummy 19K &quot;tag&quot; section has
+    been added; UNIDOS disks are stored in DOS sector order rather than ProDOS;
+    length byte on &quot;not a Macintosh disk&quot; string incremented.</li>
+  <li>[diskimg] Fixed a problem preventing auto-detection of some RDOS
+    disks.&nbsp; Only caused problems in non-debug builds (ugh).</li>
+  <li>[app] Updated the disk conversion and bulk disk conversion tools to handle
+    the above.</li>
+  <li>[nufxlib] NufxLib was updated to v2.0.2.&nbsp; The new version handles
+    poorly-constructed archives created by a very old version of ShrinkIt.</li>
+</ul>
+<h2>v1.2.3 - 16-Oct-2003</h2>
+<ul>
+  <li>[app] Pascal &quot;xdsk&quot; files are now shown with type $01 (BAD).</li>
+  <li>[nufxlib] NufxLib was updated to v2.0.1, which includes a workaround for
+    bad GS/OS option lists as well as the ability to skip over junk at the start
+    of the archive (e.g. vestigal MacBinary headers or HTTP messages, common on
+    FTP sites).</li>
+</ul>
+<h2>v1.2.2 - 22-Jul-2003</h2>
+<ul>
+  <li>[app] Added AppleWorks spreadsheet to CSV conversion.</li>
+  <li>[app] Added MacPaint graphics conversion.&nbsp; Many of my test files seem
+    to have some amount of corruption, so dealing with that gracefully is
+    important.</li>
+  <li>[app] Fixed a bug that prevented extraction to network volumes from working
+    correctly.</li>
+  <li>[diskimg] Fixed up the CP/M implementation a bit.&nbsp; File lengths are
+    now determined more accurately, and the &quot;read-only&quot; flag is
+    obeyed.&nbsp; Sparse files are handled correctly now.</li>
+</ul>
+<h2>v1.2.1 - 14-Jul-2003</h2>
+<ul>
+  <li>[app] Added S-C Assembler to text conversion.</li>
+  <li>[app] Added AppleWorks database to CSV conversion.</li>
+</ul>
+<h2>v1.2 - 08-Jun-2003</h2>
+<ul>
+  <li>[app] Added DDD to disk conversion tool.</li>
+  <li>[app] Further relaxed the &quot;relaxed&quot; criteria for identifying
+    hi-res images on DOS disks.&nbsp; We no longer insist that the auxtype be
+    $2000 or $4000.</li>
+  <li>[app] Fixed wayward assert() during decoding of Apple Preferred Format
+    3200-color images.</li>
+  <li>[app] Show empty comments with a different icon, so you can immediately
+    tell when a comment has something interesting in it.</li>
+  <li>[app] Added &quot;edit attributes&quot; for NuFX archive entries.&nbsp;
+    Uses the NuSetRecordAttr interface to change file type, auxtype, and access.</li>
+  <li>[app] Fixed Apple Preferred Format graphics handling to support images up
+    to 1024x1024.</li>
+  <li>[app] Show folders in file list (only possible on ProDOS disk
+    images).&nbsp; Allow them to be selected and viewed, but ignore them when
+    extracting files.</li>
+  <li>[app] When creating a new archive, existing files would not be overwritten
+    even if you said &quot;yes&quot; to overwriting them.&nbsp; This is fixed.</li>
+  <li>[app] Added conversion from disk image to file archive.&nbsp; Extract
+    files, converting DOS text where needed, and stuff them into a new ShrinkIt
+    archive.</li>
+  <li>[app] Added framework for conversion of file archive to disk archive.</li>
+  <li>[app] Save/restore the checkboxes for the set of threads selected in the &quot;view&quot;
+    dialog.</li>
+  <li>[app] Added file viewer converters for ProDOS directories (dump as 80-column
+    &quot;catalog&quot; command) and resource forks (break down into individual
+    resources and dump as hex).</li>
+  <li>[app] Added bulk disk image conversion.&nbsp; This required a minor
+    refactoring of the disk image converter and some additional UI and logic.</li>
+  <li>[diskimg] Added RDOS support.&nbsp; Includes 13-sector, 16-sector, and
+    &quot;cracked&quot; 13-to-16-sector formats.</li>
+  <li>[diskimg] Added DDD support.&nbsp; Output is identical to DDD Pro
+    v1.1.&nbsp; Getting it to work with DOS versions of DDD (e.g. DDD 2.1) is a
+    bit of a chore because the format was poorly designed, but it works.</li>
+  <li>[diskimg] Expanded disk usage map entries from 4 bits to 8.&nbsp; A
+    hypothetical graphical disk usage display would have more interesting things
+    to show.</li>
+  <li>[diskimg] Reshuffled internal handling of open files.</li>
+  <li>[diskimg] Added ability to format an arbitrarily-sized ProDOS volume
+    (including boot blocks).</li>
+  <li>[diskimg] (Big) Added limited support for adding files to a ProDOS volume.</li>
+  <li>[diskimg] Create a &quot;fake&quot; entry for the ProDOS volume directory.</li>
+</ul>
+<h2>v1.1 - 17-Apr-2003</h2>
+<ul>
+  <li>[app] Added disk conversion tool (mostly UI).</li>
+  <li>[app] Added SST merge tool (UI and implementation).</li>
+  <li>[app] Rewrote preferences implementation to be less annoying.&nbsp; Use
+    &quot;My Documents&quot; as default folder.</li>
+  <li>[app] Added preferences for three folders: open archive, add file, and
+    extract file.&nbsp; These are now applied to the standard file dialogs, so
+    the folders used most often are saved.</li>
+  <li>[app] Replaced &quot;SPARSESPARSESPARSE&quot; block-fill message with a
+    simple message that tells you the block is sparse.&nbsp; Much easier to read
+    and understand.&nbsp; Did similar things for empty files on CP/M disks and
+    unreadable sectors on NIB images.</li>
+  <li>[app] Added nibble viewer to block/sector viewer.</li>
+  <li>[app] Added sector parm selection to disk viewer.&nbsp; Change from DOS
+    3.2 to DOS 3.3 on the fly.</li>
+  <li>[app] Added &quot;open as disk image&quot; to &quot;Actions&quot; menu and
+    right-click menu.&nbsp; This is very handy for disk images stored inside
+    other disk images, e.g. a Copy ][+ $F1 image file stored inside a ShrinkIt
+    archive.</li>
+  <li>[diskimg] Added support for .NIB and .NB2 images.&nbsp; This required
+    adding 6&amp;2 and 5&amp;3 encoders and decoders, a flexible sector
+    read/write function, nibble track read/write/format, and some nibble image
+    analysis tools.</li>
+  <li>[diskimg] Added ability to create writeable disk images and copy data into
+    them.&nbsp; All formats that can be opened can also be created.</li>
+  <li>[diskimg] Generalized gzip wrapper handling so it works with everything
+    (except NuFX, due to NufxLib limitations).</li>
+  <li>[diskimg] Altered disk image recognition functions so odd-sized ProDOS
+    volumes are handled.</li>
+  <li>[diskimg] Allow images to be accessed by block, sector, or nibble track,
+    with one or more methods disabled (e.g. no nibble access on 800K disks, and
+    no block access on 13-sector nibble images).</li>
+  <li>[diskimg] Due to radical interface changes, DLL renamed to
+    &quot;diskimg2&quot;.</li>
+  <li>[mdc] Show the filename in the title bar.&nbsp; Useful if you're scanning
+    a large set of images in the background because it causes the icon bar at
+    the bottom of the screen to update.&nbsp; (Probably only necessary if the
+    window is minimized, though there's currently no way to do that.)</li>
+</ul>
+<h2>v1.0 - 19-Mar-2003</h2>
+<ul>
+  <li>Initial release.</li>
+</ul>
+
+</body>
+
+</html>

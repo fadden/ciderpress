@@ -1,0 +1,214 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>CiderPress FAQ</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>CiderPress FAQ</h1>
+
+<p>Some common questions and solutions.&nbsp; <a href="index.htm">Return to main
+page</a>.</p>
+<h3>Why can't I open my MicroDrive CF card?</h3>
+<p>If the CF card was previously formatted for
+Windows or a digital camera, it may still look like a valid volume,
+and Windows will assign a drive letter to it even though the card holds
+nothing but Apple II data.  It may even allow you to try to open files with
+garbled names.  If try to use the CiderPress Open Device or Volume Copier
+features by selecting the drive letter, you won't see your Apple II data.
+<p>All you need to do is open the card as a physical (numbered) device
+rather than a logical (lettered) device.&nbsp; Better yet, update the CF card
+with the newer version of the utilities, available from <a href="http://reactivecomputers.gotdns.com/MicroDrive/">Reactive
+Computers</a>; this will clear out the Windows volume data so the problem (and some others)
+don't arise.
+
+<h3>How do I transfer my Apple II disks to my PC?</h3>
+<p>This isn't something that CiderPress currently helps with.&nbsp; There are,
+however, a number of useful utilities, as well as sites with disk images.&nbsp;
+Check the <a href="http://home.swbell.net/rubywand/A2FAQs1START.html">comp.sys.apple2
+FAQ</a> site for information, especially <a href="http://home.swbell.net/rubywand/Csa2T1TCOM.html">this
+section</a>.&nbsp; ADT is probably the most popular program, but using ShrinkIt
+to create disk images and transferring them over a null modem cable or AppleTalk
+network works too.</p>
+<p>If you have a SuperDrive or floptical drive on your Apple II, you can read
+and write 1.4MB floppy disks.&nbsp; To copy disk images, just create images with ShrinkIt, copy them
+to a 1.4MB ProDOS-formatted floppy, then copy the disk images off with
+CiderPress.&nbsp; If
+you're planning to use them with an emulator right away, copy them off with the
+&quot;bulk&quot; disk image converter so that they'll be in the format your
+emulator prefers.</p>
+<p>While CiderPress supports ProDOS-formatted 720KB and 1.4MB 3.5&quot; floppy
+disks, it cannot support 800KB 3.5&quot; disks or 140K 5.25&quot; disks due to
+limitations of the disk drives used on PCs.&nbsp; (A program called &quot;<a href="http://www.oldskool.org/disk2fdi/">disk2fdi</a>&quot;
+provides some support for reading 5.25&quot; and 3.5&quot; Apple II disks on the
+PC.)</p>
+<h3>How do I transfer disk images to physical disks on a real Apple II?</h3>
+<p>You need to convert the disk image to a format accepted by software on the
+Apple II and then transfer it over.&nbsp; Check the links in the previous answer
+-- software that helps you copy disk images to the PC will usually help you copy
+them back.&nbsp;</p>
+<h3>Where can I find an Apple II emulator?</h3>
+<p>Check the <a href="http://directory.google.com/Top/Computers/Emulators/Apple/Apple_II/">Google
+directory</a> for a list of sites.&nbsp; AppleWin and KEGS are the most popular
+for Windows.</p>
+<h3>Why is my disk image opening in read-only mode?</h3>
+<p>Possible reasons:</p>
+<ul>
+  <li>The file is marked &quot;read only&quot; in Windows.&nbsp; This is common
+    for disk images copied off of CD-ROMs.&nbsp; Find the file in Windows
+    Explorer, right click on it, select Properties, and make sure the &quot;Read
+    only&quot; box is unchecked.</li>
+  <li>When you open the disk image, make sure the &quot;read only&quot; checkbox
+    in the file open dialog isn't checked.</li>
+  <li>Disk images with damaged filesystems are opened read-only to avoid
+    compounding existing problems.&nbsp; Open the file and hit Ctrl-I to bring
+    up the Archive Info screen.&nbsp; If it says &quot;damaged: yes&quot;, check
+    the Notes section for an explanation.</li>
+  <li>If you're opening a physical disk with &quot;Open Volume&quot; or the
+    Volume Copier, un-check the &quot;read only&quot; checkbox.&nbsp; Read-only
+    mode is enabled by default for physical disks, but you can change this from
+    the &quot;Disk Images&quot; tab of the &quot;Preferences&quot; interface.</li>
+</ul>
+<h3>When I paste files, the disk fills up almost immediately!</h3>
+<p>When pasting files into a ProDOS disk image, you can choose the directory
+into which the files should go.&nbsp; If the disk image doesn't have any
+subdirectories, all of the files will be pasted into the volume directory, which
+only holds 51 files.&nbsp; You need to paste the files into a subdirectory
+(&quot;folder&quot;), which can hold an effectively unlimited number of files.</p>
+<p>If you were copying from a set of nested subdirectories, and you want to preserve the
+original structure, disable the &quot;Strip pathnames when pasting
+files&quot; option in Edit-&gt;Preferences (or paste with Edit-&gt;Paste Special
+and select &quot;keep full pathnames&quot;).&nbsp; If you were copying from a
+single subdirectory, or you want all of the files to be pasted into one place,
+you will need to create a subdirectory with Actions-&gt;Create Subdirectory
+first, and then paste into that.</p>
+<p>You can see how much free space a disk has with the File-&gt;Archive Info
+feature (just hit Ctrl-I after opening the disk image).</p>
+<h3>Why isn't my disk image recognized?</h3>
+<p>CiderPress tries to correctly identify the sector ordering and filesystem of
+every disk image, but in some cases it's not possible.&nbsp; The most common
+reason is that the disk image isn't in a recognized format (DOS, ProDOS, Pascal,
+CP/M, or RDOS).&nbsp; Many games were shipped with custom disk layouts, usually for
+copy protection reasons.</p>
+<p>In some cases, disks with modified versions of standard file systems will fail to be
+recognized.&nbsp; This is most common with &quot;customized&quot; DOS 3.3 disks
+that have abbreviated catalog tracks.</p>
+<p>Disk images that can't be opened with &quot;Open...&quot; can usually be
+opened with the Disk Viewer in the Tools menu.&nbsp; If the Disk
+Viewer can't open the image, then either it's stored in a file format CiderPress doesn't
+support, or it's not a disk image at all.</p>
+
+<h3>How do I open a modified or slightly damaged DOS 3.3 disk?</h3>
+
+<p>The disk format auto-detection algorithms rely on finding the disk catalog
+track.&nbsp; If it's very short, or partially damaged, CiderPress won't
+recognize the disk.&nbsp; In some circumstances you can specify the format
+manually:</p>
+
+<ul>
+  <li>In Edit-&gt;Preferences-&gt;Disk Images, select &quot;Confirm disk image
+    format&quot;.</li>
+  <li>Open the disk image with File-&gt;Open.</li>
+  <li>When the disk image format dialog appears, select &quot;DOS sector
+    ordering&quot; and &quot;DOS 3.3&quot;.&nbsp; (If that doesn't work, try
+    &quot;ProDOS sector ordering&quot;.)</li>
+</ul>
+<p>This can also be used to select which half of a hybrid DOS/ProDOS image to
+use.</p>
+
+<h3>Why does CiderPress say my files are &quot;suspicious&quot; or
+&quot;damaged&quot;?</h3>
+
+<p>CiderPress runs an extensive set of consistency checks on disk images before
+it will allow them to be modified.&nbsp; Problems found might indicate damaged
+files, or might only indicate the potential for damage.</p>
+
+<p>For example, if some of the sectors of a file are not marked as &quot;in
+use&quot;, the next file you copy to the disk could overwrite parts of the
+existing file, corrupting it.&nbsp; CiderPress prevents you from making
+damage worse by treating such disks as &quot;read only&quot;.</p>
+
+<p>Some DOS 3.3 software shipped with &quot;title&quot; files in the
+catalog.&nbsp; These were only meant to highlight portions of the catalog, not
+hold data, so sometimes the software authors would use one sector in the catalog
+track as the &quot;storage&quot; for all of the titles.&nbsp; CiderPress will
+detect multiple files sharing the same storage, and mark them as
+&quot;suspicious&quot;, meaning that their data might be present but that
+altering the files could have unforeseen consequences.&nbsp;
+&quot;Suspicious&quot; disks are also marked &quot;read only&quot;.</p>
+
+<h3>Why are my .hdv images opening read-only?</h3>
+
+<p>Some &quot;.hdv&quot; files are undersized, and grow as you add files to
+them.&nbsp; CiderPress thinks these are damaged, because the size that the
+volume claims to be is much larger than the actual number of blocks in the
+file.&nbsp; You can tell what the difference is by opening the volume and
+selecting File-&gt;Archive Info (or hit Ctrl-I).</p>
+
+<p>To be able to write to these disks with CiderPress, you need to expand them
+to their full size.&nbsp; One approach is to force your emulator to expand
+them.&nbsp; To do this, launch a ProDOS block editor within the emulator, and
+open the last block on the disk (e.g. 65534 on a 32MB image).&nbsp; Read the
+block and write it back.</p>
+
+<p>Another approach is to create a new volume and copy all of the files
+over.&nbsp; To do this:</p>
+
+<ol>
+  <li>Create a new disk image with File-&gt;New Disk Image.&nbsp; Select ProDOS
+    and 32MB.</li>
+  <li>Open the old disk image.&nbsp; Select all files with Edit-&gt;Select All
+    (or hit Ctrl-A).</li>
+  <li>Open the new disk image.&nbsp; Select Edit-&gt;Paste Special, and choose
+    &quot;Keep full pathnames&quot;.&nbsp; (If you don't have &quot;strip
+    pathnames when pasting files&quot; set in Edit-&gt;Preferences, you can just
+    use Edit-&gt;Paste, or hit Ctrl-V.)</li>
+</ol>
+<p>That's it.&nbsp; For some emulators it will be necessary to close the file in
+CiderPress (File-&gt;Close or Ctrl-W) and then rename it from &quot;.po&quot; to &quot;.hdv&quot;.</p>
+
+<h3>How do I use DiskCopy 4.2 images on a Macintosh?</h3>
+
+<p>Some (all?) DiskCopy utility programs on the Macintosh require the correct
+file type and creator type values to be set on disk image files.&nbsp; If you
+try to open a &quot;.dsk&quot; file with a generic file type, you'll get an
+error message claiming that the file format isn't recognized.&nbsp; The correct values
+are 'dImg' for the file type and 'dCpy' for the creator.</p>
+
+<p>You can use ResEdit, BBEdit, or Norton Utilities to change the type and
+creator.&nbsp; If you're using PC Exchange on the Macintosh to copy the images
+off of Windows-formatted disks, you can configure it to set the type
+automatically for &quot;.dsk&quot; files.&nbsp; Take a look at <a href="http://www.macwindows.com/tutfiles.htm">this
+page</a> for more information.</p>
+
+<h3>How do I format a floppy disk with ProDOS?</h3>
+
+<p>Copy a 720KB or 1.4MB ProDOS disk image to a PC-formatted floppy disk with
+&quot;Volume Copier&quot; in the Tools menu.&nbsp; If you don't have a disk
+image handy, create one with File-&gt;New-&gt;Disk Image.</p>
+
+<p>CiderPress does not perform low-level disk formatting, e.g. reformatting an
+800K disk for 720K.&nbsp; From Windows, open My Computer, right-click on the
+floppy drive, and select &quot;Format&quot;.</p>
+
+<h3>Can I use CiderPress on a non-Windows system?</h3>
+
+<p>Sort of.&nbsp; It works reasonably well under Wine (<a href="http://winehq.org/">http://winehq.org/</a>),
+though you need a copy of &quot;windows\system32\mfc42.dll&quot; from a Windows
+system.&nbsp; Wine does crash occasionally, but many of the features work.</p>
+
+<p>Windows emulators, such as <a href="http://www.vmware.com/">VMware</a>, work
+fully.</p>
+
+<h3>Is there anything that CiderPress *doesn't* do?!</h3>
+
+<p>Yes.&nbsp; Take a look at our <a href="requested-features.htm">feature request list</a>.</p>
+
+</body>
+
+</html>

@@ -1,0 +1,482 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>faddenSoft CiderPress Tutorial</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>CiderPress Tutorial</h1>
+<p>Thank you for giving CiderPress a try!&nbsp; We hope you find it useful and
+easy to use.&nbsp; This page uses minimal formatting to be printer-friendly.</p>
+<p>This tutorial will get you started working with CiderPress.&nbsp; You will
+need to <a href="cp-samples.zip"> download the sample files</a> if you want to follow along.&nbsp;
+These are stored in a ZIP archive because historically some browsers have
+enjoyed corrupting SHK archives.&nbsp; ZIP archives can be unpacked with <a href="http://www.winzip.com/">WinZip</a>,
+or under WinXP just open the &quot;Zip folder&quot; and copy the data out.&nbsp;&nbsp;</p>
+<p>This tutorial assumes that you are already familiar with using a computer and
+with Microsoft Windows.</p>
+<h2>Basics</h2>
+<p>Start by installing CiderPress if you haven't yet.&nbsp; There aren't really
+any options to set, so just let it do its thing.</p>
+<p>You should create a &quot;scratch folder&quot; to put tutorial files in.&nbsp; Open
+your &quot;My Documents&quot; folder, and create a new folder called &quot;cpt&quot;
+(CiderPress Tutorial).&nbsp; To keep things simple, put the two
+sample files (cp.sample1.bxy and cp.sample2.sdk) in this folder.&nbsp; If you
+are using Windows' default &quot;hide extensions of known types&quot; feature,
+these files will show up as &quot;cp.sample1&quot; and &quot;cp.sample2&quot;
+after CiderPress is installed.</p>
+
+<p>Launch CiderPress.&nbsp; The easiest way to do this is to click on Start,
+then Programs, then the CiderPress group, and finally on the CiderPress entry.</p>
+<p>Glance through the menus and toolbar buttons.&nbsp; As you select items from
+the menu or move the mouse over a toolbar button, a description will appear on
+the &quot;status bar&quot; at the bottom of the screen.&nbsp; Most of the items
+are grayed out, because you don't have a file open.</p>
+<p>Let's fix that.&nbsp; Click on the &quot;File&quot; menu and select
+&quot;Open...&quot;.&nbsp; A standard Windows dialog appears.&nbsp; Change to
+the folder where the sample files are, click on &quot;cp.sample1&quot;,
+and then click on the &quot;Open&quot; button.&nbsp; Your display will look
+something like this:</p>
+<p><img border="0" src="cp-sample1.gif" width="320" height="184"></p>
+<p>If you've used ShrinkIt on the Apple II, this display should look
+familiar.&nbsp; If you haven't, you're looking at ProDOS files stored in a
+ShrinkIt archive.&nbsp; The columns show the filename, some file type
+information, and other useful stuff.&nbsp; The little yellow rectangle next to
+&quot;sample.text&quot; means it has a comment.</p>
+<p>You can change the sort order of the files by clicking on the column headers
+(e.g. click on &quot;Size&quot; to sort by size).&nbsp; Click a second time on
+the same header to reverse the sort order.&nbsp; You can restore the original
+archive sort order by clicking on the &quot;Edit&quot; menu, then
+&quot;Sort&quot;, and &quot;By original order&quot;.</p>
+<p>Let's take a look at what we have in the archive.&nbsp; Double-click on
+&quot;sample.text&quot;, a simple text file.&nbsp; This opens the File Viewer
+window:</p>
+<p><img border="0" src="cp-sampletext.gif" width="320" height="220"></p>
+<p>The title bar tells you the name of the file you're looking at, and specifies
+the format converter that was used.&nbsp; In this case, &quot;[Converted Text]&quot; means
+that the carriage returns found at the end of each line of the text file were
+converted to Windows &quot;CRLF&quot; format, and any &quot;high ASCII&quot;
+characters were stripped out.</p>
+<p>You can click on the &quot;Comment&quot; button on the left to view the
+comment instead of the file contents.&nbsp; Clicking on the &quot;Raw&quot;
+button changes to an un-converted view (no change will be visible under
+Win2K/XP), and clicking on the &quot;Hex&quot; button changes to a hex
+dump.&nbsp; The &quot;Best&quot; button switches back to Converted Text.&nbsp;
+You can also select modes from the pop-up menu.</p>
+<p>Click &quot;Done&quot; to close the file viewer.&nbsp; Let's try this a
+different way.&nbsp; Select all files in the archive by clicking on
+&quot;Edit&quot; and then &quot;Select all&quot;.&nbsp; Right click on one of
+the highlighted file names to bring up a short menu of commands.&nbsp; Click on
+&quot;View...&quot;.&nbsp; The File Viewer is back, but this time the &quot;Next&quot; button is
+enabled.&nbsp; Click on it to advance to the next file, and again to see the
+third file.&nbsp; Move back and forth.&nbsp; One of the files is the text file
+we looked at earlier, another is a hi-res graphic image of a &quot;double Bessel
+function&quot;, and the third is an AppleWorks word processing document.</p>
+<p>Use the &quot;Next&quot; and &quot;Prev&quot; buttons to find the AppleWorks
+document (&quot;SAMPLE.AWP&quot;).&nbsp; Try resizing the window, and watch how
+the margins, centering, and right justification work.&nbsp; Now switch to the
+hi-res image.&nbsp; Using the pop-up menu, change the format conversion from
+&quot;Hi-Res / Color&quot; to &quot;Hi-Res / B&amp;W&quot;.&nbsp; Notice how the
+color fringes disappear, leaving a sharper image.&nbsp; Some graphics look
+better in black &amp; white than in color.</p>
+<p>When you're done,
+press the &quot;Done&quot; button to close the window.&nbsp; (NOTE for Windows
+98 users: right-justified text may not display correctly when the window is
+resized.&nbsp; This appears to be a bug in Win98.&nbsp; You can cut &amp; paste
+from the file viewer window into Word or WordPad and see the correct text.)</p>
+<h2>Extracting Files</h2>
+<p>Adding files to and extracting files from Apple II archives is a little more
+complicated than just moving files around.&nbsp; When adding files, it may be
+useful to restore the ProDOS file type information.&nbsp; When extracting, it
+may be necessary to convert the data into a different format for it to be useful
+under Windows.</p>
+<p>We're going to extract and add the files twice.&nbsp; The first time we will
+preserve the original files exactly, the second time we will convert them to a
+format useful in Windows.</p>
+<p>Let's begin by extracting the files.&nbsp; Click on &quot;Actions&quot; and
+then &quot;Extract...&quot;.&nbsp; This brings up a dialog with lots of options:</p>
+<p><img border="0" src="cp-extract.gif" width="455" height="418"></p>
+<p>The first thing we need to do is choose where the files will go.&nbsp; The
+folder listed at the top of the screen is probably not the one we want, so lets change
+it.&nbsp; Click on the folder icon in the upper-right corner, next to the
+filename entry field.&nbsp; This brings up the &quot;Choose folder&quot;
+dialog.&nbsp; Navigate through the folders until the &quot;cpt&quot; folder you
+created earlier is highlighted, and click &quot;Select&quot;.&nbsp; (If you
+created &quot;cpt&quot; under &quot;My Documents&quot;, don't be surprised if
+the name shown starts something like &quot;C:\Documents and
+Settings\UserName\&quot;.&nbsp; This is normal for Win2K and WinXP.)</p>
+<p>In the &quot;Files to extract&quot; box, select &quot;Extract all
+files&quot;.&nbsp; Make sure both checkboxes in the &quot;miscellaneous&quot;
+section are unchecked.&nbsp; Finally, click on the large button near the bottom
+that says &quot;Configure to preserve Apple II formats&quot;.&nbsp; This will
+configure the remaining options so that files extracted can be added to a new
+archive that is as close as possible to the original.</p>
+<p>Once everything is set up as described (it should match the options shown in
+the picture above), click the &quot;Extract&quot; button.&nbsp; On a
+fast machine, you'll see little more than a flash as the files are extracted.</p>
+<p>If you open the &quot;cpt&quot; folder in Windows Explorer (open My Documents
+from the desktop or Windows Start menu, then open &quot;cpt&quot;), you will see three new files:</p>
+<ul>
+  <li>DBL.BESSEL.PIC#062000</li>
+  <li>SAMPLE.AWP#1ac0fd</li>
+  <li>sample.text#04000</li>
+</ul>
+<p>The junk starting with &quot;#&quot; that was added to the filename is a file
+attribute preservation sequence.&nbsp; The first two digits are the ProDOS file type,
+the next four are the ProDOS aux type.&nbsp; For DBL.BESSEL.PIC, it's $06
+(&quot;BIN&quot;) and $2000 (the typical load location of a hi-res image).&nbsp;
+None of the files has a filetype that Windows recognizes, which makes sense:
+none of the files is in a format Windows likes.</p>
+<p>You might think that &quot;sample.text&quot; is a text file, and Windows
+likes text files, but it's not that simple.&nbsp; Rename &quot;sample.text#04000&quot;
+to &quot;sample.text#04000.txt&quot;.&nbsp; Now Windows recognizes it as a text
+file.&nbsp; Double-click on it.&nbsp; If you have Windows
+&quot;Notepad&quot; as your default text viewer, you will probably notice that
+the file doesn't look right.&nbsp; Instead of line breaks there are funny little
+rectangles.&nbsp; Because we told CiderPress to preserve the original file
+formats, the carriage returns in the original file were left
+unmodified.&nbsp; Double-clicking on the other files will most likely not yield
+anything useful, because they're in formats that only an Apple II can readily
+handle.</p>
+<p>We don't have to stand for that, however.&nbsp; Go back to CiderPress, and
+click on &quot;Actions&quot; and &quot;Extract...&quot; again.&nbsp; This time,
+click on the filename in the edit box, and hit the right arrow key until you're
+all the way at the right of the filename.&nbsp; We're going to extract into a
+sub-folder called &quot;win&quot;, so type &quot;win&quot; at the end of the
+name.&nbsp; (It should now look something like &quot;C:\Documents and Settings\Administrator\My
+Documents\cpt\win&quot;.)&nbsp; There's no need to create the folder ahead of
+time, CiderPress will create it for us.</p>
+<p>Click on the large button labeled &quot;Configure for easy access in
+Windows&quot;.&nbsp; Make sure &quot;Extract all files&quot; is selected, and
+leave the rest untouched.</p>
+<p>Click the &quot;Extract&quot; button.&nbsp; Stuff happens, probably faster
+than you can see it.&nbsp; Open the
+&quot;cpt&quot; folder in Windows Explorer again, and then open the new &quot;win&quot;
+folder.&nbsp; Inside, you will find:</p>
+<ul>
+  <li>DBL.BESSEL.PIC.bmp</li>
+  <li>SAMPLE.AWP.rtf</li>
+  <li>sample.text.TXT</li>
+</ul>
+<p>(Again, if you have &quot;known extensions&quot; hidden, you won't see any of
+the &quot;.xxx&quot; shown above.)</p>
+<p>Double-clicking on the first launches the default Windows bitmap editor,
+where you can view the double-Bessel function in all its glory.&nbsp;
+Double-clicking the second launches the default Windows Rich Text Format editor,
+usually Windows WordPad or Microsoft Word.&nbsp; Double-clicking on the third
+opens the text file, nicely formatted for easy viewing.</p>
+<h2>Adding Files</h2>
+<p>Now that we've extracted some files, let's try adding them back into an
+archive.</p>
+<p>Click on &quot;File&quot; and then &quot;New&quot; and move over to
+&quot;ShrinkIt archive&quot;.&nbsp; Create
+a new archive called &quot;test.shk&quot; in the &quot;cpt&quot; folder.&nbsp;
+Creating or opening an archive causes the currently open one to be closed, so
+&quot;cp.sample1.bxy&quot; disappears and &quot;test.shk&quot; takes its place.</p>
+<p>Click on &quot;Actions&quot; and then &quot;Add files...&quot;.&nbsp; This
+brings up the Add Files dialog.</p>
+<p><img border="0" src="cp-add.gif" width="446" height="438"></p>
+<p>Leave the &quot;File attribute preservation&quot; setting on &quot;Use file
+attribute preservation tags&quot;.&nbsp;
+This tells CiderPress to look for the &quot;#062000&quot; stuff, but not to get
+excited if it's not there.&nbsp; The remaining fields aren't important for what
+we're doing now, so leave them alone.</p>
+<p>Select the three files with the funny &quot;#062000&quot; stuff in the
+names.&nbsp; You can either click on the first and then shift-click on the last,
+or click on the first and then control-click on the other two.&nbsp; When all
+three have been selected, click &quot;Accept&quot;.&nbsp; (You may notice a file
+with a name like &quot;CPtmp_12345&quot; in the folder.&nbsp; This is a temporary file used
+when ShrinkIt archives are opened, and can be ignored.)</p>
+<p>The files are added in a flash.&nbsp; Double-click on them to verify that
+they are all intact.&nbsp; Note that the file types and modification dates match
+the originals.</p>
+<p>Now lets add the second, converted set.&nbsp; Click &quot;Actions&quot; then
+&quot;Add files...&quot;.&nbsp; Make sure &quot;Include subfolders&quot; is
+checked and &quot;Strip folder names&quot; is not checked.&nbsp; Click on
+&quot;win&quot; once (don't double-click it, or the folder will open) and then
+click &quot;Accept&quot;.&nbsp; This adds everything in the &quot;win&quot;
+folder to the archive.</p>
+<p>You will end up with three new files, each prefixed with
+&quot;win:&quot;.&nbsp; Your archive should look something like this:</p>
+<p><img border="0" src="cp-postadd.gif" width="480" height="276"></p>
+<p>The file types of the three you just added are all &quot;NON&quot;, and double-clicking on them in the
+CiderPress file list is
+disappointing.&nbsp; This is because these files have crossed over to the Dark
+Side (i.e. they're in Windows formats now), and the File Viewer is only able to display Apple II formats.&nbsp; Once
+you have converted files into Windows BMP or RTF files, it's more appropriate to
+store them in a ZIP archive than a ShrinkIt archive.</p>
+<h2>Preservation or Accessibility</h2>
+<p>Generally speaking, when extracting files you can either choose to preserve
+the original format or choose to put them in a format easily accessible in
+Windows.&nbsp; CiderPress does not
+know how to un-convert BMP or RTF documents back to hi-res or AppleWorks format,
+so you should use one approach if you're planning to add the files back into an
+archive for use on an Apple II, and the other approach if you want to include
+them in Windows documents.</p>
+<p>Let's try an experiment.&nbsp; In the CiderPress file listing for the &quot;test.shk&quot;
+we created above, click on &quot;DBL.BESSEL.PIC&quot;.&nbsp; Click
+&quot;Actions&quot; then &quot;Extract...&quot;, and make sure the extraction
+path is still set to the &quot;win&quot; sub-folder of our &quot;cpt&quot;
+folder.&nbsp; Hit &quot;Configure for easy access in Windows&quot; and then check the
+box labeled &quot;Add file attribute preservation&quot;.&nbsp; Make sure the button
+in &quot;Files to extract&quot; is set to &quot;Extract 1 selected file&quot;.</p>
+<p>Click &quot;Extract&quot;.&nbsp; You might expect to end up with &quot;DBL.BESSEL.PIC#062000.bmp&quot;,
+but instead you get a warning about overwriting &quot;DBL.BESSEL.PIC.bmp&quot;.&nbsp;
+Hit &quot;Cancel&quot; to cancel the extraction.</p>
+<p>Why didn't a file attribute preservation sequence get added to the filename?&nbsp;
+Because we have file converters turned on, and those change it to Windows
+format.&nbsp; Once the file is converted to a BMP, it's no longer an Apple II
+file, and trying to preserve the &quot;BIN&quot; file type is no longer appropriate.&nbsp; The situation is similar for BASIC programs
+converted to text listings and AppleWorks word processor documents converted to
+RTF.&nbsp; If we added SAMPLE.AWP.rtf with an &quot;AWP&quot; file type, and
+then tried to load the file in AppleWorks, we'd be greatly disappointed.</p>
+<p>We're done with this set of files, so select all files (&quot;Edit&quot; then
+&quot;Select all&quot;, or hit Ctrl-A), click on &quot;Actions&quot;, then
+&quot;Delete...&quot;, and hit &quot;OK&quot; when asked to confirm the
+deletion.&nbsp; Go to &quot;File&quot; and select
+&quot;Close&quot;.&nbsp; The empty archive is automatically removed.</p>
+<p>It's worth mentioning at this point that archives are not handled the same
+way word processing documents are.&nbsp; You can't make a set of changes, undo
+them, do some other things, and then save the results.&nbsp; (Technically
+speaking, it's possible, but CiderPress doesn't work that way.)&nbsp; Any change you
+make immediately modifies the archive, and there is no &quot;undo&quot;.</p>
+<h2>Opening Archives Differently</h2>
+<p>The &quot;.BXY&quot; extension is used for a ShrinkIt archive with a Binary
+II header.&nbsp; CiderPress is capable of opening both ShrinkIt and Binary II
+archives, so how does it decide which to open?</p>
+<p>CiderPress tries to guess what you want, but it's easy to make your choice
+explicit.&nbsp; Click &quot;File&quot;,
+then &quot;Open...&quot;, and look at the &quot;Files of type&quot;
+selector.&nbsp; Click on it and change the setting to &quot;Binary
+II&quot;.&nbsp; Double-click on &quot;cp.sample1&quot;, which is a .BXY file.</p>
+<p>This time, when the file opens, you see only one entry.&nbsp; &quot;SAMPLE.SHK&quot;
+is the ShrinkIt archive embedded inside the Binary II file.&nbsp; If you want to
+convert a .BXY to a .SHK, all you have to do is open the archive as Binary II
+and then extract the ShrinkIt archive.&nbsp; CiderPress does not have the
+ability to write to Binary II archives, which is why the title bar now also says
+&quot;(read only)&quot;.</p>
+<p>ShrinkIt archives are often found on disk images or inside other ShrinkIt
+archives, so CiderPress provides a quick way of opening them.&nbsp;
+Double-click on SAMPLE.SHK and watch as a new copy of CiderPress is launched.&nbsp; A
+copy of SAMPLE.SHK was written into the system temp folder, and the new
+CiderPress window opened it automatically.&nbsp; The file will be deleted when
+the second window is closed, which is why the new window is also marked
+&quot;(read only)&quot;.&nbsp; Go ahead and close the second window before
+continuing.</p>
+<h2>Opening Disk Images</h2>
+<p>Disk images are very different from ShrinkIt archives.&nbsp; They come in
+many different file formats, can be written with sectors scrambled in different
+orders, and can be in different filesystem formats (DOS, ProDOS, etc.).&nbsp;
+With most programs you have to know a fair bit about a disk image before you can
+access it, possibly having to convert it from one format to another, but with
+CiderPress that's not necessary.</p>
+
+<p>Click &quot;File&quot; then &quot;Open...&quot;, select &quot;Disk
+Images&quot; in the &quot;Files of type&quot; selector, and double-click
+cp.sample2.&nbsp; The disk image opens, and about 35 files are
+displayed.&nbsp; Notice that in the &quot;Format&quot; column, some files are
+listed as &quot;ProDOS&quot; and some as &quot;DOS&quot;.&nbsp; This is because
+the disk image is of an 800K ProDOS volume with a 200K DOS 3.3 volume embedded
+in it.&nbsp; The title bar of the window now shows that this is a disk image of
+a ProDOS volume called &quot;/CP.TEST&quot;.</p>
+<blockquote>
+<p>(For those interested in technical details: CiderPress passed
+&quot;cp.sample2.sdk&quot; to the &quot;DiskImg&quot; library and asked it to
+open the file.&nbsp; DiskImg opened the file, figured out that it was a
+compressed ShrinkIt disk archive, and unpacked it to a buffer in memory.&nbsp;
+The disk structure was scanned, and DiskImg determined that it was a ProDOS
+volume in ProDOS sector order.&nbsp; It then examined the structure of every
+file on the disk, and determined that there was an embedded volume.&nbsp; This
+second volume was then opened, scanned, and found to be a DOS 3.3 disk in
+ProDOS sector order.&nbsp; The contents of the DOS volume were scanned.&nbsp; Control
+then returned to the CiderPress application, which took the list of files and
+displayed them in the window.&nbsp; Don't try that on an empty stomach!)</p>
+</blockquote>
+<p>The files are shown in a &quot;flat&quot; list, though the real disk has most
+of the files in folders.&nbsp; For example, &quot;Graphics:WORLD.MAP.PIC&quot;
+is actually a file called &quot;WORLD.MAP.PIC&quot; in a folder called
+&quot;Graphics&quot;.&nbsp; The files in the DOS 3.3 sub-volume aren't actually
+visible from ProDOS, so CiderPress prepends &quot;_DOS001:&quot; to make the
+separation clear.</p>
+<p>Try double-clicking on some files to view them.&nbsp; You should probably
+start by double-clicking on &quot;ReadMe&quot;,. a file in TeachText format that
+describes the contents of the disk.&nbsp; Try some BASIC programs like
+&quot;STARTUP&quot; in the ProDOS area or &quot;ANIMALS&quot; in the DOS area.&nbsp;
+Use the conversion selector to turn color highlights on and off.</p>
+<p>You may notice that some of the files appear to be compressed -- the
+&quot;Ratio&quot; column isn't 100%.&nbsp; This is because the files are
+&quot;sparse&quot;.&nbsp; ProDOS and DOS 3.3 have the ability to store empty
+disk blocks without using lots of disk space.&nbsp; The difference between
+&quot;Size&quot; and &quot;Packed&quot; represents the space saved by using
+sparse blocks.</p>
+<p>If you double-click on &quot;TestFiles:SPARSE&quot;, you will get an error
+message from the File Viewer indicating that the file is too large.&nbsp; The
+file is actually 16MB, but because it's almost entirely sparse blocks it only
+occupies about 1.5KB.&nbsp; If you
+want, you can view this file by increasing the file viewer limit.&nbsp; Click on &quot;Edit&quot;, then
+&quot;Preferences...&quot;, then on the &quot;File Viewer&quot; tab.&nbsp; The
+&quot;Viewer file size limit&quot; can be set in 1K increments.&nbsp; There are
+a number of other configurable items in here, including settings that let you
+default hi-res and double-hi-res graphics to black and white.&nbsp; Click on the &quot;Help&quot; button or use the question mark icon
+in the window title bar to get more information about specific things.&nbsp;
+Click on &quot;Cancel&quot; to close the dialog.</p>
+<h2>Adding and Extracting Disk Images</h2>
+<p>Click on the &quot;File&quot; menu, then &quot;Open...&quot;, change
+&quot;Files of type&quot; to &quot;ShrinkIt
+Archives&quot;, and open &quot;cp.sample2&quot;.&nbsp; You should see a
+single entry, for an 800K disk image.&nbsp; (If you want, double-click on the
+entry to pop open a second instance of CiderPress with the disk image contents
+in it.&nbsp; Close it when you're done.)</p>
+<p>Click on &quot;Actions&quot; and &quot;Extract...&quot;.&nbsp; Set the
+extract folder to &quot;cpt&quot;, and click &quot;Configure for easy access in
+Windows&quot;.&nbsp; Note that &quot;Extract disks as .2MG&quot; is
+checked.&nbsp; Click &quot;Extract&quot;.</p>
+<p>If you open the &quot;cpt&quot; folder with Windows Explorer, you will find a new file called
+&quot;CP.TEST.2mg&quot; (or just &quot;CP.TEST&quot; if extensions aren't being
+shown).&nbsp; Depending on how your file associations are
+configured, you should be able to double-click this file and launch the default
+2MG application (which is probably an Apple II emulator or CiderPress; file
+associations can be set from within CiderPress by clicking &quot;Edit&quot;,
+&quot;Preferences&quot;, and then the &quot;Associations...&quot; button).</p>
+<p>That was easy enough.&nbsp; Now let's try adding the disk image to an
+archive.&nbsp; Click on the &quot;File&quot; menu then &quot;New -&gt; ShrinkIt archive&quot;, and create a new archive called &quot;mydisk.shk&quot; in the
+&quot;cpt&quot; folder.&nbsp; Click on the &quot;Actions&quot; menu then
+&quot;Add disk image...&quot;.&nbsp; Navigate to the &quot;cpt&quot; folder if
+you're not there already, click on &quot;CP.TEST&quot;, and click
+&quot;Open&quot;.&nbsp; The disk image is added.</p>
+<p>Let's try a different way.&nbsp; Extract the disk image you just added (still
+working in &quot;mydisk.shk), but this time click on &quot;Configure to preserve
+Apple II formats.&quot;.&nbsp; Click &quot;Extract&quot; to create
+&quot;CP.TEST#000640i&quot;.&nbsp; (The &quot;640&quot; is the number of
+blocks in hexadecimal, and the &quot;i&quot; indicates that it's a disk
+image.)&nbsp; This file is a ProDOS-ordered sector image; if you check the
+&quot;Add type extension&quot; box before extraction, it will be given a
+&quot;.PO&quot; extension and can be opened with the default
+&quot;.PO&quot; viewer (usually CiderPress or an Apple II emulator).</p>
+<p>Let's add it back to the archive.&nbsp; We could use the &quot;Add
+disks&quot; menu item, but we have another option.&nbsp; Click on &quot;Actions&quot;
+and then &quot;Add files...&quot;.&nbsp; Make sure the &quot;File attribute preservation&quot; setting is on &quot;Use file
+attribute preservation tags&quot;,
+click on &quot;CP.TEST#000640i&quot;, and click &quot;Accept&quot;.&nbsp;
+When asked if you want to overwrite the file, click &quot;Yes&quot;.</p>
+<p>Nothing appears to happen, but you've actually just replaced the disk image
+that was in the archive with the new one.&nbsp; You were able to add the disk image
+with the &quot;Add files&quot; dialog because of the file attribute preservation
+strings (the &quot;#000640i&quot; part).&nbsp; If you had set &quot;File
+attribute preservation&quot; to &quot;Ignore file attribute preservation flags&quot;, you would
+have added a file called &quot;CP.TEST#000640i&quot; instead of a disk image
+called &quot;CP.TEST&quot;.</p>
+<h2>Creating and Adding Files to Disk Images</h2>
+<p>Working with disk images is a little different than working with ShrinkIt
+archives.&nbsp; Filenames have limited lengths and may only contain certain
+characters, file lengths are limited, and on non-ProDOS volumes the selection of
+file types will be limited.&nbsp; On the plus side, disk images can be used
+directly by Apple II emulators.</p>
+<p>Let's start by creating a disk image.&nbsp; Click on the &quot;File&quot;
+menu, then &quot;New -&gt; Disk image...&quot;.&nbsp; This opens the Create Disk
+Image dialog.</p>
+<p><img border="0" src="cp-createdisk.gif" width="519" height="353"></p>
+<p>Leave the values set to the defaults and click &quot;OK&quot; to create a
+140K ProDOS image.&nbsp; When the &quot;save&quot; dialog comes up, type &quot;testdisk&quot;
+into the &quot;file name&quot; field.&nbsp; Leave the file type set to
+&quot;DOS-ordered image (*.do)&quot;.&nbsp; Click &quot;Save&quot;.</p>
+<p>Your brand-new ProDOS disk will open automatically.&nbsp; The disk has one
+entry for the volume directory, called &quot;:NEW.DISK&quot;.&nbsp; Let's add
+some files.</p>
+<p>Click &quot;Actions&quot; then &quot;Add files...&quot;.&nbsp; Select the
+three files with &quot;#123456&quot; stuff in the filenames (DBL.BESSEL.PIC#062000,
+SAMPLE.AWP#1ac0fd, and sample.text#040000.txt) by clicking on the first one and
+control-clicking on the other two.&nbsp; Make sure &quot;use file attribute
+preservation tags&quot; is set.</p>
+<p>You will notice that the &quot;Text conversion&quot; options are now
+available.&nbsp; The files we're adding are from an Apple II, so we don't want
+to mess with them.&nbsp; Click on &quot;Don't convert text files&quot;.&nbsp;
+Now click &quot;Accept&quot; to add the files.&nbsp; You should be back in the
+CiderPress file listing, with four files on the screen (the volume directory and
+the three files you just added).&nbsp; Double-click on them to verify that
+they're all okay.</p>
+<p>You may notice that only &quot;sample.awp&quot; is in lower case.&nbsp;
+That's because, by default, CiderPress adds files to ProDOS disks in upper-case
+only.&nbsp; If you use a version of ProDOS 8 older than v1.8, you will get
+errors on disks with lower-case names.&nbsp; (You can change this behavior from
+the disk images preferences screen.)&nbsp; So why is &quot;sample.awp&quot; in
+lower case?&nbsp; Because AppleWorks files have lower-case flags in their
+&quot;aux type&quot; field.&nbsp; If CiderPress sees a file with type AWP, ADB,
+or ASP, the flags in the aux type are used.</p>
+<p>One nifty thing about ProDOS disks is that you can tuck files into
+subdirectories (usually called &quot;folders&quot; in Apple-speak).&nbsp; Let's
+create one now.&nbsp; You have to tell CiderPress which directory the new
+subdirectory will appear in, so start by clicking on the volume directory
+(&quot;:NEW.DISK&quot;).&nbsp; Click on &quot;Actions&quot; then &quot;Create
+subdirectory...&quot;.&nbsp; Type &quot;My Stuff&quot; as the name.&nbsp; Click
+&quot;OK&quot;.&nbsp; A new subdirectory, called &quot;MY.STUFF&quot;,
+appears.&nbsp; (If lower case were enabled, it would have been added as &quot;My
+Stuff&quot; instead.)</p>
+<p>Suppose we want to add more files.&nbsp; Where do they go?&nbsp; In the
+volume directory, or in MY.STUFF?&nbsp; Let's find out.&nbsp; Click on a blank
+area of the window so that nothing is highlighted.&nbsp; (You may still see a
+thin dashed line around one entry; that's okay.)&nbsp; Click on
+&quot;Actions&quot; then &quot;Add files...&quot;.&nbsp; You will see a dialog
+that asks you to pick the location.</p>
+<p><img border="0" src="cp-selectloc.gif" width="336" height="478"></p>
+<p>As you can see, you are able to add files to the volume directory or the
+folder you created.&nbsp; As noted in the &quot;tip&quot; at the bottom, you can
+avoid seeing this dialog by clicking on the target subdirectory before you
+select &quot;Add files...&quot;.</p>
+<p>We don't really want to add anything here, so click &quot;Cancel&quot;.&nbsp;
+Close the disk image by selecting &quot;Close&quot; from the &quot;File&quot;
+menu.&nbsp; Let's create another image, this time a DOS 3.3 disk.&nbsp; From
+&quot;File&quot;, select &quot;New -&gt; Disk image...&quot;.</p>
+<p>Click on the &quot;DOS 3.3&quot; button in the upper left.&nbsp; The ProDOS
+volume name entry field is greyed out, the DOS 3.3 options in the upper right
+corner become active, and our choice of sizes is now limited to just 140K
+disks.&nbsp; Leave the defaults alone and click &quot;OK&quot;.&nbsp; Click on
+&quot;testdisk.do&quot; (the disk we recently created) and click
+&quot;Save&quot;.&nbsp; When asked if you want to replace the existing file,
+click &quot;Yes&quot;.</p>
+<p>Now we have open an empty DOS 3.3 disk image.&nbsp; Let's add a file.&nbsp;
+Click &quot;Actions&quot; then &quot;Add files...&quot;.&nbsp; Open up the
+&quot;win&quot; folder inside &quot;cpt&quot;, and select &quot;sample.text&quot;
+(or &quot;sample.text.TXT&quot;).&nbsp; Click &quot;Accept&quot;.</p>
+<p>The file has been added, but something is strange.&nbsp; Our text file has
+type $F2.&nbsp; The reason this happened is because CiderPress didn't see it as
+an Apple II file, and gave it a file type of NON.&nbsp; However, there is no
+direct equivalent to NON for DOS 3.3.&nbsp; Instead, CiderPress used the DOS
+file type 'S'.&nbsp; There's no ProDOS equivalent to 'S', so CiderPress displays
+it as $F2.&nbsp; Because DOS 3.3 'S' files don't have an explicit file length,
+the length is rounded off to 512 (two DOS sectors).</p>
+<p>Yuck.&nbsp; Fortunately there's a simple way around this.&nbsp; Click
+&quot;Actions&quot; and &quot;Add files...&quot; again.&nbsp; This time, click
+the &quot;Use tags and guess type from extension&quot; button.&nbsp; This tells
+CiderPress that we want it to guess the type of the file from the filename
+extension.&nbsp; Since we're adding a text file to a DOS disk, we also want it
+to convert from Windows format (low ASCII, CRLF) to DOS 3.3 format (high ASCII,
+CR), so click on the &quot;Convert text files by file type&quot; button.</p>
+<p><img border="0" src="cp-dosadd.gif" width="480" height="401"></p>
+<p>Click on &quot;sample.text&quot; again, and click &quot;Accept&quot;.&nbsp;
+When it asks you if you want to replace the previous file, say
+&quot;Yes&quot;.&nbsp; You should now have a text file with a reasonable
+length.&nbsp; If you double-click on it and view it in hex dump mode, you'll see
+that it's in &quot;high ASCII&quot; with carriage returns, as all good DOS 3.3
+text files should be.</p>
+<p>Select &quot;Close&quot; from the &quot;File&quot; menu to close the disk
+image.</p>
+<h2>Wrapping Up</h2>
+<p>CiderPress is a powerful tool with lots of features.&nbsp; Start with the
+default settings and quick configuration buttons.&nbsp; The additional flexibility is there if you need
+it.&nbsp; Click the &quot;Help&quot; button on a screen for detailed help on
+that screen, or select &quot;Help&quot; then &quot;Contents...&quot; to start
+from the beginning.&nbsp; In many screens you can click on a question mark
+button in the title bar and then click on a button to get more information on
+that button.</p>
+
+<p><a href="../index.htm">Return to CiderPress site</a></p>
+
+</body>
+
+</html>

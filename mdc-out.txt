@@ -1,0 +1,136 @@
+MDC for Windows v2.0.0 (DiskImg library v4.0.0)
+Copyright (C) 2004 by faddenSoft, LLC.  All rights reserved.
+MDC is part of CiderPress, available from http://www.faddensoft.com/.
+Linked against NufxLib v2.0.3 and zlib v1.2.1
+
+Run started at Sun Oct 03 13:16:01 2004 in 'G:\disks\mdc-sample'
+
+File: APPLE1.IMG
+Disk: Pascal APPLE1:
+ Name                             Type Auxtyp Modified         Format   Length
+------------------------------------------------------------------------------
+ SYSTEM.APPLE                     PDA  $0000  03-Sep-85 00:00  Pascal    16384
+ SYSTEM.PASCAL                    PCD  $0000  03-Sep-85 00:00  Pascal    22528
+ SYSTEM.EDITOR                    PCD  $0000  03-Sep-85 00:00  Pascal    25600
+ SYSTEM.FILER                     PCD  $0000  03-Sep-85 00:00  Pascal    15360
+ SYSTEM.LIBRARY                   PCD  $0000  03-Sep-85 00:00  Pascal    19456
+ SYSTEM.MISCINFO                  PDA  $0000  25-Dec-83 00:00  Pascal      192
+ SYSTEM.CHARSET                   PDA  $0000  14-Jun-79 00:00  Pascal     1024
+ SYSTEM.SYNTAX                    PTX  $0000  01-Jul-85 00:00  Pascal     6144
+ MORSE.TEXT                       PTX  $0000  31-May-87 00:00  Pascal     5120
+ MORSE.CODE                       PCD  $0000  31-May-87 00:00  Pascal     3072
+------------------------------------------------------------------------------
+
+File: D3150.sdk
+Disk: [UNIDOS]
+ Name                             Type Auxtyp Modified         Format   Length
+------------------------------------------------------------------------------
+*_DOS001:CANYON CLIMBER           BIN  $077D  [No Date]        DOS       33171
+ _DOS001:HELLO                    BAS  $0801  [No Date]        DOS         899
+*_DOS001:FALCONS                  BIN  $0800  [No Date]        DOS       36096
+*_DOS001:SARGON II                BIN  $0300  [No Date]        DOS       26112
+*_DOS001:HORIZON FIVE             BIN  $0810  [No Date]        DOS       33016
+*_DOS001:SPITFIRE SIMULATOR       BIN  $0D00  [No Date]        DOS       33024
+*_DOS001:AQUATRON                 BIN  $07FD  [No Date]        DOS       36867
+ _DOS001:Q-BERT                   BIN  $4000  [No Date]        DOS       20992
+ _DOS001:SNAPPER                  BIN  $07FD  [No Date]        DOS       28931
+ _DOS001:LASER SILK               BIN  $07FD  [No Date]        DOS       31235
+ _DOS001:CROSS COUNTRY RALLY      BIN  $0800  [No Date]        DOS       31232
+*_DOS001:HOWITZER                 BAS  $0801  [No Date]        DOS        4297
+*_DOS001:PIG PEN                  BIN  $0F00  [No Date]        DOS       22528
+*_DOS001:SNOGGLE-JOYSTICK         BIN  $07FD  [No Date]        DOS       27408
+*_DOS001:CHECKERS                 BAS  $0801  [No Date]        DOS        4940
+*_DOS002:JUMPJET                  BIN  $07FD  [No Date]        DOS       36116
+*_DOS002:HOUSE OF USHER           BAS  $0801  [No Date]        DOS       25266
+*_DOS002:MAD-VENTURE              BIN  $0800  [No Date]        DOS       30720
+*_DOS002:INVASION FORCE           BIN  $0800  [No Date]        DOS        7318
+*_DOS002:BEZOFF                   BIN  $08FD  [No Date]        DOS       37891
+*_DOS002:REAR GUARD               BIN  $0280  [No Date]        DOS       37635
+ _DOS002:STAR WARS                BIN  $0300  [No Date]        DOS       27392
+ _DOS002:HELLO                    BAS  $0801  [No Date]        DOS         917
+*_DOS002:NARNIA                   BIN  $0800  [No Date]        DOS       34816
+*_DOS002:EAGLE EGGS               BIN  $0800  [No Date]        DOS        5889
+*_DOS002:ROAD PIZZA               BIN  $3500  [No Date]        DOS       24832
+*_DOS002:BRAINTEASER BLVD         BIN  $0800  [No Date]        DOS       22528
+*_DOS002:DRAW POKER               BIN  $1500  [No Date]        DOS       11008
+*_DOS002:APPLE PANIC              BIN  $07FD  [No Date]        DOS       26640
+*_DOS002:PULSAR II                BIN  $1EFD  [No Date]        DOS       30467
+*_DOS002:TEMPEST                  BIN  $1200  [No Date]        DOS       24576
+------------------------------------------------------------------------------
+
+File: D3455.sdk
+Disk: ProDOS /D3455
+ Name                             Type Auxtyp Modified         Format   Length
+------------------------------------------------------------------------------
+ PRODOS                           SYS  $0000  02-Nov-88 18:03  ProDOS    19560
+ MENU.SYSTEM                      SYS  $0000  27-Jul-88 19:26  ProDOS     2808
+ STAR.AVENGER                     BIN  $0800  01-Aug-88 19:22  ProDOS    21164
+ STAR.BLAZER                      BIN  $0800  01-Aug-88 19:22  ProDOS    26955
+ STAR.CLONES                      BIN  $0800  01-Aug-88 19:22  ProDOS    32057
+ STAR.CRUISER                     BIN  $0800  01-Aug-88 19:22  ProDOS    17020
+ STAR.DANCE                       BIN  $0800  01-Aug-88 19:22  ProDOS    23271
+ STAR.MAZE                        BIN  $0800  01-Aug-88 19:22  ProDOS    30537
+ STAR.THIEF                       BIN  $0800  01-Aug-88 19:23  ProDOS    14786
+ STAR.TREK                        BIN  $0800  01-Aug-88 19:25  ProDOS    28646
+ STAR.WARS.II                     BIN  $0300  03-Nov-85 00:00  ProDOS    27392
+ STARGATE                         BIN  $0800  01-Aug-88 19:23  ProDOS    31036
+ STARMINES                        BIN  $0800  01-Aug-88 19:23  ProDOS    15117
+ STRANGE.ODYSSEY                  BIN  $0800  01-Aug-88 19:24  ProDOS    18318
+ STUNT.CYCLE                      BIN  $1100  02-Oct-88 04:20  ProDOS     7936
+ SUCCESSION                       BIN  $0800  01-Aug-88 19:23  ProDOS    14667
+ SUPER.HUEY                       BIN  $0800  01-Aug-88 19:23  ProDOS    29716
+ SUPER.PUCKMAN                    BIN  $0800  01-Aug-88 19:24  ProDOS    29741
+ SYZYGY                           BIN  $0800  01-Aug-88 19:24  ProDOS    30823
+ TAIL.GUNNER                      BIN  $0800  13-Nov-88 16:32  ProDOS    15829
+ TAXMAN                           BIN  $0800  01-Aug-88 19:26  ProDOS    27680
+ TECHNO.RACING                    BIN  $0800  01-Aug-88 19:27  ProDOS    26435
+ TERITORY                         BIN  $0800  01-Aug-88 19:28  ProDOS    11114
+ THE.BILESTOAD                    BIN  $0800  01-Aug-88 19:27  ProDOS    30122
+ THE.COUNT                        BIN  $0800  28-May-88 21:56  ProDOS    20336
+ THE.ELIMINATOR                   BIN  $0800  01-Aug-88 19:27  ProDOS    25761
+ THIEF                            BIN  $0800  01-Aug-88 19:27  ProDOS    26349
+ THUNDERBIRD.GX                   BIN  $0800  01-Aug-88 19:27  ProDOS    10688
+ THUNDERBOMBS                     BIN  $0800  01-Aug-88 19:27  ProDOS    21474
+ TIME.TUNNELS                     BIN  $0800  01-Aug-88 19:28  ProDOS    24005
+ TORAX                            BIN  $0800  01-Aug-88 19:28  ProDOS     7255
+ TRACK.ATTACK                     BIN  $07FD  05-Dec-87 02:18  ProDOS    36356
+ TRANQUILITY.BAS                  BIN  $0800  01-Aug-88 19:29  ProDOS    22083
+ TRIAD                            BIN  $07ED  24-Feb-88 23:12  ProDOS    31511
+ TROMPERS                         BIN  $0800  01-Aug-88 19:29  ProDOS    18167
+------------------------------------------------------------------------------
+
+File: SYSTEM.MSTR.SHK
+Disk: DOS 3.3 Volume 254
+ Name                             Type Auxtyp Modified         Format   Length
+------------------------------------------------------------------------------
+*HELLO                            BAS  $0801  [No Date]        DOS        1137
+*ANIMALS                          INT  $0000  [No Date]        DOS        4205
+*APPLE PROMS                      TXT  $0000  [No Date]        DOS         264
+*APPLESOFT                        INT  $0000  [No Date]        DOS        1142
+*APPLEVISION                      INT  $0000  [No Date]        DOS        6190
+*BIORHYTHM                        INT  $0000  [No Date]        DOS        4078
+*BOOT13                           BIN  $1700  [No Date]        DOS        2288
+*BRIAN'S THEME                    BAS  $0801  [No Date]        DOS        1161
+*CHAIN                            BIN  $0808  [No Date]        DOS         456
+*COLOR DEMO                       INT  $0000  [No Date]        DOS        1921
+*COLOR DEMOSOFT                   BAS  $0801  [No Date]        DOS        1821
+*COPY                             INT  $0000  [No Date]        DOS        1834
+*COPY.OBJ0                        BIN  $02C0  [No Date]        DOS         267
+*COPYA                            BAS  $0801  [No Date]        DOS        1844
+*EXEC DEMO                        BAS  $0801  [No Date]        DOS        2208
+*FID                              BIN  $0803  [No Date]        DOS        4686
+*FPBASIC                          BIN  $D000  [No Date]        DOS       12288
+*INTBASIC                         BIN  $1000  [No Date]        DOS       12288
+*LITTLE BRICK OUT                 BAS  $0801  [No Date]        DOS        6775
+*MAKE TEXT                        BAS  $0801  [No Date]        DOS         493
+*MASTER CREATE                    BIN  $0800  [No Date]        DOS        1791
+*MUFFIN                           BIN  $0803  [No Date]        DOS        6397
+*PHONE LIST                       BAS  $0801  [No Date]        DOS       12786
+*RANDOM                           BAS  $0801  [No Date]        DOS        2280
+*RENUMBER                         BAS  $0801  [No Date]        DOS        3046
+*RENUMBER INSTRUCTIONS            BAS  $0801  [No Date]        DOS        9581
+*RETRIEVE TEXT                    BAS  $0801  [No Date]        DOS         331
+------------------------------------------------------------------------------
+
+
+Scan completed in 1 seconds.

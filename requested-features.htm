@@ -1,0 +1,236 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>CiderPress Requested Features</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>CiderPress Requested Features List</h1>
+<p>In no particular order.&nbsp; <a href="index.htm">Return to main page</a>.</p>
+<p>Main application features:</p>
+<ul>
+  <li>Add: &quot;Search&quot; feature to find text and binary strings across
+    multiple disk images and file archives.</li>
+  <li>Add: Copy &amp; paste files to and from Windows Explorer windows.</li>
+  <li>Add: Drag &amp; drop files between disk images.</li>
+  <li>Add: Drag disk images onto CiderPress window to open them.</li>
+  <li>Add: &quot;Move file&quot; command (moves files between ProDOS/HFS directories).</li>
+  <li>Add: Directory sorting.</li>
+  <li>Add: Graphical &quot;blocks in use&quot; disk map.</li>
+  <li>Add: Allow choice between list and tree display for file list.</li>
+  <li>Add: &quot;Undelete files&quot; command.</li>
+  <li>Add: &quot;Revert to original&quot; feature (mass &quot;undo&quot; for all
+    types of files).</li>
+  <li>Add: ResEdit-style resource viewer.</li>
+  <li>Expand ZIP archive support.</li>
+  <li>Add: File compare, a la ProSel-16.</li>
+</ul>
+
+<p>Ideas for tools:</p>
+<ul>
+  <li>Add: BinSCII encode/decode.</li>
+  <li>Add: Decode &quot;executioner&quot;, PAAF, etc.</li>
+  <li>Add: ADT server.</li>
+  <li>Add: Macintosh-style partitioned image creator (can be used as CD-ROM &quot;.iso&quot; image
+    creator).</li>
+  <li>Add: partition &amp; format utilities for CFFA, MicroDrive, and FocusDrive.</li>
+  <li>Add: bad block scan.&nbsp; Useful for .NIB, .APP, and .FDI images, as well
+    as physical media.</li>
+  <li>Add: more &quot;bulk tools&quot;, e.g. bulk image testing.</li>
+  <li>Add: a recursive extraction feature that extracts files from disks in
+    archives on disks.</li>
+  <li>Add: "disk zap" to zero out empty blocks (improves disk compression).</li>
+  <li>Add: HDV Normalizer, which converts an "expanding" .hdv file into a
+    full-sized file.</li>
+  <li>Turn &quot;disk sector viewer&quot; into &quot;disk sector editor&quot;.</li>
+  <li>Add 6502/65816 code disassembly to sector viewer.</li>
+  <li>Volume copier should allow you to have two volumes open at the same time,
+    and copy partitions directly between them.</li>
+  <li>Opening a file on a disk image should involve picking a name from a list
+    or tree,
+    not typing it in by hand.</li>
+  <li>Add a tool that splits a .NIB disk image into two pieces for SST (needs to
+    reconstruct sync bytes, etc).</li>
+</ul>
+
+<p>Disk image support:</p>
+<ul>
+  <li>Add: DDD Deluxe support [need format description or program disassembly].</li>
+  <li>Add: Davex archived volume support.</li>
+  <li>Add: zero out unused blocks (for better compression).</li>
+  <li>Add: support for storage type 4 [embedded Pascal volumes -- need examples].</li>
+  <li>Implement writing on CP/M and RDOS disks.</li>
+  <li>CP/M user number needs to be visible to user (maybe in place of
+    &quot;type&quot; column).</li>
+  <li>Retain 2MG comments when converting 2MG to 2MG.&nbsp; Convert 2MG comments
+    to NuFX comments and vice-versa.</li>
+  <li>Expand DOS Master support to handle arbitrary volumes embedded in ProDOS
+    hard drives.</li>
+  <li>Add &quot;delete DOS&quot; and &quot;copy DOS&quot; for DOS 3.3 disks.</li>
+  <li>Improve support for DOS files with oversized track/sector lists (e.g.
+    &quot;fastloader&quot; files).</li>
+  <li>&quot;Krunch&quot; Pascal disks.</li>
+  <li>Convert TXT to PTX when adding files to Pascal disks.&nbsp; (Might make
+    more sense to convert SRC to PTX, since PTX files were almost always source
+    code.)</li>
+  <li>Allow customization of nibble format, for reading sectors from
+    copy-protected .NIB images.</li>
+  <li>Allow nibble access to 3.5&quot; disk images.</li>
+  <li>Handle non-Macintosh hard drive formats, e.g. Corvus partitioning.</li>
+  <li>Handle zip/gzip-compressed images larger than 32MB by expanding into a
+    temp file.</li>
+  <li>Recognize Infocom games.&nbsp; Show the game data portion as a file that
+    can be extracted for use with Windows-based Infocom interpreters.</li>
+  <li>Shared file access needs to be disabled, especially on disk images open
+    read-write.&nbsp; Right now you can run a disk image in an emulator while
+    it's open in CiderPress, which is convenient until the emulator deletes or
+    adds files and CP doesn't know about it.&nbsp; (CP re-loads the block use
+    map every time it does anything, so the most common forms of nastiness are
+    prevented.)</li>
+  <li>Add block-oriented write caching to improve speed on physical media (e.g. multiple-file deletes on a ProDOS
+    3.5&quot; floppy disk).</li>
+  <li>Automatically expand undersized .hdv images.</li>
+  <li>Add an option to force writes on a &quot;damaged&quot; or
+    &quot;suspicious&quot; disk image.&nbsp; Not a good idea, but could come in
+    handy.</li>
+  <li>DOS/ProDOS &quot;hybrid&quot; disks (as created with Hybrid.Create on the
+    &quot;Extra K&quot; disk) are supported, but only one part can be accessed
+    at a time.&nbsp; This should be changed so that both parts can be accessed.</li>
+  <li>Provide translation of 13-sector boot block in disk sector viewer.</li>
+  <li>Add code to write FDI images (they're currently read-only).</li>
+  <li>Add an option to decide whether to convert FDI images to variable-length
+    tracks (which can be converted to .APP) or fixed-length tracks (which can be
+    converted to .NIB).&nbsp; This needs to happen in the FDI code because the
+    only way to do it reliably for copy-protected disks is to have access to the
+    self-sync information.</li>
+  <li>Add support for OS/9 format, for Stellation Mill 6809 card.</li>
+  <li>If a disk image isn't recognized, add a &quot;specify disk format&quot;
+    button to the error dialog.&nbsp; (Currently you have to enable the
+    &quot;specify format&quot; dialog in Edit-&gt;Preferences.)</li>
+  <li>Correctly identify newly-formatted DOS 3.1 .nib images, which don't
+    have valid sector data fields.
+</ul>
+
+<p>Physical devices:</p>
+<ul>
+  <li>Try to detect or prevent media swaps, i.e. ejecting a floppy or CD-ROM and
+    inserting a new one while CiderPress has it open.</li>
+  <li>Find a less-noisy way to tell if there's a disk in the floppy drive in
+    Win98.</li>
+  <li>After N blocks read without errors, resume bulk reads.&nbsp; (Currently
+    the disk copier goes to single-block copies after encountering read errors,
+    and stays there, with a 5-6x loss in performance on slower devices.)</li>
+</ul>
+
+<p>Application tweaks:</p>
+<ul>
+  <li>Add: Quick-open last N files from list in &quot;File&quot; menu.</li>
+  <li>Paste should behave like &quot;add files&quot;: the filenames of files
+    being pasted are guaranteed not to clash with other files being pasted, but
+    any conflicts with existing files should be resolved with a
+    rename/overwrite/skip dialog.</li>
+  <li>Copying &amp; pasting DOS 3.3 'B' files with &quot;loaders&quot; should
+    work properly.&nbsp; (When you BRUN a file, DOS uses the embedded length to
+    decide how long the file is.&nbsp; Some cracked games put a loader in the
+    first part of the file, which then read the sectors out of the rest of the
+    file.&nbsp; Handling this correctly requires copying all sectors without
+    losing the length embedded in the original.&nbsp; Current workaround: change
+    type to 'S'.)</li>
+  <li>2MG file comments should be more prominent; perhaps in the Archive Info
+    screen.</li>
+  <li>More details should be available on why &quot;damaged&quot; and
+    &quot;suspicious&quot; files are marked as such.</li>
+  <li>Printed file list should have indication of &quot;damaged&quot; and
+    &quot;suspicious&quot; files.</li>
+  <li>&quot;New -&gt; Disk image&quot; and &quot;convert file to disk archive&quot; should
+    allow formats other than ProDOS-ordered &quot;.po&quot; and DOS-ordered
+    &quot;.do&quot; (e.g. 2MG).</li>
+  <li>Make toolbar buttons configurable.</li>
+  <li>Put the &quot;...&quot; in the middle of space-shortened file names,
+    rather than at the start or end.</li>
+  <li>Add hi-res/double-hi-res palette configuration, so individual colors can
+    be tailored for authenticity with respect to a particular type of display
+    hardware (i.e. NTSC television vs. RGB monitor).</li>
+  <li>Sector viewer should have a sliding bar to select offset into disk or
+    file, allowing fast access to arbitrary offsets.</li>
+  <li>Allow addition of a Binary II header when creating NuFX archives.</li>
+  <li>File copy &amp; paste should copy comments found in NuFX archives.</li>
+  <li>Allow text conversion when adding files to NuFX archives (actually a
+    NufxLib change).</li>
+  <li>Have a &quot;convert current disk&quot; feature, instead of having to
+    re-open the currently-open disk in the disk image converter.</li>
+  <li>Add audio capture to the cassette tape import feature, so that cassette
+    tapes don't have to be captured with a sound editor.</li>
+  <li>Cassette import should recognize arrays and shape tables automatically.</li>
+  <li>Add audio export feature, converting BAS/INT/BIN to cassette tape format.</li>
+  <li>Add syntax checking to BASIC import feature.&nbsp; Add Integer BASIC
+    support.</li>
+  <li>Add a new option to Paste Special: paste the contents of the clipboard
+    into a newly-created text file.&nbsp; Useful for grabbing text data out of
+    other Windows applications.</li>
+  <li>Show compression stats, e.g. total size vs. total compressed size, for
+    NuFX archives.</li>
+  <li>Make the NufxLib error log output available.</li>
+  <li>Make rVersion and rComment resources more easily visible, perhaps
+    treating them in a fashion similar to NuFX comments.</li>
+</ul>
+
+<p>File viewer and file converters:</p>
+<ul>
+  <li>Add: Packed hi-res/DHR (ProDOS $08/4000 and $08/4001 -- never used?).</li>
+  <li>Add: Packed hi-res (Beagle Graphics).</li>
+  <li>Add: Dreamgrafix PNT/$8005 (and the less-common PIC/$8003).</li>
+  <li>Add: AppleWriter.</li>
+  <li>Add: Magic Window.</li>
+  <li>Add: Finder icons.</li>
+  <li>Add: Sound files.</li>
+  <li>Add: Apple /// Business Basic (BA3).</li>
+  <li>Add: Magic Window.</li>
+  <li>Display text in an &quot;Apple II&quot; font.&nbsp; (There are some Apple
+    II fonts on the web that you can install and use with the file viewer.&nbsp;
+    CiderPress should include one.)</li>
+  <li>Support TimeOut SuperFonts in AWP converter.</li>
+  <li>Correctly support tabs in AWP and GWP documents.</li>
+  <li>Have option to convert AWP to plain text instead of RTF.&nbsp; (Can get
+    same effect by cut &amp; pasting into Notepad.)</li>
+  <li>Expand files compressed with HardPressed.</li>
+  <li>Applesoft/Integer syntax highlighting could grey-out unreachable lines.</li>
+  <li>Have alternate Integer BASIC mode that deciphers the POKEs that conceal
+    BASIC listing in mixed Integer/assembly programs (fairly common in programs
+    from cassettes).</li>
+  <li>Add &quot;save as&quot; button to file viewer.</li>
+  <li>Add &quot;reverse&quot; conversions, e.g. RTF to AppleWorks, BMP to SHR,
+    etc.</li>
+  <li>Add a printer page setup screen that allows configuration of
+    margins.&nbsp; (Left/right margins are currently configured to deliver
+    exactly 80 columns of 10-point Courier New, in an attempt to match Apple II
+    output.)</li>
+  <li>Present &quot;select all&quot; and copy/paste in a menu or as buttons
+    (instead of expecting the user to know about Ctrl-A / Ctrl-C / Ctrl-V).</li>
+  <li>Provide a way to view files on a Windows filesystem.</li>
+  <li>Don't use a fixed pixel width for the initial size of the file
+    viewer.&nbsp; On systems with DPI set to 120 the buttons get squished
+    together.</li>
+  <li>Make the File Viewer a file editor.&nbsp; Allow editing of text files and
+    hex dumps.</li>
+</ul>
+
+<p>MDC:</p>
+<ul>
+  <li>Support multiple output modes (plain text, HTML, XML, CSV,
+    &quot;native&quot; listing that looks like DOS catalog, ProDOS catalog,
+    Pascal list, CP/M dir, etc.)</li>
+  <li>Adjust widths of individual fields.</li>
+  <li>Show the contents of SHK file archives.</li>
+  <li>Open up SHK and ZIP multi-file archives and examine their contents for things
+    that are obviously disk images.</li>
+</ul>
+
+</body>
+
+</html>

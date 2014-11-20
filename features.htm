@@ -1,0 +1,247 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta name="description" content="faddenSoft Software">
+<title>CiderPress Features</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>CiderPress Features</h1>
+
+<p><a href="index.htm">Return to main page</a>.</p>
+
+<p><b><a name="shrinkit"></a>Access to ShrinkIt Archives</b></p>
+<p>Full access to ShrinkIt archives (.shk, .sdk, .bxy, .sea, .bse) is provided,
+including:</p>
+<ul>
+  <li>View files without having to extract them first.&nbsp; Special converters
+    are provided for several popular file formats.</li>
+  <li>Extract files and directories, optionally converting them.&nbsp; File type
+    information and resource forks can be preserved in Windows, using the <a href="http://www.nulib.com/library/nulib2-preserve.htm">method</a>
+    developed for use in NuLib2.&nbsp; It's possible to extract all files from a
+    GS/OS boot disk to Windows, add them to a new disk image, and then boot that
+    image in an emulator.</li>
+  <li>Add files, directories, and disk images.</li>
+  <li>Convert the contents of a ShrinkIt file archive directly to a ProDOS disk image, and
+    vice-versa.</li>
+  <li>Re-compress entries with a different algorithm.&nbsp; All compression
+    methods defined in the NuFX specification are supported, as well as gzip
+    &quot;deflate&quot;.</li>
+  <li>Rename entries.</li>
+  <li>Test entries or whole archives.</li>
+  <li>Delete entries.</li>
+  <li>Add, update, and delete comments.</li>
+  <li>Edit file type, aux type, and access permissions of archived files.&nbsp;</li>
+  <li>Print file listings.</li>
+  <li>Copy &amp; paste files between archives and disk images.</li>
+</ul>
+<p>It's like having &quot;ShrinkIt for Windows&quot;.&nbsp; Viewing and extracting files from Binary II files
+(.bny, .bqy) and AppleLink Compression Utility archives (.acu) is also
+supported.&nbsp; ShrinkIt archive access is provided by NufxLib, the library used by the
+<a href="http://www.nulib.com/">NuLib2</a> archive utility since early 2000.&nbsp;
+Archives created with NufxLib are nearly identical to those created with GS/ShrinkIt.</p>
+<p><b><a name="disks"></a>Disk Image Support</b></p>
+<p>CiderPress has the ability to identify nearly all Apple II disk image formats
+automatically.&nbsp; Supported file formats include:</p>
+<ul>
+  <li>Universal Disk Images (.2mg, .2img)</li>
+  <li>DiskCopy 4.2 (.dsk)</li>
+  <li>Copy II Plus (.img)</li>
+  <li>Sim //e HDV images (.hdv)</li>
+  <li>TrackStar 40-track images (.app)</li>
+  <li> Dalton's Disk Disintegrator (DDD v2.1+, DDD Pro v1.1+) (.ddd)</li>
+  <li>Raw FDI images of 5.25&quot; and 3.5 disks (read-only) (.fdi)</li>
+  <li>Unadorned sector-format files (.po, .do, .d13, .raw, .hdv, .iso, most .dc6)</li>
+  <li>Unadorned nibble-format files (.nib, .nb2)</li>
+  <li>Any of the above compressed with gzip (.gz) or zip (.zip)</li>
+  <li>ShrinkIt (NuFX) compressed disk images (.shk, .sdk)</li>
+</ul>
+<p>The image file format, filesystem, and sector ordering are <b>determined
+automatically</b> for most disks.&nbsp; The settings can be overridden if necessary.&nbsp;
+Images larger than floppies, such as ProDOS and HFS hard drive partition
+images, are fully supported.</p>
+<p>The
+recognized filesystem formats are:</p>
+<ul>
+  <li>DOS 3.2/3.3 (13, 16, or 32 sectors, up to 50 tracks)</li>
+  <li>ProDOS</li>
+  <li>UCSD Pascal</li>
+  <li>HFS (up to 2GB)</li>
+  <li>CP/M</li>
+  <li>SSI's RDOS (13-sector, 16-sector, and converted 13-to-16-sector formats)</li>
+</ul>
+<p> DOS, ProDOS, HFS, and UCSD Pascal filesystems are fully supported.&nbsp; You can
+view, add, extract, rename, and delete files, as well as create bootable blank
+disk images.&nbsp; Change disk volume names and DOS volume numbers.&nbsp; Create
+subdirectories and change file types on ProDOS disks.&nbsp; Files on CP/M and RDOS disks can be extracted and
+viewed.&nbsp; CiderPress also recognizes the following &quot;meta-formats&quot;:</p>
+
+<ul>
+  <li>UNIDOS / AmDOS / OzDOS (two 400K DOS volumes on an 800K disk)</li>
+  <li>ProSel Uni-DOS / DOS Master (one or more DOS volumes embedded in an 800K ProDOS disk)</li>
+  <li>Macintosh-style disk partitioning (for hard drives, CD-ROMs, flopticals,
+    etc).</li>
+  <li>CFFA-style partitioning (fixed-size 32MB/1GB volumes, for Compact Flash
+    cards).</li>
+  <li>///SHH Systeme MicroDrive partitioning (allows up to 16 partitions on IDE hard
+    drives).</li>
+  <li>Parsons Engineering FocusDrive partitioning (allows up to 30 partitions).</li>
+</ul>
+
+<p> <b><a name="physical"></a>Direct Access to Physical Devices</b></p>
+
+<p> With CiderPress you can directly access physical devices on your PC.&nbsp;
+For example:</p>
+
+<ul>
+  <li>Read and write ProDOS-formatted 720KB and 1.4MB floppy disks.&nbsp; If you
+    have a SuperDrive or floptical drive connected to your Apple II, you can
+    transfer files around without needing to use MS-DOS utilities.&nbsp; [Works
+    for PC-format disks.&nbsp; Does not work with Apple-format 800KB and 1.6MB
+    disks, nor 140KB 5.25&quot; disks.]</li>
+  <li>Read and write files on every ProDOS partition of a CFFA card.&nbsp;
+    4-part and
+    8-part configurations are automatically detected.</li>
+  <li>Read files from ProDOS partitions of CD-ROMs.&nbsp; If you have Apple II CD-ROMs
+    with multiple 32MB ProDOS partitions, CiderPress will find every file on
+    them.</li>
+  <li>Read and write files on every partition of an Apple II hard drive.&nbsp; Got an external SCSI drive
+    connected to your //gs?&nbsp; Plug it into a
+    SCSI card on a PC and open it.</li>
+</ul>
+<p>With the included volume copier, you can also copy partitions or
+multi-partition volumes to and from physical media.&nbsp; This allows you to extract partitions
+from CFFA cards, CD-ROMs, and hard drives, and use them with an emulator.&nbsp;
+Back up your hard drive to a block image file in seconds, and restore the whole drive,
+a single partition, or individual files quickly and easily.</p>
+
+<p>All of the above requires appropriate hardware, and some versions of Windows
+work better with certain hardware than others.&nbsp; See the <a href="hardware.htm">Hardware
+Compatibility</a> page for details about what you need and what you can expect.</p>
+
+<p><b><a name="converter"></a>Built-in File Viewer/Converter</b></p>
+<p>The file viewer can convert several formats for easier viewing on modern
+systems:</p>
+<ul>
+  <li>ProDOS text with carriage returns to Windows &quot;CRLF&quot; format.</li>
+  <li>DOS 3.3 &quot;high ASCII&quot; text to Windows text.</li>
+  <li>CP/M text converted to Windows format (stops at first Ctrl-Z).</li>
+  <li>UCSD Pascal editor text to plain text.</li>
+  <li>UCSD Pascal code to a segmented hex dump.</li>
+  <li>Applesoft BASIC to text (matches output of &quot;LIST&quot; command), with
+    or without color syntax highlighting.</li>
+  <li>Integer BASIC to text (matches output of &quot;LIST&quot; command), with
+    or without color syntax highlighting.</li>
+  <li>Apple /// Business BASIC to text (matches output of &quot;LIST&quot; command), with
+    or without color syntax highlighting.</li>
+  <li>S-C Assembler source files to text.</li>
+  <li>LISA tokenized assembly source to text (versions 2.x - 5.x).</li>
+  <li>Merlin assembly sources to properly-spaced text.</li>
+  <li>65C02/65816 code disassembly.&nbsp; Output matches //e and IIgs monitor
+    listings, with the addition of Nifty List annotations (descriptions of F8
+    ROM routines, softswitches, and ProDOS, GS/OS, and toolbox calls are shown).</li>
+  <li>Magic Window / Magic Window II &quot;formatted&quot; documents to text.</li>
+  <li>AppleWorks 3.0 documents:
+    <ul>
+  <li> Word processor to Rich Text Format (supports left/right
+    margins, centering, bold, italic, etc).</li>
+  <li> Database to CSV (suitable for import into Excel or other
+    applications).</li>
+  <li> Spreadsheet to CSV (for import into Excel or other
+    spreadsheets; some formulas may not convert).</li>
+    </ul>
+  </li>
+  <li>IIgs text documents:
+    <ul>
+      <li>Generic GWP to Rich Text Format.&nbsp; Converts non-ASCII characters,
+        such as symbols and letters with accents, to Windows equivalents.&nbsp;
+        Non-English text converts correctly.</li>
+      <li>Teach documents to Rich Text Format (supports different fonts, font
+        sizes, and style changes).</li>
+      <li>AWGS Word Processor documents to Rich Text format (supports different
+        fonts, font sizes, style changes, and paragraph justification).</li>
+    </ul>
+  </li>
+  <li>Hi-Res graphics to 560x384 16-color .BMP (B&amp;W or color with half-pixel
+    shifting).</li>
+  <li>Double Hi-Res graphics to 560x384 16-color .BMP (B&amp;W or color).</li>
+  <li>Super Hi-Res graphics to 640x400 256-color .BMP.&nbsp; Supported formats
+    include unpacked ($c1/0000), Paintworks ($c0/0000), packed ($c0/0001),
+    DreamGrafix ($c0/8005), and Apple Preferred Format
+    ($c0/0002) up to 1280x1024.</li>
+  <li>3200-color Super Hi-Res graphics to 640x400 24-bit .BMP.&nbsp; Supported
+    formats include unpacked ($c1/0002 or &quot;.3200&quot;), packed
+    (&quot;.3201&quot;), DreamGrafix ($c0/8005), and Apple Preferred Format ($c0/0002 with &quot;MULTIPAL&quot;).</li>
+  <li>Print Shop and Print Shop GS clip art to 88x52 .BMP.</li>
+  <li>MacPaint image to 576x720 B&amp;W .BMP.</li>
+  <li>Apple IIgs resource forks are split into individual resources and
+    displayed as hex dumps.</li>
+</ul>
+<p>In addition, any fork of any file can be viewed in its &quot;raw&quot; state
+or as a hex dump.</p>
+<p>Text and graphics can be cut &amp; pasted from the file viewer to
+other applications, or sent directly to your printer.&nbsp; The file converters can be applied when extracting
+files as well, allowing you to convert disks full of source code or images
+easily.&nbsp; It takes the same amount of effort to convert one AppleWorks
+document or one hundred.</p>
+<p>Unsupported formats with recognizable extensions, such as &quot;.GIF&quot;
+and &quot;.JPG&quot;, are displayed in an external viewer when double-clicked.</p>
+
+<p><b><a name="dicc"></a>Disk Image Creation and Conversion</b></p>
+
+<p>The disk image creation tool allows you to create blank, bootable disk image
+for DOS 3.2/3.3, ProDOS, HFS, and Pascal disks.&nbsp; ProDOS volumes can have arbitrary sizes
+up to 32MB, and HFS can go up to 2GB.&nbsp; Resize volumes by copying &amp; pasting between them, or use
+the one-step disk-to-file-archive and file-to-disk-archive features.</p>
+
+<p>The disk image converter easily converts disk images to any other suitable
+format.&nbsp; Use it to add or remove 2MG headers, or convert .PO to .NIB and back
+    again.&nbsp; Convert your 800K ShrinkIt disk images to and from DiskCopy 4.2.&nbsp;
+You can optionally add gzip compression for reduced storage size.</p>
+
+<p>If you have a large collection of images that you want to convert to a
+different format, use the bulk image converter to migrate them all in a few easy
+steps.</p>
+
+<p> <b><a name="tools"></a>Additional Tools</b></p>
+
+<p>CiderPress includes some other handy tools:</p>
+
+<ul>
+  <li>Disk Viewer - Examine disk images as 512-byte blocks, 256-byte sectors or
+    raw nibblized
+    tracks.&nbsp; Open and follow individual files and embedded sub-volumes.&nbsp;
+    Examine blocks on CF cards and other Windows volumes.</li>
+  <li>Volume Copier - Copy data to and from Windows volumes, such as CF cards
+    and floppy disks.&nbsp; Extract ProDOS partitions from CD-ROMs and copy them
+    to a hard drive partition.&nbsp; Back up your Apple II hard drive directly.</li>
+  <li>SST Image Merge - Combine SST-generated disk image pairs into .NIB files
+    without having to run SST in an emulator.&nbsp; Just generate the images on
+    the Apple II, transfer them to the PC, and let CiderPress do the reassembly
+    for you.</li>
+  <li>2MG Properties Editor - Change the &quot;locked&quot; flag, disk volume
+    number, and edit the comment in a 2MG disk image file.</li>
+  <li>EOL Scanner - Identify disk images and file archives damaged by ASCII-mode
+    transfers.&nbsp; Figure out what OS a text file is formatted for.</li>
+  <li>Cassette Import - Capture your Apple II cassette tape in a WAV file, then
+    use CiderPress to extract every program it contains.&nbsp; Automatically
+    identifies file type and length for most programs.&nbsp; It can even decode
+    some tapes that no longer work on a real Apple II.</li>
+  <li>Import BASIC from text file - Convert a text listing of an Applesoft
+    program into a BAS file on a disk image.&nbsp; Handy for converting programs
+    scanned from hardcopy.</li>
+</ul>
+
+<p>Included as a separate application, Multi-Disk Catalog (MDC)
+allows you to generate <a href="mdc-out.txt"> file listings</a> from hundreds of disk images with only a
+few mouse clicks.&nbsp; Just select the images and the automatic format
+recognition does the rest.</p>
+
+</body>
+
+</html>
