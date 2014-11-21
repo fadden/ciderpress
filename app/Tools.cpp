@@ -1552,7 +1552,7 @@ MainWindow::OnToolsSSTMerge(void)
     const int kBadCountThreshold = 3072;
     DiskImg srcImg0, srcImg1;
     CString appName, saveName, saveFolder, errMsg;
-    BYTE* trackBuf = NULL;
+    uint8_t* trackBuf = NULL;
     long badCount;
 
     // no need to flush -- can't really open raw SST images
@@ -1563,7 +1563,7 @@ MainWindow::OnToolsSSTMerge(void)
 
     appName.LoadString(IDS_MB_APP_NAME);
 
-    trackBuf = new BYTE[kSSTNumTracks * kSSTTrackLen];
+    trackBuf = new uint8_t[kSSTNumTracks * kSSTTrackLen];
     if (trackBuf == NULL)
         goto bail;
 
@@ -1774,11 +1774,11 @@ bail:
  * Returns 0 on success, -1 on failure.
  */
 int
-MainWindow::SSTLoadData(int seqNum, DiskImg* pDiskImg, BYTE* trackBuf,
+MainWindow::SSTLoadData(int seqNum, DiskImg* pDiskImg, uint8_t* trackBuf,
     long* pBadCount)
 {
     DIError dierr;
-    BYTE sctBuf[256];
+    uint8_t sctBuf[256];
     int track, sector;
     long bufOffset;
 

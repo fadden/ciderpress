@@ -1791,7 +1791,7 @@ bail:
  * really large files.
  */
 CString
-DiskArchive::LoadFile(const WCHAR* pathName, BYTE** pBuf, long* pLen,
+DiskArchive::LoadFile(const WCHAR* pathName, uint8_t** pBuf, long* pLen,
     GenericEntry::ConvertEOL conv, GenericEntry::ConvertHighASCII convHA) const
 {
     CString errMsg;
@@ -1836,7 +1836,7 @@ DiskArchive::LoadFile(const WCHAR* pathName, BYTE** pBuf, long* pLen,
         goto bail;
     }
 
-    *pBuf = new BYTE[fileLen];
+    *pBuf = new uint8_t[fileLen];
     if (*pBuf == NULL) {
         errMsg.Format(L"Unable to allocate %ld bytes for '%ls'.",
             fileLen, pathName);
@@ -3056,8 +3056,8 @@ DiskArchive::XferPrepare(const XferFileOptions* pXferOpts)
  * version just tucks the pointers into NufxLib structures.)
  */
 CString
-DiskArchive::XferFile(FileDetails* pDetails, BYTE** pDataBuf,
-    long dataLen, BYTE** pRsrcBuf, long rsrcLen)
+DiskArchive::XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+    long dataLen, uint8_t** pRsrcBuf, long rsrcLen)
 {
     //const int kFileTypeTXT = 0x04;
     DiskFS::CreateParms createParms;

@@ -66,19 +66,19 @@ public:
         ReformatOutput* pOutput) = 0;
 
     // grab the next 8 bits
-    static inline unsigned char Read8(const unsigned char** pBuf, long* pLength) {
+    static inline uint8_t Read8(const uint8_t** pBuf, long* pLength) {
         if (*pLength > 0) {
             (*pLength)--;
             return *(*pBuf)++;
         } else {
             // ought to throw an exception here
             ASSERT(false);
-            return (unsigned char) -1;
+            return (uint8_t) -1;
         }
     }
     // grab a 16-bit little-endian value
-    static inline unsigned short Read16(const unsigned char** pBuf, long* pLength) {
-        unsigned short val;
+    static inline uint16_t Read16(const uint8_t** pBuf, long* pLength) {
+        uint16_t val;
         if (*pLength >= 2) {
             val = *(*pBuf)++;
             val |= *(*pBuf)++ << 8;
@@ -86,13 +86,13 @@ public:
         } else {
             // ought to throw an exception here
             ASSERT(false);
-            val = (unsigned short) -1;
+            val = (uint16_t) -1;
         }
         return val;
     }
-    // grab a 16-bit little-endian value
-    static inline unsigned long Read32(const unsigned char** pBuf, long* pLength) {
-        unsigned long val;
+    // grab a 32-bit little-endian value
+    static inline uint32_t Read32(const uint8_t** pBuf, long* pLength) {
+        uint32_t val;
         if (*pLength >= 4) {
             val = *(*pBuf)++;
             val |= *(*pBuf)++ << 8;
@@ -102,30 +102,30 @@ public:
         } else {
             // ought to throw an exception here
             ASSERT(false);
-            val = (unsigned long) -1;
+            val = (uint32_t) -1;
         }
         return val;
     }
 
-    static inline unsigned short Get16LE(const unsigned char* buf) {
+    static inline uint16_t Get16LE(const uint8_t* buf) {
         return *buf | *(buf+1) << 8;
     }
-    static inline unsigned long Get32LE(const unsigned char* buf) {
+    static inline uint32_t Get32LE(const uint8_t* buf) {
         return *buf | *(buf+1) << 8 | *(buf+2) << 16 | *(buf+3) << 24;
     }
-    static inline unsigned short Get16BE(const unsigned char* buf) {
+    static inline uint16_t Get16BE(const uint8_t* buf) {
         return *buf << 8 | *(buf+1);
     }
-    static inline unsigned long Get32BE(const unsigned char* buf) {
+    static inline uint32_t Get32BE(const uint8_t* buf) {
         return *buf << 24 | *(buf+1) << 16 | *(buf+2) << 8 | *(buf+3);
     }
-    static inline unsigned short Get16(const unsigned char* buf, bool littleEndian) {
+    static inline uint16_t Get16(const uint8_t* buf, bool littleEndian) {
         if (littleEndian)
             return Get16LE(buf);
         else
             return Get16BE(buf);
     }
-    static inline unsigned long Get32(const unsigned char* buf, bool littleEndian) {
+    static inline uint32_t Get32(const uint8_t* buf, bool littleEndian) {
         if (littleEndian)
             return Get32LE(buf);
         else
@@ -158,10 +158,10 @@ protected:
            kPaletteWhite, kPaletteSize };
     RGBQUAD fPalette[kPaletteSize];
 
-    int UnpackBytes(unsigned char* dst, const unsigned char* src,
+    int UnpackBytes(uint8_t* dst, const uint8_t* src,
         long dstRem, long srcLen);
-    void UnPackBits(const unsigned char** pSrcBuf, long* pSrcLen,
-        unsigned char** pOutPtr, long dstLen, unsigned char xorVal);
+    void UnPackBits(const uint8_t** pSrcBuf, long* pSrcLen,
+        uint8_t** pOutPtr, long dstLen, uint8_t xorVal);
 
 private:
     void InitPalette();
@@ -306,24 +306,24 @@ protected:
     void RTFSetColor(TextColor color);
     void RTFSetFont(RTFFont font);
     void RTFSetFontSize(int points);
-    void RTFSetGSFont(unsigned short family);
+    void RTFSetGSFont(uint16_t family);
     void RTFSetGSFontSize(int points);
-    void RTFSetGSFontStyle(unsigned char qdStyle);
+    void RTFSetGSFontStyle(uint8_t qdStyle);
 //  void RTFProportionalOn(void);
 //  void RTFProportionalOff(void);
 
-    void ConvertEOL(const unsigned char* srcBuf, long srcLen,
+    void ConvertEOL(const uint8_t* srcBuf, long srcLen,
         bool stripHiBits);
-    void ConvertEOL(const unsigned char* srcBuf, long srcLen,
+    void ConvertEOL(const uint8_t* srcBuf, long srcLen,
         bool stripHiBits, bool stripNulls);
-    void BufHexDump(const unsigned char* srcBuf, long srcLen);
+    void BufHexDump(const uint8_t* srcBuf, long srcLen);
     void SetResultBuffer(ReformatOutput* pOutput, bool multiFont = false);
 
     ExpandBuffer    fExpBuf;
     bool            fUseRTF;
 
     // return a low-ASCII character so we can read high-ASCII files
-    inline char PrintableChar(unsigned char ch) {
+    inline char PrintableChar(uint8_t ch) {
         if (ch < 0x20)
             return '.';
         else if (ch < 0x7f)
@@ -335,13 +335,13 @@ protected:
     }
     // output an RTF-escaped char (do we want to trap Ctrl-Z?)
     // (only use this if we're in RTF mode)
-    inline void RTFPrintChar(unsigned char ch) {
-        ch = PrintableChar(ch);
-        RTFPrintExtChar(ch);
+    inline void RTFPrintChar(uint8_t ch) {
+        char pch = PrintableChar(ch);
+        RTFPrintExtChar(pch);
     }
     // output an RTF-escaped char, allowing high ASCII
     // (only use this if we're in RTF mode)
-    inline void RTFPrintExtChar(unsigned char ch) {
+    inline void RTFPrintExtChar(uint8_t ch) {
         if (ch == '\\')
             fExpBuf.Printf("\\\\");
         else if (ch == '{')
@@ -352,7 +352,7 @@ protected:
             fExpBuf.Printf("%c", ch);
     }
     // output a char, doubling up double quotes (for .CSV)
-    inline void BufPrintQChar(unsigned char ch) {
+    inline void BufPrintQChar(uint8_t ch) {
         if (ch == '"')
             fExpBuf.Printf("\"\"");
         else
@@ -360,7 +360,7 @@ protected:
     }
 
     // convert IIgs documents
-    unsigned char ConvertGSChar(unsigned char ch) {
+    uint8_t ConvertGSChar(uint8_t ch) {
         if (ch < 128)
             return ch;
         else
@@ -372,7 +372,7 @@ private:
     int CreateWorkBuf(void);
     enum { kRTFUnitsPerInch = 1440 };   // TWIPS
 
-    static const unsigned char kGSCharConv[];
+    static const uint8_t kGSCharConv[];
 
     int     fLeftMargin, fRightMargin;  // for documents, in 1/10th inch
     int     fPointSize;

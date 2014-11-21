@@ -106,7 +106,7 @@ ReformatApplesoft::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     int retval = -1;
@@ -133,8 +133,8 @@ ReformatApplesoft::Process(const ReformatHolder* pHolder,
     }
 
     while (length > 0) {
-        unsigned short nextAddr;
-        unsigned short lineNum;
+        uint16_t nextAddr;
+        uint16_t lineNum;
         bool inQuote = false;
         bool inRem = false;
 
@@ -349,10 +349,9 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
-    //unsigned short val16;
     int retval = -1;
 
     //srcPtr += 0xff0; //0x228e;
@@ -379,8 +378,8 @@ ReformatInteger::Process(const ReformatHolder* pHolder,
     }
 
     while (length > 0) {
-        unsigned char lineLen;
-        unsigned short lineNum;
+        uint8_t lineLen;
+        uint16_t lineNum;
         bool trailingSpace;
         bool newTrailingSpace = false;
 
@@ -622,7 +621,7 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     int retval = -1;
@@ -649,14 +648,14 @@ ReformatBusiness::Process(const ReformatHolder* pHolder,
         goto done;
     }
 
-    unsigned short fileLength;
+    uint16_t fileLength;
     fileLength = Read16(&srcPtr, &length);
     LOGI("  BA3 internal file length is: %d", fileLength);
 
     while (length > 0) {
-        unsigned short increment;
-        unsigned short extendedToken;
-        unsigned short lineNum;
+        uint16_t increment;
+        uint16_t extendedToken;
+        uint16_t lineNum;
         bool inQuote = false;
         bool inRem = false;
         bool firstData = true;

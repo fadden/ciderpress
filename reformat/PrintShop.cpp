@@ -64,7 +64,7 @@ ReformatPrintShop::Process(const ReformatHolder* pHolder,
     ReformatOutput* pOutput)
 {
     MyDIBitmap* pDib = NULL;
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
 
     if (srcLen == 572 || srcLen == 576) {
@@ -95,11 +95,11 @@ ReformatPrintShop::Process(const ReformatHolder* pHolder,
  * at the end.
  */
 MyDIBitmap*
-ReformatPrintShop::ConvertBW(const unsigned char* srcBuf)
+ReformatPrintShop::ConvertBW(const uint8_t* srcBuf)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
-    unsigned char* outBuf;
-    unsigned char* ptr;
+    uint8_t* outBuf;
+    uint8_t* ptr;
     int pitch;
     int x, y;
 
@@ -111,7 +111,7 @@ ReformatPrintShop::ConvertBW(const unsigned char* srcBuf)
     colorConv[1].rgbRed = colorConv[1].rgbGreen = colorConv[1].rgbBlue = 0;
     colorConv[0].rgbReserved = colorConv[1].rgbReserved = 0;
 
-    outBuf = (unsigned char*) pDib->Create(kWidth, kHeight, 1, 2);
+    outBuf = (uint8_t*) pDib->Create(kWidth, kHeight, 1, 2);
     if (outBuf == NULL) {
         delete pDib;
         pDib = NULL;
@@ -146,13 +146,13 @@ bail:
  * table below come from a screen capture of KEGS.
  */
 MyDIBitmap*
-ReformatPrintShop::ConvertColor(const unsigned char* srcBuf)
+ReformatPrintShop::ConvertColor(const uint8_t* srcBuf)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
-    unsigned char* outBuf;
-    unsigned char* ptr;
-    unsigned char outVal;
-    unsigned short yellow, magenta, cyan;
+    uint8_t* outBuf;
+    uint8_t* ptr;
+    uint8_t outVal;
+    uint16_t yellow, magenta, cyan;
     int pitch;
     int x, y, bit;
     static const RGBQUAD kColorConv[8] = {
@@ -170,7 +170,7 @@ ReformatPrintShop::ConvertColor(const unsigned char* srcBuf)
     if (pDib == NULL)
         return NULL;
 
-    outBuf = (unsigned char*) pDib->Create(kWidth, kHeight, 4, 8);
+    outBuf = (uint8_t*) pDib->Create(kWidth, kHeight, 4, 8);
     if (outBuf == NULL) {
         delete pDib;
         pDib = NULL;

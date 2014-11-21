@@ -228,7 +228,7 @@ ReformatHiRes::Process(const ReformatHolder* pHolder,
     ReformatOutput* pOutput)
 {
     MyDIBitmap* pDib;
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
@@ -280,10 +280,10 @@ ReformatHiRes::InitLineOffset(int* pOffsetBuf)
  * Convert a buffer of hires data to a 16-color DIB.
  */
 MyDIBitmap*
-ReformatHiRes::HiResScreenToBitmap(const unsigned char* buf)
+ReformatHiRes::HiResScreenToBitmap(const uint8_t* buf)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
-    unsigned char* outBuf;
+    uint8_t* outBuf;
     const int kLeadIn = 4;
     unsigned int colorBuf[kLeadIn+kOutputWidth +1];     // 560 half-pixels 
     int pixelBits[kPixelsPerLine];
@@ -319,7 +319,7 @@ ReformatHiRes::HiResScreenToBitmap(const unsigned char* buf)
     if (pDib == NULL)
         goto bail;
 
-    outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
+    outBuf = (uint8_t*) pDib->Create(kOutputWidth, kOutputHeight,
                                     4, kNumColors);
     if (outBuf == NULL) {
         delete pDib;
@@ -332,13 +332,13 @@ ReformatHiRes::HiResScreenToBitmap(const unsigned char* buf)
      * Run through the lines.
      */
     for (line = 0; line < kNumLines; line++) {
-        const unsigned char* lineData = buf + fLineOffset[line];
+        const uint8_t* lineData = buf + fLineOffset[line];
         int* bitPtr = pixelBits;
         int* shiftPtr = shiftBits;
 
         /* unravel the bits */
         for (int byt = 0; byt < kPixelsPerLine / 7; byt++) {
-            unsigned char val = *lineData;
+            uint8_t val = *lineData;
             int shifted = (val & 0x80) != 0;
 
             for (int bit = 0; bit < 7; bit++) {
@@ -430,7 +430,7 @@ ReformatHiRes::HiResScreenToBitmap(const unsigned char* buf)
 #define SetPix(x, y, twoval) \
         outBuf[((kOutputHeight-1) - (y)) * (kOutputWidth/2) + (x)] = twoval
 
-        unsigned char pix4;
+        uint8_t pix4;
         for (int pix = 0; pix < kPixelsPerLine; pix++) {
             int bufPosn = kLeadIn + pix * 2;
             ASSERT(colorBuf[bufPosn] < kNumColors);

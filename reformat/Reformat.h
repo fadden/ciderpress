@@ -263,8 +263,7 @@ public:
     void SetErrorMsg(ReformatPart part, const CString& str);
 
     /* give a pointer (allocated with new[]) for one of the inputs */
-    void SetSourceBuf(ReformatPart part, unsigned char* buf,
-        long len);
+    void SetSourceBuf(ReformatPart part, uint8_t* buf, long len);
 
     static const WCHAR* GetReformatName(ReformatID id);
 
@@ -323,7 +322,7 @@ protected:
     /* set the "preferred" flag on all non-"not" entries */
     void SetApplicPreferred(ReformatID id, ReformatPart part = kPartUnknown);
 
-    const unsigned char* GetSourceBuf(ReformatPart part) const;
+    const uint8_t* GetSourceBuf(ReformatPart part) const;
     long GetSourceLen(ReformatPart part) const;
 
     long GetFileType(void) const { return fFileType; }
@@ -353,7 +352,7 @@ private:
     char*           fNameExt;       // guaranteed non-NULL
 
     /* input goes here */
-    unsigned char*  fSourceBuf[kPartMAX];
+    uint8_t*         fSourceBuf[kPartMAX];
     long            fSourceLen[kPartMAX];
 
     char*           fErrorBuf[kPartMAX];
@@ -457,27 +456,27 @@ public:
     // one-time cleanup
     static bool AppCleanup(void);
 
-    static const char* LookupP8MLI(unsigned char code) {
+    static const char* LookupP8MLI(uint8_t code) {
         return Lookup(fP8MLI, code);
     }
-    static const char* LookupGSOS(unsigned short code) {
+    static const char* LookupGSOS(uint16_t code) {
         return Lookup(fGSOS, code);
     }
-    static const char* LookupToolbox(unsigned short req) {
+    static const char* LookupToolbox(uint16_t req) {
         return Lookup(fSystemTools, req);
     }
-    static const char* LookupE1Vector(unsigned short addr) {
+    static const char* LookupE1Vector(uint16_t addr) {
         return Lookup(fE1Vectors, addr);
     }
-    static const char* LookupE0Vector(unsigned short addr) {
+    static const char* LookupE0Vector(uint16_t addr) {
         return Lookup(fE0Vectors, addr);
     }
-    static const char* Lookup00Addr(unsigned short addr) {
+    static const char* Lookup00Addr(uint16_t addr) {
         //if (addr < 0xc000)
         //  return NULL;     // ignore Davex Bxxx values
         return Lookup(f00Addrs, addr);
     }
-    static const char* Lookup01Vector(unsigned short addr) {
+    static const char* Lookup01Vector(uint16_t addr) {
         return Lookup(f01Vectors, addr);
     }
 
@@ -490,7 +489,7 @@ private:
      */
     typedef struct NameValue {
         const char*     name;
-        unsigned short  value;
+        uint16_t        value;
     } NameValue;
     typedef struct DataSet {
         long            numEntries;
@@ -515,10 +514,10 @@ private:
         LoadMode mode);
     static int ScanLine(const char* pData, long remLen);
     static int SortNameValue(const void *, const void *);
-    static unsigned short ConvHexFour(const char* data);
+    static uint16_t ConvHexFour(const char* data);
     static void DumpSection(const DataSet& dataSet);
 
-    static const char* Lookup(const DataSet& dataSet, unsigned short key);
+    static const char* Lookup(const DataSet& dataSet, uint16_t key);
 
     /* we sit on a copy of the entire file */
     static char*    fFileData;

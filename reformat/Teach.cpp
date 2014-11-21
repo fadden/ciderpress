@@ -45,7 +45,7 @@ ReformatGWP::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     fUseRTF = false;
 
@@ -53,7 +53,7 @@ ReformatGWP::Process(const ReformatHolder* pHolder,
     RTFBegin();
 
     /* convert EOL markers and IIgs characters */
-    unsigned char ch;
+    uint8_t ch;
     while (srcLen) {
         ch = *srcBuf++;
         srcLen--;
@@ -111,10 +111,10 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* dataBuf;
-    const unsigned char* rsrcBuf;
+    const uint8_t* dataBuf;
+    const uint8_t* rsrcBuf;
     long dataLen, rsrcLen;
-    const unsigned char* styleBlock;
+    const uint8_t* styleBlock;
     long styleLen;
 
     if (part != ReformatHolder::kPartData)
@@ -198,7 +198,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
         }
 
         /* output the characters */
-        unsigned char uch;
+        uint8_t uch;
         while (numBytes--) {
             if (!dataLen) {
                 LOGI("WARNING: Teach underrun (%ld wanted)", numBytes);
@@ -239,10 +239,10 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
  * Unpack an rStyleBlock resource.
  */
 bool
-RStyleBlock::Create(const unsigned char* buf, long len)
+RStyleBlock::Create(const uint8_t* buf, long len)
 {
-    unsigned short version;
-    unsigned long partLen;
+    uint16_t version;
+    uint32_t partLen;
     int i;
 
     assert(buf != NULL);
@@ -259,7 +259,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
 
     /* extract ruler(s) */
     partLen = Reformat::Read32(&buf, &len);
-    if (partLen > (unsigned long) (len+8)) {
+    if (partLen > (uint32_t) (len+8)) {
         /* not enough to satisfy data + two more counts */
         LOGI("Invalid part1 length (%d vs %d)", partLen, len);
         return false;
@@ -277,7 +277,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
 
     /* extract TEStyles */
     partLen = Reformat::Read32(&buf, &len);
-    if (partLen > (unsigned long) (len+4)) {
+    if (partLen > (uint32_t) (len + 4)) {
         LOGI("Invalid part2 length (%d vs %d)", partLen, len);
         return false;
     }
@@ -299,8 +299,8 @@ RStyleBlock::Create(const unsigned char* buf, long len)
 
     /* extract StyleItems */
     fNumStyleItems = (int) Reformat::Read32(&buf, &len);
-    partLen = fNumStyleItems * StyleItem::kDataLen;
-    if (partLen > (unsigned long) len) {
+    partLen = fNumStyleItems * StyleItem::kItemDataLen;
+    if (partLen > (uint32_t) len) {
         LOGI("Invalid part3 length (%d vs %d)", partLen, len);
         return false;
     }
@@ -315,8 +315,8 @@ RStyleBlock::Create(const unsigned char* buf, long len)
                 fpStyleItems[i].GetOffset(), TEStyle::kDataLen);
             return false;
         }
-        buf += StyleItem::kDataLen;
-        len -= StyleItem::kDataLen;
+        buf += StyleItem::kItemDataLen;
+        len -= StyleItem::kItemDataLen;
     }
 
     if (len != 0) {
@@ -333,7 +333,7 @@ RStyleBlock::Create(const unsigned char* buf, long len)
  * Returns the #of bytes consumed, or -1 on failure.
  */
 int
-RStyleBlock::TERuler::Create(const unsigned char* buf, long len)
+RStyleBlock::TERuler::Create(const uint8_t* buf, long len)
 {
     long origLen = len;
 
@@ -396,7 +396,7 @@ RStyleBlock::TERuler::Create(const unsigned char* buf, long len)
  * Extract a TEStyle object from the buffer.
  */
 void
-RStyleBlock::TEStyle::Create(const unsigned char* buf)
+RStyleBlock::TEStyle::Create(const uint8_t* buf)
 {
     fFontID = Reformat::Get32LE(buf);
     fForeColor = Reformat::Get16LE(buf + 4);
@@ -411,7 +411,7 @@ RStyleBlock::TEStyle::Create(const unsigned char* buf)
  * Extract a StyleItem object from the buffer.
  */
 void
-RStyleBlock::StyleItem::Create(const unsigned char* buf)
+RStyleBlock::StyleItem::Create(const uint8_t* buf)
 {
     fLength = Reformat::Get32LE(buf);
     fOffset = Reformat::Get32LE(buf + 4);

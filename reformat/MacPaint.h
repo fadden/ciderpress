@@ -25,7 +25,7 @@ public:
         ReformatOutput* pOutput);
 
 private:
-    MyDIBitmap* ConvertMacPaint(const unsigned char* srcBuf, long length);
+    MyDIBitmap* ConvertMacPaint(const uint8_t* srcBuf, long length);
 
     enum {
         kLeadingJunkCount = 512,

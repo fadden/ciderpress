@@ -1134,7 +1134,7 @@ NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     ASSERT(pDiskImg != NULL);
 
     /* allocate storage for the entire disk */
-    diskData = new BYTE[pDiskImg->GetNumBlocks() * kBlockSize];
+    diskData = new uint8_t[pDiskImg->GetNumBlocks() * kBlockSize];
     if (diskData == NULL) {
         errMsg.Format(L"Unable to allocate %d bytes.",
             pDiskImg->GetNumBlocks() * kBlockSize);
@@ -1988,7 +1988,7 @@ NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
 
     /* create a data source for it */
     nerr = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed,
-            0, (const BYTE*)buf, 0, len, ArrayDeleteHandler,
+            0, (const uint8_t*) buf, 0, len, ArrayDeleteHandler,
             &pSource);
     if (nerr != kNuErrNone) {
         pErrMsg->Format(L"Unable to create NufxLib data source (len=%d).",
@@ -2538,7 +2538,7 @@ NufxArchive::SetComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
 
     /* create a data source to write from */
     nerr = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed,
-            maxLen, (const BYTE*)(LPCSTR)newStr, 0,
+        maxLen, (const uint8_t*)(LPCSTR) newStr, 0,
             newStr.GetLength(), NULL, &pSource);
     if (nerr != kNuErrNone) {
         errMsg.Format(L"Unable to create NufxLib data source (len=%d, maxLen=%d).",

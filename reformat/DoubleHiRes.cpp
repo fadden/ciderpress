@@ -92,7 +92,7 @@ ReformatDHR::Process(const ReformatHolder* pHolder,
     ReformatOutput* pOutput)
 {
     MyDIBitmap* pDib;
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
@@ -162,10 +162,10 @@ ReformatDHR::InitColorLookup(void)
  * Convert a buffer of double-hires data to a 16-color DIB.
  */
 MyDIBitmap*
-ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
+ReformatDHR::DHRScreenToBitmap(const uint8_t* buf)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
-    unsigned char* outBuf;
+    uint8_t* outBuf;
     const int kMaxLook = 4;     // padding to adjust for lookbehind/lookahead
     int pixelBits[kMaxLook+kPixelsPerLine+kMaxLook];    // 560 mono pixels
     unsigned int colorBuf[kOutputWidth];        // 560 color pixels
@@ -217,7 +217,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
     if (pDib == NULL)
         goto bail;
 
-    outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
+    outBuf = (uint8_t*) pDib->Create(kOutputWidth, kOutputHeight,
                                     4, kNumColors);
     if (outBuf == NULL) {
         delete pDib;
@@ -236,7 +236,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
      * be optimized.
      */
     for (line = 0; line < kNumLines; line++) {
-        const unsigned char* lineData = buf + fLineOffset[line];
+        const uint8_t* lineData = buf + fLineOffset[line];
         int* bitPtr = pixelBits + kMaxLook;
 
         /* this is really just to clear the fore and aft MaxLook bits */
@@ -244,7 +244,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
 
         /* unravel the bits */
         for (int byt = 0; byt < kPixelsPerLine / 7; byt++) {
-            unsigned char val;
+            uint8_t val;
             
             if (byt & 0x01) {
                 /* odd pixels come from main memory */
@@ -498,7 +498,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
                          * Can't explain it, but that's how it works...
                          * usually.
                          */
-                        unsigned char mergePix;
+                        uint8_t mergePix;
 
                         mergePix = colorBuf1[idx] & 0x03;
                         mergePix |= colorBuf1[idx+1] & 0x0c;
@@ -520,7 +520,7 @@ ReformatDHR::DHRScreenToBitmap(const unsigned char* buf)
 #define SetPix(x, y, twoval) \
         outBuf[((kOutputHeight-1) - (y)) * (kOutputWidth/2) + (x)] = twoval
 
-        unsigned char pix4;
+        uint8_t pix4;
         for (int pix = 0; pix < kPixelsPerLine/2; pix++) {
             int bufPosn = pix * 2;
             ASSERT(colorBuf[bufPosn] < kNumColors);

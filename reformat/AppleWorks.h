@@ -25,7 +25,6 @@ public:
         ReformatOutput* pOutput);
 
 private:
-    typedef unsigned char uchar;
 
     /*
      * Constants.
@@ -110,20 +109,20 @@ private:
      * be exactly 300 bytes.
      */
     typedef struct FileHeader {
-        uchar       unused1[4];     /* 000 - 003: not used */
-        uchar       seventyNine;    /* 004      : $4f (79) */
-        uchar       tabStops[80];   /* 005 - 084: tab stops, one of "=<^>.|" */
-        uchar       zoomFlag;       /* 085      : boolean Zoom flag */
-        uchar       unused2[4];     /* 086 - 089: not used */
-        uchar       paginatedFlag;  /* 090      : boolean Paginated flag */
-        uchar       minLeftMargin;  /* 091      : minimum "unseen" left margin */
-        uchar       mailMergeFlag;  /* 092      : boolean - file has merge cmds */
-        uchar       unused3[83];    /* 093 - 175: not used, reserved */
-        uchar       multiRulerFlag; /* 176      : (3.0) boolean Multiple Rulers */
-        uchar       tabRulers[6];   /* 177 - 182: (3.0) used internally */
-        uchar       sfMinVers;      /* 183      : (3.0) min version of AW req */
-        uchar       unused4[66];    /* 184 - 249: reserved */
-        uchar       unused5[50];    /* 250 - 299: available */
+        uint8_t     unused1[4];     /* 000 - 003: not used */
+        uint8_t     seventyNine;    /* 004      : $4f (79) */
+        uint8_t     tabStops[80];   /* 005 - 084: tab stops, one of "=<^>.|" */
+        uint8_t     zoomFlag;       /* 085      : boolean Zoom flag */
+        uint8_t     unused2[4];     /* 086 - 089: not used */
+        uint8_t     paginatedFlag;  /* 090      : boolean Paginated flag */
+        uint8_t     minLeftMargin;  /* 091      : minimum "unseen" left margin */
+        uint8_t     mailMergeFlag;  /* 092      : boolean - file has merge cmds */
+        uint8_t     unused3[83];    /* 093 - 175: not used, reserved */
+        uint8_t     multiRulerFlag; /* 176      : (3.0) boolean Multiple Rulers */
+        uint8_t     tabRulers[6];   /* 177 - 182: (3.0) used internally */
+        uint8_t     sfMinVers;      /* 183      : (3.0) min version of AW req */
+        uint8_t     unused4[66];    /* 184 - 249: reserved */
+        uint8_t     unused5[50];    /* 250 - 299: available */
     } FileHeader;
 
     /*
@@ -139,10 +138,10 @@ private:
 
 
     void InitDocState(void);
-    int ProcessLineRecord(uchar lineRecData, uchar lineRecCode,
-        const unsigned char** pSrcPtr, long* pLength);
-    int HandleTextRecord(uchar lineRecData,
-        const unsigned char** pSrcPtr, long* pLength);
+    int ProcessLineRecord(uint8_t lineRecData, uint8_t lineRecCode,
+        const uint8_t** pSrcPtr, long* pLength);
+    int HandleTextRecord(uint8_t lineRecData,
+        const uint8_t** pSrcPtr, long* pLength);
 
     FileHeader  fFileHeader;
     DocState    fDocState;
@@ -192,54 +191,52 @@ private:
         kSANELen = 8,
     };
 
-    typedef unsigned char uchar;
-
     /*
      * File header, mapped directly on top of the input.  This structure must
      * be exactly 300 bytes.
      */
     typedef struct FileHeader {
-        uchar       unused1[4];     /* 000-003: not used */
-        uchar       colWidth[127];  /* 004-130: column width for each column */
-        uchar       recalcOrder;    /* 131    : recalc order ('R' or 'C') */
-        uchar       recalcFreq;     /* 132    : recalc frequency ('A' or 'M') */
-        uchar       lastRowRef[2];  /* 133-134: last row referenced */
-        uchar       lastColRef;     /* 135    : last column referenced */
-        uchar       numWindows;     /* 136    : '1'/'S'/'T' */
-        uchar       windowSync;     /* 137    : if two windows, are sync'ed? */
-        uchar       winInfo1[24];   /* 138-161: struct with info for 1st window */
-        uchar       winInfo2[24];   /* 162-185: struct with info for 2nd window */
-        uchar       unused2[27];    /* 186-212: not used */
-        uchar       cellProt;       /* 213    : cell protection on/off */
-        uchar       unused3;        /* 214    : not used */
-        uchar       platenWidth;    /* 215    : platen width */
-        uchar       leftMargin;     /* 216    : left margin, in 1/10th inches */
-        uchar       rightMargin;    /* 217    : right margin */
-        uchar       cpi;            /* 218    : characters per inch */
-        uchar       paperLength;    /* 219    : paper length, 1/10th inches */
-        uchar       topMargin;      /* 220    : top margin */
-        uchar       bottomMargin;   /* 221    : bottom margin */
-        uchar       lpi;            /* 222    : lines per inch (6 or 8) */
-        uchar       spacing;        /* 223    : 'S'ingle, 'D'ouble, or 'T'riple */
-        uchar       printerCodes[14];/*224-237: "special codes" for printer */
-        uchar       printDash;      /* 238    : print dash when entry is blank */
-        uchar       reportHeader;   /* 239    : print report header */
-        uchar       zoomed;         /* 240    : zoomed to show formulas */
-        uchar       reserved1;      /* 241    : used internally (v2.1) */
-        uchar       ssMinVers;      /* 242    : holds 0 for AW2.x, 0x1e for AW3.x */
-        uchar       reserved2[7];   /* 243-249: reserved */
-        uchar       available[50];  /* 250-299: available for non-AW app use */
+        uint8_t     unused1[4];     /* 000-003: not used */
+        uint8_t     colWidth[127];  /* 004-130: column width for each column */
+        uint8_t     recalcOrder;    /* 131    : recalc order ('R' or 'C') */
+        uint8_t     recalcFreq;     /* 132    : recalc frequency ('A' or 'M') */
+        uint8_t     lastRowRef[2];  /* 133-134: last row referenced */
+        uint8_t     lastColRef;     /* 135    : last column referenced */
+        uint8_t     numWindows;     /* 136    : '1'/'S'/'T' */
+        uint8_t     windowSync;     /* 137    : if two windows, are sync'ed? */
+        uint8_t     winInfo1[24];   /* 138-161: struct with info for 1st window */
+        uint8_t     winInfo2[24];   /* 162-185: struct with info for 2nd window */
+        uint8_t     unused2[27];    /* 186-212: not used */
+        uint8_t     cellProt;       /* 213    : cell protection on/off */
+        uint8_t     unused3;        /* 214    : not used */
+        uint8_t     platenWidth;    /* 215    : platen width */
+        uint8_t     leftMargin;     /* 216    : left margin, in 1/10th inches */
+        uint8_t     rightMargin;    /* 217    : right margin */
+        uint8_t     cpi;            /* 218    : characters per inch */
+        uint8_t     paperLength;    /* 219    : paper length, 1/10th inches */
+        uint8_t     topMargin;      /* 220    : top margin */
+        uint8_t     bottomMargin;   /* 221    : bottom margin */
+        uint8_t     lpi;            /* 222    : lines per inch (6 or 8) */
+        uint8_t     spacing;        /* 223    : 'S'ingle, 'D'ouble, or 'T'riple */
+        uint8_t     printerCodes[14];/*224-237: "special codes" for printer */
+        uint8_t     printDash;      /* 238    : print dash when entry is blank */
+        uint8_t     reportHeader;   /* 239    : print report header */
+        uint8_t     zoomed;         /* 240    : zoomed to show formulas */
+        uint8_t     reserved1;      /* 241    : used internally (v2.1) */
+        uint8_t     ssMinVers;      /* 242    : holds 0 for AW2.x, 0x1e for AW3.x */
+        uint8_t     reserved2[7];   /* 243-249: reserved */
+        uint8_t     available[50];  /* 250-299: available for non-AW app use */
     } FileHeader;
 
     int fCurrentRow, fCurrentCol;
     char fPrintColBuf[3];
 
-    int ProcessRow(int rowNum, const unsigned char** pSrcPtr,
+    int ProcessRow(int rowNum, const uint8_t** pSrcPtr,
         long* pLength);
-    void ProcessCell(const unsigned char* srcPtr, long cellLength);
-    void PrintToken(const unsigned char** pSrcPtr, long* pLength);
+    void ProcessCell(const uint8_t* srcPtr, long cellLength);
+    void PrintToken(const uint8_t** pSrcPtr, long* pLength);
     const char* PrintCol(int col);
-    double ConvertSANEDouble(const unsigned char* srcPtr);
+    double ConvertSANEDouble(const uint8_t* srcPtr);
 };
 
 #endif /*REFORMAT_APPLEWORKS_H*/

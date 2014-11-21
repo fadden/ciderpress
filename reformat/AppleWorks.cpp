@@ -49,13 +49,13 @@ ReformatAWP::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     int retval = -1;
 
     bool skipRecord;
-    uchar lineRecCode, lineRecData;
+    uint8_t lineRecCode, lineRecData;
 
     if (srcLen > 65536)
         fUseRTF = false;
@@ -168,8 +168,8 @@ ReformatAWP::InitDocState(void)
  * Process a line record.
  */
 int
-ReformatAWP::ProcessLineRecord(uchar lineRecData, uchar lineRecCode,
-    const unsigned char** pSrcPtr, long* pLength)
+ReformatAWP::ProcessLineRecord(uint8_t lineRecData, uint8_t lineRecCode,
+    const uint8_t** pSrcPtr, long* pLength)
 {
     int err = 0;
 
@@ -305,12 +305,12 @@ ReformatAWP::ProcessLineRecord(uchar lineRecData, uchar lineRecCode,
  * "lineRecData" has the number of bytes of input that we have yet to read.
  */
 int
-ReformatAWP::HandleTextRecord(uchar lineRecData,
-    const unsigned char** pSrcPtr, long* pLength)
+ReformatAWP::HandleTextRecord(uint8_t lineRecData,
+    const uint8_t** pSrcPtr, long* pLength)
 {
     int err = 0;
-    uchar tabFlags;
-    uchar byteCountPlusCR;
+    uint8_t tabFlags;
+    uint8_t byteCountPlusCR;
     int byteCount = lineRecData;
     bool noOutput = false;
     int ic;
@@ -493,7 +493,7 @@ ReformatADB::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     int retval = -1;
@@ -533,7 +533,7 @@ ReformatADB::Process(const ReformatHolder* pHolder,
     LOGI("  ADB should be %d reports", numReports);
 
     /* dump category names as first record */
-    const unsigned char* catPtr;
+    const uint8_t* catPtr;
     int catCount;
     catPtr = srcPtr + 357;
     catCount = numCats;
@@ -544,7 +544,7 @@ ReformatADB::Process(const ReformatHolder* pHolder,
             BufPrintf(",\"");
 
         int nameLen = *catPtr;
-        const unsigned char* namePtr = catPtr + 1;
+        const uint8_t* namePtr = catPtr + 1;
         while (nameLen--) {
             if (*namePtr == '"')
                 BufPrintf("\"\"");
@@ -650,7 +650,7 @@ ReformatADB::Process(const ReformatHolder* pHolder,
                     }
                 } else {
                     while (ctrl--) {
-                        unsigned char ch = Read8(&srcPtr, &length);
+                        uint8_t ch = Read8(&srcPtr, &length);
                         BufPrintf("%c", ch);
                         if (ch == '"')
                             BufPrintf("%c", ch);
@@ -751,7 +751,7 @@ ReformatASP::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     int retval = -1;
@@ -798,7 +798,7 @@ ReformatASP::Process(const ReformatHolder* pHolder,
      */
     fCurrentRow = 1;
     while (length > 0) {
-        unsigned short rowLen;
+        uint16_t rowLen;
         int rowNum;
 
         /* row length or EOF marker */
@@ -843,10 +843,9 @@ bail:
  * Process one row of spreadsheet data.
  */
 int
-ReformatASP::ProcessRow(int rowNum, const unsigned char** pSrcPtr,
-    long* pLength)
+ReformatASP::ProcessRow(int rowNum, const uint8_t** pSrcPtr, long* pLength)
 {
-    uchar ctrl;
+    uint8_t ctrl;
     bool first = true;
 
     fCurrentCol = 0;
@@ -900,9 +899,9 @@ ReformatASP::ProcessRow(int rowNum, const unsigned char** pSrcPtr,
  * Process the contents of a single cell.
  */
 void
-ReformatASP::ProcessCell(const unsigned char* srcPtr, long cellLength)
+ReformatASP::ProcessCell(const uint8_t* srcPtr, long cellLength)
 {
-    uchar flag1, flag2;
+    uint8_t flag1, flag2;
     double dval;
     int i;
 
@@ -971,7 +970,7 @@ ReformatASP::ProcessCell(const unsigned char* srcPtr, long cellLength)
  * several bytes to express.
  */
 void
-ReformatASP::PrintToken(const unsigned char** pSrcPtr, long* pLength)
+ReformatASP::PrintToken(const uint8_t** pSrcPtr, long* pLength)
 {
     /* string constants; note these must NOT contain '"' chars */
     const int kTokenStart = 0xc0;
@@ -993,7 +992,7 @@ ReformatASP::PrintToken(const unsigned char** pSrcPtr, long* pLength)
         /*0xf8*/ "*",       "(",        "-" /*unary*/, "+" /*unary*/,
         /*0xfc*/ "...",     "",         "",         ""
     };
-    uchar token;
+    uint8_t token;
 
     token = Read8(pSrcPtr, pLength);
     if (token < kTokenStart) {
@@ -1039,7 +1038,7 @@ ReformatASP::PrintToken(const unsigned char** pSrcPtr, long* pLength)
             return;
         }
         while (i--) {
-            unsigned char ch = Read8(pSrcPtr, pLength);
+            uint8_t ch = Read8(pSrcPtr, pLength);
             BufPrintQChar(ch);
         }
     }
@@ -1102,15 +1101,15 @@ ReformatASP::PrintCol(int col)
  * -----
  */
 double
-ReformatASP::ConvertSANEDouble(const unsigned char* srcPtr)
+ReformatASP::ConvertSANEDouble(const uint8_t* srcPtr)
 {
     double newVal;
-    unsigned char* dptr;
+    uint8_t* dptr;
     int i;
 
     ASSERT(sizeof(newVal) == kSANELen);
 
-    dptr = (unsigned char*) &newVal;
+    dptr = (uint8_t*) &newVal;
     for (i = 0; i < kSANELen; i++)
         *dptr++ = *srcPtr++;
 

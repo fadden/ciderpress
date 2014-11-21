@@ -79,7 +79,7 @@ ReformatSCAssem::Examine(ReformatHolder* pHolder)
 /*static*/ bool
 ReformatSCAssem::IsSCAssem(const ReformatHolder* pHolder)
 {
-    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
     int len;
 
@@ -108,7 +108,7 @@ ReformatSCAssem::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     // (this was written before tab stuff in ReformatAsm class existed)
@@ -132,8 +132,8 @@ ReformatSCAssem::Process(const ReformatHolder* pHolder,
     }
 
     while (length > 0) {
-        unsigned char lineLen;
-        unsigned short lineNum;
+        uint8_t lineLen;
+        uint16_t lineNum;
 
         /* pull the length byte, which we sanity-check */
         lineLen = *srcPtr++;
@@ -155,7 +155,7 @@ ReformatSCAssem::Process(const ReformatHolder* pHolder,
             } else if (*srcPtr == 0xc0) {
                 if (length > 2) {
                     int count = *(srcPtr+1);
-                    unsigned char ch = *(srcPtr+2);
+                    uint8_t ch = *(srcPtr + 2);
 
                     srcPtr += 2;
                     length -= 2;
@@ -274,7 +274,7 @@ ReformatMerlin::Examine(ReformatHolder* pHolder)
 /*static*/ bool
 ReformatMerlin::IsMerlin(const ReformatHolder* pHolder)
 {
-    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
 
     bool isLineStart = true;
@@ -334,14 +334,14 @@ ReformatMerlin::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     int retval = -1;
     enum { kStateLabel, kStateMnemonic, kStateOperand, kStateComment };
     int tabStop[] = { 0, 9, 15, 26 };   // 1:1 map with state enum
     int state;
-    unsigned char quoteChar = '\0';
+    uint8_t quoteChar = '\0';
 
     fUseRTF = false;
 
@@ -461,9 +461,9 @@ ReformatLISA2::Examine(ReformatHolder* pHolder)
 bool
 ReformatLISA2::IsLISA(const ReformatHolder* pHolder)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
-    unsigned short version, len;
+    uint16_t version, len;
 
     if (srcLen < 8)
         return false;
@@ -523,7 +523,7 @@ ReformatLISA2::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long actualLen;
     int retval = -1;
@@ -535,7 +535,7 @@ ReformatLISA2::Process(const ReformatHolder* pHolder,
         goto bail;
     }
 
-    unsigned short version;
+    uint16_t version;
 
     version = Read16(&srcPtr, &srcLen);     // usually 0x1800; maybe "2.4"?
     actualLen = Read16(&srcPtr, &srcLen);
@@ -580,10 +580,10 @@ bail:
 }
 
 void
-ReformatLISA2::ProcessLine(const unsigned char* buf)
+ReformatLISA2::ProcessLine(const uint8_t* buf)
 {
     int len = *buf;
-    unsigned char uch;
+    uint8_t uch;
 
     // consume length byte
     buf++;
@@ -784,7 +784,7 @@ ReformatLISA3::Examine(ReformatHolder* pHolder)
 ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
 {
     bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
 
     if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS)
@@ -793,7 +793,7 @@ ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
     if (srcLen < kHeaderLen+2)
         return false;       // too short
 
-    unsigned short codeLen, symLen;
+    uint16_t codeLen, symLen;
 
     codeLen = srcPtr[0x00] | srcPtr[0x01] << 8;
     symLen = srcPtr[0x02] | srcPtr[0x03] << 8;
@@ -822,7 +822,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
@@ -833,7 +833,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
 
     fUseRTF = false;
 
-    unsigned short codeLen, symLen;
+    uint16_t codeLen, symLen;
 
     codeLen = srcPtr[0x00] | srcPtr[0x01] << 8;
     symLen = srcPtr[0x02] | srcPtr[0x03] << 8;
@@ -868,8 +868,8 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
     /*
      * Do stuff with source lines.
      */
-    const unsigned char* codePtr;
-    const unsigned char* endPtr;
+    const uint8_t* codePtr;
+    const uint8_t* endPtr;
     int lineNum;
 
     codePtr = srcPtr + kHeaderLen + symLen;
@@ -878,7 +878,7 @@ ReformatLISA3::Process(const ReformatHolder* pHolder,
     lineNum = 0;
 
     while (codePtr < endPtr) {
-        unsigned char flagByte;
+        uint8_t flagByte;
         int lineLen;
 
         OutputStart();
@@ -967,9 +967,9 @@ bail:
  * BIGONE
  */
 void
-ReformatLISA3::ProcessLine(const unsigned char* codePtr, int len)
+ReformatLISA3::ProcessLine(const uint8_t* codePtr, int len)
 {
-    unsigned char mnemonic = 0;
+    uint8_t mnemonic = 0;
 
     //printf("{code=0x%02x len=%d}", *codePtr, len);
     if (*codePtr == kCMNTTKN+1 || *codePtr == kCMNTTKN) {
@@ -987,7 +987,7 @@ ReformatLISA3::ProcessLine(const unsigned char* codePtr, int len)
         goto bail;
     } else if (*codePtr == kMACTKN || *codePtr == kMACTKN+1) {
         /* CHKMACRO - handle macro */
-        unsigned short idx;
+        uint16_t idx;
         mnemonic = *codePtr;
         idx = (*codePtr & 0x01) << 8;
         idx |= *++codePtr;
@@ -999,7 +999,7 @@ ReformatLISA3::ProcessLine(const unsigned char* codePtr, int len)
         goto ConvtOperand;
     } else if (*codePtr == kLBLTKN || *codePtr == kLBLTKN+1) {
         /* CHKCLBL - handle label at start of line */
-        unsigned short idx;
+        uint16_t idx;
         idx = (*codePtr & 0x01) << 8;
         idx |= *++codePtr;
         PrintSymEntry(idx);
@@ -1055,17 +1055,17 @@ bail:
  * CNVOPRND
  */
 void
-ReformatLISA3::ConvertOperand(unsigned char mnemonic,
-    const unsigned char** pCodePtr, int* pLen)
+ReformatLISA3::ConvertOperand(uint8_t mnemonic,
+    const uint8_t** pCodePtr, int* pLen)
 {
     static const char kOPRTRST1[] = "+-*/&|^=<>%<><";
     static const char kOPRTRST2[] = "\0\0\0\0\0\0\0\0\0\0\0==>";
 
-    const unsigned char* codePtr = *pCodePtr;
+    const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
     OperandResult result;
-    unsigned char adrsMode = 0;
-    unsigned char val;
+    uint8_t adrsMode = 0;
+    uint8_t val;
 
     //printf("{opr len=%d}", len);
 
@@ -1116,7 +1116,7 @@ ReformatLISA3::ConvertOperand(unsigned char mnemonic,
         }
 
 OutOprtr:
-        unsigned char opr;
+        uint8_t opr;
 
         if (!len)
             break;
@@ -1164,7 +1164,7 @@ bail:
  * Output a single byte as a binary string.
  */
 void
-ReformatLISA3::PrintBin(unsigned char val)
+ReformatLISA3::PrintBin(uint8_t val)
 {
     char buf[9];
     buf[8] = '\0';
@@ -1178,10 +1178,10 @@ ReformatLISA3::PrintBin(unsigned char val)
  * OUTNUM
  */
 ReformatLISA3::OperandResult
-ReformatLISA3::PrintNum(int adrsMode, unsigned char val,
-    const unsigned char** pCodePtr, int* pLen)
+ReformatLISA3::PrintNum(int adrsMode, uint8_t val,
+const uint8_t** pCodePtr, int* pLen)
 {
-    const unsigned char* codePtr = *pCodePtr;
+    const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
     OperandResult result = kResultUnknown;
     char numBuf[12];
@@ -1196,7 +1196,7 @@ ReformatLISA3::PrintNum(int adrsMode, unsigned char val,
         len--;
     } else if (val == 0x1b) {
         // 2-byte decimal
-        unsigned short num;
+        uint16_t num;
         num = *codePtr++;
         num |= *codePtr++ << 8;
         len -= 2;
@@ -1211,7 +1211,7 @@ ReformatLISA3::PrintNum(int adrsMode, unsigned char val,
     } else if (val == 0x1d) {
         // 2-byte hex
         Output('$');
-        unsigned short num;
+        uint16_t num;
         num = *codePtr++;
         num |= *codePtr++ << 8;
         sprintf(numBuf, "%04X", num);
@@ -1252,7 +1252,7 @@ ReformatLISA3::PrintNum(int adrsMode, unsigned char val,
         Output(val - 0x20);
     } else if (val < 0x60) {
         // ?6..?9 tokens (+0x5c)
-        unsigned char newVal = val - 0x24;
+        uint8_t newVal = val - 0x24;
         Output('?');
         if (newVal == ';')
             Output('#');
@@ -1325,8 +1325,8 @@ ReformatLISA3::PrintSymEntry(int ent)
         return;
     }
 
-    const unsigned char* packed = &fSymTab[ent * 8];
-    unsigned char tmp[8];
+    const uint8_t* packed = &fSymTab[ent * 8];
+    uint8_t tmp[8];
     int i;
 
     tmp[0] = packed[0] >> 2;
@@ -1350,7 +1350,7 @@ ReformatLISA3::PrintSymEntry(int ent)
 }
 
 void
-ReformatLISA3::PrintMnemonic(unsigned char val)
+ReformatLISA3::PrintMnemonic(uint8_t val)
 {
     const char* ptr = &gMnemonics3[val * 3];
     Output(ptr[0]);
@@ -1364,7 +1364,7 @@ ReformatLISA3::PrintMnemonic(unsigned char val)
  * Prints the comment.  Finishes off the operand if necessary.
  */
 void
-ReformatLISA3::PrintComment(int adrsMode, const unsigned char* codePtr, int len)
+ReformatLISA3::PrintComment(int adrsMode, const uint8_t* codePtr, int len)
 {
     assert(len >= 0);
 
@@ -1448,7 +1448,7 @@ ReformatLISA4::Examine(ReformatHolder* pHolder)
 ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
 {
     bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
 
     if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS)
@@ -1457,9 +1457,9 @@ ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
     if (srcLen < kHeaderLen+2)
         return false;       // too short
 
-    unsigned short version;
-    unsigned short symEnd;
-    unsigned short symCount;
+    uint16_t version;
+    uint16_t symEnd;
+    uint16_t symCount;
 
     version = srcPtr[0x00] | srcPtr[0x01] << 8;
     symEnd = srcPtr[0x02] | srcPtr[0x03] << 8;
@@ -1475,7 +1475,7 @@ ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
         return false;;
     }
 
-    unsigned char opTab, adTab, comTab;
+    uint8_t opTab, adTab, comTab;
     opTab = srcPtr[0x06];
     adTab = srcPtr[0x07];
     comTab = srcPtr[0x08];
@@ -1492,7 +1492,7 @@ ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
     return true;
 }
 
-static const char* gHexDigit = "0123456789ABCDEF";
+static const char gHexDigit[] = "0123456789ABCDEF";
 
 
 /*
@@ -1563,7 +1563,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
@@ -1574,8 +1574,8 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
 
     fUseRTF = false;
 
-    unsigned short version;
-    unsigned short symEnd;
+    uint16_t version;
+    uint16_t symEnd;
 
     version = srcPtr[0x00] | srcPtr[0x01] << 8;
     symEnd = srcPtr[0x02] | srcPtr[0x03] << 8;
@@ -1599,13 +1599,13 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
         goto bail;
     }
     if (fSymCount > 0) {
-        fSymTab = new const unsigned char*[fSymCount];
+        fSymTab = new const uint8_t*[fSymCount];
         if (fSymTab == NULL)
             goto bail;
     }
 
-    const unsigned char* symPtr;
-    const unsigned char* endPtr;
+    const uint8_t* symPtr;
+    const uint8_t* endPtr;
     int symIdx;
 
     symPtr = srcPtr + kHeaderLen;
@@ -1636,7 +1636,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     /*
      * Process source lines.
      */
-    const unsigned char* codePtr;
+    const uint8_t* codePtr;
     int lineNum;
 
     codePtr = srcPtr + symEnd;
@@ -1645,7 +1645,7 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     lineNum = 0;
 
     while (codePtr < endPtr) {
-        unsigned char flagByte;
+        uint8_t flagByte;
         int lineLen;
 
         lineNum++;
@@ -1732,9 +1732,9 @@ bail:
 }
 
 void
-ReformatLISA4::ProcessLine(const unsigned char* codePtr, int len)
+ReformatLISA4::ProcessLine(const uint8_t* codePtr, int len)
 {
-    unsigned char mnemonic = 0;
+    uint8_t mnemonic = 0;
 
     if (*codePtr == kComntSemiTKN || *codePtr == kComntStarTKN ||
         *codePtr == kErrlnTKN)
@@ -1765,7 +1765,7 @@ ReformatLISA4::ProcessLine(const unsigned char* codePtr, int len)
         goto ConvtOperand;
     } else if (*codePtr == kLabelTKN) {
         /* handle label at start of line */
-        unsigned short idx;
+        uint16_t idx;
         idx = *++codePtr;
         idx |= *++codePtr << 8;
         PrintSymEntry(idx);
@@ -1836,8 +1836,8 @@ bail:
  * ConvtOperand
  */
 void
-ReformatLISA4::ConvertOperand(unsigned char mnemonic,
-    const unsigned char** pCodePtr, int* pLen)
+ReformatLISA4::ConvertOperand(uint8_t mnemonic,
+    const uint8_t** pCodePtr, int* pLen)
 {
     /*
      * Address header char.
@@ -1937,11 +1937,11 @@ ReformatLISA4::ConvertOperand(unsigned char mnemonic,
     };
 
 
-    const unsigned char* codePtr = *pCodePtr;
+    const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
     OperandResult result;
-    unsigned char adrsMode = 0;
-    unsigned char val;
+    uint8_t adrsMode = 0;
+    uint8_t val;
     char ch;
 
     if (mnemonic == kMacroTKN || mnemonic < kSS) {
@@ -2015,7 +2015,7 @@ ReformatLISA4::ConvertOperand(unsigned char mnemonic,
 
             if (doOutOprtr) {
 OutOprtr:
-                unsigned char opr;
+                uint8_t opr;
 
                 if (!len)
                     break;
@@ -2096,10 +2096,10 @@ not_operator:
  * CnvrtDec - convert to decimal output.
  */
 void
-ReformatLISA4::PrintDec(int count, const unsigned char** pCodePtr,
+ReformatLISA4::PrintDec(int count, const uint8_t** pCodePtr,
     int* pLen)
 {
-    const unsigned char* codePtr = *pCodePtr;
+    const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
     long val = 0;
     char buf[12];       // 4 bytes, max 10 chars + sign + nul
@@ -2119,12 +2119,12 @@ ReformatLISA4::PrintDec(int count, const unsigned char** pCodePtr,
  * CnvrtHex - convert to hex output.
  */
 void
-ReformatLISA4::PrintHex(int count, const unsigned char** pCodePtr,
+ReformatLISA4::PrintHex(int count, const uint8_t** pCodePtr,
     int* pLen)
 {
-    const unsigned char* codePtr = *pCodePtr;
+    const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
-    unsigned char val;
+    uint8_t val;
 
     Output('$');
     for (int i = count-1; i >= 0; i--) {
@@ -2143,12 +2143,12 @@ ReformatLISA4::PrintHex(int count, const unsigned char** pCodePtr,
  * CnvrtBin - convert to binary output.
  */
 void
-ReformatLISA4::PrintBin(int count, const unsigned char** pCodePtr,
+ReformatLISA4::PrintBin(int count, const uint8_t** pCodePtr,
     int* pLen)
 {
-    const unsigned char* codePtr = *pCodePtr;
+    const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
-    unsigned char val;
+    uint8_t val;
     char buf[9];
 
     buf[8] = '\0';
@@ -2172,11 +2172,11 @@ ReformatLISA4::PrintBin(int count, const unsigned char** pCodePtr,
  * OUTNUM
  */
 ReformatLISA4::OperandResult
-ReformatLISA4::PrintNum(unsigned char opr, const unsigned char** pCodePtr,
+ReformatLISA4::PrintNum(uint8_t opr, const uint8_t** pCodePtr,
     int* pLen)
 {
     OperandResult result = kResultUnknown;
-    const unsigned char* codePtr = *pCodePtr;
+    const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
     int idx;
 
@@ -2247,9 +2247,9 @@ ReformatLISA4::PrintNum(unsigned char opr, const unsigned char** pCodePtr,
             Output("{CheckMoreOprnd}");
         } else {
             /* CheckStrings */
-            unsigned char strLen;
-            unsigned char val;
-            unsigned char delimit;
+            uint8_t strLen;
+            uint8_t val;
+            uint8_t delimit;
 
             if ((opr & 0x1f) == 0) {
                 strLen = *codePtr++;
@@ -2296,20 +2296,20 @@ ReformatLISA4::PrintNum(unsigned char opr, const unsigned char** pCodePtr,
  * OutOprComp
  */
 ReformatLISA4::OperandResult
-ReformatLISA4::PrintComplexOperand(unsigned char opr,
-    const unsigned char** pCodePtr, int* pLen)
+ReformatLISA4::PrintComplexOperand(uint8_t opr,
+const uint8_t** pCodePtr, int* pLen)
 {
     if (opr != kBign_tkn)
         return PrintNum(opr, pCodePtr, pLen);
 
 /*
-    const unsigned char* codePtr = *pCodePtr;
+    const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
     *pCodePtr = codePtr;
     *pLen = len;
 */
 
-    unsigned char subClass;
+    uint8_t subClass;
 
     /* OutOprComp */
     subClass = *(*pCodePtr)++;
@@ -2322,28 +2322,28 @@ ReformatLISA4::PrintComplexOperand(unsigned char opr,
         PrintBin(4, pCodePtr, pLen);
     } else if (subClass == kBignhexs_tkn) {
         /* hex string, for HEX pseudo-op */
-        unsigned char hexLen = *(*pCodePtr)++;
+        uint8_t hexLen = *(*pCodePtr)++;
         (*pLen)--;
         if (hexLen > *pLen) {
             Output("!BAD HEX!");
             return kResultFailed;
         }
         while (hexLen--) {
-            unsigned char val = *(*pCodePtr)++;
+            uint8_t val = *(*pCodePtr)++;
             (*pLen)--;
             Output(gHexDigit[(val & 0xf0) >> 4]);
             Output(gHexDigit[val & 0x0f]);
         }
     } else if (subClass == kBignstring_tkn) {
         /* undelimited string */
-        unsigned char strLen = *(*pCodePtr)++;
+        uint8_t strLen = *(*pCodePtr)++;
         (*pLen)--;
         if (strLen > *pLen) {
             Output("!BAD USTR!");
             return kResultFailed;
         }
         while (strLen--) {
-            unsigned char val = *(*pCodePtr)++;
+            uint8_t val = *(*pCodePtr)++;
             (*pLen)--;
             Output(val & 0x7f);
         }
@@ -2368,9 +2368,9 @@ ReformatLISA4::PrintSymEntry(int ent)
         return;
     }
 
-    const unsigned char* str = fSymTab[ent];
+    const uint8_t* str = fSymTab[ent];
 
-    unsigned char uc;
+    uint8_t uc;
     str++;
     while (1) {
         uc = *str++;

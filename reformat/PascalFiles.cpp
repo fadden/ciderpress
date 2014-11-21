@@ -45,12 +45,12 @@ ReformatPascalCode::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     fUseRTF = false;
     int retval = -1;
     PCDSegment segments[kNumSegments];
-    unsigned long intrinsSegs;
+    uint32_t intrinsSegs;
     int i;
 
     if (srcLen < kSegmentHeaderLen) {
@@ -64,7 +64,7 @@ ReformatPascalCode::Process(const ReformatHolder* pHolder,
      * Pull the data fields out of srcBuf.
      */
     for (i = 0; i < kNumSegments; i++) {
-        unsigned short segInfo;
+        uint16_t segInfo;
 
         segments[i].codeAddr = Get16LE(srcBuf + 0x00 + i*4);
         segments[i].codeLeng = Get16LE(srcBuf + 0x02 + i*4);
@@ -143,7 +143,7 @@ bail:
  */
 void
 ReformatPascalCode::PrintSegment(PCDSegment* pSegment, int segNum,
-    const unsigned char* srcBuf, long srcLen)
+    const uint8_t* srcBuf, long srcLen)
 {
     const char* segKindStr;
     const char* mTypeStr;
@@ -236,7 +236,7 @@ ReformatPascalText::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     fUseRTF = false;
@@ -278,7 +278,7 @@ bail:
  * appears to -- but I'm not going to assume it.
  */
 void
-ReformatPascalText::ProcessBlock(const unsigned char* srcBuf, long length)
+ReformatPascalText::ProcessBlock(const uint8_t* srcBuf, long length)
 {
     ASSERT(srcBuf != NULL);
     ASSERT(length > 0 && length <= kPTXBlockSize);

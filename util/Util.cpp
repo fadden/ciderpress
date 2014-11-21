@@ -512,7 +512,7 @@ IsWin9x(void)
  * Returns the length of the string found, or -1 on error.
  */
 int
-GetPascalString(const char* buf, long maxLen, CString* pStr)
+GetPascalString(const uint8_t* buf, long maxLen, CString* pStr)
 {
     int len = *buf++;
     int retLen = len;

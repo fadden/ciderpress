@@ -29,12 +29,12 @@ private:
      * Definition of a "SaveArray" entry.
      */
     typedef struct SaveArrayEntry {
-        unsigned short  textBlock;      // Text Block number
-        unsigned short  offset;         // add to offset of text block
-        unsigned short  attributes;     // 0=normal text, 1=page break para
-        unsigned short  rulerNum;       // number of ruler for this para
-        unsigned short  pixelHeight;    // height of para in pixels
-        unsigned short  numLines;       // number of lines in this para
+        uint16_t    textBlock;      // Text Block number
+        uint16_t    offset;         // add to offset of text block
+        uint16_t    attributes;     // 0=normal text, 1=page break para
+        uint16_t    rulerNum;       // number of ruler for this para
+        uint16_t    pixelHeight;    // height of para in pixels
+        uint16_t    numLines;       // number of lines in this para
     } SaveArrayEntry;
 
     /*
@@ -42,12 +42,12 @@ private:
      * has the same general structure.
      */
     typedef struct Chunk {
-        const unsigned char*    saveArray;
-        const unsigned char*    rulers;
-        const unsigned char*    textBlocks;
-        unsigned short  saveArrayCount;
-        unsigned short  numRulers;
-        unsigned short  numTextBlocks;
+        const uint8_t*  saveArray;
+        const uint8_t*  rulers;
+        const uint8_t*  textBlocks;
+        uint16_t    saveArrayCount;
+        uint16_t    numRulers;
+        uint16_t    numTextBlocks;
     } Chunk;
 
     enum {
@@ -74,18 +74,18 @@ private:
         kAWGSSingleSpace        = 0x01
     };
 
-    bool ReadChunk(const unsigned char** pSrcBuf, long* pSrcLen,
+    bool ReadChunk(const uint8_t** pSrcBuf, long* pSrcLen,
         Chunk* pChunk);
     void PrintChunk(const Chunk* pChunk);
-    const unsigned char* FindTextBlock(const Chunk* pChunk, int blockNum);
-    int PrintParagraph(const unsigned char* ptr, long maxLen);
-    unsigned short GetNumRulers(const unsigned char* pSaveArray,
-        unsigned short saveArrayCount);
-    unsigned short GetNumTextBlocks(const unsigned char* pSaveArray,
-        unsigned short saveArrayCount);
-    void UnpackSaveArrayEntry(const unsigned char* pSaveArray,
+    const uint8_t* FindTextBlock(const Chunk* pChunk, int blockNum);
+    int PrintParagraph(const uint8_t* ptr, long maxLen);
+    uint16_t GetNumRulers(const uint8_t* pSaveArray,
+        uint16_t saveArrayCount);
+    uint16_t GetNumTextBlocks(const uint8_t* pSaveArray,
+        uint16_t saveArrayCount);
+    void UnpackSaveArrayEntry(const uint8_t* pSaveArray,
         SaveArrayEntry* pSAE);
-    bool SkipTextBlocks(const unsigned char** pSrcBuf,
+    bool SkipTextBlocks(const uint8_t** pSrcBuf,
         long* pSrcLen, int blockCount);
 };
 

@@ -49,8 +49,8 @@ public:
     virtual int LoadData(void) = 0;
 
     virtual void DisplayData(void) = 0;
-    virtual void DisplayData(const BYTE* buf, int size);
-    virtual void DisplayNibbleData(const BYTE* srcBuf, int size);
+    virtual void DisplayData(const uint8_t* buf, int size);
+    virtual void DisplayNibbleData(const uint8_t* srcBuf, int size);
 
     bool GetReadOnly(void) const { return fReadOnly; }
     void SetReadOnly(bool val) { fReadOnly = val; }
@@ -149,7 +149,7 @@ protected:
 
     long        fTrack;
     long        fSector;
-    BYTE        fSectorData[kSectorSize];
+    uint8_t     fSectorData[kSectorSize];
 };
 
 /*
@@ -229,7 +229,7 @@ protected:
     afx_msg virtual void OnOpenFile(void);
 
     long        fBlock;
-    BYTE        fBlockData[kBlockSize];
+    uint8_t     fBlockData[kBlockSize];
 };
 
 
@@ -308,7 +308,7 @@ protected:
     afx_msg virtual void OnNibbleParms(void) { ASSERT(false); }
 
     long        fTrack;
-    BYTE        fNibbleData[DiskImgLib::kTrackAllocSize];
+    uint8_t     fNibbleData[DiskImgLib::kTrackAllocSize];
     long        fNibbleDataLen;
 };
 

@@ -121,7 +121,7 @@ private:
         kComTab = 39,
     };
 
-    void ProcessLine(const unsigned char* buf);
+    void ProcessLine(const uint8_t* buf);
 };
 
 /*
@@ -147,17 +147,17 @@ private:
         kResultGotoOutOprnd,
     } OperandResult;
 
-    void ProcessLine(const unsigned char* codePtr, int len);
-    void ConvertOperand(unsigned char mnemonic, const unsigned char** pCodePtr,
+    void ProcessLine(const uint8_t* codePtr, int len);
+    void ConvertOperand(uint8_t mnemonic, const uint8_t** pCodePtr,
         int* pLen);
-    OperandResult PrintNum(int adrsMode, unsigned char val,
-        const unsigned char** pCodePtr, int* pLen);
-    OperandResult PrintComplexOperand(unsigned char opr,
-        const unsigned char** pCodePtr, int* pLen);
+    OperandResult PrintNum(int adrsMode, uint8_t val,
+        const uint8_t** pCodePtr, int* pLen);
+    OperandResult PrintComplexOperand(uint8_t opr,
+        const uint8_t** pCodePtr, int* pLen);
     void PrintSymEntry(int ent);
-    void PrintMnemonic(unsigned char val);
-    void PrintBin(unsigned char val);
-    void PrintComment(int adrsMode, const unsigned char* ptr, int len);
+    void PrintMnemonic(uint8_t val);
+    void PrintBin(uint8_t val);
+    void PrintComment(int adrsMode, const uint8_t* ptr, int len);
 
     enum {
         kHeaderLen = 4,
@@ -187,8 +187,8 @@ private:
         kGROUP9 = 0x4a,
     };
 
-    const unsigned char*    fSymTab;
-    unsigned short  fSymCount;
+    const uint8_t* fSymTab;
+    uint16_t       fSymCount;
 
 };
 
@@ -265,28 +265,25 @@ private:
         kResultGotoOutOprnd,
     } OperandResult;
 
-    void ProcessLine(const unsigned char* codePtr, int len);
-    void ConvertOperand(unsigned char mnemonic, const unsigned char** pCodePtr,
+    void ProcessLine(const uint8_t* codePtr, int len);
+    void ConvertOperand(uint8_t mnemonic, const uint8_t** pCodePtr,
         int* pLen);
     void PrintSymEntry(int ent);
-    OperandResult PrintNum(unsigned char opr, const unsigned char** pCodePtr,
+    OperandResult PrintNum(uint8_t opr, const uint8_t** pCodePtr,
         int* pLen);
-    OperandResult PrintComplexOperand(unsigned char opr,
-        const unsigned char** pCodePtr, int* pLen);
-    void PrintDec(int count, const unsigned char** pCodePtr,
-        int* pLen);
-    void PrintHex(int count, const unsigned char** pCodePtr,
-        int* pLen);
-    void PrintBin(int count, const unsigned char** pCodePtr,
-        int* pLen);
+    OperandResult PrintComplexOperand(uint8_t opr,
+        const uint8_t** pCodePtr, int* pLen);
+    void PrintDec(int count, const uint8_t** pCodePtr, int* pLen);
+    void PrintHex(int count, const uint8_t** pCodePtr, int* pLen);
+    void PrintBin(int count, const uint8_t** pCodePtr, int* pLen);
 
-    const unsigned char**   fSymTab;
-    unsigned short  fSymCount;
+    const uint8_t** fSymTab;
+    uint16_t    fSymCount;
 
-    unsigned char fOpTab;
-    unsigned char fAdTab;
-    unsigned char fComTab;
-    unsigned char fCpuType;
+    uint8_t     fOpTab;
+    uint8_t     fAdTab;
+    uint8_t     fComTab;
+    uint8_t     fCpuType;
 };
 
 #endif /*REFORMAT_ASM_H*/

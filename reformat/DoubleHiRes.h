@@ -44,7 +44,7 @@ public:
     } Algorithms;
 
     void InitColorLookup(void);
-    MyDIBitmap* DHRScreenToBitmap(const unsigned char* buf);
+    MyDIBitmap* DHRScreenToBitmap(const uint8_t* buf);
 
     Algorithms  fAlgorithm;
     int         fLineOffset[kNumLines];

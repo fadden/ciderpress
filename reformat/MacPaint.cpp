@@ -43,7 +43,7 @@ void
 ReformatMacPaint::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
-    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
     const char* nameExt = pHolder->GetNameExt();
     long version;
@@ -84,7 +84,7 @@ ReformatMacPaint::Process(const ReformatHolder* pHolder,
     ReformatOutput* pOutput)
 {
     MyDIBitmap* pDib;
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
@@ -111,10 +111,10 @@ bail:
  * (required for windows BMP).
  */
 MyDIBitmap*
-ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
+ReformatMacPaint::ConvertMacPaint(const uint8_t* srcBuf, long length)
 {
     MyDIBitmap* pDib = NULL;
-    unsigned char* outBuf;
+    uint8_t* outBuf;
     static const RGBQUAD colorConv[2] = {
         /* blue, green, red, reserved */
         { 0x00, 0x00, 0x00 },   // black
@@ -146,7 +146,7 @@ ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
     length -= kLeadingJunkCount;
     LOGI("Adjusted len is %d", length);
 
-    outBuf = (unsigned char*) pDib->Create(kOutputWidth, kOutputHeight,
+    outBuf = (uint8_t*) pDib->Create(kOutputWidth, kOutputHeight,
                                     1, kNumColors);
     if (outBuf == NULL) {
         delete pDib;
@@ -155,7 +155,7 @@ ReformatMacPaint::ConvertMacPaint(const unsigned char* srcBuf, long length)
     }
     pDib->SetColorTable(colorConv);
 
-    unsigned char* outPtr;
+    uint8_t* outPtr;
     int line;
 
     /* top row goes at the bottom of the buffer */

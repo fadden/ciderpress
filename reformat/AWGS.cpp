@@ -32,11 +32,11 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     fUseRTF = true;
     Chunk doc, header, footer;
-    unsigned short val;
+    uint16_t val;
 
     CheckGSCharConv();
 
@@ -149,7 +149,7 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
  * Read one of the chunks of the file.
  */
 bool
-ReformatAWGS_WP::ReadChunk(const unsigned char** pSrcBuf, long* pSrcLen,
+ReformatAWGS_WP::ReadChunk(const uint8_t** pSrcBuf, long* pSrcLen,
     Chunk* pChunk)
 {
     /* starts with the saveArray count */
@@ -210,12 +210,12 @@ ReformatAWGS_WP::PrintChunk(const Chunk* pChunk)
 {
     const int kDefaultStatusBits = kAWGSJustifyLeft | kAWGSSingleSpace;
     SaveArrayEntry sae;
-    const unsigned char* saveArray;
+    const uint8_t* saveArray;
     int saCount;
-    const unsigned char* blockPtr;
+    const uint8_t* blockPtr;
     long blockLen;
-    const unsigned char* pRuler;
-    unsigned short rulerStatusBits;
+    const uint8_t* pRuler;
+    uint16_t rulerStatusBits;
 
     saveArray = pChunk->saveArray;
     saCount = pChunk->saveArrayCount;
@@ -291,12 +291,11 @@ ReformatAWGS_WP::PrintChunk(const Chunk* pChunk)
  * skip through them earlier.  We don't really need to worry about running
  * off the end due to a bad file.
  */
-const unsigned char*
+const uint8_t*
 ReformatAWGS_WP::FindTextBlock(const Chunk* pChunk, int blockNum)
 {
-    const unsigned char* blockPtr = pChunk->textBlocks;
-    long count = pChunk->numTextBlocks;
-    unsigned long blockSize;
+    const uint8_t* blockPtr = pChunk->textBlocks;
+    uint32_t blockSize;
 
     while (blockNum--) {
         blockSize = Get32LE(blockPtr);
@@ -315,12 +314,12 @@ ReformatAWGS_WP::FindTextBlock(const Chunk* pChunk, int blockNum)
  * Returns the #of bytes consumed.
  */
 int
-ReformatAWGS_WP::PrintParagraph(const unsigned char* ptr, long maxLen)
+ReformatAWGS_WP::PrintParagraph(const uint8_t* ptr, long maxLen)
 {
-    const unsigned char* startPtr = ptr;
-    unsigned short firstFont;
-    unsigned char firstStyle, firstSize, firstColor;
-    unsigned char uch;
+    const uint8_t* startPtr = ptr;
+    uint16_t firstFont;
+    uint8_t firstStyle, firstSize, firstColor;
+    uint8_t uch;
 
     if (maxLen < 7) {
         LOGI("AWGS_WP GLITCH: not enough storage for para header (%d)",
@@ -408,9 +407,9 @@ ReformatAWGS_WP::PrintParagraph(const unsigned char* ptr, long maxLen)
 /*
  * Run through the SaveArray and find the highest-numbered ruler index.
  */
-unsigned short
-ReformatAWGS_WP::GetNumRulers(const unsigned char* pSaveArray,
-    unsigned short saveArrayCount)
+uint16_t
+ReformatAWGS_WP::GetNumRulers(const uint8_t* pSaveArray,
+    uint16_t saveArrayCount)
 {
     SaveArrayEntry sa;
     int maxRuler = -1;
@@ -430,7 +429,7 @@ ReformatAWGS_WP::GetNumRulers(const unsigned char* pSaveArray,
     /* there must be at least one paragraph, so this must hold */
     assert(maxRuler >= 0);
 
-    return (unsigned short) (maxRuler+1);
+    return (uint16_t) (maxRuler+1);
 }
 
 /*
@@ -439,12 +438,12 @@ ReformatAWGS_WP::GetNumRulers(const unsigned char* pSaveArray,
  *
  * These are stored linearly, so we just need to look at the last entry.
  */
-unsigned short
-ReformatAWGS_WP::GetNumTextBlocks(const unsigned char* pSaveArray,
-    unsigned short saveArrayCount)
+uint16_t
+ReformatAWGS_WP::GetNumTextBlocks(const uint8_t* pSaveArray,
+    uint16_t saveArrayCount)
 {
     SaveArrayEntry sa;
-    unsigned short maxTextBlock;
+    uint16_t maxTextBlock;
 
     assert(saveArrayCount > 0);
     UnpackSaveArrayEntry(pSaveArray + (saveArrayCount-1) * kSaveArrayEntryLen,
@@ -475,14 +474,14 @@ ReformatAWGS_WP::GetNumTextBlocks(const unsigned char* pSaveArray,
     }
 #endif
 
-    return (unsigned short) (maxTextBlock+1);
+    return (uint16_t) (maxTextBlock+1);
 }
 
 /*
  * Unpack a SaveArray entry.
  */
 void
-ReformatAWGS_WP::UnpackSaveArrayEntry(const unsigned char* pSaveArray,
+ReformatAWGS_WP::UnpackSaveArrayEntry(const uint8_t* pSaveArray,
     SaveArrayEntry* pSAE)
 {
     pSAE->textBlock = Get16LE(pSaveArray + 0);
@@ -503,11 +502,11 @@ ReformatAWGS_WP::UnpackSaveArrayEntry(const unsigned char* pSaveArray,
  * Returns "true" on success, "false" on failure.
  */
 bool
-ReformatAWGS_WP::SkipTextBlocks(const unsigned char** pSrcBuf,
+ReformatAWGS_WP::SkipTextBlocks(const uint8_t** pSrcBuf,
     long* pSrcLen, int textBlockCount)
 {
-    unsigned long blockSize;
-    const unsigned char* srcBuf = *pSrcBuf;
+    uint32_t blockSize;
+    const uint8_t* srcBuf = *pSrcBuf;
     long srcLen = *pSrcLen;
 
     LOGI("Scanning %d text blocks", textBlockCount);

@@ -149,7 +149,7 @@ ReformatDisasm65xxx::GetOpWidth(OpCode opCode, AddrMode addrMode, CPU cpu,
  * The caller is expected to check to see if we're in bank 0.
  */
 bool
-ReformatDisasm65xxx::IsP8Call(const unsigned char* srcBuf, long srcLen)
+ReformatDisasm65xxx::IsP8Call(const uint8_t* srcBuf, long srcLen)
 {
     if (srcLen >= 6 &&
         srcBuf[0] == 0x20 && srcBuf[1] == 0x00 && srcBuf[2] == 0xbf)
@@ -163,7 +163,7 @@ ReformatDisasm65xxx::IsP8Call(const unsigned char* srcBuf, long srcLen)
  * Returns "true" if it looks like we're pointing at a IIgs toolbox call.
  */
 bool
-ReformatDisasm65xxx::IsToolboxCall(const unsigned char* srcBuf, long srcLen,
+ReformatDisasm65xxx::IsToolboxCall(const uint8_t* srcBuf, long srcLen,
     long backState)
 {
     if (srcLen >= 4 && backState >= 3 &&
@@ -179,7 +179,7 @@ ReformatDisasm65xxx::IsToolboxCall(const unsigned char* srcBuf, long srcLen,
  * Returns "true" if it looks like we're pointing at an inline GS/OS call.
  */
 bool
-ReformatDisasm65xxx::IsInlineGSOS(const unsigned char* srcBuf, long srcLen)
+ReformatDisasm65xxx::IsInlineGSOS(const uint8_t* srcBuf, long srcLen)
 {
     if (srcLen >= 10 &&
         srcBuf[0] == 0x22 && srcBuf[1] == 0xa8 && srcBuf[2] == 0x00 &&
@@ -194,7 +194,7 @@ ReformatDisasm65xxx::IsInlineGSOS(const unsigned char* srcBuf, long srcLen)
  * Returns "true" if it looks like we're pointing at a stack GS/OS call.
  */
 bool
-ReformatDisasm65xxx::IsStackGSOS(const unsigned char* srcBuf, long srcLen,
+ReformatDisasm65xxx::IsStackGSOS(const uint8_t* srcBuf, long srcLen,
     long backState)
 {
     if (srcLen >= 4 && backState >= 3 &&
@@ -214,8 +214,8 @@ ReformatDisasm65xxx::IsStackGSOS(const unsigned char* srcBuf, long srcLen,
  * Returns the number of bytes consumed.
  */
 int
-ReformatDisasm65xxx::OutputMonitor8(const unsigned char* srcBuf, long srcLen,
-    long backState, unsigned short addr)
+ReformatDisasm65xxx::OutputMonitor8(const uint8_t* srcBuf, long srcLen,
+    long backState, uint16_t addr)
 {
     const CPU kCPU = kCPU65C02;     // 6502 or 65C02
     OpCode opCode;
@@ -249,7 +249,7 @@ ReformatDisasm65xxx::OutputMonitor8(const unsigned char* srcBuf, long srcLen,
     } else
     if (srcLen < bytesUsed) {
         assert(bytesUsed <= kMaxByteConsumption);
-        unsigned char tmpBuf[kMaxByteConsumption];
+        uint8_t tmpBuf[kMaxByteConsumption];
         memset(tmpBuf, 0, kMaxByteConsumption);
         memcpy(tmpBuf, srcBuf, srcLen);
 
@@ -267,13 +267,13 @@ ReformatDisasm65xxx::OutputMonitor8(const unsigned char* srcBuf, long srcLen,
  */
 void
 ReformatDisasm65xxx::PrintMonitor8Line(OpCode opCode, AddrMode addrMode,
-    unsigned short addr, const unsigned char* srcBuf, long srcLen,
+    uint16_t addr, const uint8_t* srcBuf, long srcLen,
     const char* comment)
 {
     char lineBuf[64];   // actual length is about 30 -- does not hold comment
     char* cp;
     const char* mnemonic = kOpCodeDetails[opCode].mnemonic;
-    unsigned char byte0, byte1, byte2;
+    uint8_t byte0, byte1, byte2;
 
     cp = lineBuf;
 
@@ -401,15 +401,15 @@ ReformatDisasm65xxx::PrintMonitor8Line(OpCode opCode, AddrMode addrMode,
  * Returns the number of bytes consumed.
  */
 int
-ReformatDisasm65xxx::OutputMonitor16(const unsigned char* srcBuf, long srcLen,
-    long backState, unsigned long addr, bool shortRegs)
+ReformatDisasm65xxx::OutputMonitor16(const uint8_t* srcBuf, long srcLen,
+    long backState, uint32_t addr, bool shortRegs)
 {
     const CPU kCPU = kCPU65816;
     OpCode opCode;
     AddrMode addrMode;
     int bytesUsed;
     int opAndAddr;
-        const char* callName;
+    const char* callName;
 
     opAndAddr = kOpMap[*srcBuf].opAndAddr[kCPU];
     opCode = (OpCode) (opAndAddr & 0xff);
@@ -457,7 +457,7 @@ ReformatDisasm65xxx::OutputMonitor16(const unsigned char* srcBuf, long srcLen,
     } else
     if (srcLen < bytesUsed) {
         assert(bytesUsed <= kMaxByteConsumption);
-        unsigned char tmpBuf[kMaxByteConsumption];
+        uint8_t tmpBuf[kMaxByteConsumption];
         memset(tmpBuf, 0, kMaxByteConsumption);
         memcpy(tmpBuf, srcBuf, srcLen);
 
@@ -474,14 +474,14 @@ ReformatDisasm65xxx::OutputMonitor16(const unsigned char* srcBuf, long srcLen,
  */
 void
 ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
-    unsigned long addr, const unsigned char* srcBuf, long srcLen,
+    uint32_t addr, const uint8_t* srcBuf, long srcLen,
     const char* comment)
 {
     char lineBuf[64];   // actual length is about 30 -- does not hold comment
     char* cp;
     const char* mnemonic = kOpCodeDetails[opCode].mnemonic;
-    unsigned char byte0, byte1, byte2, byte3;
-    short offset;
+    uint8_t byte0, byte1, byte2, byte3;
+    int16_t offset;
 
     cp = lineBuf;
 
@@ -560,10 +560,10 @@ ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
         offset = (char) byte1;
         if (offset < 0)
             cp += sprintf(cp, " %04X {-%02X}",
-                RelOffset((unsigned short) addr, byte1), -offset);
+                RelOffset((uint16_t) addr, byte1), -offset);
         else
             cp += sprintf(cp, " %04X {+%02X}",
-                RelOffset((unsigned short) addr, byte1), offset);
+                RelOffset((uint16_t) addr, byte1), offset);
         break;
 
     case kAddrAbs:
@@ -622,10 +622,10 @@ ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
         offset = (short) (byte1 | byte2 << 8);
         if (offset < 0)
             cp += sprintf(cp, " %04X {-%02X}",
-                RelLongOffset((unsigned short) addr, offset), -offset);
+                RelLongOffset((uint16_t) addr, offset), -offset);
         else
             cp += sprintf(cp, " %04X {+%02X}",
-                RelLongOffset((unsigned short) addr, offset), offset);
+                RelLongOffset((uint16_t) addr, offset), offset);
         break;
     case kAddrStackAbs:         // PEA
         cp += sprintf(cp, " %02X%02X", byte2, byte1);
@@ -708,11 +708,11 @@ ReformatDisasm8::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long fileType = pHolder->GetFileType();
     long backState = 0;
-    unsigned short addr;
+    uint16_t addr;
     fUseRTF = false;
 
     if (!srcLen)
@@ -724,7 +724,7 @@ ReformatDisasm8::Process(const ReformatHolder* pHolder,
     if (fileType == kTypeSYS || fileType == kTypeP8C || fileType == kType8OB)
         addr = 0x2000;
     else if (fileType == kTypeBIN || fileType == kTypeCMD)
-        addr = (unsigned short) pHolder->GetAuxType();
+        addr = (uint16_t) pHolder->GetAuxType();
     else
         addr = 0x0000;
 
@@ -817,10 +817,10 @@ ReformatDisasm16::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long fileType = pHolder->GetFileType();
-    unsigned long addr = 0;
+    uint32_t addr = 0;
     bool shortRegs;
 
     fUseRTF = false;
@@ -849,7 +849,7 @@ ReformatDisasm16::Process(const ReformatHolder* pHolder,
         if (fileType == kTypeSYS)
             addr = 0x2000;
         else if (fileType == kTypeBIN || fileType == kTypeCMD)
-            addr = (unsigned short) pHolder->GetAuxType();
+            addr = (uint16_t) pHolder->GetAuxType();
         OutputSection(srcBuf, srcLen, addr, shortRegs);
     }
 
@@ -862,8 +862,8 @@ ReformatDisasm16::Process(const ReformatHolder* pHolder,
  * Output one section of a file.
  */
 void
-ReformatDisasm16::OutputSection(const unsigned char* srcBuf, long srcLen,
-    unsigned long addr, bool shortRegs)
+ReformatDisasm16::OutputSection(const uint8_t* srcBuf, long srcLen,
+    uint32_t addr, bool shortRegs)
 {
     long backState = 0;
 
@@ -883,10 +883,10 @@ ReformatDisasm16::OutputSection(const unsigned char* srcBuf, long srcLen,
  * Break an OMF file into sections, and output each individually.
  */
 bool
-ReformatDisasm16::OutputOMF(const unsigned char* srcBuf, long srcLen,
+ReformatDisasm16::OutputOMF(const uint8_t* srcBuf, long srcLen,
     long fileType, bool shortRegs)
 {
-    const unsigned char* origBuf = srcBuf;
+    const uint8_t* origBuf = srcBuf;
     long origLen = srcLen;
     OMFSegmentHeader segHdr;
     int segmentNumber = 1;
@@ -1006,9 +1006,9 @@ ReformatDisasm16::PrintHeader(const OMFSegmentHeader* pSegHdr,
  */
 void
 ReformatDisasm16::PrintSegment(const OMFSegmentHeader* pSegHdr,
-    const unsigned char* srcBuf, long srcLen, bool shortRegs)
+    const uint8_t* srcBuf, long srcLen, bool shortRegs)
 {
-    unsigned long subLen;
+    uint32_t subLen;
     int offset = 0;
 
     assert(pSegHdr != NULL);
@@ -1035,7 +1035,7 @@ ReformatDisasm16::PrintSegment(const OMFSegmentHeader* pSegHdr,
 #if 0
     OMFSegment seg;
     seg.Setup(pSegHdr, srcBuf, srcLen);
-    const unsigned char* ptr;
+    const uint8_t* ptr;
 
     do {
         ptr = seg.ProcessNextChunk();
@@ -1066,7 +1066,7 @@ ReformatDisasm16::PrintSegment(const OMFSegmentHeader* pSegHdr,
  * Returns "true" on success, "false" on failure.
  */
 bool
-OMFSegmentHeader::Unpack(const unsigned char* srcBuf, long srcLen,
+OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen,
     int fileType)
 {
     if (srcLen < kHdrMinSize) {
@@ -1175,7 +1175,7 @@ OMFSegmentHeader::Unpack(const unsigned char* srcBuf, long srcLen,
 
 
     /* validate fields */
-    if (fByteCnt < kHdrMinSize || fByteCnt > (unsigned long) srcLen) {
+    if (fByteCnt < kHdrMinSize || fByteCnt > (uint32_t) srcLen) {
         LOGI("OMF: Bad value for byteCnt (%ld, srcLen=%ld min=%d)",
             fByteCnt, srcLen, kHdrMinSize);
         return false;
@@ -1204,7 +1204,7 @@ OMFSegmentHeader::Unpack(const unsigned char* srcBuf, long srcLen,
         /* big endian odd-sized numbers?? keep going, I guess */
     }
 
-    const unsigned char* segName;
+    const uint8_t* segName;
     int segLabelLen;
 
     /* copy the label entries over */
@@ -1324,7 +1324,7 @@ OMFSegmentHeader::Dump(void) const
  * Prepare to roll through a segment.
  */
 void
-OMFSegment::Setup(const OMFSegmentHeader* pSegHdr, const unsigned char* srcBuf,
+OMFSegment::Setup(const OMFSegmentHeader* pSegHdr, const uint8_t* srcBuf,
     long srcLen)
 {
     fSegBuf = fCurPtr = srcBuf + pSegHdr->GetDispData();
@@ -1340,12 +1340,12 @@ OMFSegment::Setup(const OMFSegmentHeader* pSegHdr, const unsigned char* srcBuf,
  * Returns a pointer to the start of the chunk, or "NULL" if we've encountered
  * some bogus condition (e.g. running off the end).
  */
-const unsigned char*
+const uint8_t*
 OMFSegment::ProcessNextChunk(void)
 {
-    const unsigned char* prevPtr = fCurPtr;
+    const uint8_t* prevPtr = fCurPtr;
     long remLen = fSegLen - (fCurPtr - fSegBuf);
-    unsigned long subLen;
+    uint32_t subLen;
     int len = 1;        // one byte at least (for the opcode)
 
     assert(fLabLen >= 0);
@@ -1433,7 +1433,7 @@ OMFSegment::ProcessNextChunk(void)
     case kSegOpExperimental4:
         subLen = Get32LE(fCurPtr+1);    // assumes fNumLen==4
         LOGI("  OMF found 'reserved' len=%lu (remLen=%ld)", subLen, remLen);
-        if (subLen > (unsigned long) remLen)
+        if (subLen > (uint32_t) remLen)
             return NULL;
         len += subLen + fNumLen;
         break;
@@ -1455,7 +1455,7 @@ OMFSegment::ProcessNextChunk(void)
  * Pass a pointer to the start of the expression.
  */
 int
-OMFSegment::ExpressionLength(const unsigned char* ptr)
+OMFSegment::ExpressionLength(const uint8_t* ptr)
 {
     // do this someday
     return 1;

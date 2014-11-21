@@ -32,7 +32,7 @@ private:
 };
 
 /*
- * Guterberg Word Processor
+ * Gutenberg Word Processor
  */
 class ReformatGutenberg : public ReformatText {
 public:

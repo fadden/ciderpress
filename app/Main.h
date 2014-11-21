@@ -139,8 +139,8 @@ public:
 
     // save a buffer of data as a file in a disk image or file archive
     static bool SaveToArchive(GenericArchive::FileDetails* pDetails,
-        const BYTE* dataBuf, long dataLen,
-        const BYTE* rsrcBuf, long rsrcLen,
+        const uint8_t* dataBuf, long dataLen,
+        const uint8_t* rsrcBuf, long rsrcLen,
         CString& errMsg, CWnd* pDialog);
 
     static const WCHAR kOpenNuFX[];
@@ -317,11 +317,11 @@ private:
     void BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
         const DiskConvertDialog& convDlg, CString* pErrMsg);
     int SSTOpenImage(int seqNum, DiskImg* pDiskImg);
-    int SSTLoadData(int seqNum, DiskImg* pDiskImg, BYTE* trackBuf,
+    int SSTLoadData(int seqNum, DiskImg* pDiskImg, uint8_t* trackBuf,
         long* pBadCount);
     long SSTGetBufOffset(int track);
-    long SSTCountBadBytes(const BYTE* sctBuf, int count);
-    void SSTProcessTrackData(BYTE* trackBuf);
+    long SSTCountBadBytes(const uint8_t* sctBuf, int count);
+    void SSTProcessTrackData(uint8_t* trackBuf);
     void VolumeCopier(bool openFile);
     bool EditTwoImgProps(const WCHAR* fileName);
 

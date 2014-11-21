@@ -25,7 +25,7 @@ public:
         ReformatOutput* pOutput);
 
 private:
-    void PrintDirEntries(const unsigned char* srcBuf,
+    void PrintDirEntries(const uint8_t* srcBuf,
         long srcLen, bool showDeleted);
 };
 

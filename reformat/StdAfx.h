@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <stdint.h>
 #include <afxwin.h>
 #include <afxcmn.h>         // for some stuff in util lib
 

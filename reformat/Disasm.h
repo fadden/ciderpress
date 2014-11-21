@@ -142,10 +142,10 @@ protected:
      * Output one or more lines of code in a manner appropriate for a
      * monitor listing on an 8-bit machine.  Returns the #of bytes consumed.
      */
-    int OutputMonitor8(const unsigned char* srcBuf, long srcLen,
-        long backState, unsigned short addr);
-    int OutputMonitor16(const unsigned char* srcBuf, long srcLen,
-        long backState, unsigned long addr, bool shortRegs);
+    int OutputMonitor8(const uint8_t* srcBuf, long srcLen,
+        long backState, uint16_t addr);
+    int OutputMonitor16(const uint8_t* srcBuf, long srcLen,
+        long backState, uint32_t addr, bool shortRegs);
 
 private:
     bool ValidateOpMap(void);
@@ -154,12 +154,12 @@ private:
     bool ValidateOpCodeDetails(void);
     static const OpCodeDetails kOpCodeDetails[];
 
-    inline unsigned short RelOffset(unsigned short addr, unsigned char off) {
-        char shift = (char) off;
+    inline uint16_t RelOffset(uint16_t addr, uint8_t off) {
+        int8_t shift = (int8_t) off;    // offset is signed
         return addr +2 + shift;
     }
-    inline unsigned short RelLongOffset(unsigned short addr, unsigned short off) {
-        short shift = (short) off;
+    inline uint16_t RelLongOffset(uint16_t addr, uint16_t off) {
+        int16_t shift = (int16_t) off;  // offset is signed
         return addr +3 + shift;
     }
 
@@ -169,26 +169,26 @@ private:
 
     int GetOpWidth(OpCode opCode, AddrMode addrMode, CPU cpu,
         bool emul, bool shortM, bool shortX);
-    bool IsP8Call(const unsigned char* srcBuf, long srcLen);
-    bool IsToolboxCall(const unsigned char* srcBuf, long srcLen,
+    bool IsP8Call(const uint8_t* srcBuf, long srcLen);
+    bool IsToolboxCall(const uint8_t* srcBuf, long srcLen,
         long backState);
-    bool IsInlineGSOS(const unsigned char* srcBuf, long srcLen);
-    bool IsStackGSOS(const unsigned char* srcBuf, long srcLen,
+    bool IsInlineGSOS(const uint8_t* srcBuf, long srcLen);
+    bool IsStackGSOS(const uint8_t* srcBuf, long srcLen,
         long backState);
 
     void PrintMonitor8Line(OpCode opCode, AddrMode addrMode,
-        unsigned short addr, const unsigned char* srcBuf, long srcLen,
+        uint16_t addr, const uint8_t* srcBuf, long srcLen,
         const char* comment);
     void PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
-        unsigned long addr, const unsigned char* srcBuf, long srcLen,
+        uint32_t addr, const uint8_t* srcBuf, long srcLen,
         const char* comment);
 
     /* 24-bit address helpers */
-    inline unsigned char Bank(unsigned long addr) {
-        return (unsigned char) ((addr >> 16) & 0xff);
+    inline uint8_t Bank(uint32_t addr) {
+        return (uint8_t) ((addr >> 16) & 0xff);
     }
-    inline unsigned short Offset(unsigned long addr) {
-        return (unsigned short) (addr & 0xffff);
+    inline uint16_t Offset(uint32_t addr) {
+        return (uint16_t) (addr & 0xffff);
     }
 };
 
@@ -217,7 +217,7 @@ public:
     OMFSegmentHeader(void) : fReady(false) {}
     virtual ~OMFSegmentHeader(void) {}
 
-    bool Unpack(const unsigned char* srcBuf, long srcLen, int fileType);
+    bool Unpack(const uint8_t* srcBuf, long srcLen, int fileType);
     void Dump(void) const;
 
     typedef enum SegmentType {
@@ -241,14 +241,14 @@ public:
         kFlagDynamic,
     } SegmentFlag;
 
-    int GetVersion(void) const { return fVersion; }
-    unsigned long GetSegmentLen(void) const { return fByteCnt; }
+    uint8_t GetVersion(void) const { return fVersion; }
+    uint32_t GetSegmentLen(void) const { return fByteCnt; }
     SegmentType GetSegmentType(void) const;
     bool GetSegmentFlag(SegmentFlag flag) const;
-    int GetSegNum(void) const { return fSegNum; }
-    int GetLabLen(void) const { return fLabLen; }
-    int GetNumLen(void) const { return fNumLen; }
-    int GetDispData(void) const { return fDispData; }
+    uint16_t GetSegNum(void) const { return fSegNum; }
+    uint8_t GetLabLen(void) const { return fLabLen; }
+    uint8_t GetNumLen(void) const { return fNumLen; }
+    uint16_t GetDispData(void) const { return fDispData; }
     const char* GetLoadName(void) const { return (const char*) fLoadName; }
     const char* GetSegName(void) const { return (const char*) fSegName; }
 
@@ -269,34 +269,34 @@ public:
 private:
     bool            fReady;
 
-    inline unsigned short Get16LE(const unsigned char* buf) {
+    inline uint16_t Get16LE(const uint8_t* buf) {
         return *buf | *(buf+1) << 8;
     }
-    inline unsigned long Get32LE(const unsigned char* buf) {
+    inline uint32_t Get32LE(const uint8_t* buf) {
         return *buf | *(buf+1) << 8 | *(buf+2) << 16 | *(buf+3) << 24;
     }
 
-    unsigned long   fBlockCnt;          // v0/v1
-    unsigned long   fByteCnt;           // v2
-    unsigned long   fResSpc;
-    unsigned long   fLength;
-    unsigned char   fType;              // v0/v1
-    unsigned char   fLabLen;
-    unsigned char   fNumLen;            // (always 4)
-    unsigned char   fVersion;           // (0, 1, or 2)
-    unsigned long   fBankSize;          // (always 65536)
-    unsigned short  fKind;              // v2
-    unsigned long   fOrg;
-    unsigned long   fAlign;
-    unsigned char   fNumSex;
-    unsigned char   fLCBank;            // v1
-    unsigned short  fSegNum;            // v1/v2
-    unsigned long   fEntry;             // v1/v2
-    unsigned short  fDispName;          // v1/v2
-    unsigned short  fDispData;          // v1/v2
-    unsigned long   fTempOrg;           // v2
-    unsigned char   fLoadName[kLoadNameLen+1];  // 10 chars, space-padded
-    unsigned char   fSegName[kSegNameLen+1];    // 1-255 chars
+    uint32_t    fBlockCnt;          // v0/v1
+    uint32_t    fByteCnt;           // v2
+    uint32_t    fResSpc;
+    uint32_t    fLength;
+    uint8_t     fType;              // v0/v1
+    uint8_t     fLabLen;
+    uint8_t     fNumLen;            // (always 4)
+    uint8_t     fVersion;           // (0, 1, or 2)
+    uint32_t    fBankSize;          // (always 65536)
+    uint16_t    fKind;              // v2
+    uint32_t    fOrg;
+    uint32_t    fAlign;
+    uint8_t     fNumSex;
+    uint8_t     fLCBank;            // v1
+    uint16_t    fSegNum;            // v1/v2
+    uint32_t    fEntry;             // v1/v2
+    uint16_t    fDispName;          // v1/v2
+    uint16_t    fDispData;          // v1/v2
+    uint32_t    fTempOrg;           // v2
+    uint8_t     fLoadName[kLoadNameLen + 1];  // 10 chars, space-padded
+    uint8_t     fSegName[kSegNameLen + 1];    // 1-255 chars
 };
 
 #if 0
@@ -310,9 +310,9 @@ public:
         {}
     virtual ~OMFSegment(void) {}
 
-    void Setup(const OMFSegmentHeader* pSegHdr, const unsigned char* srcBuf,
+    void Setup(const OMFSegmentHeader* pSegHdr, const uint8_t* srcBuf,
         long srcLen);
-    const unsigned char* ProcessNextChunk(void);
+    const uint8_t* ProcessNextChunk(void);
 
     /*
      * Segment op codes.
@@ -390,10 +390,10 @@ public:
     } ExprOp;
 
 private:
-//  inline unsigned short Get16LE(const unsigned char* buf) {
+//  inline uint16_t Get16LE(const uint8_t* buf) {
 //      return *buf | *(buf+1) << 8;
 //  }
-    inline unsigned long Get32LE(const unsigned char* buf) {
+    inline uint32_t Get32LE(const uint8_t* buf) {
         return *buf | *(buf+1) << 8 | *(buf+2) << 16 | *(buf+3) << 24;
     }
 
@@ -401,7 +401,7 @@ private:
      * Given a pointer to the start of a label, return the label's len.
      * The length returned includes the length byte (if present).
      */
-    int LabelLength(const unsigned char* ptr) {
+    int LabelLength(const uint8_t* ptr) {
         if (fLabLen != 0)
             return fLabLen;
         else
@@ -409,12 +409,12 @@ private:
     }
 
     /* determine the length of an expression */
-    int ExpressionLength(const unsigned char* ptr);
+    int ExpressionLength(const uint8_t* ptr);
 
-    const unsigned char*    fSegBuf;
+    const uint8_t*          fSegBuf;
     long                    fSegLen;
 
-    const unsigned char*    fCurPtr;
+    const uint8_t*          fCurPtr;
     int                     fNumLen;
     int                     fLabLen;
 };
@@ -440,14 +440,14 @@ public:
         ReformatOutput* pOutput);
 
 private:
-    void OutputSection(const unsigned char* srcBuf, long srcLen,
-        unsigned long addr, bool shortRegs);
-    bool OutputOMF(const unsigned char* srcBuf, long srcLen,
+    void OutputSection(const uint8_t* srcBuf, long srcLen,
+        uint32_t addr, bool shortRegs);
+    bool OutputOMF(const uint8_t* srcBuf, long srcLen,
         long fileType, bool shortRegs);
     void PrintHeader(const OMFSegmentHeader* pSegHdr,
         int segmentNumber, bool longFmt);
     void PrintSegment(const OMFSegmentHeader* pSegHdr,
-        const unsigned char* srcBuf, long srcLen, bool shortRegs);
+        const uint8_t* srcBuf, long srcLen, bool shortRegs);
 };
 
 #endif /*REFORMAT_DISASM_H*/

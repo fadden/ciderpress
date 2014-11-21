@@ -19,6 +19,7 @@
 
 #include "../app/targetver.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
 #include <afxwin.h>

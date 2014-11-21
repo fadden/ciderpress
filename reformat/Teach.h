@@ -59,7 +59,7 @@ public:
         }
 
     /* unpack the resource; returns false on failure */
-    bool Create(const unsigned char* buf, long len);
+    bool Create(const uint8_t* buf, long len);
 
     /*
      * Class representing a IIgs TERuler object.
@@ -70,7 +70,7 @@ public:
         virtual ~TERuler(void) {}
 
         /* unpack the ruler; returns the #of bytes consumed */
-        int Create(const unsigned char* buf, long len);
+        int Create(const uint8_t* buf, long len);
 
         typedef enum Justification {
             kJustLeft   = 0x0000,
@@ -90,20 +90,20 @@ public:
         };
 
         typedef struct TabItem {
-            unsigned short  tabKind;    // must be $0000
-            unsigned short  tabData;    // tab location, in pixels from left
+            uint16_t    tabKind;    // must be $0000
+            uint16_t    tabData;    // tab location, in pixels from left
         } TabItem;
 
-        unsigned short  fLeftMargin;    // pixel indent, except para start
-        unsigned short  fLeftIndent;    // pixel indent, for para start
-        unsigned short  fRightMargin;   // maximum line len, in pixels
-        unsigned short  fJust;          // enum Justification
-        unsigned short  fExtraLS;       // extra line spacing, in pixels
-        unsigned short  fFlags;         // reserved
-        unsigned long   fUserData;
-        unsigned short  fTabType;       // 0=none, 1=interval, 2=irregular
+        uint16_t    fLeftMargin;    // pixel indent, except para start
+        uint16_t    fLeftIndent;    // pixel indent, for para start
+        uint16_t    fRightMargin;   // maximum line len, in pixels
+        uint16_t    fJust;          // enum Justification
+        uint16_t    fExtraLS;       // extra line spacing, in pixels
+        uint16_t    fFlags;         // reserved
+        uint32_t    fUserData;
+        uint16_t    fTabType;       // 0=none, 1=interval, 2=irregular
         // array of TabItem appears here for fTabType==2
-        unsigned short  fTabTerminator; // present for fTabType==1 or 2
+        uint16_t    fTabTerminator; // present for fTabType==1 or 2
     };
 
     /*
@@ -115,22 +115,22 @@ public:
         virtual ~TEStyle(void) {}
 
         /* unpack the style; returns the #of bytes consumed */
-        void Create(const unsigned char* buf);
+        void Create(const uint8_t* buf);
 
         /* Apple IIgs font family number */
-        unsigned short GetFontFamily(void) const {
-            return (unsigned short) fFontID;
+        uint16_t GetFontFamily(void) const {
+            return (uint16_t) fFontID;
         }
         /* font size, in points */
-        int GetFontSize(void) const {
+        uint8_t GetFontSize(void) const {
             return (fFontID >> 24) & 0xff;
         }
         /* return QDII text style */
-        unsigned char GetTextStyle(void) const {
-            return (unsigned char) ((fFontID >> 16) & 0xff);
+        uint8_t GetTextStyle(void) const {
+            return (fFontID >> 16) & 0xff;
         }
         /* return QDII text color */
-        unsigned short GetTextColor(void) const { return fForeColor; }
+        uint16_t GetTextColor(void) const { return fForeColor; }
 
         /* individual text style getters */
         //bool IsBold(void) const { return (GetTextStyle() & kBold) != 0; }
@@ -140,10 +140,11 @@ public:
         enum { kDataLen = 12 };
 
     private:
-        unsigned long   fFontID;
-        unsigned short  fForeColor;
-        unsigned short  fBackColor;
-        unsigned long   fUserData;
+        /* font ID has family, size, and style */
+        uint32_t    fFontID;
+        uint16_t    fForeColor;
+        uint16_t    fBackColor;
+        uint32_t    fUserData;
     };
 
     /*
@@ -155,23 +156,22 @@ public:
         virtual ~StyleItem(void) {}
 
         /* unpack the item */
-        void Create(const unsigned char* buf);
+        void Create(const uint8_t* buf);
 
-        unsigned long GetLength(void) const { return fLength; }
-        unsigned long GetOffset(void) const { return fOffset; }
-        int GetStyleIndex(void) const {
-            /* MSVC++6.0 won't let me use TEStyle::kDataLen here */
-            return fOffset / 12;
+        uint32_t GetLength(void) const { return fLength; }
+        uint32_t GetOffset(void) const { return fOffset; }
+        uint32_t GetStyleIndex(void) const {
+            return fOffset / TEStyle::kDataLen;
         }
 
         enum {
-            kDataLen = 8,
+            kItemDataLen = 8,
             kUnusedItem = 0xffffffff,   // in fLength field
         };
 
     private:
-        unsigned long   fLength;    // #of characters affected by this style
-        unsigned long   fOffset;    // offset in bytes into TEStyle list
+        uint32_t    fLength;    // #of characters affected by this style
+        uint32_t    fOffset;    // offset in bytes into TEStyle list
     };
 
     enum {

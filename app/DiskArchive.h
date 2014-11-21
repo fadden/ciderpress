@@ -153,8 +153,8 @@ public:
 private:
     virtual CString Close(void);
     virtual void XferPrepare(const XferFileOptions* pXferOpts);
-    virtual CString XferFile(FileDetails* pDetails, BYTE** pDataBuf,
-        long dataLen, BYTE** pRsrcBuf, long rsrcLen);
+    virtual CString XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+        long dataLen, uint8_t** pRsrcBuf, long rsrcLen);
     virtual void XferAbort(CWnd* pMsgWnd);
     virtual void XferFinish(CWnd* pMsgWnd);
 
@@ -222,11 +222,11 @@ private:
     NuResult HandleReplaceExisting(const A2File* pExisting,
         FileDetails* pDetails);
     CString ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL);
-    CString LoadFile(const WCHAR* pathName, BYTE** pBuf, long* pLen,
+    CString LoadFile(const WCHAR* pathName, uint8_t** pBuf, long* pLen,
         GenericEntry::ConvertEOL conv, GenericEntry::ConvertHighASCII convHA) const;
     DIError AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
-        const BYTE* dataBuf, long dataLen,
-        const BYTE* rsrcBuf, long rsrcLen) const;
+        const uint8_t* dataBuf, long dataLen,
+        const uint8_t* rsrcBuf, long rsrcLen) const;
     void AddToAddDataList(FileAddData* pData);
     void FreeAddDataList(void);
     void ConvertFDToCP(const FileDetails* pDetails,

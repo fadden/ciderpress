@@ -38,7 +38,7 @@ ReformatDirectory::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     fUseRTF = false;
 
@@ -71,13 +71,13 @@ ReformatDirectory::Process(const ReformatHolder* pHolder,
  * deleted entries.
  */
 void
-ReformatDirectory::PrintDirEntries(const unsigned char* srcBuf,
+ReformatDirectory::PrintDirEntries(const uint8_t* srcBuf,
     long srcLen, bool showDeleted)
 {
     const int kEntriesPerBlock = 0x0d;      // expected value for entries per blk
     const int kEntryLength = 0x27;          // expected value for dir entry len
     const int kMaxFileName = 15;
-    const unsigned char* pDirEntry;
+    const uint8_t* pDirEntry;
     int blockIdx;
     int entryIdx;
 
@@ -125,7 +125,7 @@ ReformatDirectory::PrintDirEntries(const unsigned char* srcBuf,
                     lockedFlag = ' ';
 
                 CStringA auxTypeStr;
-                unsigned short auxType = pDirEntry[0x1f] | pDirEntry[0x20] << 8;
+                uint16_t auxType = pDirEntry[0x1f] | pDirEntry[0x20] << 8;
                 if (pDirEntry[0x10] == 0x06)        // bin
                     auxTypeStr.Format("A=$%04X", auxType);
                 else if (pDirEntry[0x10] == 0x04)   // txt

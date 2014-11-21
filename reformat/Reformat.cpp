@@ -528,7 +528,7 @@ ReformatHolder::Apply(ReformatPart part, ReformatID id)
 /*
  * Get the appropriate input buffer.
  */
-const unsigned char*
+const uint8_t*
 ReformatHolder::GetSourceBuf(ReformatPart part) const
 {
     if (part <= kPartUnknown || part >= kPartMAX) {
@@ -563,7 +563,7 @@ ReformatHolder::GetSourceLen(ReformatPart part) const
  * discard its pointer.
  */
 void
-ReformatHolder::SetSourceBuf(ReformatPart part, unsigned char* buf,
+ReformatHolder::SetSourceBuf(ReformatPart part, uint8_t* buf,
     long len)
 {
     if (part <= kPartUnknown || part >= kPartMAX) {

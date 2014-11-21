@@ -41,7 +41,7 @@ ReformatDG256SHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
@@ -86,7 +86,7 @@ ReformatDG3200SHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
@@ -139,7 +139,7 @@ DreamGrafix::ScanDreamGrafix(ReformatHolder* pHolder)
     if (!couldBe)
         return false;
 
-    const unsigned char* ptr;
+    const uint8_t* ptr;
     ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData)
             + fileLen - kHeaderOffset;
 
@@ -164,11 +164,11 @@ DreamGrafix::ScanDreamGrafix(ReformatHolder* pHolder)
  * exactly 32768+32*200 bytes.
  */
 bool
-DreamGrafix::UnpackDG(const unsigned char* srcBuf, long srcLen,
-    ReformatSHR::SHRScreen* pScreen, unsigned char* extColorTable)
+DreamGrafix::UnpackDG(const uint8_t* srcBuf, long srcLen,
+ReformatSHR::SHRScreen* pScreen, uint8_t* extColorTable)
 {
     int expectedLen;
-    unsigned char* tmpBuf;
+    uint8_t* tmpBuf;
     int actual;
 
     if (extColorTable == NULL) {
@@ -189,7 +189,7 @@ DreamGrafix::UnpackDG(const unsigned char* srcBuf, long srcLen,
     }
 
     /* over-alloc -- our LZW decoder doesn't check often */
-    tmpBuf = new unsigned char[expectedLen + 1024];
+    tmpBuf = new uint8_t[expectedLen + 1024];
     if (tmpBuf == NULL)
         return false;
 
@@ -205,11 +205,11 @@ DreamGrafix::UnpackDG(const unsigned char* srcBuf, long srcLen,
         memcpy(pScreen->scb, tmpBuf + 32000, 256);
         memcpy(pScreen->colorTable, tmpBuf + 32256, 512);
     } else {
-        const unsigned short* pSrcTable;
-        unsigned short* pDstTable;
+        const uint16_t* pSrcTable;
+        uint16_t* pDstTable;
         
-        pSrcTable = (const unsigned short*) (tmpBuf + 32000);
-        pDstTable = (unsigned short*) extColorTable;
+        pSrcTable = (const uint16_t*) (tmpBuf + 32000);
+        pDstTable = (uint16_t*) extColorTable;
         int table;
         for (table = 0; table < ReformatSHR::kNumLines; table++) {
             int entry;
@@ -267,18 +267,18 @@ static const unsigned int bitMasks[] = {
     };
 
 /*static*/ int
-DreamGrafix::UnpackLZW(const unsigned char* srcBuf, long srcLen,
-    unsigned char* dstBuf, long dstLen)
+DreamGrafix::UnpackLZW(const uint8_t* srcBuf, long srcLen,
+    uint8_t* dstBuf, long dstLen)
 {
-    unsigned short finChar, oldCode, inCode, freeCode, maxCode, k;
-    unsigned short nBitMod1, nBitMask;
+    uint16_t finChar, oldCode, inCode, freeCode, maxCode, k;
+    uint16_t nBitMod1, nBitMask;
     int bitOffset;
-    unsigned short hashNext[4096];
-    unsigned short hashChar[4096];
+    uint16_t hashNext[4096];
+    uint16_t hashChar[4096];
 
-    unsigned char* pOrigDst = dstBuf;
+    uint8_t* pOrigDst = dstBuf;
     int iCode;
-    short stack[32768];
+    uint16_t stack[32768];
     int stackIdx = 0;
 
     /* initialize table and code reader */
@@ -305,7 +305,7 @@ DreamGrafix::UnpackLZW(const unsigned char* srcBuf, long srcLen,
             oldCode = iCode;
             k = iCode;
             finChar = iCode;
-            *dstBuf++ = (unsigned char)iCode;
+            *dstBuf++ = (uint8_t) iCode;
             continue;
         }
 

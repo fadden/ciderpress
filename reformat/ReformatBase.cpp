@@ -26,7 +26,7 @@
  */
 const int kUnk = 0x3f;      // for unmappable chars, use '?'
 
-/*static*/ const unsigned char ReformatText::kGSCharConv[128] = {
+/*static*/ const uint8_t ReformatText::kGSCharConv[128] = {
     0xc4,   // 0x80 A + umlaut (diaeresis?)
     0xc5,   // 0x81 A + overcircle
     0xc7,   // 0x82 C + cedilla
@@ -545,7 +545,7 @@ ReformatText::RTFSetFont(RTFFont font)
  * Set the font by specifying a IIgs QuickDraw II font family number.
  */
 void
-ReformatText::RTFSetGSFont(unsigned short family)
+ReformatText::RTFSetGSFont(uint16_t family)
 {
     float newMult;
 
@@ -651,7 +651,7 @@ ReformatText::RTFSetGSFontSize(int points)
  * fonts, so we're going to look different in some circumstances.
  */
 void
-ReformatText::RTFSetGSFontStyle(unsigned char qdStyle)
+ReformatText::RTFSetGSFontStyle(uint8_t qdStyle)
 {
     if (!fUseRTF)
         return;
@@ -702,7 +702,7 @@ ReformatText::RTFProportionalOff(void) {
  * the value is considered.
  */
 void
-ReformatText::ConvertEOL(const unsigned char* srcBuf, long srcLen,
+ReformatText::ConvertEOL(const uint8_t* srcBuf, long srcLen,
     bool stripHiBits)
 {
     /* Compatibility - assume we're not stripping nulls */
@@ -719,10 +719,10 @@ ReformatText::ConvertEOL(const unsigned char* srcBuf, long srcLen,
  * If "stripNulls" is true, no null values will make it through.
  */
 void
-ReformatText::ConvertEOL(const unsigned char* srcBuf, long srcLen,
+ReformatText::ConvertEOL(const uint8_t* srcBuf, long srcLen,
     bool stripHiBits, bool stripNulls)
 {
-    unsigned char ch;
+    uint8_t ch;
     int mask;
 
     assert(!fUseRTF);   // else we have to use RTFPrintChar
@@ -761,9 +761,9 @@ ReformatText::ConvertEOL(const unsigned char* srcBuf, long srcLen,
  * Write a hex dump into the buffer.
  */
 void
-ReformatText::BufHexDump(const unsigned char* srcBuf, long srcLen)
+ReformatText::BufHexDump(const uint8_t* srcBuf, long srcLen)
 {
-    const unsigned char* origSrcBuf = srcBuf;
+    const uint8_t* origSrcBuf = srcBuf;
     char chBuf[17];
     int i, remLen;
 
@@ -923,14 +923,14 @@ ReformatGraphics::SetResultBuffer(ReformatOutput* pOutput, MyDIBitmap* pDib)
  * Returns 0 on success, nonzero if the buffer is overfilled or underfilled.
  */
 int
-ReformatGraphics::UnpackBytes(unsigned char* dst, const unsigned char* src,
+ReformatGraphics::UnpackBytes(uint8_t* dst, const uint8_t* src,
     long dstRem, long srcLen)
 {
     while (srcLen > 0) {
-        unsigned char flag = *src++;
+        uint8_t flag = *src++;
         int count = (flag & 0x3f) +1;
-        unsigned char val;
-        unsigned char valSet[4];
+        uint8_t val;
+        uint8_t valSet[4];
         int i;
 
         srcLen--;
@@ -1048,23 +1048,23 @@ ReformatGraphics::UnpackBytes(unsigned char* dst, const unsigned char* src,
  * We have to watch for underruns on the input and overruns on the output.
  */
 void
-ReformatGraphics::UnPackBits(const unsigned char** pSrcBuf, long* pSrcLen,
-    unsigned char** pOutPtr, long dstLen, unsigned char xorVal)
+ReformatGraphics::UnPackBits(const uint8_t** pSrcBuf, long* pSrcLen,
+    uint8_t** pOutPtr, long dstLen, uint8_t xorVal)
 {
-    const unsigned char* srcBuf = *pSrcBuf;
+    const uint8_t* srcBuf = *pSrcBuf;
     long length = *pSrcLen;
-    unsigned char* outPtr = *pOutPtr;
+    uint8_t* outPtr = *pOutPtr;
     int pixByte = 0;
 
     while (pixByte < dstLen && length > 0) {
-        unsigned char countByte;
+        uint8_t countByte;
         int count;
         
         countByte = *srcBuf++;
         length--;
         if (countByte & 0x80) {
             /* RLE string */
-            unsigned char ch;
+            uint8_t ch;
             count = (countByte ^ 0xff)+1 +1;
             ch = *srcBuf++;
             length--;
@@ -1073,7 +1073,7 @@ ReformatGraphics::UnPackBits(const unsigned char** pSrcBuf, long* pSrcLen,
                 pixByte++;
             }
         } else {
-            /* series of bytse */
+            /* series of bytes */
             count = countByte +1;
             while (count && pixByte < dstLen && length > 0) {
                 *outPtr++ = *srcBuf++ ^ xorVal;

@@ -319,9 +319,9 @@ HexValue(char ch)
 }
 
 /*
- * Convert a 4-char hexadecimal value to an unsigned short.
+ * Convert a 4-char hexadecimal value to an unsigned 16-bit value.
  */
-/*static*/ unsigned short
+/*static*/ uint16_t
 NiftyList::ConvHexFour(const char* data)
 {
     return HexValue(data[0]) << 12 |
@@ -354,7 +354,7 @@ NiftyList::DumpSection(const DataSet& dataSet)
  * This uses a binary search, so the entries must be in sorted order.
  */
 /*static*/ const char*
-NiftyList::Lookup(const DataSet& dataSet, unsigned short key)
+NiftyList::Lookup(const DataSet& dataSet, uint16_t key)
 {
     if (!fDataReady) {
         return NULL;
@@ -367,7 +367,7 @@ NiftyList::Lookup(const DataSet& dataSet, unsigned short key)
 
     while (low <= high) {
         mid = (high + low)/2;
-        unsigned short midVal = dataSet.pEntries[mid].value;
+        uint16_t midVal = dataSet.pEntries[mid].value;
 
         if (key > midVal)
             low = mid +1;

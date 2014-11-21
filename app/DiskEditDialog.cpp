@@ -440,7 +440,7 @@ DiskEditDialog::SetSpinner(int id, long val)
  * Convert a chunk of data into a hex dump, and stuff it into the edit control.
  */
 void
-DiskEditDialog::DisplayData(const BYTE* srcBuf, int size)
+DiskEditDialog::DisplayData(const uint8_t* srcBuf, int size)
 {
     WCHAR textBuf[80 * 16 * 2];
     WCHAR* cp;

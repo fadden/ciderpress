@@ -28,8 +28,8 @@ public:
 private:
     enum { kWidth=88, kHeight=52 };
 
-    MyDIBitmap* ConvertBW(const unsigned char* srcBuf);
-    MyDIBitmap* ConvertColor(const unsigned char* srcBuf);
+    MyDIBitmap* ConvertBW(const uint8_t* srcBuf);
+    MyDIBitmap* ConvertColor(const uint8_t* srcBuf);
 };
 
 #endif /*REFORMAT_PRINTSHOP_H*/

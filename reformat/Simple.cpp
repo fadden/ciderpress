@@ -65,7 +65,7 @@ ReformatHexDump::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
 
     /*
@@ -124,7 +124,7 @@ ReformatEOL_HA::Process(const ReformatHolder* pHolder,
         return -1;
 
     //isHighASCII = GenericEntry::CheckHighASCII(
-    //  (const unsigned char*) pHolder->fSourceBuf, pHolder->fSourceLen);
+    //  (const uint8_t*) pHolder->fSourceBuf, pHolder->fSourceLen);
 
     ConvertEOL(pHolder->GetSourceBuf(part), pHolder->GetSourceLen(part), true);
 

@@ -46,10 +46,10 @@ public:
      * This holds one SHR screen; the size must be 32768 bytes.
      */
     typedef struct SHRScreen {
-        unsigned char   pixels[kNumLines * kPixelBytesPerLine];
-        unsigned char   scb[kNumLines];
-        unsigned char   reserved[256-kNumLines];
-        unsigned char   colorTable[kNumColorTables * kNumEntriesPerColorTable *
+        uint8_t pixels[kNumLines * kPixelBytesPerLine];
+        uint8_t scb[kNumLines];
+        uint8_t reserved[256 - kNumLines];
+        uint8_t colorTable[kNumColorTables * kNumEntriesPerColorTable *
                                     kColorTableEntrySize];
     } SHRScreen;
 
@@ -70,8 +70,8 @@ public:
     RGBQUAD     fColorTables[kNumColorTables][kNumEntriesPerColorTable];
 
     MyDIBitmap* SHRScreenToBitmap8(const SHRScreen* pScreen);
-    MyDIBitmap* SHRDataToBitmap8(const unsigned char* pPixels,
-        const unsigned char* pSCB, const unsigned char* pColorTable,
+    MyDIBitmap* SHRDataToBitmap8(const uint8_t* pPixels,
+        const uint8_t* pSCB, const uint8_t* pColorTable,
         int pixelBytesPerLine, int numScanLines,
         int outputWidth, int outputHeight);
 };
@@ -172,10 +172,9 @@ public:
         ReformatOutput* pOutput);
 
 private:
-    int UnpackMain(const unsigned char* srcPtr, long srcLen);
-    int UnpackMultipal(unsigned char* dstPtr,
-        const unsigned char* srcPtr, long srcLen);
-    void UnpackNote(const unsigned char* srcPtr, long srcLen);
+    int UnpackMain(const uint8_t* srcPtr, long srcLen);
+    int UnpackMultipal(uint8_t* dstPtr, const uint8_t* srcPtr, long srcLen);
+    void UnpackNote(const uint8_t* srcPtr, long srcLen);
 
     /* use this for standard-sized images */
     SHRScreen       fScreen;
@@ -184,8 +183,8 @@ private:
     bool            fNonStandard;
 
     /* use this for non-standard-sized images */
-    unsigned char*  fPixelStore;
-    unsigned char*  fSCBStore;
+    uint8_t*        fPixelStore;
+    uint8_t*        fSCBStore;
     int             fNumScanLines;      // #of scan lines in image
     int             fPixelsPerScanLine;
     int             fPixelBytesPerLine;
@@ -202,7 +201,7 @@ public:
     virtual ~Reformat3200SHR(void) {}
 
     // alternate construction, used by APFSHR
-    Reformat3200SHR(SHRScreen* pScreen, unsigned char* multiPal) {
+    Reformat3200SHR(SHRScreen* pScreen, uint8_t* multiPal) {
         memcpy(&fScreen, pScreen, sizeof(fScreen));
         memcpy(fExtColorTable, multiPal, sizeof(fExtColorTable));
     }
@@ -223,7 +222,7 @@ protected:
     SHRScreen   fScreen;        // only "pixels" is valid
 
     /* this holds the 200 color tables, with the entries switched to normal */
-    unsigned char   fExtColorTable[kExtNumColorTables *
+    uint8_t     fExtColorTable[kExtNumColorTables *
                             kNumEntriesPerColorTable * kColorTableEntrySize];
 };
 
@@ -259,16 +258,16 @@ public:
     /*
      * Unpack a DreamGrafix SHR image compressed with LZW.
      */
-    bool UnpackDG(const unsigned char* srcBuf, long srcLen,
-        ReformatSHR::SHRScreen* pScreen, unsigned char* extColorTable);
+    bool UnpackDG(const uint8_t* srcBuf, long srcLen,
+        ReformatSHR::SHRScreen* pScreen, uint8_t* extColorTable);
 
     int fWidth;
     int fHeight;
     int fNumColors;
 
 private:
-    static int UnpackLZW(const unsigned char* srcBuf, long srcLen,
-        unsigned char* dstBuf, long dstLen);
+    static int UnpackLZW(const uint8_t* srcBuf, long srcLen,
+        uint8_t* dstBuf, long dstLen);
     enum { kHeaderOffset = 17 };
 };
 

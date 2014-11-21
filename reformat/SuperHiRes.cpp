@@ -55,14 +55,14 @@ ReformatSHR::SHRScreenToBitmap8(const SHRScreen* pScreen)
 }
 
 MyDIBitmap*
-ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
-    const unsigned char* pSCB, const unsigned char* pColorTable,
+ReformatSHR::SHRDataToBitmap8(const uint8_t* pPixels,
+    const uint8_t* pSCB, const uint8_t* pColorTable,
     int pixelBytesPerLine, int numScanLines,
     int outputWidth, int outputHeight)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
-    const unsigned char* pSCBStart = pSCB;  // sanity check only
-    unsigned char* outBuf;
+    const uint8_t* pSCBStart = pSCB;  // sanity check only
+    uint8_t* outBuf;
     int line;
 
     if (pDib == NULL)
@@ -72,7 +72,7 @@ ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
      * Set up a DIB to hold the data.  "Create" returns a pointer to the
      * pixel storage.
      */
-    outBuf = (unsigned char*) pDib->Create(outputWidth, outputHeight, 8,
+    outBuf = (uint8_t*) pDib->Create(outputWidth, outputHeight, 8,
                             kNumColorTables * kNumEntriesPerColorTable);
     if (outBuf == NULL) {
         delete pDib;
@@ -83,8 +83,8 @@ ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
     /*
      * Convert color palette.
      */
-    const unsigned short* pClrTable;
-    pClrTable = (const unsigned short*) pColorTable;
+    const uint16_t* pClrTable;
+    pClrTable = (const uint16_t*) pColorTable;
     int table;
     for (table = 0; table < kNumColorTables; table++) {
         for (int entry = 0; entry < kNumEntriesPerColorTable; entry++) {
@@ -112,9 +112,8 @@ ReformatSHR::SHRDataToBitmap8(const unsigned char* pPixels,
         bool mode640, fillMode;
         int colorTableOffset;
         int byteCount, pixelByte;
-        unsigned char pixelVal;
-//      RGBTRIPLE rgbval;
-        unsigned char colorIndex;
+        uint8_t pixelVal;
+        uint8_t colorIndex;
         int x = 0;
 
         mode640 = (*pSCB & kSCBNumPixels) != 0;
@@ -331,7 +330,7 @@ ReformatJEQSHR::Process(const ReformatHolder* pHolder,
     ReformatOutput* pOutput)
 {
     MyDIBitmap* pDib;
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
@@ -415,9 +414,9 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
     const int kPWOutputLines = 396;
     const int kPWOutputSize = kPWOutputLines * kPixelBytesPerLine;
     const int kPWDataOffset = 0x222;
-    unsigned char scb[kPWOutputLines];
-    unsigned char colorTable[kNumEntriesPerColorTable * kColorTableEntrySize];
-    unsigned char* unpackBuf = NULL;
+    uint8_t scb[kPWOutputLines];
+    uint8_t colorTable[kNumEntriesPerColorTable * kColorTableEntrySize];
+    uint8_t* unpackBuf = NULL;
     int retval = -1;
     int i, result;
 
@@ -441,7 +440,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
      * than PaintWorks wrote these, because SuperConvert expects them to
      * have 396 lines and only recognizes that many.
      */
-    unpackBuf = new unsigned char[kPWOutputSize];
+    unpackBuf = new uint8_t[kPWOutputSize];
     if (unpackBuf == NULL)
         goto bail;
     memset(unpackBuf, 0, sizeof(unpackBuf));        // in case we fall short
@@ -455,7 +454,7 @@ ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
 
 #if 0
         /* thd282.shk (rev76.2) has a large collection of these */
-        if (UnpackBytes((unsigned char*) &fScreen,
+        if (UnpackBytes((uint8_t*) &fScreen,
             pHolder->GetSourceBuf(part),
             kTotalSize,
             pHolder->GetSourceLen(part)) == 0)
@@ -532,7 +531,7 @@ ReformatPackedSHR::Process(const ReformatHolder* pHolder,
 
     ASSERT(sizeof(SHRScreen) == kTotalSize);
 
-    if (UnpackBytes((unsigned char*) &fScreen,
+    if (UnpackBytes((uint8_t*) &fScreen,
         pHolder->GetSourceBuf(part), kTotalSize,
         pHolder->GetSourceLen(part)) != 0)
     {
@@ -597,9 +596,9 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
     ReformatOutput* pOutput)
 {
     MyDIBitmap* pDib;
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
-    unsigned char multiPal[kNumLines *
+    uint8_t multiPal[kNumLines *
                         kNumEntriesPerColorTable * kColorTableEntrySize];
     bool is3200 = false;
     bool haveGraphics = false;
@@ -614,7 +613,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
 
     while (srcLen > 0) {
         CString blockName;
-        const unsigned char* nextBlock;
+        const uint8_t* nextBlock;
         long blockLen, dataLen, nextLen;
         int nameLen;
 
@@ -628,7 +627,7 @@ ReformatAPFSHR::Process(const ReformatHolder* pHolder,
         nextBlock = srcPtr + (blockLen-4);
         nextLen = srcLen - (blockLen-4);
 
-        nameLen = ::GetPascalString((const char*)srcPtr, srcLen, &blockName);
+        nameLen = ::GetPascalString(srcPtr, srcLen, &blockName);
         if (nameLen < 0) {
             LOGI(" APFSHR failed getting pascal name, bailing");
             goto bail;
@@ -709,10 +708,10 @@ bail:
  * correctly?  Can the format be different on every line?
  */
 int
-ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
+ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
 {
     const int kColorTableSize = kNumEntriesPerColorTable * kColorTableEntrySize;
-    unsigned short masterMode;
+    uint16_t masterMode;
     int numColorTables;
     int* packedDataLen = NULL;
     int retval = -1;
@@ -808,13 +807,13 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
          * Figure this out someday.
          */
         fPixelBytesPerLine = ((fPixelBytesPerLine + 7) / 8) * 8;
-        fPixelStore = new unsigned char[fPixelBytesPerLine * fNumScanLines];
+        fPixelStore = new uint8_t[fPixelBytesPerLine * fNumScanLines];
         if (fPixelStore == NULL) {
             LOGI(" APFSHR ERROR: alloc of %d bytes fPixelStore failed",
                 fPixelBytesPerLine * fNumScanLines);
             goto bail;
         }
-        fSCBStore = new unsigned char[fNumScanLines];
+        fSCBStore = new uint8_t[fNumScanLines];
         if (fSCBStore == NULL) {
             LOGI(" APFSHR ERROR: alloc of %d bytes fSCBStore failed",
                 fNumScanLines);
@@ -831,7 +830,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
     if (packedDataLen == NULL)
         goto bail;
     for (i = 0; i < fNumScanLines; i++) {
-        unsigned short mode;
+        uint16_t mode;
 
         packedDataLen[i] = Read16(&srcPtr, &srcLen);
         if (packedDataLen[i] > fPixelsPerScanLine) {
@@ -843,7 +842,7 @@ ReformatAPFSHR::UnpackMain(const unsigned char* srcPtr, long srcLen)
 
         mode = Read16(&srcPtr, &srcLen);
         if (mode >> 8 == 0)
-            fSCBStore[i] = (unsigned char)mode;
+            fSCBStore[i] = (uint8_t) mode;
         else {
             LOGI(" APFSHR odd mode 0x%04x on line %d", mode, i);
         }
@@ -883,8 +882,8 @@ bail:
  * fix it here, but we can't reliably detect the files.
  */
 int
-ReformatAPFSHR::UnpackMultipal(unsigned char* dstPtr,
-    const unsigned char* srcPtr, long srcLen)
+ReformatAPFSHR::UnpackMultipal(uint8_t* dstPtr,
+    const uint8_t* srcPtr, long srcLen)
 {
     const int kMultipalSize = kNumLines *
                         kNumEntriesPerColorTable * kColorTableEntrySize;
@@ -914,11 +913,11 @@ ReformatAPFSHR::UnpackMultipal(unsigned char* dstPtr,
     } else {
 #if 0
         /* swap entries */
-        const unsigned short* pSrcTable;
-        unsigned short* pDstTable = (unsigned short*) dst;
+        const uint16_t* pSrcTable;
+        uint16_t* pDstTable = (uint16_t*) dst;
         int table, entry;
         for (table = 0; table < kNumLines; table++) {
-            pSrcTable = (const unsigned short*)src +
+            pSrcTable = (const uint16_t*)src +
                         (kNumLines - table) * kNumEntriesPerColorTable;
             for (entry = 0; entry < kNumEntriesPerColorTable; entry++) {
                 pDstTable[entry] = *pSrcTable++;
@@ -936,7 +935,7 @@ ReformatAPFSHR::UnpackMultipal(unsigned char* dstPtr,
  * ASCII data.
  */
 void
-ReformatAPFSHR::UnpackNote(const unsigned char* srcPtr, long srcLen)
+ReformatAPFSHR::UnpackNote(const uint8_t* srcPtr, long srcLen)
 {
     int numChars;
 
@@ -1021,9 +1020,9 @@ Reformat3200SHR::Process(const ReformatHolder* pHolder,
     //  sizeof(fExtColorTable));
 
     /* "Brooks" format color tables are stored in reverse order */
-    const unsigned short* pSrcTable = (const unsigned short*)
+    const uint16_t* pSrcTable = (const uint16_t*)
                         (pHolder->GetSourceBuf(part) + sizeof(fScreen.pixels));
-    unsigned short* pDstTable = (unsigned short*) fExtColorTable;
+    uint16_t* pDstTable = (uint16_t*) fExtColorTable;
     int table;
     for (table = 0; table < kExtNumColorTables; table++) {
         int entry;
@@ -1056,7 +1055,7 @@ Reformat3200SHR::SHR3200ToBitmap24(void)
     MyDIBitmap* pDib = new MyDIBitmap;
     RGBTRIPLE colorLookup[kExtNumColorTables][kNumEntriesPerColorTable];
     RGBTRIPLE* rgbBuf;
-    const unsigned char* pPixels = fScreen.pixels;
+    const uint8_t* pPixels = fScreen.pixels;
 
     if (pDib == NULL)
         goto bail;
@@ -1074,8 +1073,8 @@ Reformat3200SHR::SHR3200ToBitmap24(void)
     /*
      * Convert color palette data to RGBTRIPLE form.
      */
-    const unsigned short* pClrTable;
-    pClrTable = (const unsigned short*) fExtColorTable;
+    const uint16_t* pClrTable;
+    pClrTable = (const uint16_t*) fExtColorTable;
     int table;
     for (table = 0; table < kExtNumColorTables; table++) {
         for (int entry = 0; entry < kNumEntriesPerColorTable; entry++) {
@@ -1093,7 +1092,7 @@ Reformat3200SHR::SHR3200ToBitmap24(void)
     int line;
     for (line = 0; line < kNumLines; line++) {
         int byteCount, pixelByte;
-        unsigned char pixelVal;
+        uint8_t pixelVal;
         RGBTRIPLE rgbval;
         int x = 0;
 
@@ -1170,10 +1169,10 @@ Reformat3201SHR::Process(const ReformatHolder* pHolder,
     ReformatOutput* pOutput)
 {
     MyDIBitmap* pDib;
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
-    unsigned char* tmpBuf = NULL;
+    uint8_t* tmpBuf = NULL;
     int retval = -1;
 
     if (srcLen < 16 || srcLen > kExtTotalSize) {
@@ -1193,10 +1192,10 @@ Reformat3201SHR::Process(const ReformatHolder* pHolder,
     ASSERT(sizeof(fScreen.pixels) + sizeof(fExtColorTable) == kExtTotalSize);
 
     /* "Brooks" format color tables are stored in reverse order */
-    const unsigned short* pSrcTable;
-    unsigned short* pDstTable;
-    pSrcTable = (const unsigned short*) srcBuf;
-    pDstTable = (unsigned short*) fExtColorTable;
+    const uint16_t* pSrcTable;
+    uint16_t* pDstTable;
+    pSrcTable = (const uint16_t*) srcBuf;
+    pDstTable = (uint16_t*) fExtColorTable;
     int table;
     for (table = 0; table < kExtNumColorTables; table++) {
         int entry;
@@ -1206,7 +1205,7 @@ Reformat3201SHR::Process(const ReformatHolder* pHolder,
         pDstTable += kNumEntriesPerColorTable;
     }
 
-    srcBuf = (const unsigned char*) pSrcTable;
+    srcBuf = (const uint8_t*) pSrcTable;
     length -= srcBuf - (pHolder->GetSourceBuf(part) +4);
 
     /* now unpack the PackBytes-format pixels */

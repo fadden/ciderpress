@@ -116,7 +116,7 @@ bool IsWin9x(void);
 /*
  * Miscellaneous functions.
  */
-int GetPascalString(const char* buf, long maxLen, CString* pStr);
+int GetPascalString(const uint8_t* buf, long maxLen, CString* pStr);
 void LogHexDump(const void* buf, long len);
 int ComputePercent(LONGLONG part, LONGLONG full);
 void FormatDate(time_t when, CString* pStr);

@@ -62,7 +62,7 @@ void
 ReformatCPMText::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
-    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
     const char* nameExt = pHolder->GetNameExt();
     bool foundCtrlZ = false;
@@ -123,7 +123,7 @@ ReformatCPMText::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     fUseRTF = false;
 

@@ -23,15 +23,16 @@
 //#include <windows.h>
 
 // C RunTime Header Files
+#include <stdint.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>
-#include <tchar.h>
 #include <sys/stat.h>
 #include <errno.h>
-
 #include <stdio.h>
 #include <assert.h>
+
+//#include <tchar.h>
 #include <afxwin.h>
 #include <afxcmn.h>
 #include <afxdlgs.h>

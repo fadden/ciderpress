@@ -8,15 +8,17 @@
 //      are changed infrequently
 //
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+
 #ifndef _WIN32
 
 /* UNIX includes */
-#include <stdlib.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <time.h>
 #include <sys/time.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -47,9 +49,6 @@
 
 #include <windows.h>
 #include <atlstr.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include <io.h>
 #include <fcntl.h>
 
@@ -64,7 +63,6 @@ typedef unsigned int ssize_t;
 
 #define HAVE__VSNPRINTF
 #define strcasecmp stricmp
-
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

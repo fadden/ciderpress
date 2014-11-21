@@ -35,7 +35,7 @@ public:
 
 
     static void InitLineOffset(int* pOffsetBuf);
-    MyDIBitmap* HiResScreenToBitmap(const unsigned char* buf);
+    MyDIBitmap* HiResScreenToBitmap(const uint8_t* buf);
 
     int     fLineOffset[kNumLines];
     bool    fBlackWhite;

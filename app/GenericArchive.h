@@ -228,10 +228,10 @@ public:
 
     // Utility functions.
     const WCHAR* GetFileTypeString(void) const;
-    static bool CheckHighASCII(const BYTE* buffer,
+    static bool CheckHighASCII(const uint8_t* buffer,
         unsigned long count);
 
-    static ConvertEOL DetermineConversion(const BYTE* buffer,
+    static ConvertEOL DetermineConversion(const uint8_t* buffer,
         long count, EOLType* pSourceType, ConvertHighASCII* pConvHA);
     static int GenericEntry::WriteConvert(FILE* fp, const char* buf,
         size_t len, ConvertEOL* pConv, ConvertHighASCII* pConvHA,
@@ -520,8 +520,8 @@ public:
 
     // Transfer files, one at a time, into this archive from another.
     virtual void XferPrepare(const XferFileOptions* pXferOpts) = 0;
-    virtual CString XferFile(FileDetails* pDetails, BYTE** pDataBuf,
-        long dataLen, BYTE** pRsrcBuf, long rsrcLen) = 0;
+    virtual CString XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+        long dataLen, uint8_t** pRsrcBuf, long rsrcLen) = 0;
     virtual void XferAbort(CWnd* pMsgWnd) = 0;
     virtual void XferFinish(CWnd* pMsgWnd) = 0;
     static void UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime);

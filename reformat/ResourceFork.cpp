@@ -71,7 +71,7 @@ ReformatResourceFork::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcBuf = pHolder->GetSourceBuf(part);
+    const uint8_t* srcBuf = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     fUseRTF = false;
 
@@ -101,7 +101,7 @@ ReformatResourceFork::Process(const ReformatHolder* pHolder,
     }
 
     /* move to start of resource map */
-    const unsigned char* mapPtr;
+    const uint8_t* mapPtr;
     long mapToIndex, mapIndexSize, mapIndexUsed;
 
     mapPtr = srcBuf + rFileToMap;
@@ -118,14 +118,14 @@ ReformatResourceFork::Process(const ReformatHolder* pHolder,
     BufPrintf("  mapFreeListUsed = %ld\r\n", Get16(mapPtr + 0x1e, littleEndian));
 
     /* dump contents of resource reference records */
-    const unsigned char* indexPtr;
+    const uint8_t* indexPtr;
 
     BufPrintf("\r\nResources:");
     indexPtr = mapPtr + mapToIndex;
     int i;
 
     for (i = 0; i < mapIndexSize; i++) {
-        unsigned short resType = Get16(indexPtr + 0x00, littleEndian);
+        uint16_t resType = Get16(indexPtr + 0x00, littleEndian);
         if (resType == 0)
             break;      // should happen when i == mapIndexUsed
 
@@ -167,7 +167,7 @@ done:
  * Extract and verify the header of a resource fork.
  */
 /*static*/ bool
-ReformatResourceFork::ReadHeader(const unsigned char* srcBuf, long srcLen,
+ReformatResourceFork::ReadHeader(const uint8_t* srcBuf, long srcLen,
     long* pFileVersion, long* pFileToMap, long* pFileMapSize,
     bool* pLittleEndian)
 {
@@ -204,9 +204,9 @@ ReformatResourceFork::ReadHeader(const unsigned char* srcBuf, long srcLen,
  * Returns "true" on success, "false" on failure.
  */
 /*static*/ bool
-ReformatResourceFork::GetResource(const unsigned char* srcBuf, long srcLen,
-    unsigned short resourceType, unsigned long resourceID,
-    const unsigned char** pResource, long* pResourceLen)
+ReformatResourceFork::GetResource(const uint8_t* srcBuf, long srcLen,
+    uint16_t resourceType, uint32_t resourceID,
+    const uint8_t** pResource, long* pResourceLen)
 {
     /* read the file header */
     long rFileVersion, rFileToMap, rFileMapSize;
@@ -219,7 +219,7 @@ ReformatResourceFork::GetResource(const unsigned char* srcBuf, long srcLen,
         return false;
 
     /* move to start of resource map */
-    const unsigned char* mapPtr;
+    const uint8_t* mapPtr;
     long mapToIndex, mapIndexSize, mapIndexUsed;
 
     mapPtr = srcBuf + rFileToMap;
@@ -228,12 +228,12 @@ ReformatResourceFork::GetResource(const unsigned char* srcBuf, long srcLen,
     mapIndexUsed = Get32(mapPtr + 0x18, littleEndian);
 
     /* find the appropriate entry */
-    const unsigned char* indexPtr = mapPtr + mapToIndex;
+    const uint8_t* indexPtr = mapPtr + mapToIndex;
     int i;
 
     for (i = 0; i < mapIndexSize; i++) {
-        unsigned short resType;
-        unsigned long resID;
+        uint16_t resType;
+        uint32_t resID;
         
         resType = Get16(indexPtr + 0x00, littleEndian);
         if (resType == 0)

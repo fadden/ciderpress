@@ -58,22 +58,22 @@ private:
         kMTPAsm9            = 9,
     } MachineType;
     typedef struct SegInfo {
-        unsigned char segNum;
-        MachineType   mType;
-        unsigned char unused;
-        unsigned char version;
+        uint8_t         segNum;
+        MachineType     mType;
+        uint8_t         unused;
+        uint8_t         version;
     } SegInfo;
     typedef struct PCDSegment {
-        unsigned short  codeLeng;
-        unsigned short  codeAddr;
+        uint16_t        codeLeng;
+        uint16_t        codeAddr;
         char            name[kSegmentNameLen+1];
         SegmentKind     segmentKind;
-        unsigned short  textAddr;
+        uint16_t        textAddr;
         SegInfo         segInfo;
     } PCDSegment;
 
     void PrintSegment(PCDSegment* pSegment, int segNum,
-        const unsigned char* srcBuf, long srcLen);
+        const uint8_t* srcBuf, long srcLen);
 };
 
 /*
@@ -97,7 +97,7 @@ private:
     };
 
 private:
-    void ProcessBlock(const unsigned char* srcBuf, long length);
+    void ProcessBlock(const uint8_t* srcBuf, long length);
 };
 
 #endif /*REFORMAT_PASCALFILES_H*/

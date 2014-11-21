@@ -82,7 +82,7 @@ ReformatMagicWindow::Examine(ReformatHolder* pHolder)
 /*static*/ bool
 ReformatMagicWindow::IsFormatted(const ReformatHolder* pHolder)
 {
-    const unsigned char* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
+    const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
     int i, count00, count20;
 
@@ -150,7 +150,7 @@ ReformatMagicWindow::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     int retval = -1;
@@ -205,7 +205,7 @@ ReformatGutenberg::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
-    const unsigned char* srcPtr = pHolder->GetSourceBuf(part);
+    const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
     long length = srcLen;
     int retval = -1;
