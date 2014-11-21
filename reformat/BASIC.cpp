@@ -69,7 +69,7 @@ ReformatApplesoft::Examine(ReformatHolder* pHolder)
  * human-readable and/or EXECable, so no attempt has been made to display
  * the error values.
  */
-static const char gApplesoftTokens[128*8] = {
+static const char gApplesoftTokens[128 * ReformatApplesoft::kTokenLen] = {
     "END\0    FOR\0    NEXT\0   DATA\0   INPUT\0  DEL\0    DIM\0    READ\0   "
     "GR\0     TEXT\0   PR#\0    IN#\0    CALL\0   PLOT\0   HLIN\0   VLIN\0   "
     "HGR2\0   HGR\0    HCOLOR=\0HPLOT\0  DRAW\0   XDRAW\0  HTAB\0   HOME\0   "
@@ -153,6 +153,8 @@ ReformatApplesoft::Process(const ReformatHolder* pHolder,
         BufPrintf(" %u ", lineNum);
 
         RTFSetColor(kDefaultColor);
+
+        assert(kTokenLen == 8);     // we do "<< 3" below, so this must hold
 
         /* print a line */
         while (*srcPtr != 0 && length > 0) {
@@ -572,9 +574,9 @@ ReformatBusiness::Examine(ReformatHolder* pHolder)
  * show up as error messages.  The goal here is to produce values that are
  * human-readable and/or EXECable, so no attempt has been made to display
  * the error values.
+ * TODO: replace this with something accurate -- looks like copy & paste leftover
  */
 static const char gBusinessTokens[128*10] = {
-                                                            
 /* 0x80 */ "END\0      FOR\0      NEXT\0     INPUT\0    OUTPUT\0   DIM\0      READ\0     WRITE\0    "
 /* 0x88 */ "OPEN\0     CLOSE\0    *error*\0  TEXT\0     *error*\0  BYE\0      *error*\0  *error*\0  "
 /* 0x90 */ "*error*\0  *error*\0  *error*\0  WINDOW\0   INVOKE\0   PERFORM\0  *error*\0  *error*\0  "
@@ -606,10 +608,10 @@ static const char gExtendedBusinessTokens[128*10] = {
 /* 0xc8 */ "ASC(\0     TEN(\0     *error*\0  *error*\0  CONV(\0    CONV&(\0   CONV$(\0   CONV%(\0   "
 /* 0xd0 */ "LEFT$(\0   RIGHT$(\0  MID$(\0    INSTR$(\0  *error*\0  *error*\0  *error*\0  *error*\0  "
 /* 0xd8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
-    "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0 "
+/* 0xe0 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0xe8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0xf0 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0xf8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0 "
 };
 
 /*

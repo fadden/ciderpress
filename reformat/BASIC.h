@@ -25,6 +25,7 @@ public:
         ReformatOutput* pOutput);
 
     /* share our token list with others */
+    // TODO: this is a hack; find a better way to do this
     enum { kTokenLen = 8, kTokenCount = 107 };
     static const char* GetApplesoftTokens(void);
 };
@@ -55,10 +56,6 @@ public:
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
         ReformatOutput* pOutput);
-
-    /* share our token list with others - but this won't really work in its current form... */
-    enum { kTokenLen = 10, kTokenCount = 107 };
-    static const char* GetBusinessTokens(void);
 };
 
 #endif /*REFORMAT_BASIC_H*/
