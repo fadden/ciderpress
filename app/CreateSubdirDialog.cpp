@@ -16,11 +16,7 @@ BEGIN_MESSAGE_MAP(CreateSubdirDialog, CDialog)
     ON_WM_HELPINFO()
 END_MESSAGE_MAP()
 
-/*
- * Set up the control.
- */
-BOOL
-CreateSubdirDialog::OnInitDialog(void)
+BOOL CreateSubdirDialog::OnInitDialog(void)
 {
     /* do the DoDataExchange stuff */
     CDialog::OnInitDialog();
@@ -34,11 +30,7 @@ CreateSubdirDialog::OnInitDialog(void)
     return FALSE;   // we set the focus
 }
 
-/*
- * Convert values.
- */
-void
-CreateSubdirDialog::DoDataExchange(CDataExchange* pDX)
+void CreateSubdirDialog::DoDataExchange(CDataExchange* pDX)
 {
     CString msg, failed;
 
@@ -71,11 +63,7 @@ fail:
     return;
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-CreateSubdirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL CreateSubdirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it

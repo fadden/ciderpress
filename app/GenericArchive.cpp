@@ -45,9 +45,6 @@
  * ===========================================================================
  */
 
-/*
- * Initialize all data members.
- */
 GenericEntry::GenericEntry(void)
 {
     fPathName = NULL;
@@ -81,9 +78,6 @@ GenericEntry::GenericEntry(void)
     fDamaged = fSuspicious = false;
 }
 
-/*
- * Throw out anything we allocated.
- */
 GenericEntry::~GenericEntry(void)
 {
     delete[] fPathName;
@@ -91,11 +85,7 @@ GenericEntry::~GenericEntry(void)
     delete[] fDisplayName;
 }
 
-/*
- * Pathname getters and setters.
- */
-void
-GenericEntry::SetPathName(const WCHAR* path)
+void GenericEntry::SetPathName(const WCHAR* path)
 {
     ASSERT(path != NULL && wcslen(path) > 0);
     if (fPathName != NULL)
@@ -117,29 +107,29 @@ GenericEntry::SetPathName(const WCHAR* path)
     if (pPreferences->GetPrefBool(kPrSpacesToUnder))
         SpacesToUnderscores(fPathName);
 }
-const WCHAR*
-GenericEntry::GetFileName(void)
+
+const WCHAR* GenericEntry::GetFileName(void)
 {
     ASSERT(fPathName != NULL);
     if (fFileName == NULL)
         fFileName = PathName::FilenameOnly(fPathName, fFssep);
     return fFileName;
 }
-const WCHAR*
-GenericEntry::GetFileNameExtension(void)
+
+const WCHAR* GenericEntry::GetFileNameExtension(void)
 {
     ASSERT(fPathName != NULL);
     if (fFileNameExtension == NULL)
         fFileNameExtension = PathName::FindExtension(fPathName, fFssep);
     return fFileNameExtension;
 }
-CStringA
-GenericEntry::GetFileNameExtensionA(void)
+
+CStringA GenericEntry::GetFileNameExtensionA(void)
 {
     return GetFileNameExtension();
 }
-void
-GenericEntry::SetSubVolName(const WCHAR* name)
+
+void GenericEntry::SetSubVolName(const WCHAR* name)
 {
     delete[] fSubVolName;
     fSubVolName = NULL;
@@ -147,8 +137,8 @@ GenericEntry::SetSubVolName(const WCHAR* name)
         fSubVolName = wcsdup(name);
     }
 }
-const WCHAR*
-GenericEntry::GetDisplayName(void) const
+
+const WCHAR* GenericEntry::GetDisplayName(void) const
 {
     ASSERT(fPathName != NULL);
     if (fDisplayName != NULL)
@@ -172,20 +162,12 @@ GenericEntry::GetDisplayName(void) const
     return pThis->fDisplayName;
 }
 
-/*
- * Get a string for this entry's filetype.
- */
-const WCHAR*
-GenericEntry::GetFileTypeString(void) const
+const WCHAR* GenericEntry::GetFileTypeString(void) const
 {
     return PathProposal::FileTypeString(fFileType);
 }
 
-/*
- * Convert spaces to underscores.
- */
-/*static*/ void
-GenericEntry::SpacesToUnderscores(WCHAR* buf)
+/*static*/ void GenericEntry::SpacesToUnderscores(WCHAR* buf)
 {
     while (*buf != '\0') {
         if (*buf == ' ')
@@ -194,24 +176,22 @@ GenericEntry::SpacesToUnderscores(WCHAR* buf)
     }
 }
 
-
-/*
- * (Pulled from NufxLib Funnel.c.)
- *
- * Check to see if this is a high-ASCII file.  To qualify, EVERY
- * character must have its high bit set, except for spaces (0x20,
- * courtesy Glen Bredon's "Merlin") and nulls (0x00, because of random-
- * access text files).
- *
- * The test for 0x00 is actually useless in many circumstances because the
- * NULLs will cause the text file auto-detector to flunk the file.  It will,
- * however, allow the user to select "convert ALL files" and still have the
- * stripping enabled.
- */
-/*static*/ bool
-GenericEntry::CheckHighASCII(const unsigned char* buffer,
+/*static*/ bool GenericEntry::CheckHighASCII(const uint8_t* buffer,
     unsigned long count)
 {
+    /*
+     * (Pulled from NufxLib Funnel.c.)
+     *
+     * Check to see if this is a high-ASCII file.  To qualify, EVERY
+     * character must have its high bit set, except for spaces (0x20,
+     * courtesy Glen Bredon's "Merlin") and nulls (0x00, because of random-
+     * access text files).
+     *
+     * The test for 0x00 is actually useless in many circumstances because the
+     * NULLs will cause the text file auto-detector to flunk the file.  It will,
+     * however, allow the user to select "convert ALL files" and still have the
+     * stripping enabled.
+     */
     bool isHighASCII;
 
     ASSERT(buffer != NULL);
@@ -268,42 +248,38 @@ static const char gIsBinary[256] = {
     0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,    /* 0xf0 */
 };
 
-#define kNuMaxUpperASCII    1       /* max #of binary chars per 100 bytes */
-#define kMinConvThreshold   40      /* min of 40 chars for auto-detect */
-#define kCharLF             '\n'
-#define kCharCR             '\r'
-/*
- * Decide, based on the contents of the buffer, whether we should do an
- * EOL conversion on the data.
- *
- * We need to decide if we are looking at text data, and if so, what kind
- * of line terminator is in use.
- *
- * If we don't have enough data to make a determination, don't mess with it.
- * (Thought for the day: add a "bias" flag, based on the NuRecord fileType,
- * that causes us to handle borderline or sub-min-threshold cases more
- * reasonably.  If it's of type TXT, it's probably text.)
- *
- * We try to figure out whether it's CR, LF, or CRLF, so that we can
- * skip the CPU-intensive conversion process if it isn't necessary.
- *
- * We will also investigate enabling a "high-ASCII" stripper if requested.
- * This is only enabled when EOL conversions are enabled.  Set "*pConvHA"
- * to on/off/auto before calling.  If it's initially set to "off", no
- * attempt to evaluate high ASCII will be made.  If "on" or "auto", the
- * buffer will be scanned, and if the input appears to be high ASCII then
- * it will be stripped *before* the EOL determination is made.
- *
- * Returns kConvEOLOff or kConvEOLOn.
- */
-/*static*/ GenericEntry::ConvertEOL
-GenericEntry::DetermineConversion(const unsigned char* buffer, long count,
+static const int  kNuMaxUpperASCII = 1;     /* max #of binary chars per 100 bytes */
+static const int  kMinConvThreshold = 40;   /* min of 40 chars for auto-detect */
+static const char kCharLF = '\n';
+static const char kCharCR = '\r';
+
+/*static*/ GenericEntry::ConvertEOL GenericEntry::DetermineConversion(
+    const uint8_t* buffer, long count,
     EOLType* pSourceType, ConvertHighASCII* pConvHA)
 {
+    /*
+     * We need to decide if we are looking at text data, and if so, what kind
+     * of line terminator is in use.
+     *
+     * If we don't have enough data to make a determination, don't mess with it.
+     * (Thought for the day: add a "bias" flag, based on the NuRecord fileType,
+     * that causes us to handle borderline or sub-min-threshold cases more
+     * reasonably.  If it's of type TXT, it's probably text.)
+     *
+     * We try to figure out whether it's CR, LF, or CRLF, so that we can
+     * skip the CPU-intensive conversion process if it isn't necessary.
+     *
+     * We will also investigate enabling a "high-ASCII" stripper if requested.
+     * This is only enabled when EOL conversions are enabled.  Set "*pConvHA"
+     * to on/off/auto before calling.  If it's initially set to "off", no
+     * attempt to evaluate high ASCII will be made.  If "on" or "auto", the
+     * buffer will be scanned, and if the input appears to be high ASCII then
+     * it will be stripped *before* the EOL determination is made.
+     */
     ConvertHighASCII wantConvHA = *pConvHA;
     long bufCount, numBinary, numLF, numCR;
     bool isHighASCII;
-    unsigned char val;
+    uint8_t val;
 
     *pSourceType = kEOLUnknown;
     *pConvHA = kConvertHAOff;
@@ -380,29 +356,13 @@ GenericEntry::DetermineConversion(const unsigned char* buffer, long count,
 /*
  * Output CRLF.
  */
-static inline void
-PutEOL(FILE* fp)
+static inline void PutEOL(FILE* fp)
 {
     putc(kCharCR, fp);
     putc(kCharLF, fp);
 }
 
-/*
- * Write data to a file, possibly converting EOL markers to Windows CRLF
- * and stripping high ASCII.
- *
- * If "*pConv" is kConvertEOLAuto, this will try to auto-detect whether
- * the input is a text file or not by scanning the input buffer.
- *
- * Ditto for "*pConvHA".
- *
- * "fp" is the output file, "buf" is the input, "len" is the buffer length.
- * "*pLastCR" should initially be "false", and carried across invocations.
- *
- * Returns 0 on success, or an errno value on error.
- */
-/*static*/ int
-GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
+/*static*/ int GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
     ConvertEOL* pConv, ConvertHighASCII* pConvHA, bool* pLastCR)
 {
     int err = 0;
@@ -417,7 +377,7 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
     /* if we're in "auto" mode, scan the input for EOL and high ASCII */
     if (*pConv == kConvertEOLAuto) {
         EOLType sourceType;
-        *pConv = DetermineConversion((unsigned char*)buf, len, &sourceType,
+        *pConv = DetermineConversion((uint8_t*)buf, len, &sourceType,
                     pConvHA);
         if (*pConv == kConvertEOLOn && sourceType == kEOLCRLF) {
             LOGI(" Auto-detected text conversion from CRLF; disabling");
@@ -427,7 +387,7 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
     } else if (*pConvHA == kConvertHAAuto) {
         if (*pConv == kConvertEOLOn) {
             /* definitely converting EOL, test for high ASCII */
-            if (CheckHighASCII((unsigned char*)buf, len))
+            if (CheckHighASCII((uint8_t*)buf, len))
                 *pConvHA = kConvertHAOn;
             else
                 *pConvHA = kConvertHAOff;
@@ -449,7 +409,7 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
     } else {
         ASSERT(*pConv == kConvertEOLOn);
         bool lastCR = *pLastCR;
-        unsigned char uch;
+        uint8_t uch;
         int mask;
 
         if (*pConvHA == kConvertHAOn)
@@ -486,11 +446,7 @@ GenericEntry::WriteConvert(FILE* fp, const char* buf, size_t len,
  * ===========================================================================
  */
 
-/*
- * Add a new entry to the end of the list.
- */
-void
-GenericArchive::AddEntry(GenericEntry* pEntry)
+void GenericArchive::AddEntry(GenericEntry* pEntry)
 {
     if (fEntryHead == NULL) {
         ASSERT(fEntryTail == NULL);
@@ -516,11 +472,7 @@ GenericArchive::AddEntry(GenericEntry* pEntry)
     //}
 }
 
-/*
- * Delete the "entries" list.
- */
-void
-GenericArchive::DeleteEntries(void)
+void GenericArchive::DeleteEntries(void)
 {
     GenericEntry* pEntry;
     GenericEntry* pNext;
@@ -567,20 +519,17 @@ GenericArchive::CreateIndex(void)
 }
 #endif
 
-/*
- * Generate a temp name from a file name.
- *
- * The key is to come up with the name of a temp file in the same directory
- * (or at least on the same disk volume) so that the temp file can be
- * renamed on top of the original.
- *
- * Windows _mktemp does appear to test for the existence of the file, which
- * is good.  It doesn't actually open the file, which creates a small window
- * in which bad things could happen, but it should be okay.
- */
-/*static*/ CString
-GenericArchive::GenDerivedTempName(const WCHAR* filename)
+/*static*/ CString GenericArchive::GenDerivedTempName(const WCHAR* filename)
 {
+    /*
+     * The key is to come up with the name of a temp file in the same directory
+     * (or at least on the same disk volume) so that the temp file can be
+     * renamed on top of the original.
+     *
+     * Windows _mktemp does appear to test for the existence of the file, which
+     * is good.  It doesn't actually open the file, which creates a small window
+     * in which bad things could happen, but it should be okay.
+     */
     static const WCHAR kTmpTemplate[] = L"CPtmp_XXXXXX";
     CString mangle(filename);
     int idx, len;
@@ -602,23 +551,7 @@ GenericArchive::GenDerivedTempName(const WCHAR* filename)
     return mangle;
 }
 
-
-/*
- * Do a strcasecmp-like comparison, taking equivalent fssep chars into
- * account.
- *
- * The tricky part is with files like "foo:bar" ':' -- "foo:bar" '/'.  The
- * names appear to match, but the fssep chars are different, so they don't.
- * If we just return (char1 - char2), though, we'll be returning 0 because
- * the ASCII values match even if the character *meanings* don't.
- *
- * This assumes that the fssep char is not affected by tolower().
- *
- * [This may not sort correctly...haven't verified that I'm returning the
- * right thing for ascending ASCII sort.]
- */
-/*static*/ int
-GenericArchive::ComparePaths(const CString& name1, char fssep1,
+/*static*/ int GenericArchive::ComparePaths(const CString& name1, char fssep1,
     const CString& name2, char fssep2)
 {
     const WCHAR* cp1 = name1;
@@ -668,11 +601,8 @@ GenericArchive::ComparePaths(const CString& name1, char fssep1,
 
 typedef bool Boolean;
 
-/*
- * Convert from time in seconds to Apple IIgs DateTime format.
- */
-/*static*/ void
-GenericArchive::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime* pDateTime)
+/*static*/ void GenericArchive::UNIXTimeToDateTime(const time_t* pWhen,
+    NuDateTime* pDateTime)
 {
     struct tm* ptm;
 
@@ -695,16 +625,7 @@ GenericArchive::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime* pDateTime)
     pDateTime->weekDay = ptm->tm_wday +1;
 }
 
-
-/*
- * Set the contents of a NuFileDetails structure, based on the pathname
- * and characteristics of the file.
- *
- * For efficiency and simplicity, the pathname fields are set to CStrings in
- * the GenericArchive object instead of newly-allocated storage.
- */
-NuError
-GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
+NuError GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
     const WCHAR* pathname, struct _stat* psb, FileDetails* pDetails)
 {
     //char* livePathStr;
@@ -809,13 +730,7 @@ typedef struct Win32dirent {
 
 static const WCHAR kWildMatchAll[] = L"*.*";
 
-/*
- * Prepare a directory for reading.
- *
- * Allocates a Win32dirent struct that must be freed by the caller.
- */
-Win32dirent*
-GenericArchive::OpenDir(const WCHAR* name)
+Win32dirent* GenericArchive::OpenDir(const WCHAR* name)
 {
     Win32dirent* dir = NULL;
     WCHAR* tmpStr = NULL;
@@ -858,13 +773,7 @@ failed:
     goto bail;
 }
 
-/*
- * Get an entry from an open directory.
- *
- * Returns a NULL pointer after the last entry has been read.
- */
-Win32dirent*
-GenericArchive::ReadDir(Win32dirent* dir)
+Win32dirent* GenericArchive::ReadDir(Win32dirent* dir)
 {
     if (dir->d_first)
         dir->d_first = 0;
@@ -880,11 +789,7 @@ GenericArchive::ReadDir(Win32dirent* dir)
     return dir;
 }
 
-/*
- * Close a directory.
- */
-void
-GenericArchive::CloseDir(Win32dirent* dir)
+void GenericArchive::CloseDir(Win32dirent* dir)
 {
     if (dir == NULL)
         return;
@@ -893,13 +798,7 @@ GenericArchive::CloseDir(Win32dirent* dir)
     free(dir);
 }
 
-/*
- * Win32 recursive directory descent.  Scan the contents of a directory.
- * If a subdirectory is found, follow it; otherwise, call Win32AddFile to
- * add the file.
- */
-NuError
-GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
+NuError GenericArchive::Win32AddDirectory(const AddFilesDialog* pAddOpts,
     const WCHAR* dirName, CString* pErrMsg)
 {
     NuError err = kNuErrNone;
@@ -961,15 +860,7 @@ bail:
     return err;
 }
 
-/*
- * Add a file to the list we're adding to the archive.  If it's a directory,
- * and the recursive descent feature is enabled, call Win32AddDirectory to
- * add the contents of the dir.
- *
- * Returns with an error if the file doesn't exist or isn't readable.
- */
-NuError
-GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
+NuError GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
     const WCHAR* pathname, CString* pErrMsg)
 {
     NuError err = kNuErrNone;
@@ -1036,21 +927,10 @@ bail:
     return err;
 }
 
-/*
- * External entry point; just calls the system-specific version.
- *
- * [ I figure the GS/OS version will want to pass a copy of the file
- *   info from the GSOSAddDirectory function back into GSOSAddFile, so we'd
- *   want to call it from here with a NULL pointer indicating that we
- *   don't yet have the file info.  That way we can get the file info
- *   from the directory read call and won't have to check it again in
- *   GSOSAddFile. ]
- */
-NuError
-GenericArchive::AddFile(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
-    CString* pErrMsg)
+NuError GenericArchive::AddFile(const AddFilesDialog* pAddOpts,
+    const WCHAR* pathname, CString* pErrMsg)
 {
-    *pErrMsg = "";
+    *pErrMsg = L"";
     return Win32AddFile(pAddOpts, pathname, pErrMsg);
 }
 
@@ -1060,9 +940,6 @@ GenericArchive::AddFile(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
  * ===========================================================================
  */
 
-/*
- * Constructor.
- */
 GenericArchive::FileDetails::FileDetails(void)
 {
     //threadID = 0;
@@ -1075,12 +952,6 @@ GenericArchive::FileDetails::FileDetails(void)
     memset(&archiveWhen, 0, sizeof(archiveWhen));
 }
 
-/*
- * Automatic cast conversion to NuFileDetails.
- *
- * Note the NuFileDetails will have a string pointing into our storage.
- * This is not a good thing, but it's tough to work around.
- */
 GenericArchive::FileDetails::operator const NuFileDetails() const
 {
     NuFileDetails details;
@@ -1155,13 +1026,7 @@ GenericArchive::FileDetails::operator const NuFileDetails() const
     return details;
 }
 
-/*
- * Copy the contents of our object to a new object.
- *
- * Useful for operator= and copy construction.
- */
-/*static*/ void
-GenericArchive::FileDetails::CopyFields(FileDetails* pDst,
+/*static*/ void GenericArchive::FileDetails::CopyFields(FileDetails* pDst,
     const FileDetails* pSrc)
 {
     //pDst->threadID = pSrc->threadID;
@@ -1186,16 +1051,13 @@ GenericArchive::FileDetails::CopyFields(FileDetails* pDst,
  * ===========================================================================
  */
 
-/*
- * Create a selection set from the selected items in a ContentList.
- *
- * This grabs the items in the order in which they appear in the display
- * (at least under Win2K), which is a good thing.  It appears that, if you
- * just grab indices 0..N, you will get them in order.
- */
-void
-SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask)
+void SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask)
 {
+    /*
+     * This grabs the items in the order in which they appear in the display
+     * (at least under Win2K), which is a good thing.  It appears that, if you
+     * just grab indices 0..N, you will get them in order.
+     */
     LOGI("CreateFromSelection (threadMask=0x%02x)", threadMask);
 
     POSITION posn;
@@ -1211,11 +1073,7 @@ SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask)
     }
 }
 
-/*
- * Like CreateFromSelection, but includes the entire list.
- */
-void
-SelectionSet::CreateFromAll(ContentList* pContentList, int threadMask)
+void SelectionSet::CreateFromAll(ContentList* pContentList, int threadMask)
 {
     LOGI("CreateFromAll (threadMask=0x%02x)", threadMask);
 
@@ -1227,12 +1085,7 @@ SelectionSet::CreateFromAll(ContentList* pContentList, int threadMask)
     }
 }
 
-/*
- * Add a GenericEntry to the set, but only if we can find a thread that
- * matches the flags in "threadMask".
- */
-void
-SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
+void SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
 {
     SelectionEntry* pSelEntry;
 
@@ -1280,11 +1133,7 @@ SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
     }
 }
 
-/*
- * Add a new entry to the end of the list.
- */
-void
-SelectionSet::AddEntry(SelectionEntry* pEntry)
+void SelectionSet::AddEntry(SelectionEntry* pEntry)
 {
     if (fEntryHead == NULL) {
         ASSERT(fEntryTail == NULL);
@@ -1304,11 +1153,7 @@ SelectionSet::AddEntry(SelectionEntry* pEntry)
     fNumEntries++;
 }
 
-/*
- * Delete the "entries" list.
- */
-void
-SelectionSet::DeleteEntries(void)
+void SelectionSet::DeleteEntries(void)
 {
     SelectionEntry* pEntry;
     SelectionEntry* pNext;
@@ -1323,11 +1168,7 @@ SelectionSet::DeleteEntries(void)
     }
 }
 
-/*
- * Count the #of entries whose display name matches the prefix string.
- */
-int
-SelectionSet::CountMatchingPrefix(const WCHAR* prefix)
+int SelectionSet::CountMatchingPrefix(const WCHAR* prefix)
 {
     SelectionEntry* pEntry;
     int count = 0;
@@ -1346,11 +1187,7 @@ SelectionSet::CountMatchingPrefix(const WCHAR* prefix)
     return count;
 }
 
-/*
- * Dump the contents of a selection set.
- */
-void
-SelectionSet::Dump(void)
+void SelectionSet::Dump(void)
 {
     const SelectionEntry* pEntry;
 

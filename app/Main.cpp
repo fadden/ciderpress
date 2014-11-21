@@ -265,12 +265,7 @@ MainWindow::~MainWindow()
     LOGI("MainWindow destructor complete");
 }
 
-
-/*
- * Override the pre-create function to tweak the window style.
- */
-BOOL
-MainWindow::PreCreateWindow(CREATESTRUCT& cs)
+BOOL MainWindow::PreCreateWindow(CREATESTRUCT& cs)
 {
     BOOL res = CFrameWnd::PreCreateWindow(cs);
 
@@ -279,11 +274,7 @@ MainWindow::PreCreateWindow(CREATESTRUCT& cs)
     return res;
 }
 
-/*
- * Override GetClientRect so we can factor in the status and tool bars.
- */
-void
-MainWindow::GetClientRect(LPRECT lpRect) const
+void MainWindow::GetClientRect(LPRECT lpRect) const
 {
     CRect sizeRect;
     int toolBarHeight, statusBarHeight;
@@ -299,12 +290,7 @@ MainWindow::GetClientRect(LPRECT lpRect) const
     lpRect->bottom -= statusBarHeight;
 }
 
-
-/*
- * Do some idle processing.
- */
-void
-MainWindow::DoIdle(void)
+void MainWindow::DoIdle(void)
 {
     /*
      * Make sure that the filename field in the content list is always
@@ -354,18 +340,13 @@ MainWindow::DoIdle(void)
     }
 }
 
-
-/*
- * Handle command-line arguments.
- *
- * Usage:
- *  CiderPress [[-temparc] [-mode {nufx,bin2,disk}] [-dispname name] filename]
- */
-void
-MainWindow::ProcessCommandLine(void)
+void MainWindow::ProcessCommandLine(void)
 {
     /*
      * Get the command line and break it down into an argument vector.
+     *
+     * Usage:
+     *  CiderPress [[-temparc] [-mode {nufx,bin2,disk}] [-dispname name] filename]
      */
     const WCHAR* cmdLine = ::GetCommandLine();
     if (cmdLine == NULL || wcslen(cmdLine) == 0)
@@ -491,12 +472,10 @@ MainWindow::ProcessCommandLine(void)
 
 const int kProgressPane = 1;
 
-/*
- * OnCreate handler.  Used to add a toolbar and status bar.
- */
-int
-MainWindow::OnCreate(LPCREATESTRUCT lpcs)
+int MainWindow::OnCreate(LPCREATESTRUCT lpcs)
 {
+    // add a toolbar and status bar
+
     LOGI("Now in OnCreate!");
     if (CFrameWnd::OnCreate(lpcs) == -1)
         return -1;
@@ -529,18 +508,16 @@ MainWindow::OnCreate(LPCREATESTRUCT lpcs)
     return 0;
 }
 
-
-/*
- * Catch a message sent to inspire us to perform one-time initializations of
- * preferences and libraries.
- *
- * We're doing this the long way around because we want to be able to
- * put up a dialog box if the version is bad.  If we tried to handle this
- * in the constructor we'd be acting before the window was fully created.
- */
-LONG
-MainWindow::OnLateInit(UINT, LONG)
+LONG MainWindow::OnLateInit(UINT, LONG)
 {
+    /*
+     * Catch a message sent to inspire us to perform one-time initializations of
+     * preferences and libraries.
+     *
+     * We're doing this the long way around because we want to be able to
+     * put up a dialog box if the version is bad.  If we tried to handle this
+     * in the constructor we'd be acting before the window was fully created.
+     */
     CString result;
     CString appName;
     CString niftyListFile;
@@ -638,24 +615,14 @@ fail:
     return 0;
 }
 
-
-/*
- * The system wants to know if we're okay with shutting down.
- *
- * Return TRUE if it's okay to shut down, FALSE otherwise.
- */
-BOOL
-MainWindow::OnQueryEndSession(void)
+BOOL MainWindow::OnQueryEndSession(void)
 {
+    // The system wants to know if we're okay with shutting down.
     LOGI("Got QueryEndSession");
     return TRUE;
 }
 
-/*
- * Notification of shutdown (or not).
- */
-void
-MainWindow::OnEndSession(BOOL bEnding)
+void MainWindow::OnEndSession(BOOL bEnding)
 {
     LOGI("Got EndSession (bEnding=%d)", bEnding);
 
@@ -666,21 +633,20 @@ MainWindow::OnEndSession(BOOL bEnding)
     }
 }
 
-/*
- * The main window is resizing.  We don't automatically redraw on resize,
- * so we will need to update the client region.  If it's filled with a
- * control, the control's resize & redraw function will take care of it.
- * If not, we need to explicitly invalidate the client region so the
- * window will repaint itself.
- */
-void
-MainWindow::OnSize(UINT nType, int cx, int cy)
+void MainWindow::OnSize(UINT nType, int cx, int cy)
 {
+    /*
+     * The main window is resizing.  We don't automatically redraw on resize,
+     * so we will need to update the client region.  If it's filled with a
+     * control, the control's resize & redraw function will take care of it.
+     * If not, we need to explicitly invalidate the client region so the
+     * window will repaint itself.
+     */
     CFrameWnd::OnSize(nType, cx, cy);
     ResizeClientArea();
 }
-void
-MainWindow::ResizeClientArea(void)
+
+void MainWindow::ResizeClientArea(void)
 {
     CRect sizeRect;
     
@@ -691,22 +657,16 @@ MainWindow::ResizeClientArea(void)
         Invalidate(false);
 }
 
-/*
- * Restrict the minimum window size to something reasonable.
- */
-void
-MainWindow::OnGetMinMaxInfo(MINMAXINFO* pMMI)
+void MainWindow::OnGetMinMaxInfo(MINMAXINFO* pMMI)
 {
+    // Restrict the minimum window size to something reasonable.
     pMMI->ptMinTrackSize.x = 256;
     pMMI->ptMinTrackSize.y = 192;
 }
 
-/*
- * Repaint the main window.
- */
-void
-MainWindow::OnPaint(void)
+void MainWindow::OnPaint(void)
 {
+    // Repaint the main window.
     CPaintDC dc(this);
     CRect clientRect;
 
@@ -735,8 +695,7 @@ MainWindow::OnPaint(void)
 }
 
 #if 0
-afx_msg BOOL
-MainWindow::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+afx_msg BOOL MainWindow::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
     LOGI("MOUSE WHEEL");
     return FALSE;
@@ -753,27 +712,19 @@ MainWindow::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 }
 #endif
 
-/*
- * Make sure open controls keep the input focus.
- */
-void
-MainWindow::OnSetFocus(CWnd* /*pOldWnd*/)
+void MainWindow::OnSetFocus(CWnd* /*pOldWnd*/)
 {
+    // Make sure open controls keep the input focus.
     if (fpContentList != NULL) {
-        LOGI("Returning focus to ContentList");
+        LOGD("Returning focus to ContentList");
         fpContentList->SetFocus();
     }
 }
 
-/*
- * User hit F1.  We don't currently have context-sensitive help on the main page.
- */
-BOOL
-MainWindow::OnHelpInfo(HELPINFO* /*lpHelpInfo*/)
+BOOL MainWindow::OnHelpInfo(HELPINFO* /*lpHelpInfo*/)
 {
-    //WinHelp(0, HELP_FINDER);
     WinHelp(HELP_TOPIC_WELCOME, HELP_CONTEXT);
-    return TRUE;    // dunno what this means
+    return TRUE;
 }
 
 #if 0
@@ -781,8 +732,7 @@ MainWindow::OnHelpInfo(HELPINFO* /*lpHelpInfo*/)
  * Catch-all Help handler, necessary to allow CPropertySheet to display a
  * "Help" button.  (WTF?)
  */
-LONG
-MainWindow::OnHelp(UINT wParam, LONG lParam)
+LONG MainWindow::OnHelp(UINT wParam, LONG lParam)
 {
     HELPINFO* lpHelpInfo = (HELPINFO*) lParam;
 
@@ -794,12 +744,10 @@ MainWindow::OnHelp(UINT wParam, LONG lParam)
 }
 #endif
 
-/*
- * Handle Edit->Preferences by popping up a property sheet.
- */
-void
-MainWindow::OnEditPreferences(void)
+void MainWindow::OnEditPreferences(void)
 {
+    // Handle Edit->Preferences by popping up a property sheet.
+
     PrefsSheet ps;
     ColumnLayout* pColLayout = fPreferences.GetColumnLayout();
 
@@ -872,15 +820,12 @@ MainWindow::OnEditPreferences(void)
         ApplyNow(&ps);
 }
 
-/*
- * Apply a change from the preferences sheet.
- */
-void
-MainWindow::ApplyNow(PrefsSheet* pPS)
+void MainWindow::ApplyNow(PrefsSheet* pPS)
 {
-    bool mustReload = false;
+    // Apply a change from the preferences sheet.
+    LOGV("APPLY CHANGES");
 
-    //LOGI("APPLY CHANGES");
+    bool mustReload = false;
 
     ColumnLayout* pColLayout = fPreferences.GetColumnLayout();
 
@@ -1019,12 +964,10 @@ MainWindow::ApplyNow(PrefsSheet* pPS)
     //Invalidate();
 }
 
-/*
- * Handle IDM_EDIT_FIND.
- */
-void
-MainWindow::OnEditFind(void)
+void MainWindow::OnEditFind(void)
 {
+    // Handle IDM_EDIT_FIND.
+
     DWORD flags = 0;
 
     if (fpFindDialog != NULL)
@@ -1045,18 +988,16 @@ MainWindow::OnEditFind(void)
                          flags,     // flags
                          this);     // parent
 }
-void
-MainWindow::OnUpdateEditFind(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateEditFind(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpOpenArchive != NULL);
 }
 
-/*
- * Handle activity in the modeless "find" dialog.
- */
-LRESULT
-MainWindow::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
 {
+    // Handle activity in the modeless "find" dialog.
+
     assert(fpFindDialog != NULL);
 
     fFindDown = (fpFindDialog->SearchDown() != 0);
@@ -1079,16 +1020,11 @@ MainWindow::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-
-/*
- * Handle IDM_SORT_*.
- *
- * The "sort" enu item should really only be active if we have a file open.
- */
-void
-MainWindow::OnEditSort(UINT id)
+void MainWindow::OnEditSort(UINT id)
 {
-    LOGI("EDIT SORT %d", id);
+    // Handle IDM_SORT_*.
+    // The "sort" menu item should really only be active if we have a file open.
+    LOGD("EDIT SORT %d", id);
 
     ASSERT(id >= IDM_SORT_PATHNAME && id <= IDM_SORT_ORIGINAL);
     fPreferences.GetColumnLayout()->SetSortColumn(id - IDM_SORT_PATHNAME);
@@ -1096,28 +1032,20 @@ MainWindow::OnEditSort(UINT id)
     if (fpContentList != NULL)
         fpContentList->NewSortOrder();
 }
-void
-MainWindow::OnUpdateEditSort(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateEditSort(CCmdUI* pCmdUI)
 {
     unsigned int column = fPreferences.GetColumnLayout()->GetSortColumn();
 
     pCmdUI->SetCheck(pCmdUI->m_nID - IDM_SORT_PATHNAME == column);
 }
 
-/*
- * Open the help file.
- */
-void
-MainWindow::OnHelpContents(void)
+void MainWindow::OnHelpContents(void)
 {
     WinHelp(0, HELP_FINDER);
 }
 
-/*
- * Go to the faddenSoft web site.
- */
-void
-MainWindow::OnHelpWebSite(void)
+void MainWindow::OnHelpWebSite(void)
 {
     int err;
 
@@ -1137,20 +1065,13 @@ MainWindow::OnHelpWebSite(void)
     }
 }
 
-/*
- * Show ordering info (ka-ching!).
- */
-void
-MainWindow::OnHelpOrdering(void)
+void MainWindow::OnHelpOrdering(void)
 {
+    // How to order... ka-ching!
     WinHelp(HELP_TOPIC_ORDERING_INFO, HELP_CONTEXT);
 }
 
-/*
- * Pop up the About box.
- */
-void
-MainWindow::OnHelpAbout(void)
+void MainWindow::OnHelpAbout(void)
 {
     int result;
 
@@ -1167,12 +1088,10 @@ MainWindow::OnHelpAbout(void)
         SetCPTitle();
 }
 
-/*
- * Create a new SHK archive, using a "save as" dialog to select the name.
- */
-void
-MainWindow::OnFileNewArchive(void)
+void MainWindow::OnFileNewArchive(void)
 {
+    // Create a new SHK archive, using a "save as" dialog to select the name.
+
     CString filename, saveFolder, errStr;
     GenericArchive* pOpenArchive;
     CString errMsg;
@@ -1219,13 +1138,10 @@ bail:
     LOGI("--- OnFileNewArchive done");
 }
 
-
-/*
- * Handle request to open an archive or disk image.
- */
-void
-MainWindow::OnFileOpen(void)
+void MainWindow::OnFileOpen(void)
 {
+    // Handle request to open an archive or disk image.
+
     CString openFilters;
     CString saveFolder;
 
@@ -1254,16 +1170,13 @@ MainWindow::OnFileOpen(void)
         dlg.m_ofn.nFilterIndex, dlg.GetReadOnlyPref() != 0);
 
 bail:
-    LOGI("--- OnFileOpen done");
+    LOGD("--- OnFileOpen done");
 }
 
-/*
- * Handle request to open a raw disk volume.
- */
-void
-MainWindow::OnFileOpenVolume(void)
+void MainWindow::OnFileOpenVolume(void)
 {
-    LOGI("--- OnFileOpenVolume");
+    // Handle request to open a raw disk volume.
+    LOGD("--- OnFileOpenVolume");
 
     int result;
 
@@ -1279,18 +1192,14 @@ MainWindow::OnFileOpenVolume(void)
 bail:
     return;
 }
-void
-MainWindow::OnUpdateFileOpenVolume(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateFileOpenVolume(CCmdUI* pCmdUI)
 {
     // don't really need this function
     pCmdUI->Enable(TRUE);
 }
 
-/*
- * Open an archive.
- */
-void
-MainWindow::DoOpenArchive(const WCHAR* pathName, const WCHAR* ext,
+void MainWindow::DoOpenArchive(const WCHAR* pathName, const WCHAR* ext,
     int filterIndex, bool readOnly)
 {
     if (LoadArchive(pathName, ext, filterIndex, readOnly, false) == 0) {
@@ -1304,33 +1213,22 @@ MainWindow::DoOpenArchive(const WCHAR* pathName, const WCHAR* ext,
     }
 }
 
-/*
- * Save any pending changes.
- *
- * This may be called directly from tools, so don't assume that the
- * conditions checked for in OnUpdateFileSave hold here.
- */
-void
-MainWindow::OnFileReopen(void)
+void MainWindow::OnFileReopen(void)
 {
     ReopenArchive();
 }
-void
-MainWindow::OnUpdateFileReopen(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateFileReopen(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpOpenArchive != NULL);
 }
 
-
-/*
- * Save any pending changes.
- *
- * This may be called directly from tools, so don't assume that the
- * conditions checked for in OnUpdateFileSave hold here.
- */
-void
-MainWindow::OnFileSave(void)
+void MainWindow::OnFileSave(void)
 {
+    /*
+     * This may be called directly from tools, so don't assume that the
+     * conditions checked for in OnUpdateFileSave hold here.
+     */
     CString errMsg;
 
     if (fpOpenArchive == NULL)
@@ -1346,34 +1244,25 @@ MainWindow::OnFileSave(void)
     // update the title bar
     DoIdle();
 }
-void
-MainWindow::OnUpdateFileSave(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateFileSave(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpOpenArchive != NULL && fpOpenArchive->IsModified());
 }
 
-/*
- * Close current archive or disk image.
- */
-void
-MainWindow::OnFileClose(void)
+void MainWindow::OnFileClose(void)
 {
     CloseArchive();
     //SetCPTitle();
-    LOGI("--- OnFileClose done");
+    LOGD("--- OnFileClose done");
 }
-void
-MainWindow::OnUpdateFileClose(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateFileClose(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpOpenArchive != NULL);
 }
 
-
-/*
- * Show detailed information on the current archive.
- */
-void
-MainWindow::OnFileArchiveInfo(void)
+void MainWindow::OnFileArchiveInfo(void)
 {
     ArchiveInfoDialog* pDlg = NULL;
     ASSERT(fpOpenArchive != NULL);
@@ -1401,31 +1290,23 @@ MainWindow::OnFileArchiveInfo(void)
 
     delete pDlg;
 }
-void
-MainWindow::OnUpdateFileArchiveInfo(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateFileArchiveInfo(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL);
 }
 
-/*
- * Print the contents of the current archive.
- */
-void
-MainWindow::OnFilePrint(void)
+void MainWindow::OnFilePrint(void)
 {
     PrintListing(fpContentList);
 }
-void
-MainWindow::OnUpdateFilePrint(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateFilePrint(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && fpContentList->GetItemCount() > 0);
 }
 
-/*
- * Print a ContentList.
- */
-void
-MainWindow::PrintListing(const ContentList* pContentList)
+void MainWindow::PrintListing(const ContentList* pContentList)
 {
     CPrintDialog dlg(FALSE);    // use CPrintDialogEx for Win2K? CPageSetUpDialog?
     PrintContentList pcl;
@@ -1461,58 +1342,35 @@ MainWindow::PrintListing(const ContentList* pContentList)
     fhDevNames = dlg.m_pd.hDevNames;
 }
 
-
-/*
- * Handle Exit item by sending a close request.
- */
-void
-MainWindow::OnFileExit(void)
+void MainWindow::OnFileExit(void)
 {
+    // Handle Exit item by sending a close request.
     SendMessage(WM_CLOSE, 0, 0);
 }
 
-
-/*
- * Select everything in the content list.
- */
-void
-MainWindow::OnEditSelectAll(void)
+void MainWindow::OnEditSelectAll(void)
 {
     ASSERT(fpContentList != NULL);
     fpContentList->SelectAll();
 }
-void
-MainWindow::OnUpdateEditSelectAll(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateEditSelectAll(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL);
 }
 
-/*
- * Invert the content list selection.
- */
-void
-MainWindow::OnEditInvertSelection(void)
+void MainWindow::OnEditInvertSelection(void)
 {
     ASSERT(fpContentList != NULL);
     fpContentList->InvertSelection();
 }
-void
-MainWindow::OnUpdateEditInvertSelection(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateEditInvertSelection(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL);
 }
 
-
-/*
- * Get the one selected item from the current display.  Primarily useful
- * for the double-click handler, but also used for "action" menu items
- * that insist on operating on a single menu item (edit prefs, create subdir).
- *
- * Returns NULL if the item couldn't be found or if more than one item was
- * selected.
- */
-GenericEntry*
-MainWindow::GetSelectedItem(ContentList* pContentList)
+GenericEntry* MainWindow::GetSelectedItem(ContentList* pContentList)
 {
     if (pContentList->GetSelectedCount() != 1)
         return NULL;
@@ -1526,21 +1384,14 @@ MainWindow::GetSelectedItem(ContentList* pContentList)
     int num = pContentList->GetNextSelectedItem(/*ref*/ posn);
     GenericEntry* pEntry = (GenericEntry*) pContentList->GetItemData(num);
     if (pEntry == NULL) {
-        LOGI(" Glitch: couldn't find entry %d", num);
+        LOGW(" Glitch: couldn't find entry %d", num);
         ASSERT(false);
     }
 
     return pEntry;
 }
 
-/*
- * Handle a double-click.
- *
- * Individual items get special treatment, multiple items just get handed off
- * to the file viewer.
- */
-void
-MainWindow::HandleDoubleClick(void)
+void MainWindow::HandleDoubleClick(void)
 {
     bool handled = false;
 
@@ -1647,19 +1498,7 @@ MainWindow::HandleDoubleClick(void)
     /* set "/t" temp flag and delete afterward, warning user (?) */
 }
 
-/*
- * Extract a record to the temp folder and open it with a new instance of
- * CiderPress.  We might want to extract disk images as 2MG files to take
- * the mystery out of opening them, but since they're coming out of a
- * ShrinkIt archive they're pretty un-mysterious anyway.
- *
- * We tell the new instance to open it read-only, and flag it for
- * deletion on exit.
- *
- * Returns 0 on success, nonzero error status on failure.
- */
-int
-MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
+int MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
     const WCHAR* modeStr)
 {
     CString dispName;
@@ -1736,26 +1575,7 @@ MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
     return 0;
 }
 
-/*
- * Extract a record to the temp folder and open it with an external viewer.
- * The file must be created with the correct extension so ShellExecute
- * does the right thing.
- *
- * The files will be added to the "delete on exit" list, so that they will
- * be cleaned up when CiderPress exits (assuming the external viewer no longer
- * has them open).
- *
- * The GetTempFileName function creates a uniquely-named temp file.  We
- * create a file that has that name plus an extension.  To ensure that we
- * don't try to use the same temp filename twice, we have to hold off on
- * deleting the unused .tmp files until we're ready to delete the
- * corresponding .gif (or whatever) files.  Thus, each invocation of this
- * function creates two files and two entries in the delete-on-exit set.
- *
- * Returns 0 on success, nonzero error status on failure.
- */
-int
-MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
+int MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
 {
     const WCHAR* ext;
 
@@ -1821,8 +1641,7 @@ MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
  * action only applies to the record that was clicked on, so we need to
  * retrieve that from the control.
  */
-void
-MainWindow::OnRtClkDefault(void)
+void MainWindow::OnRtClkDefault(void)
 {
     int idx;
 
@@ -1851,8 +1670,7 @@ MainWindow::OnRtClkDefault(void)
  * will set the percentage in the window frame if not.
  */
 
-void
-MainWindow::SetProgressBegin(void)
+void MainWindow::SetProgressBegin(void)
 {
     if (fpActionProgress != NULL)
         fpActionProgress->SetProgress(0);
@@ -1864,8 +1682,7 @@ MainWindow::SetProgressBegin(void)
     (void) PeekAndPump();
 }
 
-int
-MainWindow::SetProgressUpdate(int percent, const WCHAR* oldName,
+int MainWindow::SetProgressUpdate(int percent, const WCHAR* oldName,
     const WCHAR* newName)
 {
     int status = IDOK;
@@ -1891,8 +1708,7 @@ MainWindow::SetProgressUpdate(int percent, const WCHAR* oldName,
     return status;
 }
 
-void
-MainWindow::SetProgressEnd(void)
+void MainWindow::SetProgressEnd(void)
 {
     if (fpActionProgress != NULL)
         fpActionProgress->SetProgress(100);
@@ -1902,18 +1718,7 @@ MainWindow::SetProgressEnd(void)
     //LOGI("  Complete: END");
 }
 
-
-/*
- * Set a number in the "progress counter".  Useful for loading large archives
- * where we're not sure how much stuff is left, so showing a percentage is
- * hard.
- *
- * Pass in -1 to erase the counter.
- *
- * Returns "true" if we'd like things to continue.
- */
-bool
-MainWindow::SetProgressCounter(const WCHAR* str, long val)
+bool MainWindow::SetProgressCounter(const WCHAR* str, long val)
 {
     /* if the main window is enabled, user could activate menus */
     ASSERT(!IsWindowEnabled());
@@ -1946,20 +1751,7 @@ MainWindow::SetProgressCounter(const WCHAR* str, long val)
         return true;
 }
 
-
-/*
- * Allow events to flow through the message queue whenever the
- * progress meter gets updated.  This will allow us to redraw with
- * reasonable frequency.
- *
- * Calling this can result in other code being called, such as Windows
- * message handlers, which can lead to reentrancy problems.  Make sure
- * you're adequately semaphored before calling here.
- *
- * Returns TRUE if all is well, FALSE if we're trying to quit.
- */
-BOOL
-MainWindow::PeekAndPump(void)
+BOOL MainWindow::PeekAndPump(void)
 {
     MSG msg;
 
@@ -1976,12 +1768,7 @@ MainWindow::PeekAndPump(void)
     return TRUE;
 }
 
-/*
- * Go to sleep for a little bit, waking up 100x per second to check
- * the idle loop.
- */
-void
-MainWindow::EventPause(int duration)
+void MainWindow::EventPause(int duration)
 {
     int count = duration / 10;
 
@@ -1991,18 +1778,7 @@ MainWindow::EventPause(int duration)
     }
 }
 
-/*
- * Printer abort procedure; allows us to abort a print job.  The DC
- * SetAbortProc() function calls here periodically.  The return value from
- * this function determine whether or not printing halts.
- *
- * This checks a global "print cancel" variable, which is set by our print
- * cancel button dialog.
- *
- * If this returns TRUE, printing continues; FALSE, and printing aborts.
- */
-/*static*/ BOOL CALLBACK
-MainWindow::PrintAbortProc(HDC hDC, int nCode)
+/*static*/ BOOL CALLBACK MainWindow::PrintAbortProc(HDC hDC, int nCode)
 {
     MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
 
@@ -2021,11 +1797,7 @@ MainWindow::PrintAbortProc(HDC hDC, int nCode)
  * ===================================
  */
 
-/*
- * Draw what looks like an empty client area.
- */
-void
-MainWindow::DrawEmptyClientArea(CDC* pDC, const CRect& clientRect)
+void MainWindow::DrawEmptyClientArea(CDC* pDC, const CRect& clientRect)
 {
     CBrush brush;
     brush.CreateSolidBrush(::GetSysColor(COLOR_APPWORKSPACE));  // dk gray
@@ -2058,21 +1830,7 @@ MainWindow::DrawEmptyClientArea(CDC* pDC, const CRect& clientRect)
     pDC->SelectObject(pOldPen);
 }
 
-/*
- * Load an archive, using the appropriate GenericArchive subclass.  If
- * "createFile" is "true", a new archive file will be created (and must
- * not already exist!).
- *
- * "filename" is the full path to the file, "extension" is the
- * filetype component of the name (without the leading '.'), "filterIndex"
- * is the offset into the set of filename filters used in the standard
- * file dialog, "readOnly" reflects the state of the stdfile dialog
- * checkbox, and "createFile" is set to true by the "New Archive" command.
- *
- * Returns 0 on success, nonzero on failure.
- */
-int
-MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
+int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
     int filterIndex, bool readOnly, bool createFile)
 {
     GenericArchive::OpenResult openResult;
@@ -2212,18 +1970,7 @@ bail:
     return result;
 }
 
-/*
- * Open a raw disk volume.  Useful for ProDOS-formatted 1.44MB floppy disks
- * and CFFA flash cards.
- *
- * Assume it's a disk image -- it'd be a weird place for a ShrinkIt archive.
- * CFFA cards can actually hold multiple volumes, but that's all taken care
- * of inside the diskimg DLL.
- *
- * Returns 0 on success, nonzero on failure.
- */
-int
-MainWindow::DoOpenVolume(CString drive, bool readOnly)
+int MainWindow::DoOpenVolume(CString drive, bool readOnly)
 {
     int result = -1;
 
@@ -2272,12 +2019,7 @@ bail:
     return result;
 }
 
-
-/*
- * Close and re-open the current archive.
- */
-void
-MainWindow::ReopenArchive(void)
+void MainWindow::ReopenArchive(void)
 {
     if (fpOpenArchive == NULL) {
         ASSERT(false);
@@ -2333,11 +2075,7 @@ bail:
     delete pOpenArchive;
 }
 
-/*
- * Determine whether "path" matches the pathname of the currently open archive.
- */
-bool
-MainWindow::IsOpenPathName(const WCHAR* path)
+bool MainWindow::IsOpenPathName(const WCHAR* path)
 {
     if (fpOpenArchive == NULL)
         return false;
@@ -2348,13 +2086,7 @@ MainWindow::IsOpenPathName(const WCHAR* path)
     return false;
 }
 
-
-/*
- * Switch the content list to a new archive, closing the previous if one
- * was already open.
- */
-void
-MainWindow::SwitchContentList(GenericArchive* pOpenArchive)
+void MainWindow::SwitchContentList(GenericArchive* pOpenArchive)
 {
     assert(pOpenArchive != NULL);
 
@@ -2402,13 +2134,7 @@ MainWindow::SwitchContentList(GenericArchive* pOpenArchive)
     fpOpenArchive = pOpenArchive;
 }
 
-
-/*
- * Close the existing archive file, but don't try to shut down the child
- * windows.  This should really only be used from the destructor.
- */
-void
-MainWindow::CloseArchiveWOControls(void)
+void MainWindow::CloseArchiveWOControls(void)
 {
     if (fpOpenArchive != NULL) {
         //fpOpenArchive->Close();
@@ -2418,12 +2144,7 @@ MainWindow::CloseArchiveWOControls(void)
     }
 }
 
-/*
- * Close the existing archive file, and throw out the control we're
- * using to display it.
- */
-void
-MainWindow::CloseArchive(void)
+void MainWindow::CloseArchive(void)
 {
     CWaitCursor waitc;  // closing large compressed archive can be slow
 
@@ -2441,16 +2162,7 @@ MainWindow::CloseArchive(void)
     SetCPTitle();
 }
 
-
-/*
- * Set the title bar on the main window.
- *
- * "pathname" is often different from pOpenArchive->GetPathName(), especially
- * when we were launched from another instance of CiderPress and handed a
- * temp file whose name we're trying to conceal.
- */
-void
-MainWindow::SetCPTitle(const WCHAR* pathname, GenericArchive* pOpenArchive)
+void MainWindow::SetCPTitle(const WCHAR* pathname, GenericArchive* pOpenArchive)
 {
     ASSERT(pathname != NULL);
     CString title;
@@ -2473,11 +2185,7 @@ MainWindow::SetCPTitle(const WCHAR* pathname, GenericArchive* pOpenArchive)
     SetWindowText(title);
 }
 
-/*
- * Set the title bar to something boring when nothing is open.
- */
-void
-MainWindow::SetCPTitle(void)
+void MainWindow::SetCPTitle(void)
 {
     CString appName, regName, title;
     CString user, company, reg, versions, expire;
@@ -2502,12 +2210,7 @@ MainWindow::SetCPTitle(void)
     SetWindowText(title);
 }
 
-/*
- * Come up with a title to put at the top of a printout.  This is essentially
- * the same as the window title, but without some flags (e.g. "read-only").
- */
-CString
-MainWindow::GetPrintTitle(void)
+CString MainWindow::GetPrintTitle(void)
 {
     CString title;
     CString archiveDescription;
@@ -2527,13 +2230,7 @@ MainWindow::GetPrintTitle(void)
     return title;
 }
 
-
-/*
- * After successful completion of a command, make a happy noise (but only
- * if we're configured to do so).
- */
-void
-MainWindow::SuccessBeep(void)
+void MainWindow::SuccessBeep(void)
 {
     const Preferences* pPreferences = GET_PREFERENCES();
 
@@ -2543,11 +2240,7 @@ MainWindow::SuccessBeep(void)
     }
 }
 
-/*
- * If something fails, make noise if we're configured for loudness.
- */
-void
-MainWindow::FailureBeep(void)
+void MainWindow::FailureBeep(void)
 {
     const Preferences* pPreferences = GET_PREFERENCES();
 
@@ -2557,13 +2250,7 @@ MainWindow::FailureBeep(void)
     }
 }
 
-/*
- * Remove a file.  Returns a helpful error string on failure.
- *
- * The absence of the file is not considered an error.
- */
-CString
-MainWindow::RemoveFile(const WCHAR* fileName)
+CString MainWindow::RemoveFile(const WCHAR* fileName)
 {
     CString errMsg;
 
@@ -2581,12 +2268,7 @@ MainWindow::RemoveFile(const WCHAR* fileName)
     return errMsg;
 }
 
-
-/*
- * Configure a ReformatHolder based on the current preferences.
- */
-/*static*/ void
-MainWindow::ConfigureReformatFromPreferences(ReformatHolder* pReformat)
+/*static*/ void MainWindow::ConfigureReformatFromPreferences(ReformatHolder* pReformat)
 {
     const Preferences* pPreferences = GET_PREFERENCES();
 
@@ -2704,11 +2386,8 @@ MainWindow::ConfigureReformatFromPreferences(ReformatHolder* pReformat)
         pPreferences->GetPrefBool(kPrDisasmOneByteBrkCop));
 }
 
-/*
- * Convert a DiskImg format spec into a ReformatHolder SourceFormat.
- */
-/*static*/ ReformatHolder::SourceFormat
-MainWindow::ReformatterSourceFormat(DiskImg::FSFormat format)
+/*static*/ ReformatHolder::SourceFormat MainWindow::ReformatterSourceFormat(
+    DiskImg::FSFormat format)
 {
     /*
      * Gutenberg both UsesDOSFileStructure and is formatted with 

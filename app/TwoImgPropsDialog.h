@@ -4,7 +4,7 @@
  * See the file LICENSE for distribution terms.
  */
 /*
- * Class definition for TwoImg properties edit dialog.
+ * TwoImg properties edit dialog.
  */
 #ifndef APP_TWOIMGPROPSDIALOG_H
 #define APP_TWOIMGPROPSDIALOG_H
@@ -33,10 +33,14 @@ public:
 
 protected:
     // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+
+    /*
+     * If they changed anything, enable the "save" button.
+     */
     afx_msg void OnChange(void);
 
     TwoImgHeader*   fpHeader;

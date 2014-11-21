@@ -49,8 +49,8 @@ public:
 
 protected:
     // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnSkip(void);
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);

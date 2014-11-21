@@ -28,6 +28,9 @@ public:
     virtual ~ArchiveInfoDialog(void) {}
 
 private:
+    /*
+     * Show general help for the archive info dialogs.
+     */
     afx_msg void OnHelp(void);
 
     DECLARE_MESSAGE_MAP()
@@ -45,8 +48,7 @@ public:
     virtual ~NufxArchiveInfoDialog(void) {}
 
 private:
-    // overrides
-    virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void) override;
 
     NufxArchive*    fpArchive;
 };
@@ -63,14 +65,27 @@ public:
     virtual ~DiskArchiveInfoDialog(void) {}
 
 private:
-    // overrides
-    virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void) override;
 
+    /*
+     * The user has changed their selection in the sub-volume pulldown menu.
+     */
     afx_msg void OnSubVolSelChange(void);
 
+    /*
+     * Fill in the volume-specific info fields.
+     */
     void FillInVolumeInfo(const DiskFS* pDiskFS);
+
+    /*
+     * Recursively add sub-volumes to the list.
+     */
     void AddSubVolumes(const DiskFS* pDiskFS, const WCHAR* prefix,
         int* pIdx);
+
+    /*
+     * Reduce a size to something meaningful (KB, MB, GB).
+     */
     void GetReducedSize(long numUnits, int unitSize,
         CString* pOut) const;
 
@@ -91,8 +106,7 @@ public:
     virtual ~BnyArchiveInfoDialog(void) {}
 
 private:
-    // overrides
-    virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void) override;
 
     BnyArchive* fpArchive;
 };
@@ -109,8 +123,7 @@ public:
     virtual ~AcuArchiveInfoDialog(void) {}
 
 private:
-    // overrides
-    virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void) override;
 
     AcuArchive* fpArchive;
 };

@@ -17,13 +17,11 @@ BEGIN_MESSAGE_MAP(EditCommentDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Set up the control.  If this is a new comment, don't show the delete
- * button.
- */
-BOOL
-EditCommentDialog::OnInitDialog(void)
+BOOL EditCommentDialog::OnInitDialog(void)
 {
+    /*
+     * If this is a new comment, don't show the delete button.
+     */
     if (fNewComment) {
         CWnd* pWnd = GetDlgItem(IDC_COMMENT_DELETE);
         pWnd->EnableWindow(FALSE);
@@ -32,20 +30,12 @@ EditCommentDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * Convert values.
- */
-void
-EditCommentDialog::DoDataExchange(CDataExchange* pDX)
+void EditCommentDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_Text(pDX, IDC_COMMENT_EDIT, fComment);
 }
 
-/*
- * User wants to delete the comment.  Verify first.
- */
-void
-EditCommentDialog::OnDelete(void)
+void EditCommentDialog::OnDelete(void)
 {
     CString question, title;
     int result;
@@ -59,21 +49,13 @@ EditCommentDialog::OnDelete(void)
     EndDialog(kDeleteCommentID);
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-EditCommentDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL EditCommentDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-EditCommentDialog::OnHelp(void)
+void EditCommentDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_EDIT_COMMENT, HELP_CONTEXT);
 }

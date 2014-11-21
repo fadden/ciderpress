@@ -28,18 +28,9 @@ static const WCHAR kVersionExtra[] =
 #else
         L""
 #endif
-#ifdef _DEBUG_LOG
-        L" _LOG"
-#else
-        L""
-#endif
         ;
 
-/*
- * Update the static strings with DLL version numbers.
- */
-BOOL
-AboutDialog::OnInitDialog(void)
+BOOL AboutDialog::OnInitDialog(void)
 {
     NuError nerr;
     long major, minor, bug;
@@ -120,8 +111,7 @@ AboutDialog::OnInitDialog(void)
  * This is called during initialization and after new registration data is
  * entered successfully.
  */
-void
-AboutDialog::ShowRegistrationInfo(void)
+void AboutDialog::ShowRegistrationInfo(void)
 {
     /*
      * Pull out the registration info.  We shouldn't need to do much in the
@@ -185,11 +175,7 @@ AboutDialog::ShowRegistrationInfo(void)
 #endif
 
 
-/*
- * User hit the "Credits" button.
- */
-void
-AboutDialog::OnAboutCredits(void)
+void AboutDialog::OnAboutCredits(void)
 {
     WinHelp(HELP_TOPIC_CREDITS, HELP_CONTEXT /*HELP_CONTEXTPOPUP*/);
 }

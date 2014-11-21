@@ -21,12 +21,7 @@
  * ==========================================================================
  */
 
-/*
- * Constructor.  Pass in the info for the token blob.
- */
-void
-BASTokenLookup::Init(const char* tokenList, int numTokens,
-    int tokenLen)
+void BASTokenLookup::Init(const char* tokenList, int numTokens, int tokenLen)
 {
     int i;
 
@@ -49,13 +44,7 @@ BASTokenLookup::Init(const char* tokenList, int numTokens,
     }
 }
 
-/*
- * Return the index of the longest token that matches "str".
- *
- * Returns -1 if no match is found.
- */
-int
-BASTokenLookup::Lookup(const char* str, int len, int* pFoundLen)
+int BASTokenLookup::Lookup(const char* str, int len, int* pFoundLen)
 {
     int longestIndex, longestLen;
     int i;
@@ -86,11 +75,7 @@ BEGIN_MESSAGE_MAP(ImportBASDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Set up the dialog.
- */
-BOOL
-ImportBASDialog::OnInitDialog(void)
+BOOL ImportBASDialog::OnInitDialog(void)
 {
     CDialog::OnInitDialog();        // base class init
 
@@ -119,14 +104,10 @@ ImportBASDialog::OnInitDialog(void)
     return FALSE;       // keep our focus
 }
 
-static const char* kFailed = "failed.\r\n\r\n";
-static const char* kSuccess = "success!\r\n\r\n";
+static const char kFailed[] = "failed.\r\n\r\n";
+static const char kSuccess[] = "success!\r\n\r\n";
 
-/*
- * Import an Applesoft BASIC program from the specified file.
- */
-bool
-ImportBASDialog::ImportBAS(const WCHAR* fileName)
+bool ImportBASDialog::ImportBAS(const WCHAR* fileName)
 {
     FILE* fp = NULL;
     ExpandBuffer msgs(1024);
@@ -197,11 +178,7 @@ bail:
     return result;
 }
 
-/*
- * Do the actual conversion.
- */
-bool
-ImportBASDialog::ConvertTextToBAS(const char* buf, long fileLen,
+bool ImportBASDialog::ConvertTextToBAS(const char* buf, long fileLen,
     char** pOutBuf, long* pOutLen, ExpandBuffer* pMsgs)
 {
     ExpandBuffer output(32768);
@@ -263,13 +240,6 @@ ImportBASDialog::ConvertTextToBAS(const char* buf, long fileLen,
     return true;
 }
 
-/*
- * Process a line of Applesoft BASIC text.
- *
- * Writes output to "pOutput".
- *
- * On failure, writes an error message to "msg" and returns false.
- */
 /*
 From an Applesoft disassembly by Bob Sander-Cederlof:
 
@@ -334,8 +304,8 @@ Note the special handling for "AT" and "TO".  When it examines the next
 character, it does NOT skip whitespace, making spaces significant when
 differentiating between "at n"/"atn" and "at o"/"ato".
 */
-bool
-ImportBASDialog::ProcessBASLine(const char* buf, int len,
+
+bool ImportBASDialog::ProcessBASLine(const char* buf, int len,
     ExpandBuffer* pOutput, CString& msg)
 {
     const int kMaxTokenLen = 7;     // longest token; must also hold linenum
@@ -537,13 +507,10 @@ output_single:
     return true;
 }
 
-/*
- * Fix up the line pointers.  We left dummy nonzero values in them initially.
- */
-bool
-ImportBASDialog::FixBASLinePointers(char* buf, long len, unsigned short addr)
+bool ImportBASDialog::FixBASLinePointers(char* buf, long len,
+    uint16_t addr)
 {
-    unsigned short val;
+    uint16_t val;
     char* start;
 
     while (len >= 4) {
@@ -588,14 +555,7 @@ ImportBASDialog::FixBASLinePointers(char* buf, long len, unsigned short addr)
     return true;
 }
 
-/*
- * Look for the end of line.
- *
- * Returns a pointer to the first byte *past* the EOL marker, which will point
- * at unallocated space for last line in the buffer.
- */
-const char*
-ImportBASDialog::FindEOL(const char* buf, long max)
+const char* ImportBASDialog::FindEOL(const char* buf, long max)
 {
     ASSERT(max >= 0);
     if (max == 0)
@@ -618,15 +578,7 @@ ImportBASDialog::FindEOL(const char* buf, long max)
     return buf;
 }
 
-/*
- * Find the next non-whitespace character.
- *
- * Updates the buffer pointer and length.
- *
- * Returns "false" if we run off the end without finding another non-ws char.
- */
-bool
-ImportBASDialog::GetNextNWC(const char** pBuf, int* pLen, char* pCh)
+bool ImportBASDialog::GetNextNWC(const char** pBuf, int* pLen, char* pCh)
 {
     static const char* kWhitespace = " \t\r\n";
 
@@ -648,10 +600,6 @@ ImportBASDialog::GetNextNWC(const char** pBuf, int* pLen, char* pCh)
     return false;
 }
 
-
-/*
- * Save the imported data.
- */
 void ImportBASDialog::OnOK(void)
 {
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_IMPORT_BAS_SAVEAS);
@@ -705,11 +653,7 @@ bail:
     return;
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-ImportBASDialog::OnHelp(void)
+void ImportBASDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_IMPORT_BASIC, HELP_CONTEXT);
 }

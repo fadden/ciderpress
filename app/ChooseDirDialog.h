@@ -32,13 +32,28 @@ public:
     void SetPathName(const WCHAR* str) { fPathName = str; }
 
 protected:
-    virtual BOOL OnInitDialog(void);
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL OnInitDialog(void) override;
 
+    // Special handling for "return" key.
+    virtual BOOL PreTranslateMessage(MSG* pMsg) override;
+
+    /*
+     * Replace the ShellTree's default SELCHANGED handler with this so we can
+     * track changes to the edit control.
+     */
     afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
+
+    // F1 key hit, or '?' button in title bar used to select help for an
+    // item in the dialog.  For ON_WM_HELPINFO.
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+
+    // User pressed "Expand Tree" button.
     afx_msg void OnExpandTree(void);
+
+    // User pressed "New Folder" button.
     afx_msg void OnNewFolder(void);
+
+    // User pressed "Help" button.
     afx_msg void OnHelp(void);
 
 private:

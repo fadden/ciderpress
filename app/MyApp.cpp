@@ -17,15 +17,17 @@
 /* magic global that MFC finds (or that finds MFC) */
 MyApp gMyApp;
 
+/* used for debug logging */
 DebugLog* gDebugLog;
 
 
 /*
- * Constructor.  This is the closest thing to "main" that we have, but we
+ * This is the closest thing to "main" that we have, but we
  * should wait for InitInstance for most things.
  */
 MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
 {
+
     gDebugLog = new DebugLog(L"C:\\src\\cplog.txt");
 
     time_t now = time(NULL);
@@ -54,19 +56,9 @@ MyApp::~MyApp(void)
     delete gDebugLog;
 }
 
-
-/*
- * It all begins here.
- *
- * Create a main window.
- */
-BOOL
-MyApp::InitInstance(void)
+BOOL MyApp::InitInstance(void)
 {
-    //fclose(fopen("c:\\cp-initinstance.txt", "w"));
-
-    //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-
+    // Create the main window.
     m_pMainWnd = new MainWindow;
     m_pMainWnd->ShowWindow(m_nCmdShow);
     m_pMainWnd->UpdateWindow();
@@ -146,13 +138,7 @@ MyApp::InitInstance(void)
     return TRUE;
 }
 
-/*
- * Show where we got something from.  Handy for checking DLL load locations.
- *
- * If "name" is NULL, we show the EXE info.
- */
-void
-MyApp::LogModuleLocation(const WCHAR* name)
+void MyApp::LogModuleLocation(const WCHAR* name)
 {
     HMODULE hModule;
     WCHAR fileNameBuf[256];
@@ -167,11 +153,7 @@ MyApp::LogModuleLocation(const WCHAR* name)
     }
 }
 
-/*
- * Do some idle processing.
- */
-BOOL
-MyApp::OnIdle(LONG lCount)
+BOOL MyApp::OnIdle(LONG lCount)
 {
     BOOL bMore = CWinApp::OnIdle(lCount);
 

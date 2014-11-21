@@ -9,7 +9,6 @@
 #ifndef APP_ABOUTDIALOG_H
 #define APP_ABOUTDIALOG_H
 
-//#include <afxwin.h>
 #include "resource.h"
 
 /*
@@ -23,12 +22,17 @@ public:
         {}
 
 protected:
-    // overrides
-    virtual BOOL OnInitDialog(void);
+    /*
+     * Update the static strings with DLL version numbers.
+     */
+    virtual BOOL OnInitDialog(void) override;
 
+    /*
+     * User hit the "Credits" button.
+     */
     afx_msg void OnAboutCredits(void);
-    afx_msg void OnEnterReg(void);
 
+    //afx_msg void OnEnterReg(void);
     //void ShowRegistrationInfo(void);
 
     DECLARE_MESSAGE_MAP()

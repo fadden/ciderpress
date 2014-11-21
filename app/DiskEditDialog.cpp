@@ -45,11 +45,7 @@ BEGIN_MESSAGE_MAP(DiskEditDialog, CDialog)
     ON_WM_HELPINFO()
 END_MESSAGE_MAP()
 
-/*
- * Initialize the controls.
- */
-BOOL
-DiskEditDialog::OnInitDialog(void)
+BOOL DiskEditDialog::OnInitDialog(void)
 {
     ASSERT(!fFileName.IsEmpty());
     ASSERT(fpDiskFS != NULL);
@@ -144,11 +140,7 @@ DiskEditDialog::OnInitDialog(void)
     return TRUE;
 }
 
-/*
- * Initialize the nibble parm drop-list.
- */
-void
-DiskEditDialog::InitNibbleParmList(void)
+void DiskEditDialog::InitNibbleParmList(void)
 {
     ASSERT(fpDiskFS != NULL);
     DiskImg* pDiskImg = fpDiskFS->GetDiskImg();
@@ -204,12 +196,7 @@ DiskEditDialog::InitNibbleParmList(void)
     }
 }
 
-
-/*
- * Replace a spin button with our improved version.
- */
-int
-DiskEditDialog::ReplaceSpinCtrl(MySpinCtrl* pNewSpin, int idSpin, int idEdit)
+int DiskEditDialog::ReplaceSpinCtrl(MySpinCtrl* pNewSpin, int idSpin, int idEdit)
 {
     CSpinButtonCtrl* pSpin;
 //  CRect rect;
@@ -231,11 +218,7 @@ DiskEditDialog::ReplaceSpinCtrl(MySpinCtrl* pNewSpin, int idSpin, int idEdit)
     return 0;
 }
 
-/*
- * Special keypress handling.
- */
-BOOL
-DiskEditDialog::PreTranslateMessage(MSG* pMsg)
+BOOL DiskEditDialog::PreTranslateMessage(MSG* pMsg)
 {
     if (pMsg->message == WM_KEYDOWN &&
          pMsg->wParam == VK_RETURN)
@@ -248,12 +231,7 @@ DiskEditDialog::PreTranslateMessage(MSG* pMsg)
     return CDialog::PreTranslateMessage(pMsg);
 }
 
-/*
- * F1 key hit, or '?' button in title bar used to select help for an
- * item in the dialog.
- */
-BOOL
-DiskEditDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL DiskEditDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     LOGI("HELP: size=%d contextType=%d ctrlID=0x%x contextID=0x%08lx",
         lpHelpInfo->cbSize, lpHelpInfo->iContextType, lpHelpInfo->iCtrlId,
@@ -276,31 +254,18 @@ DiskEditDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
     return TRUE;    // indicate success??
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-DiskEditDialog::OnHelp(void)
+void DiskEditDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_DISKEDIT, HELP_CONTEXT);
 }
 
-/*
- * Handle the "Done" button.  We don't use IDOK because we don't want
- * <return> to bail out of the dialog.
- */
-void
-DiskEditDialog::OnDone(void)
+void DiskEditDialog::OnDone(void)
 {
     LOGI("DiskEditDialog OnDone");
     EndDialog(IDOK);
 }
 
-/*
- * Toggle the spin button / edit controls.
- */
-void
-DiskEditDialog::OnHexMode(void)
+void DiskEditDialog::OnHexMode(void)
 {
     int base;
 
@@ -316,11 +281,7 @@ DiskEditDialog::OnHexMode(void)
     SetSpinMode(IDC_DISKEDIT_SECTORSPIN, base);
 }
 
-/*
- * Create a new instance of the disk edit dialog, for a sub-volume.
- */
-void
-DiskEditDialog::OnSubVolume(void)
+void DiskEditDialog::OnSubVolume(void)
 {
     SubVolumeDialog subv(this);
     bool showAsBlocks;
@@ -353,14 +314,7 @@ DiskEditDialog::OnSubVolume(void)
     }
 }
 
-/*
- * Change the mode of a spin button.  The Windows control doesn't
- * immediately update with a hex display, so we do it manually.  (Our
- * replacement class does this correctly, but I'm leaving the code alone
- * for now.)
- */
-void
-DiskEditDialog::SetSpinMode(int id, int base)
+void DiskEditDialog::SetSpinMode(int id, int base)
 {
     CString valStr;
 
@@ -389,14 +343,7 @@ DiskEditDialog::SetSpinMode(int id, int base)
     LOGI("Set spin button base to %d val=%d", base, val);
 }
 
-/*
- * Read a value from a spin control.
- *
- * Returns 0 on success, -1 if the return value from the spin control was
- * invalid.  In the latter case, an error dialog will be displayed.
- */
-int
-DiskEditDialog::ReadSpinner(int id, long* pVal)
+int DiskEditDialog::ReadSpinner(int id, long* pVal)
 {
     MySpinCtrl* pSpin = (MySpinCtrl*) GetDlgItem(id);
     ASSERT(pSpin != NULL);
@@ -419,11 +366,7 @@ DiskEditDialog::ReadSpinner(int id, long* pVal)
     return 0;
 }
 
-/*
- * Set the value of a spin control.
- */
-void
-DiskEditDialog::SetSpinner(int id, long val)
+void DiskEditDialog::SetSpinner(int id, long val)
 {
     MySpinCtrl* pSpin = (MySpinCtrl*) GetDlgItem(id);
     ASSERT(pSpin != NULL);
@@ -436,11 +379,7 @@ DiskEditDialog::SetSpinner(int id, long val)
     pSpin->SetPos(val);
 }
 
-/*
- * Convert a chunk of data into a hex dump, and stuff it into the edit control.
- */
-void
-DiskEditDialog::DisplayData(const uint8_t* srcBuf, int size)
+void DiskEditDialog::DisplayData(const uint8_t* srcBuf, int size)
 {
     WCHAR textBuf[80 * 16 * 2];
     WCHAR* cp;
@@ -517,11 +456,7 @@ DiskEditDialog::DisplayData(const uint8_t* srcBuf, int size)
     pEdit->SetWindowText(textBuf);
 }
 
-/*
- * Display a track full of nibble data.
- */
-void
-DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
+void DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
 {
     ASSERT(srcBuf != NULL);
     ASSERT(size > 0);
@@ -595,17 +530,8 @@ DiskEditDialog::DisplayNibbleData(const unsigned char* srcBuf, int size)
     delete[] textBuf;
 }
 
-
-/*
- * Open a file in a disk image.
- *
- * Returns a pointer to the A2File and A2FileDescr structures on success, NULL
- * on failure.  The pointer placed in "ppOpenFile" must be freed by invoking
- * its Close function.
- */
-DIError
-DiskEditDialog::OpenFile(const WCHAR* fileName, bool openRsrc, A2File** ppFile,
-    A2FileDescr** ppOpenFile)
+DIError DiskEditDialog::OpenFile(const WCHAR* fileName, bool openRsrc,
+    A2File** ppFile, A2FileDescr** ppOpenFile)
 {
     A2File* pFile;
     A2FileDescr* pOpenFile = NULL;
@@ -640,14 +566,7 @@ DiskEditDialog::OpenFile(const WCHAR* fileName, bool openRsrc, A2File** ppFile,
     return kDIErrNone;
 }
 
-
-/*
- * Change the nibble parms.
- *
- * Assumes the parm list is linear and unbroken.
- */
-void
-DiskEditDialog::OnNibbleParms(void)
+void DiskEditDialog::OnNibbleParms(void)
 {
     DiskImg* pDiskImg = fpDiskFS->GetDiskImg();
     CComboBox* pCombo;
@@ -703,11 +622,7 @@ DiskEditDialog::FillWithPattern(unsigned char* buf, int size,
  * ===========================================================================
  */
 
-/*
- * Prep the dialog.
- */
-BOOL
-SectorEditDialog::OnInitDialog(void)
+BOOL SectorEditDialog::OnInitDialog(void)
 {
     /*
      * Do base-class construction.
@@ -747,13 +662,7 @@ SectorEditDialog::OnInitDialog(void)
     return TRUE;
 }
 
-/*
- * Load the current track/sector data into the edit control.
- *
- * Returns 0 on success, -1 on error.
- */
-int
-SectorEditDialog::LoadData(void)
+int SectorEditDialog::LoadData(void)
 {
     //LOGI("SED LoadData");
     ASSERT(fpDiskFS != NULL);
@@ -785,29 +694,17 @@ SectorEditDialog::LoadData(void)
     return 0;
 }
 
-/*
- * Read the currently specified track/sector.
- */
-void
-SectorEditDialog::OnDoRead(void)
+void SectorEditDialog::OnDoRead(void)
 {
     LoadData();
 }
 
-/*
- * Write the currently loaded track/sector.
- */
-void
-SectorEditDialog::OnDoWrite(void)
+void SectorEditDialog::OnDoWrite(void)
 {
     MessageBox(L"Write!");
 }
 
-/*
- * Back up to the previous track/sector.
- */
-void
-SectorEditDialog::OnReadPrev(void)
+void SectorEditDialog::OnReadPrev(void)
 {
     if (fTrack == 0 && fSector == 0)
         return;
@@ -825,11 +722,7 @@ SectorEditDialog::OnReadPrev(void)
     LoadData();
 }
 
-/*
- * Same as OnReadPrev, but moving forward.
- */
-void
-SectorEditDialog::OnReadNext(void)
+void SectorEditDialog::OnReadNext(void)
 {
     int numTracks = fpDiskFS->GetDiskImg()->GetNumTracks();
     int numSects = fpDiskFS->GetDiskImg()->GetNumSectPerTrack();
@@ -850,13 +743,7 @@ SectorEditDialog::OnReadNext(void)
     LoadData();
 }
 
-
-/*
- * Open a file on the disk image.  If successful, open a new edit dialog
- * that's in "file follow" mode.
- */
-void
-SectorEditDialog::OnOpenFile(void)
+void SectorEditDialog::OnOpenFile(void)
 {
     DEFileDialog fileDialog(this);
 
@@ -887,11 +774,7 @@ SectorEditDialog::OnOpenFile(void)
  * ===========================================================================
  */
 
-/*
- * Minor changes for file editing.
- */
-BOOL
-SectorFileEditDialog::OnInitDialog(void)
+BOOL SectorFileEditDialog::OnInitDialog(void)
 {
     BOOL retval;
 
@@ -933,13 +816,7 @@ SectorFileEditDialog::OnInitDialog(void)
     return retval;
 }
 
-/*
- * Load data from the current offset into the edit control.
- *
- * Returns 0 on success, -1 on error.
- */
-int
-SectorFileEditDialog::LoadData(void)
+int SectorFileEditDialog::LoadData(void)
 {
     ASSERT(fpDiskFS != NULL);
     ASSERT(fpDiskFS->GetDiskImg() != NULL);
@@ -1037,11 +914,7 @@ SectorFileEditDialog::LoadData(void)
     return 0;
 }
 
-/*
- * Move to the previous sector in the file.
- */
-void
-SectorFileEditDialog::OnReadPrev(void)
+void SectorFileEditDialog::OnReadPrev(void)
 {
     if (fSectorIdx == 0)
         return;
@@ -1051,11 +924,7 @@ SectorFileEditDialog::OnReadPrev(void)
     LoadData();
 }
 
-/*
- * Move to the next sector in the file.
- */
-void
-SectorFileEditDialog::OnReadNext(void)
+void SectorFileEditDialog::OnReadNext(void)
 {
     if (fSectorIdx+1 >= fpOpenFile->GetSectorCount())
         return;
@@ -1076,8 +945,7 @@ SectorFileEditDialog::OnReadNext(void)
  * Rearrange the DiskEdit dialog (which defaults to SectorEdit mode) to
  * accommodate block editing.
  */
-BOOL
-BlockEditDialog::OnInitDialog(void)
+BOOL BlockEditDialog::OnInitDialog(void)
 {
     /*
      * Get rid of the "sector" input item, and change the "track" input
@@ -1173,11 +1041,7 @@ BlockEditDialog::MoveControl(int id, int deltaX, int deltaY)
 #endif
 
 
-/*
- * Load the current block data into the edit control.
- */
-int
-BlockEditDialog::LoadData(void)
+int BlockEditDialog::LoadData(void)
 {
     //LOGI("BED LoadData");
     ASSERT(fpDiskFS != NULL);
@@ -1207,30 +1071,17 @@ BlockEditDialog::LoadData(void)
     return 0;
 }
 
-/*
- * Read the currently specified track/sector.
- */
-void
-BlockEditDialog::OnDoRead(void)
+void BlockEditDialog::OnDoRead(void)
 {
     LoadData();
 }
 
-/*
- * Write the currently loaded track/sector.
- */
-void
-BlockEditDialog::OnDoWrite(void)
+void BlockEditDialog::OnDoWrite(void)
 {
     MessageBox(L"Write!");
 }
 
-/*
- * Back up to the previous track/sector, or (in follow-file mode) to the
- * previous sector in the file.
- */
-void
-BlockEditDialog::OnReadPrev(void)
+void BlockEditDialog::OnReadPrev(void)
 {
     if (fBlock == 0)
         return;
@@ -1240,9 +1091,6 @@ BlockEditDialog::OnReadPrev(void)
     LoadData();
 }
 
-/*
- * Same as OnReadPrev, but moving forward.
- */
 void
 BlockEditDialog::OnReadNext(void)
 {
@@ -1255,12 +1103,7 @@ BlockEditDialog::OnReadNext(void)
     LoadData();
 }
 
-/*
- * Open a file on the disk image.  If successful, open a new edit dialog
- * that's in "file follow" mode.
- */
-void
-BlockEditDialog::OnOpenFile(void)
+void BlockEditDialog::OnOpenFile(void)
 {
     DEFileDialog fileDialog(this);
 
@@ -1291,11 +1134,7 @@ BlockEditDialog::OnOpenFile(void)
  * ===========================================================================
  */
 
-/*
- * Minor changes for file editing.
- */
-BOOL
-BlockFileEditDialog::OnInitDialog(void)
+BOOL BlockFileEditDialog::OnInitDialog(void)
 {
     BOOL retval;
 
@@ -1331,13 +1170,7 @@ BlockFileEditDialog::OnInitDialog(void)
     return retval;
 }
 
-/*
- * Load data from the current offset into the edit control.
- *
- * Returns 0 on success, -1 on error.
- */
-int
-BlockFileEditDialog::LoadData(void)
+int BlockFileEditDialog::LoadData(void)
 {
     ASSERT(fpDiskFS != NULL);
     ASSERT(fpDiskFS->GetDiskImg() != NULL);
@@ -1432,11 +1265,7 @@ BlockFileEditDialog::LoadData(void)
     return 0;
 }
 
-/*
- * Move to the previous Block in the file.
- */
-void
-BlockFileEditDialog::OnReadPrev(void)
+void BlockFileEditDialog::OnReadPrev(void)
 {
     if (fBlockIdx == 0)
         return;
@@ -1446,11 +1275,7 @@ BlockFileEditDialog::OnReadPrev(void)
     LoadData();
 }
 
-/*
- * Move to the next Block in the file.
- */
-void
-BlockFileEditDialog::OnReadNext(void)
+void BlockFileEditDialog::OnReadNext(void)
 {
     if (fBlockIdx+1 >= fpOpenFile->GetBlockCount())
         return;
@@ -1467,12 +1292,7 @@ BlockFileEditDialog::OnReadNext(void)
  * ===========================================================================
  */
 
-/*
- * Rearrange the DiskEdit dialog (which defaults to SectorEdit mode) to
- * accommodate nibble editing.
- */
-BOOL
-NibbleEditDialog::OnInitDialog(void)
+BOOL NibbleEditDialog::OnInitDialog(void)
 {
     /*
      * Get rid of the "sector" input item.
@@ -1566,11 +1386,7 @@ NibbleEditDialog::OnInitDialog(void)
     return TRUE;
 }
 
-/*
- * Load the current track data into the edit control.
- */
-int
-NibbleEditDialog::LoadData(void)
+int NibbleEditDialog::LoadData(void)
 {
     //LOGI("BED LoadData");
     ASSERT(fpDiskFS != NULL);
@@ -1595,30 +1411,17 @@ NibbleEditDialog::LoadData(void)
     return 0;
 }
 
-/*
- * Read the currently specified track/sector.
- */
-void
-NibbleEditDialog::OnDoRead(void)
+void NibbleEditDialog::OnDoRead(void)
 {
     LoadData();
 }
 
-/*
- * Write the currently loaded track/sector.
- */
-void
-NibbleEditDialog::OnDoWrite(void)
+void NibbleEditDialog::OnDoWrite(void)
 {
     MessageBox(L"Write!");
 }
 
-/*
- * Back up to the previous track/sector, or (in follow-file mode) to the
- * previous sector in the file.
- */
-void
-NibbleEditDialog::OnReadPrev(void)
+void NibbleEditDialog::OnReadPrev(void)
 {
     if (fTrack == 0)
         return;
@@ -1628,11 +1431,7 @@ NibbleEditDialog::OnReadPrev(void)
     LoadData();
 }
 
-/*
- * Same as OnReadPrev, but moving forward.
- */
-void
-NibbleEditDialog::OnReadNext(void)
+void NibbleEditDialog::OnReadNext(void)
 {
     ASSERT(fpDiskFS != NULL);
     if (fTrack == fpDiskFS->GetDiskImg()->GetNumTracks() - 1)

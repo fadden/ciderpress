@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for EditAssocDialog.
- */
 #include "stdafx.h"
 #include "EditAssocDialog.h"
 #include "MyApp.h"
@@ -24,11 +21,7 @@ END_MESSAGE_MAP()
       INDEXTOSTATEIMAGEMASK((fCheck)+1), LVIS_STATEIMAGEMASK)
 #endif
 
-/*
- * Tweak the controls.
- */
-BOOL
-EditAssocDialog::OnInitDialog(void)
+BOOL EditAssocDialog::OnInitDialog(void)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
 
@@ -59,18 +52,9 @@ EditAssocDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * Load the list view control.
- *
- * This list isn't sorted, so we don't need to stuff anything into lParam to
- * keep the list and source data tied.
- *
- * If "loadAssoc" is true, we also populate the fOurAssocations table.
- */
-void
-EditAssocDialog::Setup(bool loadAssoc)
+void EditAssocDialog::Setup(bool loadAssoc)
 {
-    LOGI("Setup!");
+    LOGD("Setup!");
 
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
     ASSERT(pListView != NULL);
@@ -107,11 +91,7 @@ EditAssocDialog::Setup(bool loadAssoc)
     //DeleteAllItems(); // for Reload case
 }
 
-/*
- * Copy state in and out of dialog.
- */
-void
-EditAssocDialog::DoDataExchange(CDataExchange* pDX)
+void EditAssocDialog::DoDataExchange(CDataExchange* pDX)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_ASSOCIATION_LIST);
 
@@ -140,20 +120,12 @@ EditAssocDialog::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-EditAssocDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL EditAssocDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     return ShowContextHelp(this, lpHelpInfo);
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-EditAssocDialog::OnHelp(void)
+void EditAssocDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_EDIT_ASSOC, HELP_CONTEXT);
 }

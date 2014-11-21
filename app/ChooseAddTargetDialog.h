@@ -35,8 +35,13 @@ public:
     DiskImgLib::A2File* fpChosenSubdir;
 
 private:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    /*
+     * Initialize the dialog box.  This requires scanning the provided disk
+     * archive.
+     */
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
+
     afx_msg void OnHelp(void);
 
     DiskFSTree      fDiskFSTree;

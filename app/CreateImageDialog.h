@@ -52,14 +52,27 @@ public:
     long    fNumBlocks;     // computed when DoModal finishes
 
 private:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
-//  BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+//  afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
+    /*
+     * When the user chooses a format, enable and disable controls as
+     * appropriate.
+     */
     afx_msg void OnFormatChangeRange(UINT nID);
+
+    /*
+     * When one of the radio buttons is clicked on, update the active status
+     * and contents of the "specify size" edit box.
+     */
     afx_msg void OnSizeChangeRange(UINT nID);
+
+    // Context help (question mark).
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+
+    // Dialog help ("help" button).
     afx_msg void OnHelp(void);
 
     bool IsValidVolumeName_DOS(const WCHAR* name);

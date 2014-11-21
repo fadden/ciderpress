@@ -49,7 +49,15 @@ public:
     virtual int LoadData(void) = 0;
 
     virtual void DisplayData(void) = 0;
+
+    /*
+     * Convert a chunk of data into a hex dump, and stuff it into the edit control.
+     */
     virtual void DisplayData(const uint8_t* buf, int size);
+
+    /*
+     * Display a track full of nibble data.
+     */
     virtual void DisplayNibbleData(const uint8_t* srcBuf, int size);
 
     bool GetReadOnly(void) const { return fReadOnly; }
@@ -72,28 +80,72 @@ protected:
             return ch & 0x7f;
     }
 
-    // overrides
-    virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void) override;
 
-    afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    // catch <return> key
+    virtual BOOL PreTranslateMessage(MSG* pMsg) override;
+
+    /*
+     * Handle the "Done" button.  We don't use IDOK because we don't want
+     * <return> to bail out of the dialog.
+     */
     afx_msg virtual void OnDone(void);
+
+     /*
+      * Toggle the spin button / edit controls.
+      */
     afx_msg virtual void OnHexMode(void);
+
     afx_msg virtual void OnDoRead(void) = 0;
     afx_msg virtual void OnDoWrite(void) = 0;
     afx_msg virtual void OnReadPrev(void) = 0;
     afx_msg virtual void OnReadNext(void) = 0;
+
+    /*
+     * Create a new instance of the disk edit dialog, for a sub-volume.
+     */
     afx_msg virtual void OnSubVolume(void);
+
     afx_msg virtual void OnOpenFile(void) = 0;
+
+    /*
+     * Change the nibble parms.
+     *
+     * Assumes the parm list is linear and unbroken.
+     */
     afx_msg virtual void OnNibbleParms(void);
+
     afx_msg virtual void OnHelp(void);
+    afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-
+    /*
+     * Change the mode of a spin button.  The Windows control doesn't
+     * immediately update with a hex display, so we do it manually.  (Our
+     * replacement class does this correctly, but I'm leaving the code alone
+     * for now.)
+     */
     void SetSpinMode(int id, int base);
+
+    /*
+     * Read a value from a spin control.
+     *
+     * Returns 0 on success, -1 if the return value from the spin control was
+     * invalid.  In the latter case, an error dialog will be displayed.
+     */
     int ReadSpinner(int id, long* pVal);
+
+    /*
+     * Set the value of a spin control.
+     */
     void SetSpinner(int id, long val);
 
-    //void FillWithPattern(unsigned char* buf, int size, const char* pattern);
+    /*
+     * Open a file in a disk image.
+     *
+     * Returns a pointer to the A2File and A2FileDescr structures on success, NULL
+     * on failure.  The pointer placed in "ppOpenFile" must be freed by invoking
+     * its Close function.
+     */
     DIError OpenFile(const WCHAR* fileName, bool openRsrc, A2File** ppFile,
         A2FileDescr** ppOpenFile);
 
@@ -104,8 +156,16 @@ protected:
     int         fPositionShift;
 
 private:
+    /*
+     * Initialize the nibble parm drop-list.
+     */
     void InitNibbleParmList(void);
+
+    /*
+     * Replace a spin button with our improved version.
+     */
     int ReplaceSpinCtrl(MySpinCtrl* pNewSpin, int idSpin, int idEdit);
+
     MySpinCtrl  fTrackSpinner;
     MySpinCtrl  fSectorSpinner;
     bool        fFirstResize;
@@ -129,22 +189,34 @@ public:
     }
     virtual ~SectorEditDialog() {}
 
-    virtual int LoadData(void);     // load the current track/sector
-    virtual void DisplayData(void) {
+    virtual int LoadData(void) override;    // load the current track/sector
+    virtual void DisplayData(void) override {
         DiskEditDialog::DisplayData(fSectorData, kSectorSize);
     }
 
     //void SetTrack(int val) { fTrack = val; }
     //void SetSector(int val) { fSector = val; }
 
-    // overrides
-    virtual BOOL OnInitDialog(void);
-
 protected:
+    virtual BOOL OnInitDialog(void) override;
+
     afx_msg virtual void OnDoRead(void);
     afx_msg virtual void OnDoWrite(void);
+
+    /*
+     * Back up to the previous track/sector.
+     */
     afx_msg virtual void OnReadPrev(void);
+
+    /*
+     * Advance to the next track/sector.
+     */
     afx_msg virtual void OnReadNext(void);
+
+    /*
+     * Open a file on the disk image.  If successful, open a new edit dialog
+     * that's in "file follow" mode.
+     */
     afx_msg virtual void OnOpenFile(void);
 
     long        fTrack;
@@ -211,21 +283,32 @@ public:
     }
     virtual ~BlockEditDialog() {}
 
-    virtual int LoadData(void);     // load the current block
-    virtual void DisplayData(void) {
+    virtual int LoadData(void) override;    // load the current block
+    virtual void DisplayData(void) override {
         DiskEditDialog::DisplayData(fBlockData, kBlockSize);
     }
 
-    // overrides
-    virtual BOOL OnInitDialog(void);
-
 protected:
-    //void MoveControl(int id, int deltaX, int deltaY);
+    virtual BOOL OnInitDialog(void) override;
 
     afx_msg virtual void OnDoRead(void);
     afx_msg virtual void OnDoWrite(void);
+
+    /*
+     * Back up to the previous track/sector, or (in follow-file mode) to the
+     * previous sector in the file.
+     */
     afx_msg virtual void OnReadPrev(void);
+
+    /*
+     * Same as OnReadPrev, but moving forward.
+     */
     afx_msg virtual void OnReadNext(void);
+
+    /*
+     * Open a file on the disk image.  If successful, open a new edit dialog
+     * that's in "file follow" mode.
+     */
     afx_msg virtual void OnOpenFile(void);
 
     long        fBlock;
@@ -266,7 +349,14 @@ private:
     // overrides
     virtual BOOL OnInitDialog(void);
 
+    /*
+     * Move to the previous Block in the file.
+     */
     afx_msg virtual void OnReadPrev(void);
+
+    /*
+     * Move to the next Block in the file.
+     */
     afx_msg virtual void OnReadNext(void);
 
     CString     fOpenFileName;
@@ -291,15 +381,18 @@ public:
     }
     virtual ~NibbleEditDialog() {}
 
-    virtual int LoadData(void);     // load the current track/sector
-    virtual void DisplayData(void) {
+    virtual int LoadData(void) override;    // load the current track/sector
+    virtual void DisplayData(void) override {
         DiskEditDialog::DisplayNibbleData(fNibbleData, fNibbleDataLen);
     }
 
-    // overrides
-    virtual BOOL OnInitDialog(void);
-
 protected:
+    /*
+     * Rearrange the DiskEdit dialog (which defaults to SectorEdit mode) to
+     * accommodate nibble editing.
+     */
+    virtual BOOL OnInitDialog(void) override;
+
     afx_msg virtual void OnDoRead(void);
     afx_msg virtual void OnDoWrite(void);
     afx_msg virtual void OnReadPrev(void);

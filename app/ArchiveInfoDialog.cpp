@@ -21,11 +21,7 @@ BEGIN_MESSAGE_MAP(ArchiveInfoDialog, CDialog)
     ON_COMMAND(IDHELP, OnHelp)
 END_MESSAGE_MAP()
 
-/*
- * Show general help for the archive info dialogs.
- */
-void
-ArchiveInfoDialog::OnHelp(void)
+void ArchiveInfoDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_ARCHIVE_INFO, HELP_CONTEXT);
 }
@@ -37,11 +33,7 @@ ArchiveInfoDialog::OnHelp(void)
  * ===========================================================================
  */
 
- /*
- * Set up fields with NuFX archive info.
- */
-BOOL
-NufxArchiveInfoDialog::OnInitDialog(void)
+BOOL NufxArchiveInfoDialog::OnInitDialog(void)
 {
     CString notAvailable = "(not available)";
     NuArchive* pNuArchive;
@@ -122,11 +114,7 @@ BEGIN_MESSAGE_MAP(DiskArchiveInfoDialog, ArchiveInfoDialog)
     ON_CBN_SELCHANGE(IDC_AIDISK_SUBVOLSEL, OnSubVolSelChange)
 END_MESSAGE_MAP()
 
-/*
- * Set up fields with disk archive info.
- */
-BOOL
-DiskArchiveInfoDialog::OnInitDialog(void)
+BOOL DiskArchiveInfoDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
     CString tmpStr;
@@ -192,12 +180,8 @@ DiskArchiveInfoDialog::OnInitDialog(void)
     return ArchiveInfoDialog::OnInitDialog();
 }
 
-/*
- * Recursively add sub-volumes to the list.
- */
-void
-DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS, const WCHAR* prefix,
-    int* pIdx)
+void DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS,
+    const WCHAR* prefix, int* pIdx)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_AIDISK_SUBVOLSEL);
     CString tmpStr;
@@ -225,11 +209,7 @@ DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS, const WCHAR* prefix,
     }
 }
 
-/*
- * The user has changed their selection in the sub-volume pulldown menu.
- */
-void
-DiskArchiveInfoDialog::OnSubVolSelChange(void)
+void DiskArchiveInfoDialog::OnSubVolSelChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_AIDISK_SUBVOLSEL);
     ASSERT(pCombo != NULL);
@@ -241,11 +221,7 @@ DiskArchiveInfoDialog::OnSubVolSelChange(void)
     FillInVolumeInfo(pDiskFS);
 }
 
-/*
- * Fill in the volume-specific info fields.
- */
-void
-DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
+void DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
 {
     const DiskImg* pDiskImg = pDiskFS->GetDiskImg();
     CString unknown = L"(unknown)";
@@ -356,11 +332,7 @@ DiskArchiveInfoDialog::FillInVolumeInfo(const DiskFS* pDiskFS)
     pWnd->SetWindowText(tmpStr);
 }
 
-/*
- * Reduce a size to something meaningful (KB, MB, GB).
- */
-void
-DiskArchiveInfoDialog::GetReducedSize(long numUnits, int unitSize,
+void DiskArchiveInfoDialog::GetReducedSize(long numUnits, int unitSize,
     CString* pOut) const
 {
     LONGLONG sizeInBytes = numUnits;
@@ -391,13 +363,7 @@ DiskArchiveInfoDialog::GetReducedSize(long numUnits, int unitSize,
  * ===========================================================================
  */
 
-/*
- * Set up fields with Binary II info.
- *
- * Binary II files are pretty dull.
- */
-BOOL
-BnyArchiveInfoDialog::OnInitDialog(void)
+BOOL BnyArchiveInfoDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
     CString tmpStr;
@@ -420,11 +386,7 @@ BnyArchiveInfoDialog::OnInitDialog(void)
  * ===========================================================================
  */
 
-/*
- * Set up fields with ACU info.
- */
-BOOL
-AcuArchiveInfoDialog::OnInitDialog(void)
+BOOL AcuArchiveInfoDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
     CString tmpStr;

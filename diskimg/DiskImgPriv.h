@@ -49,7 +49,7 @@ namespace DiskImgLib {
 /*
  * Standard goodies.
  */
-#define NELEM(x) ((int) (sizeof(x) / sizeof(x[0])))
+#define NELEM(x) (sizeof(x) / sizeof(x[0]))
 
 #define ErrnoOrGeneric() (errno != 0 ? (DIError) errno : kDIErrGeneric)
 
@@ -60,25 +60,25 @@ const char* FindExtension(const char* pathname, char fssep);
 char* StrcpyNew(const char* str);
 
 /* get/set integer values out of a memory buffer */
-unsigned short GetShortLE(const unsigned char* buf);
-unsigned long GetLongLE(const unsigned char* buf);
-unsigned short GetShortBE(const unsigned char* buf);
-unsigned long GetLongBE(const unsigned char* buf);
-unsigned long Get24BE(const unsigned char* ptr);
-void PutShortLE(unsigned char* ptr, unsigned short val);
-void PutLongLE(unsigned char* ptr, unsigned long val);
-void PutShortBE(unsigned char* ptr, unsigned short val);
-void PutLongBE(unsigned char* ptr, unsigned long val);
+uint16_t GetShortLE(const uint8_t* buf);
+uint32_t GetLongLE(const uint8_t* buf);
+uint16_t GetShortBE(const uint8_t* buf);
+uint32_t GetLongBE(const uint8_t* buf);
+uint32_t Get24BE(const uint8_t* ptr);
+void PutShortLE(uint8_t* ptr, uint16_t val);
+void PutLongLE(uint8_t* ptr, uint32_t val);
+void PutShortBE(uint8_t* ptr, uint16_t val);
+void PutLongBE(uint8_t* ptr, uint32_t val);
 
 /* little-endian read/write, for file headers (mainly 2MG and DC42) */
-DIError ReadShortLE(GenericFD* pGFD, short* pBuf);
-DIError ReadLongLE(GenericFD* pGFD, long* pBuf);
-DIError WriteShortLE(FILE* fp, unsigned short val);
-DIError WriteLongLE(FILE* fp, unsigned long val);
-DIError WriteShortLE(GenericFD* pGFD, unsigned short val);
-DIError WriteLongLE(GenericFD* pGFD, unsigned long val);
-DIError WriteShortBE(GenericFD* pGFD, unsigned short val);
-DIError WriteLongBE(GenericFD* pGFD, unsigned long val);
+DIError ReadShortLE(GenericFD* pGFD, uint16_t* pBuf);
+DIError ReadLongLE(GenericFD* pGFD, uint32_t* pBuf);
+DIError WriteShortLE(FILE* fp, uint16_t val);
+DIError WriteLongLE(FILE* fp, uint32_t val);
+DIError WriteShortLE(GenericFD* pGFD, uint16_t val);
+DIError WriteLongLE(GenericFD* pGFD, uint32_t val);
+DIError WriteShortBE(GenericFD* pGFD, uint16_t val);
+DIError WriteLongBE(GenericFD* pGFD, uint32_t val);
 
 #ifdef _WIN32
 /* Windows helpers */

@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for ConvDiskOptionsDialog.
- */
 #include "stdafx.h"
 #include "ConvDiskOptionsDialog.h"
 #include "NufxArchive.h"
@@ -27,14 +24,10 @@ BEGIN_MESSAGE_MAP(ConvDiskOptionsDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-
+// TODO: get this from DiskImgLib header?
 const int kProDOSVolNameMax = 15;   // longest possible ProDOS volume name
 
-/*
- * Set up our modified version of the "use selection" dialog.
- */
-BOOL
-ConvDiskOptionsDialog::OnInitDialog(void)
+BOOL ConvDiskOptionsDialog::OnInitDialog(void)
 {
     CEdit* pEdit = (CEdit*) GetDlgItem(IDC_CONVDISK_VOLNAME);
     ASSERT(pEdit != NULL);
@@ -50,11 +43,7 @@ ConvDiskOptionsDialog::OnInitDialog(void)
     return UseSelectionDialog::OnInitDialog();
 }
 
-/*
- * Convert values.
- */
-void
-ConvDiskOptionsDialog::DoDataExchange(CDataExchange* pDX)
+void ConvDiskOptionsDialog::DoDataExchange(CDataExchange* pDX)
 {
     UINT specifyBlocks = 280;
     CString errMsg;
@@ -99,12 +88,7 @@ ConvDiskOptionsDialog::DoDataExchange(CDataExchange* pDX)
     UseSelectionDialog::DoDataExchange(pDX);
 }
 
-/*
- * When one of the radio buttons is clicked on, update the active status
- * and contents of the "specify size" edit box.
- */
-void
-ConvDiskOptionsDialog::OnRadioChangeRange(UINT nID)
+void ConvDiskOptionsDialog::OnRadioChangeRange(UINT nID)
 {
     LOGI("OnChangeRange id=%d", nID);
 
@@ -115,25 +99,13 @@ ConvDiskOptionsDialog::OnRadioChangeRange(UINT nID)
     NewDiskSize::UpdateSpecifyEdit(this);
 }
 
-/*
- * Test a ProDOS filename for validity.
- */
-bool
-ConvDiskOptionsDialog::IsValidVolumeName_ProDOS(const WCHAR* name)
+bool ConvDiskOptionsDialog::IsValidVolumeName_ProDOS(const WCHAR* name)
 {
     CStringA nameA(name);
     return DiskImgLib::DiskFSProDOS::IsValidVolumeName(nameA);
 }
 
-
-/*
- * Enable all size radio buttons and reset the "size required" display.
- *
- * This should be invoked whenever the convert selection changes, and may be
- * called at any time.
- */
-void
-ConvDiskOptionsDialog::ResetSizeControls(void)
+void ConvDiskOptionsDialog::ResetSizeControls(void)
 {
     CWnd* pWnd;
     CString spaceReq;
@@ -155,14 +127,7 @@ ConvDiskOptionsDialog::ResetSizeControls(void)
     NewDiskSize::EnableButtons(this);
 }
 
-/*
- * Display the space requirements and disable radio button controls that are
- * for values that are too small.
- *
- * Pass in the number of blocks required on a 32MB ProDOS volume.
- */
-void
-ConvDiskOptionsDialog::LimitSizeControls(long totalBlocks, long blocksUsed)
+void ConvDiskOptionsDialog::LimitSizeControls(long totalBlocks, long blocksUsed)
 {
     LOGI("LimitSizeControls %ld %ld", totalBlocks, blocksUsed);
     LOGI("Full volume requires %ld bitmap blocks",
@@ -209,17 +174,7 @@ ConvDiskOptionsDialog::LimitSizeControls(long totalBlocks, long blocksUsed)
 #endif
 }
 
-
-/*
- * Compute the amount of space required for the files.  We use the result to
- * disable the controls that can't be used.
- *
- * We don't need to enable controls here, because the only way to change the
- * set of files is by flipping between "all" and "selected", and we can handle
- * that separately.
- */
-void
-ConvDiskOptionsDialog::OnCompute(void)
+void ConvDiskOptionsDialog::OnCompute(void)
 {
     MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
     const Preferences* pPreferences = GET_PREFERENCES();

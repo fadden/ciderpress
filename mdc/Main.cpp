@@ -326,13 +326,7 @@ MainWindow::ScanFiles(void)
         CString appName;
 
         appName.LoadString(IDS_APP_TITLE);
-#ifdef _DEBUG_LOG
-        doneMsg.Format(L"Processing completed.\r\n\r\n"
-                       "Output is in '%ls', log messages in '%ls'.",
-            (LPCWSTR) outPath, kDebugLog);
-#else
         doneMsg.Format(L"Processing completed.");
-#endif
         scanOpts.pProgress->MessageBox(doneMsg, appName, MB_OK|MB_ICONINFORMATION);
     }
 

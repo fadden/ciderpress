@@ -47,7 +47,7 @@ public:
     }
 
 private:
-    void OnOK(void) {
+    void OnOK(void) override {
         LOGI("Ignoring VolumeXferProgressDialog OnOK");
     }
 
@@ -59,12 +59,12 @@ private:
 };
 
 
-/*
- * Scan the source image.
- */
-BOOL
-VolumeCopyDialog::OnInitDialog(void)
+BOOL VolumeCopyDialog::OnInitDialog(void)
 {
+    /*
+     * Scan the source image.
+     */
+
     CRect rect;
 
     //this->GetWindowRect(&rect);
@@ -128,36 +128,31 @@ VolumeCopyDialog::OnInitDialog(void)
     return TRUE;
 }
 
-/*
- * We need to make sure we throw out the DiskFS we created before the modal
- * dialog exits.  This is necessary because we rely on an external DiskImg,
- * and create DiskFS objects that point to it.
- */
-void
-VolumeCopyDialog::OnOK(void)
+void VolumeCopyDialog::OnOK(void)
 {
+    /*
+     * We need to make sure we throw out the DiskFS we created before the modal
+     * dialog exits.  This is necessary because we rely on an external DiskImg,
+     * and create DiskFS objects that point to it.
+     */
     Cleanup();
     CDialog::OnOK();
 }
-void
-VolumeCopyDialog::OnCancel(void)
+
+void VolumeCopyDialog::OnCancel(void)
 {
     Cleanup();
     CDialog::OnCancel();
 }
-void
-VolumeCopyDialog::Cleanup(void)
+
+void VolumeCopyDialog::Cleanup(void)
 {
-    LOGI("  VolumeCopyDialog is done, cleaning up DiskFS");
+    LOGD("  VolumeCopyDialog is done, cleaning up DiskFS");
     delete fpDiskFS;
     fpDiskFS = NULL;
 }
 
-/*
- * Something changed in the list.  Update the buttons.
- */
-void
-VolumeCopyDialog::OnListChange(NMHDR*, LRESULT* pResult)
+void VolumeCopyDialog::OnListChange(NMHDR*, LRESULT* pResult)
 {
     //CRect rect;
     //this->GetWindowRect(&rect);
@@ -181,21 +176,19 @@ VolumeCopyDialog::OnListChange(NMHDR*, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * (Re-)scan the disk image and any sub-volumes.
- *
- * The top-level disk image should already have been analyzed and the
- * format overridden (if necessary).  We don't want to do it in here the
- * first time around because the "override" dialog screws up placement
- * of our dialog box.  I guess opening windows from inside OnInitDialog
- * isn't expected.  Annoying.  [Um, maybe we could call CenterWindow??
- * Actually, now I'm a little concerned about modal dialogs coming and
- * going while we're in OnInitDialog, because MainWindow is disabled and
- * we're not yet enabled. ++ATM]
- */
-void
-VolumeCopyDialog::ScanDiskInfo(bool scanTop)
+void VolumeCopyDialog::ScanDiskInfo(bool scanTop)
 {
+    /*
+     * The top-level disk image should already have been analyzed and the
+     * format overridden (if necessary).  We don't want to do it in here the
+     * first time around because the "override" dialog screws up placement
+     * of our dialog box.  I guess opening windows from inside OnInitDialog
+     * isn't expected.  Annoying.  [Um, maybe we could call CenterWindow??
+     * Actually, now I'm a little concerned about modal dialogs coming and
+     * going while we're in OnInitDialog, because MainWindow is disabled and
+     * we're not yet enabled. ++ATM]
+     */
+
     const Preferences* pPreferences = GET_PREFERENCES();
     MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
     DIError dierr;
@@ -289,12 +282,7 @@ VolumeCopyDialog::ScanDiskInfo(bool scanTop)
     return;
 }
 
-/*
- * When the focus changes, e.g. after dialog construction completes, see if
- * we have a modeless dialog lurking about.
- */
-LONG
-VolumeCopyDialog::OnDialogReady(UINT, LONG)
+LONG VolumeCopyDialog::OnDialogReady(UINT, LONG)
 {
     if (fpWaitDlg != NULL) {
         LOGI("OnDialogReady found active window, destroying");
@@ -304,16 +292,7 @@ VolumeCopyDialog::OnDialogReady(UINT, LONG)
     return 0;
 }
 
-/*
- * (Re-)load the volume and sub-volumes into the list.
- *
- * We currently only look at the first level of sub-volumes.  We're not
- * really set up to display a hierarchy in the list view.  Very few people
- * will ever need to access a sub-sub-volume in this way, so it's not
- * worth sorting it out.
- */
-void
-VolumeCopyDialog::LoadList(void)
+void VolumeCopyDialog::LoadList(void)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUMECOPYSEL_LIST);
     ASSERT(pListView != NULL);
@@ -343,11 +322,7 @@ VolumeCopyDialog::LoadList(void)
     } 
 }
 
-/*
- * Create an entry for a diskimg/diskfs pair.
- */
-void
-VolumeCopyDialog::AddToList(CListCtrl* pListView, DiskImg* pDiskImg,
+void VolumeCopyDialog::AddToList(CListCtrl* pListView, DiskImg* pDiskImg,
     DiskFS* pDiskFS, int* pIndex)
 {
     CString volName, format, sizeStr, blocksStr;
@@ -380,15 +355,7 @@ VolumeCopyDialog::AddToList(CListCtrl* pListView, DiskImg* pDiskImg,
     (*pIndex)++;
 }
 
-
-/*
- * Recover the DiskImg and DiskFS pointers for the volume or sub-volume
- * currently selected in the list.
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-VolumeCopyDialog::GetSelectedDisk(DiskImg** ppDiskImg, DiskFS** ppDiskFS)
+bool VolumeCopyDialog::GetSelectedDisk(DiskImg** ppDiskImg, DiskFS** ppDiskFS)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUMECOPYSEL_LIST);
     ASSERT(pListView != NULL);
@@ -414,22 +381,12 @@ VolumeCopyDialog::GetSelectedDisk(DiskImg** ppDiskImg, DiskFS** ppDiskFS)
     return true;
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-VolumeCopyDialog::OnHelp(void)
+void VolumeCopyDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_VOLUME_COPIER, HELP_CONTEXT);
 }
 
-
-/*
- * User pressed the "copy to file" button.  Copy the selected partition out to
- * a file on disk.
- */
-void
-VolumeCopyDialog::OnCopyToFile(void)
+void VolumeCopyDialog::OnCopyToFile(void)
 {
     VolumeXferProgressDialog* pProgressDialog = NULL;
     Preferences* pPreferences = GET_PREFERENCES_WR();
@@ -606,13 +563,7 @@ bail:
     return;
 }
 
-
-/*
- * User pressed the "copy from file" button.  Copy a file over the selected
- * partition.  We may need to reload the main window after this completes.
- */
-void
-VolumeCopyDialog::OnCopyFromFile(void)
+void VolumeCopyDialog::OnCopyFromFile(void)
 {
     VolumeXferProgressDialog* pProgressDialog = NULL;
     Preferences* pPreferences = GET_PREFERENCES_WR();

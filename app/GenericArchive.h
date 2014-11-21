@@ -4,7 +4,8 @@
  * See the file LICENSE for distribution terms.
  */
 /*
- * Generic Apple II archive handling.
+ * Generic Apple II archive handling.  In the beginning we only handled
+ * NuFX archives, and the code continues to reflect that heritage.
  *
  * These are abstract base classes.
  */
@@ -39,11 +40,11 @@ const int kFileTypeBAS = 0xfc;
  * Set of data allowed in file property "set file info" calls.
  */
 typedef struct FileProps {
-    unsigned long   fileType;
-    unsigned long   auxType;
-    unsigned long   access;
-    time_t          createWhen;
-    time_t          modWhen;
+    uint32_t    fileType;
+    uint32_t    auxType;
+    uint32_t    access;
+    time_t      createWhen;
+    time_t      modWhen;
 } FileProps;
 
 /*
@@ -148,9 +149,34 @@ public:
         kFeatureHasInvisibleFlag,
     } Feature;
 
-    // retrieve thread (or filesystem) data
+    /*
+     * Extract data from an archive (NuFX, disk image, etc).
+     *
+     * If "*ppText" is non-NULL, the data will be read into the pointed-to buffer
+     * so long as it's shorter than *pLength bytes.  The value in "*pLength"
+     * will be set to the actual length used.
+     *
+     * If "*ppText" is NULL, the uncompressed data will be placed into a buffer
+     * allocated with "new[]".
+     *
+     * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
+     * user, and -1 value on failure.  On failure, "*pErrMsg" holds an error
+     * message.
+     *
+     * "which" is an anonymous GenericArchive enum (e.g. "kDataThread").
+     */
     virtual int ExtractThreadToBuffer(int which, char** ppText, long* pLength,
         CString* pErrMsg) const = 0;
+
+    /*
+     * Extract data from a thread or disk file to a Windows file.  Since we're
+     * not copying to a buffer we can't assume that we're able to hold the
+     * entire file in memory all at once.
+     *
+     * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
+     * user, and -1 value on failure.  On failure, "*pMsg" holds an
+     * error message.
+     */
     virtual int ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
         ConvertHighASCII convHA, CString* pErrMsg) const = 0;
 
@@ -226,18 +252,48 @@ public:
     GenericEntry* GetNext(void) const { return fpNext; }
     void SetNext(GenericEntry* pEntry) { fpNext = pEntry; }
 
-    // Utility functions.
+    /*
+     * Get a string for this entry's filetype.
+     */
     const WCHAR* GetFileTypeString(void) const;
+
+    /*
+     * Check to see if this is a high-ASCII file.
+     */
     static bool CheckHighASCII(const uint8_t* buffer,
         unsigned long count);
 
+    /*
+     * Decide, based on the contents of the buffer, whether we should do an
+     * EOL conversion on the data.
+     *
+     * Returns kConvEOLOff or kConvEOLOn.
+     */
     static ConvertEOL DetermineConversion(const uint8_t* buffer,
         long count, EOLType* pSourceType, ConvertHighASCII* pConvHA);
+
+    /*
+     * Write data to a file, possibly converting EOL markers to Windows CRLF
+     * and stripping high ASCII.
+     *
+     * If "*pConv" is kConvertEOLAuto, this will try to auto-detect whether
+     * the input is a text file or not by scanning the input buffer.
+     *
+     * Ditto for "*pConvHA".
+     *
+     * "fp" is the output file, "buf" is the input, "len" is the buffer length.
+     * "*pLastCR" should initially be "false", and carried across invocations.
+     *
+     * Returns 0 on success, or an errno value on error.
+     */
     static int GenericEntry::WriteConvert(FILE* fp, const char* buf,
         size_t len, ConvertEOL* pConv, ConvertHighASCII* pConvHA,
         bool* pLastCR);
 
 protected:
+    /*
+     * Convert spaces to underscores, modifying the string.
+     */
     static void SpacesToUnderscores(WCHAR* buf);
 
 private:
@@ -303,12 +359,6 @@ public:
     virtual long GetNumEntries(void) const {
         return fNumEntries;
     }
-    //virtual GenericEntry* GetEntry(long num) {
-    //  ASSERT(num >= 0 && num < fNumEntries);
-    //  if (fEntryIndex == NULL)
-    //      CreateIndex();
-    //  return fEntryIndex[num];
-    //}
 
     typedef enum {
         kResultUnknown = 0,
@@ -353,10 +403,12 @@ public:
     // Do a bulk add.
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts) = 0;
-    // Do a disk add.
+
+    // Add a single disk to the archive.
     virtual bool AddDisk(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts) = 0;
-    // Create a subdirectory.
+
+    // Create a subdirectory with name newName in pParentEntry.
     virtual bool CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
         const WCHAR* newName) = 0;
 
@@ -368,6 +420,13 @@ public:
 
     // Rename a set of files.
     virtual bool RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet) = 0;
+
+    // Verify that a name is suitable.  Called by RenameEntryDialog and
+    // CreateSubdirDialog.
+    //
+    // Tests for context-specific syntax and checks for duplicates.
+    //
+    // Returns an empty string on success, or an error message on failure.
     virtual CString TestPathName(const GenericEntry* pGenericEntry,
         const CString& basePath, const CString& newName, char newFssep) const = 0;
 
@@ -381,26 +440,33 @@ public:
     virtual bool RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         const RecompressOptionsDialog* pRecompOpts) = 0;
 
-    // Transfer files out of this archive and into another.
+    // return result from XferSelection()
     typedef enum {
         kXferOK = 0, kXferFailed = 1, kXferCancelled = 2, kXferOutOfSpace = 3
     } XferStatus;
+
+    // Transfer selected files out of this archive and into another.
     virtual XferStatus XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         ActionProgressDialog* pActionProgress,
         const XferFileOptions* pXferOpts) = 0;
 
-    // Get, set, or delete the comment on an entry.
+    // Extract a comment from the archive, converting line terminators to CRLF.
     virtual bool GetComment(CWnd* pMsgWnd, const GenericEntry* pEntry,
         CString* pStr) = 0;
+
+    // Set a comment on an entry.
     virtual bool SetComment(CWnd* pMsgWnd, GenericEntry* pEntry,
         const CString& str) = 0;
+
+    // Delete the comment from the entry.
     virtual bool DeleteComment(CWnd* pMsgWnd, GenericEntry* pEntry) = 0;
 
-    // Set ProDOS file properties (e.g. file type, access flags).
+    // Set ProDOS file properties (file type, aux type, access flags).
     virtual bool SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
         const FileProps* pProps) = 0;
 
-    // Preferences have changed, update library state as needed.
+    // Preferences have changed, update library state as needed.  Also called
+    // the first time though.
     virtual void PreferencesChanged(void) = 0;
 
     // Determine an archive's capabilities.  This is specific to the object
@@ -422,11 +488,31 @@ public:
     // Get the pathname of the file we opened.
     const WCHAR* GetPathName(void) const { return fPathName; }
 
-    // Generic utility function.
+    /*
+     * Generate a temp name from a file name.
+     */
     static CString GenDerivedTempName(const WCHAR* filename);
+
+    /*
+     * Do a strcasecmp-like comparison, taking equivalent fssep chars into
+     * account.
+     *
+     * The tricky part is with files like "foo:bar" ':' -- "foo:bar" '/'.  The
+     * names appear to match, but the fssep chars are different, so they don't.
+     * If we just return (char1 - char2), though, we'll be returning 0 because
+     * the ASCII values match even if the character *meanings* don't.
+     *
+     * This assumes that the fssep char is not affected by tolower().
+     *
+     * [This may not sort correctly...haven't verified that I'm returning the
+     * right thing for ascending ASCII sort.]
+     */
     static int ComparePaths(const CString& name1, char fssep1,
         const CString& name2, char fssep2);
 
+    /*
+     * Add a new entry to the end of the list.
+     */
     void AddEntry(GenericEntry* pEntry);
 
     /*
@@ -505,41 +591,108 @@ public:
 
         //NuFileSysID         fileSysID;
         DiskImg::FSFormat   fileSysFmt;
-        unsigned short      fileSysInfo;    /* fssep lurks here */
-        unsigned long       access;
-        unsigned long       fileType;
-        unsigned long       extraType;
-        unsigned short      storageType;    /* "Unknown" or disk block size */
+        uint16_t            fileSysInfo;    /* fssep lurks here */
+        uint32_t            access;
+        uint32_t            fileType;
+        uint32_t            extraType;
+        uint16_t            storageType;    /* "Unknown" or disk block size */
         NuDateTime          createWhen;
         NuDateTime          modWhen;
         NuDateTime          archiveWhen;
 
     private:
+        /*
+         * Copy the contents of our object to a new object.
+         *
+         * Useful for operator= and copy construction.
+         */
         static void CopyFields(FileDetails* pDst, const FileDetails* pSrc);
     };
 
-    // Transfer files, one at a time, into this archive from another.
+    // Prepare for file transfers.
     virtual void XferPrepare(const XferFileOptions* pXferOpts) = 0;
+
+    // Transfer files, one at a time, into this archive from another.  Called
+    // from XferSelection and clipboard "paste".
+    //
+    // "dataLen" and "rsrcLen" will be -1 if the corresponding fork doesn't exist.
+    // Returns 0 on success, nonzero on failure.
+    //
+    // On success, *pDataBuf and *pRsrcBuf are freed and set to NULL.  (It's
+    // necessary for the interface to work this way because the NufxArchive
+    // version just tucks the pointers into NufxLib structures.)
     virtual CString XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
         long dataLen, uint8_t** pRsrcBuf, long rsrcLen) = 0;
+
+    // Abort progress.  Not all subclasses are capable of "undo".
     virtual void XferAbort(CWnd* pMsgWnd) = 0;
+
+    // Transfer is finished.
     virtual void XferFinish(CWnd* pMsgWnd) = 0;
+
+    /*
+     * Convert from time in seconds to Apple IIgs DateTime format.
+     */
     static void UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime);
 
 protected:
+    /*
+     * Delete the "entries" list.
+     */
     virtual void DeleteEntries(void);
 
-    /* NuLib2-derived recursive directory add functions */
     void ReplaceFssep(WCHAR* str, char oldc, char newc, char newSubst);
+
+    /*
+     * Set the contents of a NuFileDetails structure, based on the pathname
+     * and characteristics of the file.
+     *
+     * For efficiency and simplicity, the pathname fields are set to CStrings in
+     * the GenericArchive object instead of newly-allocated storage.
+     */
     NuError GetFileDetails(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
         struct _stat* psb, FileDetails* pDetails);
+
+    /*
+     * Prepare a directory for reading.
+     *
+     * Allocates a Win32dirent struct that must be freed by the caller.
+     */
     Win32dirent* OpenDir(const WCHAR* name);
+
+    /*
+     * Get an entry from an open directory.
+     *
+     * Returns a NULL pointer after the last entry has been read.
+     */
     Win32dirent* ReadDir(Win32dirent* dir);
+
+    /*
+     * Close a directory.
+     */
     void CloseDir(Win32dirent* dir);
+
+    /*
+     * Win32 recursive directory descent.  Scan the contents of a directory.
+     * If a subdirectory is found, follow it; otherwise, call Win32AddFile to
+     * add the file.
+     */
     NuError Win32AddDirectory(const AddFilesDialog* pAddOpts,
         const WCHAR* dirName, CString* pErrMsg);
+
+    /*
+     * Add a file to the list we're adding to the archive.  If it's a directory,
+     * and the recursive descent feature is enabled, call Win32AddDirectory to
+     * add the contents of the dir.
+     *
+     * Returns with an error if the file doesn't exist or isn't readable.
+     */
     NuError Win32AddFile(const AddFilesDialog* pAddOpts,
         const WCHAR* pathname, CString* pErrMsg);
+
+    /*
+     * External entry point; just calls the system-specific version.
+     */
     NuError AddFile(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
         CString* pErrMsg);
 
@@ -687,13 +840,24 @@ public:
     // count the #of entries whose display name matches "prefix"
     int CountMatchingPrefix(const WCHAR* prefix);
 
-    // debug dump
+    // debug dump the contents of the selection set
     void Dump(void);
 
 private:
+    /*
+     * Add a GenericEntry to the set, but only if we can find a thread that
+     * matches the flags in "threadMask".
+     */
     void AddToSet(GenericEntry* pEntry, int threadMask);
 
+    /*
+     * Add a new entry to the end of the list.
+     */
     void AddEntry(SelectionEntry* pEntry);
+
+    /*
+     * Delete the "entries" list.
+     */
     void DeleteEntries(void);
 
     int             fNumEntries;

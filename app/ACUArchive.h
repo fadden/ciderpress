@@ -24,14 +24,15 @@ public:
         {}
     virtual ~AcuEntry(void) {}
 
-    // retrieve thread data
     virtual int ExtractThreadToBuffer(int which, char** ppText, long* pLength,
-        CString* pErrMsg) const;
+        CString* pErrMsg) const override;
     virtual int ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
-        ConvertHighASCII convHA, CString* pErrMsg) const;
-    virtual long GetSelectionSerial(void) const { return -1; }  // doesn't matter
+        ConvertHighASCII convHA, CString* pErrMsg) const override;
 
-    virtual bool GetFeatureFlag(Feature feature) const {
+    // doesn't matter
+    virtual long GetSelectionSerial(void) const override { return -1; }
+
+    virtual bool GetFeatureFlag(Feature feature) const override {
         if (feature == kFeaturePascalTypes || feature == kFeatureDOSTypes ||
             feature == kFeatureHasSimpleAccess)
             return false;
@@ -39,6 +40,12 @@ public:
             return true;
     }
 
+    /*
+     * Test this entry by extracting it.
+     *
+     * If the file isn't compressed, just make sure the file is big enough.  If
+     * it's squeezed, invoke the un-squeeze function with a "NULL" buffer pointer.
+     */
     NuError TestEntry(CWnd* pMsgWnd);
 
     bool GetSqueezed(void) const { return fIsSqueezed; }
@@ -47,6 +54,10 @@ public:
     void SetOffset(long offset) { fOffset = offset; }
 
 private:
+    /*
+     * Copy data from the seeked archive to outfp, possibly converting EOL along
+     * the way.
+     */
     NuError CopyData(FILE* outfp, ConvertEOL conv, ConvertHighASCII convHA,
         CString* pMsg) const;
     //NuError BNYUnSqueeze(ExpandBuffer* outExp) const;
@@ -66,59 +77,78 @@ public:
         {}
     virtual ~AcuArchive(void) { (void) Close(); }
 
-    // One-time initialization; returns an error string.
+    /*
+     * Perform one-time initialization.  There really isn't any for us.
+     *
+     * Returns 0 on success, nonzero on error.
+     */
     static CString AppInit(void);
 
+    /*
+     * Open an ACU archive.
+     *
+     * Returns an error string on failure, or "" on success.
+     */
     virtual OpenResult Open(const WCHAR* filename, bool readOnly,
-        CString* pErrMsg);
-    virtual CString New(const WCHAR* filename, const void* options);
-    virtual CString Flush(void) { return ""; }
-    virtual CString Reload(void);
-    virtual bool IsReadOnly(void) const { return fIsReadOnly; };
-    virtual bool IsModified(void) const { return false; }
-    virtual void GetDescription(CString* pStr) const { *pStr = "AppleLink ACU"; }
+        CString* pErrMsg) override;
+
+    /*
+     * Finish instantiating an AcuArchive object by creating a new archive.
+     *
+     * Returns an error string on failure, or "" on success.
+     */
+    virtual CString New(const WCHAR* filename, const void* options) override;
+
+    virtual CString Flush(void) override { return ""; }
+
+    virtual CString Reload(void) override;
+    virtual bool IsReadOnly(void) const override { return fIsReadOnly; };
+    virtual bool IsModified(void) const override { return false; }
+    virtual void GetDescription(CString* pStr) const override
+        { *pStr = "AppleLink ACU"; }
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
-        const AddFilesDialog* pAddOpts)
+        const AddFilesDialog* pAddOpts) override
         { ASSERT(false); return false; }
     virtual bool AddDisk(ActionProgressDialog* pActionProgress,
-        const AddFilesDialog* pAddOpts)
+        const AddFilesDialog* pAddOpts) override
         { ASSERT(false); return false; }
     virtual bool CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
-        const WCHAR* newName)
+        const WCHAR* newName) override
         { ASSERT(false); return false; }
-    virtual bool TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet);
-    virtual bool DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
+    virtual bool TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet) override;
+    virtual bool DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet) override
         { ASSERT(false); return false; }
-    virtual bool RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
+    virtual bool RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet) override
         { ASSERT(false); return false; }
     virtual bool RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
-        const WCHAR* newName)
+        const WCHAR* newName) override
         { ASSERT(false); return false; }
     virtual CString TestVolumeName(const DiskFS* pDiskFS,
-        const WCHAR* newName) const
+        const WCHAR* newName) const override
         { ASSERT(false); return "!"; }
     virtual CString TestPathName(const GenericEntry* pGenericEntry,
-        const CString& basePath, const CString& newName, char newFssep) const
+        const CString& basePath, const CString& newName, char newFssep) const override
         { ASSERT(false); return "!"; }
     virtual bool RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
-        const RecompressOptionsDialog* pRecompOpts)
+        const RecompressOptionsDialog* pRecompOpts) override
         { ASSERT(false); return false; }
     virtual XferStatus XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
-        ActionProgressDialog* pActionProgress, const XferFileOptions* pXferOpts)
+        ActionProgressDialog* pActionProgress,
+        const XferFileOptions* pXferOpts) override
         { ASSERT(false); return kXferFailed; }
     virtual bool GetComment(CWnd* pMsgWnd, const GenericEntry* pEntry,
-        CString* pStr)
+        CString* pStr) override
         { ASSERT(false); return false; }
     virtual bool SetComment(CWnd* pMsgWnd, GenericEntry* pEntry,
-        const CString& str)
+        const CString& str) override
         { ASSERT(false); return false; }
-    virtual bool DeleteComment(CWnd* pMsgWnd, GenericEntry* pEntry)
+    virtual bool DeleteComment(CWnd* pMsgWnd, GenericEntry* pEntry) override
         { ASSERT(false); return false; }
     virtual bool SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
-        const FileProps* pProps)
+        const FileProps* pProps) override
         { ASSERT(false); return false; }
-    virtual void PreferencesChanged(void) {}
-    virtual long GetCapability(Capability cap);
+    virtual void PreferencesChanged(void) override {}
+    virtual long GetCapability(Capability cap) override;
 
     friend class AcuEntry;
 
@@ -130,19 +160,19 @@ private:
         }
         return "";
     }
-    virtual void XferPrepare(const XferFileOptions* pXferOpts)
+    virtual void XferPrepare(const XferFileOptions* pXferOpts) override
         { ASSERT(false); }
-    virtual CString XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
-        long dataLen, unsigned char** pRsrcBuf, long rsrcLen)
+    virtual CString XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+        long dataLen, uint8_t** pRsrcBuf, long rsrcLen) override
         { ASSERT(false); return "!"; }
-    virtual void XferAbort(CWnd* pMsgWnd)
+    virtual void XferAbort(CWnd* pMsgWnd) override
         { ASSERT(false); }
-    virtual void XferFinish(CWnd* pMsgWnd)
+    virtual void XferFinish(CWnd* pMsgWnd) override
         { ASSERT(false); }
 
-    virtual ArchiveKind GetArchiveKind(void) { return kArchiveACU; }
+    virtual ArchiveKind GetArchiveKind(void) override { return kArchiveACU; }
     virtual NuError DoAddFile(const AddFilesDialog* pAddOpts,
-        FileDetails* pDetails)
+        FileDetails* pDetails) override
         { ASSERT(false); return kNuErrGeneric; }
 
     enum {
@@ -203,17 +233,62 @@ private:
         kAcuCompSqueeze = 3,
     };
 
+    /*
+     * Load the contents of the archive.
+     *
+     * Returns 0 on success, < 0 if this is not an ACU archive > 0 if this appears
+     * to be an ACU archive but it's damaged.
+     */
     int LoadContents(void);
+
+    /*
+     * Read the archive header.  The archive file is left seeked to the point
+     * at the end of the header.
+     *
+     * Returns 0 on success, -1 on failure.  Sets *pNumEntries to the number of
+     * entries in the archive.
+     */
     int ReadMasterHeader(int* pNumEntries);
+
+    /*
+     * Read and decode an AppleLink Compression Utility file entry header.
+     * This leaves the file seeked to the point immediately past the filename.
+     */
     NuError ReadFileHeader(AcuFileEntry* pEntry);
+
+    /*
+     * Dump the contents of an AcuFileEntry struct.
+     */
     void DumpFileHeader(const AcuFileEntry* pEntry);
+
+    /*
+     * Given an AcuFileEntry structure, add an appropriate entry to the list.
+     */
     int CreateEntry(const AcuFileEntry* pEntry);
 
+    /*
+     * Test if this entry is a directory.
+     */
     bool IsDir(const AcuFileEntry* pEntry);
+
+    /*
+     * Wrapper for fread().  Note the arguments resemble read(2) rather
+     * than fread(3S).
+     */
     NuError AcuRead(void* buf, size_t nbyte);
+
+    /*
+     * Seek within an archive.  Because we need to handle streaming archives,
+     * and don't need to special-case anything, we only allow relative
+     * forward seeks.
+     */
     NuError AcuSeek(long offset);
-    void AcuConvertDateTime(unsigned short prodosDate,
-        unsigned short prodosTime, NuDateTime* pWhen);
+
+    /*
+     * Convert from ProDOS compact date format to the expanded DateTime format.
+     */
+    void AcuConvertDateTime(uint16_t prodosDate,
+        uint16_t prodosTime, NuDateTime* pWhen);
 
     FILE*       fFp;
     bool        fIsReadOnly;

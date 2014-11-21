@@ -30,9 +30,15 @@ public:
     int     fCompressionType;
 
 private:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
+    /*
+     * Load strings into the combo box.  Only load formats supported by the
+     * NufxLib DLL.
+     *
+     * Returns the combo box index for the format matching "fmt".
+     */
     int LoadComboBox(NuThreadFormat fmt);
 
     int     fCompressionIdx;        // drop list index

@@ -17,7 +17,7 @@
 // disable Y2K+ dates when testing w/ProSel-16 vol rep (newer ProSel is OK)
 //#define OLD_PRODOS_DATES
 
-#if defined(OLD_PRODOS_DATES) && !(defined(_DEBUG) || defined(_DEBUG_LOG))
+#if defined(OLD_PRODOS_DATES) && !(defined(_DEBUG))
 # error "don't set OLD_PRODOS_DATES for production"
 #endif
 

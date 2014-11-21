@@ -38,8 +38,9 @@ public:
     CString     fNewFullPath;
 
 protected:
-    void DoDataExchange(CDataExchange* pDX);
-    BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    void DoDataExchange(CDataExchange* pDX) override;
+
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
     // on exit, set to "true" if we created the folder in "fNewFolder"
     bool        fFolderCreated;

@@ -14,74 +14,69 @@
 /*
  * Get values from a memory buffer.
  */
-unsigned short
-DiskImgLib::GetShortLE(const unsigned char* ptr)
+uint16_t DiskImgLib::GetShortLE(const uint8_t* ptr)
 {
-    return *ptr | (unsigned short) *(ptr+1) << 8;
+    return *ptr | (uint16_t) *(ptr+1) << 8;
 }
 
-unsigned long
-DiskImgLib::GetLongLE(const unsigned char* ptr)
+uint32_t DiskImgLib::GetLongLE(const uint8_t* ptr)
 {
     return *ptr |
-            (unsigned long) *(ptr+1) << 8 |
-            (unsigned long) *(ptr+2) << 16 |
-            (unsigned long) *(ptr+3) << 24;
+            (uint32_t) *(ptr+1) << 8 |
+            (uint32_t) *(ptr+2) << 16 |
+            (uint32_t) *(ptr+3) << 24;
 }
 
-unsigned short
-DiskImgLib::GetShortBE(const unsigned char* ptr)
+uint16_t DiskImgLib::GetShortBE(const uint8_t* ptr)
 {
-    return *(ptr+1) | (unsigned short) *ptr << 8;
+    return *(ptr+1) | (uint16_t) *ptr << 8;
 }
 
-unsigned long
-DiskImgLib::GetLongBE(const unsigned char* ptr)
+uint32_t DiskImgLib::GetLongBE(const uint8_t* ptr)
 {
     return *(ptr+3) |
-            (unsigned long) *(ptr+2) << 8 |
-            (unsigned long) *(ptr+1) << 16 |
-            (unsigned long) *ptr << 24;
+            (uint32_t) *(ptr+2) << 8 |
+            (uint32_t) *(ptr+1) << 16 |
+            (uint32_t) *ptr << 24;
 }
 
-unsigned long
-DiskImgLib::Get24BE(const unsigned char* ptr)
+uint32_t DiskImgLib::Get24BE(const uint8_t* ptr)
 {
     return *(ptr+2) |
-            (unsigned long) *(ptr+1) << 8 |
-            (unsigned long) *ptr << 16;
+            (uint32_t) *(ptr+1) << 8 |
+            (uint32_t) *ptr << 16;
 }
 
 void
-DiskImgLib::PutShortLE(unsigned char* ptr, unsigned short val)
+DiskImgLib::PutShortLE(uint8_t* ptr, uint16_t val)
 {
-    *ptr++ = (unsigned char) val;
+    *ptr++ = (uint8_t) val;
     *ptr = val >> 8;
 }
 
 void
-DiskImgLib::PutLongLE(unsigned char* ptr, unsigned long val)
+DiskImgLib::PutLongLE(uint8_t* ptr, uint32_t val)
 {
-    *ptr++ = (unsigned char) val;
-    *ptr++ = (unsigned char) (val >> 8);
-    *ptr++ = (unsigned char) (val >> 16);
-    *ptr = (unsigned char) (val >> 24);
+    *ptr++ = (uint8_t) val;
+    *ptr++ = (uint8_t) (val >> 8);
+    *ptr++ = (uint8_t) (val >> 16);
+    *ptr = (uint8_t) (val >> 24);
 }
 
 void
-DiskImgLib::PutShortBE(unsigned char* ptr, unsigned short val)
+DiskImgLib::PutShortBE(uint8_t* ptr, uint16_t val)
 {
     *ptr++ = val >> 8;
-    *ptr = (unsigned char) val;
+    *ptr = (uint8_t) val;
 }
 
 void
-DiskImgLib::PutLongBE(unsigned char* ptr, unsigned long val)
+DiskImgLib::PutLongBE(uint8_t* ptr, uint32_t val)
 {
-    *ptr++ = (unsigned char) (val >> 24);
-    *ptr++ = (unsigned char) (val >> 16);
-    *ptr++ = (unsigned char) (val >> 8);
-    *ptr = (unsigned char) val;
+    *ptr++ = (uint8_t) (val >> 24);
+    *ptr++ = (uint8_t) (val >> 16);
+    *ptr++ = (uint8_t) (val >> 8);
+    *ptr = (uint8_t) val;
 }
 
 
@@ -89,10 +84,10 @@ DiskImgLib::PutLongBE(unsigned char* ptr, unsigned long val)
  * Read a two-byte little-endian value.
  */
 DIError
-DiskImgLib::ReadShortLE(GenericFD* pGFD, short* pBuf)
+DiskImgLib::ReadShortLE(GenericFD* pGFD, uint16_t* pBuf)
 {
     DIError dierr;
-    unsigned char val[2];
+    uint8_t val[2];
 
     dierr = pGFD->Read(&val[0], 1);
     if (dierr == kDIErrNone)
@@ -106,10 +101,10 @@ DiskImgLib::ReadShortLE(GenericFD* pGFD, short* pBuf)
  * Read a four-byte little-endian value.
  */
 DIError
-DiskImgLib::ReadLongLE(GenericFD* pGFD, long* pBuf)
+DiskImgLib::ReadLongLE(GenericFD* pGFD, uint32_t* pBuf)
 {
     DIError dierr;
-    unsigned char val[4];
+    uint8_t val[4];
 
     dierr = pGFD->Read(&val[0], 1);
     if (dierr == kDIErrNone)
@@ -119,15 +114,15 @@ DiskImgLib::ReadLongLE(GenericFD* pGFD, long* pBuf)
     if (dierr == kDIErrNone)
         dierr = pGFD->Read(&val[3], 1);
 
-    *pBuf = val[0] | (long)val[1] << 8 | (long)val[2] << 16 | (long)val[3] << 24;
+    *pBuf = val[0] | (uint32_t)val[1] << 8 |
+        (uint32_t)val[2] << 16 | (uint32_t)val[3] << 24;
     return dierr;
 }
 
 /*
  * Write a two-byte little-endian value.
  */
-DIError
-DiskImgLib::WriteShortLE(FILE* fp, unsigned short val)
+DIError DiskImgLib::WriteShortLE(FILE* fp, uint16_t val)
 {
     putc(val, fp);
     putc(val >> 8, fp);
@@ -137,8 +132,7 @@ DiskImgLib::WriteShortLE(FILE* fp, unsigned short val)
 /*
  * Write a four-byte little-endian value.
  */
-DIError
-DiskImgLib::WriteLongLE(FILE* fp, unsigned long val)
+DIError DiskImgLib::WriteLongLE(FILE* fp, uint32_t val)
 {
     putc(val, fp);
     putc(val >> 8, fp);
@@ -150,12 +144,11 @@ DiskImgLib::WriteLongLE(FILE* fp, unsigned long val)
 /*
  * Write a two-byte little-endian value.
  */
-DIError
-DiskImgLib::WriteShortLE(GenericFD* pGFD, unsigned short val)
+DIError DiskImgLib::WriteShortLE(GenericFD* pGFD, uint16_t val)
 {
-    unsigned char buf;
+    uint8_t buf;
 
-    buf = (unsigned char) val;
+    buf = (uint8_t) val;
     pGFD->Write(&buf, 1);
     buf = val >> 8;
     return pGFD->Write(&buf, 1);
@@ -164,40 +157,37 @@ DiskImgLib::WriteShortLE(GenericFD* pGFD, unsigned short val)
 /*
  * Write a four-byte little-endian value.
  */
-DIError
-DiskImgLib::WriteLongLE(GenericFD* pGFD, unsigned long val)
+DIError DiskImgLib::WriteLongLE(GenericFD* pGFD, uint32_t val)
 {
     unsigned char buf;
 
-    buf = (unsigned char) val;
+    buf = (uint8_t) val;
     pGFD->Write(&buf, 1);
-    buf = (unsigned char) (val >> 8);
+    buf = (uint8_t) (val >> 8);
     pGFD->Write(&buf, 1);
-    buf = (unsigned char) (val >> 16);
+    buf = (uint8_t) (val >> 16);
     pGFD->Write(&buf, 1);
-    buf = (unsigned char) (val >> 24);
+    buf = (uint8_t) (val >> 24);
     return pGFD->Write(&buf, 1);
 }
 
 /*
  * Write a two-byte big-endian value.
  */
-DIError
-DiskImgLib::WriteShortBE(GenericFD* pGFD, unsigned short val)
+DIError DiskImgLib::WriteShortBE(GenericFD* pGFD, uint16_t val)
 {
     unsigned char buf;
 
     buf = val >> 8;
     pGFD->Write(&buf, 1);
-    buf = (unsigned char) val;
+    buf = (uint8_t) val;
     return pGFD->Write(&buf, 1);
 }
 
 /*
  * Write a four-byte big-endian value.
  */
-DIError
-DiskImgLib::WriteLongBE(GenericFD* pGFD, unsigned long val)
+DIError DiskImgLib::WriteLongBE(GenericFD* pGFD, uint32_t val)
 {
     unsigned char buf;
 

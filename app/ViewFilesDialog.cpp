@@ -43,13 +43,9 @@ BEGIN_MESSAGE_MAP(ViewFilesDialog, CDialog)
     ON_COMMAND(IDHELP, OnHelp)
 END_MESSAGE_MAP()
 
-/*
- * Window creation.  Stuff the desired text into the RichEdit box.
- */
-BOOL
-ViewFilesDialog::OnInitDialog(void)
+BOOL ViewFilesDialog::OnInitDialog(void)
 {
-    LOGI("Now in VFD OnInitDialog!");
+    LOGD("Now in VFD OnInitDialog!");
 
     ASSERT(fpSelSet != NULL);
 
@@ -98,18 +94,13 @@ ViewFilesDialog::OnInitDialog(void)
     // the StreamIn call.  So don't do this until everything else is ready.
     CDialog::OnInitDialog();
 
-    LOGI("VFD OnInitDialog done");
+    LOGD("VFD OnInitDialog done");
     return FALSE;   // don't let Windows set the focus
 }
 
-
-/*
- * Window creation stuff.  Set the icon and the "gripper".
- */
-int
-ViewFilesDialog::OnCreate(LPCREATESTRUCT lpcs)
+int ViewFilesDialog::OnCreate(LPCREATESTRUCT lpcs)
 {
-    LOGI("VFD OnCreate");
+    LOGD("VFD OnCreate");
 
     HICON hIcon;
     hIcon = ::AfxGetApp()->LoadIcon(IDI_FILE_VIEWER);
@@ -124,15 +115,11 @@ ViewFilesDialog::OnCreate(LPCREATESTRUCT lpcs)
                     SBS_SIZEBOX | SBS_SIZEBOXBOTTOMRIGHTALIGN | SBS_SIZEGRIP,
         initRect, this, AFX_IDW_SIZE_BOX);
 
-    LOGI("VFD OnCreate done");
+    LOGD("VFD OnCreate done");
     return 0;
 }
 
-/*
- * Window is going away.  Save the current size.
- */
-void
-ViewFilesDialog::OnDestroy(void)
+void ViewFilesDialog::OnDestroy(void)
 {
     Preferences* pPreferences = GET_PREFERENCES_WR();
     CRect rect;
@@ -144,14 +131,7 @@ ViewFilesDialog::OnDestroy(void)
     CDialog::OnDestroy();
 }
 
-/*
- * Override OnOK/OnCancel so we don't bail out while we're in the middle of
- * loading something.  It would actually be kind of nice to be able to do
- * so, so someday we should make the "cancel" button work, or perhaps allow
- * prev/next to skip over the thing being loaded. "TO DO"
- */
-void
-ViewFilesDialog::OnOK(void)
+void ViewFilesDialog::OnOK(void)
 {
     if (fBusy)
         MessageBeep(-1);
@@ -159,13 +139,13 @@ ViewFilesDialog::OnOK(void)
         CRect rect;
 
         GetWindowRect(&rect);
-        LOGI(" VFD size now %dx%d", rect.Width(), rect.Height());
+        LOGD(" VFD size now %dx%d", rect.Width(), rect.Height());
 
         CDialog::OnOK();
     }
 }
-void
-ViewFilesDialog::OnCancel(void)
+
+void ViewFilesDialog::OnCancel(void)
 {
     if (fBusy)
         MessageBeep(-1);
@@ -173,32 +153,22 @@ ViewFilesDialog::OnCancel(void)
         CDialog::OnCancel();
 }
 
-
-/*
- * Restrict the minimum window size to something reasonable.
- */
-void
-ViewFilesDialog::OnGetMinMaxInfo(MINMAXINFO* pMMI)
+void ViewFilesDialog::OnGetMinMaxInfo(MINMAXINFO* pMMI)
 {
     pMMI->ptMinTrackSize.x = 664;
     pMMI->ptMinTrackSize.y = 200;
 }
 
-/*
- * When the window resizes, we have to tell the edit box to expand, and
- * rearrange the controls inside it.
- */
-void
-ViewFilesDialog::OnSize(UINT nType, int cx, int cy)
+void ViewFilesDialog::OnSize(UINT nType, int cx, int cy)
 {
     CDialog::OnSize(nType, cx, cy);
 
     //LOGI("Dialog: old size %d,%d",
     //  fLastWinSize.Width(), fLastWinSize.Height());
-    LOGI("Dialog: new size %d,%d", cx, cy);
+    LOGD("Dialog: new size %d,%d", cx, cy);
 
     if (fLastWinSize.Width() == cx && fLastWinSize.Height() == cy) {
-        LOGI("VFD OnSize: no change");
+        LOGD("VFD OnSize: no change");
         return;
     }
 
@@ -212,13 +182,7 @@ ViewFilesDialog::OnSize(UINT nType, int cx, int cy)
     GetClientRect(&fLastWinSize);
 }
 
-/*
- * Adjust the positions and sizes of the controls.
- *
- * This relies on MinMaxInfo to guarantee that nothing falls off an edge.
- */
-void
-ViewFilesDialog::ShiftControls(int deltaX, int deltaY)
+void ViewFilesDialog::ShiftControls(int deltaX, int deltaY)
 {
     HDWP hdwp;
 
@@ -274,24 +238,19 @@ ViewFilesDialog::ShiftControls(int deltaX, int deltaY)
 }
 
 
-/*
- * Shuffle data in and out.
- */
-void
-ViewFilesDialog::DoDataExchange(CDataExchange* pDX)
+void ViewFilesDialog::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
 
     if (pDX->m_bSaveAndValidate) {
-        LOGI("COPY OUT");
+        LOGD("COPY OUT");
     } else {
-        LOGI("COPY IN");
+        LOGD("COPY IN");
         OnFviewNext();
     }
 }
 
-static void
-DumpBitmapInfo(HBITMAP hBitmap)
+static void DumpBitmapInfo(HBITMAP hBitmap)
 {
     BITMAP info;
     CBitmap* pBitmap = CBitmap::FromHandle(hBitmap);
@@ -299,26 +258,16 @@ DumpBitmapInfo(HBITMAP hBitmap)
 
     gotten = pBitmap->GetObject(sizeof(info), &info);
 
-    LOGI("DumpBitmapInfo: gotten=%d of %d", gotten, sizeof(info));
-    LOGI("  bmType = %d", info.bmType);
-    LOGI("  bmWidth=%d, bmHeight=%d", info.bmWidth, info.bmHeight);
-    LOGI("  bmWidthBytes=%d", info.bmWidthBytes);
-    LOGI("  bmPlanes=%d", info.bmPlanes);
-    LOGI("  bmBitsPixel=%d", info.bmBitsPixel);
-    LOGI("  bmPits = 0x%p", info.bmBits);
-
+    LOGD("DumpBitmapInfo: gotten=%d of %d", gotten, sizeof(info));
+    LOGD("  bmType = %d", info.bmType);
+    LOGD("  bmWidth=%d, bmHeight=%d", info.bmWidth, info.bmHeight);
+    LOGD("  bmWidthBytes=%d", info.bmWidthBytes);
+    LOGD("  bmPlanes=%d", info.bmPlanes);
+    LOGD("  bmBitsPixel=%d", info.bmBitsPixel);
+    LOGD("  bmPits = 0x%p", info.bmBits);
 }
 
-/*
- * Display a buffer of text in the RichEdit control.
- *
- * The RichEdit dialog will hold its own copy of the data, so "pHolder" can
- * be safely destroyed after this returns.
- *
- * "fileName" is for display only.
- */
-void
-ViewFilesDialog::DisplayText(const WCHAR* fileName)
+void ViewFilesDialog::DisplayText(const WCHAR* fileName)
 {
     CWaitCursor wait;   // streaming of big files can take a little while
     bool errFlg;
@@ -625,14 +574,9 @@ ViewFilesDialog::DisplayText(const WCHAR* fileName)
     pButton->EnableWindow(fpSelSet->IterHasNext());
 }
 
-/*
- * Handle the "next" button.
- *
- * (This is also called from DoDataExchange.)
- */
-void
-ViewFilesDialog::OnFviewNext(void)
+void ViewFilesDialog::OnFviewNext(void)
 {
+    // handles "next" button; also called from DoDataExchange
     ReformatHolder::ReformatPart part;
     ReformatHolder::ReformatID id;
     int result;
@@ -684,11 +628,7 @@ ViewFilesDialog::OnFviewNext(void)
     DisplayText(pSelEntry->GetEntry()->GetDisplayName());
 }
 
-/*
- * Handle the "prev" button.
- */
-void
-ViewFilesDialog::OnFviewPrev(void)
+void ViewFilesDialog::OnFviewPrev(void)
 {
     ReformatHolder::ReformatPart part;
     ReformatHolder::ReformatID id;
@@ -731,17 +671,7 @@ ViewFilesDialog::OnFviewPrev(void)
     DisplayText(pEntry->GetDisplayName());
 }
 
-/*
- * Configure the radio buttons that determine which part to view, enabling
- * only those that make sense.
- *
- * Try to keep the previously-set button set.
- *
- * If "pEntry" is NULL, all buttons are disabled (useful for first-time
- * initialization).
- */
-void
-ViewFilesDialog::ConfigurePartButtons(const GenericEntry* pEntry)
+void ViewFilesDialog::ConfigurePartButtons(const GenericEntry* pEntry)
 {
     int id = 0;
 
@@ -792,13 +722,7 @@ ViewFilesDialog::ConfigurePartButtons(const GenericEntry* pEntry)
         pDataWnd->SetCheck(BST_CHECKED);
 }
 
-/*
- * Figure out which part of the file is selected (data/rsrc/comment).
- *
- * If no part is selected, throws up its hands and returns kPartData.
- */
-ReformatHolder::ReformatPart
-ViewFilesDialog::GetSelectedPart(void)
+ReformatHolder::ReformatPart ViewFilesDialog::GetSelectedPart(void)
 {
     CButton* pDataWnd = (CButton*) GetDlgItem(IDC_FVIEW_DATA);
     CButton* pRsrcWnd = (CButton*) GetDlgItem(IDC_FVIEW_RSRC);
@@ -817,14 +741,7 @@ ViewFilesDialog::GetSelectedPart(void)
     }
 }
 
-/*
- * Set up the fpHolder.  Does not reformat the data, just loads the source
- * material and runs the applicability tests.
- *
- * Returns 0 on success, -1 on failure.
- */
-int
-ViewFilesDialog::ReformatPrep(GenericEntry* pEntry)
+int ViewFilesDialog::ReformatPrep(GenericEntry* pEntry)
 {
     CWaitCursor waitc;      // can be slow reading data from floppy
     MainWindow* pMainWindow = GET_MAIN_WINDOW();
@@ -857,13 +774,7 @@ ViewFilesDialog::ReformatPrep(GenericEntry* pEntry)
     return 0;
 }
 
-/*
- * Reformat a file.
- *
- * Returns 0 if the file was reformatted, -1 if not
- */
-int
-ViewFilesDialog::Reformat(const GenericEntry* pEntry,
+int ViewFilesDialog::Reformat(const GenericEntry* pEntry,
     ReformatHolder::ReformatPart part, ReformatHolder::ReformatID id)
 {
     CWaitCursor waitc;
@@ -905,28 +816,14 @@ ViewFilesDialog::Reformat(const GenericEntry* pEntry,
     }
 }
 
-/*
- * Set up the entries in the drop box based on the "applicable" array in
- * fpHolder.  The set of values is different for each part of the file.
- *
- * Returns the default reformatter ID.  This is always entry #0.
- *
- * I tried making it "sticky", so that if the user chose to go into hex
- * dump mode it would stay there.  We returned either entry #0 in the
- * combo box, or the previously-selected reformatter ID if it also
- * applies to this file.  This was a little whacked, e.g. Intbasic vs.
- * S-C assembler got ugly, so I tried restricting it to "always" classes.
- * But then, the first time you hit a binary file with no reformatter,
- * you're stuck there.  Eventually I decided to discard the idea.
- */
-ReformatHolder::ReformatID
-ViewFilesDialog::ConfigureFormatSel(ReformatHolder::ReformatPart part)
+ReformatHolder::ReformatID ViewFilesDialog::ConfigureFormatSel(
+    ReformatHolder::ReformatPart part)
 {
     //ReformatHolder::ReformatID prevID = ReformatHolder::kReformatUnknown;
     ReformatHolder::ReformatID returnID = ReformatHolder::kReformatRaw;
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_FVIEW_FORMATSEL);
 
-    LOGI("--- ConfigureFormatSel");
+    LOGD("--- ConfigureFormatSel");
 
     //int sel;
     //sel = pCombo->GetCurSel();
@@ -998,24 +895,24 @@ skip:
 
     /* return whatever we now have selected */
     int sel = pCombo->GetCurSel();
-    LOGI("  At end, sel is %d", sel);
+    LOGD("  At end, sel is %d", sel);
     if (sel != CB_ERR)
         returnID = (ReformatHolder::ReformatID) pCombo->GetItemData(sel);
 
     return returnID;
 }
 
-/*
- * The user has changed entries in the format selection drop box.
- *
- * Also called from the "quick change" buttons.
- */
-void
-ViewFilesDialog::OnFormatSelChange(void)
+void ViewFilesDialog::OnFormatSelChange(void)
 {
+    /*
+     * The user has changed entries in the format selection drop box.
+     *
+     * Also called from the "quick change" buttons.
+     */
+
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_FVIEW_FORMATSEL);
     ASSERT(pCombo != NULL);
-    LOGI("+++ SELECTION IS NOW %d", pCombo->GetCurSel());
+    LOGD("+++ SELECTION IS NOW %d", pCombo->GetCurSel());
 
     SelectionEntry* pSelEntry = fpSelSet->IterCurrent();
     GenericEntry* pEntry = pSelEntry->GetEntry();
@@ -1029,26 +926,22 @@ ViewFilesDialog::OnFormatSelChange(void)
     DisplayText(pEntry->GetDisplayName());
 }
 
-/*
- * Change the fork we're looking at.
- */
-void
-ViewFilesDialog::OnFviewData(void)
+void ViewFilesDialog::OnFviewData(void)
 {
     ForkSelectCommon(ReformatHolder::kPartData);
 }
-void
-ViewFilesDialog::OnFviewRsrc(void)
+
+void ViewFilesDialog::OnFviewRsrc(void)
 {
     ForkSelectCommon(ReformatHolder::kPartRsrc);
 }
-void
-ViewFilesDialog::OnFviewCmmt(void)
+
+void ViewFilesDialog::OnFviewCmmt(void)
 {
     ForkSelectCommon(ReformatHolder::kPartCmmt);
 }
-void
-ViewFilesDialog::ForkSelectCommon(ReformatHolder::ReformatPart part)
+
+void ViewFilesDialog::ForkSelectCommon(ReformatHolder::ReformatPart part)
 {
     GenericEntry* pEntry;
     ReformatHolder::ReformatID id;
@@ -1066,11 +959,7 @@ ViewFilesDialog::ForkSelectCommon(ReformatHolder::ReformatPart part)
     DisplayText(pEntry->GetDisplayName());
 }
 
-/*
- * Switch to hex dump mode.
- */
-void
-ViewFilesDialog::OnFviewFmtBest(void)
+void ViewFilesDialog::OnFviewFmtBest(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_FVIEW_FORMATSEL);
     pCombo->SetCurSel(0);       // best is always at the top
@@ -1078,11 +967,7 @@ ViewFilesDialog::OnFviewFmtBest(void)
     pCombo->SetFocus();
 }
 
-/*
- * Switch to hex dump mode.
- */
-void
-ViewFilesDialog::OnFviewFmtHex(void)
+void ViewFilesDialog::OnFviewFmtHex(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_FVIEW_FORMATSEL);
     int sel = FindByVal(pCombo, ReformatHolder::kReformatHexDump);
@@ -1093,11 +978,7 @@ ViewFilesDialog::OnFviewFmtHex(void)
     pCombo->SetFocus();
 }
 
-/*
- * Switch to raw mode.
- */
-void
-ViewFilesDialog::OnFviewFmtRaw(void)
+void ViewFilesDialog::OnFviewFmtRaw(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_FVIEW_FORMATSEL);
     int sel = FindByVal(pCombo, ReformatHolder::kReformatRaw);
@@ -1108,11 +989,7 @@ ViewFilesDialog::OnFviewFmtRaw(void)
     pCombo->SetFocus();
 }
 
-/*
- * Enable or disable all of the format selection buttons.
- */
-void
-ViewFilesDialog::EnableFormatSelection(BOOL enable)
+void ViewFilesDialog::EnableFormatSelection(BOOL enable)
 {
     GetDlgItem(IDC_FVIEW_FORMATSEL)->EnableWindow(enable);
     GetDlgItem(IDC_FVIEW_FMT_BEST)->EnableWindow(enable);
@@ -1120,13 +997,7 @@ ViewFilesDialog::EnableFormatSelection(BOOL enable)
     GetDlgItem(IDC_FVIEW_FMT_RAW)->EnableWindow(enable);
 }
 
-/*
- * Return the combo box index for the entry whose "data" field matches "val".
- *
- * Returns -1 if the entry couldn't be found.
- */
-int
-ViewFilesDialog::FindByVal(CComboBox* pCombo, DWORD val)
+int ViewFilesDialog::FindByVal(CComboBox* pCombo, DWORD val)
 {
     int count = pCombo->GetCount();
     int i;
@@ -1138,13 +1009,10 @@ ViewFilesDialog::FindByVal(CComboBox* pCombo, DWORD val)
     return -1;
 }
 
-/*
- * Handle the "font" button.  Choose a font, then apply the choice to
- * all of the text in the box.
- */
-void
-ViewFilesDialog::OnFviewFont(void)
+void ViewFilesDialog::OnFviewFont(void)
 {
+    // Choose a font, then apply the choice to all of the text in the box.
+
     LOGFONT logFont;
     CFont font;
 
@@ -1169,11 +1037,7 @@ ViewFilesDialog::OnFviewFont(void)
 
 }
 
-/*
- * Font selection has changed, update the richedit box.
- */
-void
-ViewFilesDialog::NewFontSelected(bool resetBold)
+void ViewFilesDialog::NewFontSelected(bool resetBold)
 {
     CRichEditCtrl* pEdit = (CRichEditCtrl*) GetDlgItem(IDC_FVIEW_EDITBOX);
     ASSERT(pEdit != NULL);
@@ -1193,11 +1057,7 @@ ViewFilesDialog::NewFontSelected(bool resetBold)
 }
 
 
-/*
- * Print a ContentList.
- */
-void
-ViewFilesDialog::OnFviewPrint(void)
+void ViewFilesDialog::OnFviewPrint(void)
 {
     MainWindow* pMainWindow = GET_MAIN_WINDOW();
     CPrintDialog dlg(FALSE);    // use CPrintDialogEx for Win2K? CPageSetUpDialog?
@@ -1283,12 +1143,9 @@ ViewFilesDialog::OnFviewPrint(void)
     pMainWindow->fhDevNames = dlg.m_pd.hDevNames;
 }
 
-/*
- * User hit the "Find..." button.  Open the modeless Find dialog.
- */
-void
-ViewFilesDialog::OnFviewFind(void)
+void ViewFilesDialog::OnFviewFind(void)
 {
+    // User hit the "Find..." button.  Open the modeless Find dialog.
     DWORD flags = 0;
 
     if (fpFindDialog != NULL)
@@ -1316,12 +1173,12 @@ ViewFilesDialog::OnFviewFind(void)
                          this);     // parent
 }
 
-/*
- * Handle activity in the modeless "find" dialog.
- */
-LRESULT
-ViewFilesDialog::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
+LRESULT ViewFilesDialog::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
 {
+    /*
+     * Handle activity in the modeless "find" dialog.
+     */
+
     assert(fpFindDialog != NULL);
 
     fFindDown = (fpFindDialog->SearchDown() != 0);
@@ -1345,11 +1202,7 @@ ViewFilesDialog::OnFindDialogMessage(WPARAM wParam, LPARAM lParam)
 }
 
 
-/*
- * Find the next ocurrence of the specified string.
- */
-void
-ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
+void ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
     bool wholeWord)
 {
     LOGI("FindText '%ls' d=%d c=%d w=%d", str, down, matchCase, wholeWord);
@@ -1365,7 +1218,7 @@ ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
         flags |= FR_WHOLEWORD;
 
     fEditCtrl.GetSel(selChrg);
-    LOGI("  selection is %ld,%ld",
+    LOGD("  selection is %ld,%ld",
         selChrg.cpMin, selChrg.cpMax);
     if (selChrg.cpMin == selChrg.cpMax)
         start = selChrg.cpMin;      // start at caret
@@ -1390,7 +1243,7 @@ ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
             (LPARAM) &findTextEx);
     }
 
-    LOGI("  result=%ld min=%ld max=%ld", result,
+    LOGD("  result=%ld min=%ld max=%ld", result,
         findTextEx.chrgText.cpMin, findTextEx.chrgText.cpMax);
     if (result != -1) {
         /* select the text we found */
@@ -1405,11 +1258,7 @@ ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
     }
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-ViewFilesDialog::OnHelp(void)
+void ViewFilesDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_FILE_VIEWER, HELP_CONTEXT);
 }

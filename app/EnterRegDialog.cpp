@@ -23,8 +23,7 @@ END_MESSAGE_MAP()
 /*
  * Disable the "OK" button initially.
  */
-BOOL
-EnterRegDialog::OnInitDialog(void)
+BOOL EnterRegDialog::OnInitDialog(void)
 {
     //CWnd* pWnd = GetDlgItem(IDOK);
     //ASSERT(pWnd != NULL);
@@ -53,8 +52,7 @@ EnterRegDialog::OnInitDialog(void)
  * Shuffle data in and out of the edit fields.  We do an extra validation
  * step on the registration key before accepting it.
  */
-void
-EnterRegDialog::DoDataExchange(CDataExchange* pDX)
+void EnterRegDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_Text(pDX, IDC_REGENTER_USER, fUserName);
     DDX_Text(pDX, IDC_REGENTER_COMPANY, fCompanyName);
@@ -85,14 +83,7 @@ EnterRegDialog::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-/*
- * Call this when the text in an edit field has changed.
- *
- * If there's nothing in the "user name" or "reg key" fields, dim the OK
- * button.
- */
-void
-EnterRegDialog::HandleEditChange(int editID, int crcID)
+void EnterRegDialog::HandleEditChange(int editID, int crcID)
 {
     CString userStr, regStr;
     CEdit* pEdit;
@@ -127,45 +118,29 @@ EnterRegDialog::HandleEditChange(int editID, int crcID)
     pWnd->EnableWindow(!userStr.IsEmpty() && !regStr.IsEmpty());
 }
 
-/*
- * Handle changes in the three edit fields.
- */
-void
-EnterRegDialog::OnUserChange(void)
+void EnterRegDialog::OnUserChange(void)
 {
     HandleEditChange(IDC_REGENTER_USER, IDC_REGENTER_USERCRC);
 }
-void
-EnterRegDialog::OnCompanyChange(void)
+
+void EnterRegDialog::OnCompanyChange(void)
 {
     HandleEditChange(IDC_REGENTER_COMPANY, IDC_REGENTER_COMPCRC);
 }
-void
-EnterRegDialog::OnRegChange(void)
+
+void EnterRegDialog::OnRegChange(void)
 {
     HandleEditChange(IDC_REGENTER_REG, IDC_REGENTER_REGCRC);
 }
 
 
-/*
- * User pressed the "Help" button.
- */
-void
-EnterRegDialog::OnHelp(void)
+void EnterRegDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_ENTER_REG_DATA, HELP_CONTEXT);
 }
 
 
-/*
- * Get registration info from the user.  This is a static utility function
- * that can be called from elsewhere in the app.
- *
- * Returns 0 on successful registration, nonzero on failure or if the user
- * cancels out of the dialog.
- */
-/*static*/ int
-EnterRegDialog::GetRegInfo(CWnd* pWnd)
+/*static*/ int EnterRegDialog::GetRegInfo(CWnd* pWnd)
 {
     CString user, company, reg, versions, expire;
 

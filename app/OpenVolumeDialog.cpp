@@ -12,7 +12,6 @@
 #include "Main.h"
 #include "../diskimg/Win32Extra.h"  // need disk geometry calls
 #include "../diskimg/ASPI.h"
-//#include "resource.h"
 
 
 BEGIN_MESSAGE_MAP(OpenVolumeDialog, CDialog)
@@ -24,12 +23,12 @@ BEGIN_MESSAGE_MAP(OpenVolumeDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Set up the list of drives.
- */
-BOOL
-OpenVolumeDialog::OnInitDialog(void)
+BOOL OpenVolumeDialog::OnInitDialog(void)
 {
+    /*
+     * Sets up the list of drives.
+     */
+
     CDialog::OnInitDialog();        // do any DDX init stuff
     const Preferences* pPreferences = GET_PREFERENCES();
     long defaultFilter;
@@ -85,21 +84,13 @@ OpenVolumeDialog::OnInitDialog(void)
     return TRUE;
 }
 
-/*
- * Convert values.
- */
-void
-OpenVolumeDialog::DoDataExchange(CDataExchange* pDX)
+void OpenVolumeDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_Check(pDX, IDC_OPENVOL_READONLY, fReadOnly);
     LOGI("DoDataExchange: fReadOnly==%d", fReadOnly);
 }
 
-/*
- * Load the set of logical and physical drives.
- */
-void
-OpenVolumeDialog::LoadDriveList(void)
+void OpenVolumeDialog::LoadDriveList(void)
 {
     CWaitCursor waitc;
     CComboBox* pCombo;
@@ -125,12 +116,7 @@ OpenVolumeDialog::LoadDriveList(void)
         LoadLogicalDriveList(pListView, &itemIndex);
 }
 
-/*
- * Determine the logical volumes available in the system and stuff them into
- * the list.
- */
-bool
-OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
+bool OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
 {
     DWORD drivesAvailable;
     bool isWin9x = IsWin9x();
@@ -286,18 +272,18 @@ OpenVolumeDialog::LoadLogicalDriveList(CListCtrl* pListView, int* pItemIndex)
     return true;
 }
 
-/*
- * Add a list of physical drives to the list control.
- *
- * I don't see a clever way to do this in Win2K except to open the first 8
- * or so devices and see what happens.
- *
- * Win9x isn't much better, though you can be reasonably confident that there
- * are at most 4 floppy drives and 4 hard drives.
- */
-bool
-OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
+bool OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
 {
+    /*
+     * I don't see a clever way to do this in Win2K except to open the first 8
+     * or so devices and see what happens.
+     *
+     * Win9x isn't much better, though you can be reasonably confident that there
+     * are at most 4 floppy drives and 4 hard drives.
+     *
+     * TODO: check again for a better way
+     */
+
     bool isWin9x = IsWin9x();
     int itemIndex = *pItemIndex;
     int i;
@@ -408,16 +394,7 @@ OpenVolumeDialog::LoadPhysicalDriveList(CListCtrl* pListView, int* pItemIndex)
     return true;
 }
 
-/*
- * Determine whether physical device N exists.
- *
- * Pass in the Int13 unit number, i.e. 0x00 for the first floppy drive.  Win9x
- * makes direct access to the hard drive very difficult, so we don't even try.
- *
- * TODO: remove this entirely?
- */
-bool
-OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
+bool OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
 {
     HANDLE handle = NULL;
     const int VWIN32_DIOC_DOS_INT13 = 4;
@@ -484,14 +461,7 @@ OpenVolumeDialog::HasPhysicalDriveWin9x(int unit, CString* pRemark)
     return true;
 }
 
-/*
- * Determine whether physical device N exists.
- *
- * Pass in the Int13 unit number, i.e. 0x80 for the first hard drive.  This
- * should not be called with units for floppy drives (e.g. 0x00).
- */
-bool
-OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
+bool OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
 {
     HANDLE hDevice;         // handle to the drive to be examined 
     DISK_GEOMETRY dg;       // disk drive geometry structure
@@ -584,12 +554,7 @@ OpenVolumeDialog::HasPhysicalDriveWin2K(int unit, CString* pRemark)
     return true;
 }
 
-
-/*
- * Something changed in the list.  Update the "OK" button.
- */
-void
-OpenVolumeDialog::OnListChange(NMHDR*, LRESULT* pResult)
+void OpenVolumeDialog::OnListChange(NMHDR*, LRESULT* pResult)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUME_LIST);
     CButton* pButton = (CButton*) GetDlgItem(IDOK);
@@ -599,11 +564,7 @@ OpenVolumeDialog::OnListChange(NMHDR*, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * Double click.
- */
-void
-OpenVolumeDialog::OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult)
+void OpenVolumeDialog::OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult)
 {
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_VOLUME_LIST);
     CButton* pButton = (CButton*) GetDlgItem(IDOK);
@@ -616,11 +577,7 @@ OpenVolumeDialog::OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * The volume filter drop-down box has changed.
- */
-void
-OpenVolumeDialog::OnVolumeFilterSelChange(void)
+void OpenVolumeDialog::OnVolumeFilterSelChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_VOLUME_FILTER);
     ASSERT(pCombo != NULL);
@@ -628,11 +585,7 @@ OpenVolumeDialog::OnVolumeFilterSelChange(void)
     LoadDriveList();
 }
 
-/*
- * Verify their selection.
- */
-void
-OpenVolumeDialog::OnOK(void)
+void OpenVolumeDialog::OnOK(void)
 {
     /*
      * Figure out the (zero-based) drive letter.
@@ -714,22 +667,12 @@ OpenVolumeDialog::OnOK(void)
     }
 }
 
-
-/*
- * User pressed the "Help" button.
- */
-void
-OpenVolumeDialog::OnHelp(void)
+void OpenVolumeDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_OPEN_VOLUME, HELP_CONTEXT);
 }
 
-
-/*
- * Set the state of the "read only" checkbox in the dialog.
- */
-void
-OpenVolumeDialog::ForceReadOnly(bool readOnly) const
+void OpenVolumeDialog::ForceReadOnly(bool readOnly) const
 {
     CButton* pButton = (CButton*) GetDlgItem(IDC_OPENVOL_READONLY);
     ASSERT(pButton != NULL);
@@ -738,5 +681,5 @@ OpenVolumeDialog::ForceReadOnly(bool readOnly) const
         pButton->SetCheck(BST_CHECKED);
     else
         pButton->SetCheck(BST_UNCHECKED);
-    LOGI("FORCED READ ONLY %d", readOnly);
+    LOGW("FORCED READ ONLY %d", readOnly);
 }

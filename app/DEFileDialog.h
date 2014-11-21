@@ -44,11 +44,23 @@ public:
     int         fOpenRsrcFork;
 
 protected:
-    // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    /*
+     * Turn off the "OK" button, which is only active when some text
+     * has been typed in the window.
+     */
+    virtual BOOL OnInitDialog(void) override;
 
+    /*
+     * Get the filename and the "open resource fork" check box.
+     */
+    virtual void DoDataExchange(CDataExchange* pDX) override;
+
+    /*
+     * The text has changed.  If there's nothing in the box, dim the
+     * "OK" button.
+     */
     afx_msg virtual void OnChange(void);
+
     afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
 private:

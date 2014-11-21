@@ -67,11 +67,22 @@ public:
     DiskImgLib::DiskImg*    fpDiskImg;
 
 private:
-    virtual bool MyDataExchange(bool saveAndValidate);
-    virtual void ShiftControls(int deltaX, int deltaY);
-    virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam);
+    virtual bool MyDataExchange(bool saveAndValidate) override;
 
+    /*
+     * Overrides base class version so we can move our stuff around.
+     */
+    virtual void ShiftControls(int deltaX, int deltaY) override;
+
+    // Grabs OnIDHelp; otherwise forwards to base class.
+    virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam) override;
+
+    // User hit the Help button.
     void OnIDHelp(void);
+
+    /*
+     * Make sure the storage prefix they entered is valid.
+     */
     bool ValidateStoragePrefix(void);
 
     //DECLARE_MESSAGE_MAP()

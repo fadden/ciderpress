@@ -29,24 +29,7 @@ const unsigned char kNufxNoFssep = 0xff;
  * ===========================================================================
  */
 
-/*
- * Extract data from a thread into a buffer.
- *
- * If "*ppText" is non-NULL and "*pLength" is > 0, the data will be read into
- * the pointed-to buffer so long as it's shorter than *pLength bytes.  The
- * value in "*pLength" will be set to the actual length used.
- *
- * If "*ppText" is NULL or the length is <= 0, the uncompressed data will be
- * placed into a buffer allocated with "new[]".
- *
- * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
- * user, and -1 value on failure.  On failure, "*ppText" and "*pLength" will
- * be valid but point at an error message.
- *
- * "which" is an anonymous GenericArchive enum.
- */
-int
-NufxEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
+int NufxEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
     CString* pErrMsg) const
 {
     NuError nerr;
@@ -148,16 +131,7 @@ bail:
     return result;
 }
 
-/*
- * Extract data from a thread to a file.  Since we're not copying to memory,
- * we can't assume that we're able to hold the entire file all at once.
- *
- * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
- * user, and -1 value on failure.  On failure, "*pMsg" holds an
- * error message.
- */
-int
-NufxEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
+int NufxEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
     ConvertHighASCII convHA, CString* pErrMsg) const
 {
     NuDataSink* pDataSink = NULL;
@@ -259,18 +233,7 @@ bail:
     return result;
 }
 
-/*
- * Find info for the thread we're about to extract.
- *
- * Given the NuRecordIdx stored in the object, find the thread whose
- * ThreadID matches "which".  Copies the NuThread structure into
- * "*pThread".
- *
- * On failure, "pErrMsg" will have a nonzero length, and contain an error
- * message describing the problem.
- */
-void
-NufxEntry::FindThreadInfo(int which, NuThread* pRetThread,
+void NufxEntry::FindThreadInfo(int which, NuThread* pRetThread,
     CString* pErrMsg) const
 {
     NuError nerr;
@@ -334,29 +297,24 @@ static const WCHAR* gFormatNames[] = {
     L"LZC-16", L"Deflate", L"Bzip2"
 };
 
-/*
- * Analyze the contents of a record to determine if it's a disk, file,
- * or "other".  Compute the total compressed and uncompressed lengths
- * of all data threads.  Return the "best" format.
- *
- * The "best format" and "record type" stuff assume that the entire
- * record contains only a disk thread or a file thread, and that any
- * format is interesting so long as it isn't "no compression".  In
- * general these will be true, because ShrinkIt and NuLib create files
- * this way.
- *
- * You could, of course, create a single record with a data thread and
- * a disk image thread, but it's a fair bet ShrinkIt would ignore one
- * or the other.
- *
- * NOTE: we don't currently work around the GSHK zero-length file bug.
- * Such records, which have a filename thread but no data threads at all,
- * will be categorized as "unknown".  We could detect the situation and
- * correct it, but we might as well flag it in a user-visible way.
- */
-void
-NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
+void NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
 {
+    /*
+     * The "best format" and "record type" stuff assume that the entire
+     * record contains only a disk thread or a file thread, and that any
+     * format is interesting so long as it isn't "no compression".  In
+     * general these will be true, because ShrinkIt and NuLib create files
+     * this way.
+     *
+     * You could, of course, create a single record with a data thread and
+     * a disk image thread, but it's a fair bet ShrinkIt would ignore one
+     * or the other.
+     *
+     * NOTE: we don't currently work around the GSHK zero-length file bug.
+     * Such records, which have a filename thread but no data threads at all,
+     * will be categorized as "unknown".  We could detect the situation and
+     * correct it, but we might as well flag it in a user-visible way.
+     */
     const NuThread* pThread;
     NuThreadID threadID;
     unsigned long idx;
@@ -442,17 +400,7 @@ NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
  * ===========================================================================
  */
 
-/*
- * Perform one-time initialization of the NufxLib library.
- *
- * Returns with an error if the NufxLib version is off.  Major version must
- * match (since it indicates an interface change), minor version must be
- * >= what we expect (in case we're relying on recent behavior changes).
- *
- * Returns 0 on success, nonzero on error.
- */
-/*static*/ CString
-NufxArchive::AppInit(void)
+/*static*/ CString NufxArchive::AppInit(void)
 {
     NuError nerr;
     CString result("");
@@ -483,15 +431,7 @@ bail:
     return result;
 }
 
-
-/*
- * Determine whether a particular kind of compression is supported by
- * NufxLib.
- *
- * Returns "true" if supported, "false" if not.
- */
-/*static*/ bool
-NufxArchive::IsCompressionSupported(NuThreadFormat format)
+/*static*/ bool NufxArchive::IsCompressionSupported(NuThreadFormat format)
 {
     NuFeature feature;
 
@@ -529,11 +469,7 @@ NufxArchive::IsCompressionSupported(NuThreadFormat format)
     return false;
 }
 
-/*
- * Display error messages... or not.
- */
-NuResult
-NufxArchive::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
+NuResult NufxArchive::NufxErrorMsgHandler(NuArchive*, void* vErrorMessage)
 {
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
@@ -544,14 +480,10 @@ NufxArchive::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
     return kNuOK;
 }
 
-/*
- * Display our progress.
- *
- * "oldName" ends up on top, "newName" on bottom.
- */
-/*static*/NuResult
-NufxArchive::ProgressUpdater(NuArchive* pArchive, void* vpProgress)
+/*static*/NuResult NufxArchive::ProgressUpdater(NuArchive* pArchive,
+    void* vpProgress)
 {
+    // "oldName" ends up on top, "newName" on bottom.
     const NuProgressData* pProgress = (const NuProgressData*) vpProgress;
     NufxArchive* pThis;
     MainWindow* pMainWin = (MainWindow*)::AfxGetMainWnd();
@@ -608,14 +540,8 @@ NufxArchive::ProgressUpdater(NuArchive* pArchive, void* vpProgress)
         return kNuOK;
 }
 
-
-/*
- * Finish instantiating a NufxArchive object by opening an existing file.
- *
- * Returns an error string on failure, or NULL on success.
- */
-GenericArchive::OpenResult
-NufxArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
+GenericArchive::OpenResult NufxArchive::Open(const WCHAR* filename,
+    bool readOnly, CString* pErrMsg)
 {
     NuError nerr;
     CString errMsg;
@@ -669,14 +595,7 @@ bail:
         return kResultSuccess;
 }
 
-
-/*
- * Finish instantiating a NufxArchive object by creating a new archive.
- *
- * Returns an error string on failure, or "" on success.
- */
-CString
-NufxArchive::New(const WCHAR* filename, const void* options)
+CString NufxArchive::New(const WCHAR* filename, const void* options)
 {
     NuError nerr;
     CString retmsg;
@@ -710,11 +629,7 @@ bail:
     return retmsg;
 }
 
-/*
- * Set some standard callbacks and feature flags.
- */
-NuError
-NufxArchive::SetCallbacks(void)
+NuError NufxArchive::SetCallbacks(void)
 {
     NuError nerr;
 
@@ -745,13 +660,7 @@ bail:
     return nerr;
 }
 
-/*
- * User has updated their preferences.  Take note.
- *
- * (This is also called the first time through.)
- */
-void
-NufxArchive::PreferencesChanged(void)
+void NufxArchive::PreferencesChanged(void)
 {
     NuError nerr;
     const Preferences* pPreferences = GET_PREFERENCES();
@@ -774,11 +683,7 @@ NufxArchive::PreferencesChanged(void)
     NuSetValue(fpArchive, kNuValueHandleBadMac, val);
 }
 
-/*
- * Report on what NuFX is capable of.
- */
-long
-NufxArchive::GetCapability(Capability cap)
+long NufxArchive::GetCapability(Capability cap)
 {
     switch (cap) {
     case kCapCanTest:
@@ -812,15 +717,12 @@ NufxArchive::GetCapability(Capability cap)
     }
 }
 
-/*
- * Load the contents of an archive into the GenericEntry/NufxEntry list.
- *
- * We will need to set an error handler if we want to be able to do things
- * like "I found a bad CRC, did you want me to keep trying anyway?".
- */
-NuError
-NufxArchive::LoadContents(void)
+NuError NufxArchive::LoadContents(void)
 {
+    /*
+     * We will need to set an error handler if we want to be able to do things
+     * like "I found a bad CRC, did you want me to keep trying anyway?".
+     */
     long counter = 0;
     NuError result;
 
@@ -846,11 +748,7 @@ NufxArchive::LoadContents(void)
     return result;
 }
 
-/*
- * Reload the contents.
- */
-CString
-NufxArchive::Reload(void)
+CString NufxArchive::Reload(void)
 {
     NuError nerr;
     CString errMsg;
@@ -871,12 +769,7 @@ NufxArchive::Reload(void)
     return errMsg;
 }
 
-/*
- * Reload the contents of the archive, showing an error message if the
- * reload fails.
- */
-NuError
-NufxArchive::InternalReload(CWnd* pMsgWnd)
+NuError NufxArchive::InternalReload(CWnd* pMsgWnd)
 {
     CString errMsg;
 
@@ -890,11 +783,7 @@ NufxArchive::InternalReload(CWnd* pMsgWnd)
     return kNuErrNone;
 }
 
-/*
- * Static callback function.  Used for scanning the contents of an archive.
- */
-NuResult
-NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
+NuResult NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
 {
     const NuRecord* pRecord = (const NuRecord*) vpRecord;
     NufxArchive* pThis;
@@ -933,11 +822,7 @@ NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
     return kNuOK;
 }
 
-/*
- * Convert a NuDateTime structure to a time_t.
- */
-/*static*/ time_t
-NufxArchive::DateTimeToSeconds(const NuDateTime* pDateTime)
+/*static*/ time_t NufxArchive::DateTimeToSeconds(const NuDateTime* pDateTime)
 {
     if (pDateTime->second == 0 &&
         pDateTime->minute == 0 &&
@@ -983,12 +868,7 @@ NufxArchive::DateTimeToSeconds(const NuDateTime* pDateTime)
     return (time_t) modTime.GetTime();
 }
 
-/*
- * Callback from a DataSource that is done with a buffer.  Use for memory
- * allocated with new[].
- */
-/*static*/ NuResult
-NufxArchive::ArrayDeleteHandler(NuArchive* pArchive, void* ptr)
+/*static*/ NuResult NufxArchive::ArrayDeleteHandler(NuArchive* pArchive, void* ptr)
 {
     delete[] ptr;
     return kNuOK;
@@ -1001,19 +881,14 @@ NufxArchive::ArrayDeleteHandler(NuArchive* pArchive, void* ptr)
  * ===========================================================================
  */
 
-/*
- * Process a bulk "add" request.
- *
- * This calls into the GenericArchive "AddFile" function, which does
- * Win32-specific processing.  That function calls our DoAddFile function,
- * which does the NuFX stuff.
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
+bool NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     const AddFilesDialog* pAddOpts)
 {
+    /*
+     * This calls into the GenericArchive "AddFile" function, which does
+     * Win32-specific processing.  That function calls our DoAddFile function,
+     * which does the NuFX stuff.
+     */
     NuError nerr;
     CString errMsg;
     WCHAR curDir[MAX_PATH] = L"";
@@ -1103,11 +978,7 @@ bail:
     return retVal;
 }
 
-/*
- * Add a single disk to the archive.
- */
-bool
-NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
+bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     const AddFilesDialog* pAddOpts)
 {
     NuError nerr;
@@ -1279,13 +1150,7 @@ bail:
     return retVal;
 }
 
-/*
- * Do the archive-dependent part of the file add, including things like
- * adding comments.  This is eventually called by AddFile() during bulk
- * adds.
- */
-NuError
-NufxArchive::DoAddFile(const AddFilesDialog* pAddOpts,
+NuError NufxArchive::DoAddFile(const AddFilesDialog* pAddOpts,
     FileDetails* pDetails)
 {
     NuError err;
@@ -1337,11 +1202,7 @@ bail_quiet:
     return err;
 }
 
-/*
- * Prepare to add files.
- */
-void
-NufxArchive::AddPrep(CWnd* pMsgWnd, const AddFilesDialog* pAddOpts)
+void NufxArchive::AddPrep(CWnd* pMsgWnd, const AddFilesDialog* pAddOpts)
 {
     NuError nerr;
     const Preferences* pPreferences = GET_PREFERENCES();
@@ -1375,13 +1236,7 @@ NufxArchive::AddPrep(CWnd* pMsgWnd, const AddFilesDialog* pAddOpts)
     NuSetExtraData(fpArchive, this);
 }
 
-/*
- * Reset some things after we finish adding files.  We don't necessarily
- * want these to stay in effect for other operations, e.g. extracting
- * (though that is currently handled within CiderPress).
- */
-void
-NufxArchive::AddFinish(void)
+void NufxArchive::AddFinish(void)
 {
     NuSetErrorHandler(fpArchive, NULL);
     NuSetValue(fpArchive, kNuValueHandleExisting, kNuMaybeOverwrite);
@@ -1390,12 +1245,8 @@ NufxArchive::AddFinish(void)
     //fBulkProgress = false;
 }
 
-
-/*
- * Error handler callback for "bulk" adds.
- */
-/*static*/ NuResult
-NufxArchive::BulkAddErrorHandler(NuArchive* pArchive, void* vErrorStatus)
+/*static*/ NuResult NufxArchive::BulkAddErrorHandler(NuArchive* pArchive,
+    void* vErrorStatus)
 {
     const NuErrorStatus* pErrorStatus = (const NuErrorStatus*)vErrorStatus;
     NufxArchive* pThis;
@@ -1437,12 +1288,7 @@ NufxArchive::BulkAddErrorHandler(NuArchive* pArchive, void* vErrorStatus)
     return result;
 }
 
-/*
- * Decide whether or not to replace an existing file (during extract)
- * or record (during add).
- */
-NuResult
-NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
+NuResult NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
 {
     NuResult result = kNuOK;
 
@@ -1498,13 +1344,7 @@ bail:
     return result;
 }
 
-/*
- * A file that used to be there isn't anymore.
- *
- * This should be exceedingly rare.
- */
-NuResult
-NufxArchive::HandleAddNotFound(const NuErrorStatus* pErrorStatus)
+NuResult NufxArchive::HandleAddNotFound(const NuErrorStatus* pErrorStatus)
 {
     CString errMsg;
 
@@ -1522,11 +1362,7 @@ NufxArchive::HandleAddNotFound(const NuErrorStatus* pErrorStatus)
  * ===========================================================================
  */
 
-/*
- * Test the records represented in the selection set.
- */
-bool
-NufxArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
+bool NufxArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 {
     NuError nerr;
     NufxEntry* pEntry;
@@ -1579,11 +1415,7 @@ bail:
  * ===========================================================================
  */
 
-/*
- * Delete the records represented in the selection set.
- */
-bool
-NufxArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
+bool NufxArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 {
     NuError nerr;
     NufxEntry* pEntry;
@@ -1638,11 +1470,7 @@ bail:
  * ===========================================================================
  */
 
-/*
- * Rename the records represented in the selection set.
- */
-bool
-NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
+bool NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 {
     CString errMsg;
     NuError nerr;
@@ -1733,16 +1561,7 @@ NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     return retVal;
 }
 
-
-/*
- * Verify that the a name is suitable.  Called by RenameEntryDialog.
- *
- * Tests for context-specific syntax and checks for duplicates.
- *
- * Returns an empty string on success, or an error message on failure.
- */
-CString
-NufxArchive::TestPathName(const GenericEntry* pGenericEntry,
+CString NufxArchive::TestPathName(const GenericEntry* pGenericEntry,
     const CString& basePath, const CString& newName, char newFssep) const
 {
     CString errMsg;
@@ -1796,24 +1615,21 @@ bail:
  * ===========================================================================
  */
 
-/*
- * Recompress the files in the selection set.
- *
- * We have to uncompress the files into memory and then recompress them.
- * We don't want to flush after every file (too slow), but we can't wait
- * until they're expanded (unbounded memory requirements).  So we have
- * to keep expanding until we reach a certain limit, then call flush to
- * push the changes out.
- *
- * Since we're essentially making the changes in place (it's actually
- * all getting routed through the temp file), we need to delete the thread
- * and re-add it.  This isn't quite as thorough as "launder", which
- * actually reconstructs the entire record.
- */
-bool
-NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
+bool NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
     const RecompressOptionsDialog* pRecompOpts)
 {
+    /*
+     * We have to uncompress the files into memory and then recompress them.
+     * We don't want to flush after every file (too slow), but we can't wait
+     * until they're expanded (unbounded memory requirements).  So we have
+     * to keep expanding until we reach a certain limit, then call flush to
+     * push the changes out.
+     *
+     * Since we're essentially making the changes in place (it's actually
+     * all getting routed through the temp file), we need to delete the thread
+     * and re-add it.  This isn't quite as thorough as "launder", which
+     * actually reconstructs the entire record.
+     */
     const int kMaxSizeInMemory = 2 * 1024 * 1024;   // 2MB
     CString errMsg;
     NuError nerr;
@@ -1934,13 +1750,7 @@ bail:
     return retVal;
 }
 
-/*
- * Recompress one thread.
- *
- * Returns "true" if things went okay, "false" on a fatal failure.
- */
-bool
-NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
+bool NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     const RecompressOptionsDialog* pRecompOpts, long* pSizeInMemory,
     CString* pErrMsg)
 {
@@ -2032,18 +1842,16 @@ bail:
  * ===========================================================================
  */
 
-/*
- * Transfer the selected files out of this archive and into another.
- *
- * We get one entry in the selection set per record.
- *
- * I think this now throws kXferCancelled whenever it's supposed to.  Not
- * 100% sure, but it looks good.
- */
-GenericArchive::XferStatus
-NufxArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
-    ActionProgressDialog* pActionProgress, const XferFileOptions* pXferOpts)
+GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
+    SelectionSet* pSelSet, ActionProgressDialog* pActionProgress,
+    const XferFileOptions* pXferOpts)
 {
+    /*
+     * We get one entry in the selection set per record.
+     *
+     * I think this now throws kXferCancelled whenever it's supposed to.  Not
+     * 100% sure, but it looks good.
+     */
     LOGI("NufxArchive XferSelection!");
     XferStatus retval = kXferFailed;
     unsigned char* dataBuf = NULL;
@@ -2202,31 +2010,17 @@ bail:
     return retval;
 }
 
-/*
- * Prepare to transfer files into a NuFX archive.
- *
- * We set the "allow duplicates" flag because DOS 3.3 volumes can have
- * files with duplicate names.
- */
-void
-NufxArchive::XferPrepare(const XferFileOptions* pXferOpts)
+void NufxArchive::XferPrepare(const XferFileOptions* pXferOpts)
 {
+    /*
+     * We set the "allow duplicates" flag because DOS 3.3 volumes can have
+     * files with duplicate names.
+     */
     LOGI("  NufxArchive::XferPrepare");
     (void) NuSetValue(fpArchive, kNuValueAllowDuplicates, true);
 }
 
-/*
- * Transfer the data and optional resource fork of a single file into the
- * NuFX archive.
- *
- * "dataLen" and "rsrcLen" will be -1 if the corresponding fork doesn't
- * exist.
- *
- * Returns 0 on success, -1 on failure.  On success, "*pDataBuf" and
- * "*pRsrcBuf" are set to NULL (ownership transfers to NufxLib).
- */
-CString
-NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
+CString NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
     long dataLen, unsigned char** pRsrcBuf, long rsrcLen)
 {
     NuError nerr;
@@ -2360,15 +2154,12 @@ bail:
     return errMsg;
 }
 
-/*
- * Abort the transfer.
- *
- * Since we don't do any interim flushes, we can just call NuAbort.  If that
- * weren't the case, we would need to delete all records and flush.
- */
-void
-NufxArchive::XferAbort(CWnd* pMsgWnd)
+void NufxArchive::XferAbort(CWnd* pMsgWnd)
 {
+    /*
+     * Since we don't do any interim flushes, we can just call NuAbort.  If that
+     * weren't the case, we would need to delete all records and flush.
+     */
     NuError nerr;
     CString errMsg;
 
@@ -2381,11 +2172,7 @@ NufxArchive::XferAbort(CWnd* pMsgWnd)
     }
 }
 
-/*
- * Flush all changes to the archive.
- */
-void
-NufxArchive::XferFinish(CWnd* pMsgWnd)
+void NufxArchive::XferFinish(CWnd* pMsgWnd)
 {
     NuError nerr;
     CString errMsg;
@@ -2425,8 +2212,7 @@ bail:
  *
  * Returns "true" on success, "false" on failure.
  */
-bool
-NufxArchive::GetComment(CWnd* pMsgWnd, const GenericEntry* pGenericEntry,
+bool NufxArchive::GetComment(CWnd* pMsgWnd, const GenericEntry* pGenericEntry,
     CString* pStr)
 {
     NufxEntry* pEntry = (NufxEntry*) pGenericEntry;
@@ -2472,24 +2258,21 @@ NufxArchive::GetComment(CWnd* pMsgWnd, const GenericEntry* pGenericEntry,
     return true;
 }
 
-/*
- * Set the comment.  This requires either adding a new comment or updating
- * an existing one.  The latter is constrained by the maximum size of the
- * comment buffer.
- *
- * We want to update in place whenever possible because it's faster (don't
- * have to rewrite the entire archive), but that really only holds for new
- * archives or if we foolishly set the kNuValueModifyOrig flag.
- *
- * Cleanest approach is to delete the existing thread and add a new one.
- * If somebody complains we can try to be smarter about it.
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-NufxArchive::SetComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
+bool NufxArchive::SetComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
     const CString& str)
 {
+    /*
+     * Set the comment.  This requires either adding a new comment or updating
+     * an existing one.  The latter is constrained by the maximum size of the
+     * comment buffer.
+     *
+     * We want to update in place whenever possible because it's faster (don't
+     * have to rewrite the entire archive), but that really only holds for new
+     * archives or if we foolishly set the kNuValueModifyOrig flag.
+     *
+     * Cleanest approach is to delete the existing thread and add a new one.
+     * If somebody complains we can try to be smarter about it.
+     */
     NuDataSource* pSource = NULL;
     NufxEntry* pEntry = (NufxEntry*) pGenericEntry;
     NuError nerr;
@@ -2578,13 +2361,7 @@ bail:
     return retVal;
 }
 
-/*
- * Remove a comment.
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-NufxArchive::DeleteComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry)
+bool NufxArchive::DeleteComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry)
 {
     CString errMsg;
     NuError nerr;
@@ -2626,21 +2403,18 @@ bail:
 }
 
 
-/*
- * Set file properties via the NuSetRecordAttr call.
- *
- * Get the existing properties, copy the fields from FileProps over, and
- * set them.
- *
- * [currently only supports file type, aux type, and access flags]
- *
- * Technically we should reload the GenericArchive from the NufxArchive,
- * but the set of changes is pretty small, so we just make them here.
- */
-bool
-NufxArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
+bool NufxArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
     const FileProps* pProps)
 {
+    /*
+     * Sets file properties via the NuSetRecordAttr call.
+     *
+     * Gets the existing properties, copies the fields from FileProps over, and
+     * sets them. [currently only supports file type, aux type, and access flags]
+     *
+     * Technically we should reload the GenericArchive from the NufxArchive,
+     * but the set of changes is pretty small, so we just make them here.
+     */
     NuError nerr;
     NufxEntry* pNufxEntry = (NufxEntry*) pEntry;
     const NuRecord* pRecord;

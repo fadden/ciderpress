@@ -29,6 +29,7 @@ public:
         return CancelDialog::Create(&fCancel, IDD_PROGRESS_COUNTER,
                     pParentWnd);
     }
+
     /* enable the parent window before we're destroyed */
     virtual BOOL DestroyWindow(void) {
         if (fpParentWnd != NULL)
@@ -50,7 +51,7 @@ public:
     bool GetCancel(void) const { return fCancel; }
 
 private:
-    BOOL OnInitDialog(void) {
+    BOOL OnInitDialog(void) override {
         CancelDialog::OnInitDialog();
 
         CWnd* pWnd = GetDlgItem(IDC_PROGRESS_COUNTER_DESC);

@@ -12,7 +12,7 @@
 #include "MyApp.h"
 #include "../util/UtilLib.h"
 
-static const char* kDefaultTempPath = ".";
+static const WCHAR kDefaultTempPath[] = L".";
 
 /* registry section for columns */
 static const WCHAR kColumnSect[] = L"columns";
@@ -44,7 +44,7 @@ static const WCHAR kMiscSect[] = L"misc";
  * index into the table.
  */
 const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
-    /**/ { kPrefNumUnknown,             kPTNone, NULL,           NULL },
+    /**/ { kPrefNumUnknown,             kPTNone, NULL,          NULL },
 
     { kPrAddIncludeSubFolders,          kBool,  kAddSect,       L"include-sub-folders" },
     { kPrAddStripFolderNames,           kBool,  kAddSect,       L"strip-folder-names" },
@@ -146,10 +146,6 @@ const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
     { kPrDiskImageCreateFormat,         kLong,  NULL,           NULL },
 };
 
-/*
- * Constructor.  There should be only one Preferences object in the
- * application, so this should only be run once.
- */
 Preferences::Preferences(void)
 {
     LOGI("Initializing Preferences");
@@ -268,11 +264,7 @@ Preferences::Preferences(void)
  * ==========================================================================
  */
 
-/*
- * Restore column widths.
- */
-void
-ColumnLayout::LoadFromRegistry(const WCHAR* section)
+void ColumnLayout::LoadFromRegistry(const WCHAR* section)
 {
     WCHAR numBuf[8];
     int i;
@@ -289,11 +281,7 @@ ColumnLayout::LoadFromRegistry(const WCHAR* section)
     fAscending = (gMyApp.GetProfileInt(section, L"ascending", fAscending) != 0);
 }
 
-/*
- * Store column widths.
- */
-void
-ColumnLayout::SaveToRegistry(const WCHAR* section)
+void ColumnLayout::SaveToRegistry(const WCHAR* section)
 {
     WCHAR numBuf[8];
     int i;
@@ -314,11 +302,7 @@ ColumnLayout::SaveToRegistry(const WCHAR* section)
  * ==========================================================================
  */
 
-/*
- * Get a default value for the temp path.
- */
-void
-Preferences::InitTempPath(void)
+void Preferences::InitTempPath(void)
 {
     WCHAR buf[MAX_PATH];
     DWORD len;
@@ -351,11 +335,7 @@ Preferences::InitTempPath(void)
 //  ::GetCurrentDirectory(sizeof(buf2), buf2);
 }
 
-/*
- * Set default values for the various folders.
- */
-void
-Preferences::InitFolders(void)
+void Preferences::InitFolders(void)
 {
     CString path;
 
@@ -375,14 +355,10 @@ Preferences::InitFolders(void)
         SetPrefString(kPrOpenWAVFolder, buf);
     }
 
-    LOGI("Default folder is '%ls'", GetPrefString(kPrExtractFileFolder));
+    LOGD("Default folder is '%ls'", GetPrefString(kPrExtractFileFolder));
 }
 
-/*
- * Get the path to the "My Documents" folder.
- */
-bool
-Preferences::GetMyDocuments(CString* pPath)
+bool Preferences::GetMyDocuments(CString* pPath)
 {
     LPITEMIDLIST pidl = NULL;
     LPMALLOC lpMalloc = NULL;
@@ -395,13 +371,13 @@ Preferences::GetMyDocuments(CString* pPath)
 
     hr = SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl);
     if (FAILED(hr)) {
-        LOGI("WARNING: unable to get CSIDL_PERSONAL");
+        LOGW("WARNING: unable to get CSIDL_PERSONAL");
         goto bail;
     }
 
     result = (Pidl::GetPath(pidl, pPath) != FALSE);
     if (!result) {
-        LOGI("WARNING: unable to convert CSIDL_PERSONAL to path");
+        LOGW("WARNING: unable to convert CSIDL_PERSONAL to path");
         /* fall through with "result" */
     }
 
@@ -411,15 +387,7 @@ bail:
     return result;
 }
 
-/*
- * Determine the type of compression to use as a default, based on what this
- * version of NufxLib supports.
- *
- * Note this happens *before* the AppInit call, so we should restrict this to
- * things that are version-safe for all of NufxLib v2.x.
- */
-int
-Preferences::DefaultCompressionType(void)
+int Preferences::DefaultCompressionType(void)
 {
     if (NufxArchive::IsCompressionSupported(kNuThreadFormatLZW2))
         return kNuThreadFormatLZW2;
@@ -427,47 +395,43 @@ Preferences::DefaultCompressionType(void)
         return kNuThreadFormatUncompressed;
 }
 
-/*
- * Preference getters and setters.
- */
-bool
-Preferences::GetPrefBool(PrefNum num) const
+bool Preferences::GetPrefBool(PrefNum num) const
 {
     if (!ValidateEntry(num, kBool))
         return false;
     //return (bool) (fValues[num]);
     return (bool) ((long) (fValues[num]) != 0);
 }
-void
-Preferences::SetPrefBool(PrefNum num, bool val)
+
+void Preferences::SetPrefBool(PrefNum num, bool val)
 {
     if (!ValidateEntry(num, kBool))
         return;
     fValues[num] = (void*) val;
 }
-long
-Preferences::GetPrefLong(PrefNum num) const
+
+long Preferences::GetPrefLong(PrefNum num) const
 {
     if (!ValidateEntry(num, kLong))
         return -1;
     return (long) fValues[num];
 }
-void
-Preferences::SetPrefLong(PrefNum num, long val)
+
+void Preferences::SetPrefLong(PrefNum num, long val)
 {
     if (!ValidateEntry(num, kLong))
         return;
     fValues[num] = (void*) val;
 }
-const WCHAR*
-Preferences::GetPrefString(PrefNum num) const
+
+const WCHAR* Preferences::GetPrefString(PrefNum num) const
 {
     if (!ValidateEntry(num, kString))
         return NULL;
     return (const WCHAR*) fValues[num];
 }
-void
-Preferences::SetPrefString(PrefNum num, const WCHAR* str)
+
+void Preferences::SetPrefString(PrefNum num, const WCHAR* str)
 {
     if (!ValidateEntry(num, kString))
         return;
@@ -479,35 +443,23 @@ Preferences::SetPrefString(PrefNum num, const WCHAR* str)
     }
 }
 
-/*
- * Free storage for any string entries.
- */
-void
-Preferences::FreeStringValues(void)
+void Preferences::FreeStringValues(void)
 {
-    int i;
-
-    for (i = 0; i < kPrefNumLastEntry; i++) {
+    for (int i = 0; i < kPrefNumLastEntry; i++) {
         if (fPrefMaps[i].type == kString) {
             delete[] fValues[i];
         }
     }
 }
 
-
-/*
- * Do a quick scan of the PrefMaps to identify duplicate, misplaced, and
- * missing entries.
- */
-void
-Preferences::ScanPrefMaps(void)
+void Preferences::ScanPrefMaps(void)
 {
     int i, j;
 
     /* scan PrefNum */
     for (i = 0; i < kPrefNumLastEntry; i++) {
         if (fPrefMaps[i].num != i) {
-            LOGI("HEY: PrefMaps[%d] has num=%d", i, fPrefMaps[i].num);
+            LOGE("HEY: PrefMaps[%d] has num=%d", i, fPrefMaps[i].num);
             ASSERT(false);
             break;
         }
@@ -526,7 +478,7 @@ Preferences::ScanPrefMaps(void)
                 wcsicmp(fPrefMaps[i].registrySection,
                         fPrefMaps[j].registrySection) == 0)
             {
-                LOGI("HEY: PrefMaps[%d] and [%d] both have '%ls'/'%ls'",
+                LOGE("HEY: PrefMaps[%d] and [%d] both have '%ls'/'%ls'",
                     i, j, fPrefMaps[i].registrySection,
                     fPrefMaps[i].registryKey);
                 ASSERT(false);
@@ -536,11 +488,7 @@ Preferences::ScanPrefMaps(void)
     }
 }
 
-/*
- * Load preferences from the registry.
- */
-int
-Preferences::LoadFromRegistry(void)
+int Preferences::LoadFromRegistry(void)
 {
     CString sval;
     bool bval;
@@ -581,11 +529,7 @@ Preferences::LoadFromRegistry(void)
     return 0;
 }
 
-/*
- * Save preferences to the registry.
- */
-int
-Preferences::SaveToRegistry(void)
+int Preferences::SaveToRegistry(void)
 {
     LOGI("Saving preferences to registry");
 

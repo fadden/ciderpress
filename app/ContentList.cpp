@@ -35,12 +35,7 @@ ContentList::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 #endif
 
 
-/*
- * Put the window into "report" mode, and add a client edge since we're not
- * using one on the frame window.
- */
-BOOL
-ContentList::PreCreateWindow(CREATESTRUCT& cs)
+BOOL ContentList::PreCreateWindow(CREATESTRUCT& cs)
 {
     if (!CListCtrl::PreCreateWindow(cs))
         return FALSE;
@@ -53,27 +48,18 @@ ContentList::PreCreateWindow(CREATESTRUCT& cs)
     return TRUE;
 }
 
-/*
- * Auto-cleanup the object.
- */
-void
-ContentList::PostNcDestroy(void)
+void ContentList::PostNcDestroy(void)
 {
     LOGI("ContentList PostNcDestroy");
     delete this;
 }
 
-static inline int
-MaxVal(int a, int b)
+static inline int MaxVal(int a, int b)
 {
     return a > b ? a : b;
 }
 
-/*
- * Create and populate list control.
- */
-int
-ContentList::OnCreate(LPCREATESTRUCT lpcs)
+int ContentList::OnCreate(LPCREATESTRUCT lpcs)
 {
     CString colHdrs[kNumVisibleColumns] = {
         "Pathname", "Type", "Aux", "Mod Date",
@@ -126,12 +112,7 @@ ContentList::OnCreate(LPCREATESTRUCT lpcs)
     return 0;
 }
 
-/*
- * If we're being shut down, save off the column width info before the window
- * gets destroyed.
- */
-void
-ContentList::OnDestroy(void)
+void ContentList::OnDestroy(void)
 {
     LOGI("ContentList OnDestroy");
 
@@ -139,22 +120,13 @@ ContentList::OnDestroy(void)
     CListCtrl::OnDestroy();
 }
 
-/*
- * The system colors are changing; delete the image list and re-load it.
- */
-void
-ContentList::OnSysColorChange(void)
+void ContentList::OnSysColorChange(void)
 {
     fHdrImageList.DeleteImageList();
     LoadHeaderImages();
 }
 
-/*
- * They've clicked on a header.  Figure out what kind of sort order we want
- * to use.
- */
-void
-ContentList::OnColumnClick(NMHDR* pnmh, LRESULT* pResult)
+void ContentList::OnColumnClick(NMHDR* pnmh, LRESULT* pResult)
 {
     NM_LISTVIEW* pnmlv = (NM_LISTVIEW*) pnmh;
 
@@ -171,28 +143,14 @@ ContentList::OnColumnClick(NMHDR* pnmh, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * Copy the current column widths out to the Preferences object.
- */
-void
-ContentList::ExportColumnWidths(void)
+void ContentList::ExportColumnWidths(void)
 {
     //LOGI("ExportColumnWidths");
     for (int i = 0; i < kNumVisibleColumns; i++)
         fpLayout->SetColumnWidth(i, GetColumnWidth(i));
 }
 
-/*
- * Call this when the column widths are changed programmatically (e.g. by
- * the preferences page enabling or disabling columns).
- *
- * We want to set any defaulted entries to actual values so that, if the
- * font properties change, column A doesn't resize when column B is tweaked
- * in the Preferences dialog.  (If it's still set to "default", then when
- * we say "update all widths" the defaultedness will be re-evaluated.)
- */
-void
-ContentList::NewColumnWidths(void)
+void ContentList::NewColumnWidths(void)
 {
     for (int i = 0; i < kNumVisibleColumns; i++) {
         int width = fpLayout->GetColumnWidth(i);
@@ -205,38 +163,7 @@ ContentList::NewColumnWidths(void)
     }
 }
 
-#if 0   // replaced by GenericArchive reload flag
-/*
- * If we're in the middle of an update, invalidate the contents of the list
- * so that we don't try to redraw from underlying storage that is no longer
- * there.
- *
- * If we call DeleteAllItems the list will immediately blank itself.  This
- * rather sucks.  Instead, we just mark it as invalid and have the "virtual"
- * list goodies return empty strings.  If the window has to redraw it won't
- * do so properly, but most of the time it looks good and it beats flashing
- * blank or crashing.
- */
-void
-ContentList::Invalidate(void)
-{
-    fInvalid = true;
-}
-#endif
-
-/*
- * The archive contents have changed.  Reload the list from the
- * GenericArchive.
- *
- * Reloading causes the current selection and view position to be lost.  This
- * is sort of annoying if all we did is add a comment, so we try to save the
- * selection and reapply it.  To do this correctly we need some sort of
- * unique identifier so we can spot the records that have come back.
- *
- * Nothing in GenericArchive should be considered valid at this point.
- */
-void
-ContentList::Reload(bool saveSelection)
+void ContentList::Reload(bool saveSelection)
 {
     LOGI("Reloading ContentList");
     CWaitCursor waitc;
@@ -271,14 +198,7 @@ ContentList::Reload(bool saveSelection)
     EnsureVisible(top, false);
 }
 
-#if 1
-/*
- * Get the "selection serials" from the list of selected items.
- *
- * The caller is responsible for delete[]ing the return value.
- */
-long*
-ContentList::GetSelectionSerials(long* pSelCount)
+long* ContentList::GetSelectionSerials(long* pSelCount)
 {
     long* savedSel = NULL;
     long maxCount;
@@ -313,11 +233,7 @@ ContentList::GetSelectionSerials(long* pSelCount)
     return savedSel;
 }
 
-/*
- * Restore the selection from the "savedSel" list.
- */
-void
-ContentList::RestoreSelection(const long* savedSel, long selCount)
+void ContentList::RestoreSelection(const long* savedSel, long selCount)
 {
     LOGI("RestoreSelection (selCount=%d)", selCount);
     if (savedSel == NULL)
@@ -341,14 +257,8 @@ ContentList::RestoreSelection(const long* savedSel, long selCount)
         }
     }
 }
-#endif
 
-
-/*
- * Call this when the sort order changes.
- */
-void
-ContentList::NewSortOrder(void)
+void ContentList::NewSortOrder(void)
 {
     CWaitCursor wait;       // automatically changes mouse to hourglass
     int column;
@@ -361,14 +271,8 @@ ContentList::NewSortOrder(void)
     SortItems(CompareFunc, column);
 }
 
-/*
- * Get the file type display string.
- *
- * "buf" must be able to hold at least 4 characters plus the NUL (i.e. 5).
- * Use kFileTypeBufLen.
- */
-/*static*/ void
-ContentList::MakeFileTypeDisplayString(const GenericEntry* pEntry, WCHAR* buf)
+/*static*/ void ContentList::MakeFileTypeDisplayString(const GenericEntry* pEntry,
+    WCHAR* buf)
 {
     bool isDir =
         pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir ||
@@ -430,14 +334,7 @@ ContentList::MakeFileTypeDisplayString(const GenericEntry* pEntry, WCHAR* buf)
     }
 }
 
-/*
- * Convert an HFS file/creator type into a string.
- *
- * "buf" must be able to hold at least 4 characters plus the NUL.  Use
- * kFileTypeBufLen.
- */
-/*static*/ void
-ContentList::MakeMacTypeString(unsigned long val, WCHAR* buf)
+/*static*/ void ContentList::MakeMacTypeString(unsigned long val, WCHAR* buf)
 {
     /* expand longword with ASCII type bytes */
     buf[0] = (unsigned char) (val >> 24);
@@ -453,14 +350,8 @@ ContentList::MakeMacTypeString(unsigned long val, WCHAR* buf)
     }
 }
 
-/*
- * Get the aux type display string.
- *
- * "buf" must be able to hold at least 5 characters plus the NUL (i.e. 6).
- * Use kFileTypeBufLen.
- */
-/*static*/ void
-ContentList::MakeAuxTypeDisplayString(const GenericEntry* pEntry, WCHAR* buf)
+/*static*/ void ContentList::MakeAuxTypeDisplayString(const GenericEntry* pEntry,
+    WCHAR* buf)
 {
     bool isDir =
         pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir ||
@@ -481,15 +372,7 @@ ContentList::MakeAuxTypeDisplayString(const GenericEntry* pEntry, WCHAR* buf)
     }
 }
 
-
-/*
- * Generate the funky ratio display string.  While we're at it, return a
- * numeric value that we can sort on.
- *
- * "buf" must be able to hold at least 6 chars plus the NULL.
- */
-void
-ContentList::MakeRatioDisplayString(const GenericEntry* pEntry, WCHAR* buf,
+void ContentList::MakeRatioDisplayString(const GenericEntry* pEntry, WCHAR* buf,
     int* pPerc)
 {
     LONGLONG totalLen, totalCompLen;
@@ -508,15 +391,7 @@ ContentList::MakeRatioDisplayString(const GenericEntry* pEntry, WCHAR* buf,
     }
 }
 
-
-/*
- * Return the value for a particular row and column.
- *
- * This gets called *a lot* while the list is being drawn, scrolled, etc.
- * Don't do anything too expensive.
- */
-void
-ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
+void ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
 {
     static const WCHAR kAccessBits[] = L"dnb  iwr";
     LV_DISPINFO* plvdi = (LV_DISPINFO*) pnmh;
@@ -616,12 +491,10 @@ ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
     *pResult = 0;
 }
 
-
 /*
  * Helper functions for sort routine.
  */
-static inline int
-CompareUnsignedLong(unsigned long u1, unsigned long u2)
+static inline int CompareUnsignedLong(unsigned long u1, unsigned long u2)
 {
     if (u1 < u2)
         return -1;
@@ -630,8 +503,7 @@ CompareUnsignedLong(unsigned long u1, unsigned long u2)
     else
         return 0;
 }
-static inline int
-CompareLONGLONG(LONGLONG u1, LONGLONG u2)
+static inline int CompareLONGLONG(LONGLONG u1, LONGLONG u2)
 {
     if (u1 < u2)
         return -1;
@@ -640,8 +512,7 @@ CompareLONGLONG(LONGLONG u1, LONGLONG u2)
     else
         return 0;
 }
-static inline int
-CompareTime(time_t t1, time_t t2)
+static inline int CompareTime(time_t t1, time_t t2)
 {
     if (t1 < t2)
         return -1;
@@ -651,11 +522,8 @@ CompareTime(time_t t1, time_t t2)
         return 0;
 }
 
-/*
- * Static comparison function for list sorting.
- */
-int CALLBACK
-ContentList::CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+int CALLBACK ContentList::CompareFunc(LPARAM lParam1, LPARAM lParam2,
+    LPARAM lParamSort)
 {
     const GenericEntry* pEntry1 = (const GenericEntry*) lParam1;
     const GenericEntry* pEntry2 = (const GenericEntry*) lParam2;
@@ -730,16 +598,7 @@ ContentList::CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
     return result;
 }
 
-/*
- * Fill the columns with data from the archive entries.  We use a "virtual"
- * list control to avoid storing everything multiple times.  However, we
- * still create one item per entry so that the list control will do most
- * of the sorting for us (otherwise we have to do the sorting ourselves).
- *
- * Someday we should probably move to a wholly virtual list view.
- */
-int
-ContentList::LoadData(void)
+int ContentList::LoadData(void)
 {
     GenericEntry* pEntry;
     LV_ITEM lvi;
@@ -781,12 +640,7 @@ ContentList::LoadData(void)
     return 0;
 }
 
-
-/*
- * Return the default width for the specified column.
- */
-int
-ContentList::GetDefaultWidth(int col)
+int ContentList::GetDefaultWidth(int col)
 {
     int retval;
 
@@ -826,12 +680,7 @@ ContentList::GetDefaultWidth(int col)
     return retval;
 }
 
-
-/*
- * Set the up/down sorting arrow as appropriate.
- */
-void
-ContentList::SetSortIcon(void)
+void ContentList::SetSortIcon(void)
 {
     CHeaderCtrl* pHeader = GetHeaderCtrl();
     ASSERT(pHeader != NULL);
@@ -857,16 +706,7 @@ ContentList::SetSortIcon(void)
     }
 }
 
-
-/*
- * Handle a double-click on an item.
- *
- * The double-click should single-select the item, so we can throw it
- * straight into the viewer.  However, there are some uses for bulk
- * double-clicking.
- */
-void
-ContentList::OnDoubleClick(NMHDR*, LRESULT* pResult)
+void ContentList::OnDoubleClick(NMHDR*, LRESULT* pResult)
 {
     /* test */
     DWORD dwPos = ::GetMessagePos();
@@ -883,20 +723,17 @@ ContentList::OnDoubleClick(NMHDR*, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * Handle a right-click on an item.
- *
- * -The first item in the menu performs the double-click action on the
- * -item clicked on.  The rest of the menu is simply a mirror of the items
- * -in the "Actions" menu.  To make this work, we let the main window handle
- * -everything, but save a copy of the index of the menu item that was
- * -clicked on.
- *
- * [We do this differently now?? ++ATM 20040722]
- */
-void
-ContentList::OnRightClick(NMHDR*, LRESULT* pResult)
+void ContentList::OnRightClick(NMHDR*, LRESULT* pResult)
 {
+    /*
+     * -The first item in the menu performs the double-click action on the
+     * -item clicked on.  The rest of the menu is simply a mirror of the items
+     * -in the "Actions" menu.  To make this work, we let the main window handle
+     * -everything, but save a copy of the index of the menu item that was
+     * -clicked on.
+     *
+     * [We do this differently now?? ++ATM 20040722]
+     */
     DWORD dwPos = ::GetMessagePos();
     CPoint point ((int) LOWORD(dwPos), (int) HIWORD(dwPos));
     ScreenToClient(&point);
@@ -922,11 +759,7 @@ ContentList::OnRightClick(NMHDR*, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * Mark everything as selected.
- */
-void
-ContentList::SelectAll(void)
+void ContentList::SelectAll(void)
 {
     int i;
 
@@ -937,11 +770,7 @@ ContentList::SelectAll(void)
     }
 }
 
-/*
- * Toggle the "selected" state flag.
- */
-void
-ContentList::InvertSelection(void)
+void ContentList::InvertSelection(void)
 {
     int i, oldState;
 
@@ -953,29 +782,26 @@ ContentList::InvertSelection(void)
     }
 }
 
-/*
- * Select the contents of any selected subdirs.
- *
- * We do the selection by prefix matching on the display name.  This means
- * we do one pass through the list for the contents of a subdir, including
- * all of its subdirs.  However, the subdirs we select as we're going will
- * be indistinguishable from subdirs selected by the user, which could
- * result in O(n^2) behavior.
- *
- * We mark the user's selection with LVIS_CUT, process them all, then go
- * back and clear all of the LVIS_CUT flags.  Of course, if they select
- * the entire archive, we're approach O(n^2) anyway.  If efficiency is a
- * problem we will need to sort the list, do some work, then sort it back
- * the way it was.
- *
- * This doesn't work for volume directories, because their display name
- * isn't quite right.  That's okay for now -- we document that we don't
- * allow deletion of the volume directory.  (We don't currently have a test
- * to see if a GenericEntry is a volume dir; might want to add one.)
- */
-void
-ContentList::SelectSubdirContents(void)
+void ContentList::SelectSubdirContents(void)
 {
+    /*
+     * We do the selection by prefix matching on the display name.  This means
+     * we do one pass through the list for the contents of a subdir, including
+     * all of its subdirs.  However, the subdirs we select as we're going will
+     * be indistinguishable from subdirs selected by the user, which could
+     * result in O(n^2) behavior.
+     *
+     * We mark the user's selection with LVIS_CUT, process them all, then go
+     * back and clear all of the LVIS_CUT flags.  Of course, if they select
+     * the entire archive, we're approach O(n^2) anyway.  If efficiency is a
+     * problem we will need to sort the list, do some work, then sort it back
+     * the way it was.
+     *
+     * This doesn't work for volume directories, because their display name
+     * isn't quite right.  That's okay for now -- we document that we don't
+     * allow deletion of the volume directory.  (We don't currently have a test
+     * to see if a GenericEntry is a volume dir; might want to add one.)
+     */
     POSITION posn;
     posn = GetFirstSelectedItemPosition();
     if (posn == NULL) {
@@ -1018,11 +844,7 @@ ContentList::SelectSubdirContents(void)
     }
 }
 
-/*
- * Select every entry whose display name has "displayPrefix" as a prefix.
- */
-void
-ContentList::SelectSubdir(const WCHAR* displayPrefix)
+void ContentList::SelectSubdir(const WCHAR* displayPrefix)
 {
     LOGI(" ContentList selecting all in '%ls'", displayPrefix);
     int len = wcslen(displayPrefix);
@@ -1035,22 +857,13 @@ ContentList::SelectSubdir(const WCHAR* displayPrefix)
     }
 }
 
-/*
- * Mark all items as unselected.
- */
-void
-ContentList::ClearSelection(void)
+void ContentList::ClearSelection(void)
 {
     for (int i = GetItemCount()-1; i >= 0; i--)
         SetItemState(i, 0, LVIS_SELECTED);
 }
 
-/*
- * Find the next matching entry.  We start after the first selected item.
- * If we find a matching entry, we clear the current selection and select it.
- */
-void
-ContentList::FindNext(const WCHAR* str, bool down, bool matchCase,
+void ContentList::FindNext(const WCHAR* str, bool down, bool matchCase,
     bool wholeWord)
 {
     POSITION posn;
@@ -1110,11 +923,7 @@ ContentList::FindNext(const WCHAR* str, bool down, bool matchCase,
     }
 }
 
-/*
- * Compare "str" against the contents of entry "num".
- */
-bool
-ContentList::CompareFindString(int num, const WCHAR* str, bool matchCase,
+bool ContentList::CompareFindString(int num, const WCHAR* str, bool matchCase,
     bool wholeWord)
 {
     GenericEntry* pEntry = (GenericEntry*) GetItemData(num);

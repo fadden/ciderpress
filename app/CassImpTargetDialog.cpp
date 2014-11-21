@@ -18,11 +18,7 @@ BEGIN_MESSAGE_MAP(CassImpTargetDialog, CDialog)
     ON_EN_CHANGE(IDC_CASSIMPTARG_BINADDR, OnAddrChange)
 END_MESSAGE_MAP()
 
-/*
- * Set up the dialog.
- */
-BOOL
-CassImpTargetDialog::OnInitDialog(void)
+BOOL CassImpTargetDialog::OnInitDialog(void)
 {
     /* substitute our replacement edit control */
     fAddrEdit.ReplaceDlgCtrl(this, IDC_CASSIMPTARG_BINADDR);
@@ -45,11 +41,7 @@ CassImpTargetDialog::OnInitDialog(void)
     return FALSE;       // don't change the focus
 }
 
-/*
- * Copy values in and out of the dialog.
- */
-void
-CassImpTargetDialog::DoDataExchange(CDataExchange* pDX)
+void CassImpTargetDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_Radio(pDX, IDC_CASSIMPTARG_BAS, fFileTypeIndex);
     DDX_Text(pDX, IDC_CASSIMPTARG_FILENAME, fFileName);
@@ -83,12 +75,7 @@ CassImpTargetDialog::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-/*
- * They selected a different file type.  Enable or disable the address
- * entry window.
- */
-void
-CassImpTargetDialog::OnTypeChange(void)
+void CassImpTargetDialog::OnTypeChange(void)
 {
     CButton* pButton;
     CWnd* pWnd;
@@ -99,11 +86,7 @@ CassImpTargetDialog::OnTypeChange(void)
     pWnd->EnableWindow(pButton->GetCheck() == BST_CHECKED);
 }
 
-/*
- * If the user changes the address, update the "end of range" field.
- */
-void
-CassImpTargetDialog::OnAddrChange(void)
+void CassImpTargetDialog::OnAddrChange(void)
 {
     CWnd* pWnd;
     CString tmpStr;
@@ -119,14 +102,7 @@ CassImpTargetDialog::OnAddrChange(void)
     pWnd->SetWindowText(tmpStr);
 }
 
-/*
- * Get the start address (entered as a 4-digit hex value).
- *
- * Returns -1 if something was wrong with the string (e.g. empty or has
- * invalid chars).
- */
-long
-CassImpTargetDialog::GetStartAddr(void) const
+long CassImpTargetDialog::GetStartAddr(void) const
 {
     CWnd* pWnd = GetDlgItem(IDC_CASSIMPTARG_BINADDR);
     ASSERT(pWnd != NULL);
@@ -151,11 +127,7 @@ CassImpTargetDialog::GetStartAddr(void) const
     return val;
 }
 
-/*
- * Get the selected file type.  Call this after the modal dialog exits.
- */
-long 
-CassImpTargetDialog::GetFileType(void) const
+long CassImpTargetDialog::GetFileType(void) const
 {
     switch (fFileTypeIndex) {
     case kTypeBIN:  return kFileTypeBIN;
@@ -167,11 +139,7 @@ CassImpTargetDialog::GetFileType(void) const
     }
 }
 
-/*
- * Convert a ProDOS file type into a radio button enum.
- */
-void
-CassImpTargetDialog::SetFileType(long type)
+void CassImpTargetDialog::SetFileType(long type)
 {
     switch (type) {
     case kFileTypeBIN:  fFileTypeIndex = kTypeBIN;  break;

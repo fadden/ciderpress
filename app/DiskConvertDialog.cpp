@@ -19,11 +19,7 @@ BEGIN_MESSAGE_MAP(DiskConvertDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Initialize the set of available options based on the source image.
- */
-void
-DiskConvertDialog::Init(const DiskImg* pDiskImg)
+void DiskConvertDialog::Init(const DiskImg* pDiskImg)
 {
     ASSERT(pDiskImg != NULL);
     const int kMagicNibbles = -1234;
@@ -129,11 +125,7 @@ DiskConvertDialog::Init(const DiskImg* pDiskImg)
     }
 }
 
-/*
- * Initialize options for a bulk transfer.
- */
-void
-DiskConvertDialog::Init(int fileCount)
+void DiskConvertDialog::Init(int fileCount)
 {
     /* allow everything */
     fAllowUnadornedDOS = fAllowUnadornedProDOS = fAllowProDOS2MG =
@@ -144,12 +136,7 @@ DiskConvertDialog::Init(int fileCount)
     fDiskDescription.Format(L"%d images selected", fBulkFileCount);
 }
 
-
-/*
- * Disable unavailable options.
- */
-BOOL
-DiskConvertDialog::OnInitDialog(void)
+BOOL DiskConvertDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
 
@@ -227,11 +214,7 @@ DiskConvertDialog::OnInitDialog(void)
     return TRUE;
 }
 
-/*
- * Convert options in and out.
- */
-void
-DiskConvertDialog::DoDataExchange(CDataExchange* pDX)
+void DiskConvertDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_Check(pDX, IDC_DISKCONV_GZIP, fAddGzip);
     DDX_Radio(pDX, IDC_DISKCONV_DOS, fConvertIdx);
@@ -264,15 +247,7 @@ DiskConvertDialog::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-/*
- * If the radio button selection changes, we may need to disable the gzip
- * checkbox to show that NuFX can't be combined with gzip.
- *
- * If the underlying disk is over 32MB, disable gzip, because we won't be
- * able to open the disk we create.
- */
-void
-DiskConvertDialog::OnChangeRadio(UINT nID)
+void DiskConvertDialog::OnChangeRadio(UINT nID)
 {
     CWnd* pGzip = GetDlgItem(IDC_DISKCONV_GZIP);
     ASSERT(pGzip != NULL);
@@ -285,21 +260,13 @@ DiskConvertDialog::OnChangeRadio(UINT nID)
         pGzip->EnableWindow(pNuFX->GetCheck() == BST_UNCHECKED);
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-DiskConvertDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL DiskConvertDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-DiskConvertDialog::OnHelp(void)
+void DiskConvertDialog::OnHelp(void)
 {
     if (fBulkFileCount < 0)
         WinHelp(HELP_TOPIC_DISK_CONV, HELP_CONTEXT);

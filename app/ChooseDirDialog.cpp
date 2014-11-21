@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for "choose a directory" dialog.
- */
 #include "stdafx.h"
 #include "ChooseDirDialog.h"
 #include "NewFolderDialog.h"
@@ -22,11 +19,7 @@ BEGIN_MESSAGE_MAP(ChooseDirDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Initialize dialog components.
- */
-BOOL
-ChooseDirDialog::OnInitDialog(void)
+BOOL ChooseDirDialog::OnInitDialog(void)
 {
     CDialog::OnInitDialog();
 
@@ -63,11 +56,7 @@ ChooseDirDialog::OnInitDialog(void)
     return FALSE;   // leave focus on shell tree
 }
 
-/*
- * Special keypress handling.
- */
-BOOL
-ChooseDirDialog::PreTranslateMessage(MSG* pMsg)
+BOOL ChooseDirDialog::PreTranslateMessage(MSG* pMsg)
 {
     if (pMsg->message == WM_KEYDOWN &&
          pMsg->wParam == VK_RETURN)
@@ -82,33 +71,19 @@ ChooseDirDialog::PreTranslateMessage(MSG* pMsg)
     return CDialog::PreTranslateMessage(pMsg);
 }
 
-/*
- * F1 key hit, or '?' button in title bar used to select help for an
- * item in the dialog.
- */
-BOOL
-ChooseDirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL ChooseDirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     DWORD context = lpHelpInfo->iCtrlId;
     WinHelp(context, HELP_CONTEXTPOPUP);
     return TRUE;    // indicate success??
 }
 
-/*
- * User pressed Ye Olde Helppe Button.
- */
-void
-ChooseDirDialog::OnHelp(void)
+void ChooseDirDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_CHOOSE_FOLDER, HELP_CONTEXT);
 }
 
-/*
- * Replace the ShellTree's default SELCHANGED handler with this so we can
- * track changes to the edit control.
- */
-void
-ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
+void ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
 {
     CString path;
     CWnd* pWnd = GetDlgItem(IDC_CHOOSEDIR_PATH);
@@ -133,11 +108,7 @@ ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * User pressed "Expand Tree" button.
- */
-void
-ChooseDirDialog::OnExpandTree(void)
+void ChooseDirDialog::OnExpandTree(void)
 {
     CWnd* pWnd;
     CString str;
@@ -157,11 +128,7 @@ ChooseDirDialog::OnExpandTree(void)
     }
 }
 
-/*
- * User pressed "New Folder" button.
- */
-void
-ChooseDirDialog::OnNewFolder(void)
+void ChooseDirDialog::OnNewFolder(void)
 {
     if (fPathName.IsEmpty()) {
         MessageBox(L"You can't create a folder in this part of the tree.",

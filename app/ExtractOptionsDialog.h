@@ -68,14 +68,34 @@ public:
     }
 
 private:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
+    /*
+     * Reconfigure controls for best preservation of Apple II formats.
+     */
     afx_msg void OnConfigPreserve(void);
+
+    /*
+     * Reconfigure controls for easiest viewing under Windows.
+     */
     afx_msg void OnConfigConvert(void);
+
+    /*
+     * Enable or disable the "Convert high ASCII" button based on the current
+     * setting of the radio button above it.
+     */
     afx_msg void OnChangeTextConv(void);
+
+    /*
+     * They want to choose the folder from a tree.
+     */
     afx_msg void OnChooseFolder(void);
+
+    // Context help request (question mark button).
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+
+    // User pressed the "Help" button.
     afx_msg void OnHelp(void);
 
     MyBitmapButton  fChooseFolderButton;

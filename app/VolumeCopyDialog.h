@@ -34,26 +34,66 @@ public:
     CString     fPathName;
 
 protected:
-    virtual BOOL OnInitDialog(void);
-    //virtual void DoDataExchange(CDataExchange* pDX);
-    virtual void OnOK(void);
-    virtual void OnCancel(void);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void OnOK(void) override;
+    virtual void OnCancel(void) override;
 
     void Cleanup(void);
     
     enum { WMU_DIALOG_READY = WM_USER+2 };
 
-    afx_msg void OnHelp(void);
+    /*
+     * Something changed in the list.  Update the buttons.
+     */
     afx_msg void OnListChange(NMHDR* pNotifyStruct, LRESULT* pResult);
+
+    /*
+     * User pressed the "copy to file" button.  Copy the selected partition out to
+     * a file on disk.
+     */
     afx_msg void OnCopyToFile(void);
+
+    /*
+     * User pressed the "copy from file" button.  Copy a file over the selected
+     * partition.  We may need to reload the main window after this completes.
+     */
     afx_msg void OnCopyFromFile(void);
 
+    afx_msg void OnHelp(void);
+
+    /*
+     * When the focus changes, e.g. after dialog construction completes, see if
+     * we have a modeless dialog lurking about.
+     */
     afx_msg LONG OnDialogReady(UINT, LONG);
 
+    /*
+     * (Re-)scan the disk image and any sub-volumes.
+     */
     void ScanDiskInfo(bool scanTop);
+
+    /*
+     * (Re-)load the volume and sub-volumes into the list.
+     *
+     * We currently only look at the first level of sub-volumes.  We're not
+     * really set up to display a hierarchy in the list view.  Very few people
+     * will ever need to access a sub-sub-volume in this way, so it's not
+     * worth sorting it out.
+     */
     void LoadList(void);
+
+    /*
+     * Create an entry for a diskimg/diskfs pair.
+     */
     void AddToList(CListCtrl* pListView, DiskImgLib::DiskImg* pDiskImg,
         DiskImgLib::DiskFS* pDiskFS, int* pIndex);
+
+    /*
+     * Recover the DiskImg and DiskFS pointers for the volume or sub-volume
+     * currently selected in the list.
+     *
+     * Returns "true" on success, "false" on failure.
+     */
     bool GetSelectedDisk(DiskImgLib::DiskImg** ppDstImg,
         DiskImgLib::DiskFS** ppDiskFS);
 

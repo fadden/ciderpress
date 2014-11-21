@@ -45,14 +45,16 @@ public:
     bool        fAllowRename;
 
 private:
+    virtual BOOL OnInitDialog(void) override;
+
     afx_msg void OnYes(void);
     afx_msg void OnYesToAll(void);
     afx_msg void OnNo(void);
     afx_msg void OnNoToAll(void);
     afx_msg void OnRename(void);
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
-    virtual BOOL OnInitDialog(void);
+    // Handle a click on the question-mark button.
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
     DECLARE_MESSAGE_MAP()
 };
@@ -82,8 +84,8 @@ public:
     CString     fNewName;
 
 private:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 

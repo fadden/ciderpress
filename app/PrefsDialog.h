@@ -51,7 +51,7 @@ public:
     bool*   fOurAssociations;
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnChange(void);
     afx_msg void OnChangeRange(UINT);
@@ -87,8 +87,8 @@ public:
     BOOL    fProDOSUseSparse;
 
 protected:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnChange(void);
     //afx_msg void OnChangeRange(UINT);
@@ -114,14 +114,21 @@ public:
     int     fCompressType;      // radio button index
 
 protected:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    /*
+     * Disable compression types not supported by the NufxLib DLL.
+     */
+    virtual BOOL OnInitDialog(void) override;
+
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnChangeRange(UINT);
     afx_msg LONG OnHelp(UINT wParam, LONG lParam);
     afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
 
 private:
+    /*
+     * Disable a window in our dialog.
+     */
     void DisableWnd(int id);
 
     DECLARE_MESSAGE_MAP()
@@ -173,8 +180,8 @@ public:
     UINT    fMaxViewFileSizeKB;
 
 protected:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnChange(void);
     afx_msg void OnChangeRange(UINT);
@@ -201,8 +208,8 @@ public:
     CString fExtViewerExts;
 
 protected:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnChange(void);
     afx_msg void OnChooseFolder(void);
@@ -221,6 +228,9 @@ protected:
 class PrefsSheet : public CPropertySheet
 {
 public:
+    /*
+     * Construct the preferences dialog from the individual pages.
+     */
     PrefsSheet(CWnd* pParentWnd = NULL);
 
     PrefsGeneralPage        fGeneralPage;
@@ -230,11 +240,44 @@ public:
     PrefsFilesPage          fFilesPage;
 
 protected:
-    BOOL OnNcCreate(LPCREATESTRUCT cs);
+    /*
+     * Enables the context help button.
+     *
+     * We don't seem to get a PreCreateWindow or OnInitDialog, but we can
+     * intercept the WM_NCCREATE message and override the default behavior.
+     */
+    afx_msg BOOL OnNcCreate(LPCREATESTRUCT cs);
 
+    /*
+     * Handle the "apply" button.  We only want to process updates for property
+     * pages that have been constructed, and they only get constructed when
+     * the user clicks on them.
+     *
+     * We also have to watch out for DDV tests that should prevent the "apply"
+     * from succeeding, e.g. the file viewer size limit.
+     */
     afx_msg void OnApplyNow();
-    LONG OnHelp(UINT wParam, LONG lParam);
-    void OnIDHelp(void);
+
+    /*
+     * Handle a press of the "Help" button by redirecting it back to ourselves
+     * as a WM_COMMANDHELP message.  If we don't do this, the main window ends
+     * up getting our WM_COMMAND(ID_HELP) message.
+     *
+     * We still need to define an ID_HELP WM_COMMAND handler in the main window,
+     * or the CPropertySheet code refuses to believe that help is enabled for
+     * the application as a whole.
+     *
+     * The PropertySheet object handles the WM_COMMANDHELP message and redirects
+     * it to the active PropertyPage.  Each page must handle WM_COMMANDHELP by
+     * opening an appropriate chapter in the help file.
+     */
+    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
+
+    /*
+     * Context help request (question mark button) on something outside of the
+     * property page, most likely the Apply or Cancel button.
+     */
+    afx_msg void OnIDHelp(void);
 
     DECLARE_MESSAGE_MAP()
 };

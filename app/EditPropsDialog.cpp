@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for file properties edit dialog.
- */
 #include "StdAfx.h"
 #include "EditPropsDialog.h"
 #include "FileNameConv.h"
@@ -25,11 +22,7 @@ BEGIN_MESSAGE_MAP(EditPropsDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Initialize fProps from the stuff in pEntry.
- */
-void
-EditPropsDialog::InitProps(GenericEntry* pEntry)
+void EditPropsDialog::InitProps(GenericEntry* pEntry)
 {
     fPathName = pEntry->GetPathName();
     fProps.fileType = pEntry->GetFileType();
@@ -66,8 +59,7 @@ EditPropsDialog::InitProps(GenericEntry* pEntry)
  * If this is a disk archive, we might want to make the aux type read-only,
  * though this would provide a way for users to fix badly-formed archives.
  */
-BOOL
-EditPropsDialog::OnInitDialog(void)
+BOOL EditPropsDialog::OnInitDialog(void)
 {
     static const int kPascalTypes[] = {
         0x00 /*NON*/,   0x01 /*BAD*/,   0x02 /*PCD*/,   0x03 /*PTX*/,
@@ -197,11 +189,7 @@ EditPropsDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * Convert values.
- */
-void
-EditPropsDialog::DoDataExchange(CDataExchange* pDX)
+void EditPropsDialog::DoDataExchange(CDataExchange* pDX)
 {
     int fileTypeIdx;
     BOOL accessR, accessW, accessI, accessB, accessN, accessD;
@@ -342,17 +330,7 @@ EditPropsDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Text(pDX, IDC_PROPS_PATHNAME, fPathName);
 }
 
-/*
- * This is called when the file type selection changes or something is
- * typed in the aux type box.
- *
- * We use this notification to configure the type description field.
- *
- * Typing in the ProDOS aux type box causes us to nuke the HFS values.
- * If we were in "HFS mode" we reset the file type to zero.
- */
-void
-EditPropsDialog::OnTypeChange(void)
+void EditPropsDialog::OnTypeChange(void)
 {
     static const WCHAR kUnknownFileType[] = L"Unknown file type";
     CComboBox* pCombo;
@@ -388,20 +366,12 @@ EditPropsDialog::OnTypeChange(void)
     }
 }
 
-/*
- * Called when something is typed in one of the HFS type boxes.
- */
-void
-EditPropsDialog::OnHFSTypeChange(void)
+void EditPropsDialog::OnHFSTypeChange(void)
 {
     assert(fAllowedTypes == kAllowedHFS);
 }
 
-/*
- * Called initially and when switching modes.
- */
-void
-EditPropsDialog::UpdateHFSMode(void)
+void EditPropsDialog::UpdateHFSMode(void)
 {
     CButton* pButton = (CButton*) GetDlgItem(IDC_PROPS_HFS_MODE);
     CComboBox* pCombo;
@@ -449,13 +419,7 @@ EditPropsDialog::UpdateHFSMode(void)
     }
 }
 
-/*
- * For "simple" access formats, i.e. DOS 3.2/3.3, the "write" button acts
- * as a "locked" flag.  We want the other rename/delete flags to track this
- * one.
- */
-void
-EditPropsDialog::UpdateSimpleAccess(void)
+void EditPropsDialog::UpdateSimpleAccess(void)
 {
     if (!fSimpleAccess)
         return;
@@ -472,15 +436,7 @@ EditPropsDialog::UpdateSimpleAccess(void)
     pButton->SetCheck(checked);
 }
 
-
-/*
- * Get the aux type.
- *
- * Returns -1 if something was wrong with the string (e.g. empty or has
- * invalid chars).
- */
-long
-EditPropsDialog::GetAuxType(void)
+long EditPropsDialog::GetAuxType(void)
 {
     CWnd* pWnd = GetDlgItem(IDC_PROPS_AUXTYPE);
     ASSERT(pWnd != NULL);
@@ -505,21 +461,13 @@ EditPropsDialog::GetAuxType(void)
     return val;
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-EditPropsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL EditPropsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-EditPropsDialog::OnHelp(void)
+void EditPropsDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_EDIT_PROPS, HELP_CONTEXT);
 }

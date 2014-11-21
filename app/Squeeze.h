@@ -9,6 +9,11 @@
 #ifndef APP_SQUEEZE_H
 #define APP_SQUEEZE_H
 
+/*
+ * Expand "SQ" format.  Archive file should already be seeked.
+ *
+ * If "outExp" is NULL, no output is produced (useful for "test" mode).
+ */
 NuError UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
     bool fullSqHeader, int blockSize);
 

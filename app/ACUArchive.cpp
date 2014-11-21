@@ -58,24 +58,7 @@
  * ===========================================================================
  */
 
-/*
- * Extract data from an entry.
- *
- * If "*ppText" is non-NULL, the data will be read into the pointed-to buffer
- * so long as it's shorter than *pLength bytes.  The value in "*pLength"
- * will be set to the actual length used.
- *
- * If "*ppText" is NULL, the uncompressed data will be placed into a buffer
- * allocated with "new[]".
- *
- * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
- * user, and -1 value on failure.  On failure, "*pErrMsg" holds an error
- * message.
- *
- * "which" is an anonymous GenericArchive enum (e.g. "kDataThread").
- */
-int
-AcuEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
+int AcuEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
     CString* pErrMsg) const
 {
     NuError nerr;
@@ -199,16 +182,7 @@ bail:
     return result;
 }
 
-/*
- * Extract data from a thread to a file.  Since we're not copying to memory,
- * we can't assume that we're able to hold the entire file all at once.
- *
- * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
- * user, and -1 value on failure.  On failure, "*pMsg" holds an
- * error message.
- */
-int
-AcuEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
+int AcuEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
     ConvertHighASCII convHA, CString* pErrMsg) const
 {
     NuError nerr;
@@ -297,12 +271,7 @@ bail:
     return result;
 }
 
-/*
- * Copy data from the seeked archive to outfp, possibly converting EOL along
- * the way.
- */
-NuError
-AcuEntry::CopyData(FILE* outfp, ConvertEOL conv, ConvertHighASCII convHA,
+NuError AcuEntry::CopyData(FILE* outfp, ConvertEOL conv, ConvertHighASCII convHA,
         CString* pMsg) const
 {
     NuError nerr = kNuErrNone;
@@ -351,14 +320,7 @@ bail:
 }
 
 
-/*
- * Test this entry by extracting it.
- *
- * If the file isn't compressed, just make sure the file is big enough.  If
- * it's squeezed, invoke the un-squeeze function with a "NULL" buffer pointer.
- */
-NuError
-AcuEntry::TestEntry(CWnd* pMsgWnd)
+NuError AcuEntry::TestEntry(CWnd* pMsgWnd)
 {
     NuError nerr = kNuErrNone;
     CString errMsg;
@@ -411,24 +373,13 @@ bail:
  * ===========================================================================
  */
 
-/*
- * Perform one-time initialization.  There really isn't any for us.
- *
- * Returns 0 on success, nonzero on error.
- */
-/*static*/ CString
-AcuArchive::AppInit(void)
+/*static*/ CString AcuArchive::AppInit(void)
 {
     return "";
 }
 
-/*
- * Open an ACU archive.
- *
- * Returns an error string on failure, or "" on success.
- */
-GenericArchive::OpenResult
-AcuArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
+GenericArchive::OpenResult AcuArchive::Open(const WCHAR* filename,
+    bool readOnly, CString* pErrMsg)
 {
     CString errMsg;
 
@@ -465,23 +416,13 @@ bail:
         return kResultSuccess;
 }
 
-/*
- * Finish instantiating an AcuArchive object by creating a new archive.
- *
- * Returns an error string on failure, or "" on success.
- */
-CString
-AcuArchive::New(const WCHAR* /*filename*/, const void* /*options*/)
+CString AcuArchive::New(const WCHAR* /*filename*/, const void* /*options*/)
 {
     return L"Sorry, AppleLink Compression Utility files can't be created.";
 }
 
 
-/*
- * Our capabilities.
- */
-long
-AcuArchive::GetCapability(Capability cap)
+long AcuArchive::GetCapability(Capability cap)
 {
     switch (cap) {
     case kCapCanTest:
@@ -515,15 +456,7 @@ AcuArchive::GetCapability(Capability cap)
     }
 }
 
-
-/*
- * Load the contents of the archive.
- *
- * Returns 0 on success, < 0 if this is not an ACU archive > 0 if this appears
- * to be an ACU archive but it's damaged.
- */
-int
-AcuArchive::LoadContents(void)
+int AcuArchive::LoadContents(void)
 {
     NuError nerr;
     int numEntries;
@@ -561,11 +494,7 @@ AcuArchive::LoadContents(void)
     return 0;
 }
 
-/*
- * Reload the contents of the archive.
- */
-CString
-AcuArchive::Reload(void)
+CString AcuArchive::Reload(void)
 {
     fReloadFlag = true;     // tell everybody that cached data is invalid
 
@@ -577,15 +506,7 @@ AcuArchive::Reload(void)
     return "";
 }
 
-/*
- * Read the archive header.  The archive file is left seeked to the point
- * at the end of the header.
- *
- * Returns 0 on success, -1 on failure.  Sets *pNumEntries to the number of
- * entries in the archive.
- */
-int
-AcuArchive::ReadMasterHeader(int* pNumEntries)
+int AcuArchive::ReadMasterHeader(int* pNumEntries)
 {
     AcuMasterHeader header;
     unsigned char buf[kAcuMasterHeaderLen];
@@ -615,12 +536,7 @@ AcuArchive::ReadMasterHeader(int* pNumEntries)
     return 0;
 }
 
-/*
- * Read and decode an AppleLink Compression Utility file entry header.
- * This leaves the file seeked to the point immediately past the filename.
- */
-NuError
-AcuArchive::ReadFileHeader(AcuFileEntry* pEntry)
+NuError AcuArchive::ReadFileHeader(AcuFileEntry* pEntry)
 {
     NuError err = kNuErrNone;
     unsigned char buf[kAcuEntryHeaderLen];
@@ -688,11 +604,7 @@ bail:
     return err;
 }
 
-/*
- * Dump the contents of an AcuFileEntry struct.
- */
-void
-AcuArchive::DumpFileHeader(const AcuFileEntry* pEntry)
+void AcuArchive::DumpFileHeader(const AcuFileEntry* pEntry)
 {
     time_t createWhen, modWhen;
     CString createStr, modStr;
@@ -714,12 +626,7 @@ AcuArchive::DumpFileHeader(const AcuFileEntry* pEntry)
         pEntry->fileNameLen, pEntry->headerChecksum);
 }
 
-
-/*
- * Given an AcuFileEntry structure, add an appropriate entry to the list.
- */
-int
-AcuArchive::CreateEntry(const AcuFileEntry* pEntry)
+int AcuArchive::CreateEntry(const AcuFileEntry* pEntry)
 {
     const int kAcuFssep = '/';
     NuError err = kNuErrNone;
@@ -776,21 +683,12 @@ AcuArchive::CreateEntry(const AcuFileEntry* pEntry)
  * ===========================================================================
  */
 
-/*
- * Test if this entry is a directory.
- */
-bool
-AcuArchive::IsDir(const AcuFileEntry* pEntry)
+bool AcuArchive::IsDir(const AcuFileEntry* pEntry)
 {
     return (pEntry->storageType == 0x0d);
 }
 
-/*
- * Wrapper for fread().  Note the arguments resemble read(2) rather
- * than fread(3S).
- */
-NuError
-AcuArchive::AcuRead(void* buf, size_t nbyte)
+NuError AcuArchive::AcuRead(void* buf, size_t nbyte)
 {
     size_t result;
 
@@ -805,13 +703,7 @@ AcuArchive::AcuRead(void* buf, size_t nbyte)
     return kNuErrNone;
 }
 
-/*
- * Seek within an archive.  Because we need to handle streaming archives,
- * and don't need to special-case anything, we only allow relative
- * forward seeks.
- */
-NuError
-AcuArchive::AcuSeek(long offset)
+NuError AcuArchive::AcuSeek(long offset)
 {
     ASSERT(fFp != NULL);
     ASSERT(offset > 0);
@@ -825,12 +717,8 @@ AcuArchive::AcuSeek(long offset)
 }
 
 
-/*
- * Convert from ProDOS compact date format to the expanded DateTime format.
- */
-void
-AcuArchive::AcuConvertDateTime(unsigned short prodosDate,
-    unsigned short prodosTime, NuDateTime* pWhen)
+void AcuArchive::AcuConvertDateTime(uint16_t prodosDate,
+    uint16_t prodosTime, NuDateTime* pWhen)
 {
     pWhen->second = 0;
     pWhen->minute = prodosTime & 0x3f;
@@ -851,11 +739,7 @@ AcuArchive::AcuConvertDateTime(unsigned short prodosDate,
  * ===========================================================================
  */
 
-/*
- * Test the records represented in the selection set.
- */
-bool
-AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
+bool AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 {
     NuError nerr;
     AcuEntry* pEntry;

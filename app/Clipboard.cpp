@@ -4,7 +4,8 @@
  * See the file LICENSE for distribution terms.
  */
 /*
- * Handle clipboard functions (copy, paste).
+ * Handle clipboard functions (copy, paste).  This is part of MainWindow,
+ * split out into a separate file for clarity.
  */
 #include "StdAfx.h"
 #include "Main.h"
@@ -94,11 +95,7 @@ typedef struct FileCollectionEntry {
  * ==========================================================================
  */
 
-/*
- * Copy data to the clipboard.
- */
-void
-MainWindow::OnEditCopy(void)
+void MainWindow::OnEditCopy(void)
 {
     CString errStr, fileList;
     SelectionSet selSet;
@@ -181,22 +178,14 @@ MainWindow::OnEditCopy(void)
 bail:
     CloseClipboard();
 }
-void
-MainWindow::OnUpdateEditCopy(CCmdUI* pCmdUI)
+
+void MainWindow::OnUpdateEditCopy(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL &&
         fpContentList->GetSelectedCount() > 0);
 }
 
-/*
- * Create a list of selected files.
- *
- * The returned string uses tab-delineated fields with CSV-style quoting
- * around the filename (so that double quotes in the filename don't confuse
- * applications like MS Excel).
- */
-CString
-MainWindow::CreateFileList(SelectionSet* pSelSet)
+CString MainWindow::CreateFileList(SelectionSet* pSelSet)
 {
     SelectionEntry* pSelEntry;
     GenericEntry* pEntry;
@@ -232,11 +221,7 @@ MainWindow::CreateFileList(SelectionSet* pSelSet)
     return fullStr;
 }
 
-/*
- * Double-up all double quotes.
- */
-/*static*/ CString
-MainWindow::DblDblQuote(const WCHAR* str)
+/*static*/ CString MainWindow::DblDblQuote(const WCHAR* str)
 {
     CString result;
     WCHAR* buf;
@@ -258,12 +243,7 @@ MainWindow::DblDblQuote(const WCHAR* str)
     return result;
 }
 
-
-/*
- * Compute the size of everything currently on the clipboard.
- */
-long
-MainWindow::GetClipboardContentLen(void)
+long MainWindow::GetClipboardContentLen(void)
 {
     long len = 0;
     UINT format = 0;
@@ -278,11 +258,7 @@ MainWindow::GetClipboardContentLen(void)
     return len;
 }
 
-/*
- * Create the file collection.
- */
-HGLOBAL
-MainWindow::CreateFileCollection(SelectionSet* pSelSet)
+HGLOBAL MainWindow::CreateFileCollection(SelectionSet* pSelSet)
 {
     SelectionEntry* pSelEntry;
     GenericEntry* pEntry;
@@ -441,18 +417,8 @@ bail:
     return hResult;
 }
 
-/*
- * Copy the contents of the file referred to by "pEntry" into the buffer
- * "*pBuf", which has "*pBufLen" bytes in it.
- *
- * The call fails if "*pBufLen" isn't large enough.
- *
- * Returns an empty string on success, or an error message on failure.
- * On success, "*pBuf" will be advanced past the data added, and "*pBufLen"
- * will be reduced by the amount of data copied into "buf".
- */
-CString
-MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf, long* pBufLen)
+CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
+    long* pBufLen)
 {
     FileCollectionEntry collEnt;
     CString errStr, dummyStr;
@@ -615,19 +581,14 @@ MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf, long* pBufLen)
  * ==========================================================================
  */
 
-/*
- * Paste data from the clipboard, using the configured defaults.
- */
-void
-MainWindow::OnEditPaste(void)
+void MainWindow::OnEditPaste(void)
 {
     bool pasteJunkPaths = fPreferences.GetPrefBool(kPrPasteJunkPaths);
 
     DoPaste(pasteJunkPaths);
 }
 
-void
-MainWindow::OnUpdateEditPaste(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateEditPaste(CCmdUI* pCmdUI)
 {
     bool dataAvailable = false;
     UINT myFormat;
@@ -640,12 +601,7 @@ MainWindow::OnUpdateEditPaste(CCmdUI* pCmdUI)
         dataAvailable);
 }
 
-/*
- * Paste data from the clipboard, giving the user the opportunity to select
- * how the files are handled.
- */
-void
-MainWindow::OnEditPasteSpecial(void)
+void MainWindow::OnEditPasteSpecial(void)
 {
     PasteSpecialDialog dlg;
     bool pasteJunkPaths = fPreferences.GetPrefBool(kPrPasteJunkPaths);
@@ -673,17 +629,12 @@ MainWindow::OnEditPasteSpecial(void)
     DoPaste(pasteJunkPaths);
 }
 
-void
-MainWindow::OnUpdateEditPasteSpecial(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateEditPasteSpecial(CCmdUI* pCmdUI)
 {
     OnUpdateEditPaste(pCmdUI);
 }
 
-/*
- * Do some prep work and then call ProcessClipboard to copy files in.
- */
-void
-MainWindow::DoPaste(bool pasteJunkPaths)
+void MainWindow::DoPaste(bool pasteJunkPaths)
 {
     CString errStr, buildStr;
     UINT format = 0;
@@ -761,13 +712,8 @@ bail:
         CloseClipboard();
 }
 
-/*
- * Process the data in the clipboard.
- *
- * Returns an empty string on success, or an error message on failure.
- */
-CString
-MainWindow::ProcessClipboard(const void* vbuf, long bufLen, bool pasteJunkPaths)
+CString MainWindow::ProcessClipboard(const void* vbuf, long bufLen,
+    bool pasteJunkPaths)
 {
     FileCollection fileColl;
     CString errMsg, storagePrefix;
@@ -954,17 +900,8 @@ bail:
     return errMsg;
 }
 
-/*
- * Process a single clipboard entry.
- *
- * On entry, "buf" points to the start of the first chunk of data (either
- * data fork or resource fork).  If the file has empty forks or is a
- * subdirectory, then "buf" is actually pointing at the start of the
- * next entry.
- */
-CString
-MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
-    const WCHAR* pathName, const unsigned char* buf, long remLen)
+CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
+    const WCHAR* pathName, const uint8_t* buf, long remLen)
 {
     GenericArchive::FileDetails::FileKind entryKind;
     GenericArchive::FileDetails details;

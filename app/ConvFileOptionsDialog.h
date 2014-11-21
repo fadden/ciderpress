@@ -29,8 +29,7 @@ public:
     BOOL    fPreserveEmptyFolders;
 
 private:
-    //virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     //DECLARE_MESSAGE_MAP()
 };

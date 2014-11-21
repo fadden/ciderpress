@@ -57,15 +57,41 @@ public:
     void SetNoWrapText(bool val) { fNoWrapText = val; }
 
 protected:
-    // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void OnOK(void);
-    virtual void OnCancel(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    /*
+     * Window creation.  Stuff the desired text into the RichEdit box.
+     */
+    virtual BOOL OnInitDialog(void) override;
 
+    /*
+     * Override OnOK/OnCancel so we don't bail out while we're in the middle of
+     * loading something.  It would actually be kind of nice to be able to do
+     * so, so someday we should make the "cancel" button work, or perhaps allow
+     * prev/next to skip over the thing being loaded. "TO DO"
+     */
+    virtual void OnOK(void) override;
+    virtual void OnCancel(void) override;
+
+    virtual void DoDataExchange(CDataExchange* pDX) override;
+
+    /*
+     * Window creation stuff.  Set the icon and the "gripper".
+     */
     afx_msg int OnCreate(LPCREATESTRUCT lpcs);
+
+    /*
+     * Window is going away.  Save the current size.
+     */
     afx_msg void OnDestroy(void);
+
+    /*
+     * When the window resizes, we have to tell the edit box to expand, and
+     * rearrange the controls inside it.
+     */
     afx_msg void OnSize(UINT nType, int cx, int cy);
+
+    /*
+     * Restrict the minimum window size to something reasonable.
+     */
     afx_msg void OnGetMinMaxInfo(MINMAXINFO* pMMI);
 
     afx_msg void OnFviewNext(void);
@@ -85,21 +111,87 @@ protected:
     afx_msg LRESULT OnFindDialogMessage(WPARAM wParam, LPARAM lParam);
 
 private:
+    /*
+     * Adjust the positions and sizes of the controls.
+     *
+     * This relies on MinMaxInfo to guarantee that nothing falls off an edge.
+     */
     void ShiftControls(int deltaX, int deltaY);
+
     //void MoveControl(int id, int deltaX, int deltaY);
     //void StretchControl(int id, int deltaX, int deltaY);
     void NewFontSelected(bool resetBold);
+
+    /*
+     * Display a buffer of text in the RichEdit control.
+     *
+     * The RichEdit dialog will hold its own copy of the data, so "pHolder" can
+     * be safely destroyed after this returns.
+     *
+     * "fileName" is for display only.
+     */
     void DisplayText(const WCHAR* fileName);
+
+    /*
+     * Set up the fpHolder.  Does not reformat the data, just loads the source
+     * material and runs the applicability tests.
+     *
+     * Returns 0 on success, -1 on failure.
+     */
     int ReformatPrep(GenericEntry* pEntry);
+
+    /*
+     * Reformat a file.
+     *
+     * Returns 0 if the file was reformatted, -1 if not
+     */
     int Reformat(const GenericEntry* pEntry,
         ReformatHolder::ReformatPart part, ReformatHolder::ReformatID id);
+
+    /*
+     * Configure the radio buttons that determine which part to view, enabling
+     * only those that make sense.
+     *
+     * Try to keep the previously-set button set.
+     *
+     * If "pEntry" is NULL, all buttons are disabled (useful for first-time
+     * initialization).
+     */
     void ConfigurePartButtons(const GenericEntry* pEntry);
+
+    /*
+     * Figure out which part of the file is selected (data/rsrc/comment).
+     *
+     * If no part is selected, throws up its hands and returns kPartData.
+     */
     ReformatHolder::ReformatPart GetSelectedPart(void);
+
     void ForkSelectCommon(ReformatHolder::ReformatPart part);
+
+    /*
+     * Set up the entries in the drop box based on the "applicable" array in
+     * fpHolder.  The set of values is different for each part of the file.
+     *
+     * Returns the default reformatter ID.  This is always entry #0.
+     */
     ReformatHolder::ReformatID ConfigureFormatSel(
         ReformatHolder::ReformatPart part);
+
+    /*
+     * Return the combo box index for the entry whose "data" field matches "val".
+     *
+     * Returns -1 if the entry couldn't be found.
+     */
     int FindByVal(CComboBox* pCombo, DWORD val);
+
+    /*
+     * Enable or disable all of the format selection buttons.
+     */
     void EnableFormatSelection(BOOL enable);
+
+    /*
+     * Find the next ocurrence of the specified string.
+     */
     void FindNext(const WCHAR* str, bool down, bool matchCase,
         bool wholeWord);
 

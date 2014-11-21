@@ -15,6 +15,7 @@
 
 
 #define WINDOWS_LIKE
+
 /* replace unsupported chars with '%xx' */
 #define kForeignIndic   '%'
 
@@ -80,6 +81,18 @@ static const WCHAR gFileTypeNames[256][4] = {
     L"$F8", L"OS ", L"INT", L"IVR", L"BAS", L"VAR", L"REL", L"SYS"
 };
 
+static const WCHAR kUnknownTypeStr[] = L"???";
+
+/*static*/ const WCHAR* PathProposal::FileTypeString(unsigned long fileType)
+{
+    // Note to self: code down below tests first char for '?'.
+    if (fileType < NELEM(gFileTypeNames))
+        return gFileTypeNames[fileType];
+    else
+        return kUnknownTypeStr;
+}
+
+
 /*
  * Some file extensions we recognize.  When adding files with "extended"
  * preservation mode, we try to assign types to files that weren't
@@ -110,21 +123,6 @@ static const struct {
     //{ L"ACU",  0xe0, 0x8001, 0 },     /* ACU archive */
     { L"SHK",  0xe0, 0x8002, 0 },       /* ShrinkIt archive */
 };
-
-
-/*
- * Return a pointer to the three-letter representation of the file type name.
- *
- * Note to self: code down below tests first char for '?'.
- */
-/*static*/ const WCHAR*
-PathProposal::FileTypeString(unsigned long fileType)
-{
-    if (fileType < NELEM(gFileTypeNames))
-        return gFileTypeNames[fileType];
-    else
-        return kUnknownTypeStr;
-}
 
 /*
  * Description table.
@@ -589,16 +587,10 @@ static const struct {
     /*OS */ { 0xff, 0x0000, 0xffff, L"ProDOS 8 application" },
 };
 
-/*
- * Find an entry in the type description table that matches both file type and
- * aux type.  If no match is found, NULL is returned.
- */
-/*static*/ const WCHAR*
-PathProposal::FileTypeDescription(long fileType, long auxType)
+/*static*/ const WCHAR* PathProposal::FileTypeDescription(long fileType,
+    long auxType)
 {
-    int i;
-
-    for (i = NELEM(gTypeDescriptions)-1; i >= 0; i--) {
+    for (int i = NELEM(gTypeDescriptions)-1; i >= 0; i--) {
         if (fileType == gTypeDescriptions[i].fileType &&
             auxType >= gTypeDescriptions[i].minAuxType &&
             auxType <= gTypeDescriptions[i].maxAuxType)
@@ -617,15 +609,7 @@ PathProposal::FileTypeDescription(long fileType, long auxType)
  * ===========================================================================
  */
 
-/*
- * Convert a pathname pulled out of an archive to something suitable for the
- * local filesystem.
- *
- * The new pathname may be shorter (because characters were removed) or
- * longer (if we add a "#XXYYYYZ" extension or replace chars with '%' codes).
- */
-void
-PathProposal::ArchiveToLocal(void)
+void PathProposal::ArchiveToLocal(void)
 {
     WCHAR* pathBuf;
     const WCHAR* startp;
@@ -736,17 +720,14 @@ static const WCHAR* gFatReservedNames4[] = {
     NULL
 };
 
-/*
- * Filename normalization for Win32 filesystems.  You can't use [ \/:*?"<>| ]
- * or control characters, and we're currently avoiding high-ASCII stuff.
- * TODO: consider supporting the "Mac Roman" characters
- *
- * TODO: don't allow the filename to end with a space or period
- */
-void
-PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
+void PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
     char fssep, WCHAR** pDstp, long dstLen)
 {
+    /*
+     * TODO: consider supporting the "Mac Roman" characters
+     * TODO: don't allow the filename to end with a space or period (Windows
+     *   requirement)
+     */
     WCHAR* dstp = *pDstp;
     const WCHAR* startp = srcp;
     static const WCHAR* kInvalid = L"\\/:*?\"<>|";
@@ -823,18 +804,7 @@ PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
 }
 #endif
 
-
-/*
- * Normalize a file name to local filesystem conventions.  The input
- * is quite possibly *NOT* null-terminated, since it may represent a
- * substring of a full pathname.  Use "srcLen".
- *
- * The output filename is copied to *pDstp, which is advanced forward.
- *
- * The output buffer must be able to hold 3x the original string length.
- */
-void
-PathProposal::NormalizeFileName(const WCHAR* srcp, long srcLen,
+void PathProposal::NormalizeFileName(const WCHAR* srcp, long srcLen,
     char fssep, WCHAR** pDstp, long dstLen)
 {
     ASSERT(srcp != NULL);
@@ -852,12 +822,7 @@ PathProposal::NormalizeFileName(const WCHAR* srcp, long srcLen,
 #endif
 }
 
-
-/*
- * Normalize a directory name to local filesystem conventions.
- */
-void
-PathProposal::NormalizeDirectoryName(const WCHAR* srcp, long srcLen,
+void PathProposal::NormalizeDirectoryName(const WCHAR* srcp, long srcLen,
     char fssep, WCHAR** pDstp, long dstLen)
 {
     /* in general, directories and filenames are the same */
@@ -865,15 +830,7 @@ PathProposal::NormalizeDirectoryName(const WCHAR* srcp, long srcLen,
     NormalizeFileName(srcp, srcLen, fssep, pDstp, dstLen);
 }
 
-
-/*
- * Add a preservation string.
- *
- * "pathBuf" is assumed to have enough space to hold the current path
- * plus kMaxPathGrowth more.  It will be modified in place.
- */
-void
-PathProposal::AddPreservationString(const WCHAR* pathBuf, WCHAR* extBuf)
+void PathProposal::AddPreservationString(const WCHAR* pathBuf, WCHAR* extBuf)
 {
     WCHAR* cp;
 
@@ -905,14 +862,7 @@ PathProposal::AddPreservationString(const WCHAR* pathBuf, WCHAR* extBuf)
     *cp = '\0';
 }
 
-/*
- * Add a ".foo" extension to the filename.
- *
- * We either need to retain the existing extension (possibly obscured by file
- * type preservation) or append an extension based on the ProDOS file type.
- */
-void
-PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
+void PathProposal::AddTypeExtension(const WCHAR* pathBuf, WCHAR* extBuf)
 {
     const WCHAR* pPathExt = NULL;
     const WCHAR* pWantedExt = NULL;
@@ -1024,18 +974,7 @@ know_ext:
 
 typedef bool Boolean;
 
-/*
- * Convert a local path into something suitable for storage in an archive.
- * Type preservation strings are interpreted and stripped as appropriate.
- *
- * This does *not* do filesystem-specific normalization here.  (It could, but
- * it's better to leave that for later so we can do uniqueification.)
- *
- * In the current implementation, fStoredPathName will always get smaller,
- * but it would be unwise to rely on that.
- */
-void
-PathProposal::LocalToArchive(const AddFilesDialog* pAddOpts)
+void PathProposal::LocalToArchive(const AddFilesDialog* pAddOpts)
 {
     Boolean wasPreserved;
     Boolean doJunk = false;
@@ -1173,12 +1112,7 @@ PathProposal::LocalToArchive(const AddFilesDialog* pAddOpts)
     fStoredPathName.ReleaseBuffer();
 }
 
-/*
- * Replace "oldc" with "newc".  If we find an instance of "newc" already
- * in the string, replace it with "newSubst".
- */
-void
-PathProposal::ReplaceFssep(WCHAR* str, char oldc, char newc, char newSubst)
+void PathProposal::ReplaceFssep(WCHAR* str, char oldc, char newc, char newSubst)
 {
     while (*str != '\0') {
         if (*str == oldc)
@@ -1189,15 +1123,7 @@ PathProposal::ReplaceFssep(WCHAR* str, char oldc, char newc, char newSubst)
     }
 }
 
-
-/*
- * Try to figure out what file type is associated with a filename extension.
- *
- * This checks the standard list of ProDOS types (which should catch things
- * like "TXT" and "BIN") and the separate list of recognized extensions.
- */
-void
-PathProposal::LookupExtension(const WCHAR* ext)
+void PathProposal::LookupExtension(const WCHAR* ext)
 {
     WCHAR uext3[4];
     int i, extLen;
@@ -1242,11 +1168,7 @@ bail:
     return;
 }
 
-/*
- * Try to associate some meaning with the file extension.
- */
-void
-PathProposal::InterpretExtension(const WCHAR* pathName)
+void PathProposal::InterpretExtension(const WCHAR* pathName)
 {
     const WCHAR* pExt;
 
@@ -1257,18 +1179,12 @@ PathProposal::InterpretExtension(const WCHAR* pathName)
         LookupExtension(pExt+1);
 }
 
-
-/*
- * Check to see if there's a preservation string on the filename.  If so,
- * set the filetype and auxtype information, and trim the preservation
- * string off.
- *
- * We have to be careful not to trip on false-positive occurrences of '#'
- * in the filename.
- */
-Boolean
-PathProposal::ExtractPreservationString(WCHAR* pathname)
+Boolean PathProposal::ExtractPreservationString(WCHAR* pathname)
 {
+    /*
+     * We have to be careful not to trip on false-positive occurrences of '#'
+     * in the filename.
+     */
     WCHAR numBuf[9];
     unsigned long fileType, auxType;
     int threadMask;
@@ -1352,15 +1268,7 @@ PathProposal::ExtractPreservationString(WCHAR* pathname)
     return true;
 }
 
-
-/*
- * Remove NuLib2's normalization magic (e.g. "%2f" for '/').
- *
- * This always results in the filename staying the same length or getting
- * smaller, so we can do it in place in the buffer.
- */
-void
-PathProposal::DenormalizePath(WCHAR* pathBuf)
+void PathProposal::DenormalizePath(WCHAR* pathBuf)
 {
     const WCHAR* srcp;
     WCHAR* dstp;
@@ -1402,14 +1310,7 @@ PathProposal::DenormalizePath(WCHAR* pathBuf)
     ASSERT(dstp <= srcp);
 }
 
-/*
- * Remove a disk image suffix.
- *
- * Useful when adding disk images directly from a .SDK or .2MG file.  We
- * don't want them to retain their original suffix.
- */
-void
-PathProposal::StripDiskImageSuffix(WCHAR* pathName)
+void PathProposal::StripDiskImageSuffix(WCHAR* pathName)
 {
     static const WCHAR diskExt[][4] = {
         L"SHK", L"SDK", L"IMG", L"PO", L"DO", L"2MG", L"DSK"

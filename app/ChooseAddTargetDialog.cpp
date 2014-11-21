@@ -17,12 +17,7 @@ BEGIN_MESSAGE_MAP(ChooseAddTargetDialog, CDialog)
     ON_COMMAND(IDHELP, OnHelp)
 END_MESSAGE_MAP()
 
-/*
- * Initialize the dialog box.  This requires scanning the provided disk
- * archive.
- */
-BOOL
-ChooseAddTargetDialog::OnInitDialog(void)
+BOOL ChooseAddTargetDialog::OnInitDialog(void)
 {
     CDialog::OnInitDialog();
 
@@ -51,14 +46,13 @@ ChooseAddTargetDialog::OnInitDialog(void)
     return TRUE;
 }
 
-/*
- * Not much to do on the way in.  On the way out, make sure that they've
- * selected something acceptable, and copy the values to an easily
- * accessible location.
- */
-void
-ChooseAddTargetDialog::DoDataExchange(CDataExchange* pDX)
+void ChooseAddTargetDialog::DoDataExchange(CDataExchange* pDX)
 {
+    /*
+     * Not much to do on the way in.  On the way out, make sure that they've
+     * selected something acceptable, and copy the values to an easily
+     * accessible location.
+     */
     if (pDX->m_bSaveAndValidate) {
         CTreeCtrl* pTree = (CTreeCtrl*) GetDlgItem(IDC_ADD_TARGET_TREE);
         CString errMsg, appName;
@@ -91,12 +85,7 @@ ChooseAddTargetDialog::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-
-/*
- * User pressed the "Help" button.
- */
-void
-ChooseAddTargetDialog::OnHelp(void)
+void ChooseAddTargetDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_CHOOSE_TARGET, HELP_CONTEXT);
 }

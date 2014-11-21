@@ -17,7 +17,7 @@
 #include "ConfirmOverwriteDialog.h"
 #include "../diskimg/DiskImgDetail.h"
 
-static const char* kEmptyFolderMarker = ".$$EmptyFolder";
+static const char kEmptyFolderMarker[] = ".$$EmptyFolder";
 
 
 /*
@@ -26,24 +26,7 @@ static const char* kEmptyFolderMarker = ".$$EmptyFolder";
  * ===========================================================================
  */
 
-/*
- * Extract data from a disk image.
- *
- * If "*ppText" is non-NULL, the data will be read into the pointed-to buffer
- * so long as it's shorter than *pLength bytes.  The value in "*pLength"
- * will be set to the actual length used.
- *
- * If "*ppText" is NULL, the uncompressed data will be placed into a buffer
- * allocated with "new[]".
- *
- * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
- * user, and -1 value on failure.  On failure, "*pErrMsg" holds an error
- * message.
- *
- * "which" is an anonymous GenericArchive enum (e.g. "kDataThread").
- */
-int
-DiskEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
+int DiskEntry::ExtractThreadToBuffer(int which, char** ppText, long* pLength,
     CString* pErrMsg) const
 {
     DIError dierr;
@@ -150,16 +133,7 @@ bail:
     return result;
 }
 
-/*
- * Extract data from a thread to a file.  Since we're not copying to memory,
- * we can't assume that we're able to hold the entire file all at once.
- *
- * Returns IDOK on success, IDCANCEL if the operation was cancelled by the
- * user, and -1 value on failure.  On failure, "*pMsg" holds an
- * error message.
- */
-int
-DiskEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
+int DiskEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
     ConvertHighASCII convHA, CString* pErrMsg) const
 {
     A2FileDescr* pOpenFile = NULL;
@@ -219,12 +193,7 @@ bail:
     return result;
 }
 
-/*
- * Copy data from the open A2File to outfp, possibly converting EOL along
- * the way.
- */
-DIError
-DiskEntry::CopyData(A2FileDescr* pOpenFile, FILE* outfp, ConvertEOL conv,
+DIError DiskEntry::CopyData(A2FileDescr* pOpenFile, FILE* outfp, ConvertEOL conv,
     ConvertHighASCII convHA, CString* pMsg) const
 {
     DIError dierr = kDIErrNone;
@@ -287,13 +256,7 @@ bail:
     return dierr;
 }
 
-
-/*
- * Figure out whether or not we're allowed to change a file's type and
- * aux type.
- */
-bool
-DiskEntry::GetFeatureFlag(Feature feature) const
+bool DiskEntry::GetFeatureFlag(Feature feature) const
 {
     DiskImg::FSFormat format;
 
@@ -392,11 +355,7 @@ DiskEntry::GetFeatureFlag(Feature feature) const
  * ===========================================================================
  */
 
-/*
- * Perform one-time initialization of the DiskLib library.
- */
-/*static*/ CString
-DiskArchive::AppInit(void)
+/*static*/ CString DiskArchive::AppInit(void)
 {
     CString result("");
     DIError dierr;
@@ -427,21 +386,13 @@ bail:
     return result;
 }
 
-/*
- * Perform one-time cleanup of DiskImgLib at shutdown time.
- */
-/*static*/ void
-DiskArchive::AppCleanup(void)
+/*static*/ void DiskArchive::AppCleanup(void)
 {
     DiskImgLib::Global::AppCleanup();
 }
 
-
-/*
- * Handle a debug message from the DiskImg library.
- */
-/*static*/ void
-DiskArchive::DebugMsgHandler(const char* file, int line, const char* msg)
+/*static*/ void DiskArchive::DebugMsgHandler(const char* file, int line,
+    const char* msg)
 {
     ASSERT(file != NULL);
     ASSERT(msg != NULL);
@@ -449,14 +400,7 @@ DiskArchive::DebugMsgHandler(const char* file, int line, const char* msg)
     LOG_BASE(DebugLog::LOG_INFO, file, line, "<diskimg> %hs", msg);
 }
 
-/*
- * Progress update callback, called from DiskImgLib during read/write
- * operations.
- *
- * Returns "true" if we should continue;
- */
-/*static*/ bool
-DiskArchive::ProgressCallback(DiskImgLib::A2FileDescr* pFile,
+/*static*/ bool DiskArchive::ProgressCallback(DiskImgLib::A2FileDescr* pFile,
     DiskImgLib::di_off_t max, DiskImgLib::di_off_t current, void* state)
 {
     int status;
@@ -471,16 +415,8 @@ DiskArchive::ProgressCallback(DiskImgLib::A2FileDescr* pFile,
     return true;        // tell DiskImgLib to continue what it's doing
 }
 
-/*
- * Progress update callback, called from DiskImgLib while scanning a volume
- * during Open().
- *
- * "str" must not contain a '%'.  (TODO: fix that)
- *
- * Returns "true" if we should continue.
- */
-/*static*/ bool
-DiskArchive::ScanProgressCallback(void* cookie, const char* str, int count)
+/*static*/ bool DiskArchive::ScanProgressCallback(void* cookie, const char* str,
+    int count)
 {
     CString fmt;
     bool cont;
@@ -498,12 +434,8 @@ DiskArchive::ScanProgressCallback(void* cookie, const char* str, int count)
     return cont;
 }
 
-
-/*
- * Finish instantiating a DiskArchive object by opening an existing file.
- */
-GenericArchive::OpenResult
-DiskArchive::Open(const WCHAR* filename, bool readOnly, CString* pErrMsg)
+GenericArchive::OpenResult DiskArchive::Open(const WCHAR* filename,
+    bool readOnly, CString* pErrMsg)
 {
     DIError dierr;
     CString errMsg;
@@ -715,14 +647,7 @@ bail:
     return result;
 }
 
-
-/*
- * Finish instantiating a DiskArchive object by creating a new archive.
- *
- * Returns an error string on failure, or "" on success.
- */
-CString
-DiskArchive::New(const WCHAR* fileName, const void* vOptions)
+CString DiskArchive::New(const WCHAR* fileName, const void* vOptions)
 {
     const Preferences* pPreferences = GET_PREFERENCES();
     NewOptions* pOptions = (NewOptions*) vOptions;
@@ -901,11 +826,7 @@ bail:
     return retmsg;
 }
 
-/*
- * Close the DiskArchive ojbect.
- */
-CString
-DiskArchive::Close(void)
+CString DiskArchive::Close(void)
 {
     if (fpPrimaryDiskFS != NULL) {
         LOGI("DiskArchive shutdown closing disk image");
@@ -930,17 +851,7 @@ DiskArchive::Close(void)
     return L"";
 }
 
-/*
- * Flush the DiskArchive object.
- *
- * Most of the stuff we do with disk images goes straight through, but in
- * the case of compressed disks we don't normally re-compress them until
- * it's time to close them.  This forces us to update the copy on disk.
- *
- * Returns an empty string on success, or an error message on failure.
- */
-CString
-DiskArchive::Flush(void)
+CString DiskArchive::Flush(void)
 {
     DIError dierr;
     CWaitCursor waitc;
@@ -959,23 +870,14 @@ DiskArchive::Flush(void)
     return L"";
 }
 
-/*
- * Returns "true" if the archive has un-flushed modifications pending.
- */
-bool
-DiskArchive::IsModified(void) const
+bool DiskArchive::IsModified(void) const
 {
     assert(fpPrimaryDiskFS != NULL);
 
     return fpPrimaryDiskFS->GetDiskImg()->GetDirtyFlag();
 }
 
-/*
- * Return an description of the disk archive, suitable for display in the
- * main title bar.
- */
-void
-DiskArchive::GetDescription(CString* pStr) const
+void DiskArchive::GetDescription(CString* pStr) const
 {
     if (fpPrimaryDiskFS == NULL)
         return;
@@ -985,14 +887,7 @@ DiskArchive::GetDescription(CString* pStr) const
     }
 }
 
-
-/*
- * Load the contents of a "disk archive".
- *
- * Returns 0 on success.
- */
-int
-DiskArchive::LoadContents(void)
+int DiskArchive::LoadContents(void)
 {
     int result;
 
@@ -1018,22 +913,7 @@ DiskArchive::LoadContents(void)
     return result;
 }
 
-/*
- * Reload the stuff from the underlying DiskFS.
- *
- * This also does a "lite" flush of the disk data.  For files that are
- * essentially being written as we go, this does little more than clear
- * the "dirty" flag.  Files that need to be recompressed or have some
- * other slow operation remain dirty.
- *
- * We don't need to do the flush as part of the reload -- we can load the
- * contents with everything in a perfectly dirty state.  We don't need to
- * do it at all.  We do it to keep the "dirty" flag clear when nothing is
- * really dirty, and we do it here because almost all of our functions call
- * "reload" after making changes, which makes it convenient to call from here.
- */
-CString
-DiskArchive::Reload()
+CString DiskArchive::Reload()
 {
     fReloadFlag = true;     // tell everybody that cached data is invalid
 
@@ -1047,14 +927,7 @@ DiskArchive::Reload()
     return "";
 }
 
-/*
- * Reload the contents of the archive, showing an error message if the
- * reload fails.
- *
- * Returns 0 on success, -1 on failure.
- */
-int
-DiskArchive::InternalReload(CWnd* pMsgWnd)
+int DiskArchive::InternalReload(CWnd* pMsgWnd)
 {
     CString errMsg;
 
@@ -1068,14 +941,7 @@ DiskArchive::InternalReload(CWnd* pMsgWnd)
     return 0;
 }
 
-/*
- * Load the contents of a DiskFS.
- *
- * Recursively handle sub-volumes.  "volName" holds the name of the
- * sub-volume as it should appear in the list.
- */
-int
-DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
+int DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
 {
     static const WCHAR* kBlankFileName = L"<blank filename>";
     A2File* pFile;
@@ -1231,15 +1097,7 @@ DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
     return 0;
 }
 
-
-/*
- * User has updated their preferences.  Take note.
- *
- * Setting preferences in a DiskFS causes those prefs to be pushed down
- * to all sub-volumes.
- */
-void
-DiskArchive::PreferencesChanged(void)
+void DiskArchive::PreferencesChanged(void)
 {
     const Preferences* pPreferences = GET_PREFERENCES();
 
@@ -1251,12 +1109,7 @@ DiskArchive::PreferencesChanged(void)
     }
 }
 
-
-/*
- * Report on what this disk image is capable of.
- */
-long
-DiskArchive::GetCapability(Capability cap)
+long DiskArchive::GetCapability(Capability cap)
 {
     switch (cap) {
     case kCapCanTest:
@@ -1297,13 +1150,7 @@ DiskArchive::GetCapability(Capability cap)
  * ===========================================================================
  */
 
-/*
- * Process a bulk "add" request.
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
+bool DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     const AddFilesDialog* pAddOpts)
 {
     NuError nerr;
@@ -1396,43 +1243,40 @@ bail:
     return retVal;
 }
 
-/*
- * Add a file to a disk image.
- *
- * Unfortunately we can't just add the files here.  We need to figure out
- * which pairs of files should be combined into a single "extended" file.
- * (Yes, the cursed forked files strike again.)
- *
- * The way you tell if two files should be one is by comparing their
- * filenames and type info.  If they match, and one is a data fork and
- * one is a resource fork, we have a single split file.
- *
- * We have to be careful here because we don't know which will be seen
- * first and whether they'll be adjacent.  We have to dig through the
- * list of previously-added files for a match (O(n^2) behavior currently).
- *
- * We also have to compare the right filename.  Comparing the Windows
- * filename is a bad idea, because by definition one of them has a resource
- * fork tag on it.  We need to compare the normalized filename before
- * the ProDOS normalizer/uniqifier gets a chance to mangle it.  As luck
- * would have it, that's exactly what we have in "storageName".
- *
- * For a NuFX archive, NufxLib does all this nonsense for us, but we have
- * to manage it ourselves here.  The good news is that, since we have to
- * wade through all the filenames, we have an opportunity to make the names
- * unique.  So long as we ensure that the names we have don't clash with
- * anything currently on the disk, we know that anything we add that does
- * clash is running into something we just added, which means we can turn
- * on CreateFile's "make unique" feature and let the filesystem-specific
- * code handle uniqueness.
- *
- * Any fields we want to keep from the NuFileDetails struct need to be
- * copied out.  It's a "hairy" struct, so we need to duplicate the strings.
- */
-NuError
-DiskArchive::DoAddFile(const AddFilesDialog* pAddOpts,
+NuError DiskArchive::DoAddFile(const AddFilesDialog* pAddOpts,
     FileDetails* pDetails)
 {
+    /*
+     * Add a file to a disk image  Unfortunately we can't just add the files
+     * here.  We need to figure  which pairs of files should be combined into
+     * a single "extended" file (yes, the cursed forked files strike again).
+     *
+     * The way you tell if two files should be one is by comparing their
+     * filenames and type info.  If they match, and one is a data fork and
+     * one is a resource fork, we have a single split file.
+     *
+     * We have to be careful here because we don't know which will be seen
+     * first and whether they'll be adjacent.  We have to dig through the
+     * list of previously-added files for a match (O(n^2) behavior currently).
+     *
+     * We also have to compare the right filename.  Comparing the Windows
+     * filename is a bad idea, because by definition one of them has a resource
+     * fork tag on it.  We need to compare the normalized filename before
+     * the ProDOS normalizer/uniqifier gets a chance to mangle it.  As luck
+     * would have it, that's exactly what we have in "storageName".
+     *
+     * For a NuFX archive, NufxLib does all this nonsense for us, but we have
+     * to manage it ourselves here.  The good news is that, since we have to
+     * wade through all the filenames, we have an opportunity to make the names
+     * unique.  So long as we ensure that the names we have don't clash with
+     * anything currently on the disk, we know that anything we add that does
+     * clash is running into something we just added, which means we can turn
+     * on CreateFile's "make unique" feature and let the filesystem-specific
+     * code handle uniqueness.
+     *
+     * Any fields we want to keep from the NuFileDetails struct need to be
+     * copied out.  It's a "hairy" struct, so we need to duplicate the strings.
+     */
     NuError nuerr = kNuErrNone;
     DiskFS* pDiskFS = pAddOpts->fpTargetDiskFS;
 
@@ -1527,22 +1371,7 @@ bail:
     return nuerr;
 }
 
-/*
- * A file we're adding clashes with an existing file.  Decide what to do
- * about it.
- *
- * Returns one of the following:
- *  kNuOverwrite - overwrite the existing file
- *  kNuSkip - skip adding the existing file
- *  kNuRename - user wants to rename the file
- *  kNuAbort - cancel out of the entire add process
- *
- * Side effects:
- *  Sets fOverwriteExisting and fOverwriteNoAsk if a "to all" button is hit
- *  Replaces pDetails->storageName if the user elects to rename
- */
-NuResult
-DiskArchive::HandleReplaceExisting(const A2File* pExisting,
+NuResult DiskArchive::HandleReplaceExisting(const A2File* pExisting,
     FileDetails* pDetails)
 {
     NuResult result;
@@ -1602,14 +1431,7 @@ DiskArchive::HandleReplaceExisting(const A2File* pExisting,
     return result;
 }
 
-
-/*
- * Process the list of pending file adds.
- *
- * This is where the rubber (finally!) meets the road.
- */
-CString
-DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
+CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
 {
     CString errMsg;
     FileAddData* pData;
@@ -1775,25 +1597,14 @@ bail:
     return errMsg;
 }
 
-#define kCharLF             '\n'
-#define kCharCR             '\r'
 
-/*
- * Load a file into a buffer, possibly converting EOL markers and setting
- * "high ASCII" along the way.
- *
- * Returns a pointer to a newly-allocated buffer (new[]) and the data length.
- * If the file is empty, no buffer will be allocated.
- *
- * Returns an empty string on success, or an error message on failure.
- *
- * HEY: really ought to update the progress counter, especially when reading
- * really large files.
- */
-CString
-DiskArchive::LoadFile(const WCHAR* pathName, uint8_t** pBuf, long* pLen,
+// TODO: really ought to update the progress counter, especially when reading
+// really large files.
+CString DiskArchive::LoadFile(const WCHAR* pathName, uint8_t** pBuf, long* pLen,
     GenericEntry::ConvertEOL conv, GenericEntry::ConvertHighASCII convHA) const
 {
+    const char kCharLF = '\n';
+    const char kCharCR = '\r';
     CString errMsg;
     FILE* fp;
     long fileLen;
@@ -1950,16 +1761,8 @@ bail:
     return errMsg;
 }
 
-/*
- * Add a file with the supplied data to the disk image.
- *
- * Forks that exist but are empty have a length of zero.  Forks that don't
- * exist have a length of -1.
- *
- * Called by XferFile and ProcessFileAddData.
- */
-DIError
-DiskArchive::AddForksToDisk(DiskFS* pDiskFS, const DiskFS::CreateParms* pParms,
+DIError DiskArchive::AddForksToDisk(DiskFS* pDiskFS,
+    const DiskFS::CreateParms* pParms,
     const unsigned char* dataBuf, long dataLen,
     const unsigned char* rsrcBuf, long rsrcLen) const
 {
@@ -2149,14 +1952,7 @@ bail:
     return dierr;
 }
 
-/*
- * Fill out a CreateParms structure from a FileDetails structure.
- *
- * The NuStorageType values correspond exactly to ProDOS storage types, so
- * there's no need to convert them.
- */
-void
-DiskArchive::ConvertFDToCP(const FileDetails* pDetails,
+void DiskArchive::ConvertFDToCP(const FileDetails* pDetails,
     DiskFS::CreateParms* pCreateParms)
 {
     // TODO(xyzzy): need to store 8-bit form
@@ -2170,19 +1966,7 @@ DiskArchive::ConvertFDToCP(const FileDetails* pDetails,
     pCreateParms->modWhen = NufxArchive::DateTimeToSeconds(&pDetails->modWhen);
 }
 
-
-/*
- * Add an entry to the end of the FileAddData list.
- *
- * If "storageName" (the Windows filename with type goodies stripped, but
- * without filesystem normalization) matches an entry already in the list,
- * we check to see if these are forks of the same file.  If they are
- * different forks and we don't already have both forks, we put the
- * pointer into the "fork pointer" of the existing file rather than adding
- * it to the end of the list.
- */
-void
-DiskArchive::AddToAddDataList(FileAddData* pData)
+void DiskArchive::AddToAddDataList(FileAddData* pData)
 {
     ASSERT(pData != NULL);
     ASSERT(pData->GetNext() == NULL);
@@ -2234,11 +2018,7 @@ DiskArchive::AddToAddDataList(FileAddData* pData)
     }
 }
 
-/*
- * Free all entries in the FileAddData list.
- */
-void
-DiskArchive::FreeAddDataList(void)
+void DiskArchive::FreeAddDataList(void)
 {
     FileAddData* pData;
     FileAddData* pNext;
@@ -2261,11 +2041,7 @@ DiskArchive::FreeAddDataList(void)
  * ===========================================================================
  */
 
-/*
- * Create a subdirectory named "newName" in "pParentEntry".
- */
-bool
-DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
+bool DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
     const WCHAR* newName)
 {
     ASSERT(newName != NULL && wcslen(newName) > 0);
@@ -2332,11 +2108,8 @@ DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
  * ===========================================================================
  */
 
-/*
- * Compare DiskEntry display names in descending order (Z-A).
- */
-/*static*/ int
-DiskArchive::CompareDisplayNamesDesc(const void* ventry1, const void* ventry2)
+/*static*/ int DiskArchive::CompareDisplayNamesDesc(const void* ventry1,
+    const void* ventry2)
 {
     const DiskEntry* pEntry1 = *((const DiskEntry**) ventry1);
     const DiskEntry* pEntry2 = *((const DiskEntry**) ventry2);
@@ -2344,21 +2117,18 @@ DiskArchive::CompareDisplayNamesDesc(const void* ventry1, const void* ventry2)
     return wcsicmp(pEntry2->GetDisplayName(), pEntry1->GetDisplayName());
 }
 
-/*
- * Delete the records listed in the selection set.
- *
- * The DiskFS DeleteFile() function will not delete a subdirectory unless
- * it is empty.  This complicates matters somewhat for us, because the
- * selection set isn't in any particular order.  We need to sort on the
- * pathname and then delete bottom-up.
- *
- * CiderPress does work to ensure that, if a subdir is selected, everything
- * in that subdir is also selected.  So if we just delete everything in the
- * right order, we should be okay.
- */
-bool
-DiskArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
+bool DiskArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 {
+    /*
+     * The DiskFS DeleteFile() function will not delete a subdirectory unless
+     * it is empty.  This complicates matters somewhat for us, because the
+     * selection set isn't in any particular order.  We need to sort on the
+     * pathname and then delete bottom-up.
+     *
+     * CiderPress does work to ensure that, if a subdir is selected, everything
+     * in that subdir is also selected.  So if we just delete everything in the
+     * right order, we should be okay.
+     */
     CString errMsg;
     SelectionEntry* pSelEntry;
     DiskEntry* pEntry;
@@ -2467,20 +2237,17 @@ bail:
  * ===========================================================================
  */
 
- /*
-  * Rename a set of files, one at a time.
-  *
-  * If we rename a subdirectory, it could affect the next thing we try to
-  * rename (because we show the full path).  We have to reload our file
-  * list from the DiskFS after each renamed subdir.  The trouble is that
-  * this invalidates the data displayed in the ContentList, and we won't
-  * redraw the screen correctly.  We can work around the problem by getting
-  * the pathname directly from the DiskFS instead of from DiskEntry, though
-  * it's not immediately obvious which is less confusing.
-  */
-bool
-DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
+bool DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 {
+    /*
+     * If we rename a subdirectory, it could affect the next thing we try to
+     * rename (because we show the full path).  We have to reload our file
+     * list from the DiskFS after each renamed subdir.  The trouble is that
+     * this invalidates the data displayed in the ContentList, and we won't
+     * redraw the screen correctly.  We can work around the problem by getting
+     * the pathname directly from the DiskFS instead of from DiskEntry, though
+     * it's not immediately obvious which is less confusing.
+     */
     CString errMsg;
     bool retVal = false;
 
@@ -2546,13 +2313,7 @@ bail:
     return retVal;
 }
 
-/*
- * Set up a RenameEntryDialog for the entry in "*pEntry".
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-DiskArchive::SetRenameFields(CWnd* pMsgWnd, DiskEntry* pEntry,
+bool DiskArchive::SetRenameFields(CWnd* pMsgWnd, DiskEntry* pEntry,
     RenameEntryDialog* pDialog)
 {
     DiskFS* pDiskFS;
@@ -2598,16 +2359,7 @@ DiskArchive::SetRenameFields(CWnd* pMsgWnd, DiskEntry* pEntry,
     return true;
 }
 
-/*
- * Verify that the a name is suitable.  Called by RenameEntryDialog and
- * CreateSubdirDialog.
- *
- * Tests for context-specific syntax and checks for duplicates.
- *
- * Returns an empty string on success, or an error message on failure.
- */
-CString
-DiskArchive::TestPathName(const GenericEntry* pGenericEntry,
+CString DiskArchive::TestPathName(const GenericEntry* pGenericEntry,
     const CString& basePath, const CString& newName, char newFssep) const
 {
     const DiskEntry* pEntry = (DiskEntry*) pGenericEntry;
@@ -2670,13 +2422,7 @@ bail:
  * ===========================================================================
  */
 
-/*
- * Ask a DiskFS to change its volume name.
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-DiskArchive::RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
+bool DiskArchive::RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
     const WCHAR* newName)
 {
     DIError dierr;
@@ -2700,11 +2446,7 @@ DiskArchive::RenameVolume(CWnd* pMsgWnd, DiskFS* pDiskFS,
     return retVal;
 }
 
-/*
- * Test a volume name for validity.
- */
-CString
-DiskArchive::TestVolumeName(const DiskFS* pDiskFS,
+CString DiskArchive::TestVolumeName(const DiskFS* pDiskFS,
     const WCHAR* newName) const
 {
     DiskImg::FSFormat format;
@@ -2748,18 +2490,13 @@ DiskArchive::TestVolumeName(const DiskFS* pDiskFS,
  * ===========================================================================
  */
 
-/*
- * Set the properties of "pEntry" to what's in "pProps".
- *
- * [currently only supports file type, aux type, and access flags]
- *
- * Technically we should reload the GenericArchive from the NufxArchive,
- * but the set of changes is pretty small, so we just make them here.
- */
-bool
-DiskArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
+bool DiskArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
     const FileProps* pProps)
 {
+    /*
+     * Technically we should reload the GenericArchive from the disk image,
+     * but the set of changes is pretty small, so we just make them here.
+     */
     DIError dierr;
     DiskEntry* pEntry = (DiskEntry*) pGenericEntry;
     A2File* pFile = pEntry->GetA2File();
@@ -2802,20 +2539,17 @@ DiskArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
  * ===========================================================================
  */
 
-/*
- * Transfer the selected files out of this archive and into another.
- *
- * In this case, it's files on a disk (with unspecified filesystem) to a NuFX
- * archive.  We get the open archive pointer and some options from "pXferOpts".
- *
- * The selection set was created with the "any" selection criteria, which
- * means there's only one entry for each file regardless of whether it's
- * forked or not.
- */
-GenericArchive::XferStatus
-DiskArchive::XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
-    ActionProgressDialog* pActionProgress, const XferFileOptions* pXferOpts)
+GenericArchive::XferStatus DiskArchive::XferSelection(CWnd* pMsgWnd,
+    SelectionSet* pSelSet, ActionProgressDialog* pActionProgress, 
+    const XferFileOptions* pXferOpts)
 {
+    /*
+     * We get the open archive pointer and some options from "pXferOpts".
+     *
+     * The selection set was created with the "any" selection criteria, which
+     * means there's only one entry for each file regardless of whether it's
+     * forked or not.
+     */
     LOGI("DiskArchive XferSelection!");
     unsigned char* dataBuf = NULL;
     unsigned char* rsrcBuf = NULL;
@@ -3024,11 +2758,7 @@ bail:
     return retval;
 }
 
-/*
- * Prepare for file transfers.
- */
-void
-DiskArchive::XferPrepare(const XferFileOptions* pXferOpts)
+void DiskArchive::XferPrepare(const XferFileOptions* pXferOpts)
 {
     LOGI("DiskArchive::XferPrepare");
 
@@ -3042,21 +2772,7 @@ DiskArchive::XferPrepare(const XferFileOptions* pXferOpts)
     fpXferTargetFS = pXferOpts->fpTargetFS;
 }
 
-/*
- * Transfer a file to the disk image.  Called from NufxArchive's XferSelection
- * and clipboard "paste".
- *
- * "dataLen" and "rsrcLen" will be -1 if the corresponding fork doesn't
- * exist.
- *
- * Returns 0 on success, nonzero on failure.
- *
- * On success, *pDataBuf and *pRsrcBuf are freed and set to NULL.  (It's
- * necessary for the interface to work this way because the NufxArchive
- * version just tucks the pointers into NufxLib structures.)
- */
-CString
-DiskArchive::XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+CString DiskArchive::XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
     long dataLen, uint8_t** pRsrcBuf, long rsrcLen)
 {
     //const int kFileTypeTXT = 0x04;
@@ -3144,23 +2860,14 @@ bail:
     return errMsg;
 }
 
-
-/*
- * Abort our progress.  Not really possible, except by throwing the disk
- * image away.
- */
-void
-DiskArchive::XferAbort(CWnd* pMsgWnd)
+void DiskArchive::XferAbort(CWnd* pMsgWnd)
 {
+    // Can't undo previous actions.
     LOGI("DiskArchive::XferAbort");
     InternalReload(pMsgWnd);
 }
 
-/*
- * Transfer is finished.
- */
-void
-DiskArchive::XferFinish(CWnd* pMsgWnd)
+void DiskArchive::XferFinish(CWnd* pMsgWnd)
 {
     LOGI("DiskArchive::XferFinish");
     InternalReload(pMsgWnd);

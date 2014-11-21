@@ -50,19 +50,46 @@ public:
     bool    fReadOnly;
 
 private:
-    // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
+    /*
+     * This is called when the file type selection changes or something is
+     * typed in the aux type box.
+     *
+     * We use this notification to configure the type description field.
+     *
+     * Typing in the ProDOS aux type box causes us to nuke the HFS values.
+     * If we were in "HFS mode" we reset the file type to zero.
+     */
     afx_msg void OnTypeChange(void);
+
+    /*
+     * Called when something is typed in one of the HFS type boxes.
+     */
     afx_msg void OnHFSTypeChange(void);
     afx_msg void OnHelp(void);
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
+    /*
+     * For "simple" access formats, i.e. DOS 3.2/3.3, the "write" button acts
+     * as a "locked" flag.  We want the other rename/delete flags to track this
+     * one.
+     */
     void UpdateSimpleAccess(void);
+
+    /*
+     * Called initially and when switching modes.
+     */
     void UpdateHFSMode(void);
+
+    /*
+     * Get the aux type.
+     *
+     * Returns -1 if something was wrong with the string (e.g. empty or has
+     * invalid chars).
+     */
     long GetAuxType(void);
-    //void ShowHFSType(void);
 
     /* what sort of type changes do we allow? */
     AllowedTypes    fAllowedTypes;

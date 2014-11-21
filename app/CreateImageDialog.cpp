@@ -22,17 +22,13 @@ BEGIN_MESSAGE_MAP(CreateImageDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-
+// TODO: obtain from DiskImgLib header?
 const int kProDOSVolNameMax = 15;       // longest possible ProDOS volume name
 const int kPascalVolNameMax = 7;        // longest possible Pascal volume name
 const int kHFSVolNameMax = 27;          // longest possible HFS volume name
 const long kMaxBlankBlocks = 16777216;  // 8GB in 512-byte blocks
 
-/*
- * Set up our modified version of the "use selection" dialog.
- */
-BOOL
-CreateImageDialog::OnInitDialog(void)
+BOOL CreateImageDialog::OnInitDialog(void)
 {
     // high bit set in signed short means key is down
     if (::GetKeyState(VK_SHIFT) < 0) {
@@ -63,11 +59,7 @@ CreateImageDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * Convert values.
- */
-void
-CreateImageDialog::DoDataExchange(CDataExchange* pDX)
+void CreateImageDialog::DoDataExchange(CDataExchange* pDX)
 {
     UINT specifyBlocks = 280;
     CString errMsg;
@@ -169,12 +161,7 @@ CreateImageDialog::DoDataExchange(CDataExchange* pDX)
     CDialog::DoDataExchange(pDX);
 }
 
-/*
- * When the user chooses a format, enable and disable controls as
- * appropriate.
- */
-void
-CreateImageDialog::OnFormatChangeRange(UINT nID)
+void CreateImageDialog::OnFormatChangeRange(UINT nID)
 {
     static const struct {
         UINT    buttonID;
@@ -262,12 +249,7 @@ CreateImageDialog::OnFormatChangeRange(UINT nID)
     }
 }
 
-/*
- * When one of the radio buttons is clicked on, update the active status
- * and contents of the "specify size" edit box.
- */
-void
-CreateImageDialog::OnSizeChangeRange(UINT nID)
+void CreateImageDialog::OnSizeChangeRange(UINT nID)
 {
     LOGI("OnSizeChangeRange id=%d", nID);
 
@@ -290,62 +272,37 @@ CreateImageDialog::OnSizeChangeRange(UINT nID)
 }
 
 
-/*
- * Test a DOS filename for validity.
- */
-bool
-CreateImageDialog::IsValidVolumeName_DOS(const WCHAR* name)
+bool CreateImageDialog::IsValidVolumeName_DOS(const WCHAR* name)
 {
     CStringA nameStr(name);
     return DiskImgLib::DiskFSDOS33::IsValidVolumeName(nameStr);
 }
 
-/*
- * Test a ProDOS filename for validity.
- */
-bool
-CreateImageDialog::IsValidVolumeName_ProDOS(const WCHAR* name)
+bool CreateImageDialog::IsValidVolumeName_ProDOS(const WCHAR* name)
 {
     CStringA nameStr(name);
     return DiskImgLib::DiskFSProDOS::IsValidVolumeName(nameStr);
 }
 
-/*
- * Test a Pascal filename for validity.
- */
-bool
-CreateImageDialog::IsValidVolumeName_Pascal(const WCHAR* name)
+bool CreateImageDialog::IsValidVolumeName_Pascal(const WCHAR* name)
 {
     CStringA nameStr(name);
     return DiskImgLib::DiskFSPascal::IsValidVolumeName(nameStr);
 }
 
-/*
- * Test an HFS filename for validity.
- */
-bool
-CreateImageDialog::IsValidVolumeName_HFS(const WCHAR* name)
+bool CreateImageDialog::IsValidVolumeName_HFS(const WCHAR* name)
 {
     CStringA nameStr(name);
     return DiskImgLib::DiskFSHFS::IsValidVolumeName(nameStr);
 }
 
-
-/*
- * Context help request (question mark button).
- */
-BOOL
-CreateImageDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL CreateImageDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-CreateImageDialog::OnHelp(void)
+void CreateImageDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_IMAGE_CREATOR, HELP_CONTEXT);
 }

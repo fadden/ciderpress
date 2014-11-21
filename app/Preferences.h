@@ -42,7 +42,14 @@ public:
     }
     ~ColumnLayout(void) {}
 
+    /*
+     * Restore column widths.
+     */
     void LoadFromRegistry(const WCHAR* section);
+
+    /*
+     * Store column widths.
+     */
     void SaveToRegistry(const WCHAR* section);
 
     int GetColumnWidth(int col) const {
@@ -212,18 +219,26 @@ typedef enum {
  */
 class Preferences {
 public:
+    /*
+     * There should be only one Preferences object in the
+     * application, so this should only be run once.
+     */
     Preferences(void);
     ~Preferences(void) {
         FreeStringValues();
     }
 
-    // Load/save preferences from/to registry.
+    /*
+     * Load preferences from the registry.
+     */
     int LoadFromRegistry(void);
+
+    /*
+     * Save preferences to the registry.
+     */
     int SaveToRegistry(void);
 
     ColumnLayout* GetColumnLayout(void) { return &fColumnLayout; }
-    //bool GetShowToolbarText(void) const { return fShowToolbarText; }
-    //void SetShowToolbarText(bool val) { fShowToolbarText = val; }
 
     bool GetPrefBool(PrefNum num) const;
     void SetPrefBool(PrefNum num, bool val);
@@ -234,10 +249,33 @@ public:
 
 
 private:
+    /*
+     * Get a default value for the temp path.
+     */
     void InitTempPath(void);
+
+    /*
+     * Set default values for the various folders.
+     */
     void InitFolders(void);
+
+    /*
+     * Get the path to the "My Documents" folder.
+     */
     bool GetMyDocuments(CString* pPath);
+
+    /*
+     * Determine the type of compression to use as a default, based on what this
+     * version of NufxLib supports.
+     *
+     * Note this happens *before* the AppInit call, so we should restrict this to
+     * things that are version-safe for all of NufxLib v2.x.
+     */
     int DefaultCompressionType(void);
+
+    /*
+     * Free storage for any string entries.
+     */
     void FreeStringValues(void);
 
     /*
@@ -251,6 +289,11 @@ private:
         const WCHAR* registryKey;
     } PrefMap;
     static const PrefMap fPrefMaps[kPrefNumLastEntry];
+
+    /*
+     * Do a quick scan of the PrefMaps to identify duplicate, misplaced, and
+     * missing entries.
+     */
     void ScanPrefMaps(void);
 
     // this holds the actual values

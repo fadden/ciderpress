@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for AddClashDialog class.
- */
 #include "stdafx.h"
 #include "ConfirmOverwriteDialog.h"
 #include "AddClashDialog.h"
@@ -17,10 +14,9 @@ BEGIN_MESSAGE_MAP(AddClashDialog, CDialog)
 END_MESSAGE_MAP()
 
 /*
- * Replace some static text fields.
+ * Replaces some static text fields.
  */
-BOOL
-AddClashDialog::OnInitDialog(void)
+BOOL AddClashDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
 
@@ -35,17 +31,13 @@ AddClashDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * One of the buttons was hit.
- */
-void
-AddClashDialog::OnSkip(void)
+void AddClashDialog::OnSkip(void)
 {
     fDoRename = false;
     CDialog::OnOK();
 }
-void
-AddClashDialog::OnRename(void)
+
+void AddClashDialog::OnRename(void)
 {
     RenameOverwriteDialog dlg;
 

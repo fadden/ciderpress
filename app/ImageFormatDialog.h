@@ -3,18 +3,16 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Dialog asking the user to confirm certain details of a disk image.
- */
 #ifndef APP_IMAGEFORMATDIALOG_H
 #define APP_IMAGEFORMATDIALOG_H
 
-//#include <afxwin.h>
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
 using namespace DiskImgLib;
 
 /*
+ * Dialog asking the user to confirm certain details of a disk image.
+ *
  * The default values can be initialized individually or from a prepped
  * DiskImg structure.
  */
@@ -38,7 +36,9 @@ public:
         fHasSectors = fHasBlocks = fHasNibbles = false;
     }
 
-    // initialize values from a DiskImg
+    /*
+     * Initialize our members by querying the associated DiskImg.
+     */
     void InitializeValues(const DiskImg* pImg);
 
     bool                    fInitialized;
@@ -58,15 +58,37 @@ public:
     void SetAllowGenericFormats(bool val) { fAllowGenericFormats = val; }
 
 protected:
-    //virtual void DoDataExchange(CDataExchange* pDX);
-    virtual BOOL OnInitDialog(void);
-    void OnOK(void);
+    virtual BOOL OnInitDialog(void) override;
+
+    /*
+     * Handle the "OK" button by extracting values from the dialog and
+     * verifying that reasonable settings are in place.
+     */
+    void OnOK(void) override;
+
     afx_msg virtual void OnHelp(void);
     afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
     struct ConvTable;
+
+    /*
+     * Load the combo boxes with every possible entry, and set the current
+     * value appropriately.
+     *
+     * While we're at it, initialize the "source" edit text box and the
+     * "show as blocks" checkbox.
+     */
     void LoadComboBoxes(void);
+
+    /*
+     * Load the strings from ConvTable into the combo box, setting the
+     * entry matching "default" as the current entry.
+     */
     void LoadComboBox(int boxID, const ConvTable* pTable, int dflt);
+
+    /*
+     * Find the enum value for the specified index.
+     */
     int ConvComboSel(int boxID, const ConvTable* pTable);
 
     bool                    fQueryDisplayFormat;

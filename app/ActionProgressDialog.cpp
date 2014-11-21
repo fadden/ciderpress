@@ -15,11 +15,7 @@ BEGIN_MESSAGE_MAP(ActionProgressDialog, ProgressCancelDialog)
     //ON_MESSAGE(WMU_START, OnStart)
 END_MESSAGE_MAP()
 
-/*
- * Initialize the static text controls to say something reasonable.
- */
-BOOL
-ActionProgressDialog::OnInitDialog(void)
+BOOL ActionProgressDialog::OnInitDialog(void)
 {
     CDialog::OnInitDialog();
 
@@ -96,11 +92,7 @@ ActionProgressDialog::OnInitDialog(void)
     return FALSE;
 }
 
-/*
- * Set the name of the file as it appears in the archive.
- */
-void
-ActionProgressDialog::SetArcName(const WCHAR* str)
+void ActionProgressDialog::SetArcName(const WCHAR* str)
 {
     CString oldStr;
 
@@ -111,8 +103,7 @@ ActionProgressDialog::SetArcName(const WCHAR* str)
         pWnd->SetWindowText(str);
 }
 
-const CString
-ActionProgressDialog::GetFileName(void)
+const CString ActionProgressDialog::GetFileName(void)
 {
     CString str;
 
@@ -123,11 +114,7 @@ ActionProgressDialog::GetFileName(void)
     return str;
 }
 
-/*
- * Set the name of the file as it appears under Windows.
- */
-void
-ActionProgressDialog::SetFileName(const WCHAR* str)
+void ActionProgressDialog::SetFileName(const WCHAR* str)
 {
     CString oldStr;
 
@@ -138,13 +125,7 @@ ActionProgressDialog::SetFileName(const WCHAR* str)
         pWnd->SetWindowText(str);
 }
 
-/*
- * Update the progress meter.
- *
- * We take a percentage, but the underlying control uses 1000ths.
- */
-int
-ActionProgressDialog::SetProgress(int perc)
+int ActionProgressDialog::SetProgress(int perc)
 {
     ASSERT(perc >= 0 && perc <= 100);
     MainWindow* pMainWin = (MainWindow*)::AfxGetMainWnd();

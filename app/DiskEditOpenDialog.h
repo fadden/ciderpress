@@ -37,7 +37,7 @@ public:
     OpenWhat fOpenWhat;
 
 private:
-    virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void) override;
 
     afx_msg void OnButtonFile(void);
     afx_msg void OnButtonVolume(void);

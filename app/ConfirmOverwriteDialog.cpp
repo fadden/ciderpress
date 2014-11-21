@@ -22,11 +22,7 @@ BEGIN_MESSAGE_MAP(RenameOverwriteDialog, CDialog)
     ON_WM_HELPINFO()
 END_MESSAGE_MAP()
 
-/*
- * Init static text fields.
- */
-BOOL
-RenameOverwriteDialog::OnInitDialog(void)
+BOOL RenameOverwriteDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
 
@@ -37,11 +33,7 @@ RenameOverwriteDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * Convert values.
- */
-void
-RenameOverwriteDialog::DoDataExchange(CDataExchange* pDX)
+void RenameOverwriteDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_Text(pDX, IDC_RENOVWR_ORIG_NAME, fExistingFile);
     DDX_Text(pDX, IDC_RENOVWR_NEW_NAME, fNewName);
@@ -58,8 +50,7 @@ RenameOverwriteDialog::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-BOOL
-RenameOverwriteDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL RenameOverwriteDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
@@ -82,11 +73,7 @@ BEGIN_MESSAGE_MAP(ConfirmOverwriteDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Replace some static text fields.
- */
-BOOL
-ConfirmOverwriteDialog::OnInitDialog(void)
+BOOL ConfirmOverwriteDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
     CString tmpStr, dateStr;
@@ -118,47 +105,39 @@ ConfirmOverwriteDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * Handle a click on the question-mark button.
- */
-BOOL
-ConfirmOverwriteDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL ConfirmOverwriteDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
 
-/*
- * One of the buttons was hit.
- */
-void
-ConfirmOverwriteDialog::OnYes(void)
+void ConfirmOverwriteDialog::OnYes(void)
 {
     fResultOverwrite = true;
     CDialog::OnOK();
 }
-void
-ConfirmOverwriteDialog::OnYesToAll(void)
+
+void ConfirmOverwriteDialog::OnYesToAll(void)
 {
     fResultOverwrite = true;
     fResultApplyToAll = true;
     CDialog::OnOK();
 }
-void
-ConfirmOverwriteDialog::OnNo(void)
+
+void ConfirmOverwriteDialog::OnNo(void)
 {
     //fResultOverwrite = false;
     CDialog::OnOK();
 }
-void
-ConfirmOverwriteDialog::OnNoToAll(void)
+
+void ConfirmOverwriteDialog::OnNoToAll(void)
 {
     //fResultOverwrite = true;
     fResultApplyToAll = true;
     CDialog::OnOK();
 }
-void
-ConfirmOverwriteDialog::OnRename(void)
+
+void ConfirmOverwriteDialog::OnRename(void)
 {
     RenameOverwriteDialog dlg;
 

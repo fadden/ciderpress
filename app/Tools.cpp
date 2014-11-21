@@ -26,18 +26,7 @@
 #include <io.h>     // need chsize() for TwoImgProps
 
 
-/*
- * Put up the ImageFormatDialog and apply changes to "pImg".
- *
- * "*pDisplayFormat" gets the result of user changes to the display format.
- * If "pDisplayFormat" is NULL, the "query image format" feature will be
- * disabled.
- *
- * Returns IDCANCEL if the user cancelled out of the dialog, IDOK otherwise.
- * On error, "*pErrMsg" will be non-empty.
- */
-int
-MainWindow::TryDiskImgOverride(DiskImg* pImg, const WCHAR* fileSource,
+int MainWindow::TryDiskImgOverride(DiskImg* pImg, const WCHAR* fileSource,
     DiskImg::FSFormat defaultFormat, int* pDisplayFormat, bool allowUnknown,
     CString* pErrMsg)
 {
@@ -95,11 +84,7 @@ MainWindow::TryDiskImgOverride(DiskImg* pImg, const WCHAR* fileSource,
  * ==========================================================================
  */
 
-/*
- * User wants to edit a disk.
- */
-void
-MainWindow::OnToolsDiskEdit(void)
+void MainWindow::OnToolsDiskEdit(void)
 {
     DIError dierr;
     DiskImg img;
@@ -350,11 +335,7 @@ bail:
  * ==========================================================================
  */
 
-/*
- * Convert a disk image from one format to another.
- */
-void
-MainWindow::OnToolsDiskConv(void)
+void MainWindow::OnToolsDiskConv(void)
 {
     DIError dierr;
     CString openFilters, errMsg;
@@ -766,14 +747,7 @@ bail:
     return;
 }
 
-/*
- * Determine the settings we need to pass into DiskImgLib to create the
- * desired disk image format.
- *
- * Returns 0 on success, -1 on failure.
- */
-int
-MainWindow::DetermineImageSettings(int convertIdx, bool addGzip,
+int MainWindow::DetermineImageSettings(int convertIdx, bool addGzip,
     DiskImg::OuterFormat* pOuterFormat, DiskImg::FileFormat* pFileFormat,
     DiskImg::PhysicalFormat* pPhysicalFormat,
     DiskImg::SectorOrder* pSectorOrder)
@@ -858,19 +832,14 @@ static inline int MIN(int val1, int val2)
     return (val1 < val2) ? val1 : val2;
 }
 
-/*
- * Do a block copy or track copy from one disk image to another.
- *
- * If "bulk" is set, warning dialogs are suppressed.  If "partial" is set,
- * copies between volumes of different sizes are allowed.
- *
- * This originally just did a block copy.  Nibble track copies were added
- * later, and sector copies were added even later.
- */
-DIError
-MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
+DIError MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
     bool partial, ProgressCancelDialog* pPCDialog)
 {
+    /*
+     * This originally just did a block copy.  Nibble track copies were added
+     * later, and sector copies were added even later.
+     */
+
     DIError dierr = kDIErrNone;
     CString errMsg;
     unsigned char* dataBuf = NULL;
@@ -994,7 +963,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
             goto bail;
         }
 
-        LOGI("--- BLOCK COPY (%ld blocks, %d per)",
+        LOGD("--- BLOCK COPY (%ld blocks, %d per)",
             numBlocks, blocksPerRead);
         for (long block = 0; block < numBlocks; ) {
             long blocksThisTime = blocksPerRead;
@@ -1007,7 +976,7 @@ MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
                     /*
                      * Media with errors.  Drop to one block per read.
                      */
-                    LOGI(" Bad sector encountered at %ld(%ld), slowing",
+                    LOGW(" Bad sector encountered at %ld(%ld), slowing",
                         block, blocksThisTime);
                     blocksThisTime = blocksPerRead = 1;
                     continue;   // retry this block
@@ -1086,7 +1055,7 @@ public:
 
 private:
     void OnOK(void) {
-        LOGI("Ignoring BulkConvCancelDialog OnOK");
+        LOGD("Ignoring BulkConvCancelDialog OnOK");
     }
 
     MainWindow* GetMainWindow(void) const {
@@ -1094,11 +1063,7 @@ private:
     }
 };
 
-/*
- * Handle a request for a bulk disk conversion.
- */
-void
-MainWindow::OnToolsBulkDiskConv(void)
+void MainWindow::OnToolsBulkDiskConv(void)
 {
     const int kFileNameBufSize = 32768;
     DiskConvertDialog convDlg(this);
@@ -1143,7 +1108,7 @@ MainWindow::OnToolsBulkDiskConv(void)
         pathName = dlg.GetNextPathName(posn);
         nameCount++;
     }
-    LOGI("BulkConv got nameCount=%d", nameCount);
+    LOGD("BulkConv got nameCount=%d", nameCount);
 
     /*
      * Choose the target directory.
@@ -1173,7 +1138,7 @@ MainWindow::OnToolsBulkDiskConv(void)
     /* initialize cancel dialog, and disable main window */
     EnableWindow(FALSE);
     if (pCancelDialog->Create(this) == FALSE) {
-        LOGI("Cancel dialog init failed?!");
+        LOGE("Cancel dialog init failed?!");
         ASSERT(false);
         goto bail;
     }
@@ -1227,18 +1192,14 @@ bail:
     return;
 }
 
-/*
- * Convert one image during a bulk conversion.
- *
- * [Much of this is copy & pasted from OnToolsDiskConv().  This needs to get
- * refactored.]
- *
- * On failure, the reason for failure is stuffed into "*pErrMsg".
- */
-void
-MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
+void MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
     const DiskConvertDialog& convDlg, CString* pErrMsg)
 {
+    /*
+     * [Much of this is copy & pasted from OnToolsDiskConv().  This needs to get
+     * refactored.]
+     */
+
     DIError dierr;
     CString saveName;
     DiskImg srcImg, dstImg;
@@ -1543,11 +1504,7 @@ const int kSSTNumTracks = 35;
 const int kSSTNumSectPerTrack = 16;
 const int kSSTTrackLen = 6656;
 
-/*
- * Merge two SST images into a single NIB image.
- */
-void
-MainWindow::OnToolsSSTMerge(void)
+void MainWindow::OnToolsSSTMerge(void)
 {
     const int kBadCountThreshold = 3072;
     DiskImg srcImg0, srcImg1;
@@ -1662,15 +1619,7 @@ bail:
     return;
 }
 
-/*
- * Open one of the SST images.
- *
- * Configures "pDiskImg" appropriately.
- *
- * Returns 0 on success, nonzero on failure.
- */
-int
-MainWindow::SSTOpenImage(int seqNum, DiskImg* pDiskImg)
+int MainWindow::SSTOpenImage(int seqNum, DiskImg* pDiskImg)
 {
     DIError dierr;
     int result = -1;
@@ -1765,16 +1714,7 @@ bail:
     return result;
 }
 
-/*
- * Copy 17.5 tracks of data from the SST image to a .NIB image.
- *
- * Data is stored in all 16 sectors of track 0, followed by the first
- * 12 sectors of track 1, then on to track 2.  Total of $1a00 bytes.
- *
- * Returns 0 on success, -1 on failure.
- */
-int
-MainWindow::SSTLoadData(int seqNum, DiskImg* pDiskImg, uint8_t* trackBuf,
+int MainWindow::SSTLoadData(int seqNum, DiskImg* pDiskImg, uint8_t* trackBuf,
     long* pBadCount)
 {
     DIError dierr;
@@ -1823,19 +1763,7 @@ MainWindow::SSTLoadData(int seqNum, DiskImg* pDiskImg, uint8_t* trackBuf,
     return 0;
 }
 
-/*
- * Compute the destination file offset for a particular source track.  The
- * track number ranges from 0 to 69 inclusive.  Sectors from two adjacent
- * "cooked" tracks are combined into a single "raw nibbilized" track.
- *
- * The data is ordered like this:
- *  track 1 sector 15 --> track 1 sector 4  (12 sectors)
- *  track 0 sector 13 --> track 0 sector 0  (14 sectors)
- *
- * Total of 26 sectors, or $1a00 bytes.
- */
-long
-MainWindow::SSTGetBufOffset(int track)
+long MainWindow::SSTGetBufOffset(int track)
 {
     assert(track >= 0 && track < kSSTNumTracks*2);
 
@@ -1854,17 +1782,7 @@ MainWindow::SSTGetBufOffset(int track)
     return offset;
 }
 
-/*
- * Count the number of "bad" bytes in the sector.
- *
- * Strictly speaking, a "bad" byte is anything that doesn't appear in the
- * 6&2 decoding table, 5&3 decoding table, special list (D5, AA), and
- * can't be used as a 4+4 encoding value.
- *
- * We just use $80 - $92, which qualify for all of the above.
- */
-long
-MainWindow::SSTCountBadBytes(const unsigned char* sctBuf, int count)
+long MainWindow::SSTCountBadBytes(const unsigned char* sctBuf, int count)
 {
     long badCount = 0;
     unsigned char uch;
@@ -1879,12 +1797,7 @@ MainWindow::SSTCountBadBytes(const unsigned char* sctBuf, int count)
     return badCount;
 }
 
-/*
- * Run through the data, adding 0x80 everywhere and re-aligning the
- * tracks so that the big clump of sync bytes is at the end.
- */
-void
-MainWindow::SSTProcessTrackData(unsigned char* trackBuf)
+void MainWindow::SSTProcessTrackData(unsigned char* trackBuf)
 {
     unsigned char* trackPtr;
     int track;
@@ -1950,22 +1863,17 @@ MainWindow::SSTProcessTrackData(unsigned char* trackBuf)
  * ==========================================================================
  */
 
-void
-MainWindow::OnToolsVolumeCopierVolume(void)
+void MainWindow::OnToolsVolumeCopierVolume(void)
 {
     VolumeCopier(false);
 }
-void
-MainWindow::OnToolsVolumeCopierFile(void)
+
+void MainWindow::OnToolsVolumeCopierFile(void)
 {
     VolumeCopier(true);
 }
 
-/*
- * Select a volume and then invoke the volcopy dialog.
- */
-void
-MainWindow::VolumeCopier(bool openFile)
+void MainWindow::VolumeCopier(bool openFile)
 {
     VolumeCopyDialog copyDlg(this);
     DiskImg srcImg;
@@ -2099,11 +2007,7 @@ bail:
  * ==========================================================================
  */
 
-/*
- * Create a new disk image.
- */
-void
-MainWindow::OnToolsDiskImageCreator(void)
+void MainWindow::OnToolsDiskImageCreator(void)
 {
     CreateImageDialog createDlg(this);
     DiskArchive* pNewArchive = NULL;
@@ -2282,13 +2186,7 @@ MainWindow::OnToolsDiskImageCreator(void)
  * ==========================================================================
  */
 
-/*
- * Scan and report on the end-of-line markers found in a file.
- *
- * Useful for identifying files that have been mangled by ASCII conversions.
- */
-void
-MainWindow::OnToolsEOLScanner(void)
+void MainWindow::OnToolsEOLScanner(void)
 {
     CString fileName, saveFolder, errMsg;
 
@@ -2355,7 +2253,7 @@ MainWindow::OnToolsEOLScanner(void)
     }
     fclose(fp);
 
-    LOGI("Got CR=%ld LF=%ld CRLF=%ld (numChars=%ld)",
+    LOGD("Got CR=%ld LF=%ld CRLF=%ld (numChars=%ld)",
         numCR, numLF, numCRLF, numChars);
 
     EOLScanDialog output;
@@ -2374,11 +2272,7 @@ MainWindow::OnToolsEOLScanner(void)
  * ==========================================================================
  */
 
-/*
- * Edit the properties (but not the disk image inside) a .2MG disk image.
- */
-void
-MainWindow::OnToolsTwoImgProps(void)
+void MainWindow::OnToolsTwoImgProps(void)
 {
     CString fileName, saveFolder, errMsg;
     CString openFilters;
@@ -2419,13 +2313,7 @@ MainWindow::OnToolsTwoImgProps(void)
     }
 }
 
-/*
- * Edit the properties of a 2MG file.
- *
- * Returns "true" if the file was modified, "false" if not.
- */
-bool
-MainWindow::EditTwoImgProps(const WCHAR* fileName)
+bool MainWindow::EditTwoImgProps(const WCHAR* fileName)
 {
     TwoImgPropsDialog dialog;
     TwoImgHeader header;

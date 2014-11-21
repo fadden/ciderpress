@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * TwoImg properties editor.
- */
 #include "StdAfx.h"
 #include "TwoImgPropsDialog.h"
 
@@ -18,11 +15,7 @@ BEGIN_MESSAGE_MAP(TwoImgPropsDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Initialize the dialog from fpHeader.
- */
-BOOL
-TwoImgPropsDialog::OnInitDialog(void)
+BOOL TwoImgPropsDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
     CEdit* pEdit;
@@ -81,11 +74,7 @@ TwoImgPropsDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * Do the data exchange, and set values in the header.
- */
-void
-TwoImgPropsDialog::DoDataExchange(CDataExchange* pDX)
+void TwoImgPropsDialog::DoDataExchange(CDataExchange* pDX)
 {
     BOOL locked, dosVolSet;
     CString comment;
@@ -151,11 +140,7 @@ TwoImgPropsDialog::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-/*
- * If they changed anything, enable the "save" button.
- */
-void
-TwoImgPropsDialog::OnChange(void)
+void TwoImgPropsDialog::OnChange(void)
 {
     CButton* pButton;
     UINT checked;
@@ -169,11 +154,7 @@ TwoImgPropsDialog::OnChange(void)
     GetDlgItem(IDC_TWOIMG_DOSVOLNUM)->EnableWindow(checked == BST_CHECKED);
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-TwoImgPropsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL TwoImgPropsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it

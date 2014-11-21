@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for RenameEntryDialog.
- */
 #include "stdafx.h"
 #include "RenameEntryDialog.h"
 #include "HelpTopics.h"
@@ -17,11 +14,7 @@ BEGIN_MESSAGE_MAP(RenameEntryDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Set up the control.
- */
-BOOL
-RenameEntryDialog::OnInitDialog(void)
+BOOL RenameEntryDialog::OnInitDialog(void)
 {
     ASSERT(fBasePath.IsEmpty());
     fOldFile = fOldName;
@@ -62,15 +55,10 @@ RenameEntryDialog::OnInitDialog(void)
     return FALSE;   // we set the focus
 }
 
-/*
- * Convert values.
- */
-void
-RenameEntryDialog::DoDataExchange(CDataExchange* pDX)
+void RenameEntryDialog::DoDataExchange(CDataExchange* pDX)
 {
     CString msg, failed;
 
-    msg = "";
     failed.LoadString(IDS_MB_APP_NAME);
 
     /* fNewName must come last, or the focus will be set on the wrong field
@@ -105,31 +93,22 @@ fail:
     return;
 }
 
-/*
- * User pressed the "skip" button, which causes us to bail with a result that
- * skips the rename but continues with the series.
- */
-void
-RenameEntryDialog::OnSkip(void)
+void RenameEntryDialog::OnSkip(void)
 {
+    /*
+     * User pressed the "skip" button, which causes us to bail with a result that
+     * skips the rename but continues with the series.
+     */
     EndDialog(IDIGNORE);
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-RenameEntryDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL RenameEntryDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-RenameEntryDialog::OnHelp(void)
+void RenameEntryDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_RENAME_ENTRY, HELP_CONTEXT);
 }

@@ -27,12 +27,12 @@ PasteSpecialDialog::OnInitDialog(void)
 }
 #endif
 
-/*
- * Initialize radio control with value from fPasteHow.
- */
-void
-PasteSpecialDialog::DoDataExchange(CDataExchange* pDX)
+void PasteSpecialDialog::DoDataExchange(CDataExchange* pDX)
 {
+    /*
+     * Initialize radio control with value from fPasteHow.
+     */
+
     if (!pDX->m_bSaveAndValidate) {
         UINT ctrlId;
 

@@ -10,7 +10,6 @@
 #include "stdafx.h"
 #include "Main.h"
 #include "ViewFilesDialog.h"
-//#include "ViewOptionsDialog.h"
 #include "ChooseDirDialog.h"
 #include "AddFilesDialog.h"
 #include "CreateSubdirDialog.h"
@@ -31,7 +30,6 @@
 #include "ChooseAddTargetDialog.h"
 #include "CassetteDialog.h"
 #include "BasicImport.h"
-//#include "../util/UtilLib.h"
 #include "../diskimg/TwoImg.h"
 #include <errno.h>
 
@@ -42,36 +40,17 @@
  * ==========================================================================
  */
 
-/*
- * View a file stored in the archive.
- *
- * Control bounces back through Get*FileText() to get the actual
- * data to view.
- */
-void
-MainWindow::OnActionsView(void)
+void MainWindow::OnActionsView(void)
 {
     HandleView();
 }
-void
-MainWindow::OnUpdateActionsView(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsView(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL &&
         fpContentList->GetSelectedCount() > 0);
 }
 
-
-/*
- * Handle a request to view stuff.
- *
- * If "query" is set, we ask the user to confirm some choices.  If not, we
- * just go with the defaults.
- *
- * We include "damaged" files so that we can show the user a nice message
- * about how the file is damaged.
- */
-void
-MainWindow::HandleView(void)
+void MainWindow::HandleView(void)
 {
     ASSERT(fpContentList != NULL);
 
@@ -87,16 +66,12 @@ MainWindow::HandleView(void)
         return;
     }
 
-    //fpSelSet = &selSet;
-
     ViewFilesDialog vfd(this);
     vfd.SetSelectionSet(&selSet);
     vfd.SetTextTypeFace(fPreferences.GetPrefString(kPrViewTextTypeFace));
     vfd.SetTextPointSize(fPreferences.GetPrefLong(kPrViewTextPointSize));
     vfd.SetNoWrapText(fPreferences.GetPrefBool(kPrNoWrapText));
     vfd.DoModal();
-
-    //fpSelSet = NULL;
 
     // remember which font they used (sticky pref, not in registry)
     fPreferences.SetPrefString(kPrViewTextTypeFace, vfd.GetTextTypeFace());
@@ -113,14 +88,7 @@ MainWindow::HandleView(void)
  * ==========================================================================
  */
 
-/*
- * View a file stored in the archive.
- *
- * Control bounces back through Get*FileText() to get the actual
- * data to view.
- */
-void
-MainWindow::OnActionsOpenAsDisk(void)
+void MainWindow::OnActionsOpenAsDisk(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpContentList->GetSelectedCount() == 1);
@@ -131,8 +99,7 @@ MainWindow::OnActionsOpenAsDisk(void)
     else
         TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeDiskImage);
 }
-void
-MainWindow::OnUpdateActionsOpenAsDisk(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsOpenAsDisk(CCmdUI* pCmdUI)
 {
     const int kMinLen = 512 * 7;
     bool allow = false;
@@ -157,11 +124,7 @@ MainWindow::OnUpdateActionsOpenAsDisk(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Add files to an archive.
- */
-void
-MainWindow::OnActionsAddFiles(void)
+void MainWindow::OnActionsAddFiles(void)
 {
     LOGI("Add files!");
     AddFilesDialog addFiles(this);
@@ -266,21 +229,12 @@ MainWindow::OnActionsAddFiles(void)
         LOGI("SFD bailed with Cancel");
     }
 }
-void
-MainWindow::OnUpdateActionsAddFiles(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsAddFiles(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly());
 }
 
-
-/*
- * Figure out where they want to add files.
- *
- * If the volume directory of a disk is chosen, "*ppTargetSubdir" will
- * be set to NULL.
- */
-bool
-MainWindow::ChooseAddTarget(DiskImgLib::A2File** ppTargetSubdir,
+bool MainWindow::ChooseAddTarget(DiskImgLib::A2File** ppTargetSubdir,
     DiskImgLib::DiskFS** ppTargetDiskFS)
 {
     ASSERT(ppTargetSubdir != NULL);
@@ -341,15 +295,7 @@ MainWindow::ChooseAddTarget(DiskImgLib::A2File** ppTargetSubdir,
  * ==========================================================================
  */
 
-/*
- * Add a disk to an archive.  Not all archive formats support disk images.
- *
- * We open a single disk archive file as a DiskImg, get the format
- * figured out, then write it block-by-block into a file chosen by the user.
- * Standard open/save dialogs work fine here.
- */
-void
-MainWindow::OnActionsAddDisks(void)
+void MainWindow::OnActionsAddDisks(void)
 {
     DIError dierr;
     DiskImg img;
@@ -489,8 +435,7 @@ MainWindow::OnActionsAddDisks(void)
 bail:
     return;
 }
-void
-MainWindow::OnUpdateActionsAddDisks(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsAddDisks(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpOpenArchive->GetCapability(GenericArchive::kCapCanAddDisk));
@@ -503,16 +448,7 @@ MainWindow::OnUpdateActionsAddDisks(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Create a subdirectory inside another subdirectory (or volume directory).
- *
- * Simply asserting that an existing subdir be selected in the list does
- * away with all sorts of testing.  Creating subdirs on DOS disks and NuFX
- * archives is impossible because neither has subdirs.  Nested volumes are
- * selected for us by the user.
- */
-void
-MainWindow::OnActionsCreateSubdir(void)
+void MainWindow::OnActionsCreateSubdir(void)
 {
     CreateSubdirDialog csDialog;
 
@@ -549,8 +485,7 @@ MainWindow::OnActionsCreateSubdir(void)
     fpOpenArchive->CreateSubdir(this, pEntry, csDialog.fNewName);
     fpContentList->Reload();
 }
-void
-MainWindow::OnUpdateActionsCreateSubdir(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsCreateSubdir(CCmdUI* pCmdUI)
 {
     bool enable = fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpContentList->GetSelectedCount() == 1 &&
@@ -580,11 +515,7 @@ MainWindow::OnUpdateActionsCreateSubdir(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Extract files.
- */
-void
-MainWindow::OnActionsExtract(void)
+void MainWindow::OnActionsExtract(void)
 {
     ASSERT(fpContentList != NULL);
 
@@ -666,25 +597,21 @@ MainWindow::OnActionsExtract(void)
     fpActionProgress->Cleanup(this);
     fpActionProgress = NULL;
 }
-void
-MainWindow::OnUpdateActionsExtract(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsExtract(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL);
 }
 
-/*
- * Handle a bulk extraction.
- *
- * IMPORTANT: since the pActionProgress dialog has the foreground, it's
- * vital that any MessageBox calls go through that.  Otherwise the
- * progress dialog message handler won't get disabled by MessageBox and
- * we can end up permanently hiding the dialog.  (Could also use
- * ::MessageBox or ::AfxMessageBox instead.)
- */
-void
-MainWindow::DoBulkExtract(SelectionSet* pSelSet,
+void MainWindow::DoBulkExtract(SelectionSet* pSelSet,
     const ExtractOptionsDialog* pExtOpts)
 {
+    /*
+     * IMPORTANT: since the pActionProgress dialog has the foreground, it's
+     * vital that any MessageBox calls go through that.  Otherwise the
+     * progress dialog message handler won't get disabled by MessageBox and
+     * we can end up permanently hiding the dialog.  (Could also use
+     * ::MessageBox or ::AfxMessageBox instead.)
+     */
     ReformatHolder* pHolder = NULL;
     bool overwriteExisting, ovwrForAll;
 
@@ -790,17 +717,7 @@ MainWindow::DoBulkExtract(SelectionSet* pSelSet,
     delete pHolder;
 }
 
-/*
- * Extract a single entry.
- *
- * If "pHolder" is non-NULL, it holds the data from the file, and can be
- * used for formatted or non-formatted output.  If it's NULL, we need to
- * extract the data ourselves.
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
+bool MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
     ReformatHolder* pHolder, const ExtractOptionsDialog* pExtOpts,
     bool* pOverwriteExisting, bool* pOvwrForAll)
 {
@@ -1272,26 +1189,7 @@ open_file_fail:
     return true;
 }
 
-
-/*
- * Open an output file.
- *
- * "outputPath" holds the name of the file to create.  "origPath" is the
- * name as it was stored in the archive.  "pOverwriteExisting" tells us
- * if we should just go ahead and overwrite the existing file, while
- * "pOvwrForAll" tells us if a "To All" button was hit previously.
- *
- * If the file exists, "*pOverwriteExisting" is false, and "*pOvwrForAll"
- * is false, then we will put up the "do you want to overwrite?" dialog.
- * One possible outcome of the dialog is renaming the output path.
- *
- * On success, "*pFp" will be non-NULL, and IDOK will be returned.  On
- * failure, IDCANCEL will be returned.  The values in "*pOverwriteExisting"
- * and "*pOvwrForAll" may be updated, and "*pOutputPath" will change if
- * the user chose to rename the file.
- */
-int
-MainWindow::OpenOutputFile(CString* pOutputPath, const PathProposal& pathProp,
+int MainWindow::OpenOutputFile(CString* pOutputPath, const PathProposal& pathProp,
     time_t arcFileModWhen, bool* pOverwriteExisting, bool* pOvwrForAll,
     FILE** pFp)
 {
@@ -1402,11 +1300,7 @@ bail:
  * ==========================================================================
  */
 
-/*
- * Test files.
- */
-void
-MainWindow::OnActionsTest(void)
+void MainWindow::OnActionsTest(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpOpenArchive != NULL);
@@ -1480,11 +1374,7 @@ MainWindow::OnUpdateActionsTest(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Delete archive entries.
- */
-void
-MainWindow::OnActionsDelete(void)
+void MainWindow::OnActionsDelete(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpOpenArchive != NULL);
@@ -1571,8 +1461,7 @@ MainWindow::OnActionsDelete(void)
     if (result)
         SuccessBeep();
 }
-void
-MainWindow::OnUpdateActionsDelete(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsDelete(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly()
         && fpContentList->GetSelectedCount() > 0);
@@ -1585,13 +1474,7 @@ MainWindow::OnUpdateActionsDelete(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Rename archive entries.  Depending on the structure of the underlying
- * archive, we may only allow the user to alter the filename component.
- * Anything else would constitute moving the file around in the filesystem.
- */
-void
-MainWindow::OnActionsRename(void)
+void MainWindow::OnActionsRename(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpOpenArchive != NULL);
@@ -1626,8 +1509,7 @@ MainWindow::OnActionsRename(void)
 
     // user interaction on each step, so skip the SuccessBeep
 }
-void
-MainWindow::OnUpdateActionsRename(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsRename(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly()
         && fpContentList->GetSelectedCount() > 0);
@@ -1640,11 +1522,7 @@ MainWindow::OnUpdateActionsRename(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Edit a comment, creating it if necessary.
- */
-void
-MainWindow::OnActionsEditComment(void)
+void MainWindow::OnActionsEditComment(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpOpenArchive != NULL);
@@ -1688,8 +1566,7 @@ MainWindow::OnActionsEditComment(void)
         fpContentList->Reload();
     }
 }
-void
-MainWindow::OnUpdateActionsEditComment(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsEditComment(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpContentList->GetSelectedCount() == 1 &&
@@ -1703,17 +1580,7 @@ MainWindow::OnUpdateActionsEditComment(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Edit file properties.
- *
- * This causes a reload of the list, which isn't really necessary.  We
- * do need to re-evaluate the sort order if one of the fields they modified
- * is the current sort key, but it would be nice if we could at least retain
- * the selection.  Since we're not reloading the GenericArchive, we *can*
- * remember the selection.
- */
-void
-MainWindow::OnActionsEditProps(void)
+void MainWindow::OnActionsEditProps(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpOpenArchive != NULL);
@@ -1742,8 +1609,7 @@ MainWindow::OnActionsEditProps(void)
         fpContentList->Reload(true);
     }
 }
-void
-MainWindow::OnUpdateActionsEditProps(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsEditProps(CCmdUI* pCmdUI)
 {
     // allow it in read-only mode, so we can view the props
     pCmdUI->Enable(fpContentList != NULL &&
@@ -1757,11 +1623,7 @@ MainWindow::OnUpdateActionsEditProps(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Change a volume name or volume number.
- */
-void
-MainWindow::OnActionsRenameVolume(void)
+void MainWindow::OnActionsRenameVolume(void)
 {
     RenameVolumeDialog rvDialog;
 
@@ -1806,8 +1668,7 @@ MainWindow::OnActionsRenameVolume(void)
     fpContentList->Reload();
     SetCPTitle(fOpenArchivePathName, fpOpenArchive);
 }
-void
-MainWindow::OnUpdateActionsRenameVolume(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsRenameVolume(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpOpenArchive->GetCapability(GenericArchive::kCapCanRenameVolume));
@@ -1820,11 +1681,7 @@ MainWindow::OnUpdateActionsRenameVolume(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Recompress files.
- */
-void
-MainWindow::OnActionsRecompress(void)
+void MainWindow::OnActionsRecompress(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpOpenArchive != NULL);
@@ -1906,19 +1763,14 @@ MainWindow::OnActionsRecompress(void)
         MessageBox(msg, appName, MB_OK|MB_ICONINFORMATION);
     }
 }
-void
-MainWindow::OnUpdateActionsRecompress(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsRecompress(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly() &&
         fpContentList->GetItemCount() > 0 &&
         fpOpenArchive->GetCapability(GenericArchive::kCapCanRecompress));
 }
 
-/*
- * Compute the total size of all files in the GenericArchive.
- */
-void
-MainWindow::CalcTotalSize(LONGLONG* pUncomp, LONGLONG* pComp) const
+void MainWindow::CalcTotalSize(LONGLONG* pUncomp, LONGLONG* pComp) const
 {
     GenericEntry* pEntry = fpOpenArchive->GetEntries();
     LONGLONG uncomp = 0, comp = 0;
@@ -1940,11 +1792,7 @@ MainWindow::CalcTotalSize(LONGLONG* pUncomp, LONGLONG* pComp) const
  * ==========================================================================
  */
 
-/*
- * Select files to convert.
- */
-void
-MainWindow::OnActionsConvDisk(void)
+void MainWindow::OnActionsConvDisk(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpOpenArchive != NULL);
@@ -2074,8 +1922,7 @@ MainWindow::OnActionsConvDisk(void)
     /* clean up */
     delete xferOpts.fTarget;
 }
-void
-MainWindow::OnUpdateActionsConvDisk(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsConvDisk(CCmdUI* pCmdUI)
 {
     /* right now, only NufxArchive has the Xfer stuff implemented */
     pCmdUI->Enable(fpContentList != NULL &&
@@ -2090,11 +1937,7 @@ MainWindow::OnUpdateActionsConvDisk(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Select files to convert.
- */
-void
-MainWindow::OnActionsConvFile(void)
+void MainWindow::OnActionsConvFile(void)
 {
     ASSERT(fpContentList != NULL);
     ASSERT(fpOpenArchive != NULL);
@@ -2219,8 +2062,7 @@ MainWindow::OnActionsConvFile(void)
     /* clean up */
     delete xferOpts.fTarget;
 }
-void
-MainWindow::OnUpdateActionsConvFile(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsConvFile(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL &&
         fpContentList->GetItemCount() > 0 &&
@@ -2234,17 +2076,12 @@ MainWindow::OnUpdateActionsConvFile(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Convert BAS, INT, or BIN to a cassette-audio WAV file.
- */
-void
-MainWindow::OnActionsConvToWav(void)
+void MainWindow::OnActionsConvToWav(void)
 {
     // do this someday
     LOGI("Convert TO wav");
 }
-void
-MainWindow::OnUpdateActionsConvToWav(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsConvToWav(CCmdUI* pCmdUI)
 {
     BOOL enable = false;
 
@@ -2264,12 +2101,7 @@ MainWindow::OnUpdateActionsConvToWav(CCmdUI* pCmdUI)
     pCmdUI->Enable(enable);
 }
 
-/*
- * Convert a WAV file with a digitized Apple II cassette tape into an
- * Apple II file, and add it to the current disk.
- */
-void
-MainWindow::OnActionsConvFromWav(void)
+void MainWindow::OnActionsConvFromWav(void)
 {
     CassetteDialog dlg;
     CString fileName, saveFolder;
@@ -2301,22 +2133,12 @@ MainWindow::OnActionsConvFromWav(void)
 bail:
     return;
 }
-void
-MainWindow::OnUpdateActionsConvFromWav(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsConvFromWav(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly());
 }
 
-
-/*
- * Utility function used by cassette import.
- *
- * May modify contents of "pDetails".
- *
- * On failure, returns with an error message in "errMsg".
- */
-/*static*/ bool
-MainWindow::SaveToArchive(GenericArchive::FileDetails* pDetails,
+/*static*/ bool MainWindow::SaveToArchive(GenericArchive::FileDetails* pDetails,
     const unsigned char* dataBufIn, long dataLen,
     const unsigned char* rsrcBufIn, long rsrcLen,
     CString& errMsg, CWnd* pDialog)
@@ -2410,14 +2232,7 @@ bail:
  * ==========================================================================
  */
 
-/*
- * Import an Applesoft BASIC program from a text file.
- *
- * We currently allow the user to select a single file for import.  Someday
- * we may want to allow multi-file import.
- */
-void
-MainWindow::OnActionsImportBAS(void)
+void MainWindow::OnActionsImportBAS(void)
 {
     ImportBASDialog dlg;
     CString fileName, saveFolder;
@@ -2437,7 +2252,7 @@ MainWindow::OnActionsImportBAS(void)
     fileName = fileDlg.GetPathName();
     LOGI("Opening TXT file '%ls'", (LPCWSTR) fileName);
 
-    dlg.fFileName = fileName;
+    dlg.SetFileName(fileName);
     // pass in fpOpenArchive?
 
     dlg.DoModal();
@@ -2449,8 +2264,7 @@ MainWindow::OnActionsImportBAS(void)
 bail:
     return;
 }
-void
-MainWindow::OnUpdateActionsImportBAS(CCmdUI* pCmdUI)
+void MainWindow::OnUpdateActionsImportBAS(CCmdUI* pCmdUI)
 {
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly());
 }
@@ -2462,15 +2276,7 @@ MainWindow::OnUpdateActionsImportBAS(CCmdUI* pCmdUI)
  * ==========================================================================
  */
 
-/*
- * Extract every part of the file into "ReformatHolder".  Does not try to
- * reformat anything, just extracts the parts.
- *
- * Returns IDOK on success, IDCANCEL if the user cancelled, or -1 on error.
- * On error, the reformatted text buffer gets the error message.
- */
-int
-MainWindow::GetFileParts(const GenericEntry* pEntry,
+int MainWindow::GetFileParts(const GenericEntry* pEntry,
     ReformatHolder** ppHolder) const
 {
     ReformatHolder* pHolder = new ReformatHolder;
@@ -2493,11 +2299,7 @@ MainWindow::GetFileParts(const GenericEntry* pEntry,
     return 0;
 }
 
-/*
- * Load the requested part.
- */
-void
-MainWindow::GetFilePart(const GenericEntry* pEntry, int whichThread,
+void MainWindow::GetFilePart(const GenericEntry* pEntry, int whichThread,
     ReformatHolder* pHolder) const
 {
     CString errMsg;

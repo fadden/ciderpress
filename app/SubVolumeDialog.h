@@ -32,9 +32,8 @@ public:
     int         fListBoxIndex;
 
 protected:
-    // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnItemDoubleClicked(void);
 

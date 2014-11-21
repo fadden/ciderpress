@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for RecompressOptionsDialog.
- */
 #include "stdafx.h"
 #include "RecompressOptionsDialog.h"
 #include "NufxArchive.h"
@@ -17,25 +14,14 @@
 //END_MESSAGE_MAP()
 
 
-/*
- * Set up our modified version of the "use selection" dialog.
- */
-BOOL
-RecompressOptionsDialog::OnInitDialog(void)
+BOOL RecompressOptionsDialog::OnInitDialog(void)
 {
     fCompressionIdx = LoadComboBox((NuThreadFormat) fCompressionType);
 
     return UseSelectionDialog::OnInitDialog();
 }
 
-/*
- * Load strings into the combo box.  Only load formats supported by the
- * NufxLib DLL.
- *
- * Returns the combo box index for the format matching "fmt".
- */
-int
-RecompressOptionsDialog::LoadComboBox(NuThreadFormat fmt)
+int RecompressOptionsDialog::LoadComboBox(NuThreadFormat fmt)
 {
     static const struct {
         NuThreadFormat  format;
@@ -73,11 +59,7 @@ RecompressOptionsDialog::LoadComboBox(NuThreadFormat fmt)
     return retIdx;
 }
 
-/*
- * Convert values.
- */
-void
-RecompressOptionsDialog::DoDataExchange(CDataExchange* pDX)
+void RecompressOptionsDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_CBIndex(pDX, IDC_RECOMP_COMP, fCompressionIdx);
 

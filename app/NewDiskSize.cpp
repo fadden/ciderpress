@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Functions and data to support the "new disk size" radio buttons.
- */
 #include "stdafx.h"
 #include "NewDiskSize.h"
 #include "resource.h"
@@ -27,27 +24,18 @@
 };
 static const int kEditBoxID = IDC_CONVDISK_SPECIFY_EDIT;
 
-/*
- * Return the #of entries in the table.
- */
-/*static*/ unsigned int
-NewDiskSize::GetNumSizeEntries(void)
+/*static*/ unsigned int NewDiskSize::GetNumSizeEntries(void)
 {
     return NELEM(kCtrlMap);
 }
 
-/*
- * Return the "size" field from an array entry.
- */
-/*static*/ long
-NewDiskSize::GetDiskSizeByIndex(int idx)
+/*static*/ long NewDiskSize::GetDiskSizeByIndex(int idx)
 {
     ASSERT(idx >= 0 && idx < NELEM(kCtrlMap));
     return kCtrlMap[idx].blocks;
 }
 
-/*static*/ void
-NewDiskSize::EnableButtons(CDialog* pDialog, BOOL state /*=true*/)
+/*static*/ void NewDiskSize::EnableButtons(CDialog* pDialog, BOOL state)
 {
     CWnd* pWnd;
 
@@ -58,22 +46,8 @@ NewDiskSize::EnableButtons(CDialog* pDialog, BOOL state /*=true*/)
     }
 }
 
-/*
- * Run through the set of radio buttons, disabling any that don't have enough
- * space to hold the ProDOS volume with the specified parameters.
- *
- * The space required is equal to the blocks required for data plus the blocks
- * required for the free-space bitmap.  Since the free-space bitmap size is
- * smaller for smaller volumes, we have to adjust it for each.
- *
- * Pass in the total blocks and #of blocks used on a particular ProDOS volume.
- * This will compute how much space would be required for larger and smaller
- * volumes, and enable or disable radio buttons as appropriate.  (You can get
- * these values from DiskFS::GetFreeBlockCount()).
- */
-/*static*/ void
-NewDiskSize::EnableButtons_ProDOS(CDialog* pDialog, long totalBlocks,
-    long blocksUsed)
+/*static*/ void NewDiskSize::EnableButtons_ProDOS(CDialog* pDialog,
+    long totalBlocks, long blocksUsed)
 {
     CButton* pButton;
     long usedWithoutBitmap = blocksUsed - GetNumBitmapBlocks_ProDOS(totalBlocks);
@@ -116,23 +90,14 @@ NewDiskSize::EnableButtons_ProDOS(CDialog* pDialog, long totalBlocks,
     UpdateSpecifyEdit(pDialog);
 }
 
-/*
- * Compute the #of blocks needed to hold the ProDOS block bitmap.
- */
-/*static*/long
-NewDiskSize::GetNumBitmapBlocks_ProDOS(long totalBlocks) {
+/*static*/ long NewDiskSize::GetNumBitmapBlocks_ProDOS(long totalBlocks) {
     ASSERT(totalBlocks > 0);
     const int kBitsPerBlock = 512 * 8;
     int numBlocks = (totalBlocks + kBitsPerBlock-1) / kBitsPerBlock;
     return numBlocks;
 }
 
-
-/*
- * Update the "specify size" edit box.
- */
-/*static*/ void
-NewDiskSize::UpdateSpecifyEdit(CDialog* pDialog)
+/*static*/ void NewDiskSize::UpdateSpecifyEdit(CDialog* pDialog)
 {
     CEdit* pEdit = (CEdit*) pDialog->GetDlgItem(kEditBoxID);
     int i;

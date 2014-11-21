@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for ExtractOptionsDialog.
- */
 #include "stdafx.h"
 #include "ExtractOptionsDialog.h"
 #include "HelpTopics.h"
@@ -30,8 +27,7 @@ END_MESSAGE_MAP()
  * All we really need to do is update the string that indicates how many
  * files have been selected.
  */
-BOOL
-ExtractOptionsDialog::OnInitDialog(void)
+BOOL ExtractOptionsDialog::OnInitDialog(void)
 {
     CString countFmt;
     CString selStr;
@@ -68,15 +64,12 @@ ExtractOptionsDialog::OnInitDialog(void)
     //return TRUE;  // let Windows set the focus
 }
 
-/*
- * Convert values.
- *
- * Should probably verify that fFilesToExtract is not set to kExtractSelection
- * when fSelectedCount is zero.
- */
-void
-ExtractOptionsDialog::DoDataExchange(CDataExchange* pDX)
+void ExtractOptionsDialog::DoDataExchange(CDataExchange* pDX)
 {
+    /*
+     * Should probably verify that fFilesToExtract is not set to kExtractSelection
+     * when fSelectedCount is zero.
+     */
     DDX_Text(pDX, IDC_EXT_PATH, fExtractPath);
 
     DDX_Radio(pDX, IDC_EXT_SELECTED, fFilesToExtract);
@@ -98,11 +91,7 @@ ExtractOptionsDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_EXT_OVERWRITE_EXIST, fOverwriteExisting);
 }
 
-/*
- * Reconfigure controls for best preservation of Apple II formats.
- */
-void
-ExtractOptionsDialog::OnConfigPreserve(void)
+void ExtractOptionsDialog::OnConfigPreserve(void)
 {
     // IDC_EXT_PATH, IDC_EXT_SELECTED
     SetDlgButtonCheck(this, IDC_EXT_DATAFORK, BST_CHECKED);
@@ -123,11 +112,7 @@ ExtractOptionsDialog::OnConfigPreserve(void)
     OnChangeTextConv();
 }
 
-/*
- * Reconfigure controls for easiest viewing under Windows.
- */
-void
-ExtractOptionsDialog::OnConfigConvert(void)
+void ExtractOptionsDialog::OnConfigConvert(void)
 {
     // IDC_EXT_PATH, IDC_EXT_SELECTED
     SetDlgButtonCheck(this, IDC_EXT_DATAFORK, BST_CHECKED);
@@ -148,12 +133,7 @@ ExtractOptionsDialog::OnConfigConvert(void)
     OnChangeTextConv();
 }
 
-/*
- * Enable or disable the "Convert high ASCII" button based on the current
- * setting of the radio button above it.
- */
-void
-ExtractOptionsDialog::OnChangeTextConv(void)
+void ExtractOptionsDialog::OnChangeTextConv(void)
 {
     CButton* pButton = (CButton*) GetDlgItem(IDC_EXT_CONVEOLNONE);
     ASSERT(pButton != NULL);
@@ -164,11 +144,7 @@ ExtractOptionsDialog::OnChangeTextConv(void)
     pWnd->EnableWindow(!convDisabled);
 }
 
-/*
- * They want to choose the folder from a tree.
- */
-void
-ExtractOptionsDialog::OnChooseFolder(void)
+void ExtractOptionsDialog::OnChooseFolder(void)
 {
     ChooseDirDialog chooseDir(this);
     CWnd* pEditWnd;
@@ -188,21 +164,13 @@ ExtractOptionsDialog::OnChooseFolder(void)
     }
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-ExtractOptionsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL ExtractOptionsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-ExtractOptionsDialog::OnHelp(void)
+void ExtractOptionsDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_EXT_OPTIONS, HELP_CONTEXT);
 }

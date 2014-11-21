@@ -56,9 +56,9 @@ static const WCHAR kUserSettingsBaseKey[] =
 /*
  * Put one of these under the AppID to specify the icon for a file type.
  */
-static const WCHAR* kDefaultIcon = L"DefaultIcon";
+static const WCHAR kDefaultIcon[] = L"DefaultIcon";
 
-static const WCHAR* kRegKeyCPKStr = L"CPK";
+static const WCHAR kRegKeyCPKStr[] = L"CPK";
 
 /*
  * Table of file type associations.  They will appear in the UI in the same
@@ -110,16 +110,7 @@ static const struct {
  * ==========================================================================
  */
 
-/*
- * This is called immediately after installation finishes.
- *
- * We want to snatch up any unused file type associations.  We define them
- * as "unused" if the entry does not exist in the registry at all.  A more
- * thorough installer would also verify that the appID actually existed
- * and "steal" any apparent orphans, but we can let the user do that manually.
- */
-void
-MyRegistry::OneTimeInstall(void) const
+void MyRegistry::OneTimeInstall(void) const
 {
     /* start by stomping on our appIDs */
     LOGI(" Removing appIDs");
@@ -149,17 +140,7 @@ MyRegistry::OneTimeInstall(void) const
     }
 }
 
-/*
- * Remove things that the standard uninstall script won't.
- *
- * We want to un-set any of our file associations.  We don't really need to
- * clean up the ".xxx" entries, because removing their appID entries is enough
- * to fry their little brains, but it's probably the right thing to do.
- *
- * We definitely want to strip out our appIDs.
- */
-void
-MyRegistry::OneTimeUninstall(void) const
+void MyRegistry::OneTimeUninstall(void) const
 {
     /* drop any associations we hold */
     int i;
@@ -195,40 +176,29 @@ MyRegistry::OneTimeUninstall(void) const
  * ==========================================================================
  */
 
-/*
- * Return the application's registry key.  This is used as the argument to
- * CWinApp::SetRegistryKey().  The GetProfile{Int,String} calls combine this
- * (in m_pszRegistryKey) with the app name (in m_pszProfileName) and prepend
- * "HKEY_CURRENT_USER\Software\".
- */
-const WCHAR*
-MyRegistry::GetAppRegistryKey(void) const
+const WCHAR* MyRegistry::GetAppRegistryKey(void) const
 {
     return kCompanyName;
 }
 
-/*
- * See if an AppID is one we recognize.
- */
-bool
-MyRegistry::IsOurAppID(const WCHAR* id) const
+bool MyRegistry::IsOurAppID(const WCHAR* id) const
 {
     return (wcsicmp(id, kAppIDNuFX) == 0 ||
             wcsicmp(id, kAppIDDiskImage) == 0 ||
             wcsicmp(id, kAppIDBinaryII) == 0);
 }
 
-/*
- * Fix the basic registry settings, e.g. our AppID classes.
- *
- * We don't overwrite values that already exist.  We want to hold on to the
- * installer's settings, which should get whacked if the program is
- * uninstalled or reinstalled.  This is here for "installer-less" environments
- * and to cope with registry damage.
- */
-void
-MyRegistry::FixBasicSettings(void) const
+void MyRegistry::FixBasicSettings(void) const
 {
+    /*
+     * Fix the basic registry settings, e.g. our AppID classes.
+     *
+     * We don't overwrite values that already exist.  We want to hold on to the
+     * installer's settings, which should get whacked if the program is
+     * uninstalled or reinstalled.  This is here for "installer-less" environments
+     * and to cope with registry damage.
+     */
+
     const WCHAR* exeName = gMyApp.GetExeFileName();
     ASSERT(exeName != NULL && wcslen(exeName) > 0);
 
@@ -239,11 +209,7 @@ MyRegistry::FixBasicSettings(void) const
     ConfigureAppID(kAppIDDiskImage, L"Disk Image (CiderPress)", exeName, 3);
 }
 
-/*
- * Set up the registry goodies for one appID.
- */
-void
-MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
+void MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
     const WCHAR* exeName, int iconIdx) const
 {
     LOGI(" Configuring '%ls' for '%ls'", appID, exeName);
@@ -296,12 +262,7 @@ MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
     RegCloseKey(hAppKey);
 }
 
-/*
- * Set up the current key's default (which is used as the explorer
- * description) and put the "Open" command in "...\shell\open\command".
- */
-void
-MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
+void MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
     const WCHAR* exeName) const
 {
     HKEY hShellKey, hOpenKey, hCommandKey;
@@ -362,60 +323,24 @@ MyRegistry::ConfigureAppIDSubFields(HKEY hAppKey, const WCHAR* descr,
 }
 
 
-/*
- * Return the number of file type associations.
- */
-int
-MyRegistry::GetNumFileAssocs(void) const
+int MyRegistry::GetNumFileAssocs(void) const
 {
     return NELEM(kFileTypeAssoc);
 }
 
-#if 0
-/*
- * Return information on a file association.
- *
- * Check to see if we're the application that will be launched.
- *
- * Problem: the file must *actually exist* for this to work.
- */
-void
-MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
+void MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
     bool* pOurs) const
 {
-    char buf[MAX_PATH];
+    /*
+     * We check to see if the file extension is associated with one of our
+     * application ID strings.  We don't bother to check whether the appID
+     * strings are still associated with CiderPress, since nobody should be
+     * messing with those.
+     *
+     * BUG: we should be checking to see what the shell actually does to
+     * take into account the overrides that users can set.
+     */
 
-    *pExt = kFileTypeAssoc[idx].ext;
-    *pHandler = "";
-    *pOurs = false;
-
-    HINSTANCE res = FindExecutable(*pExt, "\\", buf);
-    if ((long) res > 32) {
-        LOGI("Executable is '%s'", buf);
-        *pHandler = buf;
-    } else {
-        LOGI("FindExecutable failed (err=%d)", res);
-        *pHandler = kNoAssociation;
-    }
-}
-#endif
-
-
-/*
- * Return information on a file association.
- *
- * We check to see if the file extension is associated with one of our
- * application ID strings.  We don't bother to check whether the appID
- * strings are still associated with CiderPress, since nobody should be
- * messing with those.
- *
- * BUG: we should be checking to see what the shell actually does to
- * take into account the overrides that users can set.
- */
-void
-MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
-    bool* pOurs) const
-{
     ASSERT(idx >= 0 && idx < NELEM(kFileTypeAssoc));
     long res;
 
@@ -455,13 +380,7 @@ MyRegistry::GetFileAssoc(int idx, CString* pExt, CString* pHandler,
     RegCloseKey(hExtKey);
 }
 
-/*
- * Given an application ID, determine the application's name.
- *
- * This requires burrowing down into HKEY_CLASSES_ROOT\<appID>\shell\open\.
- */
-int
-MyRegistry::GetAssocAppName(const CString& appID, CString* pCmd) const
+int MyRegistry::GetAssocAppName(const CString& appID, CString* pCmd) const
 {
     CString keyName;
     WCHAR buf[260];
@@ -507,11 +426,7 @@ MyRegistry::GetAssocAppName(const CString& appID, CString* pCmd) const
     return result;
 }
 
-/*
- * Reduce a compound string to just its first token.
- */
-void
-MyRegistry::ReduceToToken(CString* pStr) const
+void MyRegistry::ReduceToToken(CString* pStr) const
 {
     WCHAR* argv[1];
     int argc = 1;
@@ -525,19 +440,19 @@ MyRegistry::ReduceToToken(CString* pStr) const
     free(mangle);
 }
 
-/*
- * Set the state of a file association.  There are four possibilities:
- *
- *  - We own it, we want to keep owning it: do nothing.
- *  - We don't own it, we want to keep not owning it: do nothing.
- *  - We own it, we don't want it anymore: remove ".xxx" entry.
- *  - We don't own it, we want to own it: remove ".xxx" entry and replace it.
- *
- * Returns 0 on success, nonzero on failure.
- */
-int
-MyRegistry::SetFileAssoc(int idx, bool wantIt) const
+int MyRegistry::SetFileAssoc(int idx, bool wantIt) const
 {
+    /*
+     * Set the state of a file association.  There are four possibilities:
+     *
+     *  - We own it, we want to keep owning it: do nothing.
+     *  - We don't own it, we want to keep not owning it: do nothing.
+     *  - We own it, we don't want it anymore: remove ".xxx" entry.
+     *  - We don't own it, we want to own it: remove ".xxx" entry and replace it.
+     *
+     * Returns 0 on success, nonzero on failure.
+     */
+
     const WCHAR* ext;
     bool weOwnIt;
     int result = 0;
@@ -564,15 +479,7 @@ MyRegistry::SetFileAssoc(int idx, bool wantIt) const
     return 0;
 }
 
-/*
- * Determine whether or not the filetype described by "ext" is one that we
- * currently manage.
- *
- * Returns "true" if so, "false" if not.  Returns "false" on any errors
- * encountered.
- */
-bool
-MyRegistry::GetAssocState(const WCHAR* ext) const
+bool MyRegistry::GetAssocState(const WCHAR* ext) const
 {
     WCHAR buf[260];
     HKEY hExtKey = NULL;
@@ -596,15 +503,7 @@ MyRegistry::GetAssocState(const WCHAR* ext) const
     return result;
 }
 
-/*
- * Drop ownership of a file extension.
- *
- * We assume we own it.
- *
- * Returns 0 on success, -1 on error.
- */
-int
-MyRegistry::DisownExtension(const WCHAR* ext) const
+int MyRegistry::DisownExtension(const WCHAR* ext) const
 {
     ASSERT(ext != NULL);
     ASSERT(ext[0] == '.');
@@ -614,20 +513,14 @@ MyRegistry::DisownExtension(const WCHAR* ext) const
     if (RegDeleteKeyNT(HKEY_CLASSES_ROOT, ext) == ERROR_SUCCESS) {
         LOGI("    HKCR\\%ls subtree deleted", ext);
     } else {
-        LOGI("    Failed deleting HKCR\\'%ls'", ext);
+        LOGW("    Failed deleting HKCR\\'%ls'", ext);
         return -1;
     }
 
     return 0;
 }
 
-/*
- * Take ownership of a file extension.
- *
- * Returns 0 on success, -1 on error.
- */
-int
-MyRegistry::OwnExtension(const WCHAR* ext, const WCHAR* appID) const
+int MyRegistry::OwnExtension(const WCHAR* ext, const WCHAR* appID) const
 {
     ASSERT(ext != NULL);
     ASSERT(ext[0] == '.');
@@ -645,7 +538,7 @@ MyRegistry::OwnExtension(const WCHAR* ext, const WCHAR* appID) const
     } else if (res == ERROR_FILE_NOT_FOUND) {
         LOGI("    No HKCR\\%ls subtree to delete", ext);
     } else {
-        LOGI("    Failed deleting HKCR\\'%ls'", ext);
+        LOGW("    Failed deleting HKCR\\'%ls'", ext);
         goto bail;
     }
 
@@ -660,7 +553,7 @@ MyRegistry::OwnExtension(const WCHAR* ext, const WCHAR* appID) const
             LOGI("    Set '%ls' to '%ls'", ext, appID);
             result = 0;
         } else {
-            LOGI("Failed setting '%ls' to '%ls' (res=%d)", ext, appID, res);
+            LOGW("Failed setting '%ls' to '%ls' (res=%d)", ext, appID, res);
             goto bail;
         }
     }
@@ -681,8 +574,7 @@ bail:
 // Windows NT. This is by design.
 //
 #define MAX_KEY_LENGTH  256     // not in any header I can find ++ATM
-DWORD
-MyRegistry::RegDeleteKeyNT(HKEY hStartKey, LPCTSTR pKeyName) const
+DWORD MyRegistry::RegDeleteKeyNT(HKEY hStartKey, LPCTSTR pKeyName) const
 {
     DWORD   dwRtn, dwSubKeyLength;
     LPTSTR  pSubKey = NULL;

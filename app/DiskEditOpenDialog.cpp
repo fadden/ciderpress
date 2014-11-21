@@ -16,8 +16,7 @@ BEGIN_MESSAGE_MAP(DiskEditOpenDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-BOOL
-DiskEditOpenDialog::OnInitDialog(void)
+BOOL DiskEditOpenDialog::OnInitDialog(void)
 {
     if (!fArchiveOpen) {
         CButton* pButton = (CButton*) GetDlgItem(IDC_DEOW_CURRENT);
@@ -28,25 +27,19 @@ DiskEditOpenDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/* user clicked "open file" button */
-void
-DiskEditOpenDialog::OnButtonFile(void)
+void DiskEditOpenDialog::OnButtonFile(void)
 {
     fOpenWhat = kOpenFile;
     OnOK();
 }
 
-/* user clicked "open volume" button */
-void
-DiskEditOpenDialog::OnButtonVolume(void)
+void DiskEditOpenDialog::OnButtonVolume(void)
 {
     fOpenWhat = kOpenVolume;
     OnOK();
 }
 
-/* user clicked "open current" button */
-void
-DiskEditOpenDialog::OnButtonCurrent(void)
+void DiskEditOpenDialog::OnButtonCurrent(void)
 {
     fOpenWhat = kOpenCurrent;
     OnOK();

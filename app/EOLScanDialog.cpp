@@ -17,11 +17,7 @@ BEGIN_MESSAGE_MAP(EOLScanDialog, CDialog)
     ON_COMMAND(IDHELP, OnHelp)
 END_MESSAGE_MAP()
 
-/*
- * Fill in the blanks.
- */
-BOOL
-EOLScanDialog::OnInitDialog(void)
+BOOL EOLScanDialog::OnInitDialog(void)
 {
     CWnd* pWnd;
     CString fmt;
@@ -49,11 +45,7 @@ EOLScanDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-EOLScanDialog::OnHelp(void)
+void EOLScanDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_EOL_SCAN, HELP_CONTEXT);
 }

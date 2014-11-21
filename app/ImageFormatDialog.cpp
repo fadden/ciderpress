@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Implementation of ImageFormatDialog class.
- */
 #include "stdafx.h"
 #include "ImageFormatDialog.h"
 #include "HelpTopics.h"
@@ -111,11 +108,7 @@ static const ConvTable gFSFormats[] = {
 };
 
 
-/*
- * Initialize our members by querying the associated DiskImg.
- */
-void
-ImageFormatDialog::InitializeValues(const DiskImg* pImg)
+void ImageFormatDialog::InitializeValues(const DiskImg* pImg)
 {
     fOuterFormat = pImg->GetOuterFormat();
     fFileFormat = pImg->GetFileFormat();
@@ -141,12 +134,7 @@ ImageFormatDialog::InitializeValues(const DiskImg* pImg)
     fInitialized = true;
 }
 
-
-/*
- * Configure the combo boxes.
- */
-BOOL
-ImageFormatDialog::OnInitDialog(void)
+BOOL ImageFormatDialog::OnInitDialog(void)
 {
     ASSERT(fInitialized);
 
@@ -155,15 +143,7 @@ ImageFormatDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();     // do DDX/DDV
 }
 
-/*
- * Load the combo boxes with every possible entry, and set the current
- * value appropriately.
- *
- * While we're at it, initialize the "source" edit text box and the
- * "show as blocks" checkbox.
- */
-void
-ImageFormatDialog::LoadComboBoxes(void)
+void ImageFormatDialog::LoadComboBoxes(void)
 {
     CWnd* pWnd;
     CButton* pButton;
@@ -209,12 +189,8 @@ ImageFormatDialog::LoadComboBoxes(void)
     LoadComboBox(IDC_DECONF_FSFORMAT, gFSFormats, fFSFormat);
 }
 
-/*
- * Load the strings from ConvTable into the combo box, setting the
- * entry matching "default" as the current entry.
- */
-void
-ImageFormatDialog::LoadComboBox(int boxID, const ConvTable* pTable, int dflt)
+void ImageFormatDialog::LoadComboBox(int boxID, const ConvTable* pTable,
+    int dflt)
 {
     CComboBox* pCombo;
 //  const ConvTable* pBaseTable = pTable;
@@ -251,14 +227,9 @@ ImageFormatDialog::LoadComboBox(int boxID, const ConvTable* pTable, int dflt)
     } else {
         LOGI(" No matching default for %d (%d)", boxID, dflt);
     }
-
 }
 
-/*
- * Find the enum value for the specified index.
- */
-int
-ImageFormatDialog::ConvComboSel(int boxID, const ConvTable* pTable)
+int ImageFormatDialog::ConvComboSel(int boxID, const ConvTable* pTable)
 {
     CComboBox* pCombo;
     int idx, enumval;
@@ -287,12 +258,7 @@ ImageFormatDialog::ConvComboSel(int boxID, const ConvTable* pTable)
     return enumval;
 }
 
-/*
- * Handle the "OK" button by extracting values from the dialog and
- * verifying that reasonable settings are in place.
- */
-void
-ImageFormatDialog::OnOK(void)
+void ImageFormatDialog::OnOK(void)
 {
     CButton* pButton;
 
@@ -338,22 +304,13 @@ ImageFormatDialog::OnOK(void)
     CDialog::OnOK();
 }
 
-/*
- * F1 key hit, or '?' button in title bar used to select help for an
- * item in the dialog.
- */
-BOOL
-ImageFormatDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL ImageFormatDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp(lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // indicate success??
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-ImageFormatDialog::OnHelp(void)
+void ImageFormatDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_DISK_IMAGES, HELP_CONTEXT);
 }

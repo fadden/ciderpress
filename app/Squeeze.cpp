@@ -53,8 +53,7 @@ typedef struct USQState {
 /*
  * Decode the next symbol from the Huffman stream.
  */
-static NuError
-USQDecodeHuffSymbol(USQState* pUsqState, int* pVal)
+static NuError USQDecodeHuffSymbol(USQState* pUsqState, int* pVal)
 {
     short val = 0;
     int bits, bitPosn;
@@ -90,8 +89,7 @@ USQDecodeHuffSymbol(USQState* pUsqState, int* pVal)
 /*
  * Read two bytes of signed data out of the buffer.
  */
-static inline NuError
-USQReadShort(USQState* pUsqState, short* pShort)
+static inline NuError USQReadShort(USQState* pUsqState, short* pShort)
 {
     if (pUsqState->dataInBuffer < 2)
         return kNuErrBufferUnderrun;
@@ -107,8 +105,7 @@ USQReadShort(USQState* pUsqState, short* pShort)
  * Wrapper for fread().  Note the arguments resemble read(2) rather
  * than fread(3S).
  */
-static NuError
-SQRead(FILE* fp, void* buf, size_t nbyte)
+static NuError SQRead(FILE* fp, void* buf, size_t nbyte)
 {
     size_t result;
 
@@ -123,19 +120,14 @@ SQRead(FILE* fp, void* buf, size_t nbyte)
     return kNuErrNone;
 }
 
-
-/*
- * Expand "SQ" format.  Archive file should already be seeked.
- *
- * Because we have a stop symbol, knowing the uncompressed length of
- * the file is not essential.
- *
- * If "outExp" is NULL, no output is produced (useful for "test" mode).
- */
-NuError
-UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
+NuError UnSqueeze(FILE* fp, unsigned long realEOF, ExpandBuffer* outExp,
           bool fullSqHeader, int blockSize)
 {
+    /*
+     * Because we have a stop symbol, knowing the uncompressed length of
+     * the file is not essential.
+     */
+
     NuError err = kNuErrNone;
     USQState usqState;
     unsigned long compRemaining, getSize;

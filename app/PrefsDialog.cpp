@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Implementation classes for the preferences property sheet
- */
 #include "stdafx.h"
 #include "PrefsDialog.h"
 #include "ChooseDirDialog.h"
@@ -39,33 +36,29 @@ BEGIN_MESSAGE_MAP(PrefsGeneralPage, CPropertyPage)
 END_MESSAGE_MAP()
 
 
-/*
- * If they clicked on a checkbox, just mark the page as dirty so the "apply"
- * button will be enabled.
- */
-void
-PrefsGeneralPage::OnChange(void)
+void PrefsGeneralPage::OnChange(void)
 {
+    /*
+     * They clicked on a checkbox, just mark the page as dirty so the "apply"
+     * button will be enabled.
+     */
     SetModified(TRUE);
 }
-void
-PrefsGeneralPage::OnChangeRange(UINT nID)
+
+void PrefsGeneralPage::OnChangeRange(UINT nID)
 {
     SetModified(TRUE);
 }
 
-/*
- * Handle a click of the "defaults" button.
- *
- * Since we don't actually set column widths here, we need to tell the main
- * window that the defaults button was pushed.  It needs to reset all column
- * widths to defaults, and then take into account any checking and un-checking
- * that was done after "defaults" was pushed.
- */
-void
-PrefsGeneralPage::OnDefaults(void)
+void PrefsGeneralPage::OnDefaults(void)
 {
-    LOGI("DEFAULTS!");
+    /*
+     * Since we don't actually set column widths here, we need to tell the main
+     * window that the defaults button was pushed.  It needs to reset all column
+     * widths to defaults, and then take into account any checking and un-checking
+     * that was done after "defaults" was pushed.
+     */
+    LOGD("OnDefaults");
 
     CButton* pButton;
 
@@ -83,13 +76,7 @@ PrefsGeneralPage::OnDefaults(void)
     SetModified(TRUE);
 }
 
-/*
- * They clicked on "assocations".  Bring up the association edit dialog.
- * If they click "OK", make a copy of the changes and mark us as modified so
- * the Apply/Cancel buttons behave as expected.
- */
-void
-PrefsGeneralPage::OnAssociations(void)
+void PrefsGeneralPage::OnAssociations(void)
 {
     EditAssocDialog assocDlg;
 
@@ -97,7 +84,11 @@ PrefsGeneralPage::OnAssociations(void)
     fOurAssociations = NULL;
 
     if (assocDlg.DoModal() == IDOK) {
-        // steal the modified associations
+        /*
+         * Make a copy of the changes and mark us as modified so
+         * the Apply/Cancel buttons behave as expected.  (We don't make
+         * a copy so much as steal the data from the dialog object.)
+         */
         delete[] fOurAssociations;
         fOurAssociations = assocDlg.fOurAssociations;
         assocDlg.fOurAssociations = NULL;
@@ -105,15 +96,13 @@ PrefsGeneralPage::OnAssociations(void)
     }
 }
 
-/*
- * Convert values.
- *
- * The various column checkboxes are independent.  We still do the xfer
- * for "pathname" even though it's disabled.
- */
-void
-PrefsGeneralPage::DoDataExchange(CDataExchange* pDX)
+void PrefsGeneralPage::DoDataExchange(CDataExchange* pDX)
 {
+    /*
+     * The various column checkboxes are independent.  We still do the xfer
+     * for "pathname" even though it's disabled.
+     */
+
     fReady = true;
 
     ASSERT(NELEM(fColumn) == 9);
@@ -136,20 +125,13 @@ PrefsGeneralPage::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_PREF_SUCCESS_BEEP, fBeepOnSuccess);
 }
 
-/*
- * Context help request (question mark button).
- */
-LONG
-PrefsGeneralPage::OnHelp(UINT wParam, LONG lParam)
+LONG PrefsGeneralPage::OnHelp(UINT wParam, LONG lParam)
 {
     WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
-/*
- * User pressed the PropertySheet "Help" button.
- */
-LONG
-PrefsGeneralPage::OnCommandHelp(UINT, LONG)
+
+LONG PrefsGeneralPage::OnCommandHelp(UINT, LONG)
 {
     WinHelp(HELP_TOPIC_PREFS_GENERAL, HELP_CONTEXT);
     return 0;       // doesn't matter
@@ -172,38 +154,26 @@ BEGIN_MESSAGE_MAP(PrefsDiskImagePage, CPropertyPage)
     ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
-/*
- * Set up our spin button.
- */
-BOOL
-PrefsDiskImagePage::OnInitDialog(void)
+BOOL PrefsDiskImagePage::OnInitDialog(void)
 {
     //LOGI("OnInit!");
     return CPropertyPage::OnInitDialog();
 }
 
-/*
- * Enable the "apply" button.
- */
-void
-PrefsDiskImagePage::OnChange(void)
+void PrefsDiskImagePage::OnChange(void)
 {
-    LOGI("OnChange");
-    SetModified(TRUE);
+    LOGD("OnChange");
+    SetModified(TRUE);  // enable the "apply" button
 }
-//void
-//PrefsDiskImagePage::OnChangeRange(UINT nID)
+
+//void PrefsDiskImagePage::OnChangeRange(UINT nID)
 //{
-//  LOGI("OnChangeRange id=%d", nID);
+//  LOGD("OnChangeRange id=%d", nID);
 //  SetModified(TRUE);
 //}
 
 
-/*
- * Convert values.
- */
-void
-PrefsDiskImagePage::DoDataExchange(CDataExchange* pDX)
+void PrefsDiskImagePage::DoDataExchange(CDataExchange* pDX)
 {
     fReady = true;
     DDX_Check(pDX, IDC_PDISK_CONFIRM_FORMAT, fQueryImageFormat);
@@ -213,20 +183,13 @@ PrefsDiskImagePage::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_PDISK_PRODOS_USESPARSE, fProDOSUseSparse);
 }
 
-/*
- * Context help request (question mark button).
- */
-LONG
-PrefsDiskImagePage::OnHelp(UINT wParam, LONG lParam)
+LONG PrefsDiskImagePage::OnHelp(UINT wParam, LONG lParam)
 {
     WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
-/*
- * User pressed the PropertySheet "Help" button.
- */
-LONG
-PrefsDiskImagePage::OnCommandHelp(UINT, LONG)
+
+LONG PrefsDiskImagePage::OnCommandHelp(UINT, LONG)
 {
     WinHelp(HELP_TOPIC_PREFS_DISK_IMAGE, HELP_CONTEXT);
     return 0;       // doesn't matter
@@ -246,11 +209,7 @@ BEGIN_MESSAGE_MAP(PrefsCompressionPage, CPropertyPage)
 END_MESSAGE_MAP()
 
 
-/*
- * Disable compression types not supported by the NufxLib DLL.
- */
-BOOL
-PrefsCompressionPage::OnInitDialog(void)
+BOOL PrefsCompressionPage::OnInitDialog(void)
 {
     if (!NufxArchive::IsCompressionSupported(kNuThreadFormatHuffmanSQ)) {
         DisableWnd(IDC_DEFC_SQUEEZE);
@@ -293,11 +252,7 @@ PrefsCompressionPage::OnInitDialog(void)
     return CPropertyPage::OnInitDialog();
 }
 
-/*
- * Disable a window in our dialog.
- */
-void
-PrefsCompressionPage::DisableWnd(int id)
+void PrefsCompressionPage::DisableWnd(int id)
 {
     CWnd* pWnd;
     pWnd = GetDlgItem(id);
@@ -308,43 +263,30 @@ PrefsCompressionPage::DisableWnd(int id)
     pWnd->EnableWindow(FALSE);
 }
 
-/*
- * Enable the "apply" button.
- */
-void
-PrefsCompressionPage::OnChangeRange(UINT nID)
+void PrefsCompressionPage::OnChangeRange(UINT nID)
 {
-    SetModified(TRUE);
+    SetModified(TRUE);      // enable the "apply" button
 }
 
-/*
- * Convert values.
- *
- * Compression types match the NuThreadFormat enum in NufxLib.h, starting
- * with IDC_DEFC_UNCOMPRESSED.
- */
-void
-PrefsCompressionPage::DoDataExchange(CDataExchange* pDX)
+void PrefsCompressionPage::DoDataExchange(CDataExchange* pDX)
 {
-    //LOGI("OnInit comp!");
+    /*
+     * Compression types match the NuThreadFormat enum in NufxLib.h, starting
+     * with IDC_DEFC_UNCOMPRESSED.
+     */
+
+    LOGV("OnInit comp!");
     fReady = true;
     DDX_Radio(pDX, IDC_DEFC_UNCOMPRESSED, fCompressType);
 }
 
-/*
- * Context help request (question mark button).
- */
-LONG
-PrefsCompressionPage::OnHelp(UINT wParam, LONG lParam)
+LONG PrefsCompressionPage::OnHelp(UINT wParam, LONG lParam)
 {
     WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
-/*
- * User pressed the PropertySheet "Help" button.
- */
-LONG
-PrefsCompressionPage::OnCommandHelp(UINT, LONG)
+
+LONG PrefsCompressionPage::OnCommandHelp(UINT, LONG)
 {
     WinHelp(HELP_TOPIC_PREFS_COMPRESSION, HELP_CONTEXT);
     return 0;       // doesn't matter
@@ -366,16 +308,11 @@ BEGIN_MESSAGE_MAP(PrefsFviewPage, CPropertyPage)
     ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
-/*
- * Set up our spin button.
- */
-BOOL
-PrefsFviewPage::OnInitDialog(void)
+BOOL PrefsFviewPage::OnInitDialog(void)
 {
-    //LOGI("OnInit!");
     CSpinButtonCtrl* pSpin;
 
-    //LOGI("Configuring spin");
+    LOGV("Configuring spin");
 
     pSpin = (CSpinButtonCtrl*) GetDlgItem(IDC_PVIEW_SIZE_SPIN);
     ASSERT(pSpin != NULL);
@@ -385,33 +322,24 @@ PrefsFviewPage::OnInitDialog(void)
     uda.nInc = 64;
     pSpin->SetRange(1, 32767);
     pSpin->SetAccel(1, &uda);
-    LOGI("OnInit done!");
+    LOGD("OnInit done!");
 
     return CPropertyPage::OnInitDialog();
 }
 
-/*
- * Enable the "apply" button.
- */
-void
-PrefsFviewPage::OnChange(void)
+void PrefsFviewPage::OnChange(void)
 {
-    LOGI("OnChange");
-    SetModified(TRUE);
+    LOGD("OnChange");
+    SetModified(TRUE);      // enable the "apply" button
 }
-void
-PrefsFviewPage::OnChangeRange(UINT nID)
+
+void PrefsFviewPage::OnChangeRange(UINT nID)
 {
-    LOGI("OnChangeRange id=%d", nID);
+    LOGD("OnChangeRange id=%d", nID);
     SetModified(TRUE);
 }
 
-
-/*
- * Convert values.
- */
-void
-PrefsFviewPage::DoDataExchange(CDataExchange* pDX)
+void PrefsFviewPage::DoDataExchange(CDataExchange* pDX)
 {
     fReady = true;
     //DDX_Check(pDX, IDC_PVIEW_EOL_RAW, fEOLConvRaw);
@@ -449,20 +377,13 @@ PrefsFviewPage::DoDataExchange(CDataExchange* pDX)
     DDV_MinMaxUInt(pDX, fMaxViewFileSizeKB, 1, 32767);
 }
 
-/*
- * Context help request (question mark button).
- */
-LONG
-PrefsFviewPage::OnHelp(UINT wParam, LONG lParam)
+LONG PrefsFviewPage::OnHelp(UINT wParam, LONG lParam)
 {
     WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
-/*
- * User pressed the PropertySheet "Help" button.
- */
-LONG
-PrefsFviewPage::OnCommandHelp(UINT, LONG)
+
+LONG PrefsFviewPage::OnCommandHelp(UINT, LONG)
 {
     WinHelp(HELP_TOPIC_PREFS_FVIEW, HELP_CONTEXT);
     return 0;       // doesn't matter
@@ -484,11 +405,7 @@ BEGIN_MESSAGE_MAP(PrefsFilesPage, CPropertyPage)
 END_MESSAGE_MAP()
 
 
-/*
- * Set up the "choose folder" button.
- */
-BOOL
-PrefsFilesPage::OnInitDialog(void)
+BOOL PrefsFilesPage::OnInitDialog(void)
 {
     fChooseFolderButton.ReplaceDlgCtrl(this, IDC_PREF_CHOOSE_TEMP_FOLDER);
     fChooseFolderButton.SetBitmapID(IDB_CHOOSE_FOLDER);
@@ -496,20 +413,12 @@ PrefsFilesPage::OnInitDialog(void)
     return CPropertyPage::OnInitDialog();
 }
 
-/*
- * Enable the "apply" button.
- */
-void
-PrefsFilesPage::OnChange(void)
+void PrefsFilesPage::OnChange(void)
 {
-    SetModified(TRUE);
+    SetModified(TRUE);      // enable the "apply" button
 }
 
-/*
- * Convert values.
- */
-void
-PrefsFilesPage::DoDataExchange(CDataExchange* pDX)
+void PrefsFilesPage::DoDataExchange(CDataExchange* pDX)
 {
     fReady = true;
     DDX_Text(pDX, IDC_PREF_TEMP_FOLDER, fTempPath);
@@ -529,12 +438,12 @@ PrefsFilesPage::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-/*
- * They want to choose the folder from a menu hierarchy.  Show them a list.
- */
-void
-PrefsFilesPage::OnChooseFolder(void)
+void PrefsFilesPage::OnChooseFolder(void)
 {
+    /*
+     * They want to choose the folder from a menu hierarchy.  Show them a list.
+     */
+
     ChooseDirDialog chooseDir(this);
     CWnd* pEditWnd;
     CString editPath;
@@ -547,7 +456,7 @@ PrefsFilesPage::OnChooseFolder(void)
     chooseDir.SetPathName(editPath);
     if (chooseDir.DoModal() == IDOK) {
         const WCHAR* ccp = chooseDir.GetPathName();
-        LOGI("New temp path chosen = '%ls'", ccp);
+        LOGD("New temp path chosen = '%ls'", ccp);
 
         pEditWnd->SetWindowText(ccp);
 
@@ -556,20 +465,13 @@ PrefsFilesPage::OnChooseFolder(void)
     }
 }
 
-/*
- * Context help request (question mark button).
- */
-LONG
-PrefsFilesPage::OnHelp(UINT wParam, LONG lParam)
+LONG PrefsFilesPage::OnHelp(UINT wParam, LONG lParam)
 {
     WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
-/*
- * User pressed the PropertySheet "Help" button.
- */
-LONG
-PrefsFilesPage::OnCommandHelp(UINT, LONG)
+
+LONG PrefsFilesPage::OnCommandHelp(UINT, LONG)
 {
     WinHelp(HELP_TOPIC_PREFS_FILES, HELP_CONTEXT);
     return 0;       // doesn't matter
@@ -589,9 +491,6 @@ BEGIN_MESSAGE_MAP(PrefsSheet, CPropertySheet)
     ON_MESSAGE(WM_HELP, OnHelp)
 END_MESSAGE_MAP()
 
-/*
- * Construct the preferences dialog from the individual pages.
- */
 PrefsSheet::PrefsSheet(CWnd* pParentWnd) :
     CPropertySheet(L"Preferences", pParentWnd)
 {
@@ -605,31 +504,15 @@ PrefsSheet::PrefsSheet(CWnd* pParentWnd) :
     //m_psh.dwFlags |= PSH_HASHELP;
 }
 
-/*
- * Enable the context help button.
- *
- * We don't seem to get a PreCreateWindow or OnInitDialog, but we can
- * intercept the WM_NCCREATE message and override the default behavior.
- */
-BOOL
-PrefsSheet::OnNcCreate(LPCREATESTRUCT cs)
+BOOL PrefsSheet::OnNcCreate(LPCREATESTRUCT cs)
 {
-    //LOGI("PrefsSheet OnNcCreate");
+    LOGV("PrefsSheet OnNcCreate");
     BOOL val = CPropertySheet::OnNcCreate(cs);
     ModifyStyleEx(0, WS_EX_CONTEXTHELP);
     return val;
 }
 
-/*
- * Handle the "apply" button.  We only want to process updates for property
- * pages that have been constructed, and they only get constructed when
- * the user clicks on them.
- *
- * We also have to watch out for DDV tests that should prevent the "apply"
- * from succeeding, e.g. the file viewer size limit.
- */
-void
-PrefsSheet::OnApplyNow(void)
+void PrefsSheet::OnApplyNow(void)
 {
     BOOL result;
 
@@ -666,7 +549,7 @@ PrefsSheet::OnApplyNow(void)
     }
 
     /* reset all to "unmodified" state */
-    LOGI("All 'applies' were successful");
+    LOGD("All 'applies' were successful");
     ((MainWindow*) AfxGetMainWnd())->ApplyNow(this);
     fGeneralPage.SetModified(FALSE);
     fGeneralPage.fDefaultsPushed = false;
@@ -676,36 +559,17 @@ PrefsSheet::OnApplyNow(void)
     fFilesPage.SetModified(FALSE);
 }
 
-/*
- * Handle a press of the "Help" button by redirecting it back to ourselves
- * as a WM_COMMANDHELP message.  If we don't do this, the main window ends
- * up getting our WM_COMMAND(ID_HELP) message.
- *
- * We still need to define an ID_HELP WM_COMMAND handler in the main window,
- * or the CPropertySheet code refuses to believe that help is enabled for
- * the application as a whole.
- *
- * The PropertySheet object handles the WM_COMMANDHELP message and redirects
- * it to the active PropertyPage.  Each page must handle WM_COMMANDHELP by
- * opening an appropriate chapter in the help file.
- */
-void
-PrefsSheet::OnIDHelp(void)
+void PrefsSheet::OnIDHelp(void)
 {
-    LOGI("PrefsSheet OnIDHelp");
+    LOGD("PrefsSheet OnIDHelp");
     SendMessage(WM_COMMANDHELP);
 }
 
-/*
- * Context help request (question mark button) on something outside of the
- * property page, most likely the Apply or Cancel button.
- */
-LONG
-PrefsSheet::OnHelp(UINT wParam, LONG lParam)
+LONG PrefsSheet::OnHelp(UINT wParam, LONG lParam)
 {
     HELPINFO* lpHelpInfo = (HELPINFO*) lParam;
 
-    LOGI("PrefsSheet OnHelp");
+    LOGD("PrefsSheet OnHelp");
     DWORD context = lpHelpInfo->iCtrlId;
     WinHelp(context, HELP_CONTEXTPOPUP);
 

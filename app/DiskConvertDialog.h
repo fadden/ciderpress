@@ -29,8 +29,15 @@ public:
     }
     virtual ~DiskConvertDialog(void) {}
 
-    void Init(const DiskImgLib::DiskImg* pDiskImg);     // single file init
-    void Init(int fileCount);                           // bulk init
+    /*
+     * Initialize the set of available options based on the source image.
+     */
+    void Init(const DiskImgLib::DiskImg* pDiskImg);
+
+    /*
+     * Initialize options for a bulk transfer.
+     */
+    void Init(int fileCount);
 
     /* must match up with dialog */
     enum {
@@ -55,13 +62,23 @@ public:
     CString fExtension;
 
 private:
-    BOOL OnInitDialog(void);
-    void DoDataExchange(CDataExchange* pDX);
+    BOOL OnInitDialog(void) override;
+    void DoDataExchange(CDataExchange* pDX) override;
 
+    /*
+     * If the radio button selection changes, we may need to disable the gzip
+     * checkbox to show that NuFX can't be combined with gzip.
+     *
+     * If the underlying disk is over 32MB, disable gzip, because we won't be
+     * able to open the disk we create.
+     */
     afx_msg void OnChangeRadio(UINT nID);
+
+    // User pressed the "Help" button.
     afx_msg void OnHelp(void);
 
-    BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    // Context help request (question mark button).
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
     CString fDiskDescription;
     bool    fAllowUnadornedDOS;

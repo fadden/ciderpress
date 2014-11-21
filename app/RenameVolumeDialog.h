@@ -5,6 +5,13 @@
  */
 /*
  * Declarations for "rename volume" dialog.
+ *
+ * Show a tree with possible volumes and sub-volumes, and ask the user to
+ * enter the desired name (or volume number).
+ *
+ * We need to have the tree, rather than just clicking on an entry in the file
+ * list, because we want to be able to change names and volume numbers on
+ * disks with no files.
  */
 #ifndef APP_RENAMEVOLUME_H
 #define APP_RENAMEVOLUME_H
@@ -32,11 +39,15 @@ public:
     DiskImgLib::DiskFS* fpChosenDiskFS;
 
 protected:
-    // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
+    /*
+     * Get a notification whenever the selection changes.  Use it to stuff a
+     * default value into the edit box.
+     */
     afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
+
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
     afx_msg void OnHelp(void);
 

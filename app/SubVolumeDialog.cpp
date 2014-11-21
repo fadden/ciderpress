@@ -19,11 +19,7 @@ BEGIN_MESSAGE_MAP(SubVolumeDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Set up the control.
- */
-BOOL
-SubVolumeDialog::OnInitDialog(void)
+BOOL SubVolumeDialog::OnInitDialog(void)
 {
     ASSERT(fpDiskFS != NULL);
 
@@ -46,20 +42,13 @@ SubVolumeDialog::OnInitDialog(void)
     return CDialog::OnInitDialog();
 }
 
-/*
- * Do the DDX thang.
- */
-void
-SubVolumeDialog::DoDataExchange(CDataExchange* pDX)
+void SubVolumeDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_LBIndex(pDX, IDC_SUBV_LIST, fListBoxIndex);
 }
 
-/*
- * Accept a double-click as an "OK".
- */
-void
-SubVolumeDialog::OnItemDoubleClicked(void)
+void SubVolumeDialog::OnItemDoubleClicked(void)
 {
+    // Accept a double-click as an "OK".
     OnOK();
 }

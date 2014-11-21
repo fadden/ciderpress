@@ -28,7 +28,8 @@ public:
     long    fCountHighASCII;
 
 private:
-    BOOL OnInitDialog(void);
+    BOOL OnInitDialog(void) override;
+
     afx_msg void OnHelp(void);
 
     DECLARE_MESSAGE_MAP()

@@ -30,13 +30,20 @@ public:
     bool*   fOurAssociations;
 
 protected:
-    // overrides
-    virtual BOOL OnInitDialog(void);
-    BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-    void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    void DoDataExchange(CDataExchange* pDX) override;
 
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
     afx_msg void OnHelp(void);
 
+    /*
+     * Load the list view control.
+     *
+     * This list isn't sorted, so we don't need to stuff anything into lParam to
+     * keep the list and source data tied.
+     *
+     * If "loadAssoc" is true, we also populate the fOurAssocations table.
+     */
     void Setup(bool loadAssoc);
 
     DECLARE_MESSAGE_MAP()

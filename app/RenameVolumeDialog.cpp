@@ -3,16 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Implementation of RenameVolumeDialog.
- *
- * Show a tree with possible volumes and sub-volumes, and ask the user to
- * enter the desired name (or volume number).
- *
- * We need to have the tree, rather than just clicking on an entry in the file
- * list, because we want to be able to change names and volume numbers on
- * disks with no files.
- */
 #include "stdafx.h"
 #include "RenameVolumeDialog.h"
 #include "DiskFSTree.h"
@@ -25,11 +15,7 @@ BEGIN_MESSAGE_MAP(RenameVolumeDialog, CDialog)
     ON_WM_HELPINFO()
 END_MESSAGE_MAP()
 
-/*
- * Set up the control.
- */
-BOOL
-RenameVolumeDialog::OnInitDialog(void)
+BOOL RenameVolumeDialog::OnInitDialog(void)
 {
     /* do the DoDataExchange stuff */
     CDialog::OnInitDialog();
@@ -58,16 +44,11 @@ RenameVolumeDialog::OnInitDialog(void)
     return FALSE;   // we set the focus
 }
 
-/*
- * Convert values.
- */
-void
-RenameVolumeDialog::DoDataExchange(CDataExchange* pDX)
+void RenameVolumeDialog::DoDataExchange(CDataExchange* pDX)
 {
     CString msg, failed;
     //DiskImgLib::DiskFS*   pDiskFS = fpArchive->GetDiskFS();
 
-    msg = "";
     failed.LoadString(IDS_MB_APP_NAME);
 
     /* put fNewName last so it gets the focus after failure */
@@ -130,12 +111,7 @@ fail:
     return;
 }
 
-/*
- * Get a notification whenever the selection changes.  Use it to stuff a
- * default value into the edit box.
- */
-void
-RenameVolumeDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
+void RenameVolumeDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
 {
     CTreeCtrl* pTree = (CTreeCtrl*) GetDlgItem(IDC_RENAMEVOL_TREE);
     HTREEITEM selected;
@@ -160,21 +136,13 @@ RenameVolumeDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * Context help request (question mark button).
- */
-BOOL
-RenameVolumeDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
+BOOL RenameVolumeDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
 {
     WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;    // yes, we handled it
 }
 
-/*
- * User pressed Ye Olde Helppe Button.
- */
-void
-RenameVolumeDialog::OnHelp(void)
+void RenameVolumeDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_RENAME_VOLUME, HELP_CONTEXT);
 }

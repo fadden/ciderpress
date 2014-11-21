@@ -21,11 +21,7 @@
 /*static*/ const WCHAR PrintStuff::kCourierNew[] = L"Courier New";
 /*static*/ const WCHAR PrintStuff::kTimesNewRoman[] = L"Times New Roman";
 
-/*
- * Set up various values.
- */
-void
-PrintStuff::InitBasics(CDC* pDC)
+void PrintStuff::InitBasics(CDC* pDC)
 {
     ASSERT(pDC != NULL);
     ASSERT(fpDC == NULL);
@@ -44,11 +40,7 @@ PrintStuff::InitBasics(CDC* pDC)
         fLogPixelsX, fLogPixelsY, fHorzRes, fVertRes);
 }
 
-/*
- * Create a new font, based on the number of lines per page we need.
- */
-void
-PrintStuff::CreateFontByNumLines(CFont* pFont, int numLines)
+void PrintStuff::CreateFontByNumLines(CFont* pFont, int numLines)
 {
     ASSERT(pFont != NULL);
     ASSERT(numLines > 0);
@@ -70,24 +62,14 @@ PrintStuff::CreateFontByNumLines(CFont* pFont, int numLines)
     /*fpOldFont =*/ fpDC->SelectObject(pFont);
 }
 
-
-/*
- * Returns the width of the string.
- */
-int
-PrintStuff::StringWidth(const CString& str)
+int PrintStuff::StringWidth(const CString& str)
 {
     CSize size;
     size = fpDC->GetTextExtent(str);
     return size.cx;
 }
 
-/*
- * Trim a string to the specified number of pixels.  If it's too large,
- * ellipsis will be added on the left or right.
- */
-int
-PrintStuff::TrimString(CString* pStr, int width, bool addOnLeft)
+int PrintStuff::TrimString(CString* pStr, int width, bool addOnLeft)
 {
     static const char* kEllipsis = "...";
     CString newStr;
@@ -138,11 +120,7 @@ PrintStuff::TrimString(CString* pStr, int width, bool addOnLeft)
  * ==========================================================================
  */
 
-/*
- * Calculate some constant values.
- */
-void
-PrintContentList::Setup(CDC* pDC, CWnd* pParent)
+void PrintContentList::Setup(CDC* pDC, CWnd* pParent)
 {
     /* init base class */
     InitBasics(pDC);
@@ -158,18 +136,14 @@ PrintContentList::Setup(CDC* pDC, CWnd* pParent)
     fCharHeight = metrics.tmHeight + metrics.tmExternalLeading;
     fLinesPerPage = fVertRes / fCharHeight;
 
-    LOGI("fVertRes=%d, fCharHeight=%d", fVertRes, fCharHeight);
+    LOGD("fVertRes=%d, fCharHeight=%d", fVertRes, fCharHeight);
 
     /* set up our slightly reduced lines per page */
     ASSERT(fLinesPerPage > kHeaderLines+1);
     fCLLinesPerPage = fLinesPerPage - kHeaderLines;
 }
 
-/*
- * Compute the number of pages in fpContentList.
- */
-void
-PrintContentList::CalcNumPages(void)
+void PrintContentList::CalcNumPages(void)
 {
     /* set up our local goodies */
     ASSERT(fpContentList != NULL);
@@ -179,15 +153,10 @@ PrintContentList::CalcNumPages(void)
     fNumPages = (numLines + fCLLinesPerPage -1) / fCLLinesPerPage;
     ASSERT(fNumPages > 0);
 
-    LOGI("Using numLines=%d, fNumPages=%d, fCLLinesPerPage=%d",
+    LOGD("Using numLines=%d, fNumPages=%d, fCLLinesPerPage=%d",
         numLines, fNumPages, fCLLinesPerPage);
 }
 
-/*
- * Initiate printing of the specified list to the specified DC.
- *
- * Returns 0 if all went well, nonzero on cancellation or failure.
- */
 int
 PrintContentList::Print(const ContentList* pContentList)
 {
@@ -198,8 +167,9 @@ PrintContentList::Print(const ContentList* pContentList)
     fToPage = fNumPages;
     return StartPrint();
 }
-int
-PrintContentList::Print(const ContentList* pContentList, int fromPage, int toPage)
+
+int PrintContentList::Print(const ContentList* pContentList, int fromPage,
+    int toPage)
 {
     fpContentList = pContentList;
     CalcNumPages();
@@ -209,11 +179,7 @@ PrintContentList::Print(const ContentList* pContentList, int fromPage, int toPag
     return StartPrint();
 }
 
-/*
- * Kick off the print job.
- */
-int
-PrintContentList::StartPrint(void)
+int PrintContentList::StartPrint(void)
 {
     MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
     BOOL bres;
@@ -276,14 +242,7 @@ bail:
     return result;
 }
 
-
-/*
- * Print all pages.
- *
- * Returns 0 on success, nonzero on failure.
- */
-int
-PrintContentList::DoPrint(void)
+int PrintContentList::DoPrint(void)
 {
     LOGI("Printing from page=%d to page=%d", fFromPage, fToPage);
 
@@ -311,11 +270,7 @@ PrintContentList::DoPrint(void)
     return 0;
 }
 
-/*
- * Print page N of the content list, where N is a 1-based count.
- */
-void
-PrintContentList::DoPrintPage(int page)
+void PrintContentList::DoPrintPage(int page)
 {
     /*
      * Column widths, on an arbitrary scale.  These will be
@@ -347,7 +302,7 @@ PrintContentList::DoPrintPage(int page)
         totalWidth += kColumnWidths[i].width;
 
     widthMult = (float) fHorzRes / totalWidth;
-    LOGI("totalWidth=%d, fHorzRes=%d, mult=%.3f",
+    LOGD("totalWidth=%d, fHorzRes=%d, mult=%.3f",
         totalWidth, fHorzRes, widthMult);
 
     /*
@@ -430,11 +385,7 @@ PrintContentList::DoPrintPage(int page)
  * ==========================================================================
  */
 
-/*
- * Calculate some constant values.
- */
-void
-PrintRichEdit::Setup(CDC* pDC, CWnd* pParent)
+void PrintRichEdit::Setup(CDC* pDC, CWnd* pParent)
 {
     /* preflighting can cause this to be initialized twice */
     fpDC = NULL;
@@ -462,11 +413,7 @@ PrintRichEdit::Setup(CDC* pDC, CWnd* pParent)
     fInitialized = true;
 }
 
-/*
- * Pre-flight the print process to get the number of pages.
- */
-int
-PrintRichEdit::PrintPreflight(CRichEditCtrl* pREC, int* pNumPages)
+int PrintRichEdit::PrintPreflight(CRichEditCtrl* pREC, int* pNumPages)
 {
     fStartChar = 0;
     fEndChar = -1;
@@ -475,11 +422,7 @@ PrintRichEdit::PrintPreflight(CRichEditCtrl* pREC, int* pNumPages)
     return StartPrint(pREC, L"(test)", pNumPages, false);
 }
 
-/*
- * Print all pages.
- */
-int
-PrintRichEdit::PrintAll(CRichEditCtrl* pREC, const WCHAR* title)
+int PrintRichEdit::PrintAll(CRichEditCtrl* pREC, const WCHAR* title)
 {
     fStartChar = 0;
     fEndChar = -1;
@@ -488,11 +431,7 @@ PrintRichEdit::PrintAll(CRichEditCtrl* pREC, const WCHAR* title)
     return StartPrint(pREC, title, NULL, true);
 }
 
-/*
- * Print a range of pages.
- */
-int
-PrintRichEdit::PrintPages(CRichEditCtrl* pREC, const WCHAR* title,
+int PrintRichEdit::PrintPages(CRichEditCtrl* pREC, const WCHAR* title,
     int startPage, int endPage)
 {
     fStartChar = 0;
@@ -502,11 +441,7 @@ PrintRichEdit::PrintPages(CRichEditCtrl* pREC, const WCHAR* title,
     return StartPrint(pREC, title, NULL, true);
 }
 
-/*
- * Print the selected area.
- */
-int
-PrintRichEdit::PrintSelection(CRichEditCtrl* pREC, const WCHAR* title,
+int PrintRichEdit::PrintSelection(CRichEditCtrl* pREC, const WCHAR* title,
     long startChar, long endChar)
 {
     fStartChar = startChar;
@@ -516,11 +451,7 @@ PrintRichEdit::PrintSelection(CRichEditCtrl* pREC, const WCHAR* title,
     return StartPrint(pREC, title, NULL, true);
 }
 
-/*
- * Start the printing process by posting a print-cancel dialog.
- */
-int
-PrintRichEdit::StartPrint(CRichEditCtrl* pREC, const WCHAR* title,
+int PrintRichEdit::StartPrint(CRichEditCtrl* pREC, const WCHAR* title,
     int* pNumPages, bool doPrint)
 {
     CancelDialog* pPCD = NULL;
@@ -554,11 +485,7 @@ PrintRichEdit::StartPrint(CRichEditCtrl* pREC, const WCHAR* title,
     return result;
 }
 
-/*
- * Do some prep work before printing.
- */
-void
-PrintRichEdit::PrintPrep(FORMATRANGE* pFR)
+void PrintRichEdit::PrintPrep(FORMATRANGE* pFR)
 {
     CFont* pOldFont;
 
@@ -607,14 +534,7 @@ PrintRichEdit::PrintPrep(FORMATRANGE* pFR)
     pFR->chrg.cpMax = fEndChar;
 }
 
-/*
- * Compute the size of the left and right margins, based on the width of 80
- * characters of 10-point Courier New on the current printer.
- *
- * Sets fLeftMargin and fRightMargin, in printer DC pixels.
- */
-void
-PrintRichEdit::ComputeMargins(void)
+void PrintRichEdit::ComputeMargins(void)
 {
     CFont tmpFont;
     CFont* pOldFont;
@@ -662,13 +582,8 @@ PrintRichEdit::ComputeMargins(void)
     }
 }
 
-/*
- * Send the contents of the rich edit control to the printer DC.
- *
- * This was derived from Microsft KB article 129860.
- */
-int
-PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
+// This was derived from Microsoft KB article 129860.
+int PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
     int* pNumPages, bool doPrint)
 {
     FORMATRANGE fr;
@@ -723,7 +638,7 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
 #endif
     extdTextLength = (long)::SendMessage(pREC->m_hWnd, EM_GETTEXTLENGTHEX,
         (WPARAM) &exLenReq, (LPARAM) NULL);
-    LOGI("RichEdit text length: std=%ld extd=%ld",
+    LOGD("RichEdit text length: std=%ld extd=%ld",
         basicTextLength, extdTextLength);
 
     if (fEndChar == -1) {
@@ -734,13 +649,13 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
     } else
         textLength = fEndChar - fStartChar;
 
-    LOGI("  +++ starting while loop, textLength=%ld", textLength);
+    LOGD("  +++ starting while loop, textLength=%ld", textLength);
     pageNum = 0;
     lastTextPrinted = -1;
     do {
         bool skipPage = false;
         pageNum++;
-        LOGI("  +++  while loop: pageNum is %d", pageNum);
+        LOGD("  +++  while loop: pageNum is %d", pageNum);
 
         if (fEndPage > 0) {
             if (pageNum < fStartPage)
@@ -776,12 +691,12 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
 
         /* print a page full of RichEdit stuff */
         textPrinted = pREC->FormatRange(&fr, doPrint && !skipPage);
-        LOGI("  +++    returned from FormatRange (textPrinted=%d)",
+        LOGD("  +++    returned from FormatRange (textPrinted=%d)",
             textPrinted);
         if (textPrinted <= lastTextPrinted) {
             /* the earlier StartPage can't be undone, so we'll get an
                extra blank page at the very end */
-            LOGI("GLITCH: no new text printed (printed=%ld, last=%ld, len=%ld)",
+            LOGW("GLITCH: no new text printed (printed=%ld, last=%ld, len=%ld)",
                 textPrinted, lastTextPrinted, textLength);
             pageNum--;  // fix page count estimator
             break;
@@ -806,9 +721,9 @@ PrintRichEdit::DoPrint(CRichEditCtrl* pREC, const WCHAR* title,
         }
     } while (textPrinted < textLength);
 
-    //LOGI("  +++ calling FormatRange(NULL, FALSE)");
+    LOGV("  +++ calling FormatRange(NULL, FALSE)");
     pREC->FormatRange(NULL, FALSE);
-    //LOGI("  +++  returned from final FormatRange");
+    LOGV("  +++  returned from final FormatRange");
 
     if (doPrint)
         fpDC->EndDoc();

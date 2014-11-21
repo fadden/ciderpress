@@ -12,11 +12,7 @@
 
 using namespace DiskImgLib;
 
-/*
- * Build the tree.
- */
-bool
-DiskFSTree::BuildTree(DiskFS* pDiskFS, CTreeCtrl* pTree)
+bool DiskFSTree::BuildTree(DiskFS* pDiskFS, CTreeCtrl* pTree)
 {
     ASSERT(pDiskFS != NULL);
     ASSERT(pTree != NULL);
@@ -25,16 +21,7 @@ DiskFSTree::BuildTree(DiskFS* pDiskFS, CTreeCtrl* pTree)
     return AddDiskFS(pTree, TVI_ROOT, pDiskFS, 1);
 }
 
-/*
- * Load the specified DiskFS into the tree, recursively adding any
- * sub-volumes.
- *
- * Pass in an initial depth of 1.
- *
- * Returns "true" on success, "false" on failure.
- */
-bool
-DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
+bool DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     DiskImgLib::DiskFS* pDiskFS, int depth)
 {
     const DiskFS::SubVolume* pSubVol;
@@ -116,21 +103,7 @@ DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     return true;
 }
 
-
-/*
- * Add the subdir and all of the subdirectories of the current subdir.
- *
- * The files are held in a linear list in the DiskFS, so we have to
- * reconstruct the hierarchy from the path names.  Pass in NULL for the
- * root volume.
- *
- * Returns a pointer to the next A2File in the list (i.e. the first one
- * that we couldn't digest).  This assumes that the contents of a
- * subdirectory are grouped together in the linear list, so that we can
- * immediately bail when the first misfit is encountered.
- */
-DiskImgLib::A2File*
-DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
+DiskImgLib::A2File* DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
     DiskImgLib::DiskFS* pDiskFS, DiskImgLib::A2File* pParentFile,
     int depth)
 {
@@ -212,12 +185,7 @@ DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
     return pFile;
 }
 
-
-/*
- * Allocate a new TargetData struct, and add it to our list.
- */
-DiskFSTree::TargetData*
-DiskFSTree::AllocTargetData(void)
+DiskFSTree::TargetData* DiskFSTree::AllocTargetData(void)
 {
     TargetData* pNew = new TargetData;
 
@@ -232,13 +200,7 @@ DiskFSTree::AllocTargetData(void)
     return pNew;
 }
 
-/*
- * Free up the TargetData structures we created.
- *
- * Rather than  
- */
-void
-DiskFSTree::FreeAllTargetData(void)
+void DiskFSTree::FreeAllTargetData(void)
 {
     TargetData* pTarget;
     TargetData* pNext;

@@ -48,13 +48,33 @@ public:
         DestroyWindow();
     }
 
+    /*
+     * Set the name of the file as it appears in the archive.
+     */
     void SetArcName(const WCHAR* str);
+
+    /*
+     * Set the name of the file as it appears under Windows.
+     */
     void SetFileName(const WCHAR* str);
+
+    /*
+     * Get the name of the file as it appears under Windows.
+     */
     const CString GetFileName(void);
+
+    /*
+     * Update the progress meter.
+     *
+     * We take a percentage, but the underlying control uses 1000ths.
+     */
     int SetProgress(int perc);
 
 private:
-    virtual BOOL OnInitDialog(void);
+    /*
+     * Initialize the static text controls to say something reasonable.
+     */
+    virtual BOOL OnInitDialog(void) override;
 
     Action          fAction;
     bool            fCancel;

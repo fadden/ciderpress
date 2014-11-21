@@ -33,7 +33,7 @@ public:
 
 protected:
     //virtual BOOL OnInitDialog(void);
-    void DoDataExchange(CDataExchange* pDX);
+    void DoDataExchange(CDataExchange* pDX) override;
 
     //DECLARE_MESSAGE_MAP()
 };

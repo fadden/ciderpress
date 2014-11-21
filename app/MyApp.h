@@ -32,10 +32,14 @@ public:
     const WCHAR* GetExeBaseName(void) const { return fExeBaseName; }
 
 private:
-    // Overridden functions
-    virtual BOOL InitInstance(void);
-    virtual BOOL OnIdle(LONG lCount);
+    virtual BOOL InitInstance(void) override;
+    virtual BOOL OnIdle(LONG lCount) override;
 
+    /*
+     * Show where we got something from.  Handy for checking DLL load locations.
+     *
+     * If "name" is NULL, we show the EXE info.
+     */
     void LogModuleLocation(const WCHAR* name);
 
     CString     fExeFileName;

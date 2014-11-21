@@ -268,11 +268,7 @@ BEGIN_MESSAGE_MAP(CassetteDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-/*
- * Set up the dialog.
- */
-BOOL
-CassetteDialog::OnInitDialog(void)
+BOOL CassetteDialog::OnInitDialog(void)
 {
     CRect rect;
     const Preferences* pPreferences = GET_PREFERENCES();
@@ -360,11 +356,7 @@ CassetteDialog::OnDialogReady(UINT, LONG)
 #endif
 
 
-/*
- * Something changed in the list.  Update the "OK" button.
- */
-void
-CassetteDialog::OnListChange(NMHDR*, LRESULT* pResult)
+void CassetteDialog::OnListChange(NMHDR*, LRESULT* pResult)
 {
     LOGI("List change");
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
@@ -375,11 +367,7 @@ CassetteDialog::OnListChange(NMHDR*, LRESULT* pResult)
 }
 
 
-/*
- * Double click.
- */
-void
-CassetteDialog::OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult)
+void CassetteDialog::OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult)
 {
     LOGI("Double click!");
     CListCtrl* pListView = (CListCtrl*) GetDlgItem(IDC_CASSETTE_LIST);
@@ -390,11 +378,7 @@ CassetteDialog::OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * The volume filter drop-down box has changed.
- */
-void
-CassetteDialog::OnAlgorithmChange(void)
+void CassetteDialog::OnAlgorithmChange(void)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_CASSETTE_ALG);
     ASSERT(pCombo != NULL);
@@ -403,21 +387,12 @@ CassetteDialog::OnAlgorithmChange(void)
     AnalyzeWAV();
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-CassetteDialog::OnHelp(void)
+void CassetteDialog::OnHelp(void)
 {
     WinHelp(HELP_TOPIC_IMPORT_CASSETTE, HELP_CONTEXT);
 }
 
-/*
- * User pressed "import" button.  Add the selected item to the current
- * archive or disk image.
- */
-void
-CassetteDialog::OnImport(void)
+void CassetteDialog::OnImport(void)
 {
     /*
      * Figure out which item they have selected.
@@ -486,14 +461,7 @@ bail:
     }
 }
 
-
-/*
- * Analyze the contents of a WAV file.
- *
- * Returns "true" if it found anything at all, "false" if not.
- */
-bool
-CassetteDialog::AnalyzeWAV(void)
+bool CassetteDialog::AnalyzeWAV(void)
 {
     SoundFile soundFile;
     CWaitCursor waitc;
@@ -546,13 +514,7 @@ CassetteDialog::AnalyzeWAV(void)
     return true;
 }
 
-/*
- * Add an entry to the list.
- *
- * Layout: index format length checksum start-offset
- */
-void
-CassetteDialog::AddEntry(int idx, CListCtrl* pListCtrl, long* pFileType)
+void CassetteDialog::AddEntry(int idx, CListCtrl* pListCtrl, long* pFileType)
 {
     CString tmpStr;
     const CassetteData* pData = &fDataArray[idx];
@@ -605,15 +567,7 @@ CassetteDialog::AddEntry(int idx, CListCtrl* pListCtrl, long* pFileType)
  * ==========================================================================
  */
 
-/*
- * Scan the WAV file, starting from the specified byte offset.
- *
- * Returns "true" if we found a file, "false" if not (indicating that the
- * end of the input has been reached).  Updates "*pStartOffset" to point
- * past the end of the data we've read.
- */
-bool
-CassetteDialog::CassetteData::Scan(SoundFile* pSoundFile, Algorithm alg,
+bool CassetteDialog::CassetteData::Scan(SoundFile* pSoundFile, Algorithm alg,
     long* pStartOffset)
 {
     const int kSampleChunkSize = 65536;     // should be multiple of 4
@@ -760,13 +714,7 @@ bail:
     return result;
 }
 
-/*
- * Convert a block of samples from PCM to float.
- *
- * Only the first (left) channel is converted in multi-channel formats.
- */
-void
-CassetteDialog::CassetteData::ConvertSamplesToReal(const WAVEFORMATEX* pFormat,
+void CassetteDialog::CassetteData::ConvertSamplesToReal(const WAVEFORMATEX* pFormat,
     const unsigned char* buf, long chunkLen, float* sampleBuf)
 {
     int bps = ((pFormat->wBitsPerSample+7)/8) * pFormat->nChannels;
@@ -826,13 +774,7 @@ const float kTransMinDelta = 0.02f;         // 1%
 const float kTransDeltaBase = 45.35f;       // usec (1 sample at 22.05KHz)
 
 
-/*
- * Process one audio sample.  Updates "pScanState" appropriately.
- *
- * If we think we found a bit, this returns "true" with 0 or 1 in "*pBitVal".
- */
-bool
-CassetteDialog::CassetteData::ProcessSample(float sample, long sampleIndex,
+bool CassetteDialog::CassetteData::ProcessSample(float sample, long sampleIndex,
     ScanState* pScanState, int* pBitVal)
 {
     if (pScanState->algorithm == kAlgorithmZero)
@@ -847,18 +789,7 @@ CassetteDialog::CassetteData::ProcessSample(float sample, long sampleIndex,
     }
 }
 
-/*
- * Process the data by measuring the distance between zero crossings.
- *
- * This is very similar to the way the Apple II does it, though
- * we have to scan for the 770Hz lead-in instead of simply assuming the
- * the user has queued up the tape.
- *
- * To offset the effects of DC bias, we examine full cycles instead of
- * half cycles.
- */
-bool
-CassetteDialog::CassetteData::ProcessSampleZero(float sample, long sampleIndex,
+bool CassetteDialog::CassetteData::ProcessSampleZero(float sample, long sampleIndex,
     ScanState* pScanState, int* pBitVal)
 {
     long timeDelta;
@@ -920,11 +851,7 @@ CassetteDialog::CassetteData::ProcessSampleZero(float sample, long sampleIndex,
     return emitBit;
 }
 
-/*
- * Process the data by finding and measuring the distance between peaks.
- */
-bool
-CassetteDialog::CassetteData::ProcessSamplePeak(float sample, long sampleIndex,
+bool CassetteDialog::CassetteData::ProcessSamplePeak(float sample, long sampleIndex,
     ScanState* pScanState, int* pBitVal)
 {
     /* values range from [-1.0,1.0), so range is 2.0 total */
@@ -1054,20 +981,8 @@ CassetteDialog::CassetteData::ProcessSamplePeak(float sample, long sampleIndex,
     return emitBit;
 }
 
-
-/*
- * Given the width of a half-cycle, update "phase" and decide whether or not
- * it's time to emit a bit.
- *
- * Updates "halfCycleWidth" too, alternating between 0.0 and a value.
- *
- * The "sampleIndex" parameter is largely just for display.  We use it to
- * set the "start" and "end" pointers, but those are also ultimately just
- * for display to the user.
- */
-bool
-CassetteDialog::CassetteData::UpdatePhase(ScanState* pScanState, long sampleIndex,
-    float halfCycleUsec, int* pBitVal)
+bool CassetteDialog::CassetteData::UpdatePhase(ScanState* pScanState,
+    long sampleIndex, float halfCycleUsec, int* pBitVal)
 {
     float fullCycleUsec;
     bool emitBit = false;

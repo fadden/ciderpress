@@ -31,7 +31,7 @@ public:
         delete[] fTokenLen;
     }
 
-    // Initialize the array.
+    // Initialize the array.  Pass in the info for the token blob.
     void Init(const char* tokenList, int numTokens, int tokenLen);
 
     // Return the index of the matching token, or -1 if none found.
@@ -64,26 +64,59 @@ public:
         delete[] fOutput;
     }
 
-    CString fFileName;      // file to open
-
     // did we add something to the archive?
     bool IsDirty(void) const { return fDirty; }
 
+    void SetFileName(const CString& fileName) { fFileName = fileName;  }
+
 private:
-    virtual BOOL OnInitDialog(void);
+    virtual BOOL OnInitDialog(void) override;
     //virtual void DoDataExchange(CDataExchange* pDX);
-    virtual void OnOK(void);
+    virtual void OnOK(void) override;
 
     afx_msg void OnHelp(void);
 
+    /*
+     * Import an Applesoft BASIC program from the specified file.
+     */
     bool ImportBAS(const WCHAR* fileName);
+
+    /*
+     * Do the actual conversion.
+     */
     bool ConvertTextToBAS(const char* buf, long fileLen,
         char** pOutBuf, long* pOutLen, ExpandBuffer* pMsgs);
+
+    /*
+     * Process a line of Applesoft BASIC text.
+     *
+     * Writes output to "pOutput".
+     *
+     * On failure, writes an error message to "msg" and returns false.
+     */
     bool ProcessBASLine(const char* buf, int len,
         ExpandBuffer* pOutput, CString& msg);
-    bool FixBASLinePointers(char* buf, long len, unsigned short addr);
 
+    /*
+     * Fix up the line pointers.  We left dummy nonzero values in them initially.
+     */
+    bool FixBASLinePointers(char* buf, long len, uint16_t addr);
+
+    /*
+     * Look for the end of line.
+     *
+     * Returns a pointer to the first byte *past* the EOL marker, which will point
+     * at unallocated space for last line in the buffer.
+     */
     const char* FindEOL(const char* buf, long max);
+
+    /*
+     * Find the next non-whitespace character.
+     *
+     * Updates the buffer pointer and length.
+     *
+     * Returns "false" if we run off the end without finding another non-ws char.
+     */
     bool GetNextNWC(const char** pBuf, int* pLen, char* pCh);
 
     void SetOutput(char* outBuf, long outLen) {
@@ -97,6 +130,8 @@ private:
 
     char*       fOutput;
     long        fOutputLen;
+
+    CString fFileName;      // file to open
 
     DECLARE_MESSAGE_MAP()
 };

@@ -3,9 +3,6 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * Support for the "add files" dialog.
- */
 #include "stdafx.h"
 #include "AddFilesDialog.h"
 #include "FileNameConv.h"
@@ -23,8 +20,7 @@
  * "false" indication occurs during saveAndValidate==true, and means that we
  * shouldn't allow the dialog to close yet.
  */
-bool
-AddFilesDialog::MyDataExchange(bool saveAndValidate)
+bool AddFilesDialog::MyDataExchange(bool saveAndValidate)
 {
     CWnd* pWnd;
 
@@ -113,11 +109,7 @@ AddFilesDialog::MyDataExchange(bool saveAndValidate)
     }
 }
 
-/*
- * Make sure the storage prefix they entered is valid.
- */
-bool
-AddFilesDialog::ValidateStoragePrefix(void)
+bool AddFilesDialog::ValidateStoragePrefix(void)
 {
     if (fStoragePrefix.IsEmpty())
         return true;
@@ -135,11 +127,7 @@ AddFilesDialog::ValidateStoragePrefix(void)
 }
 
 
-/*
- * Override base class version.
- */
-UINT
-AddFilesDialog::MyOnCommand(WPARAM wParam, LPARAM lParam)
+UINT AddFilesDialog::MyOnCommand(WPARAM wParam, LPARAM lParam)
 {
     switch (wParam) {
     case IDHELP:
@@ -150,14 +138,7 @@ AddFilesDialog::MyOnCommand(WPARAM wParam, LPARAM lParam)
     }
 }
 
-/*
- * Override base class version so we can move our stuff around.
- *
- * It's important that the base class be called last, because it calls
- * Invalidate to redraw the dialog.
- */
-void
-AddFilesDialog::ShiftControls(int deltaX, int deltaY)
+void AddFilesDialog::ShiftControls(int deltaX, int deltaY)
 {
     /*
      * These only need to be here so that the initial move puts them
@@ -185,14 +166,15 @@ AddFilesDialog::ShiftControls(int deltaX, int deltaY)
      */
     MoveControl(this, IDHELP, deltaX, deltaY, false);
     StretchControl(this, IDC_ADDFILES_PREFIX, deltaX, 0, false);
+
+    /*
+     * It's important that the base class be called last, because it calls
+     * Invalidate to redraw the dialog.
+     */
     SelectFilesDialog::ShiftControls(deltaX, deltaY);
 }
 
-/*
- * User pressed the "Help" button.
- */
-void
-AddFilesDialog::OnIDHelp(void)
+void AddFilesDialog::OnIDHelp(void)
 {
     CWnd* pWndMain = ::AfxGetMainWnd();
     CWinApp* pAppMain = ::AfxGetApp();

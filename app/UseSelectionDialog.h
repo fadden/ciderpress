@@ -4,7 +4,7 @@
  * See the file LICENSE for distribution terms.
  */
 /*
- * Acknowledge and clarify a request to delete files.
+ * Acknowledge and clarify a request to do something, e.g. delete files.
  */
 #ifndef APP_USESELECTIONDIALOG_H
 #define APP_USESELECTIONDIALOG_H
@@ -39,8 +39,8 @@ public:
     int     fFilesToAction;
 
 protected:
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
     //afx_msg void OnHelp(void);

@@ -24,13 +24,21 @@ protected:
     /* get basic goodies, based on the DC */
     virtual void InitBasics(CDC* pDC);
 
-    // Trim a string until it's <= width; returns final width.
+    /*
+     * Trim a string to the specified number of pixels.  If it's too large,
+     * ellipsis will be added on the left or right.  Returns final width.
+     */
     int TrimString(CString* pStr, int width, bool addOnLeft = false);
 
-    // Fills in blank "pFont" object with font that tries to get us N
-    //  lines per page.
+    /*
+     * Fills in blank "pFont" object with font that tries to get us N
+     * lines per page.
+     */
     void CreateFontByNumLines(CFont* pFont, int numLines);
 
+    /*
+     * Returns the width of the string.
+     */
     int StringWidth(const CString& str);
 
     static const WCHAR kCourierNew[];
@@ -64,7 +72,13 @@ public:
     /* set the DC and the parent window (for the cancel box) */
     virtual void Setup(CDC* pDC, CWnd* pParent);
 
+    /*
+     * Initiate printing of the specified list to the configured DC.
+     *
+     * Returns 0 if all went well, nonzero on cancellation or failure.
+     */
     int Print(const ContentList* pContentList);
+
     int Print(const ContentList* pContentList, int fromPage, int toPage);
 
     /* this is used to set up the page range selection in print dialog */
@@ -73,9 +87,26 @@ public:
     }
 
 private:
+    /*
+     * Compute the number of pages in fpContentList.
+     */
     void CalcNumPages(void);
+
+    /*
+     * Kick off the print job.
+     */
     int StartPrint(void);
+
+    /*
+     * Print all pages.
+     *
+     * Returns 0 on success, nonzero on failure.
+     */
     int DoPrint(void);
+
+    /*
+     * Print page N of the content list, where N is a 1-based count.
+     */
     void DoPrintPage(int page);
 
     enum {
@@ -110,20 +141,50 @@ public:
     virtual void Setup(CDC* pDC, CWnd* pParent);
 
     /*
-     * Commence printing.
+     * Pre-flight the print process to get the number of pages.
      */
     int PrintPreflight(CRichEditCtrl* pREC, int* pNumPages);
+
+    /*
+     * Print all pages.
+     */
     int PrintAll(CRichEditCtrl* pREC, const WCHAR* title);
+
+    /*
+     * Print a range of pages.
+     */
     int PrintPages(CRichEditCtrl* pREC, const WCHAR* title, int startPage,
         int endPage);
+
+    /*
+     * Print the selected area.
+     */
     int PrintSelection(CRichEditCtrl* pREC, const WCHAR* title, long startChar,
         long endChar);
 
 private:
+    /*
+     * Start the printing process by posting a print-cancel dialog.
+     */
     int StartPrint(CRichEditCtrl* pREC, const WCHAR* title,
         int* pNumPages, bool doPrint);
+
+    /*
+     * Do some prep work before printing.
+     */
     void PrintPrep(FORMATRANGE* pFR);
+
+    /*
+     * Compute the size of the left and right margins, based on the width of 80
+     * characters of 10-point Courier New on the current printer.
+     *
+     * Sets fLeftMargin and fRightMargin, in printer DC pixels.
+     */
     void ComputeMargins(void);
+
+    /*
+     * Send the contents of the rich edit control to the printer DC.
+     */
     int DoPrint(CRichEditCtrl* pREC, const WCHAR* title, int* pNumPages,
         bool doPrint);
 

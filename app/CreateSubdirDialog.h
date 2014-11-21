@@ -32,9 +32,10 @@ public:
 
 protected:
     // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
+    // Context help request (question mark button).
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
 
 private:

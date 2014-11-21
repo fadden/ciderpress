@@ -21,7 +21,6 @@ public:
     EditCommentDialog(CWnd* pParentWnd = NULL) :
         CDialog(IDD_COMMENT_EDIT, pParentWnd)
     {
-        //fComment = "";
         fNewComment = false;
     }
     virtual ~EditCommentDialog(void) {}
@@ -32,12 +31,15 @@ public:
     bool        fNewComment;    // entry doesn't already have one
 
 protected:
-    // overrides
-    virtual BOOL OnInitDialog(void);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL OnInitDialog(void) override;
+    virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
     afx_msg void OnHelp(void);
+
+    /*
+     * User wants to delete the comment.  Verify first.
+     */
     afx_msg void OnDelete(void);
 
 private:
