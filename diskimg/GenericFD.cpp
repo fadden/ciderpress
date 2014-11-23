@@ -427,7 +427,7 @@ GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
 
     /* if buffer is NULL, allocate it ourselves */
     if (buffer == NULL) {
-        fBuffer = (void*) new char[(int) length];
+        fBuffer = (void*) new uint8_t[(int) length];
         if (fBuffer == NULL)
             return kDIErrMalloc;
     } else

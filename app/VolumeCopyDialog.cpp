@@ -618,7 +618,8 @@ void VolumeCopyDialog::OnCopyFromFile(void)
         CString saveFolder;
 
         /* open the image file and analyze it */
-        dierr = srcImg.OpenImage(loadName, PathProposal::kLocalFssep, true);
+        CStringA loadNameA(loadName);
+        dierr = srcImg.OpenImage(loadNameA, PathProposal::kLocalFssep, true);
         if (dierr != kDIErrNone) {
             errMsg.Format(L"Unable to open disk image: %hs.",
                 DiskImgLib::DIStrError(dierr));

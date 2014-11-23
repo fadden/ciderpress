@@ -381,12 +381,20 @@ bail:
     return dierr;
 }
 
+DIError DiskImg::OpenImageFromBufferRO(const uint8_t* buffer, long length) {
+    return OpenImageFromBuffer(const_cast<uint8_t*>(buffer), length, true);
+}
+
+DIError DiskImg::OpenImageFromBufferRW(uint8_t* buffer, long length) {
+    return OpenImageFromBuffer(buffer, length, false);
+}
+
 /*
  * Open from a buffer, which could point to unadorned ready-to-go content
  * or to a preloaded image file.
  */
 DIError
-DiskImg::OpenImage(const void* buffer, long length, bool readOnly)
+DiskImg::OpenImageFromBuffer(uint8_t* buffer, long length, bool readOnly)
 {
     if (fpDataGFD != NULL) {
         LOGI(" DI already open!");
@@ -400,8 +408,7 @@ DiskImg::OpenImage(const void* buffer, long length, bool readOnly)
     fReadOnly = readOnly;
     pGFDBuffer = new GFDBuffer;
 
-    dierr = pGFDBuffer->Open(const_cast<void*>(buffer), length, false, false,
-                readOnly);
+    dierr = pGFDBuffer->Open(buffer, length, false, false, readOnly);
     if (dierr != kDIErrNone) {
         delete pGFDBuffer;
         return dierr;
@@ -782,7 +789,8 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
     } else
         ext = "";
 
-    LOGI(" DI AnalyzeImageFile ext='%s'", ext);
+    LOGI(" DI AnalyzeImageFile '%s' '%c' ext='%s'",
+        pathName, fssep, ext);
 
     /* sanity check: nobody should have configured these yet */
     assert(fOuterFormat == kOuterFormatUnknown);

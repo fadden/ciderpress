@@ -301,6 +301,7 @@ void MainWindow::OnActionsAddDisks(void)
     DiskImg img;
     CString failed, errMsg;
     CString openFilters, saveFolder;
+    CStringA pathNameA;
     AddFilesDialog addOpts;
 
     LOGI("Add disks!");
@@ -325,7 +326,8 @@ void MainWindow::OnActionsAddDisks(void)
     fPreferences.SetPrefString(kPrAddFileFolder, saveFolder);
 
     /* open the image file and analyze it */
-    dierr = img.OpenImage(dlg.GetPathName(), PathProposal::kLocalFssep, true);
+    pathNameA = dlg.GetPathName();
+    dierr = img.OpenImage(pathNameA, PathProposal::kLocalFssep, true);
     if (dierr != kDIErrNone) {
         errMsg.Format(L"Unable to open disk image: %hs.",
             DiskImgLib::DIStrError(dierr));

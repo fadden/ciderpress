@@ -409,7 +409,9 @@ public:
     // file is on disk; stuff like 2MG headers will be identified and stripped
     DIError OpenImage(const char* filename, char fssep, bool readOnly);
     // file is in memory; provide a pointer to the data start and buffer size
-    DIError OpenImage(const void* buffer, long length, bool readOnly);
+    DIError OpenImageFromBufferRO(const uint8_t* buffer, long length);
+    // file is in memory; provide a pointer to the data start and buffer size
+    DIError OpenImageFromBufferRW(uint8_t* buffer, long length);
     // file is a range of blocks on an open block-oriented disk image
     DIError OpenImage(DiskImg* pParent, long firstBlock, long numBlocks);
     // file is a range of tracks/sectors on an open sector-oriented disk image
@@ -741,6 +743,7 @@ private:
     /* static table of default values */
     static const NibbleDescr kStdNibbleDescrs[];
 
+    DIError OpenImageFromBuffer(uint8_t* buffer, long length, bool readOnly);
     DIError CreateImageCommon(const char* pathName, const char* storageName,
         bool skipFormat);
     DIError ValidateCreateFormat(void) const;

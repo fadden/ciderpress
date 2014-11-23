@@ -466,13 +466,16 @@ GenericArchive::OpenResult DiskArchive::Open(const WCHAR* filename,
     {
         CWaitCursor waitc;
 
-        dierr = fDiskImg.OpenImage(filename, PathProposal::kLocalFssep, readOnly);
+        CStringA fileNameA(filename);
+        dierr = fDiskImg.OpenImage(fileNameA, PathProposal::kLocalFssep,
+            readOnly);
         if (dierr == kDIErrAccessDenied && !readOnly && !isVolume) {
             // retry file open with read-only set
             // don't do that for volumes -- assume they know what they want
             LOGI("  Retrying open with read-only set");
             fIsReadOnly = readOnly = true;
-            dierr = fDiskImg.OpenImage(filename, PathProposal::kLocalFssep, readOnly);
+            dierr = fDiskImg.OpenImage(fileNameA, PathProposal::kLocalFssep,
+                readOnly);
         }
         if (dierr != kDIErrNone) {
             if (dierr == kDIErrFileArchive)

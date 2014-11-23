@@ -167,7 +167,8 @@ void MainWindow::OnToolsDiskEdit(void)
     {
         CWaitCursor waitc;
         /* open the image file and analyze it */
-        dierr = img.OpenImage(loadName, PathProposal::kLocalFssep, true);
+        CStringA loadNameA(loadName);
+        dierr = img.OpenImage(loadNameA, PathProposal::kLocalFssep, true);
     }
 #else
     /* quick test of memory-buffer-based interface */
@@ -343,7 +344,7 @@ void MainWindow::OnToolsDiskConv(void)
     DiskImg srcImg, dstImg;
     DiskConvertDialog convDlg(this);
     CString storageName;
-    CStringA saveNameA, storageNameA;
+    CStringA saveNameA, storageNameA, loadNameA;
 
     /* flush current archive in case that's what we're planning to convert */
     OnFileSave();
@@ -372,7 +373,8 @@ void MainWindow::OnToolsDiskConv(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     /* open the image file and analyze it */
-    dierr = srcImg.OpenImage(loadName, PathProposal::kLocalFssep, true);
+    loadNameA = loadName;
+    dierr = srcImg.OpenImage(loadNameA, PathProposal::kLocalFssep, true);
     if (dierr != kDIErrNone) {
         errMsg.Format(L"Unable to open disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
@@ -1214,7 +1216,8 @@ void MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
                             fPreferences.GetPrefLong(kPrCompressionType));
 
     /* open the image file and analyze it */
-    dierr = srcImg.OpenImage(pathName, PathProposal::kLocalFssep, true);
+    CStringA pathNameA(pathName);
+    dierr = srcImg.OpenImage(pathNameA, PathProposal::kLocalFssep, true);
     if (dierr != kDIErrNone) {
         pErrMsg->Format(L"Unable to open disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
@@ -1625,6 +1628,7 @@ int MainWindow::SSTOpenImage(int seqNum, DiskImg* pDiskImg)
     int result = -1;
     CString openFilters, errMsg;
     CString loadName, saveFolder;
+    CStringA loadNameA;
 
     /*
      * Select the image to convert.
@@ -1650,7 +1654,8 @@ int MainWindow::SSTOpenImage(int seqNum, DiskImg* pDiskImg)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     /* open the image file and analyze it */
-    dierr = pDiskImg->OpenImage(loadName, PathProposal::kLocalFssep, true);
+    loadNameA = loadName;
+    dierr = pDiskImg->OpenImage(loadNameA, PathProposal::kLocalFssep, true);
     if (dierr != kDIErrNone) {
         errMsg.Format(L"Unable to open disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
@@ -1930,7 +1935,8 @@ void MainWindow::VolumeCopier(bool openFile)
 
         DiskImg::SetAllowWritePhys0(false);
 
-        dierr = srcImg.OpenImage(deviceName, '\0', readOnly);
+        CStringA deviceNameA(deviceName);
+        dierr = srcImg.OpenImage(deviceNameA, '\0', readOnly);
         if (dierr == kDIErrAccessDenied) {
             if (openFile) {
                 errMsg.Format(L"Unable to open '%ls': %hs (try opening the file"
