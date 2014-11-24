@@ -30,12 +30,11 @@ static const char* kInvalidNameChars = "$=?,[#:";
  *
  * We test a few fields in the volume directory for validity.
  */
-static DIError
-TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[512];
-    unsigned char volName[DiskFSPascal::kMaxVolumeName+1];
+    uint8_t blkBuf[512];
+    uint8_t volName[DiskFSPascal::kMaxVolumeName+1];
 
     dierr = pImg->ReadBlockSwapped(kVolHeaderBlock, blkBuf, imageOrder,
                 DiskImg::kSectorOrderProDOS);
@@ -66,8 +65,7 @@ bail:
 /*
  * Test to see if the image is a Pascal disk.
  */
-/*static*/ DIError
-DiskFSPascal::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSPascal::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     DiskImg::SectorOrder ordering[DiskImg::kSectorOrderMax];
@@ -95,8 +93,7 @@ DiskFSPascal::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
  * on out must be handled somehow, possibly by claiming that the disk is
  * completely full and has no files on it.
  */
-DIError
-DiskFSPascal::Initialize(void)
+DIError DiskFSPascal::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -138,11 +135,10 @@ bail:
 /*
  * Read some interesting fields from the volume header.
  */
-DIError
-DiskFSPascal::LoadVolHeader(void)
+DIError DiskFSPascal::LoadVolHeader(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     int nameLen, maxFiles;
 
     dierr = fpImg->ReadBlock(kVolHeaderBlock, blkBuf);
@@ -198,8 +194,7 @@ bail:
 /*
  * Set the volume ID field.
  */
-void
-DiskFSPascal::SetVolumeID(void)
+void DiskFSPascal::SetVolumeID(void)
 {
     sprintf(fVolumeID, "Pascal %s:", fVolumeName);
 }
@@ -207,8 +202,7 @@ DiskFSPascal::SetVolumeID(void)
 /*
  * Dump what we pulled out of the volume header.
  */
-void
-DiskFSPascal::DumpVolHeader(void)
+void DiskFSPascal::DumpVolHeader(void)
 {
     time_t access, dateSet;
 
@@ -237,11 +231,10 @@ DiskFSPascal::DumpVolHeader(void)
  *
  * Sets "fDirectory".
  */
-DIError
-DiskFSPascal::LoadCatalog(void)
+DIError DiskFSPascal::LoadCatalog(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* dirPtr;
+    uint8_t* dirPtr;
     int block, numBlocks;
 
     assert(fDirectory == NULL);
@@ -252,7 +245,7 @@ DiskFSPascal::LoadCatalog(void)
         goto bail;
     }
 
-    fDirectory = new unsigned char[kBlkSize * numBlocks];
+    fDirectory = new uint8_t[kBlkSize * numBlocks];
     if (fDirectory == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -280,11 +273,10 @@ bail:
 /*
  * Write our copy of the catalog back out to disk.
  */
-DIError
-DiskFSPascal::SaveCatalog(void)
+DIError DiskFSPascal::SaveCatalog(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* dirPtr;
+    uint8_t* dirPtr;
     int block, numBlocks;
 
     assert(fDirectory != NULL);
@@ -308,8 +300,7 @@ bail:
 /*
  * Free the catalog storage.
  */
-void
-DiskFSPascal::FreeCatalog(void)
+void DiskFSPascal::FreeCatalog(void)
 {
     delete[] fDirectory;
     fDirectory = NULL;
@@ -319,14 +310,13 @@ DiskFSPascal::FreeCatalog(void)
 /*
  * Process the catalog into A2File structures.
  */
-DIError
-DiskFSPascal::ProcessCatalog(void)
+DIError DiskFSPascal::ProcessCatalog(void)
 {
     DIError dierr = kDIErrNone;
     int i, nameLen;
     A2FilePascal* pFile;
-    const unsigned char* dirPtr;
-    unsigned short prevNextBlock = fNextBlock;
+    const uint8_t* dirPtr;
+    uint16_t prevNextBlock = fNextBlock;
 
     dierr = LoadCatalog();
     if (dierr != kDIErrNone)
@@ -398,8 +388,7 @@ bail:
  * Create the volume usage map.  Since UCSD Pascal volumes have neither
  * in-use maps nor index blocks, this is pretty straightforward.
  */
-DIError
-DiskFSPascal::ScanFileUsage(void)
+DIError DiskFSPascal::ScanFileUsage(void)
 {
     int block;
 
@@ -426,8 +415,7 @@ DiskFSPascal::ScanFileUsage(void)
 /*
  * Update an entry in the volume usage map.
  */
-void
-DiskFSPascal::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
+void DiskFSPascal::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
 {
     VolumeUsage::ChunkState cstate;
 
@@ -450,8 +438,7 @@ DiskFSPascal::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
  * Volume names can only be 7 characters long, but otherwise obey the same
  * rules as file names.
  */
-/*static*/ bool
-DiskFSPascal::IsValidVolumeName(const char* name)
+/*static*/ bool DiskFSPascal::IsValidVolumeName(const char* name)
 {
     if (name == NULL) {
         assert(false);
@@ -471,8 +458,7 @@ DiskFSPascal::IsValidVolumeName(const char* name)
  * (,[#:).  It also converts all alpha characters to upper case, but we can
  * take care of that later.
  */
-/*static*/ bool
-DiskFSPascal::IsValidFileName(const char* name)
+/*static*/ bool DiskFSPascal::IsValidFileName(const char* name)
 {
     assert(name != NULL);
 
@@ -499,11 +485,10 @@ DiskFSPascal::IsValidFileName(const char* name)
 /*
  * Put a Pascal filesystem image on the specified DiskImg.
  */
-DIError
-DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
+DIError DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     long formatBlocks;
 
     if (!IsValidVolumeName(volName))
@@ -552,7 +537,7 @@ DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
     PutShortLE(&blkBuf[0x04], 0);       // "file" type
     blkBuf[0x06] = strlen(volName);
     memcpy(&blkBuf[0x07], volName, strlen(volName));
-    PutShortLE(&blkBuf[0x0e], (unsigned short) pDiskImg->GetNumBlocks());
+    PutShortLE(&blkBuf[0x0e], (uint16_t) pDiskImg->GetNumBlocks());
     PutShortLE(&blkBuf[0x10], 0);       // num files
     PutShortLE(&blkBuf[0x12], 0);       // last access date
     PutShortLE(&blkBuf[0x14], 0xa87b);  // last date set (Nov 7 1984)
@@ -580,7 +565,7 @@ bail:
  * Blocks 0 and 1 of a 5.25" bootable Pascal disk, formatted by
  * APPLE3:FORMATTER from Pascal v1.3.
  */
-const unsigned char gPascal525Block0[] = {
+const uint8_t gPascal525Block0[] = {
     0x01, 0xe0, 0x70, 0xb0, 0x04, 0xe0, 0x40, 0xb0, 0x39, 0xbd, 0x88, 0xc0,
     0x20, 0x20, 0x08, 0xa2, 0x00, 0xbd, 0x25, 0x08, 0x09, 0x80, 0x20, 0xfd,
     0xfb, 0xe8, 0xe0, 0x1d, 0xd0, 0xf3, 0xf0, 0xfe, 0xa9, 0x0a, 0x4c, 0x24,
@@ -625,7 +610,7 @@ const unsigned char gPascal525Block0[] = {
     0xf4, 0xea, 0xbd, 0x8c, 0xc0, 0x10, 0xfb, 0xc9, 0xaa, 0xd0, 0xf2, 0xa0,
     0x56, 0xbd, 0x8c, 0xc0, 0x10, 0xfb, 0xc9, 0xad
 };
-const unsigned char gPascal525Block1[] = {
+const uint8_t gPascal525Block1[] = {
     0xd0, 0xe7, 0xa9, 0x00, 0x88, 0x84, 0x26, 0xbc, 0x8c, 0xc0, 0x10, 0xfb,
     0x59, 0xd6, 0x02, 0xa4, 0x26, 0x99, 0x00, 0x03, 0xd0, 0xee, 0x84, 0x26,
     0xbc, 0x8c, 0xc0, 0x10, 0xfb, 0x59, 0xd6, 0x02, 0xa4, 0x26, 0x99, 0x00,
@@ -675,7 +660,7 @@ const unsigned char gPascal525Block1[] = {
  * Block 0 of a 3.5" bootable Pascal disk, formatted by
  * APPLE3:FORMATTER from Pascal v1.3.  Block 1 is zeroed out.
  */
-unsigned char gPascal35Block0[] = {
+const uint8_t gPascal35Block0[] = {
     0x01, 0xe0, 0x70, 0xb0, 0x04, 0xe0, 0x40, 0xb0, 0x39, 0xbd, 0x88, 0xc0,
     0x20, 0x20, 0x08, 0xa2, 0x00, 0xbd, 0x25, 0x08, 0x09, 0x80, 0x20, 0xfd,
     0xfb, 0xe8, 0xe0, 0x1d, 0xd0, 0xf3, 0xf0, 0xfe, 0xa9, 0x0a, 0x4c, 0x24,
@@ -724,12 +709,11 @@ unsigned char gPascal35Block0[] = {
 /*
  * Write the Pascal boot blocks onto the disk image.
  */
-DIError
-DiskFSPascal::WriteBootBlocks(void)
+DIError DiskFSPascal::WriteBootBlocks(void)
 {
     DIError dierr;
-    unsigned char block0[512];
-    unsigned char block1[512];
+    uint8_t block0[512];
+    uint8_t block1[512];
     bool is525 = false;
 
     assert(fpImg->GetHasBlocks());
@@ -765,7 +749,6 @@ DiskFSPascal::WriteBootBlocks(void)
     return kDIErrNone;
 }
 
-
 /*
  * Scan for damaged files and conflicting file allocation entries.
  *
@@ -774,8 +757,7 @@ DiskFSPascal::WriteBootBlocks(void)
  *
  * Returns "true" if disk appears to be perfect, "false" otherwise.
  */
-bool
-DiskFSPascal::CheckDiskIsGood(void)
+bool DiskFSPascal::CheckDiskIsGood(void)
 {
     //DIError dierr;
     bool result = true;
@@ -809,13 +791,12 @@ DiskFSPascal::CheckDiskIsGood(void)
 /*
  * Run through the list of files and count up the free blocks.
  */
-DIError
-DiskFSPascal::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
+DIError DiskFSPascal::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     int* pUnitSize) const
 {
     A2FilePascal* pFile;
     long freeBlocks = 0;
-    unsigned short prevNextBlock = fNextBlock;
+    uint16_t prevNextBlock = fNextBlock;
 
     pFile = (A2FilePascal*) GetNextFile(NULL);
     while (pFile != NULL) {
@@ -840,8 +821,7 @@ DiskFSPascal::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
  * "*pNormalizedBufLen" is used to pass in the length of the buffer and
  * pass out the length of the string (should the buffer prove inadequate).
  */
-DIError
-DiskFSPascal::NormalizePath(const char* path, char fssep,
+DIError DiskFSPascal::NormalizePath(const char* path, char fssep,
     char* normalizedBuf, int* pNormalizedBufLen)
 {
     DIError dierr = kDIErrNone;
@@ -866,8 +846,7 @@ DiskFSPascal::NormalizePath(const char* path, char fssep,
  *
  * "outBuf" must be able to hold kMaxFileName+1 characters.
  */
-void
-DiskFSPascal::DoNormalizePath(const char* name, char fssep, char* outBuf)
+void DiskFSPascal::DoNormalizePath(const char* name, char fssep, char* outBuf)
 {
     char* outp = outBuf;
     const char* cp;
@@ -912,8 +891,7 @@ DiskFSPascal::DoNormalizePath(const char* name, char fssep, char* outBuf)
  * we create here are expected to be written to, not used as filler, so
  * this behavior is actually a *good* thing.
  */
-DIError
-DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
+DIError DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
 {
     DIError dierr = kDIErrNone;
     const bool createUnique = (GetParameter(kParm_CreateUnique) != 0);
@@ -1015,12 +993,12 @@ DiskFSPascal::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     /*
      * Fill the hole.
      */
-    unsigned char* dirPtr;
+    uint8_t* dirPtr;
     dirPtr = fDirectory + (prevIdx+1) * kDirectoryEntryLen;
     PutShortLE(&dirPtr[0x00], pNewFile->fStartBlock);
     PutShortLE(&dirPtr[0x02], pNewFile->fNextBlock);
-    PutShortLE(&dirPtr[0x04], (unsigned short) pNewFile->fFileType);
-    dirPtr[0x06] = (unsigned char) strlen(pNewFile->fFileName);
+    PutShortLE(&dirPtr[0x04], (uint16_t) pNewFile->fFileType);
+    dirPtr[0x06] = (uint8_t) strlen(pNewFile->fFileName);
     memcpy(&dirPtr[0x07], pNewFile->fFileName, A2FilePascal::kMaxFileName);
     PutShortLE(&dirPtr[0x16], pNewFile->fBytesRemaining);
     PutShortLE(&dirPtr[0x18], pNewFile->fModWhen);
@@ -1065,8 +1043,7 @@ bail:
  *
  * Returns an error on failure, which should be impossible.
  */
-DIError
-DiskFSPascal::MakeFileNameUnique(char* fileName)
+DIError DiskFSPascal::MakeFileNameUnique(char* fileName)
 {
     assert(fileName != NULL);
     assert(strlen(fileName) <= A2FilePascal::kMaxFileName);
@@ -1135,12 +1112,11 @@ DiskFSPascal::MakeFileNameUnique(char* fileName)
  *
  * If there's no free space left, returns kDIErrDiskFull.
  */
-DIError
-DiskFSPascal::FindLargestFreeArea(int *pPrevIdx, A2FilePascal** ppPrevFile)
+DIError DiskFSPascal::FindLargestFreeArea(int *pPrevIdx, A2FilePascal** ppPrevFile)
 {
     A2FilePascal* pFile;
     A2FilePascal* pPrevFile;
-    unsigned short prevNextBlock = fNextBlock;
+    uint16_t prevNextBlock = fNextBlock;
     int gapSize, maxGap, maxIndex, idx;
 
     maxIndex = -1;
@@ -1181,17 +1157,15 @@ DiskFSPascal::FindLargestFreeArea(int *pPrevIdx, A2FilePascal** ppPrevFile)
     return kDIErrNone;
 }
 
-
 /*
  * Delete a file.  Because Pascal doesn't have a block allocation map, this
  * is a simple matter of crunching the directory entry out.
  */
-DIError
-DiskFSPascal::DeleteFile(A2File* pGenericFile)
+DIError DiskFSPascal::DeleteFile(A2File* pGenericFile)
 {
     DIError dierr = kDIErrNone;
     A2FilePascal* pFile = (A2FilePascal*) pGenericFile;
-    unsigned char* pEntry;
+    uint8_t* pEntry;
     int dirLen, offsetToNextEntry;
 
     if (pGenericFile == NULL) {
@@ -1247,13 +1221,12 @@ bail:
 /*
  * Rename a file.
  */
-DIError
-DiskFSPascal::RenameFile(A2File* pGenericFile, const char* newName)
+DIError DiskFSPascal::RenameFile(A2File* pGenericFile, const char* newName)
 {
     DIError dierr = kDIErrNone;
     A2FilePascal* pFile = (A2FilePascal*) pGenericFile;
     char normalName[A2FilePascal::kMaxFileName+1];
-    unsigned char* pEntry;
+    uint8_t* pEntry;
 
     if (pFile == NULL || newName == NULL)
         return kDIErrInvalidArg;
@@ -1302,13 +1275,12 @@ bail:
  * but we don't allow the full range of ProDOS types.  Attempting to change
  * to an unsupported type results in "PDA" being used.
  */
-DIError
-DiskFSPascal::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
+DIError DiskFSPascal::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     long accessFlags)
 {
     DIError dierr = kDIErrNone;
     A2FilePascal* pFile = (A2FilePascal*) pGenericFile;
-    unsigned char* pEntry;
+    uint8_t* pEntry;
 
     if (pFile == NULL)
         return kDIErrInvalidArg;
@@ -1334,7 +1306,7 @@ DiskFSPascal::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     A2FilePascal::FileType newType;
 
     newType = A2FilePascal::ConvertFileType(fileType);
-    PutShortLE(&pEntry[0x04], (unsigned short) newType);
+    PutShortLE(&pEntry[0x04], (uint16_t) newType);
 
     dierr = SaveCatalog();
     if (dierr != kDIErrNone)
@@ -1351,8 +1323,7 @@ bail:
 /*
  * Change the Pascal volume name.
  */
-DIError
-DiskFSPascal::RenameVolume(const char* newName)
+DIError DiskFSPascal::RenameVolume(const char* newName)
 {
     DIError dierr = kDIErrNone;
     char normalName[A2FilePascal::kMaxFileName+1];
@@ -1387,10 +1358,9 @@ bail:
 /*
  * Find "pFile" in "fDirectory".
  */
-unsigned char*
-DiskFSPascal::FindDirEntry(A2FilePascal* pFile)
+uint8_t* DiskFSPascal::FindDirEntry(A2FilePascal* pFile)
 {
-    unsigned char* ptr;
+    uint8_t* ptr;
     int i;
 
     assert(fDirectory != NULL);
@@ -1423,8 +1393,7 @@ DiskFSPascal::FindDirEntry(A2FilePascal* pFile)
 /*
  * Convert Pascal file type to ProDOS file type.
  */
-long
-A2FilePascal::GetFileType(void) const
+long A2FilePascal::GetFileType(void) const
 {
     switch (fFileType) {
     case kTypeUntyped:      return 0x00;        // NON
@@ -1445,8 +1414,7 @@ A2FilePascal::GetFileType(void) const
 /*
  * Convert a ProDOS file type to a Pascal file type.
  */
-/*static*/ A2FilePascal::FileType
-A2FilePascal::ConvertFileType(long prodosType)
+/*static*/ A2FilePascal::FileType A2FilePascal::ConvertFileType(long prodosType)
 {
     FileType newType;
 
@@ -1483,8 +1451,7 @@ A2FilePascal::ConvertFileType(long prodosType)
  * the year 100, it will assume that the file was created shortly before the
  * system crashed, and will remove the file.
  */
-/*static*/ time_t
-A2FilePascal::ConvertPascalDate(PascalDate pascalDate)
+/*static*/ time_t A2FilePascal::ConvertPascalDate(PascalDate pascalDate)
 {
     int year, month, day;
 
@@ -1524,10 +1491,9 @@ A2FilePascal::ConvertPascalDate(PascalDate pascalDate)
  *
  * CiderPress uses kDateInvalid==-1 and kDateNone==-2.
  */
-/*static*/ A2FilePascal::PascalDate
-A2FilePascal::ConvertPascalDate(time_t unixDate)
+/*static*/ A2FilePascal::PascalDate A2FilePascal::ConvertPascalDate(time_t unixDate)
 {
-    unsigned long date, year;
+    uint32_t date, year;
     struct tm* ptm;
 
     if (unixDate == 0 || unixDate == -1 || unixDate == -2)
@@ -1541,7 +1507,7 @@ A2FilePascal::ConvertPascalDate(time_t unixDate)
     if (year >= 100)
         year -= 100;
     if (year < 0 || year >= 100) {
-        LOGI("WHOOPS: got year %lu from %d", year, ptm->tm_year);
+        LOGW("WHOOPS: got year %lu from %d", year, ptm->tm_year);
         year = 70;
     }
     date = year << 9 | (ptm->tm_mon+1) | ptm->tm_mday << 4;
@@ -1552,8 +1518,7 @@ A2FilePascal::ConvertPascalDate(time_t unixDate)
 /*
  * Return the file modification date.
  */
-time_t
-A2FilePascal::GetModWhen(void) const
+time_t A2FilePascal::GetModWhen(void) const
 {
     return ConvertPascalDate(fModWhen);
 }
@@ -1561,8 +1526,7 @@ A2FilePascal::GetModWhen(void) const
 /*
  * Dump the contents of the A2File structure.
  */
-void
-A2FilePascal::Dump(void) const
+void A2FilePascal::Dump(void) const
 {
     LOGI("A2FilePascal '%s'", fFileName);
     LOGI("  start=%d next=%d type=%d",
@@ -1574,8 +1538,7 @@ A2FilePascal::Dump(void) const
 /*
  * Not a whole lot to do, since there's no fancy index blocks.
  */
-DIError
-A2FilePascal::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FilePascal::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     A2FDPascal* pOpenFile = NULL;
@@ -1614,8 +1577,7 @@ A2FilePascal::Open(A2FileDescr** ppOpenFile, bool readOnly,
 /*
  * Read a chunk of data from the current offset.
  */
-DIError
-A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
 {
     LOGI(" Pascal reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
@@ -1633,7 +1595,7 @@ A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
     long incrLen = len;
 
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     long block = pFile->fStartBlock + (long) (fOffset / kBlkSize);
     int bufOffset = (long) (fOffset % kBlkSize);        // (& 0x01ff)
     size_t thisCount;
@@ -1674,13 +1636,12 @@ A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
  * and writing all data in one shot.  On a Pascal disk, that makes this
  * process almost embarrassingly simple.
  */
-DIError
-A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
     A2FilePascal* pFile = (A2FilePascal*) fpFile;
     DiskFSPascal* pDiskFS = (DiskFSPascal*) fpFile->GetDiskFS();
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     size_t origLen = len;
 
     LOGI("   DOS Write len=%u %s", len, pFile->GetPathName());
@@ -1726,7 +1687,7 @@ A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
                 goto bail;
 
             len -= kBlkSize;
-            buf = (unsigned char*) buf + kBlkSize;
+            buf = (uint8_t*) buf + kBlkSize;
         } else {
             /* partial block write */
             memset(blkBuf, 0, sizeof(blkBuf));
@@ -1756,8 +1717,7 @@ bail:
 /*
  * Seek to a new offset.
  */
-DIError
-A2FDPascal::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDPascal::Seek(di_off_t offset, DIWhence whence)
 {
     //di_off_t fileLen = ((A2FilePascal*) fpFile)->fLength;
 
@@ -1792,8 +1752,7 @@ A2FDPascal::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDPascal::Tell(void)
+di_off_t A2FDPascal::Tell(void)
 {
     return fOffset;
 }
@@ -1804,15 +1763,14 @@ A2FDPascal::Tell(void)
  * Most applications don't check the value of "Close", or call it from a
  * destructor, so we call CloseDescr whether we succeed or not.
  */
-DIError
-A2FDPascal::Close(void)
+DIError A2FDPascal::Close(void)
 {
     DIError dierr = kDIErrNone;
     DiskFSPascal* pDiskFS = (DiskFSPascal*) fpFile->GetDiskFS();
 
     if (fModified) {
         A2FilePascal* pFile = (A2FilePascal*) fpFile;
-        unsigned char* pEntry;
+        uint8_t* pEntry;
 
         dierr = pDiskFS->LoadCatalog();
         if (dierr != kDIErrNone)
@@ -1822,7 +1780,7 @@ A2FDPascal::Close(void)
          * Update our internal copies of stuff.
          */
         pFile->fLength = fOpenEOF;
-        pFile->fNextBlock = pFile->fStartBlock + (unsigned short) fOpenBlocksUsed;
+        pFile->fNextBlock = pFile->fStartBlock + (uint16_t) fOpenBlocksUsed;
         pFile->fModWhen = A2FilePascal::ConvertPascalDate(time(NULL));
 
         /*
@@ -1838,8 +1796,8 @@ A2FDPascal::Close(void)
             dierr = kDIErrInternal;
             goto bail;
         }
-        unsigned short bytesInLastBlock;
-        bytesInLastBlock = (unsigned short)pFile->fLength % kBlkSize;
+        uint16_t bytesInLastBlock;
+        bytesInLastBlock = (uint16_t)pFile->fLength % kBlkSize;
         if (bytesInLastBlock == 0)
             bytesInLastBlock = 512;     // exactly filled out last block
 
@@ -1861,14 +1819,13 @@ bail:
 /*
  * Return the #of sectors/blocks in the file.
  */
-long
-A2FDPascal::GetSectorCount(void) const
+long A2FDPascal::GetSectorCount(void) const
 {
     A2FilePascal* pFile = (A2FilePascal*) fpFile;
     return (pFile->fNextBlock - pFile->fStartBlock) * 2;
 }
-long
-A2FDPascal::GetBlockCount(void) const
+
+long A2FDPascal::GetBlockCount(void) const
 {
     A2FilePascal* pFile = (A2FilePascal*) fpFile;
     return pFile->fNextBlock - pFile->fStartBlock;
@@ -1877,8 +1834,7 @@ A2FDPascal::GetBlockCount(void) const
 /*
  * Return the Nth track/sector in this file.
  */
-DIError
-A2FDPascal::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDPascal::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
     A2FilePascal* pFile = (A2FilePascal*) fpFile;
     long pascalIdx = sectorIdx / 2;
@@ -1890,11 +1846,11 @@ A2FDPascal::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
     BlockToTrackSector(pascalBlock, (sectorIdx & 0x01) != 0, pTrack, pSector);
     return kDIErrNone;
 }
+
 /*
  * Return the Nth 512-byte block in this file.
  */
-DIError
-A2FDPascal::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDPascal::GetStorage(long blockIdx, long* pBlock) const
 {
     A2FilePascal* pFile = (A2FilePascal*) fpFile;
     long pascalBlock = pFile->fStartBlock + blockIdx;

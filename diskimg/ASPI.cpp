@@ -25,8 +25,7 @@
 /*
  * Initialize ASPI.
  */
-DIError
-ASPI::Init(void)
+DIError ASPI::Init(void)
 {
     DWORD aspiStatus;
     static const char* kASPIDllName = "wnaspi32.dll";
@@ -104,8 +103,7 @@ ASPI::~ASPI(void)
  *
  * Pass in a pointer to a struct that receives the result.
  */
-DIError
-ASPI::HostAdapterInquiry(unsigned char adapter, AdapterInfo* pAdapterInfo)
+DIError ASPI::HostAdapterInquiry(unsigned char adapter, AdapterInfo* pAdapterInfo)
 {
     SRB_HAInquiry req;
     DWORD result;
@@ -140,8 +138,7 @@ ASPI::HostAdapterInquiry(unsigned char adapter, AdapterInfo* pAdapterInfo)
 /*
  * Issue an ASPI query on device type.
  */
-DIError
-ASPI::GetDeviceType(unsigned char adapter, unsigned char target,
+DIError ASPI::GetDeviceType(unsigned char adapter, unsigned char target,
     unsigned char lun, unsigned char* pType)
 {
     SRB_GDEVBlock req;
@@ -170,8 +167,7 @@ ASPI::GetDeviceType(unsigned char adapter, unsigned char target,
 /*
  * Return a printable string for the given device type.
  */
-const char*
-ASPI::DeviceTypeToString(unsigned char deviceType)
+const char* ASPI::DeviceTypeToString(unsigned char deviceType)
 {
     switch (deviceType) {
     case kScsiDevTypeDASD:      return "Disk device";
@@ -192,8 +188,7 @@ ASPI::DeviceTypeToString(unsigned char deviceType)
 /*
  * Issue a SCSI device inquiry and return the interesting parts.
  */
-DIError
-ASPI::DeviceInquiry(unsigned char adapter, unsigned char target,
+DIError ASPI::DeviceInquiry(unsigned char adapter, unsigned char target,
     unsigned char lun, Inquiry* pInquiry)
 {
     DIError dierr;
@@ -245,8 +240,7 @@ ASPI::DeviceInquiry(unsigned char adapter, unsigned char target,
 /*
  * Get the capacity of a SCSI block device.
  */
-DIError
-ASPI::GetDeviceCapacity(unsigned char adapter, unsigned char target,
+DIError ASPI::GetDeviceCapacity(unsigned char adapter, unsigned char target,
     unsigned char lun, unsigned long* pLastBlock, unsigned long* pBlockSize)
 {
     DIError dierr;
@@ -294,8 +288,7 @@ ASPI::GetDeviceCapacity(unsigned char adapter, unsigned char target,
  *
  * Returns "true" if the device is ready, "false" if not.
  */
-DIError
-ASPI::TestUnitReady(unsigned char adapter, unsigned char target,
+DIError ASPI::TestUnitReady(unsigned char adapter, unsigned char target,
     unsigned char lun, bool* pReady)
 {
     DIError dierr;
@@ -355,8 +348,7 @@ ASPI::TestUnitReady(unsigned char adapter, unsigned char target,
  * (possibly modified by extents, but we'll ignore that).  For a CD-ROM
  * this means 2048-byte blocks.
  */
-DIError
-ASPI::ReadBlocks(unsigned char adapter, unsigned char target,
+DIError ASPI::ReadBlocks(unsigned char adapter, unsigned char target,
     unsigned char lun, long startBlock, short numBlocks, long blockSize,
     void* buf)
 {
@@ -397,8 +389,7 @@ ASPI::ReadBlocks(unsigned char adapter, unsigned char target,
 /*
  * Write one or more blocks to the device.
  */
-DIError
-ASPI::WriteBlocks(unsigned char adapter, unsigned char target,
+DIError ASPI::WriteBlocks(unsigned char adapter, unsigned char target,
     unsigned char lun, long startBlock, short numBlocks, long blockSize,
     const void* buf)
 {
@@ -446,8 +437,7 @@ ASPI::WriteBlocks(unsigned char adapter, unsigned char target,
  * The Nero ASPI layer typically returns immediately, and hands back an
  * SS_ERR when something fails.  Win98 ASPI does the SS_PENDING thang.
  */
-DIError
-ASPI::ExecSCSICommand(SRB_ExecSCSICmd* pSRB)
+DIError ASPI::ExecSCSICommand(SRB_ExecSCSICmd* pSRB)
 {
     HANDLE completionEvent = NULL;
     DWORD eventStatus;
@@ -522,8 +512,7 @@ ASPI::ExecSCSICommand(SRB_ExecSCSICmd* pSRB)
  *
  * Only return the devices matching device types in "deviceMask".
  */
-DIError
-ASPI::GetAccessibleDevices(int deviceMask, ASPIDevice** ppDeviceArray,
+DIError ASPI::GetAccessibleDevices(int deviceMask, ASPIDevice** ppDeviceArray,
     int* pNumDevices)
 {
     DIError dierr;

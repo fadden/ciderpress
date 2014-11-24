@@ -13,8 +13,7 @@
 /*
  * Blank out the volume usage map, setting all entries to "embedded".
  */
-void
-DiskFSContainer::SetVolumeUsageMap(void)
+void DiskFSContainer::SetVolumeUsageMap(void)
 {
     VolumeUsage::ChunkState cstate;
     long block;
@@ -34,8 +33,7 @@ DiskFSContainer::SetVolumeUsageMap(void)
  * Create a "placeholder" sub-volume.  Useful for some of the tools when
  * dealing with unformatted (or unknown-formatted) partitions.
  */
-DIError
-DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
+DIError DiskFSContainer::CreatePlaceholder(long startBlock, long numBlocks,
     const char* partName, const char* partType,
     DiskImg** ppNewImg, DiskFS** ppNewFS)
 {

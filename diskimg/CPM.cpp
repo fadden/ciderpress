@@ -41,12 +41,11 @@ const int kMaxExtent = 31;              // extent counter, 0-31
  *
  * We test a few fields in the volume directory for validity.
  */
-static DIError
-TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
-    unsigned char dirBuf[kBlkSize * kVolDirCount];
-    unsigned char* dptr;
+    uint8_t dirBuf[kBlkSize * kVolDirCount];
+    uint8_t* dptr;
     int i;
 
     assert(sizeof(dirBuf) == DiskFSCPM::kFullDirSize);
@@ -79,7 +78,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
             }
 
             /* check for a valid filename here; high bit may be set on some bytes */
-            unsigned char firstLet = *(dptr+1) & 0x7f;
+            uint8_t firstLet = *(dptr+1) & 0x7f;
             if (firstLet < 0x20) {
                 dierr = kDIErrFilesystemNotFound;
                 break;
@@ -101,8 +100,7 @@ bail:
  * On the Apple II, these were always on 5.25" disks.  However, it's possible
  * to create hard drive volumes up to 8MB.
  */
-/*static*/ DIError
-DiskFSCPM::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSCPM::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     /* CP/M disks use 1K blocks, so ignore anything with odd count */
@@ -139,8 +137,7 @@ DiskFSCPM::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
  * on out must be handled somehow, possibly by claiming that the disk is
  * completely full and has no files on it.
  */
-DIError
-DiskFSCPM::Initialize(void)
+DIError DiskFSCPM::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -178,12 +175,11 @@ bail:
  * A single file can have more than one directory entry.  We only want
  * to create an A2File object for the first one.
  */
-DIError
-DiskFSCPM::ReadCatalog(void)
+DIError DiskFSCPM::ReadCatalog(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char dirBuf[kFullDirSize];
-    unsigned char* dptr;
+    uint8_t dirBuf[kFullDirSize];
+    uint8_t* dptr;
     int i;
 
     for (i = 0; i < kVolDirCount; i++) {
@@ -262,8 +258,7 @@ bail:
 /*
  * Reformat from 11 chars with spaces into clean xxxxx.yyy format.
  */
-void
-DiskFSCPM::FormatName(char* dstBuf, const char* srcBuf)
+void DiskFSCPM::FormatName(char* dstBuf, const char* srcBuf)
 {
     char workBuf[kDirFileNameLen+1];
     char* cp;
@@ -299,8 +294,7 @@ DiskFSCPM::FormatName(char* dstBuf, const char* srcBuf)
  * (Should probably just get the block list and then walk that, rather than
  * having directory parse code in two places.)
  */
-DIError
-DiskFSCPM::ComputeLength(A2FileCPM* pFile)
+DIError DiskFSCPM::ComputeLength(A2FileCPM* pFile)
 {
     int i;
     int best, maxExtent;
@@ -342,8 +336,7 @@ DiskFSCPM::ComputeLength(A2FileCPM* pFile)
  * Tracks 0, 1, and 2 are always used by the boot loader.  The volume directory
  * is on the first half of track 3 (blocks 0 and 1).
  */
-DIError
-DiskFSCPM::ScanFileUsage(void)
+DIError DiskFSCPM::ScanFileUsage(void)
 {
     int cpmBlock;
     int i, j;
@@ -379,8 +372,7 @@ DiskFSCPM::ScanFileUsage(void)
  * "block" is a 512-byte block, so you will have to call here twice for every
  * 1K CP/M block.
  */
-void
-DiskFSCPM::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
+void DiskFSCPM::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
 {
     VolumeUsage::ChunkState cstate;
 
@@ -409,8 +401,7 @@ DiskFSCPM::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
  *
  * Returns "true" if disk appears to be perfect, "false" otherwise.
  */
-bool
-DiskFSCPM::CheckDiskIsGood(void)
+bool DiskFSCPM::CheckDiskIsGood(void)
 {
     //DIError dierr;
     bool result = true;
@@ -454,8 +445,7 @@ DiskFSCPM::CheckDiskIsGood(void)
  * Calling GetBlockList twice is probably not the best way to go through life.
  * This needs an overhaul.
  */
-DIError
-A2FileCPM::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FileCPM::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     DIError dierr;
@@ -474,7 +464,7 @@ A2FileCPM::Open(A2FileDescr** ppOpenFile, bool readOnly,
     if (dierr != kDIErrNone)
         goto bail;
 
-    pOpenFile->fBlockList = new unsigned char[pOpenFile->fBlockCount+1];
+    pOpenFile->fBlockList = new uint8_t[pOpenFile->fBlockCount+1];
     pOpenFile->fBlockList[pOpenFile->fBlockCount] = 0xff;
 
     dierr = GetBlockList(&pOpenFile->fBlockCount, pOpenFile->fBlockList);
@@ -503,8 +493,7 @@ bail:
  * Call this once with "blockBuf" equal to "NULL" to get the block count,
  * then call a second time after allocating blockBuf.
  */
-DIError
-A2FileCPM::GetBlockList(long* pBlockCount, unsigned char* blockBuf) const
+DIError A2FileCPM::GetBlockList(long* pBlockCount, uint8_t* blockBuf) const
 {
     di_off_t length = fLength;
     int blockCount = 0;
@@ -565,8 +554,7 @@ A2FileCPM::GetBlockList(long* pBlockCount, unsigned char* blockBuf) const
 /*
  * Dump the contents of the A2File structure.
  */
-void
-A2FileCPM::Dump(void) const
+void A2FileCPM::Dump(void) const
 {
     LOGI("A2FileCPM '%s' length=%ld", fFileName, (long) fLength);
 }
@@ -581,8 +569,7 @@ A2FileCPM::Dump(void) const
 /*
  * Read a chunk of data from the current offset.
  */
-DIError
-A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
 {
     LOGI(" CP/M reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
@@ -602,7 +589,7 @@ A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
     DIError dierr = kDIErrNone;
     const int kCPMBlockSize = kBlkSize*2;
     assert(kCPMBlockSize == 1024);
-    unsigned char blkBuf[kCPMBlockSize];
+    uint8_t blkBuf[kCPMBlockSize];
     int blkIndex = (int) (fOffset / kCPMBlockSize);
     int bufOffset = (int) (fOffset % kCPMBlockSize);        // (& 0x3ff)
     size_t thisCount;
@@ -669,8 +656,7 @@ A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
 /*
  * Write data at the current offset.
  */
-DIError
-A2FDCPM::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDCPM::Write(const void* buf, size_t len, size_t* pActual)
 {
     return kDIErrNotSupported;
 }
@@ -678,8 +664,7 @@ A2FDCPM::Write(const void* buf, size_t len, size_t* pActual)
 /*
  * Seek to a new offset.
  */
-DIError
-A2FDCPM::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDCPM::Seek(di_off_t offset, DIWhence whence)
 {
     di_off_t fileLength = ((A2FileCPM*) fpFile)->fLength;
 
@@ -714,8 +699,7 @@ A2FDCPM::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDCPM::Tell(void)
+di_off_t A2FDCPM::Tell(void)
 {
     return fOffset;
 }
@@ -723,8 +707,7 @@ A2FDCPM::Tell(void)
 /*
  * Release file state, such as it is.
  */
-DIError
-A2FDCPM::Close(void)
+DIError A2FDCPM::Close(void)
 {
     fpFile->CloseDescr(this);
     return kDIErrNone;
@@ -733,13 +716,11 @@ A2FDCPM::Close(void)
 /*
  * Return the #of sectors/blocks in the file.
  */
-long
-A2FDCPM::GetSectorCount(void) const
+long A2FDCPM::GetSectorCount(void) const
 {
     return fBlockCount * 4;
 }
-long
-A2FDCPM::GetBlockCount(void) const
+long A2FDCPM::GetBlockCount(void) const
 {
     return fBlockCount * 2;
 }
@@ -747,8 +728,7 @@ A2FDCPM::GetBlockCount(void) const
 /*
  * Return the Nth track/sector in this file.
  */
-DIError
-A2FDCPM::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDCPM::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
     long cpmIdx = sectorIdx / 4;    // 4 256-byte sectors per 1K CP/M block
     if (cpmIdx >= fBlockCount)
@@ -766,8 +746,7 @@ A2FDCPM::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
  * Return the Nth 512-byte block in this file.  Since things aren't stored
  * in 512-byte blocks, we grab the appropriate 1K block and pick half.
  */
-DIError
-A2FDCPM::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDCPM::GetStorage(long blockIdx, long* pBlock) const
 {
     long cpmIdx = blockIdx / 2; // 4 256-byte sectors per 1K CP/M block
     if (cpmIdx >= fBlockCount)

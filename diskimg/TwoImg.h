@@ -42,20 +42,20 @@ public:
      */
     //char            fMagic[4];
     //char            fCreator[4];
-    unsigned long   fMagic;
-    unsigned long   fCreator;
-    short           fHeaderLen;
-    short           fVersion;
-    long            fImageFormat;
-    unsigned long   fFlags;         // may include DOS volume num
-    long            fNumBlocks;     // 512-byte blocks
-    long            fDataOffset;
-    long            fDataLen;
-    long            fCmtOffset;
-    long            fCmtLen;
-    long            fCreatorOffset;
-    long            fCreatorLen;
-    long            fSpare[4];
+    uint32_t    fMagic;
+    uint32_t    fCreator;
+    uint16_t    fHeaderLen;
+    uint16_t    fVersion;
+    uint32_t    fImageFormat;
+    uint32_t    fFlags;         // may include DOS volume num
+    uint32_t    fNumBlocks;     // 512-byte blocks
+    uint32_t    fDataOffset;
+    uint32_t    fDataLen;
+    uint32_t    fCmtOffset;
+    uint32_t    fCmtLen;
+    uint32_t    fCreatorOffset;
+    uint32_t    fCreatorLen;
+    uint32_t    fSpare[4];
 
     /*
      * Related constants.
@@ -93,9 +93,9 @@ public:
      * end of the data section.  This is done in case the file has some
      * sort of wrapper outside the 2MG header.
      */
-    int InitHeader(int imageFormat, long imageSize, long imageBlockCount);
-    int ReadHeader(FILE* fp, long totalLength);
-    int ReadHeader(GenericFD* pGFD, long totalLength);
+    int InitHeader(int imageFormat, uint32_t imageSize, uint32_t imageBlockCount);
+    int ReadHeader(FILE* fp, uint32_t totalLength);
+    int ReadHeader(GenericFD* pGFD, uint32_t totalLength);
     int WriteHeader(FILE* fp) const;
     int WriteHeader(GenericFD* pGFD) const;
     int WriteFooter(FILE* fp) const;
@@ -108,7 +108,7 @@ public:
     const char* GetMagicStr(void) const { return fMagicStr; }
     const char* GetCreatorStr(void) const { return fCreatorStr; }
 
-    short GetDOSVolumeNum(void) const;
+    int16_t GetDOSVolumeNum(void) const;
     void SetDOSVolumeNum(short dosVolumeNum);
     const char* GetComment(void) const { return fComment; }
     void SetComment(const char* comment);
@@ -116,14 +116,12 @@ public:
     void SetCreatorChunk(const void* creatorBlock, long len);
 
 private:
-    int UnpackHeader(const unsigned char* buf, long totalLength);
-    void PackHeader(unsigned char* buf) const;
-    int GetChunk(GenericFD* pGFD, di_off_t relOffset, long len,
-        void** pBuf);
-    int GetChunk(FILE* fp, di_off_t relOffset, long len,
-        void** pBuf);
+    int UnpackHeader(const uint8_t* buf, uint32_t totalLength);
+    void PackHeader(uint8_t* buf) const;
+    int GetChunk(GenericFD* pGFD, di_off_t relOffset, long len, void** pBuf);
+    int GetChunk(FILE* fp, di_off_t relOffset, long len, void** pBuf);
 
-    int     fDOSVolumeNum;
+    int16_t fDOSVolumeNum;      // 8-bit volume number, or -1
     char    fMagicStr[5];
     char    fCreatorStr[5];
 
@@ -131,6 +129,6 @@ private:
     char*   fCreatorChunk;
 };
 
-}  // namespace DiskImgLib
+}   // namespace DiskImgLib
 
 #endif /*DISKIMG_TWOIMG_H*/

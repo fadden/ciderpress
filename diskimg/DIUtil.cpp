@@ -47,15 +47,13 @@ uint32_t DiskImgLib::Get24BE(const uint8_t* ptr)
             (uint32_t) *ptr << 16;
 }
 
-void
-DiskImgLib::PutShortLE(uint8_t* ptr, uint16_t val)
+void DiskImgLib::PutShortLE(uint8_t* ptr, uint16_t val)
 {
     *ptr++ = (uint8_t) val;
     *ptr = val >> 8;
 }
 
-void
-DiskImgLib::PutLongLE(uint8_t* ptr, uint32_t val)
+void DiskImgLib::PutLongLE(uint8_t* ptr, uint32_t val)
 {
     *ptr++ = (uint8_t) val;
     *ptr++ = (uint8_t) (val >> 8);
@@ -63,15 +61,13 @@ DiskImgLib::PutLongLE(uint8_t* ptr, uint32_t val)
     *ptr = (uint8_t) (val >> 24);
 }
 
-void
-DiskImgLib::PutShortBE(uint8_t* ptr, uint16_t val)
+void DiskImgLib::PutShortBE(uint8_t* ptr, uint16_t val)
 {
     *ptr++ = val >> 8;
     *ptr = (uint8_t) val;
 }
 
-void
-DiskImgLib::PutLongBE(uint8_t* ptr, uint32_t val)
+void DiskImgLib::PutLongBE(uint8_t* ptr, uint32_t val)
 {
     *ptr++ = (uint8_t) (val >> 24);
     *ptr++ = (uint8_t) (val >> 16);
@@ -83,8 +79,7 @@ DiskImgLib::PutLongBE(uint8_t* ptr, uint32_t val)
 /*
  * Read a two-byte little-endian value.
  */
-DIError
-DiskImgLib::ReadShortLE(GenericFD* pGFD, uint16_t* pBuf)
+DIError DiskImgLib::ReadShortLE(GenericFD* pGFD, uint16_t* pBuf)
 {
     DIError dierr;
     uint8_t val[2];
@@ -100,8 +95,7 @@ DiskImgLib::ReadShortLE(GenericFD* pGFD, uint16_t* pBuf)
 /*
  * Read a four-byte little-endian value.
  */
-DIError
-DiskImgLib::ReadLongLE(GenericFD* pGFD, uint32_t* pBuf)
+DIError DiskImgLib::ReadLongLE(GenericFD* pGFD, uint32_t* pBuf)
 {
     DIError dierr;
     uint8_t val[4];
@@ -159,7 +153,7 @@ DIError DiskImgLib::WriteShortLE(GenericFD* pGFD, uint16_t val)
  */
 DIError DiskImgLib::WriteLongLE(GenericFD* pGFD, uint32_t val)
 {
-    unsigned char buf;
+    uint8_t buf;
 
     buf = (uint8_t) val;
     pGFD->Write(&buf, 1);
@@ -176,7 +170,7 @@ DIError DiskImgLib::WriteLongLE(GenericFD* pGFD, uint32_t val)
  */
 DIError DiskImgLib::WriteShortBE(GenericFD* pGFD, uint16_t val)
 {
-    unsigned char buf;
+    uint8_t buf;
 
     buf = val >> 8;
     pGFD->Write(&buf, 1);
@@ -189,15 +183,15 @@ DIError DiskImgLib::WriteShortBE(GenericFD* pGFD, uint16_t val)
  */
 DIError DiskImgLib::WriteLongBE(GenericFD* pGFD, uint32_t val)
 {
-    unsigned char buf;
+    uint8_t buf;
 
-    buf = (unsigned char) (val >> 24);
+    buf = (uint8_t) (val >> 24);
     pGFD->Write(&buf, 1);
-    buf = (unsigned char) (val >> 16);
+    buf = (uint8_t) (val >> 16);
     pGFD->Write(&buf, 1);
-    buf = (unsigned char) (val >> 8);
+    buf = (uint8_t) (val >> 8);
     pGFD->Write(&buf, 1);
-    buf = (unsigned char) val;
+    buf = (uint8_t) val;
     return pGFD->Write(&buf, 1);
 }
 
@@ -209,8 +203,7 @@ DIError DiskImgLib::WriteLongBE(GenericFD* pGFD, uint32_t val)
  *
  * Always returns a pointer to a string; never returns NULL.
  */
-const char*
-DiskImgLib::FilenameOnly(const char* pathname, char fssep)
+const char* DiskImgLib::FilenameOnly(const char* pathname, char fssep)
 {
     const char* retstr;
     const char* pSlash;
@@ -274,8 +267,7 @@ bail:
  *
  * We guarantee that there is at least one character after the '.'.
  */
-const char*
-DiskImgLib::FindExtension(const char* pathname, char fssep)
+const char* DiskImgLib::FindExtension(const char* pathname, char fssep)
 {
     const char* pFilename;
     const char* pExt;
@@ -302,8 +294,7 @@ DiskImgLib::FindExtension(const char* pathname, char fssep)
  *
  * TODO: should be "StrdupNew()"
  */
-char*
-DiskImgLib::StrcpyNew(const char* str)
+char* DiskImgLib::StrcpyNew(const char* str)
 {
     char* newStr;
 
@@ -320,8 +311,7 @@ DiskImgLib::StrcpyNew(const char* str)
 /*
  * Convert the value from GetLastError() to its DIError counterpart.
  */
-DIError
-DiskImgLib::LastErrorToDIError(void)
+DIError DiskImgLib::LastErrorToDIError(void)
 {
     DWORD lastErr = ::GetLastError();
 
@@ -353,8 +343,7 @@ DiskImgLib::LastErrorToDIError(void)
  * Returns "true" if we're running on Win9x (Win95, Win98, WinME), "false"
  * if not (could be WinNT/2K/XP or even Win31 with Win32s).
  */
-bool
-DiskImgLib::IsWin9x(void)
+bool DiskImgLib::IsWin9x(void)
 {
     OSVERSIONINFO osvers;
     BOOL result;

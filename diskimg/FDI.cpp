@@ -33,8 +33,7 @@
 /*
  * Pack a disk image with FDI.
  */
-DIError
-WrapperFDI::PackDisk(GenericFD* pSrcGFD, GenericFD* pWrapperGFD)
+DIError WrapperFDI::PackDisk(GenericFD* pSrcGFD, GenericFD* pWrapperGFD)
 {
     DIError dierr = kDIErrGeneric;      // not yet
     return dierr;
@@ -57,13 +56,12 @@ WrapperFDI::PackDisk(GenericFD* pSrcGFD, GenericFD* pWrapperGFD)
  *
  * Fills in "fNibbleTrackInfo".
  */
-DIError
-WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
-    int numHeads)
+DIError WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD,
+    int numCyls, int numHeads)
 {
     DIError dierr = kDIErrNone;
-    unsigned char nibbleBuf[kNibbleBufLen];
-    unsigned char* inputBuf = NULL;
+    uint8_t nibbleBuf[kNibbleBufLen];
+    uint8_t* inputBuf = NULL;
     bool goodTracks[kMaxNibbleTracks525];
     int inputBufLen = -1;
     int badTracks = 0;
@@ -91,7 +89,7 @@ WrapperFDI::UnpackDisk525(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
                 /* allocate or increase the size of the input buffer */
                 delete[] inputBuf;
                 inputBufLen = length256 * 256;
-                inputBuf = new unsigned char[inputBufLen];
+                inputBuf = new uint8_t[inputBufLen];
                 if (inputBuf == NULL) {
                     dierr = kDIErrMalloc;
                     goto bail;
@@ -223,14 +221,13 @@ bail:
  * We also need to set up a "bad block" map to identify parts that we had
  * trouble unpacking.
  */
-DIError
-WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
+DIError WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
     int numHeads, LinearBitmap* pBadBlockMap)
 {
     DIError dierr = kDIErrNone;
-    unsigned char nibbleBuf[kNibbleBufLen];
-    unsigned char* inputBuf = NULL;
-    unsigned char outputBuf[kMaxSectors35 * kBlockSize];    // 6KB
+    uint8_t nibbleBuf[kNibbleBufLen];
+    uint8_t* inputBuf = NULL;
+    uint8_t outputBuf[kMaxSectors35 * kBlockSize];    // 6KB
     int inputBufLen = -1;
     int badTracks = 0;
     int trk, type, length256;
@@ -258,7 +255,7 @@ WrapperFDI::UnpackDisk35(GenericFD* pGFD, GenericFD* pNewGFD, int numCyls,
                 /* allocate or increase the size of the input buffer */
                 delete[] inputBuf;
                 inputBufLen = length256 * 256;
-                inputBuf = new unsigned char[inputBufLen];
+                inputBuf = new uint8_t[inputBufLen];
                 if (inputBuf == NULL) {
                     dierr = kDIErrMalloc;
                     goto bail;
@@ -344,8 +341,7 @@ bail:
 /*
  * Return the approximate bit rate for the specified cylinder, in bits/sec.
  */
-int
-WrapperFDI::BitRate35(int cyl)
+int WrapperFDI::BitRate35(int cyl)
 {
     if (cyl >= 0 && cyl <= 15)
         return 375000;      // 394rpm
@@ -374,8 +370,7 @@ WrapperFDI::BitRate35(int cyl)
  * (We could be more rigorous and test against valid disk bytes, but that's
  * probably excessive.)
  */
-void
-WrapperFDI::FixBadNibbles(unsigned char* nibbleBuf, long nibbleLen)
+void WrapperFDI::FixBadNibbles(uint8_t* nibbleBuf, long nibbleLen)
 {
     int badCount = 0;
 
@@ -399,10 +394,9 @@ WrapperFDI::FixBadNibbles(unsigned char* nibbleBuf, long nibbleLen)
  *
  * Returns the track type and amount of data (/256).
  */
-void
-WrapperFDI::GetTrackInfo(int trk, int* pType, int* pLength256)
+void WrapperFDI::GetTrackInfo(int trk, int* pType, int* pLength256)
 {
-    unsigned short trackDescr;
+    uint16_t trackDescr;
     trackDescr = fHeaderBuf[kTrackDescrOffset + trk * 2] << 8 |
                  fHeaderBuf[kTrackDescrOffset + trk * 2 +1];
 
@@ -457,15 +451,14 @@ WrapperFDI::GetTrackInfo(int trk, int* pType, int* pLength256)
  *
  * Returns "true" on success, "false" on failure.
  */
-bool
-WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
-    int bitRate, unsigned char* nibbleBuf, long* pNibbleLen)
+bool WrapperFDI::DecodePulseTrack(const uint8_t* inputBuf, long inputLen,
+    int bitRate, uint8_t* nibbleBuf, long* pNibbleLen)
 {
     const int kSizeValueMask = 0x003fffff;
     const int kSizeCompressMask = 0x00c00000;
     const int kSizeCompressShift = 22;
     PulseIndexHeader hdr;
-    unsigned long val;
+    uint32_t val;
     bool result = false;
 
     memset(&hdr, 0, sizeof(hdr));
@@ -502,7 +495,7 @@ WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
     /*
      * Uncompress or endian-swap the pulse streams.
      */
-    hdr.avgStream = new unsigned long[hdr.numPulses];
+    hdr.avgStream = new uint32_t[hdr.numPulses];
     if (hdr.avgStream == NULL)
         goto bail;
     if (!UncompressPulseStream(inputBuf, hdr.avgStreamLen, hdr.avgStream,
@@ -513,7 +506,7 @@ WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
     inputBuf += hdr.avgStreamLen;
 
     if (hdr.minStreamLen > 0) {
-        hdr.minStream = new unsigned long[hdr.numPulses];
+        hdr.minStream = new uint32_t[hdr.numPulses];
         if (hdr.minStream == NULL)
             goto bail;
         if (!UncompressPulseStream(inputBuf, hdr.minStreamLen, hdr.minStream,
@@ -524,7 +517,7 @@ WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
         inputBuf += hdr.minStreamLen;
     }
     if (hdr.maxStreamLen > 0) {
-        hdr.maxStream = new unsigned long[hdr.numPulses];
+        hdr.maxStream = new uint32_t[hdr.numPulses];
         if (!UncompressPulseStream(inputBuf, hdr.maxStreamLen, hdr.maxStream,
             hdr.numPulses, hdr.maxStreamCompression, 4))
         {
@@ -533,7 +526,7 @@ WrapperFDI::DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
         inputBuf += hdr.maxStreamLen;
     }
     if (hdr.idxStreamLen > 0) {
-        hdr.idxStream = new unsigned long[hdr.numPulses];
+        hdr.idxStream = new uint32_t[hdr.numPulses];
         if (!UncompressPulseStream(inputBuf, hdr.idxStreamLen, hdr.idxStream,
             hdr.numPulses, hdr.idxStreamCompression, 2))
         {
@@ -575,9 +568,8 @@ bail:
  * Returns "true" if all went well, "false" if we hit something that we
  * couldn't handle.
  */
-bool
-WrapperFDI::UncompressPulseStream(const unsigned char* inputBuf, long inputLen,
-    unsigned long* outputBuf, long numPulses, int format, int bytesPerPulse)
+bool WrapperFDI::UncompressPulseStream(const uint8_t* inputBuf, long inputLen,
+    uint32_t* outputBuf, long numPulses, int format, int bytesPerPulse)
 {
     assert(bytesPerPulse == 2 || bytesPerPulse == 4);
 
@@ -590,7 +582,7 @@ WrapperFDI::UncompressPulseStream(const unsigned char* inputBuf, long inputLen,
     if (format == kCompUncompressed) {
         int i;
 
-        LOGI("NOT TESTED");      // remove this when we've tested it
+        LOGE("NOT TESTED");      // remove this when we've tested it
 
         if (inputLen != numPulses * bytesPerPulse) {
             LOGI(" FDI: got unc inputLen=%ld, outputLen=%ld",
@@ -630,18 +622,17 @@ WrapperFDI::UncompressPulseStream(const unsigned char* inputBuf, long inputLen,
  *
  * This implementation is based on the fdi2raw code.
  */
-bool
-WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
-    unsigned long* outputBuf, long numPulses)
+bool WrapperFDI::ExpandHuffman(const uint8_t* inputBuf, long inputLen,
+    uint32_t* outputBuf, long numPulses)
 {
     HuffNode root;
-    const unsigned char* origInputBuf = inputBuf;
+    const uint8_t* origInputBuf = inputBuf;
     bool signExtend, sixteenBits;
     int i, subStreamShift;
-    unsigned char bits;
-    unsigned char bitMask;
+    uint8_t bits;
+    uint8_t bitMask;
 
-    memset(outputBuf, 0, numPulses * sizeof(unsigned long));
+    memset(outputBuf, 0, numPulses * sizeof(uint32_t));
     subStreamShift = 1;
 
     while (subStreamShift != 0) {
@@ -683,7 +674,7 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
         /* decode the data over all pulses */
         bitMask = 0;
         for (i = 0; i < numPulses; i++) {
-            unsigned long outVal;
+            uint32_t outVal;
             const HuffNode* pCurrent = &root;
 
             /* chase down the tree until we hit a leaf */
@@ -732,11 +723,10 @@ WrapperFDI::ExpandHuffman(const unsigned char* inputBuf, long inputLen,
 /*
  * Recursively extract the Huffman tree structure for this sub-stream.
  */
-const unsigned char*
-WrapperFDI::HuffExtractTree(const unsigned char* inputBuf, HuffNode* pNode,
-    unsigned char* pBits, unsigned char* pBitMask)
+const uint8_t* WrapperFDI::HuffExtractTree(const uint8_t* inputBuf,
+    HuffNode* pNode, uint8_t* pBits, uint8_t* pBitMask)
 {
-    unsigned char val;
+    uint8_t val;
 
     if (*pBitMask == 0) {
         *pBits = *inputBuf++;
@@ -764,8 +754,8 @@ WrapperFDI::HuffExtractTree(const unsigned char* inputBuf, HuffNode* pNode,
 /*
  * Recursively get the 16-bit values for our Huffman tree from the stream.
  */
-const unsigned char*
-WrapperFDI::HuffExtractValues16(const unsigned char* inputBuf, HuffNode* pNode)
+const uint8_t* WrapperFDI::HuffExtractValues16(const uint8_t* inputBuf,
+    HuffNode* pNode)
 {
     if (pNode->left == NULL) {
         pNode->val = (*inputBuf++) << 8;
@@ -780,8 +770,8 @@ WrapperFDI::HuffExtractValues16(const unsigned char* inputBuf, HuffNode* pNode)
 /*
  * Recursively get the 8-bit values for our Huffman tree from the stream.
  */
-const unsigned char*
-WrapperFDI::HuffExtractValues8(const unsigned char* inputBuf, HuffNode* pNode)
+const uint8_t* WrapperFDI::HuffExtractValues8(const uint8_t* inputBuf,
+    HuffNode* pNode)
 {
     if (pNode->left == NULL) {
         pNode->val = *inputBuf++;
@@ -795,8 +785,7 @@ WrapperFDI::HuffExtractValues8(const unsigned char* inputBuf, HuffNode* pNode)
 /*
  * Recursively free up the current node and all nodes beneath it.
  */
-void
-WrapperFDI::HuffFreeNodes(HuffNode* pNode)
+void WrapperFDI::HuffFreeNodes(HuffNode* pNode)
 {
     if (pNode != NULL) {
         HuffFreeNodes(pNode->left);
@@ -809,8 +798,7 @@ WrapperFDI::HuffFreeNodes(HuffNode* pNode)
 /*
  * Sign-extend a 16-bit value to 32 bits.
  */
-unsigned long
-WrapperFDI::HuffSignExtend16(unsigned long val)
+uint32_t WrapperFDI::HuffSignExtend16(uint32_t val)
 {
     if (val & 0x8000)
         val |= 0xffff0000;
@@ -820,8 +808,7 @@ WrapperFDI::HuffSignExtend16(unsigned long val)
 /*
  * Sign-extend an 8-bit value to 32 bits.
  */
-unsigned long
-WrapperFDI::HuffSignExtend8(unsigned long val)
+uint32_t WrapperFDI::HuffSignExtend8(uint32_t val)
 {
     if (val & 0x80)
         val |= 0xffffff00;
@@ -843,21 +830,20 @@ WrapperFDI::HuffSignExtend8(unsigned long val)
  * "*pNibbleLen" should hold the maximum size of the buffer.  On success,
  * it will hold the actual number of bytes used.
  */
-bool
-WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
-    unsigned char* nibbleBuf, long* pNibbleLen)
+bool WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
+    uint8_t* nibbleBuf, long* pNibbleLen)
 {
-    unsigned long* fakeIdxStream = NULL;
+    uint32_t* fakeIdxStream = NULL;
     bool result = false;
     int i;
 
     /*
      * Stream pointers.  If we don't have a stream, fake it.
      */
-    unsigned long* avgStream;
-    unsigned long* minStream;
-    unsigned long* maxStream;
-    unsigned long* idxStream;
+    uint32_t* avgStream;
+    uint32_t* minStream;
+    uint32_t* maxStream;
+    uint32_t* idxStream;
     
     avgStream = pHdr->avgStream;
     if (pHdr->minStream != NULL && pHdr->maxStream != NULL) {
@@ -885,7 +871,7 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
          */
         LOGI(" FDI: HEY: using fake index stream");
         DebugBreak();
-        fakeIdxStream = new unsigned long[pHdr->numPulses];
+        fakeIdxStream = new uint32_t[pHdr->numPulses];
         if (fakeIdxStream == NULL) {
             LOGI(" FDI: unable to alloc fake idx stream");
             goto bail;
@@ -900,11 +886,11 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
     /*
      * Compute a value for maxIndex.
      */
-    unsigned long maxIndex;
+    uint32_t maxIndex;
 
     maxIndex = 0;
     for (i = 0; i < pHdr->numPulses; i++) {
-        unsigned long sum;
+        uint32_t sum;
 
         /* add up the two single-byte values in the index stream */
         sum = ZeroStateCount(idxStream[i]) + OneStateCount(idxStream[i]);
@@ -946,7 +932,7 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
      * Compute totalAvg and weakBits, and rewrite idxStream.
      * (We don't actually use weakBits.)
      */
-    unsigned long totalAvg;
+    uint32_t totalAvg;
     int weakBits;
 
     totalAvg = weakBits = 0;
@@ -968,7 +954,7 @@ WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
      * Take our altered stream values and the stuff we've calculated,
      * and convert the pulse values into bits.
      */
-    unsigned char bitBuffer[kBitBufferSize];
+    uint8_t bitBuffer[kBitBufferSize];
     int bitCount;
     
     bitCount = kBitBufferSize;
@@ -1013,8 +999,8 @@ bail:
 const int kPulseLimitVal = 15;      /* "tolerance of 15%" */
 
 typedef struct PulseSamples {
-    unsigned long   size;
-    int             numBits;
+    uint32_t    size;
+    int         numBits;
 } PulseSamples;
 
 class PulseSampleCollection {
@@ -1041,7 +1027,7 @@ public:
         assert(fTotalDiv != 0);
     }
 
-    unsigned long GetTotal(void) const { return fTotal; }
+    uint32_t GetTotal(void) const { return fTotal; }
     int GetTotalDiv(void) const { return fTotalDiv; }
 
     void AdjustTotal(long val) { fTotal += val; }
@@ -1063,7 +1049,7 @@ public:
 private:
     PulseSamples    fArray[kSampleArrayMax];
     int             fArrayIndex;
-    unsigned long   fTotal;
+    uint32_t        fTotal;
     int             fTotalDiv;
 };
 
@@ -1080,8 +1066,7 @@ private:
  */
 #undef RAND_MAX
 #define RAND_MAX    32767
-int
-WrapperFDI::MyRand(void)
+int WrapperFDI::MyRand(void)
 {
     const int kNumStates = 31;
     const int kQuantum = RAND_MAX / (kNumStates+1);
@@ -1108,18 +1093,17 @@ WrapperFDI::MyRand(void)
  * This is a fairly direct conversion from the sample code.  There's a lot
  * here that I haven't taken the time to figure out.
  */
-bool
-WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
-    const unsigned long* minStream, const unsigned long* maxStream,
-    const unsigned long* idxStream, int numPulses, int maxIndex,
-    int indexOffset, unsigned long totalAvg, int bitRate,
-    unsigned char* outputBuf, int* pOutputLen)
+bool WrapperFDI::ConvertPulsesToBits(const uint32_t* avgStream,
+    const uint32_t* minStream, const uint32_t* maxStream,
+    const uint32_t* idxStream, int numPulses, int maxIndex,
+    int indexOffset, uint32_t totalAvg, int bitRate,
+    uint8_t* outputBuf, int* pOutputLen)
 {
     PulseSampleCollection samples;
     BitOutputBuffer bitOutput(outputBuf, *pOutputLen);
     /* magic numbers, from somewhere */
-    const unsigned long kStdMFM2BitCellSize = (totalAvg * 5) / bitRate;
-    const unsigned long kStdMFM8BitCellSize = (totalAvg * 20) / bitRate;
+    const uint32_t kStdMFM2BitCellSize = (totalAvg * 5) / bitRate;
+    const uint32_t kStdMFM8BitCellSize = (totalAvg * 20) / bitRate;
     int mfmMagic = 0;       // if set to 1, decode as MFM rather than GCR
     bool result = false;
     int i;
@@ -1134,15 +1118,15 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
      */
     i = 1;
     while (i < numPulses &&
-           (idxStream[i] < (unsigned long) maxIndex ||
-            idxStream[i-1] < (unsigned long) maxIndex ||
+           (idxStream[i] < (uint32_t) maxIndex ||
+            idxStream[i-1] < (uint32_t) maxIndex ||
             minStream[i] < (kStdMFM2BitCellSize - (kStdMFM2BitCellSize / 4))
            ))
     {
         i++;
     }
     if (i == numPulses) {
-        LOGI(" FDI: no stable and long-enough pulse in track");
+        LOGW(" FDI: no stable and long-enough pulse in track");
         goto bail;
     }
 
@@ -1150,7 +1134,7 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
      * Set up some variables.
      */
     int nextI, endOfData, adjust, bitOffset, step;
-    unsigned long refPulse;
+    uint32_t refPulse;
     long jitter;
 
     samples.Create(kStdMFM2BitCellSize, 1 + mfmMagic);
@@ -1174,7 +1158,7 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
          * Calculates the current average bit rate from previously
          * decoded data.
          */
-        unsigned long avgSize;
+        uint32_t avgSize;
         int kCell8Limit = (kPulseLimitVal * kStdMFM8BitCellSize) / 100;
 
         /* this is the new average size for one MFM bit */
@@ -1195,11 +1179,11 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
         /*
          * Get the next long-enough pulse (may require more than one pulse).
          */
-        unsigned long pulse;
+        uint32_t pulse;
 
         pulse = 0;
         while (pulse < ((avgSize / 4) - (avgSize / 16))) {
-            unsigned long avgPulse, minPulse, maxPulse;
+            uint32_t avgPulse, minPulse, maxPulse;
 
             /* advance i */
             i++;
@@ -1212,10 +1196,10 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
                     nextI++;
                     if (nextI >= numPulses)
                         nextI = 0;
-                } while (idxStream[nextI] < (unsigned long) maxIndex);
+                } while (idxStream[nextI] < (uint32_t) maxIndex);
             }
 
-            if (idxStream[i] >= (unsigned long) maxIndex) {
+            if (idxStream[i] >= (uint32_t) maxIndex) {
                 /* stable pulse */
                 avgPulse = avgStream[i] - jitter;
                 minPulse = minStream[i];
@@ -1279,7 +1263,7 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
                  */
                 if (i == endOfData)
                     step++;
-            } else if ((unsigned long) rand() <= (idxStream[i] * RAND_MAX) / maxIndex) {
+            } else if ((uint32_t) rand() <= (idxStream[i] * RAND_MAX) / maxIndex) {
                 /* futz with it */
                 int randVal;
 
@@ -1324,7 +1308,7 @@ WrapperFDI::ConvertPulsesToBits(const unsigned long* avgStream,
          * "realSize" will end up holding the number of bits we're going
          * to output for this pulse.
          */
-        unsigned long adjustedPulse;
+        uint32_t adjustedPulse;
         int realSize;
 
         adjustedPulse = pulse;
@@ -1448,7 +1432,6 @@ bail:
 }
 
 
-
 /*
  * Convert a stream of GCR bits into nibbles.
  *
@@ -1463,15 +1446,14 @@ bail:
  * "*pNibbleLen" should hold the maximum size of the buffer.  On success,
  * it will hold the actual number of bytes used.
  */
-bool
-WrapperFDI::ConvertBitsToNibbles(const unsigned char* bitBuffer, int bitCount,
-    unsigned char* nibbleBuf, long* pNibbleLen)
+bool WrapperFDI::ConvertBitsToNibbles(const uint8_t* bitBuffer, int bitCount,
+    uint8_t* nibbleBuf, long* pNibbleLen)
 {
     BitInputBuffer inputBuffer(bitBuffer, bitCount);
-    const unsigned char* nibbleBufStart = nibbleBuf;
+    const uint8_t* nibbleBufStart = nibbleBuf;
     long outputBufSize = *pNibbleLen;
     bool result = false;
-    unsigned char val;
+    uint8_t val;
     bool wrap;
 
     /*
@@ -1508,11 +1490,11 @@ WrapperFDI::ConvertBitsToNibbles(const unsigned char* bitBuffer, int bitCount,
         if ((val & 0x80) == 0)
             val = (val << 1) | inputBuffer.GetBit(&wrap);
         if ((val & 0x80) == 0) {
-            LOGI(" FDI: WARNING: more than 2 consecutive zeroes (read)");
+            LOGW(" FDI: WARNING: more than 2 consecutive zeroes (read)");
         }
 
         if (nibbleBuf - nibbleBufStart >= outputBufSize) {
-            LOGI(" FDI: bits overflowed nibble buffer");
+            LOGW(" FDI: bits overflowed nibble buffer");
             goto bail;
         }
         *nibbleBuf++ = val;
@@ -1524,7 +1506,7 @@ WrapperFDI::ConvertBitsToNibbles(const unsigned char* bitBuffer, int bitCount,
 
     if (inputBuffer.GetBitsConsumed() != bitCount) {
         /* we dropped some or double-counted some */
-        LOGI(" FDI: WARNING: consumed %d of %d bits",
+        LOGW(" FDI: WARNING: consumed %d of %d bits",
             inputBuffer.GetBitsConsumed(), bitCount);
     }
 
@@ -1538,4 +1520,3 @@ WrapperFDI::ConvertBitsToNibbles(const unsigned char* bitBuffer, int bitCount,
 bail:
     return result;
 }
-

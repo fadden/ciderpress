@@ -1,7 +1,6 @@
 /*
  * CiderPress
  * Copyright (C) 2009 by CiderPress authors.  All Rights Reserved.
- * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
 /*
@@ -76,13 +75,13 @@ public:
 
     static DIError Test(GenericFD* pGFD, di_off_t outerLength);
     virtual DIError Load(GenericFD* pGFD, di_off_t outerLength, bool readOnly,
-        di_off_t* pTotalLength, GenericFD** ppNewGFD);
+        di_off_t* pTotalLength, GenericFD** ppNewGFD) override;
     virtual DIError Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
-        di_off_t wrapperLength);
+        di_off_t wrapperLength) override;
 
-    virtual bool IsDamaged(void) const { return fWrapperDamaged; }
+    virtual bool IsDamaged(void) const override { return fWrapperDamaged; }
 
-    virtual const char* GetExtension(void) const { return NULL; }
+    virtual const char* GetExtension(void) const override { return NULL; }
 
 private:
     DIError ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength);
@@ -105,13 +104,13 @@ public:
 
     static DIError Test(GenericFD* pGFD, di_off_t outerLength);
     virtual DIError Load(GenericFD* pGFD, di_off_t outerLength, bool readOnly,
-        di_off_t* pTotalLength, GenericFD** ppNewGFD);
+        di_off_t* pTotalLength, GenericFD** ppNewGFD) override;
     virtual DIError Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
-        di_off_t wrapperLength);
+        di_off_t wrapperLength) override;
 
-    virtual bool IsDamaged(void) const { return false; }
+    virtual bool IsDamaged(void) const override { return false; }
 
-    virtual const char* GetExtension(void) const { return fExtension; }
+    virtual const char* GetExtension(void) const override { return fExtension; }
 
 private:
     class LocalFileHeader {
@@ -135,18 +134,18 @@ private:
         DIError Write(GenericFD* pGFD);
         void SetFileName(const char* name);
 
-        // unsigned long fSignature;
-        unsigned short  fVersionToExtract;
-        unsigned short  fGPBitFlag;
-        unsigned short  fCompressionMethod;
-        unsigned short  fLastModFileTime;
-        unsigned short  fLastModFileDate;
-        unsigned long   fCRC32;
-        unsigned long   fCompressedSize;
-        unsigned long   fUncompressedSize;
-        unsigned short  fFileNameLength;
-        unsigned short  fExtraFieldLength;
-        unsigned char*  fFileName;
+        // uint32_t fSignature;
+        uint16_t        fVersionToExtract;
+        uint16_t        fGPBitFlag;
+        uint16_t        fCompressionMethod;
+        uint16_t        fLastModFileTime;
+        uint16_t        fLastModFileDate;
+        uint32_t        fCRC32;
+        uint32_t        fCompressedSize;
+        uint32_t        fUncompressedSize;
+        uint16_t        fFileNameLength;
+        uint16_t        fExtraFieldLength;
+        uint8_t*        fFileName;
         // extra field
 
         enum {
@@ -188,26 +187,26 @@ private:
         DIError Write(GenericFD* pGFD);
         void SetFileName(const char* name);
 
-        // unsigned long fSignature;
-        unsigned short  fVersionMadeBy;
-        unsigned short  fVersionToExtract;
-        unsigned short  fGPBitFlag;
-        unsigned short  fCompressionMethod;
-        unsigned short  fLastModFileTime;
-        unsigned short  fLastModFileDate;
-        unsigned long   fCRC32;
-        unsigned long   fCompressedSize;
-        unsigned long   fUncompressedSize;
-        unsigned short  fFileNameLength;
-        unsigned short  fExtraFieldLength;
-        unsigned short  fFileCommentLength;
-        unsigned short  fDiskNumberStart;
-        unsigned short  fInternalAttrs;
-        unsigned long   fExternalAttrs;
-        unsigned long   fLocalHeaderRelOffset;
-        unsigned char*  fFileName;
+        // uint32_t fSignature;
+        uint16_t        fVersionMadeBy;
+        uint16_t        fVersionToExtract;
+        uint16_t        fGPBitFlag;
+        uint16_t        fCompressionMethod;
+        uint16_t        fLastModFileTime;
+        uint16_t        fLastModFileDate;
+        uint32_t        fCRC32;
+        uint32_t        fCompressedSize;
+        uint32_t        fUncompressedSize;
+        uint16_t        fFileNameLength;
+        uint16_t        fExtraFieldLength;
+        uint16_t        fFileCommentLength;
+        uint16_t        fDiskNumberStart;
+        uint16_t        fInternalAttrs;
+        uint32_t        fExternalAttrs;
+        uint32_t        fLocalHeaderRelOffset;
+        uint8_t*        fFileName;
         // extra field
-        unsigned char*  fFileComment;   // alloc with new[]
+        uint8_t*        fFileComment;   // alloc with new[]
 
         void Dump(void) const;
 
@@ -230,17 +229,17 @@ private:
             {}
         virtual ~EndOfCentralDir(void) {}
 
-        DIError ReadBuf(const unsigned char* buf, int len);
+        DIError ReadBuf(const uint8_t* buf, int len);
         DIError Write(GenericFD* pGFD);
 
-        // unsigned long fSignature;
-        unsigned short  fDiskNumber;
-        unsigned short  fDiskWithCentralDir;
-        unsigned short  fNumEntries;
-        unsigned short  fTotalNumEntries;
-        unsigned long   fCentralDirSize;
-        unsigned long   fCentralDirOffset;      // offset from first disk
-        unsigned short  fCommentLen;
+        // uint32_t fSignature;
+        uint16_t        fDiskNumber;
+        uint16_t        fDiskWithCentralDir;
+        uint16_t        fNumEntries;
+        uint16_t        fTotalNumEntries;
+        uint32_t        fCentralDirSize;
+        uint32_t        fCentralDirOffset;      // offset from first disk
+        uint16_t        fCommentLen;
         // archive comment
 
         enum {
@@ -271,17 +270,17 @@ private:
     static DIError ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
         CentralDirEntry* pDirEntry);
     DIError ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
-        unsigned char** pBuf, di_off_t* pLength);
+        uint8_t** pBuf, di_off_t* pLength);
     DIError InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
-        unsigned long uncompSize, unsigned char* buf);
+        unsigned long uncompSize, uint8_t* buf);
     DIError DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t length,
-        di_off_t* pCompLength, unsigned long* pCRC);
+        di_off_t* pCompLength, uint32_t* pCRC);
 
 private:
     void SetExtension(const char* ext);
     void SetStoredFileName(const char* name);
-    void GetMSDOSTime(unsigned short* pDate, unsigned short* pTime);
-    void DOSTime(time_t when, unsigned short* pDate, unsigned short* pTime);
+    void GetMSDOSTime(uint16_t* pDate, uint16_t* pTime);
+    void DOSTime(time_t when, uint16_t* pDate, uint16_t* pTime);
 
     char*       fStoredFileName;
     char*       fExtension;
@@ -384,13 +383,13 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
-    virtual bool HasFastFlush(void) const { return true; }
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
+    virtual bool HasFastFlush(void) const override { return true; }
     //virtual const char* GetComment(void) const { return NULL; }
     // (need to hold TwoImgHeader in the struct, rather than as temp, or
     //  need to copy the comment out into Wrapper2MG storage e.g. StorageName)
@@ -407,13 +406,13 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
-    virtual bool HasFastFlush(void) const { return false; }
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
+    virtual bool HasFastFlush(void) const override { return false; }
 
     void SetStorageName(const char* name) {
         delete[] fStorageName;
@@ -452,12 +451,12 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
     void SetStorageName(const char* name) {
         delete[] fStorageName;
         if (name != NULL) {
@@ -467,8 +466,8 @@ public:
             fStorageName = NULL;
     }
 
-    virtual bool HasFastFlush(void) const { return false; }
-    virtual bool IsDamaged(void) const { return fBadChecksum; }
+    virtual bool HasFastFlush(void) const override { return false; }
+    virtual bool IsDamaged(void) const override { return fBadChecksum; }
 
 private:
     typedef struct DC42Header DC42Header;
@@ -477,7 +476,7 @@ private:
     static int ReadHeader(GenericFD* pGFD, DC42Header* pHeader);
     DIError WriteHeader(GenericFD* pGFD, const DC42Header* pHeader);
     static DIError ComputeChecksum(GenericFD* pGFD,
-        unsigned long* pChecksum);
+        uint32_t* pChecksum);
 
     char*           fStorageName;
     bool            fBadChecksum;
@@ -489,13 +488,13 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
-    virtual bool HasFastFlush(void) const { return false; }
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
+    virtual bool HasFastFlush(void) const override { return false; }
 
     enum {
         kMaxDDDZeroCount = 4,       // 3 observed, 4 suspected
@@ -516,14 +515,14 @@ private:
 
     static DIError UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
         short* pDiskVolNum);
-    static bool UnpackTrack(BitBuffer* pBitBuffer, unsigned char* trackBuf);
+    static bool UnpackTrack(BitBuffer* pBitBuffer, uint8_t* trackBuf);
     static DIError PackDisk(GenericFD* pSrcGFD, GenericFD* pWrapperGFD,
         short diskVolNum);
-    static void PackTrack(const unsigned char* trackBuf, BitBuffer* pBitBuf);
-    static void ComputeFreqCounts(const unsigned char* trackBuf,
-        unsigned short* freqCounts);
-    static void ComputeFavorites(unsigned short* freqCounts,
-        unsigned char* favorites);
+    static void PackTrack(const uint8_t* trackBuf, BitBuffer* pBitBuf);
+    static void ComputeFreqCounts(const uint8_t* trackBuf,
+        uint16_t* freqCounts);
+    static void ComputeFavorites(uint16_t* freqCounts,
+        uint8_t* favorites);
 
     short       fDiskVolumeNum;
 };
@@ -534,13 +533,13 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
-    virtual bool HasFastFlush(void) const { return true; }
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
+    virtual bool HasFastFlush(void) const override { return true; }
 };
 
 class WrapperTrackStar : public ImageWrapper {
@@ -562,15 +561,15 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
-    virtual bool HasFastFlush(void) const { return false; }
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
+    virtual bool HasFastFlush(void) const override { return false; }
 
-    virtual void SetStorageName(const char* name)
+    virtual void SetStorageName(const char* name) override
     {
         delete[] fStorageName;
         if (name != NULL) {
@@ -581,7 +580,7 @@ public:
     }
 
 private:
-    static DIError VerifyTrack(int track, const unsigned char* trackBuf);
+    static DIError VerifyTrack(int track, const uint8_t* trackBuf);
     DIError Unpack(GenericFD* pGFD, GenericFD** ppNewGFD);
     DIError UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD);
 
@@ -638,13 +637,13 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
-    virtual bool HasFastFlush(void) const { return false; }
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
+    virtual bool HasFastFlush(void) const override { return false; }
 
     enum {
         kSignatureLen = 27,
@@ -672,15 +671,15 @@ private:
         // CR + LF
         char            comment[kCommentLen+1];
         // MS-DOS EOF
-        unsigned short  version;
-        unsigned short  lastTrack;
-        unsigned char   lastHead;
-        unsigned char   type;       // DiskType enum
-        unsigned char   rotSpeed;
-        unsigned char   flags;
-        unsigned char   tpi;
-        unsigned char   headWidth;
-        unsigned short  reserved;
+        uint16_t        version;
+        uint16_t        lastTrack;
+        uint8_t         lastHead;
+        uint8_t         type;       // DiskType enum
+        uint8_t         rotSpeed;
+        uint8_t         flags;
+        uint8_t         tpi;
+        uint8_t         headWidth;
+        uint16_t        reserved;
         // track descriptors follow, at byte 152
     } FDIHeader;
 
@@ -698,10 +697,10 @@ private:
         long        idxStreamLen;
         int         idxStreamCompression;
 
-        unsigned long*  avgStream;      // 4 bytes/pulse
-        unsigned long*  minStream;      // 4 bytes/pulse; optional
-        unsigned long*  maxStream;      // 4 bytes/pulse; optional
-        unsigned long*  idxStream;      // 2 bytes/pulse; optional?
+        uint32_t*   avgStream;      // 4 bytes/pulse
+        uint32_t*   minStream;      // 4 bytes/pulse; optional
+        uint32_t*   maxStream;      // 4 bytes/pulse; optional
+        uint32_t*   idxStream;      // 2 bytes/pulse; optional?
     } PulseIndexHeader;
 
     enum {
@@ -731,7 +730,7 @@ private:
 
     /* node in the Huffman tree */
     typedef struct HuffNode {
-        unsigned short      val;
+        uint16_t            val;
         struct HuffNode*    left;
         struct HuffNode*    right;
     } HuffNode;
@@ -741,9 +740,9 @@ private:
      * we're interested in have more than kMaxHeaderBlockTracks tracks in
      * them, so we don't need anything beyond the initial 512-byte header.
      */
-    unsigned char fHeaderBuf[kMinHeaderLen];
+    uint8_t fHeaderBuf[kMinHeaderLen];
 
-    static void UnpackHeader(const unsigned char* headerBuf, FDIHeader* hdr);
+    static void UnpackHeader(const uint8_t* headerBuf, FDIHeader* hdr);
     static void DumpHeader(const FDIHeader* pHdr);
 
     DIError Unpack525(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
@@ -759,32 +758,32 @@ private:
     void GetTrackInfo(int trk, int* pType, int* pLength256);
 
     int BitRate35(int trk);
-    void FixBadNibbles(unsigned char* nibbleBuf, long nibbleLen);
-    bool DecodePulseTrack(const unsigned char* inputBuf, long inputLen,
-        int bitRate, unsigned char* nibbleBuf, long* pNibbleLen);
-    bool UncompressPulseStream(const unsigned char* inputBuf, long inputLen,
-        unsigned long* outputBuf, long numPulses, int format, int bytesPerPulse);
-    bool ExpandHuffman(const unsigned char* inputBuf, long inputLen,
-        unsigned long* outputBuf, long numPulses);
-    const unsigned char* HuffExtractTree(const unsigned char* inputBuf,
-        HuffNode* pNode, unsigned char* pBits, unsigned char* pBitMask);
-    const unsigned char* HuffExtractValues16(const unsigned char* inputBuf,
+    void FixBadNibbles(uint8_t* nibbleBuf, long nibbleLen);
+    bool DecodePulseTrack(const uint8_t* inputBuf, long inputLen,
+        int bitRate, uint8_t* nibbleBuf, long* pNibbleLen);
+    bool UncompressPulseStream(const uint8_t* inputBuf, long inputLen,
+        uint32_t* outputBuf, long numPulses, int format, int bytesPerPulse);
+    bool ExpandHuffman(const uint8_t* inputBuf, long inputLen,
+        uint32_t* outputBuf, long numPulses);
+    const uint8_t* HuffExtractTree(const uint8_t* inputBuf,
+        HuffNode* pNode, uint8_t* pBits, uint8_t* pBitMask);
+    const uint8_t* HuffExtractValues16(const uint8_t* inputBuf,
         HuffNode* pNode);
-    const unsigned char* HuffExtractValues8(const unsigned char* inputBuf,
+    const uint8_t* HuffExtractValues8(const uint8_t* inputBuf,
         HuffNode* pNode);
     void HuffFreeNodes(HuffNode* pNode);
-    unsigned long HuffSignExtend16(unsigned long val);
-    unsigned long HuffSignExtend8(unsigned long val);
+    uint32_t HuffSignExtend16(uint32_t val);
+    uint32_t HuffSignExtend8(uint32_t val);
     bool ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRate,
-        unsigned char* nibbleBuf, long* pNibbleLen);
-    bool ConvertPulsesToBits(const unsigned long* avgStream,
-        const unsigned long* minStream, const unsigned long* maxStream,
-        const unsigned long* idxStream, int numPulses, int maxIndex,
-        int indexOffset, unsigned long totalAvg, int bitRate,
-        unsigned char* outputBuf, int* pOutputLen);
+        uint8_t* nibbleBuf, long* pNibbleLen);
+    bool ConvertPulsesToBits(const uint32_t* avgStream,
+        const uint32_t* minStream, const uint32_t* maxStream,
+        const uint32_t* idxStream, int numPulses, int maxIndex,
+        int indexOffset, uint32_t totalAvg, int bitRate,
+        uint8_t* outputBuf, int* pOutputLen);
     int MyRand(void);
-    bool ConvertBitsToNibbles(const unsigned char* bitBuffer, int bitCount,
-        unsigned char* nibbleBuf, long* pNibbleLen);
+    bool ConvertBitsToNibbles(const uint8_t* bitBuffer, int bitCount,
+        uint8_t* nibbleBuf, long* pNibbleLen);
 
 
     int     fImageTracks;
@@ -830,13 +829,13 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
-    virtual bool HasFastFlush(void) const { return true; }
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
+    virtual bool HasFastFlush(void) const override { return true; }
 };
 
 class WrapperUnadornedSector : public ImageWrapper {
@@ -845,13 +844,13 @@ public:
     virtual DIError Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
         di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
         DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
-        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD);
+        LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD) override;
     virtual DIError Create(di_off_t length, DiskImg::PhysicalFormat physical,
         DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
-        di_off_t* pWrappedLength, GenericFD** pDataFD);
+        di_off_t* pWrappedLength, GenericFD** pDataFD) override;
     virtual DIError Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
-        di_off_t dataLen, di_off_t* pWrappedLen);
-    virtual bool HasFastFlush(void) const { return true; }
+        di_off_t dataLen, di_off_t* pWrappedLen) override;
+    virtual bool HasFastFlush(void) const override { return true; }
 };
 
 
@@ -879,13 +878,13 @@ public:
         return kDIErrNone;
     }
 
-    virtual const char* GetVolumeName(void) const { return fDiskVolumeName; }
-    virtual const char* GetVolumeID(void) const { return fDiskVolumeID; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
+    virtual const char* GetVolumeName(void) const override { return fDiskVolumeName; }
+    virtual const char* GetVolumeID(void) const override { return fDiskVolumeID; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
     // Use this if *something* is known about the filesystem, e.g. the
@@ -944,22 +943,22 @@ public:
     static DIError TestWideFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
 
-    virtual const char* GetVolumeName(void) const { return "[UNIDOS]"; }
-    virtual const char* GetVolumeID(void) const { return "[UNIDOS]"; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
+    virtual const char* GetVolumeName(void) const override { return "[UNIDOS]"; }
+    virtual const char* GetVolumeID(void) const override { return "[UNIDOS]"; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
 private:
-    virtual const char* GetDebugName(void) { return "UNIDOS"; }
+    virtual const char* GetDebugName(void) override { return "UNIDOS"; }
     DIError Initialize(void);
     DIError OpenSubVolume(int idx);
 };
@@ -981,22 +980,22 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
 
-    virtual const char* GetVolumeName(void) const { return "[OzDOS]"; }
-    virtual const char* GetVolumeID(void) const { return "[OzDOS]"; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
+    virtual const char* GetVolumeName(void) const override { return "[OzDOS]"; }
+    virtual const char* GetVolumeID(void) const override { return "[OzDOS]"; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
 private:
-    virtual const char* GetDebugName(void) { return "OzDOS"; }
+    virtual const char* GetDebugName(void) override { return "OzDOS"; }
     DIError Initialize(void);
     DIError OpenSubVolume(int idx);
 };
@@ -1015,22 +1014,22 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
 
-    virtual const char* GetVolumeName(void) const { return "[CFFA]"; }
-    virtual const char* GetVolumeID(void) const { return "[CFFA]"; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
+    virtual const char* GetVolumeName(void) const override { return "[CFFA]"; }
+    virtual const char* GetVolumeID(void) const override { return "[CFFA]"; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
 private:
-    virtual const char* GetDebugName(void) { return "CFFA"; }
+    virtual const char* GetDebugName(void) override { return "CFFA"; }
 
     static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
         DiskImg::FSFormat* pFormatFound);
@@ -1063,29 +1062,29 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
 
-    virtual const char* GetVolumeName(void) const { return "[MacPartition]"; }
-    virtual const char* GetVolumeID(void) const { return "[MacPartition]"; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
+    virtual const char* GetVolumeName(void) const override { return "[MacPartition]"; }
+    virtual const char* GetVolumeID(void) const override { return "[MacPartition]"; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
 private:
-    virtual const char* GetDebugName(void) { return "MacPart"; }
+    virtual const char* GetDebugName(void) override { return "MacPart"; }
 
     struct PartitionMap;            // fwd
     struct DriverDescriptorRecord;  // fwd
-    static void UnpackDDR(const unsigned char* buf,
+    static void UnpackDDR(const uint8_t* buf,
         DriverDescriptorRecord* pDDR);
     static void DumpDDR(const DriverDescriptorRecord* pDDR);
-    static void UnpackPartitionMap(const unsigned char* buf,
+    static void UnpackPartitionMap(const uint8_t* buf,
         PartitionMap* pMap);
     static void DumpPartitionMap(long block, const PartitionMap* pMap);
 
@@ -1116,25 +1115,25 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
 
-    virtual const char* GetVolumeName(void) const { return "[MicroDrive]"; }
-    virtual const char* GetVolumeID(void) const { return "[MicroDrive]"; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
+    virtual const char* GetVolumeName(void) const override { return "[MicroDrive]"; }
+    virtual const char* GetVolumeID(void) const override { return "[MicroDrive]"; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
 private:
-    virtual const char* GetDebugName(void) { return "MicroDrive"; }
+    virtual const char* GetDebugName(void) override { return "MicroDrive"; }
 
     struct PartitionMap;            // fwd
-    static void UnpackPartitionMap(const unsigned char* buf,
+    static void UnpackPartitionMap(const uint8_t* buf,
         PartitionMap* pMap);
     static void DumpPartitionMap(const PartitionMap* pMap);
 
@@ -1165,26 +1164,26 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
 
-    virtual const char* GetVolumeName(void) const { return "[FocusDrive]"; }
-    virtual const char* GetVolumeID(void) const { return "[FocusDrive]"; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
+    virtual const char* GetVolumeName(void) const override { return "[FocusDrive]"; }
+    virtual const char* GetVolumeID(void) const override { return "[FocusDrive]"; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
 private:
-    virtual const char* GetDebugName(void) { return "FocusDrive"; }
+    virtual const char* GetDebugName(void) override { return "FocusDrive"; }
 
     struct PartitionMap;            // fwd
-    static void UnpackPartitionMap(const unsigned char* buf,
-        const unsigned char* nameBuf, PartitionMap* pMap);
+    static void UnpackPartitionMap(const uint8_t* buf,
+        const uint8_t* nameBuf, PartitionMap* pMap);
     static void DumpPartitionMap(const PartitionMap* pMap);
 
     static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder);
@@ -1223,31 +1222,31 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize(initMode);
     }
-    virtual DIError Format(DiskImg* pDiskImg, const char* volName);
+    virtual DIError Format(DiskImg* pDiskImg, const char* volName) override;
 
-    virtual const char* GetVolumeName(void) const { return fDiskVolumeName; }
-    virtual const char* GetVolumeID(void) const { return fDiskVolumeID; }
-    virtual const char* GetBareVolumeName(void) const {
+    virtual const char* GetVolumeName(void) const override { return fDiskVolumeName; }
+    virtual const char* GetVolumeID(void) const override { return fDiskVolumeID; }
+    virtual const char* GetBareVolumeName(void) const override {
         // this is fragile -- skip over the "DOS" part, return 3 digits
         assert(strlen(fDiskVolumeName) > 3);
         return fDiskVolumeName+3;
     }
-    virtual bool GetReadWriteSupported(void) const { return true; }
-    virtual bool GetFSDamaged(void) const { return !fDiskIsGood; }
+    virtual bool GetReadWriteSupported(void) const override { return true; }
+    virtual bool GetFSDamaged(void) const override { return !fDiskIsGood; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const;
+        int* pUnitSize) const override;
     virtual DIError NormalizePath(const char* path, char fssep,
-        char* normalizedBuf, int* pNormalizedBufLen);
-    virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile);
-    virtual DIError DeleteFile(A2File* pFile);
-    virtual DIError RenameFile(A2File* pFile, const char* newName);
+        char* normalizedBuf, int* pNormalizedBufLen) override;
+    virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile) override;
+    virtual DIError DeleteFile(A2File* pFile) override;
+    virtual DIError RenameFile(A2File* pFile, const char* newName) override;
     virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags);
-    virtual DIError RenameVolume(const char* newName);
+        long accessFlags) override;
+    virtual DIError RenameVolume(const char* newName) override;
 
     /*
      * Unique to DOS 3.3 disks.
@@ -1259,7 +1258,7 @@ public:
     static bool IsValidVolumeName(const char* name);
 
     // utility function
-    static void LowerASCII(unsigned char* buf, long len);
+    static void LowerASCII(uint8_t* buf, long len);
     static void ReplaceFssep(char* str, char replacement);
 
     enum {
@@ -1286,21 +1285,21 @@ private:
     void FixVolumeUsageMap(void);
     DIError ReadCatalog(void);
     DIError ProcessCatalogSector(int catTrack, int catSect,
-        const unsigned char* sctBuf);
+        const uint8_t* sctBuf);
     DIError GetFileLengths(void);
     DIError ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
         int tsCount);
     DIError TrimLastSectorUp(A2FileDOS* pFile, TrackSector lastTS);
     void MarkFileUsage(A2FileDOS* pFile, TrackSector* tsList, int tsCount,
         TrackSector* indexList, int indexCount);
-    //DIError TrimLastSectorDown(A2FileDOS* pFile, unsigned short* tsBuf,
+    //DIError TrimLastSectorDown(A2FileDOS* pFile, uint16_t* tsBuf,
     //  int maxZeroCount);
     void DoNormalizePath(const char* name, char fssep, char* outBuf);
     DIError MakeFileNameUnique(char* fileName);
     DIError GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
-        unsigned char* sctBuf, A2FileDOS** ppPrevEntry);
-    void CreateDirEntry(unsigned char* sctBuf, int catEntry,
-        const char* fileName, TrackSector* pTSSect, unsigned char fileType,
+        uint8_t* sctBuf, A2FileDOS** ppPrevEntry);
+    void CreateDirEntry(uint8_t* sctBuf, int catEntry,
+        const char* fileName, TrackSector* pTSSect, uint8_t fileType,
         int access);
     void FreeTrackSectors(TrackSector* pList, int count);
 
@@ -1316,8 +1315,7 @@ private:
     DIError CreateEmptyBlockMap(bool withDOS);
     bool GetSectorUseEntry(long track, int sector) const;
     void SetSectorUseEntry(long track, int sector, bool inUse);
-    inline unsigned long GetVTOCEntry(const unsigned char* pVTOC,
-        long track) const;
+    inline uint32_t GetVTOCEntry(const uint8_t* pVTOC, long track) const;
 
     // Largest interesting volume is 400K (50 tracks, 32 sectors), but
     // we may be looking at it in 16-sector mode, so max tracks is 100.
@@ -1329,8 +1327,8 @@ private:
     };
 
     // DOS track images, for initializing disk images
-    static const unsigned char gDOS33Tracks[];
-    static const unsigned char gDOS32Tracks[];
+    static const uint8_t gDOS33Tracks[];
+    static const uint8_t gDOS32Tracks[];
 
     /* some fields from the VTOC */
     int     fFirstCatTrack;
@@ -1343,7 +1341,7 @@ private:
     int     fDiskVolumeNum;         // usually 254
     char    fDiskVolumeName[7];     // "DOS" + num, e.g. "DOS001", "DOS254"
     char    fDiskVolumeID[32];      // sizeof "DOS 3.3 Volume " +3 +1
-    unsigned char   fVTOC[kSectorSize];
+    uint8_t   fVTOC[kSectorSize];
     bool    fVTOCLoaded;
 
     /*
@@ -1378,16 +1376,17 @@ public:
 
     friend class A2FileDOS;
 
-    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Seek(di_off_t offset, DIWhence whence);
-    virtual di_off_t Tell(void);
-    virtual DIError Close(void);
+    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Seek(di_off_t offset, DIWhence whence) override;
+    virtual di_off_t Tell(void) override;
+    virtual DIError Close(void) override;
 
-    virtual long GetSectorCount(void) const;
-    virtual long GetBlockCount(void) const;
-    virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
-    virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+    virtual long GetSectorCount(void) const override;
+    virtual long GetBlockCount(void) const override;
+    virtual DIError GetStorage(long sectorIdx, long* pTrack,
+        long* pSector) const override;
+    virtual DIError GetStorage(long blockIdx, long* pBlock) const override;
 
 private:
     typedef DiskFSDOS33::TrackSector TrackSector;
@@ -1447,27 +1446,27 @@ public:
     /*
      * Implementations of standard interfaces.
      */
-    virtual const char* GetFileName(void) const { return fFileName; }
-    virtual const char* GetPathName(void) const { return fFileName; }
-    virtual char GetFssep(void) const { return '\0'; }
-    virtual long GetFileType(void) const;
-    virtual long GetAuxType(void) const { return fAuxType; }
-    virtual long GetAccess(void) const;
-    virtual time_t GetCreateWhen(void) const { return 0; }
-    virtual time_t GetModWhen(void) const { return 0; }
-    virtual di_off_t GetDataLength(void) const { return fLength; }
-    virtual di_off_t GetDataSparseLength(void) const { return fSparseLength; }
-    virtual di_off_t GetRsrcLength(void) const { return -1; }
-    virtual di_off_t GetRsrcSparseLength(void) const { return -1; }
+    virtual const char* GetFileName(void) const override { return fFileName; }
+    virtual const char* GetPathName(void) const override { return fFileName; }
+    virtual char GetFssep(void) const override { return '\0'; }
+    virtual long GetFileType(void) const override;
+    virtual long GetAuxType(void) const override { return fAuxType; }
+    virtual long GetAccess(void) const override;
+    virtual time_t GetCreateWhen(void) const override { return 0; }
+    virtual time_t GetModWhen(void) const override { return 0; }
+    virtual di_off_t GetDataLength(void) const override { return fLength; }
+    virtual di_off_t GetDataSparseLength(void) const override { return fSparseLength; }
+    virtual di_off_t GetRsrcLength(void) const override { return -1; }
+    virtual di_off_t GetRsrcSparseLength(void) const override { return -1; }
 
     virtual DIError Open(A2FileDescr** ppOpenFile, bool readOnly,
-        bool rsrcFork = false);
-    virtual void CloseDescr(A2FileDescr* pOpenFile) {
+        bool rsrcFork = false) override;
+    virtual void CloseDescr(A2FileDescr* pOpenFile) override {
         assert(pOpenFile == fpOpenFile);
         delete fpOpenFile;
         fpOpenFile = NULL;
     }
-    virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+    virtual bool IsFileOpen(void) const override { return fpOpenFile != NULL; }
 
     void Dump(void) const;
 
@@ -1481,7 +1480,7 @@ public:
      */
     short       fTSListTrack;       // (could use TrackSector here)
     short       fTSListSector;
-    unsigned short  fLengthInSectors;
+    uint16_t    fLengthInSectors;
     bool        fLocked;
     char        fFileName[kMaxFileName+1];  // "fixed" version
     FileType    fFileType;
@@ -1490,10 +1489,10 @@ public:
     int         fCatEntryNum;   // entry number within cat sector
 
     // these are computed or determined from the file contents
-    unsigned short  fAuxType;           // addr for bin, etc.
-    short           fDataOffset;        // for 'A'/'B'/'I' with embedded len
-    di_off_t        fLength;            // file length, in bytes
-    di_off_t        fSparseLength;      // file length, factoring sparse out
+    uint16_t    fAuxType;           // addr for bin, etc.
+    short       fDataOffset;        // for 'A'/'B'/'I' with embedded len
+    di_off_t    fLength;            // file length, in bytes
+    di_off_t    fSparseLength;      // file length, factoring sparse out
 
     void FixFilename(void);
 
@@ -1505,7 +1504,7 @@ public:
     static void TrimTrailingSpaces(char* filename);
 
 private:
-    DIError ExtractTSPairs(const unsigned char* sctBuf, TrackSector* tsList,
+    DIError ExtractTSPairs(const uint8_t* sctBuf, TrackSector* tsList,
         int* pLastNonZero);
 
     A2FDDOS*        fpOpenFile;
@@ -1550,43 +1549,44 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize(initMode);
     }
-    virtual DIError Format(DiskImg* pDiskImg, const char* volName);
+    virtual DIError Format(DiskImg* pDiskImg, const char* volName) override;
     virtual DIError NormalizePath(const char* path, char fssep,
-        char* normalizedBuf, int* pNormalizedBufLen);
-    virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile);
-    virtual DIError DeleteFile(A2File* pFile);
-    virtual DIError RenameFile(A2File* pFile, const char* newName);
+        char* normalizedBuf, int* pNormalizedBufLen) override;
+    virtual DIError CreateFile(const CreateParms* pParms,
+        A2File** ppNewFile) override;
+    virtual DIError DeleteFile(A2File* pFile) override;
+    virtual DIError RenameFile(A2File* pFile, const char* newName) override;
     virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags);
-    virtual DIError RenameVolume(const char* newName);
+        long accessFlags) override;
+    virtual DIError RenameVolume(const char* newName) override;
 
     // assorted constants
     enum {
         kMaxVolumeName = 15,
     };
-    typedef unsigned long ProDate;
+    typedef uint32_t ProDate;
 
-    virtual const char* GetVolumeName(void) const { return fVolumeName; }
-    virtual const char* GetVolumeID(void) const { return fVolumeID; }
-    virtual const char* GetBareVolumeName(void) const { return fVolumeName; }
-    virtual bool GetReadWriteSupported(void) const { return true; }
-    virtual bool GetFSDamaged(void) const { return !fDiskIsGood; }
-    virtual long GetFSNumBlocks(void) const { return fTotalBlocks; }
+    virtual const char* GetVolumeName(void) const override { return fVolumeName; }
+    virtual const char* GetVolumeID(void) const override { return fVolumeID; }
+    virtual const char* GetBareVolumeName(void) const override { return fVolumeName; }
+    virtual bool GetReadWriteSupported(void) const override { return true; }
+    virtual bool GetFSDamaged(void) const override { return !fDiskIsGood; }
+    virtual long GetFSNumBlocks(void) const override { return fTotalBlocks; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const;
+        int* pUnitSize) const override;
 
     //A2FileProDOS* GetVolDir(void) const { return fpVolDir; }
 
     static bool IsValidFileName(const char* name);
     static bool IsValidVolumeName(const char* name);
-    static unsigned short GenerateLowerCaseBits(const char* upperName,
+    static uint16_t GenerateLowerCaseBits(const char* upperName,
         const char* lowerName, bool forAppleWorks);
     static void GenerateLowerCaseName(const char* upperName,
-        char* lowerNameNoTerm, unsigned short lcFlags, bool fromAppleWorks);
+        char* lowerNameNoTerm, uint16_t lcFlags, bool fromAppleWorks);
 
     friend class A2FDProDOS;
 
@@ -1617,57 +1617,57 @@ private:
     bool ScanForExtraEntries(void) const;
 
     void SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose);
-    DIError GetDirHeader(const unsigned char* blkBuf, DirHeader* pHeader);
-    DIError RecursiveDirAdd(A2File* pParent, unsigned short dirBlock,
+    DIError GetDirHeader(const uint8_t* blkBuf, DirHeader* pHeader);
+    DIError RecursiveDirAdd(A2File* pParent, uint16_t dirBlock,
         const char* basePath, int depth);
     DIError SlurpEntries(A2File* pParent, const DirHeader* pHeader,
-        const unsigned char* blkBuf, bool skipFirst, int* pCount,
-        const char* basePath, unsigned short thisBlock, int depth);
+        const uint8_t* blkBuf, bool skipFirst, int* pCount,
+        const char* basePath, uint16_t thisBlock, int depth);
     DIError ReadExtendedInfo(A2FileProDOS* pFile);
     DIError ScanFileUsage(void);
-    void ScanBlockList(long blockCount, unsigned short* blockList,
-        long indexCount, unsigned short* indexList, long* pSparseCount);
+    void ScanBlockList(long blockCount, uint16_t* blockList,
+        long indexCount, uint16_t* indexList, long* pSparseCount);
     DIError ScanForSubVolumes(void);
     DIError FindSubVolume(long blockStart, long blockCount,
         DiskImg** ppDiskImg, DiskFS** ppDiskFS);
     void MarkSubVolumeBlocks(long block, long count);
 
-    A2File* FindFileByKeyBlock(A2File* pStart, unsigned short keyBlock);
+    A2File* FindFileByKeyBlock(A2File* pStart, uint16_t keyBlock);
     DIError AllocInitialFileStorage(const CreateParms* pParms,
-        const char* upperName, unsigned short dirBlock, int dirEntrySlot,
+        const char* upperName, uint16_t dirBlock, int dirEntrySlot,
         long* pKeyBlock, int* pBlocksUsed, int* pNewEOF);
     DIError WriteBootBlocks(void);
     DIError DoNormalizePath(const char* path, char fssep,
         char** pNormalizedPath);
     void UpperCaseName(char* upperName, const char* name);
     bool CheckDiskIsGood(void);
-    DIError AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
-        long* pDirLen, unsigned char** ppDirEntry, unsigned short* pDirKeyBlock,
-        int* pDirEntrySlot, unsigned short* pDirBlock);
-    unsigned char* GetPrevDirEntry(unsigned char* buf, unsigned char* ptr);
-    DIError MakeFileNameUnique(const unsigned char* dirBuf, long dirLen,
+    DIError AllocDirEntry(A2FileDescr* pOpenSubdir, uint8_t** ppDir,
+        long* pDirLen, uint8_t** ppDirEntry, uint16_t* pDirKeyBlock,
+        int* pDirEntrySlot, uint16_t* pDirBlock);
+    uint8_t* GetPrevDirEntry(uint8_t* buf, uint8_t* ptr);
+    DIError MakeFileNameUnique(const uint8_t* dirBuf, long dirLen,
         char* fileName);
-    bool NameExistsInDir(const unsigned char* dirBuf, long dirLen,
+    bool NameExistsInDir(const uint8_t* dirBuf, long dirLen,
         const char* fileName);
 
-    DIError FreeBlocks(long blockCount, unsigned short* blockList);
+    DIError FreeBlocks(long blockCount, uint16_t* blockList);
     DIError RegeneratePathName(A2FileProDOS* pFile);
 
     /* some items from the volume header */
     char            fVolumeName[kMaxVolumeName+1];
     char            fVolumeID[kMaxVolumeName + 16]; // add "ProDOS /"
-    unsigned char   fAccess;
+    uint8_t         fAccess;
     ProDate         fCreateWhen;
     ProDate         fModWhen;
-    unsigned short  fBitMapPointer;
-    unsigned short  fTotalBlocks;
-    //unsigned short    fPrevBlock;
-    //unsigned short    fNextBlock;
-    //unsigned char fVersion;
-    //unsigned char fMinVersion;
-    //unsigned char fEntryLength;
-    //unsigned char fEntriesPerBlock;
-    unsigned short  fVolDirFileCount;
+    uint16_t        fBitMapPointer;
+    uint16_t        fTotalBlocks;
+    //uint16_t fPrevBlock;
+    //uint16_t fNextBlock;
+    //uint8_t fVersion;
+    //uint8_t fMinVersion;
+    //uint8_t fEntryLength;
+    //uint8_t fEntriesPerBlock;
+    uint16_t        fVolDirFileCount;
 
 //  A2FileProDOS*   fpVolDir;       // a "fake" file entry for the volume dir
 
@@ -1679,7 +1679,7 @@ private:
      * one of the bitmap blocks directly (e.g. with the disk sector editor).
      * It should never be held across calls.
      */
-    unsigned char*  fBlockUseMap;
+    uint8_t*        fBlockUseMap;
 
     /*
      * Set this if the disk is "perfect".  If it's not, we disallow write
@@ -1708,29 +1708,31 @@ public:
 
     friend class A2FileProDOS;
 
-    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Seek(di_off_t offset, DIWhence whence);
-    virtual di_off_t Tell(void);
-    virtual DIError Close(void);
+    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Write(const void* buf, size_t len,
+        size_t* pActual = NULL) override;
+    virtual DIError Seek(di_off_t offset, DIWhence whence) override;
+    virtual di_off_t Tell(void) override;
+    virtual DIError Close(void) override;
 
-    virtual long GetSectorCount(void) const;
-    virtual long GetBlockCount(void) const;
-    virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
-    virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+    virtual long GetSectorCount(void) const override;
+    virtual long GetBlockCount(void) const override;
+    virtual DIError GetStorage(long sectorIdx, long* pTrack,
+        long* pSector) const override;
+    virtual DIError GetStorage(long blockIdx, long* pBlock) const override;
 
     void DumpBlockList(void) const;
 
 private:
-    bool IsEmptyBlock(const unsigned char* blk);
+    bool IsEmptyBlock(const uint8_t* blk);
     DIError WriteDirectory(const void* buf, size_t len, size_t* pActual);
 
     /* state for open files */
     bool            fModified;
     long            fBlockCount;
-    unsigned short* fBlockList;
+    uint16_t*       fBlockList;
     di_off_t        fOpenEOF;           // current EOF
-    unsigned short  fOpenBlocksUsed;    // #of block used by open piece
+    uint16_t        fOpenBlocksUsed;    // #of block used by open piece
     int             fOpenStorageType;
     bool            fOpenRsrcFork;      // is this the resource fork?
     di_off_t        fOffset;            // current file offset
@@ -1776,23 +1778,23 @@ public:
     typedef struct DirEntry {
         int             storageType;
         char            fileName[kMaxFileName+1];   // shows lower case
-        unsigned char   fileType;
-        unsigned short  keyPointer;
-        unsigned short  blocksUsed;
-        unsigned long   eof;
+        uint8_t         fileType;
+        uint16_t        keyPointer;
+        uint16_t        blocksUsed;
+        uint32_t        eof;
         ProDate         createWhen;
-        unsigned char   version;
-        unsigned char   minVersion;
-        unsigned char   access;
-        unsigned short  auxType;
+        uint8_t         version;
+        uint8_t         minVersion;
+        uint8_t         access;
+        uint16_t        auxType;
         ProDate         modWhen;
-        unsigned short  headerPointer;
+        uint16_t        headerPointer;
     } DirEntry;
     typedef struct ExtendedInfo {
-        unsigned char   storageType;
-        unsigned short  keyBlock;
-        unsigned short  blocksUsed;
-        unsigned long   eof;
+        uint8_t         storageType;
+        uint16_t        keyBlock;
+        uint16_t        blocksUsed;
+        uint32_t        eof;
     } ExtendedInfo;
     typedef enum StorageType {
         kStorageDeleted         = 0,      /* indicates deleted file */
@@ -1814,15 +1816,15 @@ public:
     /*
      * Implementations of standard interfaces.
      */
-    virtual const char* GetFileName(void) const { return fDirEntry.fileName; }
-    virtual const char* GetPathName(void) const { return fPathName; }
-    virtual char GetFssep(void) const { return kFssep; }
-    virtual long GetFileType(void) const { return fDirEntry.fileType; }
-    virtual long GetAuxType(void) const { return fDirEntry.auxType; }
-    virtual long GetAccess(void) const { return fDirEntry.access; }
-    virtual time_t GetCreateWhen(void) const;
-    virtual time_t GetModWhen(void) const;
-    virtual di_off_t GetDataLength(void) const {
+    virtual const char* GetFileName(void) const override { return fDirEntry.fileName; }
+    virtual const char* GetPathName(void) const override { return fPathName; }
+    virtual char GetFssep(void) const override { return kFssep; }
+    virtual long GetFileType(void) const override { return fDirEntry.fileType; }
+    virtual long GetAuxType(void) const override { return fDirEntry.auxType; }
+    virtual long GetAccess(void) const override { return fDirEntry.access; }
+    virtual time_t GetCreateWhen(void) const override;
+    virtual time_t GetModWhen(void) const override;
+    virtual di_off_t GetDataLength(void) const override {
         if (GetQuality() == kQualityDamaged)
             return 0;
         if (fDirEntry.storageType == kStorageExtended)
@@ -1830,7 +1832,7 @@ public:
         else
             return fDirEntry.eof;
     }
-    virtual di_off_t GetRsrcLength(void) const {
+    virtual di_off_t GetRsrcLength(void) const override {
         if (fDirEntry.storageType == kStorageExtended) {
             if (GetQuality() == kQualityDamaged)
                 return 0;
@@ -1839,49 +1841,48 @@ public:
         } else
             return -1;
     }
-    virtual di_off_t GetDataSparseLength(void) const {
+    virtual di_off_t GetDataSparseLength(void) const override {
         if (GetQuality() == kQualityDamaged)
             return 0;
         else
             return fSparseDataEof;
     }
-    virtual di_off_t GetRsrcSparseLength(void) const {
+    virtual di_off_t GetRsrcSparseLength(void) const override {
         if (GetQuality() == kQualityDamaged)
             return 0;
         else
             return fSparseRsrcEof;
     }
-    virtual bool IsDirectory(void) const {
+    virtual bool IsDirectory(void) const override {
         return (fDirEntry.storageType == kStorageDirectory ||
                 fDirEntry.storageType == kStorageVolumeDirHeader);
     }
-    virtual bool IsVolumeDirectory(void) const {
+    virtual bool IsVolumeDirectory(void) const override {
         return (fDirEntry.storageType == kStorageVolumeDirHeader);
     }
 
     virtual DIError Open(A2FileDescr** ppOpenFile, bool readOnly,
-        bool rsrcFork = false);
-    virtual void CloseDescr(A2FileDescr* pOpenFile) {
+        bool rsrcFork = false) override;
+    virtual void CloseDescr(A2FileDescr* pOpenFile) override {
         assert(pOpenFile == fpOpenFile);
         delete fpOpenFile;
         fpOpenFile = NULL;
     }
-    virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+    virtual bool IsFileOpen(void) const override { return fpOpenFile != NULL; }
 
-    virtual void SetParent(A2File* pParent) { fpParent = pParent; }
-    virtual A2File* GetParent(void) const { return fpParent; }
+    virtual void SetParent(A2File* pParent) override { fpParent = pParent; }
+    virtual A2File* GetParent(void) const override { return fpParent; }
 
     static char NameToLower(char ch);
-    static void InitDirEntry(DirEntry* pEntry,
-        const unsigned char* entryBuf);
+    static void InitDirEntry(DirEntry* pEntry, const uint8_t* entryBuf);
 
-    virtual void Dump(void) const;
+    virtual void Dump(void) const override;
 
     /* directory entry contents for this file */
     DirEntry        fDirEntry;
 
     /* pointer to directory entry (update dir if file size or dates change) */
-    unsigned short  fParentDirBlock;    // directory block
+    uint16_t        fParentDirBlock;    // directory block
     int             fParentDirIdx;      // index in dir block
 
     /* these are only valid if storageType == kStorageExtended */
@@ -1893,7 +1894,7 @@ public:
     static ProDate ConvertProDate(time_t unixDate);
 
     /* returns "true" if AppleWorks aux type is used for lower-case name */
-    static bool UsesAppleWorksAuxType(unsigned char fileType) {
+    static bool UsesAppleWorksAuxType(uint8_t fileType) {
         return (fileType >= 0x19 && fileType <= 0x1b);
     }
 
@@ -1911,20 +1912,20 @@ public:
     }
 #endif
 
-    DIError LoadBlockList(int storageType, unsigned short keyBlock,
-        long eof, long* pBlockCount, unsigned short** pBlockList,
-        long* pIndexBlockCount=NULL, unsigned short** pIndexBlockList=NULL);
-    DIError LoadDirectoryBlockList(unsigned short keyBlock,
-        long eof, long* pBlockCount, unsigned short** pBlockList);
+    DIError LoadBlockList(int storageType, uint16_t keyBlock,
+        long eof, long* pBlockCount, uint16_t** pBlockList,
+        long* pIndexBlockCount=NULL, uint16_t** pIndexBlockList=NULL);
+    DIError LoadDirectoryBlockList(uint16_t keyBlock,
+        long eof, long* pBlockCount, uint16_t** pBlockList);
 
     /* fork lengths without sparseness */
     di_off_t        fSparseDataEof;
     di_off_t        fSparseRsrcEof;
 
 private:
-    DIError LoadIndexBlock(unsigned short block, unsigned short* list,
+    DIError LoadIndexBlock(uint16_t block, uint16_t* list,
         int maxCount);
-    DIError ValidateBlockList(const unsigned short* list, long count);
+    DIError ValidateBlockList(const uint16_t* list, long count);
 
     char*           fPathName;      // full pathname to file on this volume
 
@@ -1960,39 +1961,39 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
-    virtual DIError Format(DiskImg* pDiskImg, const char* volName);
+    virtual DIError Format(DiskImg* pDiskImg, const char* volName) override;
 
     // assorted constants
     enum {
         kMaxVolumeName = 7,
         kDirectoryEntryLen = 26,
     };
-    typedef unsigned short PascalDate;
+    typedef uint16_t PascalDate;
 
-    virtual const char* GetVolumeName(void) const { return fVolumeName; }
-    virtual const char* GetVolumeID(void) const { return fVolumeID; }
-    virtual const char* GetBareVolumeName(void) const { return fVolumeName; }
-    virtual bool GetReadWriteSupported(void) const { return true; }
-    virtual bool GetFSDamaged(void) const { return !fDiskIsGood; }
+    virtual const char* GetVolumeName(void) const override { return fVolumeName; }
+    virtual const char* GetVolumeID(void) const override { return fVolumeID; }
+    virtual const char* GetBareVolumeName(void) const override { return fVolumeName; }
+    virtual bool GetReadWriteSupported(void) const override { return true; }
+    virtual bool GetFSDamaged(void) const override { return !fDiskIsGood; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const;
+        int* pUnitSize) const override;
     virtual DIError NormalizePath(const char* path, char fssep,
-        char* normalizedBuf, int* pNormalizedBufLen);
-    virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile);
-    virtual DIError DeleteFile(A2File* pFile);
-    virtual DIError RenameFile(A2File* pFile, const char* newName);
+        char* normalizedBuf, int* pNormalizedBufLen) override;
+    virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile) override;
+    virtual DIError DeleteFile(A2File* pFile) override;
+    virtual DIError RenameFile(A2File* pFile, const char* newName) override;
     virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags);
-    virtual DIError RenameVolume(const char* newName);
+        long accessFlags) override;
+    virtual DIError RenameVolume(const char* newName) override;
 
     static bool IsValidVolumeName(const char* name);
     static bool IsValidFileName(const char* name);
 
-    unsigned short GetTotalBlocks(void) const { return fTotalBlocks; }
+    uint16_t GetTotalBlocks(void) const { return fTotalBlocks; }
 
     friend class A2FDPascal;
 
@@ -2012,21 +2013,21 @@ private:
     void DoNormalizePath(const char* name, char fssep, char* outBuf);
     DIError MakeFileNameUnique(char* fileName);
     DIError FindLargestFreeArea(int *pPrevIdx, A2FilePascal** ppPrevFile);
-    unsigned char* FindDirEntry(A2FilePascal* pFile);
+    uint8_t* FindDirEntry(A2FilePascal* pFile);
 
     enum { kMaxExtensionLen = 5 };  // used when normalizing; ".code" is 4
 
     /* some items from the volume header */
-    unsigned short  fStartBlock;        // first block of dir hdr; always 2
-    unsigned short  fNextBlock;         // i.e. first block with data
+    uint16_t        fStartBlock;        // first block of dir hdr; always 2
+    uint16_t        fNextBlock;         // i.e. first block with data
     char            fVolumeName[kMaxVolumeName+1];
     char            fVolumeID[kMaxVolumeName + 16]; // add "Pascal ___:"
-    unsigned short  fTotalBlocks;
-    unsigned short  fNumFiles;
+    uint16_t        fTotalBlocks;
+    uint16_t        fNumFiles;
     PascalDate      fAccessWhen;        // PascalDate last access
     PascalDate      fDateSetWhen;       // PascalDate last date setting
-    unsigned short  fStuff1;            //
-    unsigned short  fStuff2;            //
+    uint16_t        fStuff1;            //
+    uint16_t        fStuff2;            //
 
     /* other goodies */
     bool            fDiskIsGood;
@@ -2043,7 +2044,7 @@ private:
      * to this longer than necessary.  Possibly less efficient that way;
      * if it becomes a problem it's easy enough to change the behavior.
      */
-    unsigned char*  fDirectory;
+    uint8_t*        fDirectory;
 };
 
 /*
@@ -2060,16 +2061,18 @@ public:
 
     friend class A2FilePascal;
 
-    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Seek(di_off_t offset, DIWhence whence);
-    virtual di_off_t Tell(void);
-    virtual DIError Close(void);
+    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Write(const void* buf, size_t len,
+        size_t* pActual = NULL) override;
+    virtual DIError Seek(di_off_t offset, DIWhence whence) override;
+    virtual di_off_t Tell(void) override;
+    virtual DIError Close(void) override;
 
-    virtual long GetSectorCount(void) const;
-    virtual long GetBlockCount(void) const;
-    virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
-    virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+    virtual long GetSectorCount(void) const override;
+    virtual long GetBlockCount(void) const override;
+    virtual DIError GetStorage(long sectorIdx, long* pTrack,
+        long* pSector) const override;
+    virtual DIError GetStorage(long blockIdx, long* pBlock) const override;
 
 private:
     di_off_t        fOffset;            // where we are
@@ -2113,41 +2116,41 @@ public:
     /*
      * Implementations of standard interfaces.
      */
-    virtual const char* GetFileName(void) const { return fFileName; }
-    virtual const char* GetPathName(void) const { return fFileName; }
-    virtual char GetFssep(void) const { return '\0'; }
-    virtual long GetFileType(void) const;
-    virtual long GetAuxType(void) const { return 0; }
-    virtual long GetAccess(void) const { return DiskFS::kFileAccessUnlocked; }
-    virtual time_t GetCreateWhen(void) const { return 0; }
-    virtual time_t GetModWhen(void) const;
-    virtual di_off_t GetDataLength(void) const { return fLength; }
-    virtual di_off_t GetDataSparseLength(void) const { return fLength; }
-    virtual di_off_t GetRsrcLength(void) const { return -1; }
-    virtual di_off_t GetRsrcSparseLength(void) const { return -1; }
+    virtual const char* GetFileName(void) const override { return fFileName; }
+    virtual const char* GetPathName(void) const override { return fFileName; }
+    virtual char GetFssep(void) const override { return '\0'; }
+    virtual long GetFileType(void) const override;
+    virtual long GetAuxType(void) const override { return 0; }
+    virtual long GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
+    virtual time_t GetCreateWhen(void) const override { return 0; }
+    virtual time_t GetModWhen(void) const override;
+    virtual di_off_t GetDataLength(void) const override { return fLength; }
+    virtual di_off_t GetDataSparseLength(void) const override { return fLength; }
+    virtual di_off_t GetRsrcLength(void) const override { return -1; }
+    virtual di_off_t GetRsrcSparseLength(void) const override { return -1; }
 
     virtual DIError Open(A2FileDescr** pOpenFile, bool readOnly,
-        bool rsrcFork = false);
-    virtual void CloseDescr(A2FileDescr* pOpenFile) {
+        bool rsrcFork = false) override;
+    virtual void CloseDescr(A2FileDescr* pOpenFile) override {
         assert(pOpenFile == fpOpenFile);
         delete fpOpenFile;
         fpOpenFile = NULL;
     }
-    virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+    virtual bool IsFileOpen(void) const override { return fpOpenFile != NULL; }
 
 
-    virtual void Dump(void) const;
+    virtual void Dump(void) const override;
 
     static time_t ConvertPascalDate(PascalDate pascalDate);
     static A2FilePascal::PascalDate ConvertPascalDate(time_t unixDate);
     static A2FilePascal::FileType ConvertFileType(long prodosType);
 
     /* fields pulled out of directory block */
-    unsigned short  fStartBlock;
-    unsigned short  fNextBlock;
+    uint16_t        fStartBlock;
+    uint16_t        fNextBlock;
     FileType        fFileType;
     char            fFileName[kMaxFileName+1];
-    unsigned short  fBytesRemaining;
+    uint16_t        fBytesRemaining;
     PascalDate      fModWhen;
 
     /* derived fields */
@@ -2189,18 +2192,18 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
 
-    virtual const char* GetVolumeName(void) const { return "CP/M"; }
-    virtual const char* GetVolumeID(void) const { return "CP/M"; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return !fDiskIsGood; }
+    virtual const char* GetVolumeName(void) const override { return "CP/M"; }
+    virtual const char* GetVolumeID(void) const override { return "CP/M"; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return !fDiskIsGood; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
     // assorted constants
@@ -2215,6 +2218,7 @@ public:
 
         kDirEntryFlagContinued = 0x8000,    // "flags" word
     };
+
     // Contents of the raw 32-byte directory entry.
     //
     // From http://www.seasip.demon.co.uk/Cpm/format31.html
@@ -2231,12 +2235,12 @@ public:
     // Files larger than (1024 * 16) have multiple "extent" entries, i.e.
     // entries with the same user number and file name.
     typedef struct DirEntry {
-        unsigned char   userNumber; // 0-15 or 0-31 (usually 0), e5=unused
-        unsigned char   fileName[kDirFileNameLen+1];
-        unsigned short  extent;     // extent (EX + S2 * 32)
-        unsigned char   S1;         // Last Record Byte Count (app-specific)
-        unsigned char   records;    // #of 128-byte records in this extent
-        unsigned char   blocks[kDirEntryBlockCount];
+        uint8_t         userNumber; // 0-15 or 0-31 (usually 0), e5=unused
+        uint8_t         fileName[kDirFileNameLen+1];
+        uint16_t        extent;     // extent (EX + S2 * 32)
+        uint8_t         S1;         // Last Record Byte Count (app-specific)
+        uint8_t         records;    // #of 128-byte records in this extent
+        uint8_t         blocks[kDirEntryBlockCount];
         bool            readOnly;
         bool            system;
         bool            badBlockList;   // set if block list is damaged
@@ -2277,22 +2281,24 @@ public:
 
     friend class A2FileCPM;
 
-    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Seek(di_off_t offset, DIWhence whence);
-    virtual di_off_t Tell(void);
-    virtual DIError Close(void);
+    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Write(const void* buf, size_t len,
+        size_t* pActual = NULL) override;
+    virtual DIError Seek(di_off_t offset, DIWhence whence) override;
+    virtual di_off_t Tell(void) override;
+    virtual DIError Close(void) override;
 
-    virtual long GetSectorCount(void) const;
-    virtual long GetBlockCount(void) const;
-    virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
-    virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+    virtual long GetSectorCount(void) const override;
+    virtual long GetBlockCount(void) const override;
+    virtual DIError GetStorage(long sectorIdx, long* pTrack,
+        long* pSector) const override;
+    virtual DIError GetStorage(long blockIdx, long* pBlock) const override;
 
 private:
     //bool          fOpen;
     di_off_t        fOffset;
     long            fBlockCount;
-    unsigned char*  fBlockList;
+    uint8_t*        fBlockList;
 };
 
 /*
@@ -2320,34 +2326,34 @@ public:
     /*
      * Implementations of standard interfaces.
      */
-    virtual const char* GetFileName(void) const { return fFileName; }
-    virtual const char* GetPathName(void) const { return fFileName; }
-    virtual char GetFssep(void) const { return '\0'; }
-    virtual long GetFileType(void) const { return 0; }
-    virtual long GetAuxType(void) const { return 0; }
-    virtual long GetAccess(void) const {
+    virtual const char* GetFileName(void) const override { return fFileName; }
+    virtual const char* GetPathName(void) const override { return fFileName; }
+    virtual char GetFssep(void) const override { return '\0'; }
+    virtual long GetFileType(void) const override { return 0; }
+    virtual long GetAuxType(void) const override { return 0; }
+    virtual long GetAccess(void) const override {
         if (fReadOnly)
             return DiskFS::kFileAccessLocked;
         else
             return DiskFS::kFileAccessUnlocked;
     }
-    virtual time_t GetCreateWhen(void) const { return 0; }
-    virtual time_t GetModWhen(void) const { return 0; }
-    virtual di_off_t GetDataLength(void) const { return fLength; }
-    virtual di_off_t GetDataSparseLength(void) const { return fLength; }
-    virtual di_off_t GetRsrcLength(void) const { return -1; }
-    virtual di_off_t GetRsrcSparseLength(void) const { return -1; }
+    virtual time_t GetCreateWhen(void) const override { return 0; }
+    virtual time_t GetModWhen(void) const override { return 0; }
+    virtual di_off_t GetDataLength(void) const override { return fLength; }
+    virtual di_off_t GetDataSparseLength(void) const override { return fLength; }
+    virtual di_off_t GetRsrcLength(void) const override { return -1; }
+    virtual di_off_t GetRsrcSparseLength(void) const override { return -1; }
 
     virtual DIError Open(A2FileDescr** ppOpenFile, bool readOnly,
-        bool rsrcFork = false);
-    virtual void CloseDescr(A2FileDescr* pOpenFile) {
+        bool rsrcFork = false) override;
+    virtual void CloseDescr(A2FileDescr* pOpenFile) override {
         assert(pOpenFile == fpOpenFile);
         delete fpOpenFile;
         fpOpenFile = NULL;
     }
-    virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+    virtual bool IsFileOpen(void) const override { return fpOpenFile != NULL; }
 
-    virtual void Dump(void) const;
+    virtual void Dump(void) const override;
 
     /* fields pulled out of directory block */
     char            fFileName[kMaxFileName+1];
@@ -2357,7 +2363,7 @@ public:
     di_off_t        fLength;
     int             fDirIdx;        // index into fDirEntry for part #1
 
-    DIError GetBlockList(long* pBlockCount, unsigned char* blockBuf) const;
+    DIError GetBlockList(long* pBlockCount, uint8_t* blockBuf) const;
 
 private:
     const DirEntry* fpDirEntry;
@@ -2390,18 +2396,18 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
 
-    virtual const char* GetVolumeName(void) const { return fVolumeName; }
-    virtual const char* GetVolumeID(void) const { return fVolumeName; }
-    virtual const char* GetBareVolumeName(void) const { return NULL; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
+    virtual const char* GetVolumeName(void) const override { return fVolumeName; }
+    virtual const char* GetVolumeID(void) const override { return fVolumeName; }
+    virtual const char* GetBareVolumeName(void) const override { return NULL; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
     int GetOurSectPerTrack(void) const { return fOurSectPerTrack; }
@@ -2434,16 +2440,18 @@ public:
 
     friend class A2FileRDOS;
 
-    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Seek(di_off_t offset, DIWhence whence);
-    virtual di_off_t Tell(void);
-    virtual DIError Close(void);
+    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Write(const void* buf, size_t len,
+        size_t* pActual = NULL) override;
+    virtual DIError Seek(di_off_t offset, DIWhence whence) override;
+    virtual di_off_t Tell(void) override;
+    virtual DIError Close(void) override;
 
-    virtual long GetSectorCount(void) const;
-    virtual long GetBlockCount(void) const;
-    virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
-    virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+    virtual long GetSectorCount(void) const override;
+    virtual long GetBlockCount(void) const override;
+    virtual DIError GetStorage(long sectorIdx, long* pTrack,
+        long* pSector) const override;
+    virtual DIError GetStorage(long blockIdx, long* pBlock) const override;
 
 private:
     /* RDOS is unique in that it can put 13-sector disks on 16-sector tracks */
@@ -2483,38 +2491,38 @@ public:
     /*
      * Implementations of standard interfaces.
      */
-    virtual const char* GetFileName(void) const { return fFileName; }
-    virtual const char* GetPathName(void) const { return fFileName; }
-    virtual char GetFssep(void) const { return '\0'; }
-    virtual long GetFileType(void) const;
-    virtual long GetAuxType(void) const { return fLoadAddr; }
-    virtual long GetAccess(void) const { return DiskFS::kFileAccessUnlocked; }
-    virtual time_t GetCreateWhen(void) const { return 0; }
-    virtual time_t GetModWhen(void) const { return 0; };
-    virtual di_off_t GetDataLength(void) const { return fLength; }
-    virtual di_off_t GetDataSparseLength(void) const { return fLength; }
-    virtual di_off_t GetRsrcLength(void) const { return -1; }
-    virtual di_off_t GetRsrcSparseLength(void) const { return -1; }
+    virtual const char* GetFileName(void) const override { return fFileName; }
+    virtual const char* GetPathName(void) const override { return fFileName; }
+    virtual char GetFssep(void) const override { return '\0'; }
+    virtual long GetFileType(void) const override;
+    virtual long GetAuxType(void) const override { return fLoadAddr; }
+    virtual long GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
+    virtual time_t GetCreateWhen(void) const override { return 0; }
+    virtual time_t GetModWhen(void) const override { return 0; };
+    virtual di_off_t GetDataLength(void) const override { return fLength; }
+    virtual di_off_t GetDataSparseLength(void) const override { return fLength; }
+    virtual di_off_t GetRsrcLength(void) const override { return -1; }
+    virtual di_off_t GetRsrcSparseLength(void) const override { return -1; }
 
     virtual DIError Open(A2FileDescr** ppOpenFile, bool readOnly,
-        bool rsrcFork = false);
-    virtual void CloseDescr(A2FileDescr* pOpenFile) {
+        bool rsrcFork = false) override;
+    virtual void CloseDescr(A2FileDescr* pOpenFile) override {
         assert(pOpenFile == fpOpenFile);
         delete fpOpenFile;
         fpOpenFile = NULL;
     }
-    virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+    virtual bool IsFileOpen(void) const override { return fpOpenFile != NULL; }
 
     void FixFilename(void);
-    virtual void Dump(void) const;
+    virtual void Dump(void) const override;
 
     /* fields pulled out of directory block */
     char            fFileName[kMaxFileName+1];
     FileType        fFileType;
-    unsigned short  fNumSectors;
-    unsigned short  fLoadAddr;
-    unsigned short  fLength;
-    unsigned short  fStartSector;
+    uint16_t        fNumSectors;
+    uint16_t        fLoadAddr;
+    uint16_t        fLength;
+    uint16_t        fStartSector;
 
 private:
     void TrimTrailingSpaces(char* filename);
@@ -2552,21 +2560,21 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize(initMode);
     }
 
 #ifndef EXCISE_GPL_CODE
     /* these are optional, defined as no-ops in the parent class */
-    virtual DIError Format(DiskImg* pDiskImg, const char* volName);
+    virtual DIError Format(DiskImg* pDiskImg, const char* volName) override;
     virtual DIError NormalizePath(const char* path, char fssep,
-        char* normalizedBuf, int* pNormalizedBufLen);
-    virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile);
-    virtual DIError DeleteFile(A2File* pFile);
-    virtual DIError RenameFile(A2File* pFile, const char* newName);
+        char* normalizedBuf, int* pNormalizedBufLen) override;
+    virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile) override;
+    virtual DIError DeleteFile(A2File* pFile) override;
+    virtual DIError RenameFile(A2File* pFile, const char* newName) override;
     virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags);
+        long accessFlags) override;
     virtual DIError RenameVolume(const char* newName);
 #endif
 
@@ -2577,14 +2585,14 @@ public:
     };
 
     /* mandatory functions */
-    virtual const char* GetVolumeName(void) const { return fVolumeName; }
-    virtual const char* GetVolumeID(void) const { return fVolumeID; }
-    virtual const char* GetBareVolumeName(void) const { return fVolumeName; }
-    virtual bool GetReadWriteSupported(void) const { return true; }
-    virtual bool GetFSDamaged(void) const { return false; }
-    virtual long GetFSNumBlocks(void) const { return fTotalBlocks; }
+    virtual const char* GetVolumeName(void) const override { return fVolumeName; }
+    virtual const char* GetVolumeID(void) const override { return fVolumeID; }
+    virtual const char* GetBareVolumeName(void) const override { return fVolumeName; }
+    virtual bool GetReadWriteSupported(void) const override { return true; }
+    virtual bool GetFSDamaged(void) const override { return false; }
+    virtual long GetFSNumBlocks(void) const override { return fTotalBlocks; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const;
+        int* pUnitSize) const override;
 
 #ifndef EXCISE_GPL_CODE
     hfsvol* GetHfsVol(void) const { return fHfsVol; }
@@ -2618,7 +2626,7 @@ private:
     };
 
     struct MasterDirBlock;      // fwd
-    static void UnpackMDB(const unsigned char* buf, MasterDirBlock* pMDB);
+    static void UnpackMDB(const uint8_t* buf, MasterDirBlock* pMDB);
     static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder);
 
     DIError Initialize(InitMode initMode);
@@ -2631,7 +2639,7 @@ private:
     void CreateFakeFile(void);
 #else
     DIError RecursiveDirAdd(A2File* pParent, const char* basePath, int depth);
-    //void Sanitize(unsigned char* str);
+    //void Sanitize(uint8_t* str);
     DIError DoNormalizePath(const char* path, char fssep,
         char** pNormalizedPath);
     static int CompareMacFileNames(const char* str1, const char* str2);
@@ -2648,13 +2656,13 @@ private:
     /* some items from the volume header */
     char            fVolumeName[kMaxVolumeName+1];
     char            fVolumeID[kMaxVolumeName + 8];  // add "HFS :"
-    unsigned long   fTotalBlocks;
-    unsigned long   fAllocationBlockSize;
-    unsigned long   fNumAllocationBlocks;
-    unsigned long   fCreatedDateTime;
-    unsigned long   fModifiedDateTime;
-    unsigned long   fNumFiles;
-    unsigned long   fNumDirectories;
+    uint32_t        fTotalBlocks;
+    uint32_t        fAllocationBlockSize;
+    uint32_t        fNumAllocationBlocks;
+    uint32_t        fCreatedDateTime;
+    uint32_t        fModifiedDateTime;
+    uint32_t        fNumFiles;
+    uint32_t        fNumDirectories;
 
     long            fLocalTimeOffset;
     bool            fDiskIsGood;
@@ -2683,16 +2691,18 @@ public:
 
     friend class A2FileHFS;
 
-    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Seek(di_off_t offset, DIWhence whence);
-    virtual di_off_t Tell(void);
-    virtual DIError Close(void);
+    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Write(const void* buf, size_t len,
+        size_t* pActual = NULL) override;
+    virtual DIError Seek(di_off_t offset, DIWhence whence) override;
+    virtual di_off_t Tell(void) override;
+    virtual DIError Close(void) override;
 
-    virtual long GetSectorCount(void) const;
-    virtual long GetBlockCount(void) const;
-    virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
-    virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+    virtual long GetSectorCount(void) const override;
+    virtual long GetBlockCount(void) const override;
+    virtual DIError GetStorage(long sectorIdx, long* pTrack,
+        long* pSector) const override;
+    virtual DIError GetStorage(long blockIdx, long* pBlock) const override;
 
 private:
 #ifdef EXCISE_GPL_CODE
@@ -2730,29 +2740,29 @@ public:
     /*
      * Implementations of standard interfaces.
      */
-    virtual const char* GetFileName(void) const { return fFileName; }
-    virtual const char* GetPathName(void) const { return fPathName; }
-    virtual char GetFssep(void) const { return kFssep; }
-    virtual long GetFileType(void) const;
-    virtual long GetAuxType(void) const;
-    virtual long GetAccess(void) const { return fAccess; }
-    virtual time_t GetCreateWhen(void) const { return fCreateWhen; }
-    virtual time_t GetModWhen(void) const { return fModWhen; }
-    virtual di_off_t GetDataLength(void) const { return fDataLength; }
-    virtual di_off_t GetDataSparseLength(void) const { return fDataLength; }
-    virtual di_off_t GetRsrcLength(void) const { return fRsrcLength; }
-    virtual di_off_t GetRsrcSparseLength(void) const { return fRsrcLength; }
-    virtual bool IsDirectory(void) const { return fIsDir; }
-    virtual bool IsVolumeDirectory(void) const { return fIsVolumeDir; }
+    virtual const char* GetFileName(void) const override { return fFileName; }
+    virtual const char* GetPathName(void) const override { return fPathName; }
+    virtual char GetFssep(void) const override { return kFssep; }
+    virtual long GetFileType(void) const override;
+    virtual long GetAuxType(void) const override;
+    virtual long GetAccess(void) const override { return fAccess; }
+    virtual time_t GetCreateWhen(void) const override { return fCreateWhen; }
+    virtual time_t GetModWhen(void) const override { return fModWhen; }
+    virtual di_off_t GetDataLength(void) const override { return fDataLength; }
+    virtual di_off_t GetDataSparseLength(void) const override { return fDataLength; }
+    virtual di_off_t GetRsrcLength(void) const override { return fRsrcLength; }
+    virtual di_off_t GetRsrcSparseLength(void) const override { return fRsrcLength; }
+    virtual bool IsDirectory(void) const override { return fIsDir; }
+    virtual bool IsVolumeDirectory(void) const override { return fIsVolumeDir; }
 
     virtual DIError Open(A2FileDescr** pOpenFile, bool readOnly,
-        bool rsrcFork = false);
-    virtual void CloseDescr(A2FileDescr* pOpenFile) {
+        bool rsrcFork = false) override;
+    virtual void CloseDescr(A2FileDescr* pOpenFile) override {
         assert(pOpenFile == fpOpenFile);
         delete fpOpenFile;
         fpOpenFile = NULL;
     }
-    virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+    virtual bool IsFileOpen(void) const override { return fpOpenFile != NULL; }
 
     enum {
         kMaxFileName = 31,
@@ -2761,7 +2771,7 @@ public:
     };
 
     void SetPathName(const char* basePath, const char* fileName);
-    virtual void Dump(void) const;
+    virtual void Dump(void) const override;
 
 #ifdef EXCISE_GPL_CODE
     void SetFakeFile(void* buf, long len) {
@@ -2776,8 +2786,8 @@ public:
 #else
     void InitEntry(const hfsdirent* dirEntry);
     void SetOrigPathName(const char* pathName);
-    virtual void SetParent(A2File* pParent) { fpParent = pParent; }
-    virtual A2File* GetParent(void) const { return fpParent; }
+    virtual void SetParent(A2File* pParent) override { fpParent = pParent; }
+    virtual A2File* GetParent(void) const override { return fpParent; }
     char* GetLibHFSPathName(void) const;
     static void ConvertTypeToHFS(long fileType, long auxType,
         char* pType, char* pCreator);
@@ -2828,26 +2838,26 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize(initMode);
     }
 
-    virtual const char* GetVolumeName(void) const { return fDiskVolumeName; }
-    virtual const char* GetVolumeID(void) const { return fDiskVolumeID; }
-    virtual const char* GetBareVolumeName(void) const {
+    virtual const char* GetVolumeName(void) const override { return fDiskVolumeName; }
+    virtual const char* GetVolumeID(void) const override { return fDiskVolumeID; }
+    virtual const char* GetBareVolumeName(void) const override {
         return fDiskVolumeName;
     }
-    virtual bool GetReadWriteSupported(void) const { return true; }
-    virtual bool GetFSDamaged(void) const { return !fDiskIsGood; }
+    virtual bool GetReadWriteSupported(void) const override { return true; }
+    virtual bool GetFSDamaged(void) const override { return !fDiskIsGood; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const;
+        int* pUnitSize) const override;
 
     static bool IsValidFileName(const char* name);
     static bool IsValidVolumeName(const char* name);
 
     // utility function
-    static void LowerASCII(unsigned char* buf, long len);
+    static void LowerASCII(uint8_t* buf, long len);
     static void ReplaceFssep(char* str, char replacement);
 
     enum {
@@ -2874,7 +2884,7 @@ private:
     void FixVolumeUsageMap(void);
     DIError ReadCatalog(void);
     DIError ProcessCatalogSector(int catTrack, int catSect,
-        const unsigned char* sctBuf);
+        const uint8_t* sctBuf);
     DIError GetFileLengths(void);
     DIError ComputeLength(A2FileGutenberg* pFile, const TrackSector* tsList,
         int tsCount);
@@ -2883,9 +2893,9 @@ private:
         TrackSector* indexList, int indexCount);
     DIError MakeFileNameUnique(char* fileName);
     DIError GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
-        unsigned char* sctBuf, A2FileGutenberg** ppPrevEntry);
-    void CreateDirEntry(unsigned char* sctBuf, int catEntry,
-        const char* fileName, TrackSector* pTSSect, unsigned char fileType,
+        uint8_t* sctBuf, A2FileGutenberg** ppPrevEntry);
+    void CreateDirEntry(uint8_t* sctBuf, int catEntry,
+        const char* fileName, TrackSector* pTSSect, uint8_t fileType,
         int access);
     void FreeTrackSectors(TrackSector* pList, int count);
 
@@ -2901,8 +2911,7 @@ private:
     DIError CreateEmptyBlockMap(bool withDOS);
     bool GetSectorUseEntry(long track, int sector) const;
     void SetSectorUseEntry(long track, int sector, bool inUse);
-    inline unsigned long GetVTOCEntry(const unsigned char* pVTOC,
-        long track) const;
+    inline uint32_t GetVTOCEntry(const uint8_t* pVTOC, long track) const;
 
     // Largest interesting volume is 400K (50 tracks, 32 sectors), but
     // we may be looking at it in 16-sector mode, so max tracks is 100.
@@ -2923,7 +2932,7 @@ private:
     /* private data */
     char    fDiskVolumeName[10];        // 
     char    fDiskVolumeID[11+12+1];     // sizeof "Gutenberg: " + 12 + null
-    unsigned char   fVTOC[kSectorSize];
+    uint8_t   fVTOC[kSectorSize];
     bool    fVTOCLoaded;
 
     /*
@@ -2951,16 +2960,18 @@ public:
 
     friend class A2FileGutenberg;
 
-    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Seek(di_off_t offset, DIWhence whence);
-    virtual di_off_t Tell(void);
-    virtual DIError Close(void);
+    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Write(const void* buf, size_t len,
+        size_t* pActual = NULL) override;
+    virtual DIError Seek(di_off_t offset, DIWhence whence) override;
+    virtual di_off_t Tell(void) override;
+    virtual DIError Close(void) override;
 
-    virtual long GetSectorCount(void) const;
-    virtual long GetBlockCount(void) const;
-    virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
-    virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+    virtual long GetSectorCount(void) const override;
+    virtual long GetBlockCount(void) const override;
+    virtual DIError GetStorage(long sectorIdx, long* pTrack,
+        long* pSector) const override;
+    virtual DIError GetStorage(long blockIdx, long* pBlock) const override;
 
 private:
     typedef DiskFSGutenberg::TrackSector TrackSector;
@@ -2995,27 +3006,27 @@ public:
     /*
      * Implementations of standard interfaces.
      */
-    virtual const char* GetFileName(void) const { return fFileName; }
-    virtual const char* GetPathName(void) const { return fFileName; }
-    virtual char GetFssep(void) const { return '\0'; }
-    virtual long GetFileType(void) const;
-    virtual long GetAuxType(void) const { return fAuxType; }
-    virtual long GetAccess(void) const { return DiskFS::kFileAccessUnlocked; }
-    virtual time_t GetCreateWhen(void) const { return 0; }
-    virtual time_t GetModWhen(void) const { return 0; }
-    virtual di_off_t GetDataLength(void) const { return fLength; }
-    virtual di_off_t GetDataSparseLength(void) const { return fSparseLength; }
-    virtual di_off_t GetRsrcLength(void) const { return -1; }
-    virtual di_off_t GetRsrcSparseLength(void) const { return -1; }
+    virtual const char* GetFileName(void) const override { return fFileName; }
+    virtual const char* GetPathName(void) const override { return fFileName; }
+    virtual char GetFssep(void) const override { return '\0'; }
+    virtual long GetFileType(void) const override;
+    virtual long GetAuxType(void) const override { return fAuxType; }
+    virtual long GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
+    virtual time_t GetCreateWhen(void) const override { return 0; }
+    virtual time_t GetModWhen(void) const override { return 0; }
+    virtual di_off_t GetDataLength(void) const override { return fLength; }
+    virtual di_off_t GetDataSparseLength(void) const override { return fSparseLength; }
+    virtual di_off_t GetRsrcLength(void) const override { return -1; }
+    virtual di_off_t GetRsrcSparseLength(void) const override { return -1; }
 
     virtual DIError Open(A2FileDescr** ppOpenFile, bool readOnly,
-        bool rsrcFork = false);
-    virtual void CloseDescr(A2FileDescr* pOpenFile) {
+        bool rsrcFork = false) override;
+    virtual void CloseDescr(A2FileDescr* pOpenFile) override {
         assert(pOpenFile == fpOpenFile);
         delete fpOpenFile;
         fpOpenFile = NULL;
     }
-    virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+    virtual bool IsFileOpen(void) const override { return fpOpenFile != NULL; }
 
     void Dump(void) const;
 
@@ -3029,7 +3040,7 @@ public:
      */
     short       fTrack;     // (could use TrackSector here)
     short       fSector;
-    unsigned short  fLengthInSectors;
+    uint16_t    fLengthInSectors;
     bool        fLocked;
     char        fFileName[kMaxFileName+1];  // "fixed" version
     FileType    fFileType;
@@ -3038,7 +3049,7 @@ public:
     int         fCatEntryNum;   // entry number within cat sector
 
     // these are computed or determined from the file contents
-    unsigned short  fAuxType;           // addr for bin, etc.
+    uint16_t        fAuxType;           // addr for bin, etc.
     short           fDataOffset;        // for 'A'/'B'/'I' with embedded len
     di_off_t        fLength;            // file length, in bytes
     di_off_t        fSparseLength;      // file length, factoring sparse out
@@ -3051,7 +3062,7 @@ public:
     static void TrimTrailingSpaces(char* filename);
 
 private:
-    DIError ExtractTSPairs(const unsigned char* sctBuf, TrackSector* tsList,
+    DIError ExtractTSPairs(const uint8_t* sctBuf, TrackSector* tsList,
         int* pLastNonZero);
 
     A2FDGutenberg*      fpOpenFile;
@@ -3079,7 +3090,7 @@ public:
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
         DiskImg::FSFormat* pFormat, FSLeniency leniency);
 
-    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) {
+    virtual DIError Initialize(DiskImg* pImg, InitMode initMode) override {
         SetDiskImg(pImg);
         return Initialize();
     }
@@ -3089,14 +3100,14 @@ public:
         kMaxVolumeName = 11,
     };
 
-    virtual const char* GetVolumeName(void) const { return fVolumeName; }
-    virtual const char* GetVolumeID(void) const { return fVolumeID; }
-    virtual const char* GetBareVolumeName(void) const { return fVolumeName; }
-    virtual bool GetReadWriteSupported(void) const { return false; }
-    virtual bool GetFSDamaged(void) const { return false; }
-    virtual long GetFSNumBlocks(void) const { return fTotalBlocks; }
+    virtual const char* GetVolumeName(void) const override { return fVolumeName; }
+    virtual const char* GetVolumeID(void) const override { return fVolumeID; }
+    virtual const char* GetBareVolumeName(void) const override { return fVolumeName; }
+    virtual bool GetReadWriteSupported(void) const override { return false; }
+    virtual bool GetFSDamaged(void) const override { return false; }
+    virtual long GetFSNumBlocks(void) const override { return fTotalBlocks; }
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
-        int* pUnitSize) const
+        int* pUnitSize) const override
         { return kDIErrNotSupported; }
 
 private:
@@ -3106,8 +3117,8 @@ private:
 
     struct MasterBootRecord;        // fwd
     struct BootSector;
-    static bool UnpackMBR(const unsigned char* buf, MasterBootRecord* pOut);
-    static bool UnpackBootSector(const unsigned char* buf, BootSector* pOut);
+    static bool UnpackMBR(const uint8_t* buf, MasterBootRecord* pOut);
+    static bool UnpackBootSector(const uint8_t* buf, BootSector* pOut);
     static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder);
 
     DIError Initialize(void);
@@ -3119,7 +3130,7 @@ private:
     /* some items from the volume header */
     char            fVolumeName[kMaxVolumeName+1];
     char            fVolumeID[kMaxVolumeName + 8];  // add "FAT %s:"
-    unsigned long   fTotalBlocks;
+    uint32_t        fTotalBlocks;
 };
 
 /*
@@ -3136,16 +3147,18 @@ public:
 
     friend class A2FileFAT;
 
-    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Write(const void* buf, size_t len, size_t* pActual = NULL);
-    virtual DIError Seek(di_off_t offset, DIWhence whence);
-    virtual di_off_t Tell(void);
-    virtual DIError Close(void);
+    virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) override;
+    virtual DIError Write(const void* buf, size_t len,
+        size_t* pActual = NULL) override;
+    virtual DIError Seek(di_off_t offset, DIWhence whence) override;
+    virtual di_off_t Tell(void) override;
+    virtual DIError Close(void) override;
 
-    virtual long GetSectorCount(void) const;
-    virtual long GetBlockCount(void) const;
-    virtual DIError GetStorage(long sectorIdx, long* pTrack, long* pSector) const;
-    virtual DIError GetStorage(long blockIdx, long* pBlock) const;
+    virtual long GetSectorCount(void) const override;
+    virtual long GetBlockCount(void) const override;
+    virtual DIError GetStorage(long sectorIdx, long* pTrack,
+        long* pSector) const override;
+    virtual DIError GetStorage(long blockIdx, long* pBlock) const override;
 
 private:
     di_off_t        fOffset;
@@ -3169,31 +3182,31 @@ public:
     /*
      * Implementations of standard interfaces.
      */
-    virtual const char* GetFileName(void) const { return fFileName; }
-    virtual const char* GetPathName(void) const { return fFileName; }
-    virtual char GetFssep(void) const { return '\0'; }
-    virtual long GetFileType(void) const { return 0; };
-    virtual long GetAuxType(void) const { return 0; }
-    virtual long GetAccess(void) const { return DiskFS::kFileAccessUnlocked; }
-    virtual time_t GetCreateWhen(void) const { return 0; }
-    virtual time_t GetModWhen(void) const { return 0; }
-    virtual di_off_t GetDataLength(void) const { return fLength; }
-    virtual di_off_t GetDataSparseLength(void) const { return fLength; }
-    virtual di_off_t GetRsrcLength(void) const { return -1; }
-    virtual di_off_t GetRsrcSparseLength(void) const { return -1; }
+    virtual const char* GetFileName(void) const override { return fFileName; }
+    virtual const char* GetPathName(void) const override { return fFileName; }
+    virtual char GetFssep(void) const override { return '\0'; }
+    virtual long GetFileType(void) const override { return 0; };
+    virtual long GetAuxType(void) const override { return 0; }
+    virtual long GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
+    virtual time_t GetCreateWhen(void) const override { return 0; }
+    virtual time_t GetModWhen(void) const override { return 0; }
+    virtual di_off_t GetDataLength(void) const override { return fLength; }
+    virtual di_off_t GetDataSparseLength(void) const override { return fLength; }
+    virtual di_off_t GetRsrcLength(void) const override { return -1; }
+    virtual di_off_t GetRsrcSparseLength(void) const override { return -1; }
 
     virtual DIError Open(A2FileDescr** pOpenFile, bool readOnly,
-        bool rsrcFork = false);
-    virtual void CloseDescr(A2FileDescr* pOpenFile) {
+        bool rsrcFork = false) override;
+    virtual void CloseDescr(A2FileDescr* pOpenFile) override {
         assert(pOpenFile == fpOpenFile);
         delete fpOpenFile;
         fpOpenFile = NULL;
     }
-    virtual bool IsFileOpen(void) const { return fpOpenFile != NULL; }
+    virtual bool IsFileOpen(void) const override { return fpOpenFile != NULL; }
 
     enum { kMaxFileName = 31 };
 
-    virtual void Dump(void) const;
+    virtual void Dump(void) const override;
 
     void SetFakeFile(void* buf, long len) {
         assert(len > 0);

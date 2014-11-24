@@ -96,11 +96,11 @@ bool IsWin9x(void);
  */
 class CircularBufferAccess {
 public:
-    CircularBufferAccess(unsigned char* buf, long len) :
+    CircularBufferAccess(uint8_t* buf, long len) :
         fBuf(buf), fLen(len)
         { assert(fLen > 0); assert(fBuf != NULL); }
-    CircularBufferAccess(const unsigned char* buf, long len) :
-        fBuf(const_cast<unsigned char*>(buf)), fLen(len)
+    CircularBufferAccess(const uint8_t* buf, long len) :
+        fBuf(const_cast<uint8_t*>(buf)), fLen(len)
         { assert(fLen > 0); assert(fBuf != NULL); }
     ~CircularBufferAccess(void) {}
 
@@ -108,7 +108,7 @@ public:
      * Be circular.  Assume that we won't stray far past the end, so
      * it's cheaper to subtract than mod.
      */
-    unsigned char& operator[](int idx) const {
+    uint8_t& operator[](int idx) const {
         if (idx < 0) {
             assert(false);
         }
@@ -117,7 +117,7 @@ public:
         return fBuf[idx];
     }
 
-    //unsigned char* GetPointer(int idx) const {
+    //uint8_t* GetPointer(int idx) const {
     //    while (idx >= fLen)
     //        idx -= fLen;
     //    return &fBuf[idx];
@@ -134,8 +134,8 @@ public:
     }
 
 private:
-    unsigned char*  fBuf;
-    long            fLen;
+    uint8_t*    fBuf;
+    long        fLen;
 };
 
 /*
@@ -152,7 +152,7 @@ private:
 class BitOutputBuffer {
 public:
     /* pass in the output buffer and the output buffer's size */
-    BitOutputBuffer(unsigned char* buf, int size) {
+    BitOutputBuffer(uint8_t* buf, int size) {
         fBufStart = fBuf = buf;
         fBufSize = size;
         fBitMask = 0x80;
@@ -204,12 +204,12 @@ public:
     }
 
 private:
-    unsigned char*  fBufStart;
-    unsigned char*  fBuf;
-    int             fBufSize;
-    unsigned char   fBitMask;
-    unsigned char   fByte;
-    bool            fOverflow;
+    uint8_t*    fBufStart;
+    uint8_t*    fBuf;
+    int         fBufSize;
+    uint8_t     fBitMask;
+    uint8_t     fByte;
+    bool        fOverflow;
 };
 
 /*
@@ -217,7 +217,7 @@ private:
  */
 class BitInputBuffer {
 public:
-    BitInputBuffer(const unsigned char* buf, int bitCount) {
+    BitInputBuffer(const uint8_t* buf, int bitCount) {
         fBufStart = fBuf = buf;
         fBitCount = bitCount;
         fCurrentBit = 0;
@@ -233,8 +233,8 @@ public:
      * non-null, set "*pWrap". (This does *not* set it to "false" if we
      * don't wrap.)
      */
-    unsigned char GetBit(bool* pWrap) {
-        unsigned char val;
+    uint8_t GetBit(bool* pWrap) {
+        uint8_t val;
 
         //assert(fBitPosn == 7 - (fCurrentBit & 0x07));
 
@@ -264,8 +264,8 @@ public:
     /*
      * Get the next 8 bits.
      */
-    unsigned char GetByte(bool* pWrap) {
-        unsigned char val;
+    uint8_t GetByte(bool* pWrap) {
+        uint8_t val;
         int i;
 
         if (true || fCurrentBit > fBitCount-8) {
@@ -295,12 +295,12 @@ public:
     int GetBitsConsumed(void) const { return fBitsConsumed; }
 
 private:
-    const unsigned char*    fBufStart;
-    const unsigned char*    fBuf;
+    const uint8_t*  fBufStart;
+    const uint8_t*  fBuf;
     int             fBitCount;          // #of bits in buffer
     int             fCurrentBit;        // where we are in buffer
     int             fBitPosn;           // which bit to access within byte
-    //unsigned char fByte;
+    //uint8_t fByte;
 
     int             fBitsConsumed;      // sanity check - all bits used?
 };
@@ -312,7 +312,7 @@ class LinearBitmap {
 public:
     LinearBitmap(int numBits) {
         assert(numBits > 0);
-        fBits = new unsigned char[(numBits + 7) / 8];
+        fBits = new uint8_t[(numBits + 7) / 8];
         memset(fBits, 0, (numBits + 7) / 8);
         fNumBits = numBits;
     }
@@ -333,12 +333,12 @@ public:
     }
 
 private:
-    unsigned char*  fBits;
-    int             fNumBits;
+    uint8_t*    fBits;
+    int         fNumBits;
 };
 
 
-}  // namespace DiskImgLib
+}   // namespace DiskImgLib
 
 /*
  * Most of the code needs these.

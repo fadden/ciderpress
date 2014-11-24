@@ -15,7 +15,7 @@
 
 const int kBlkSize = 512;
 const int kPartMapBlock = 0;    // partition map lives here
-const unsigned int kPartSizeMask = 0x00ffffff;
+const uint32_t kPartSizeMask = 0x00ffffff;
 
 
 /*
@@ -45,24 +45,24 @@ const unsigned int kPartSizeMask = 0x00ffffff;
  */
 const int kMaxNumParts = 8;
 typedef struct DiskFSMicroDrive::PartitionMap {
-    unsigned short  magic;              // partition signature
-    unsigned short  cylinders;          // #of cylinders
-    unsigned short  reserved1;          // ??
-    unsigned short  heads;              // #of heads/cylinder
-    unsigned short  sectors;            // #of sectors/track
-    unsigned short  reserved2;          // ??
-    unsigned char   numPart1;           // #of partitions in first chunk
-    unsigned char   numPart2;           // #of partitions in second chunk
-    unsigned char   reserved3[10];      // bytes 0x0e-0x17
-    unsigned short  romVersion;         // IIgs ROM01 or ROM03
-    unsigned char   reserved4[6];       // bytes 0x1a-0x1f
-    unsigned long   partitionStart1[kMaxNumParts];  // bytes 0x20-0x3f
-    unsigned long   partitionLength1[kMaxNumParts]; // bytes 0x40-0x5f
-    unsigned char   reserved5[32];      // bytes 0x60-0x7f
-    unsigned long   partitionStart2[kMaxNumParts];  // bytes 0x80-0x9f
-    unsigned long   partitionLength2[kMaxNumParts]; // bytes 0xa0-0xbf
+    uint16_t    magic;              // partition signature
+    uint16_t    cylinders;          // #of cylinders
+    uint16_t    reserved1;          // ??
+    uint16_t    heads;              // #of heads/cylinder
+    uint16_t    sectors;            // #of sectors/track
+    uint16_t    reserved2;          // ??
+    uint8_t     numPart1;           // #of partitions in first chunk
+    uint8_t     numPart2;           // #of partitions in second chunk
+    uint8_t     reserved3[10];      // bytes 0x0e-0x17
+    uint16_t    romVersion;         // IIgs ROM01 or ROM03
+    uint8_t     reserved4[6];       // bytes 0x1a-0x1f
+    uint32_t    partitionStart1[kMaxNumParts];  // bytes 0x20-0x3f
+    uint32_t    partitionLength1[kMaxNumParts]; // bytes 0x40-0x5f
+    uint8_t     reserved5[32];      // bytes 0x60-0x7f
+    uint32_t    partitionStart2[kMaxNumParts];  // bytes 0x80-0x9f
+    uint32_t    partitionLength2[kMaxNumParts]; // bytes 0xa0-0xbf
 
-    unsigned char   padding[320];
+    uint8_t     padding[320];
 } PartitionMap;
 
 
@@ -72,11 +72,11 @@ typedef struct DiskFSMicroDrive::PartitionMap {
  * The "imageOrder" parameter has no use here, because (in the current
  * version) embedded parent volumes are implicitly ProDOS-ordered.
  */
-/*static*/ DIError
-DiskFSMicroDrive::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+/*static*/ DIError DiskFSMicroDrive::TestImage(DiskImg* pImg,
+    DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     int partCount1, partCount2;
 
     assert(sizeof(PartitionMap) == kBlkSize);
@@ -119,8 +119,7 @@ bail:
 /*
  * Unpack a partition map block into a partition map data structure.
  */
-/*static*/ void
-DiskFSMicroDrive::UnpackPartitionMap(const unsigned char* buf,
+/*static*/ void DiskFSMicroDrive::UnpackPartitionMap(const uint8_t* buf,
     PartitionMap* pMap)
 {
     pMap->magic = GetShortLE(&buf[0x00]);
@@ -148,8 +147,7 @@ DiskFSMicroDrive::UnpackPartitionMap(const unsigned char* buf,
 /*
  * Debug: dump the contents of the partition map.
  */
-/*static*/ void
-DiskFSMicroDrive::DumpPartitionMap(const PartitionMap* pMap)
+/*static*/ void DiskFSMicroDrive::DumpPartitionMap(const PartitionMap* pMap)
 {
     LOGI(" MicroDrive partition map:");
     LOGI("    cyls=%d res1=%d heads=%d sects=%d",
@@ -178,8 +176,7 @@ DiskFSMicroDrive::DumpPartitionMap(const PartitionMap* pMap)
 /*
  * Open up a sub-volume.
  */
-DIError
-DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
+DIError DiskFSMicroDrive::OpenSubVolume(long startBlock, long numBlocks)
 {
     DIError dierr = kDIErrNone;
     DiskFS* pNewFS = NULL;
@@ -289,8 +286,7 @@ bail:
 /*
  * Check to see if this is a MicroDrive volume.
  */
-/*static*/ DIError
-DiskFSMicroDrive::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSMicroDrive::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     if (pImg->GetNumBlocks() < kMinInterestingBlocks)
@@ -313,8 +309,7 @@ DiskFSMicroDrive::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 /*
  * Prep the MicroDrive "container" for use.
  */
-DIError
-DiskFSMicroDrive::Initialize(void)
+DIError DiskFSMicroDrive::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -337,11 +332,10 @@ DiskFSMicroDrive::Initialize(void)
 /*
  * Find the various sub-volumes and open them.
  */
-DIError
-DiskFSMicroDrive::FindSubVolumes(void)
+DIError DiskFSMicroDrive::FindSubVolumes(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[kBlkSize];
+    uint8_t buf[kBlkSize];
     PartitionMap map;
     int i;
 
@@ -375,8 +369,7 @@ bail:
  * Open the volume.  If it fails, open a placeholder instead.  (If *that*
  * fails, return with an error.)
  */
-DIError
-DiskFSMicroDrive::OpenVol(int idx, long startBlock, long numBlocks)
+DIError DiskFSMicroDrive::OpenVol(int idx, long startBlock, long numBlocks)
 {
     DIError dierr;
 
@@ -387,13 +380,13 @@ DiskFSMicroDrive::OpenVol(int idx, long startBlock, long numBlocks)
         DiskFS* pNewFS = NULL;
         DiskImg* pNewImg = NULL;
 
-        LOGI(" MicroDrive failed opening sub-volume %d", idx);
+        LOGW(" MicroDrive failed opening sub-volume %d", idx);
         dierr = CreatePlaceholder(startBlock, numBlocks, NULL, NULL,
                     &pNewImg, &pNewFS);
         if (dierr == kDIErrNone) {
             AddSubVolumeToList(pNewImg, pNewFS);
         } else {
-            LOGI("  MicroDrive unable to create placeholder (err=%d)",
+            LOGE("  MicroDrive unable to create placeholder (err=%d)",
                 dierr);
             // fall out with error
         }

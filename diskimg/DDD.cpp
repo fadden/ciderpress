@@ -103,18 +103,18 @@ public:
     ~BitBuffer(void) {}
 
     void SetFile(GenericFD* pGFD) { fpGFD = pGFD; }
-    void PutBits(unsigned char bits, int numBits);
-    unsigned char GetBits(int numBits);
+    void PutBits(uint8_t bits, int numBits);
+    uint8_t GetBits(int numBits);
 
     bool IOFailure(void) const { return fIOFailure; }
 
-    static unsigned char Reverse(unsigned char val);
+    static uint8_t Reverse(uint8_t val);
 
 private:
-    GenericFD*      fpGFD;
-    unsigned char   fBits;
-    int             fBitCount;
-    bool            fIOFailure;
+    GenericFD*  fpGFD;
+    uint8_t     fBits;
+    int         fBitCount;
+    bool        fIOFailure;
 };
 
 /*
@@ -124,8 +124,7 @@ private:
  * reverse order in which they were passed in).  As soon as we get 8 bits
  * we flush.
  */
-void
-WrapperDDD::BitBuffer::PutBits(unsigned char bits, int numBits)
+void WrapperDDD::BitBuffer::PutBits(uint8_t bits, int numBits)
 {
     assert(fBitCount >= 0 && fBitCount < 8);
     assert(numBits > 0 && numBits <= 8);
@@ -153,15 +152,14 @@ WrapperDDD::BitBuffer::PutBits(unsigned char bits, int numBits)
  * These come out in the order in which they appear in the file, which
  * means that in some cases they will have to be reversed.
  */
-unsigned char
-WrapperDDD::BitBuffer::GetBits(int numBits)
+uint8_t WrapperDDD::BitBuffer::GetBits(int numBits)
 {
     assert(fBitCount >= 0 && fBitCount < 8);
     assert(numBits > 0 && numBits <= 8);
     assert(fpGFD != NULL);
 
     DIError dierr;
-    unsigned char retVal;
+    uint8_t retVal;
 
     if (fBitCount == 0) {
         /* have no bits */
@@ -199,11 +197,10 @@ WrapperDDD::BitBuffer::GetBits(int numBits)
 /*
  * Utility function to reverse the order of bits in a byte.
  */
-/*static*/ unsigned char
-WrapperDDD::BitBuffer::Reverse(unsigned char val)
+/*static*/ uint8_t WrapperDDD::BitBuffer::Reverse(uint8_t val)
 {
     int i;
-    unsigned char result = 0;       // init is to make valgrind happy
+    uint8_t result = 0;       // init is to make valgrind happy
 
     for (i = 0; i < 8; i++) {
         result = (result << 1) + (val & 0x01);
@@ -224,7 +221,7 @@ WrapperDDD::BitBuffer::Reverse(unsigned char val)
  * These are all odd, which when they're written in reverse order means
  * they all have their hi bits set.
  */
-static const unsigned char kFavoriteBitEnc[kNumFavorites] = {
+static const uint8_t kFavoriteBitEnc[kNumFavorites] = {
     0x03, 0x09, 0x1f, 0x0f, 0x07, 0x1b, 0x0b, 0x0d, 0x15, 0x37,
     0x3d, 0x25, 0x05, 0xb1, 0x11, 0x21, 0x01, 0x57, 0x5d, 0x1d
 };
@@ -240,8 +237,7 @@ static const int kFavoriteBitEncLen[kNumFavorites] = {
  * Assumes pSrcGFD points to DOS-ordered sectors.  (This is enforced when the
  * disk image is first being created.)
  */
-/*static*/ DIError
-WrapperDDD::PackDisk(GenericFD* pSrcGFD, GenericFD* pWrapperGFD,
+/*static*/ DIError WrapperDDD::PackDisk(GenericFD* pSrcGFD, GenericFD* pWrapperGFD,
     short diskVolNum)
 {
     DIError dierr = kDIErrNone;
@@ -256,13 +252,13 @@ WrapperDDD::PackDisk(GenericFD* pSrcGFD, GenericFD* pWrapperGFD,
     bitBuffer.SetFile(pWrapperGFD);
 
     bitBuffer.PutBits(0x00, 3);
-    bitBuffer.PutBits((unsigned char)diskVolNum, 8);
+    bitBuffer.PutBits((uint8_t)diskVolNum, 8);
 
     /*
      * Process all tracks.
      */
     for (int track = 0; track < kNumTracks; track++) {
-        unsigned char trackBuf[kTrackLen];
+        uint8_t trackBuf[kTrackLen];
 
         dierr = pSrcGFD->Read(trackBuf, kTrackLen);
         if (dierr != kDIErrNone) {
@@ -291,11 +287,10 @@ bail:
 /*
  * Compress a track full of data.
  */
-/*static*/ void
-WrapperDDD::PackTrack(const unsigned char* trackBuf, BitBuffer* pBitBuf)
+/*static*/ void WrapperDDD::PackTrack(const uint8_t* trackBuf, BitBuffer* pBitBuf)
 {
-    unsigned short freqCounts[kNumSymbols];
-    unsigned char favorites[kNumFavorites];
+    uint16_t freqCounts[kNumSymbols];
+    uint8_t favorites[kNumFavorites];
     int i, fav;
 
     ComputeFreqCounts(trackBuf, freqCounts);
@@ -309,7 +304,7 @@ WrapperDDD::PackTrack(const unsigned char* trackBuf, BitBuffer* pBitBuf)
      * Compress track data.  Store runs as { 0x97 char count }, where
      * a count of zero means 256.
      */
-    const unsigned char* ucp = trackBuf;
+    const uint8_t* ucp = trackBuf;
     for (i = 0; i < kTrackLen; i++, ucp++) {
         if (i < (kTrackLen-3) &&
             *ucp == *(ucp+1) &&
@@ -361,16 +356,15 @@ WrapperDDD::PackTrack(const unsigned char* trackBuf, BitBuffer* pBitBuf)
  * bytes or longer are completely ignored.
  *
  * "trackBuf" holds kTrackLen bytes of data, and "freqCounts" holds
- * kNumSymbols (256) unsigned shorts.
+ * kNumSymbols (256) 16-bit values.
  */
-/*static*/ void
-WrapperDDD::ComputeFreqCounts(const unsigned char* trackBuf,
-    unsigned short* freqCounts)
+/*static*/ void WrapperDDD::ComputeFreqCounts(const uint8_t* trackBuf,
+    uint16_t* freqCounts)
 {
-    const unsigned char* ucp;
+    const uint8_t* ucp;
     int i;
 
-    memset(freqCounts, 0, 256 * sizeof(unsigned short));
+    memset(freqCounts, 0, 256 * sizeof(uint16_t));
 
     ucp = trackBuf;
     for (i = 0; i < kTrackLen; i++, ucp++) {
@@ -407,19 +401,18 @@ WrapperDDD::ComputeFreqCounts(const unsigned char* trackBuf,
  *
  * Modifies "freqCounts".
  */
-/*static*/ void
-WrapperDDD::ComputeFavorites(unsigned short* freqCounts,
-    unsigned char* favorites)
+/*static*/ void WrapperDDD::ComputeFavorites(uint16_t* freqCounts,
+    uint8_t* favorites)
 {
     int i, fav;
 
     for (fav = 0; fav < kNumFavorites; fav++) {
-        unsigned short bestCount = 0;
-        unsigned char bestSym = 0;
+        uint16_t bestCount = 0;
+        uint8_t bestSym = 0;
 
         for (i = 0; i < kNumSymbols; i++) {
             if (freqCounts[i] >= bestCount) {
-                bestSym = (unsigned char) i;
+                bestSym = (uint8_t) i;
                 bestCount = freqCounts[i];
             }
         }
@@ -445,7 +438,7 @@ WrapperDDD::ComputeFavorites(unsigned short* freqCounts,
  * This is the reverse of the kFavoriteBitEnc table.  The bits are
  * reversed and lack the high bit.
  */
-static const unsigned char kFavoriteBitDec[kNumFavorites] = {
+static const uint8_t kFavoriteBitDec[kNumFavorites] = {
     0x04, 0x01, 0x0f, 0x0e, 0x0c, 0x0b, 0x0a, 0x06, 0x05, 0x1b,
     0x0f, 0x09, 0x08, 0x03, 0x02, 0x01, 0x00, 0x35, 0x1d, 0x1c
 };
@@ -455,13 +448,12 @@ static const unsigned char kFavoriteBitDec[kNumFavorites] = {
  *
  * The result is an unadorned DOS-ordered image.
  */
-/*static*/ DIError
-WrapperDDD::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
+/*static*/ DIError WrapperDDD::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
     short* pDiskVolNum)
 {
     DIError dierr = kDIErrNone;
     BitBuffer bitBuffer;
-    unsigned char val;
+    uint8_t val;
     long lbuf;
 
     assert(pGFD != NULL);
@@ -487,7 +479,7 @@ WrapperDDD::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD,
 
     int track;
     for (track = 0; track < kNumTracks; track++) {
-        unsigned char trackBuf[kTrackLen];
+        uint8_t trackBuf[kTrackLen];
 
         if (!UnpackTrack(&bitBuffer, trackBuf)) {
             LOGI(" DDD failed unpacking track %d", track);
@@ -543,12 +535,11 @@ bail:
  *
  * Returns "true" if all went well, "false" if something failed.
  */
-/*static*/ bool
-WrapperDDD::UnpackTrack(BitBuffer* pBitBuffer, unsigned char* trackBuf)
+/*static*/ bool WrapperDDD::UnpackTrack(BitBuffer* pBitBuffer, uint8_t* trackBuf)
 {
-    unsigned char favorites[kNumFavorites];
-    unsigned char val;
-    unsigned char* trackPtr;
+    uint8_t favorites[kNumFavorites];
+    uint8_t val;
+    uint8_t* trackPtr;
     int fav;
 
     /*
@@ -609,7 +600,7 @@ WrapperDDD::UnpackTrack(BitBuffer* pBitBuffer, unsigned char* trackBuf)
             }
             if (extraBits == 4) {
                 /* we didn't get it, this must be RLE */
-                unsigned char rleChar;
+                uint8_t rleChar;
                 int rleCount;
 
                 (void) pBitBuffer->GetBits(1);  // get last bit of 0x97
@@ -635,4 +626,3 @@ WrapperDDD::UnpackTrack(BitBuffer* pBitBuffer, unsigned char* trackBuf)
 
     return true;
 }
-

@@ -18,7 +18,7 @@ namespace DiskImgLib {
  * Obtained from tracks 0-2 of a newly-formatted disk created
  * by "INIT HELLO" after booting the DOS 3.3 system master.
  */
-/*static*/ const unsigned char DiskFSDOS33::gDOS33Tracks[16 * 3 * 256] = {
+/*static*/ const uint8_t DiskFSDOS33::gDOS33Tracks[16 * 3 * 256] = {
     0x01, 0xa5, 0x27, 0xc9, 0x09, 0xd0, 0x18, 0xa5,
     0x2b, 0x4a, 0x4a, 0x4a, 0x4a, 0x09, 0xc0, 0x85,
     0x3f, 0xa9, 0x5c, 0x85, 0x3e, 0x18, 0xad, 0xfe,
@@ -1612,7 +1612,7 @@ namespace DiskImgLib {
  * Obtained from the DOS 3.2.1 system master.  The last two sectors of
  * track 2 were unreadable, and have been zeroed out here.
  */
-/*static*/ const unsigned char DiskFSDOS33::gDOS32Tracks[13 * 3 * 256] = {
+/*static*/ const uint8_t DiskFSDOS33::gDOS32Tracks[13 * 3 * 256] = {
     0xf0, 0x4a, 0x99, 0xff, 0xff, 0x03, 0x3c, 0xad,
     0xff, 0xff, 0xff, 0x26, 0xb3, 0xff, 0xff, 0x4d,
     0x4a, 0x10, 0xff, 0xff, 0x3d, 0x4a, 0xca, 0xff,
@@ -2901,5 +2901,4 @@ namespace DiskImgLib {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-
-};  // namespace DiskImgLib
+}   // namespace DiskImgLib

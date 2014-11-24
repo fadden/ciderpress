@@ -13,8 +13,7 @@
 /*
  * Initialize structures for a block-structured disk.
  */
-DIError
-DiskFS::VolumeUsage::Create(long numBlocks)
+DIError DiskFS::VolumeUsage::Create(long numBlocks)
 {
     if (numBlocks <= 0 || numBlocks > 32*1024*1024)     // 16GB
         return kDIErrInvalidArg;
@@ -35,8 +34,7 @@ DiskFS::VolumeUsage::Create(long numBlocks)
 /*
  * Initialize structures for a track/sector-structured disk.
  */
-DIError
-DiskFS::VolumeUsage::Create(long numTracks, long numSectors)
+DIError DiskFS::VolumeUsage::Create(long numTracks, long numSectors)
 {
     long count = numTracks * numSectors;
     if (numTracks <= 0 || count <= 0 || count > 32*1024*1024)
@@ -58,15 +56,14 @@ DiskFS::VolumeUsage::Create(long numTracks, long numSectors)
 /*
  * Return the state of a particular chunk.
  */
-DIError
-DiskFS::VolumeUsage::GetChunkState(long block, ChunkState* pState) const
+DIError DiskFS::VolumeUsage::GetChunkState(long block, ChunkState* pState) const
 {
     if (!fByBlocks)
         return kDIErrInvalidArg;
     return GetChunkStateIdx(block, pState);
 }
-DIError
-DiskFS::VolumeUsage::GetChunkState(long track, long sector,
+
+DIError DiskFS::VolumeUsage::GetChunkState(long track, long sector,
     ChunkState* pState) const
 {
     if (fByBlocks)
@@ -75,8 +72,8 @@ DiskFS::VolumeUsage::GetChunkState(long track, long sector,
         return kDIErrInvalidArg;
     return GetChunkStateIdx(track * fNumSectors + sector, pState);
 }
-DIError
-DiskFS::VolumeUsage::GetChunkStateIdx(int idx, ChunkState* pState) const
+
+DIError DiskFS::VolumeUsage::GetChunkStateIdx(int idx, ChunkState* pState) const
 {
     if (fList == NULL || idx < 0 || idx >= fListSize) {
         assert(false);
@@ -94,15 +91,14 @@ DiskFS::VolumeUsage::GetChunkStateIdx(int idx, ChunkState* pState) const
 /*
  * Set the state of a particular chunk.
  */
-DIError
-DiskFS::VolumeUsage::SetChunkState(long block, const ChunkState* pState)
+DIError DiskFS::VolumeUsage::SetChunkState(long block, const ChunkState* pState)
 {
     if (!fByBlocks)
         return kDIErrInvalidArg;
     return SetChunkStateIdx(block, pState);
 }
-DIError
-DiskFS::VolumeUsage::SetChunkState(long track, long sector,
+
+DIError DiskFS::VolumeUsage::SetChunkState(long track, long sector,
     const ChunkState* pState)
 {
     if (fByBlocks)
@@ -111,8 +107,8 @@ DiskFS::VolumeUsage::SetChunkState(long track, long sector,
         return kDIErrInvalidArg;
     return SetChunkStateIdx(track * fNumSectors + sector, pState);
 }
-DIError
-DiskFS::VolumeUsage::SetChunkStateIdx(int idx, const ChunkState* pState)
+
+DIError DiskFS::VolumeUsage::SetChunkStateIdx(int idx, const ChunkState* pState)
 {
     if (fList == NULL || idx < 0 || idx >= fListSize) {
         assert(false);
@@ -136,12 +132,10 @@ DiskFS::VolumeUsage::SetChunkStateIdx(int idx, const ChunkState* pState)
     return kDIErrNone;
 }
 
-
 /*
  * Count up the #of free chunks.
  */
-long
-DiskFS::VolumeUsage::GetActualFreeChunks(void) const
+long DiskFS::VolumeUsage::GetActualFreeChunks(void) const
 {
     ChunkState cstate;  // could probably do this bitwise...
     int freeCount = 0;
@@ -170,7 +164,6 @@ DiskFS::VolumeUsage::GetActualFreeChunks(void) const
     return freeCount;
 }
 
-
 /*
  * Convert a ChunkState into a single, hopefully meaningful, character.
  *
@@ -183,8 +176,7 @@ DiskFS::VolumeUsage::GetActualFreeChunks(void) const
  *  'I' - inuse, marked, used by file structure (index block)
  *  'F' - inuse, marked, used by file
  */
-inline char
-DiskFS::VolumeUsage::StateToChar(ChunkState* pState) const
+char DiskFS::VolumeUsage::StateToChar(ChunkState* pState) const
 {
     if (!pState->isUsed && !pState->isMarkedUsed)
         return '.';
@@ -217,8 +209,7 @@ DiskFS::VolumeUsage::StateToChar(ChunkState* pState) const
 /*
  * Dump the list.
  */
-void
-DiskFS::VolumeUsage::Dump(void) const
+void DiskFS::VolumeUsage::Dump(void) const
 {
 #define kMapInit "--------------------------------"
     if (fList == NULL) {

@@ -43,8 +43,8 @@
 namespace DiskImgLib {
 
 /* compiled-against versions; call DiskImg::GetVersion for linked-against */
-#define kDiskImgVersionMajor    4
-#define kDiskImgVersionMinor    6
+#define kDiskImgVersionMajor    5
+#define kDiskImgVersionMinor    0
 #define kDiskImgVersionBug      0
 
 
@@ -346,7 +346,7 @@ public:
         kFormatMacPart = 44,        // Macintosh-style partitioned disk
         kFormatMicroDrive = 45,     // ///SHH Systeme's MicroDrive format
         kFormatFocusDrive = 46,     // Parsons Engineering FocusDrive format
-        kFormatGutenberg = 47,     // Gutenberg word processor format
+        kFormatGutenberg = 47,      // Gutenberg word processor format
 
         // try to keep this in an unsigned char, e.g. for CP clipboard
     } FSFormat;
@@ -379,16 +379,16 @@ public:
         char            description[32];
         short           numSectors;     // 13 or 16 (or 18?)
 
-        unsigned char   addrProlog[kNibbleAddrPrologLen];
-        unsigned char   addrEpilog[kNibbleAddrEpilogLen];
-        unsigned char   addrChecksumSeed;
+        uint8_t         addrProlog[kNibbleAddrPrologLen];
+        uint8_t         addrEpilog[kNibbleAddrEpilogLen];
+        uint8_t         addrChecksumSeed;
         bool            addrVerifyChecksum;
         bool            addrVerifyTrack;
         int             addrEpilogVerifyCount;
 
-        unsigned char   dataProlog[kNibbleDataPrologLen];
-        unsigned char   dataEpilog[kNibbleDataEpilogLen];
-        unsigned char   dataChecksumSeed;
+        uint8_t         dataProlog[kNibbleDataPrologLen];
+        uint8_t         dataEpilog[kNibbleDataEpilogLen];
+        uint8_t         dataChecksumSeed;
         bool            dataVerifyChecksum;
         int             dataEpilogVerifyCount;
 
@@ -522,10 +522,10 @@ public:
     virtual DIError WriteBlocks(long startBlock, int numBlocks, const void* buf);
 
     // read an entire nibblized track
-    virtual DIError ReadNibbleTrack(long track, unsigned char* buf,
+    virtual DIError ReadNibbleTrack(long track, uint8_t* buf,
         long* pTrackLen);
     // write a track; trackLen must be <= those in image
-    virtual DIError WriteNibbleTrack(long track, const unsigned char* buf,
+    virtual DIError WriteNibbleTrack(long track, const uint8_t* buf,
         long trackLen);
 
     // save the current image as a 2MG file
@@ -632,8 +632,8 @@ public:
     // calculate block number from cyl/head/sect on 3.5" disk
     static int CylHeadSect35ToBlock(int cyl, int head, int sect);
     // unpack nibble data from a 3.5" disk track
-    static DIError UnpackNibbleTrack35(const unsigned char* nibbleBuf,
-        long nibbleLen, unsigned char* outputBuf, int cyl, int head,
+    static DIError UnpackNibbleTrack35(const uint8_t* nibbleBuf,
+        long nibbleLen, uint8_t* outputBuf, int cyl, int head,
         LinearBitmap* pBadBlockMap);
     // compute the #of sectors per track for cylinder N (0-79)
     static int SectorsPerTrack35(int cylinder);
@@ -642,7 +642,7 @@ public:
     static void GetSectorOrderArray(SectorOrder* orderArray, SectorOrder first);
 
     // utility function used by HFS filename normalizer; available to apps
-    static inline unsigned char MacToASCII(unsigned char uch) {
+    static inline uint8_t MacToASCII(uint8_t uch) {
         if (uch < 0x20)
             return '?';
         else if (uch < 0x80)
@@ -722,7 +722,7 @@ private:
     int             fNumSectPerTrack;   // (ditto)
     long            fNumBlocks;     // for 512-byte block-addressable images
 
-    unsigned char*  fNibbleTrackBuf;    // allocated on heap
+    uint8_t*        fNibbleTrackBuf;    // allocated on heap
     int             fNibbleTrackLoaded; // track currently in buffer
 
     int             fNuFXCompressType;  // used when compressing a NuFX image
@@ -824,24 +824,24 @@ private:
         int track, int sector, const NibbleDescr* pNibbleDescr, int* pVol);
     void DecodeAddr(const CircularBufferAccess& buffer, int offset,
         short* pVol, short* pTrack, short* pSector, short* pChksum);
-    inline unsigned int ConvFrom44(unsigned char val1, unsigned char val2) {
+    inline uint16_t ConvFrom44(uint8_t val1, uint8_t val2) {
         return ((val1 << 1) | 0x01) & val2;
     }
     DIError DecodeNibbleData(const CircularBufferAccess& buffer, int idx,
-        unsigned char* sctBuf, const NibbleDescr* pNibbleDescr);
+        uint8_t* sctBuf, const NibbleDescr* pNibbleDescr);
     void EncodeNibbleData(const CircularBufferAccess& buffer, int idx,
-        const unsigned char* sctBuf, const NibbleDescr* pNibbleDescr) const;
+        const uint8_t* sctBuf, const NibbleDescr* pNibbleDescr) const;
     DIError DecodeNibble62(const CircularBufferAccess& buffer, int idx,
-        unsigned char* sctBuf, const NibbleDescr* pNibbleDescr);
+        uint8_t* sctBuf, const NibbleDescr* pNibbleDescr);
     void EncodeNibble62(const CircularBufferAccess& buffer, int idx,
-        const unsigned char* sctBuf, const NibbleDescr* pNibbleDescr) const;
+        const uint8_t* sctBuf, const NibbleDescr* pNibbleDescr) const;
     DIError DecodeNibble53(const CircularBufferAccess& buffer, int idx,
-        unsigned char* sctBuf, const NibbleDescr* pNibbleDescr);
+        uint8_t* sctBuf, const NibbleDescr* pNibbleDescr);
     void EncodeNibble53(const CircularBufferAccess& buffer, int idx,
-        const unsigned char* sctBuf, const NibbleDescr* pNibbleDescr) const;
+        const uint8_t* sctBuf, const NibbleDescr* pNibbleDescr) const;
     int TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr, int* pVol);
     DIError AnalyzeNibbleData(void);
-    inline unsigned char Conv44(unsigned short val, bool first) const {
+    inline uint8_t Conv44(uint16_t val, bool first) const {
         if (first)
             return (val >> 1) | 0xaa;
         else
@@ -849,7 +849,7 @@ private:
     }
     DIError FormatNibbles(GenericFD* pGFD) const;
 
-    static const unsigned char kMacHighASCII[];
+    static const uint8_t kMacHighASCII[];
 
     /*
      * 3.5" nibble access
@@ -857,18 +857,18 @@ private:
     static int FindNextSector35(const CircularBufferAccess& buffer, int start,
         int cyl, int head, int* pSector);
     static bool DecodeNibbleSector35(const CircularBufferAccess& buffer,
-        int start, unsigned char* sectorBuf, unsigned char* readChecksum,
-        unsigned char* calcChecksum);
+        int start, uint8_t* sectorBuf, uint8_t* readChecksum,
+        uint8_t* calcChecksum);
     static bool UnpackChecksum35(const CircularBufferAccess& buffer,
-        int offset, unsigned char* checksumBuf);
-    static void EncodeNibbleSector35(const unsigned char* sectorData,
-        unsigned char* outBuf);
+        int offset, uint8_t* checksumBuf);
+    static void EncodeNibbleSector35(const uint8_t* sectorData,
+        uint8_t* outBuf);
 
     /* static data tables */
-    static unsigned char kDiskBytes53[32];
-    static unsigned char kDiskBytes62[64];
-    static unsigned char kInvDiskBytes53[256];
-    static unsigned char kInvDiskBytes62[256];
+    static uint8_t kDiskBytes53[32];
+    static uint8_t kDiskBytes62[64];
+    static uint8_t kInvDiskBytes53[256];
+    static uint8_t kInvDiskBytes62[256];
     enum { kInvInvalidValue = 0xff };
 
 private:    // some C++ stuff to block behavior we don't support
@@ -1035,7 +1035,7 @@ public:
         long        fTotalChunks;
         long        fNumSectors;        // only valid if !fByBlocks
         //long      fFreeChunks;
-        unsigned char*  fList;
+        uint8_t*    fList;
         int         fListSize;
     };  // end of VolumeUsage class
 
@@ -1661,6 +1661,6 @@ private:
     void*               fProgressUpdateState;
 };
 
-};  // namespace DiskImgLib
+}   // namespace DiskImgLib
 
 #endif /*DISKIMG_DISKIMG_H*/

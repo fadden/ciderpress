@@ -30,15 +30,15 @@
 
 const int kBlkSize = 512;
 const int kMasterDirBlock = 2;      // also a copy in next-to-last block
-const unsigned short kSignature = 0x4244;   // or 0xd2d7 for MFS
+const uint16_t kSignature = 0x4244;   // or 0xd2d7 for MFS
 const int kMaxDirectoryDepth = 128;     // not sure what HFS limit is
 
 //namespace DiskImgLib {
 
 /* extent descriptor */
 typedef struct ExtDescriptor {
-    unsigned short  xdrStABN;       // first allocation block
-    unsigned short  xdrNumABlks;    // #of allocation blocks
+    uint16_t    xdrStABN;       // first allocation block
+    uint16_t    xdrNumABlks;    // #of allocation blocks
 } ExtDescriptor;
 /* extent data record */
 typedef struct ExtDataRec {
@@ -50,36 +50,36 @@ typedef struct ExtDataRec {
  * chapter 2 ("Data Organization on Volumes"), pages 2-60 to 2-62.
  */
 typedef struct DiskFSHFS::MasterDirBlock {
-    unsigned short  drSigWord;      // volume signature
-    unsigned long   drCrDate;       // date/time of volume creation
-    unsigned long   drLsMod;        // date/time of last modification
-    unsigned short  drAtrb;         // volume attributes
-    unsigned short  drNmPls;        // #of files in root directory
-    unsigned short  drVBMSt;        // first block of volume bitmap
-    unsigned short  drAllocPtr;     // start of next allocation search
-    unsigned short  drNmAlBlks;     // number of allocation blocks in volume
-    unsigned long   drAlBlkSiz;     // size (bytes) of allocation blocks
-    unsigned long   drClpSiz;       // default clump size
-    unsigned short  drAlBlSt;       // first allocation block in volume
-    unsigned long   drNxtCNID;      // next unused catalog node ID
-    unsigned short  drFreeBks;      // number of unused allocation blocks
-    unsigned char   drVN[28];       // volume name (pascal string)
-    unsigned long   drVolBkUp;      // date/time of last backup
-    unsigned short  drVSeqNum;      // volume backup sequence number
-    unsigned long   drWrCnt;        // volume write count
-    unsigned long   drXTClpSiz;     // clump size for extents overflow file
-    unsigned long   drCTClpSiz;     // clump size for catalog file
-    unsigned short  drNmRtDirs;     // #of directories in root directory
-    unsigned long   drFilCnt;       // #of files in volume
-    unsigned long   drDirCnt;       // #of directories in volume
-    unsigned long   drFndrInfo[8];  // information used by the Finder
-    unsigned short  drVCSize;       // size (blocks) of volume cache
-    unsigned short  drVBMCSize;     // size (blocks) of volume bitmap cache
-    unsigned short  drCtlCSize;     // size (blocks) of common volume cache
-    unsigned long   drXTFlSize;     // size (bytes) of extents overflow file
-    ExtDataRec      drXTExtRec;     // extent record for extents overflow file
-    unsigned long   drCTFlSize;     // size (bytes) of catalog file
-    ExtDataRec      drCTExtRec;     // extent record for catalog file
+    uint16_t    drSigWord;      // volume signature
+    uint32_t    drCrDate;       // date/time of volume creation
+    uint32_t    drLsMod;        // date/time of last modification
+    uint16_t    drAtrb;         // volume attributes
+    uint16_t    drNmPls;        // #of files in root directory
+    uint16_t    drVBMSt;        // first block of volume bitmap
+    uint16_t    drAllocPtr;     // start of next allocation search
+    uint16_t    drNmAlBlks;     // number of allocation blocks in volume
+    uint32_t    drAlBlkSiz;     // size (bytes) of allocation blocks
+    uint32_t    drClpSiz;       // default clump size
+    uint16_t    drAlBlSt;       // first allocation block in volume
+    uint32_t    drNxtCNID;      // next unused catalog node ID
+    uint16_t    drFreeBks;      // number of unused allocation blocks
+    uint8_t     drVN[28];       // volume name (pascal string)
+    uint32_t    drVolBkUp;      // date/time of last backup
+    uint16_t    drVSeqNum;      // volume backup sequence number
+    uint32_t    drWrCnt;        // volume write count
+    uint32_t    drXTClpSiz;     // clump size for extents overflow file
+    uint32_t    drCTClpSiz;     // clump size for catalog file
+    uint16_t    drNmRtDirs;     // #of directories in root directory
+    uint32_t    drFilCnt;       // #of files in volume
+    uint32_t    drDirCnt;       // #of directories in volume
+    uint32_t    drFndrInfo[8];  // information used by the Finder
+    uint16_t    drVCSize;       // size (blocks) of volume cache
+    uint16_t    drVBMCSize;     // size (blocks) of volume bitmap cache
+    uint16_t    drCtlCSize;     // size (blocks) of common volume cache
+    uint32_t    drXTFlSize;     // size (bytes) of extents overflow file
+    ExtDataRec  drXTExtRec;     // extent record for extents overflow file
+    uint32_t    drCTFlSize;     // size (bytes) of catalog file
+    ExtDataRec  drCTExtRec;     // extent record for catalog file
 } MasterDirBlock;
 
 //}; // namespace DiskImgLib
@@ -87,8 +87,7 @@ typedef struct DiskFSHFS::MasterDirBlock {
 /*
  * Extract fields from a Master Directory Block.
  */
-/*static*/ void
-DiskFSHFS::UnpackMDB(const unsigned char* buf, MasterDirBlock* pMDB)
+/*static*/ void DiskFSHFS::UnpackMDB(const uint8_t* buf, MasterDirBlock* pMDB)
 {
     pMDB->drSigWord = GetShortBE(&buf[0x00]);
     pMDB->drCrDate = GetLongBE(&buf[0x02]);
@@ -129,12 +128,11 @@ DiskFSHFS::UnpackMDB(const unsigned char* buf, MasterDirBlock* pMDB)
  *
  * We test a few fields in the master directory block for validity.
  */
-/*static*/ DIError
-DiskFSHFS::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+/*static*/ DIError DiskFSHFS::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
     MasterDirBlock mdb;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
 
     dierr = pImg->ReadBlockSwapped(kMasterDirBlock, blkBuf, imageOrder,
                 DiskImg::kSectorOrderProDOS);
@@ -181,8 +179,7 @@ bail:
 /*
  * Test to see if the image is an HFS disk.
  */
-/*static*/ DIError
-DiskFSHFS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSHFS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     //return kDIErrFilesystemNotFound;      // DEBUG DEBUG DEBUG
@@ -209,16 +206,14 @@ DiskFSHFS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     return kDIErrFilesystemNotFound;
 }
 
-
 /*
  * Load some stuff from the volume header.
  */
-DIError
-DiskFSHFS::LoadVolHeader(void)
+DIError DiskFSHFS::LoadVolHeader(void)
 {
     DIError dierr = kDIErrNone;
     MasterDirBlock mdb;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
 
     if (fLocalTimeOffset == -1) {
         struct tm* ptm;
@@ -264,7 +259,7 @@ DiskFSHFS::LoadVolHeader(void)
     fAllocationBlockSize = mdb.drAlBlkSiz;
     fTotalBlocks = fpImg->GetNumBlocks();
 
-    unsigned long minBlocks;
+    uint32_t minBlocks;
     minBlocks = mdb.drNmAlBlks * (mdb.drAlBlkSiz / kBlkSize) + mdb.drAlBlSt + 2;
     assert(fTotalBlocks >= minBlocks);      // verified during fs tests
 
@@ -319,8 +314,7 @@ bail:
 /*
  * Set the volume ID based on fVolumeName.
  */
-void
-DiskFSHFS::SetVolumeID(void)
+void DiskFSHFS::SetVolumeID(void)
 {
     strcpy(fVolumeID, "HFS ");
     strcat(fVolumeID, fVolumeName);
@@ -329,8 +323,7 @@ DiskFSHFS::SetVolumeID(void)
 /*
  * Blank out the volume usage map.  The HFS volume bitmap is not yet supported.
  */
-void
-DiskFSHFS::SetVolumeUsageMap(void)
+void DiskFSHFS::SetVolumeUsageMap(void)
 {
     VolumeUsage::ChunkState cstate;
     long block;
@@ -345,12 +338,10 @@ DiskFSHFS::SetVolumeUsageMap(void)
         fVolumeUsage.SetChunkState(block, &cstate);
 }
 
-
 /*
  * Print some interesting fields to the debug log.
  */
-void
-DiskFSHFS::DumpVolHeader(void)
+void DiskFSHFS::DumpVolHeader(void)
 {
     LOGI("HFS volume header read:");
     LOGI("  volume name = '%s'", fVolumeName);
@@ -376,8 +367,7 @@ DiskFSHFS::DumpVolHeader(void)
  * on out must be handled somehow, possibly by claiming that the disk is
  * completely full and has no files on it.
  */
-DIError
-DiskFSHFS::Initialize(InitMode initMode)
+DIError DiskFSHFS::Initialize(InitMode initMode)
 {
     DIError dierr = kDIErrNone;
     char msg[kMaxVolumeName + 32];
@@ -443,8 +433,7 @@ bail:
  *
  * Returns -1 on failure.
  */
-unsigned long
-DiskFSHFS::LibHFSCB(void* vThis, int op, unsigned long arg1, void* arg2)
+unsigned long DiskFSHFS::LibHFSCB(void* vThis, int op, unsigned long arg1, void* arg2)
 {
     DiskFSHFS* pThis = (DiskFSHFS*) vThis;
     unsigned long result = (unsigned long) -1;
@@ -492,12 +481,10 @@ DiskFSHFS::LibHFSCB(void* vThis, int op, unsigned long arg1, void* arg2)
     return result;
 }
 
-
 /*
  * Determine the amount of free space on the disk.
  */
-DIError
-DiskFSHFS::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
+DIError DiskFSHFS::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     int* pUnitSize) const
 {
     assert(fHfsVol != NULL);
@@ -516,8 +503,7 @@ DiskFSHFS::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
 /*
  * Recursively traverse the filesystem.
  */
-DIError
-DiskFSHFS::RecursiveDirAdd(A2File* pParent, const char* basePath, int depth)
+DIError DiskFSHFS::RecursiveDirAdd(A2File* pParent, const char* basePath, int depth)
 {
     DIError dierr = kDIErrNone;
     hfsdir* dir;
@@ -609,14 +595,14 @@ void A2FileHFS::InitEntry(const hfsdirent* dirEntry)
         fDataLength = 0;
         fRsrcLength = -1;
     } else {
-        unsigned char* pType;
+        uint8_t* pType;
 
         fIsDir = false;
 
-        pType = (unsigned char*) dirEntry->u.file.type;
+        pType = (uint8_t*) dirEntry->u.file.type;
         fType =
             pType[0] << 24 | pType[1] << 16 | pType[2] << 8 | pType[3];
-        pType = (unsigned char*) dirEntry->u.file.creator;
+        pType = (uint8_t*) dirEntry->u.file.creator;
         fCreator =
             pType[0] << 24 | pType[1] << 16 | pType[2] << 8 | pType[3];
         fDataLength = dirEntry->u.file.dsize;
@@ -641,8 +627,7 @@ void A2FileHFS::InitEntry(const hfsdirent* dirEntry)
 /*
  * Return "true" if "name" is valid for use as an HFS volume name.
  */
-/*static*/ bool
-DiskFSHFS::IsValidVolumeName(const char* name)
+/*static*/ bool DiskFSHFS::IsValidVolumeName(const char* name)
 {
     if (name == NULL)
         return false;
@@ -663,8 +648,7 @@ DiskFSHFS::IsValidVolumeName(const char* name)
 /*
  * Return "true" if "name" is valid for use as an HFS file name.
  */
-/*static*/ bool
-DiskFSHFS::IsValidFileName(const char* name)
+/*static*/ bool DiskFSHFS::IsValidFileName(const char* name)
 {
     if (name == NULL)
         return false;
@@ -685,8 +669,7 @@ DiskFSHFS::IsValidFileName(const char* name)
 /*
  * Format the current volume with HFS.
  */
-DIError
-DiskFSHFS::Format(DiskImg* pDiskImg, const char* volName)
+DIError DiskFSHFS::Format(DiskImg* pDiskImg, const char* volName)
 {
     assert(strlen(volName) > 0 && strlen(volName) <= kMaxVolumeName);
 
@@ -712,7 +695,6 @@ DiskFSHFS::Format(DiskImg* pDiskImg, const char* volName)
     return kDIErrNone;
 }
 
-
 /*
  * Normalize an HFS path.  Invokes DoNormalizePath and handles the buffer
  * management (if the normalized path doesn't fit in "*pNormalizedBufLen"
@@ -721,8 +703,7 @@ DiskFSHFS::Format(DiskImg* pDiskImg, const char* volName)
  * This is invoked from the generalized "add" function in CiderPress, which
  * doesn't want to understand the ins and outs of pathnames.
  */
-DIError
-DiskFSHFS::NormalizePath(const char* path, char fssep,
+DIError DiskFSHFS::NormalizePath(const char* path, char fssep,
     char* normalizedBuf, int* pNormalizedBufLen)
 {
     DIError dierr = kDIErrNone;
@@ -760,8 +741,7 @@ bail:
  *
  * The caller must delete[] "*pNormalizedPath".
  */
-DIError
-DiskFSHFS::DoNormalizePath(const char* path, char fssep,
+DIError DiskFSHFS::DoNormalizePath(const char* path, char fssep,
     char** pNormalizedPath)
 {
     DIError dierr = kDIErrNone;
@@ -876,11 +856,10 @@ bail:
  * Returns <0, ==0, or >0 depending on whether sstr1 is lexically less than,
  * equal to, or greater than sstr2.
  */
-/*static*/ int
-DiskFSHFS::CompareMacFileNames(const char* sstr1, const char* sstr2)
+/*static*/ int DiskFSHFS::CompareMacFileNames(const char* sstr1, const char* sstr2)
 {
-    const unsigned char* str1 = (const unsigned char*) sstr1;
-    const unsigned char* str2 = (const unsigned char*) sstr2;
+    const uint8_t* str1 = (const uint8_t*) sstr1;
+    const uint8_t* str2 = (const uint8_t*) sstr2;
     int diff;
 
     while (*str1 && *str2) {
@@ -906,8 +885,7 @@ DiskFSHFS::CompareMacFileNames(const char* sstr1, const char* sstr2)
  * but may require disk reads.  We use the DiskFS interface, on the assumption
  * that someday we'll switch the linear list to a tree structure.
  */
-DIError
-DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
+DIError DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
 {
     A2File* pFile;
     const int kMaxExtra = 3;
@@ -984,7 +962,6 @@ DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
     return kDIErrNone;
 }
 
-
 /*
  * Create a new file or directory.  Automatically creates the base path
  * if necessary.
@@ -993,8 +970,7 @@ DiskFSHFS::MakeFileNameUnique(const char* pathName, char** pUniqueName)
  * a stronger set of utility functions in the parent class now that we have
  * more than one hierarchical file system.
  */
-DIError
-DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
+DIError DiskFSHFS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
 {
     DIError dierr = kDIErrNone;
     char typeStr[5], creatorStr[5];
@@ -1317,8 +1293,7 @@ bail:
  *
  * We need to use a different call for file vs. directory.
  */
-DIError
-DiskFSHFS::DeleteFile(A2File* pGenericFile)
+DIError DiskFSHFS::DeleteFile(A2File* pGenericFile)
 {
     DIError dierr = kDIErrNone;
     char* pathName = NULL;
@@ -1373,8 +1348,7 @@ bail:
  * get fixed up when we copy them to a ProDOS disk, which is the only way
  * 8-bit AppleWorks can get at them.
  */
-DIError
-DiskFSHFS::RenameFile(A2File* pGenericFile, const char* newName)
+DIError DiskFSHFS::RenameFile(A2File* pGenericFile, const char* newName)
 {
     DIError dierr = kDIErrNone;
     A2FileHFS* pFile = (A2FileHFS*) pGenericFile;
@@ -1474,8 +1448,7 @@ bail:
  * [This was lifted straight out of the ProDOS sources.  It should probably
  * be moved into generic DiskFS.]
  */
-DIError
-DiskFSHFS::RegeneratePathName(A2FileHFS* pFile)
+DIError DiskFSHFS::RegeneratePathName(A2FileHFS* pFile)
 {
     A2FileHFS* pParent;
     char* buf = NULL;
@@ -1532,8 +1505,7 @@ DiskFSHFS::RegeneratePathName(A2FileHFS* pFile)
  * Mac convention is to *not* start the volume name with a colon.  In fact,
  * the libhfs convention is to *end* the volume names with a colon.
  */
-DIError
-DiskFSHFS::RenameVolume(const char* newName)
+DIError DiskFSHFS::RenameVolume(const char* newName)
 {
     DIError dierr = kDIErrNone;
     A2FileHFS* pFile;
@@ -1579,8 +1551,7 @@ bail:
 /*
  * Set file attributes.
  */
-DIError
-DiskFSHFS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
+DIError DiskFSHFS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     long accessFlags)
 {
     DIError dierr = kDIErrNone;
@@ -1616,12 +1587,12 @@ DiskFSHFS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     else
         dirEnt.flags &= ~HFS_ISLOCKED;
 
-    LOGI(" HFS setting '%s' to fdflags=0x%04x flags=0x%04x",
+    LOGD(" HFS setting '%s' to fdflags=0x%04x flags=0x%04x",
         colonPath, dirEnt.fdflags, dirEnt.flags);
-    LOGI("  type=0x%08lx creator=0x%08lx", fileType, auxType);
+    LOGD("  type=0x%08lx creator=0x%08lx", fileType, auxType);
 
     if (hfs_setattr(fHfsVol, colonPath, &dirEnt) != 0) {
-        LOGI(" HFS setattr '%s' failed: %s", colonPath, hfs_error);
+        LOGW(" HFS setattr '%s' failed: %s", colonPath, hfs_error);
         dierr = kDIErrGeneric;
         goto bail;
     }
@@ -1649,8 +1620,7 @@ bail:
 /*
  * Dump the contents of the A2File structure.
  */
-void
-A2FileHFS::Dump(void) const
+void A2FileHFS::Dump(void) const
 {
     LOGI("A2FileHFS '%s'", fFileName);
 }
@@ -1701,7 +1671,7 @@ long A2FileHFS::GetFileType(void) const
         return digit1 << 4 | digit2;
     }
 
-    unsigned char flag = (unsigned char)(fType >> 24);
+    uint8_t flag = (uint8_t)(fType >> 24);
     if (flag == 0x70) {     // 'p'
         /* type and aux embedded within */
         return (fType >> 16) & 0xff;
@@ -1718,7 +1688,7 @@ long A2FileHFS::GetFileType(void) const
         else
             return 0x00;
     }
-};
+}
 
 /*
  * If this has a ProDOS aux type, convert it.
@@ -1728,7 +1698,7 @@ long A2FileHFS::GetAuxType(void) const
     if (fCreator != kPdosType)
         return fCreator;
 
-    unsigned char flag = (unsigned char)(fType >> 24);
+    uint8_t flag = (uint8_t)(fType >> 24);
     if (flag == 0x70) {     // 'p'
         /* type and aux embedded within */
         return fType & 0xffff;
@@ -1743,8 +1713,7 @@ long A2FileHFS::GetAuxType(void) const
  *
  * If we're in the volume directory, pass in "" for the base path (not NULL).
  */
-void
-A2FileHFS::SetPathName(const char* basePath, const char* fileName)
+void A2FileHFS::SetPathName(const char* basePath, const char* fileName)
 {
     assert(basePath != NULL && fileName != NULL);
     if (fPathName != NULL)
@@ -1774,8 +1743,7 @@ A2FileHFS::SetPathName(const char* basePath, const char* fileName)
  *
  * The caller must delete[] the return value.
  */
-char*
-A2FileHFS::GetLibHFSPathName(void) const
+char* A2FileHFS::GetLibHFSPathName(void) const
 {
     char* nameBuf;
 
@@ -1794,8 +1762,7 @@ A2FileHFS::GetLibHFSPathName(void) const
  * conversions discard the file's aux type and therefore are unsuitable,
  * and the conversion of SRC throws away its identity.
  */
-/*static*/ void
-A2FileHFS::ConvertTypeToHFS(long fileType, long auxType,
+/*static*/ void A2FileHFS::ConvertTypeToHFS(long fileType, long auxType,
         char* pType, char* pCreator)
 {
     if (fileType == 0x00 && auxType == 0x0000) {
@@ -1808,9 +1775,9 @@ A2FileHFS::ConvertTypeToHFS(long fileType, long auxType,
         auxType >= 0 && auxType <= 0xffff)
     {
         pType[0] = 'p';
-        pType[1] = (unsigned char) fileType;
-        pType[2] = (unsigned char) (auxType >> 8);
-        pType[3] = (unsigned char) auxType;
+        pType[1] = (uint8_t) fileType;
+        pType[2] = (uint8_t) (auxType >> 8);
+        pType[3] = (uint8_t) auxType;
         pType[4] = '\0';
         pCreator[0] = 'p';
         pCreator[1] = 'd';
@@ -1818,15 +1785,15 @@ A2FileHFS::ConvertTypeToHFS(long fileType, long auxType,
         pCreator[3] = 's';
         pCreator[4] = '\0';
     } else {
-        pType[0] = (unsigned char)(fileType >> 24);
-        pType[1] = (unsigned char)(fileType >> 16);
-        pType[2] = (unsigned char)(fileType >> 8);
-        pType[3] = (unsigned char) fileType;
+        pType[0] = (uint8_t)(fileType >> 24);
+        pType[1] = (uint8_t)(fileType >> 16);
+        pType[2] = (uint8_t)(fileType >> 8);
+        pType[3] = (uint8_t) fileType;
         pType[4] = '\0';
-        pCreator[0] = (unsigned char)(auxType >> 24);
-        pCreator[1] = (unsigned char)(auxType >> 16);
-        pCreator[2] = (unsigned char)(auxType >> 8);
-        pCreator[3] = (unsigned char) auxType;
+        pCreator[0] = (uint8_t)(auxType >> 24);
+        pCreator[1] = (uint8_t)(auxType >> 16);
+        pCreator[2] = (uint8_t)(auxType >> 8);
+        pCreator[3] = (uint8_t) auxType;
         pCreator[4] = '\0';
     }
 }
@@ -1840,8 +1807,7 @@ A2FileHFS::ConvertTypeToHFS(long fileType, long auxType,
  * by the rest of CiderPress (and most of the civilized world), so instead
  * of storing the pathname that way we just tack it on here.
  */
-DIError
-A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     DIError dierr = kDIErrNone;
@@ -1885,8 +1851,7 @@ bail:
 /*
  * Read a chunk of data from the fake file.
  */
-DIError
-A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
 {
     long result;
 
@@ -1927,8 +1892,7 @@ A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
  * one piece.  This function does work correctly with multiple smaller
  * pieces though, because it lets libhfs do all the work.)
  */
-DIError
-A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
 {
     long result;
 
@@ -1967,8 +1931,7 @@ A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
 /*
  * Seek to a new offset.
  */
-DIError
-A2FDHFS::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDHFS::Seek(di_off_t offset, DIWhence whence)
 {
     int hfsWhence;
     unsigned long result;
@@ -1993,8 +1956,7 @@ A2FDHFS::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDHFS::Tell(void)
+di_off_t A2FDHFS::Tell(void)
 {
     di_off_t offset;
 
@@ -2006,8 +1968,7 @@ A2FDHFS::Tell(void)
 /*
  * Release file state, and tell our parent to destroy us.
  */
-DIError
-A2FDHFS::Close(void)
+DIError A2FDHFS::Close(void)
 {
     hfsdirent dirEnt;
 
@@ -2050,15 +2011,14 @@ A2FDHFS::Close(void)
  * Return the #of sectors/blocks in the file.  Not supported, but since HFS
  * doesn't support "sparse" files we can fake it.
  */
-long
-A2FDHFS::GetSectorCount(void) const
+long A2FDHFS::GetSectorCount(void) const
 {
     A2FileHFS* pFile = (A2FileHFS*) fpFile;
     return (long) ((pFile->fDataLength+255) / 256 +
                    (pFile->fRsrcLength+255) / 256);
 }
-long
-A2FDHFS::GetBlockCount(void) const
+
+long A2FDHFS::GetBlockCount(void) const
 {
     A2FileHFS* pFile = (A2FileHFS*) fpFile;
     return (long) ((pFile->fDataLength+511) / 512 +
@@ -2068,16 +2028,15 @@ A2FDHFS::GetBlockCount(void) const
 /*
  * Return the Nth track/sector in this file.  Not supported.
  */
-DIError
-A2FDHFS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDHFS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
     return kDIErrNotSupported;
 }
+
 /*
  * Return the Nth 512-byte block in this file.  Not supported.
  */
-DIError
-A2FDHFS::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDHFS::GetStorage(long blockIdx, long* pBlock) const
 {
     return kDIErrNotSupported;
 }
@@ -2094,8 +2053,7 @@ A2FDHFS::GetStorage(long blockIdx, long* pBlock) const
  * on out must be handled somehow, possibly by claiming that the disk is
  * completely full and has no files on it.
  */
-DIError
-DiskFSHFS::Initialize(InitMode initMode)
+DIError DiskFSHFS::Initialize(InitMode initMode)
 {
     DIError dierr = kDIErrNone;
 
@@ -2112,12 +2070,10 @@ bail:
     return dierr;
 }
 
-
 /*
  * Fill a buffer with some interesting stuff, and add it to the file list.
  */
-void
-DiskFSHFS::CreateFakeFile(void)
+void DiskFSHFS::CreateFakeFile(void)
 {
     A2FileHFS* pFile;
     char buf[768];      // currently running about 475
@@ -2156,7 +2112,7 @@ DiskFSHFS::CreateFakeFile(void)
         dateBuf[len-1] = '\0';
 
     memset(buf, 0, sizeof(buf));
-    sprintf(buf, kFormatMsg,
+    snprintf(buf, NELEM(buf), kFormatMsg,
         fVolumeName,
         capacity,
         (double) capacity / 2048.0,
@@ -2194,8 +2150,7 @@ DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
 /*
  * Not a whole lot to do.
  */
-DIError
-A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     A2FDHFS* pOpenFile = NULL;
@@ -2224,10 +2179,9 @@ A2FileHFS::Open(A2FileDescr** ppOpenFile, bool readOnly,
 /*
  * Read a chunk of data from the fake file.
  */
-DIError
-A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" HFS reading %d bytes from '%s' (offset=%ld)",
+    LOGD(" HFS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileHFS* pFile = (A2FileHFS*) fpFile;
@@ -2251,8 +2205,7 @@ A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
 /*
  * Write data at the current offset.
  */
-DIError
-A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
 {
     return kDIErrNotSupported;
 }
@@ -2260,8 +2213,7 @@ A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
 /*
  * Seek to a new offset.
  */
-DIError
-A2FDHFS::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDHFS::Seek(di_off_t offset, DIWhence whence)
 {
     di_off_t fileLen = ((A2FileHFS*) fpFile)->fDataLength;
 
@@ -2296,8 +2248,7 @@ A2FDHFS::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDHFS::Tell(void)
+di_off_t A2FDHFS::Tell(void)
 {
     return fOffset;
 }
@@ -2305,8 +2256,7 @@ A2FDHFS::Tell(void)
 /*
  * Release file state, and tell our parent to destroy us.
  */
-DIError
-A2FDHFS::Close(void)
+DIError A2FDHFS::Close(void)
 {
     fpFile->CloseDescr(this);
     return kDIErrNone;
@@ -2315,14 +2265,13 @@ A2FDHFS::Close(void)
 /*
  * Return the #of sectors/blocks in the file.
  */
-long
-A2FDHFS::GetSectorCount(void) const
+long A2FDHFS::GetSectorCount(void) const
 {
     A2FileHFS* pFile = (A2FileHFS*) fpFile;
     return (long) ((pFile->fDataLength+255) / 256);
 }
-long
-A2FDHFS::GetBlockCount(void) const
+
+long A2FDHFS::GetBlockCount(void) const
 {
     A2FileHFS* pFile = (A2FileHFS*) fpFile;
     return (long) ((pFile->fDataLength+511) / 512);
@@ -2331,16 +2280,15 @@ A2FDHFS::GetBlockCount(void) const
 /*
  * Return the Nth track/sector in this file.
  */
-DIError
-A2FDHFS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDHFS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
     return kDIErrNotSupported;
 }
+
 /*
  * Return the Nth 512-byte block in this file.
  */
-DIError
-A2FDHFS::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDHFS::GetStorage(long blockIdx, long* pBlock) const
 {
     return kDIErrNotSupported;
 }

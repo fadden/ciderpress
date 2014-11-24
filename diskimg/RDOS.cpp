@@ -49,12 +49,11 @@ const int kNumDirEntryPerSect = (256 / kDirectoryEntryLen); // 8
  * The initial value of "pFormatFound" is ignored, because we can reliably
  * detect which variant we're looking at.
  */
-static DIError
-TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
+static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
     DiskImg::FSFormat* pFormatFound)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
 
 
     if (pImg->GetNumSectPerTrack() == 13) {
@@ -106,7 +105,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
      */
     {
         int track, sector, offset;
-        unsigned char orMask;
+        uint8_t orMask;
         static const char* kCompare = "<NAME>";
         DiskImg::SectorOrder order;
 
@@ -133,7 +132,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
 
         int i;
         for (i = strlen(kCompare)-1; i >= 0; i--) {
-            if (sctBuf[offset+i] != ((unsigned char)kCompare[i] | orMask))
+            if (sctBuf[offset+i] != ((uint8_t)kCompare[i] | orMask))
                 break;
         }
         if (i >= 0) {
@@ -153,8 +152,7 @@ bail:
 /*
  * Common RDOS test code.
  */
-/*static*/ DIError
-DiskFSRDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSRDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     if (!pImg->GetHasSectors()) {
@@ -190,8 +188,7 @@ DiskFSRDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 /*
  * Test to see if the image is an RDOS 3.3 disk.
  */
-/*static*/ DIError
-DiskFSRDOS::TestFS33(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSRDOS::TestFS33(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     FSLeniency leniency)
 {
     DIError dierr;
@@ -211,8 +208,7 @@ DiskFSRDOS::TestFS33(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 /*
  * Test to see if the image is an RDOS 3.2 disk.
  */
-/*static*/ DIError
-DiskFSRDOS::TestFS32(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSRDOS::TestFS32(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     FSLeniency leniency)
 {
     DIError dierr;
@@ -232,8 +228,7 @@ DiskFSRDOS::TestFS32(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 /*
  * Test to see if the image is an RDOS 3 (cracked 3.2) disk.
  */
-/*static*/ DIError
-DiskFSRDOS::TestFS3(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSRDOS::TestFS3(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     FSLeniency leniency)
 {
     DIError dierr;
@@ -259,8 +254,7 @@ DiskFSRDOS::TestFS3(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
  * on out must be handled somehow, possibly by claiming that the disk is
  * completely full and has no files on it.
  */
-DIError
-DiskFSRDOS::Initialize(void)
+DIError DiskFSRDOS::Initialize(void)
 {
     DIError dierr = kDIErrNone;
     const char* volStr;
@@ -314,15 +308,14 @@ bail:
  *
  * To make life easy we slurp the whole thing into memory.
  */
-DIError
-DiskFSRDOS::ReadCatalog(void)
+DIError DiskFSRDOS::ReadCatalog(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* dir = NULL;
-    unsigned char* dirPtr;
+    uint8_t* dir = NULL;
+    uint8_t* dirPtr;
     int track, sector;
     
-    dir = new unsigned char[kSctSize * kNumCatSectors];
+    dir = new uint8_t[kSctSize * kNumCatSectors];
     if (dir == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -391,8 +384,7 @@ bail:
  * Create the volume usage map.  Since RDOS volumes have neither
  * in-use maps nor index blocks, this is pretty straightforward.
  */
-DIError
-DiskFSRDOS::ScanFileUsage(void)
+DIError DiskFSRDOS::ScanFileUsage(void)
 {
     int track, sector, block, count;
 
@@ -419,8 +411,7 @@ DiskFSRDOS::ScanFileUsage(void)
 /*
  * Update an entry in the usage map.
  */
-void
-DiskFSRDOS::SetSectorUsage(long track, long sector,
+void DiskFSRDOS::SetSectorUsage(long track, long sector,
     VolumeUsage::ChunkPurpose purpose)
 {
     VolumeUsage::ChunkState cstate;
@@ -447,8 +438,7 @@ DiskFSRDOS::SetSectorUsage(long track, long sector,
 /*
  * Convert RDOS file type to ProDOS file type.
  */
-long
-A2FileRDOS::GetFileType(void) const
+long A2FileRDOS::GetFileType(void) const
 {
     long retval;
 
@@ -463,12 +453,10 @@ A2FileRDOS::GetFileType(void) const
     return retval;
 }
 
-
 /*
  * Dump the contents of the A2File structure.
  */
-void
-A2FileRDOS::Dump(void) const
+void A2FileRDOS::Dump(void) const
 {
     LOGI("A2FileRDOS '%s' (type=%d)", fFileName, fFileType);
     LOGI("  start=%d num=%d len=%d addr=0x%04x",
@@ -484,10 +472,9 @@ A2FileRDOS::Dump(void) const
  * low-ASCII.  The inverse-mode correction turns it into punctuation, but
  * I don't see a good way around it.  Or any particular need to fix it.
  */
-void
-A2FileRDOS::FixFilename(void)
+void A2FileRDOS::FixFilename(void)
 {
-    DiskFSDOS33::LowerASCII((unsigned char*)fFileName, kMaxFileName);
+    DiskFSDOS33::LowerASCII((uint8_t*)fFileName, kMaxFileName);
     TrimTrailingSpaces(fFileName);
 }
 
@@ -496,8 +483,7 @@ A2FileRDOS::FixFilename(void)
  *
  * Assumes the filename has already been converted to low ASCII.
  */
-void
-A2FileRDOS::TrimTrailingSpaces(char* filename)
+void A2FileRDOS::TrimTrailingSpaces(char* filename)
 {
     char* lastspc = filename + strlen(filename);
 
@@ -511,12 +497,10 @@ A2FileRDOS::TrimTrailingSpaces(char* filename)
     *(lastspc+1) = '\0';
 }
 
-
 /*
  * Not a whole lot to do, since there's no fancy index blocks.
  */
-DIError
-A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     if (fpOpenFile != NULL)
@@ -547,8 +531,7 @@ A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
 /*
  * Read a chunk of data from the current offset.
  */
-DIError
-A2FDRDOS::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDRDOS::Read(void* buf, size_t len, size_t* pActual)
 {
     LOGI(" RDOS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
@@ -568,7 +551,7 @@ A2FDRDOS::Read(void* buf, size_t len, size_t* pActual)
     long incrLen = len;
 
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     long block = pFile->fStartSector + (long) (fOffset / kSctSize);
     int bufOffset = (int) (fOffset % kSctSize);     // (& 0xff)
     int ourSectPerTrack = GetOurSectPerTrack();
@@ -611,8 +594,7 @@ A2FDRDOS::Read(void* buf, size_t len, size_t* pActual)
 /*
  * Write data at the current offset.
  */
-DIError
-A2FDRDOS::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDRDOS::Write(const void* buf, size_t len, size_t* pActual)
 {
     //if (!fOpen)
     //  return kDIErrNotReady;
@@ -622,8 +604,7 @@ A2FDRDOS::Write(const void* buf, size_t len, size_t* pActual)
 /*
  * Seek to a new offset.
  */
-DIError
-A2FDRDOS::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDRDOS::Seek(di_off_t offset, DIWhence whence)
 {
     //if (!fOpen)
     //  return kDIErrNotReady;
@@ -661,8 +642,7 @@ A2FDRDOS::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDRDOS::Tell(void)
+di_off_t A2FDRDOS::Tell(void)
 {
     //if (!fOpen)
     //  return kDIErrNotReady;
@@ -673,8 +653,7 @@ A2FDRDOS::Tell(void)
 /*
  * Release file state, such as it is.
  */
-DIError
-A2FDRDOS::Close(void)
+DIError A2FDRDOS::Close(void)
 {
     fpFile->CloseDescr(this);
     return kDIErrNone;
@@ -683,15 +662,14 @@ A2FDRDOS::Close(void)
 /*
  * Return the #of sectors/blocks in the file.
  */
-long
-A2FDRDOS::GetSectorCount(void) const
+long A2FDRDOS::GetSectorCount(void) const
 {
     //if (!fOpen)
     //  return kDIErrNotReady;
     return ((A2FileRDOS*) fpFile)->fNumSectors;
 }
-long
-A2FDRDOS::GetBlockCount(void) const
+
+long A2FDRDOS::GetBlockCount(void) const
 {
     //if (!fOpen)
     //  return kDIErrNotReady;
@@ -701,8 +679,7 @@ A2FDRDOS::GetBlockCount(void) const
 /*
  * Return the Nth track/sector in this file.
  */
-DIError
-A2FDRDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDRDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
     //if (!fOpen)
     //  return kDIErrNotReady;
@@ -717,11 +694,11 @@ A2FDRDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 
     return kDIErrNone;
 }
+
 /*
  * Return the Nth 512-byte block in this file.
  */
-DIError
-A2FDRDOS::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDRDOS::GetStorage(long blockIdx, long* pBlock) const
 {
     //if (!fOpen)
     //  return kDIErrNotReady;

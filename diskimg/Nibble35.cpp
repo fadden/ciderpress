@@ -73,8 +73,7 @@ enum {
  * There are 12 sectors per track for the first 16 cylinders, 11 sectors
  * per track for the next 16, and so on until we're down to 8 per track.
  */
-/*static*/ int
-DiskImg::SectorsPerTrack35(int cylinder)
+/*static*/ int DiskImg::SectorsPerTrack35(int cylinder)
 {
     return kMaxSectorsPerTrack - (cylinder / 16);
 }
@@ -82,8 +81,7 @@ DiskImg::SectorsPerTrack35(int cylinder)
 /*
  * Convert cylinder/head/sector to a block number on a 3.5" disk.
  */
-/*static*/ int
-DiskImg::CylHeadSect35ToBlock(int cyl, int head, int sect)
+/*static*/ int DiskImg::CylHeadSect35ToBlock(int cyl, int head, int sect)
 {
     int i, block;
 
@@ -108,16 +106,15 @@ DiskImg::CylHeadSect35ToBlock(int cyl, int head, int sect)
  *
  * "outputBuf" must be able to hold 512 * 12 sectors of decoded sector data.
  */
-/*static*/ DIError
-DiskImg::UnpackNibbleTrack35(const unsigned char* nibbleBuf,
-    long nibbleLen, unsigned char* outputBuf, int cyl, int head,
+/*static*/ DIError DiskImg::UnpackNibbleTrack35(const uint8_t* nibbleBuf,
+    long nibbleLen, uint8_t* outputBuf, int cyl, int head,
     LinearBitmap* pBadBlockMap)
 {
     CircularBufferAccess buffer(nibbleBuf, nibbleLen);
     bool foundSector[kMaxSectorsPerTrack];
-    unsigned char sectorBuf[kSectorSize35];
-    unsigned char readSum[kDataChecksumLen];
-    unsigned char calcSum[kDataChecksumLen];
+    uint8_t sectorBuf[kSectorSize35];
+    uint8_t readSum[kDataChecksumLen];
+    uint8_t calcSum[kDataChecksumLen];
     int i;
 
     memset(&foundSector, 0, sizeof(foundSector));
@@ -189,9 +186,8 @@ DiskImg::UnpackNibbleTrack35(const unsigned char* nibbleBuf,
 /*
  * Returns the offset of the next sector, or -1 if we went off the end.
  */
-/*static*/ int
-DiskImg::FindNextSector35(const CircularBufferAccess& buffer, int start,
-    int cyl, int head, int* pSector)
+/*static*/ int DiskImg::FindNextSector35(const CircularBufferAccess& buffer,
+    int start, int cyl, int head, int* pSector)
 {
     int end = buffer.GetSize();
     int i;
@@ -275,16 +271,15 @@ DiskImg::FindNextSector35(const CircularBufferAccess& buffer, int start,
  * not return false on a checksum mismatch -- it's up to the caller to
  * verify the checksum if desired.
  */
-/*static*/ bool
-DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
-    unsigned char* sectorBuf, unsigned char* readChecksum,
-    unsigned char* calcChecksum)
+/*static*/ bool DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer,
+    int start, uint8_t* sectorBuf, uint8_t* readChecksum,
+    uint8_t* calcChecksum)
 {
     const int kMaxDataReach35 = 48;       // fairly arbitrary
-    unsigned char* sectorBufStart = sectorBuf;
-    unsigned char part0[kChunkSize35], part1[kChunkSize35], part2[kChunkSize35];
+    uint8_t* sectorBufStart = sectorBuf;
+    uint8_t part0[kChunkSize35], part1[kChunkSize35], part2[kChunkSize35];
     unsigned int chk0, chk1, chk2;
-    unsigned char val, nib0, nib1, nib2, twos;
+    uint8_t val, nib0, nib1, nib2, twos;
     int i, off;
 
     /*
@@ -402,7 +397,7 @@ DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
 //#define TEST_ENC_35
 #ifdef TEST_ENC_35
     {
-        unsigned char nibBuf[kNibblizedOutputLen];
+        uint8_t nibBuf[kNibblizedOutputLen];
         memset(nibBuf, 0xcc, sizeof(nibBuf));
 
         /* encode what we just decoded */
@@ -416,7 +411,7 @@ DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
                  * two flaky bits.
                  */
                 if (i == 696) {
-                    unsigned char val1, val2;
+                    uint8_t val1, val2;
                     val1 = kInvDiskBytes62[buffer[start + i]];
                     val2 = kInvDiskBytes62[nibBuf[i]];
                     if ((val1 & 0xfc) != (val2 & 0xfc)) {
@@ -444,11 +439,10 @@ DiskImg::DecodeNibbleSector35(const CircularBufferAccess& buffer, int start,
  *
  * Returns "true" if all goes well, "false" otherwise.
  */
-/*static*/ bool
-DiskImg::UnpackChecksum35(const CircularBufferAccess& buffer, int offset,
-    unsigned char* checksumBuf)
+/*static*/ bool DiskImg::UnpackChecksum35(const CircularBufferAccess& buffer,
+    int offset, uint8_t* checksumBuf)
 {
-    unsigned char nib0, nib1, nib2, twos;
+    uint8_t nib0, nib1, nib2, twos;
     
     twos = kInvDiskBytes62[buffer[offset++]];
     nib2 = kInvDiskBytes62[buffer[offset++]];
@@ -476,15 +470,14 @@ DiskImg::UnpackChecksum35(const CircularBufferAccess& buffer, int offset,
  *
  * "outBuf" must be able to hold kNibblizedOutputLen bytes.
  */
-/*static*/ void
-DiskImg::EncodeNibbleSector35(const unsigned char* sectorData,
-    unsigned char* outBuf)
+/*static*/ void DiskImg::EncodeNibbleSector35(const uint8_t* sectorData,
+    uint8_t* outBuf)
 {
-    const unsigned char* sectorDataStart = sectorData;
-    unsigned char* outBufStart = outBuf;
-    unsigned char part0[kChunkSize35], part1[kChunkSize35], part2[kChunkSize35];
+    const uint8_t* sectorDataStart = sectorData;
+    uint8_t* outBufStart = outBuf;
+    uint8_t part0[kChunkSize35], part1[kChunkSize35], part2[kChunkSize35];
     unsigned int chk0, chk1, chk2;
-    unsigned char val, twos;
+    uint8_t val, twos;
     int i;
 
     /*

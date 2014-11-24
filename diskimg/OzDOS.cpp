@@ -40,9 +40,8 @@ const int kMaxCatalogIterations = 64;
  * Read a track/sector, adjusting for 32-sector disks being treated as
  * if they were 16-sector.
  */
-static DIError
-ReadTrackSectorAdjusted(DiskImg* pImg, int track, int sector,
-    int sectorOffset, unsigned char* buf, DiskImg::SectorOrder imageOrder)
+static DIError ReadTrackSectorAdjusted(DiskImg* pImg, int track, int sector,
+    int sectorOffset, uint8_t* buf, DiskImg::SectorOrder imageOrder)
 {
     track *= 4;
     sector = sector * 2 + sectorOffset;
@@ -57,11 +56,11 @@ ReadTrackSectorAdjusted(DiskImg* pImg, int track, int sector,
 /*
  * Test for presence of 400K OzDOS 3.3 volumes.
  */
-static DIError
-TestImageHalf(DiskImg* pImg, int sectorOffset, DiskImg::SectorOrder imageOrder)
+static DIError TestImageHalf(DiskImg* pImg, int sectorOffset,
+    DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int numTracks, numSectors;
     int catTrack, catSect;
     int foundGood = 0;
@@ -129,8 +128,7 @@ bail:
 /*
  * Test both of the DOS partitions.
  */
-static DIError
-TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 {
     DIError dierr;
 
@@ -150,8 +148,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 /*
  * Test to see if the image is a OzDOS volume.
  */
-/*static*/ DIError
-DiskFSOzDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSOzDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     /* only on 800K disks (at the least, insist on numTracks being even) */
@@ -189,8 +186,8 @@ DiskFSOzDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
  * Test to see if the image is a 'wide' (32-sector) DOS3.3 volume, i.e.
  * half of a OzDOS volume.
  */
-/*static*/ DIError
-DiskFS::TestOzWideDOS33(const DiskImg* pImg, DiskImg::SectorOrder* pOrder)
+/*static*/ DIError DiskFS::TestOzWideDOS33(const DiskImg* pImg,
+    DiskImg::SectorOrder* pOrder)
 {
     DIError dierr = kDIErrNone;
 
@@ -224,8 +221,7 @@ DiskFS::TestOzWideDOS33(const DiskImg* pImg, DiskImg::SectorOrder* pOrder)
 /*
  * Set up our sub-volumes.
  */
-DIError
-DiskFSOzDOS::Initialize(void)
+DIError DiskFSOzDOS::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -249,8 +245,7 @@ DiskFSOzDOS::Initialize(void)
 /*
  * Open up one of the DOS 3.3 sub-volumes.
  */
-DIError
-DiskFSOzDOS::OpenSubVolume(int idx)
+DIError DiskFSOzDOS::OpenSubVolume(int idx)
 {
     DIError dierr = kDIErrNone;
     DiskFS* pNewFS = NULL;

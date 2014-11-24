@@ -19,13 +19,13 @@
  * ===========================================================================
  */
 
-/*static*/ unsigned char DiskImg::kDiskBytes53[32] = {
+/*static*/ uint8_t DiskImg::kDiskBytes53[32] = {
     0xab, 0xad, 0xae, 0xaf, 0xb5, 0xb6, 0xb7, 0xba,
     0xbb, 0xbd, 0xbe, 0xbf, 0xd6, 0xd7, 0xda, 0xdb,
     0xdd, 0xde, 0xdf, 0xea, 0xeb, 0xed, 0xee, 0xef,
     0xf5, 0xf6, 0xf7, 0xfa, 0xfb, 0xfd, 0xfe, 0xff
 };
-/*static*/ unsigned char DiskImg::kDiskBytes62[64] = {
+/*static*/ uint8_t DiskImg::kDiskBytes62[64] = {
     0x96, 0x97, 0x9a, 0x9b, 0x9d, 0x9e, 0x9f, 0xa6,
     0xa7, 0xab, 0xac, 0xad, 0xae, 0xaf, 0xb2, 0xb3,
     0xb4, 0xb5, 0xb6, 0xb7, 0xb9, 0xba, 0xbb, 0xbc,
@@ -35,16 +35,15 @@
     0xed, 0xee, 0xef, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6,
     0xf7, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
 };
-/*static*/ unsigned char DiskImg::kInvDiskBytes53[256]; // all values are 0-31
-/*static*/ unsigned char DiskImg::kInvDiskBytes62[256]; // all values are 0-63
+/*static*/ uint8_t DiskImg::kInvDiskBytes53[256]; // all values are 0-31
+/*static*/ uint8_t DiskImg::kInvDiskBytes62[256]; // all values are 0-63
 
 /*
  * Compute tables to convert disk bytes back to values.
  *
  * Should be called once, at DLL initialization time.
  */
-/*static*/ void
-DiskImg::CalcNibbleInvTables(void)
+/*static*/ void DiskImg::CalcNibbleInvTables(void)
 {
     unsigned int i;
 
@@ -66,8 +65,7 @@ DiskImg::CalcNibbleInvTables(void)
  *
  * Returns the index start on success or -1 on failure.
  */
-int
-DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
+int DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
     int sector, const NibbleDescr* pNibbleDescr, int* pVol)
 {
     const int kMaxDataReach = 48;       // fairly arbitrary
@@ -178,8 +176,7 @@ DiskImg::FindNibbleSectorStart(const CircularBufferAccess& buffer, int track,
 /*
  * Decode the values in the address field.
  */
-void
-DiskImg::DecodeAddr(const CircularBufferAccess& buffer, int offset,
+void DiskImg::DecodeAddr(const CircularBufferAccess& buffer, int offset,
     short* pVol, short* pTrack, short* pSector, short* pChksum)
 {
     //unsigned int vol, track, sector, chksum;
@@ -195,9 +192,8 @@ DiskImg::DecodeAddr(const CircularBufferAccess& buffer, int offset,
  * This invokes the appropriate function (e.g. 5&3 or 6&2) to decode the
  * data into a 256-byte sector.
  */
-DIError
-DiskImg::DecodeNibbleData(const CircularBufferAccess& buffer, int idx,
-    unsigned char* sctBuf, const NibbleDescr* pNibbleDescr)
+DIError DiskImg::DecodeNibbleData(const CircularBufferAccess& buffer, int idx,
+    uint8_t* sctBuf, const NibbleDescr* pNibbleDescr)
 {
     switch (pNibbleDescr->encoding) {
     case kNibbleEnc62:
@@ -215,9 +211,8 @@ DiskImg::DecodeNibbleData(const CircularBufferAccess& buffer, int idx,
  * This invokes the appropriate function (e.g. 5&3 or 6&2) to encode the
  * data from a 256-byte sector.
  */
-void
-DiskImg::EncodeNibbleData(const CircularBufferAccess& buffer, int idx,
-    const unsigned char* sctBuf, const NibbleDescr* pNibbleDescr) const
+void DiskImg::EncodeNibbleData(const CircularBufferAccess& buffer, int idx,
+    const uint8_t* sctBuf, const NibbleDescr* pNibbleDescr) const
 {
     switch (pNibbleDescr->encoding) {
     case kNibbleEnc62:
@@ -235,13 +230,12 @@ DiskImg::EncodeNibbleData(const CircularBufferAccess& buffer, int idx,
 /*
  * Decode 6&2 encoding.
  */
-DIError
-DiskImg::DecodeNibble62(const CircularBufferAccess& buffer, int idx,
-    unsigned char* sctBuf, const NibbleDescr* pNibbleDescr)
+DIError DiskImg::DecodeNibble62(const CircularBufferAccess& buffer, int idx,
+    uint8_t* sctBuf, const NibbleDescr* pNibbleDescr)
 {
-    unsigned char twos[kChunkSize62 * 3];   // 258
+    uint8_t twos[kChunkSize62 * 3];   // 258
     int chksum = pNibbleDescr->dataChecksumSeed;
-    unsigned char decodedVal;
+    uint8_t decodedVal;
     int i;
 
     /*
@@ -294,12 +288,11 @@ DiskImg::DecodeNibble62(const CircularBufferAccess& buffer, int idx,
 /*
  * Encode 6&2 encoding.
  */
-void
-DiskImg::EncodeNibble62(const CircularBufferAccess& buffer, int idx,
-    const unsigned char* sctBuf, const NibbleDescr* pNibbleDescr) const
+void DiskImg::EncodeNibble62(const CircularBufferAccess& buffer, int idx,
+    const uint8_t* sctBuf, const NibbleDescr* pNibbleDescr) const
 {
-    unsigned char top[256];
-    unsigned char twos[kChunkSize62];
+    uint8_t top[256];
+    uint8_t twos[kChunkSize62];
     int twoPosn, twoShift;
     int i;
 
@@ -338,14 +331,13 @@ DiskImg::EncodeNibble62(const CircularBufferAccess& buffer, int idx,
 /*
  * Decode 5&3 encoding.
  */
-DIError
-DiskImg::DecodeNibble53(const CircularBufferAccess& buffer, int idx,
-    unsigned char* sctBuf, const NibbleDescr* pNibbleDescr)
+DIError DiskImg::DecodeNibble53(const CircularBufferAccess& buffer, int idx,
+    uint8_t* sctBuf, const NibbleDescr* pNibbleDescr)
 {
-    unsigned char base[256];
-    unsigned char threes[kThreeSize];
+    uint8_t base[256];
+    uint8_t threes[kThreeSize];
     int chksum = pNibbleDescr->dataChecksumSeed;
-    unsigned char decodedVal;
+    uint8_t decodedVal;
     int i;
 
     /*
@@ -391,7 +383,7 @@ DiskImg::DecodeNibble53(const CircularBufferAccess& buffer, int idx,
     /*
      * Convert this pile of stuff into 256 data bytes.
      */
-    unsigned char* bufPtr;
+    uint8_t* bufPtr;
 
     bufPtr = sctBuf;
     for (i = kChunkSize53-1; i >= 0; i--) {
@@ -422,12 +414,11 @@ DiskImg::DecodeNibble53(const CircularBufferAccess& buffer, int idx,
 /*
  * Encode 5&3 encoding.
  */
-void
-DiskImg::EncodeNibble53(const CircularBufferAccess& buffer, int idx,
-    const unsigned char* sctBuf, const NibbleDescr* pNibbleDescr) const
+void DiskImg::EncodeNibble53(const CircularBufferAccess& buffer, int idx,
+    const uint8_t* sctBuf, const NibbleDescr* pNibbleDescr) const
 {
-    unsigned char top[kChunkSize53 * 5 +1];     // (255 / 0xff) +1
-    unsigned char threes[kChunkSize53 * 3 +1];  // (153 / 0x99) +1
+    uint8_t top[kChunkSize53 * 5 +1];     // (255 / 0xff) +1
+    uint8_t threes[kChunkSize53 * 3 +1];  // (153 / 0x99) +1
     int i, chunk;
 
     /*
@@ -500,8 +491,7 @@ DiskImg::EncodeNibble53(const CircularBufferAccess& buffer, int idx,
  *
  * "buf" must be able to hold (num * 3) characters.
  */
-static void
-DumpBytes(const unsigned char* bytes, unsigned int num, char* buf)
+static void DumpBytes(const uint8_t* bytes, unsigned int num, char* buf)
 {
     sprintf(buf, "%02x", bytes[0]);
     buf += 2;
@@ -514,8 +504,7 @@ DumpBytes(const unsigned char* bytes, unsigned int num, char* buf)
     *buf = '\0';
 }
 
-static inline const char*
-VerifyStr(bool val)
+static inline const char* VerifyStr(bool val)
 {
     return val ? "verify" : "ignore";
 }
@@ -523,8 +512,7 @@ VerifyStr(bool val)
 /*
  * Dump the contents of a NibbleDescr struct.
  */
-void
-DiskImg::DumpNibbleDescr(const NibbleDescr* pNibDescr) const
+void DiskImg::DumpNibbleDescr(const NibbleDescr* pNibDescr) const
 {
     char outBuf1[48];
     char outBuf2[48];
@@ -560,8 +548,7 @@ DiskImg::DumpNibbleDescr(const NibbleDescr* pNibDescr) const
 /*
  * Load a nibble track into our track buffer.
  */
-DIError
-DiskImg::LoadNibbleTrack(long track, long* pTrackLen)
+DIError DiskImg::LoadNibbleTrack(long track, long* pTrackLen)
 {
     DIError dierr = kDIErrNone;
     long offset;
@@ -586,7 +573,7 @@ DiskImg::LoadNibbleTrack(long track, long* pTrackLen)
 
     /* alloc track buffer if needed */
     if (fNibbleTrackBuf == NULL) {
-        fNibbleTrackBuf = new unsigned char[kTrackAllocSize];
+        fNibbleTrackBuf = new uint8_t[kTrackAllocSize];
         if (fNibbleTrackBuf == NULL)
             return kDIErrMalloc;
     }
@@ -606,8 +593,7 @@ DiskImg::LoadNibbleTrack(long track, long* pTrackLen)
 /*
  * Save the track buffer back to disk.
  */
-DIError
-DiskImg::SaveNibbleTrack(void)
+DIError DiskImg::SaveNibbleTrack(void)
 {
     if (fNibbleTrackLoaded < 0) {
         LOGI("ERROR: tried to save track without loading it first");
@@ -630,8 +616,7 @@ DiskImg::SaveNibbleTrack(void)
  * return it.  If "pVol" is non-NULL, return the volume number from
  * one of the readable sectors.
  */
-int
-DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
+int DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
     int* pVol)
 {
     long trackLen;
@@ -655,7 +640,7 @@ DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
             if (pVol != NULL)
                 *pVol = vol;
 
-            unsigned char sctBuf[256];
+            uint8_t sctBuf[256];
             if (DecodeNibbleData(buffer, sectorIdx, sctBuf, pNibbleDescr) == kDIErrNone)
                 count++;
         }
@@ -678,8 +663,7 @@ DiskImg::TestNibbleTrack(int track, const NibbleDescr* pNibbleDescr,
  *  fDOSVolumeNum holds a volume number from one of the tracks
  *  fNumTracks holds the number of tracks on the disk
  */
-DIError
-DiskImg::AnalyzeNibbleData(void)
+DIError DiskImg::AnalyzeNibbleData(void)
 {
     assert(IsNibbleFormat(fPhysical));
 
@@ -739,15 +723,13 @@ DiskImg::AnalyzeNibbleData(void)
     return kDIErrNone;
 }
 
-
 /*
  * Read a sector from a nibble image.
  *
  * While fNumTracks is valid, fNumSectPerTrack is a little flaky, because
  * in theory each track could be formatted differently.
  */
-DIError
-DiskImg::ReadNibbleSector(long track, int sector, void* buf,
+DIError DiskImg::ReadNibbleSector(long track, int sector, void* buf,
     const NibbleDescr* pNibbleDescr)
 {
     if (pNibbleDescr == NULL) {
@@ -782,7 +764,7 @@ DiskImg::ReadNibbleSector(long track, int sector, void* buf,
     if (sectorIdx < 0)
         return kDIErrSectorUnreadable;
 
-    dierr = DecodeNibbleData(buffer, sectorIdx, (unsigned char*) buf,
+    dierr = DecodeNibbleData(buffer, sectorIdx, (uint8_t*) buf,
                 pNibbleDescr);
 
     return dierr;
@@ -791,8 +773,7 @@ DiskImg::ReadNibbleSector(long track, int sector, void* buf,
 /*
  * Write a sector to a nibble image.
  */
-DIError
-DiskImg::WriteNibbleSector(long track, int sector, const void* buf,
+DIError DiskImg::WriteNibbleSector(long track, int sector, const void* buf,
     const NibbleDescr* pNibbleDescr)
 {
     assert(pNibbleDescr != NULL);
@@ -817,7 +798,7 @@ DiskImg::WriteNibbleSector(long track, int sector, const void* buf,
     if (sectorIdx < 0)
         return kDIErrSectorUnreadable;
 
-    EncodeNibbleData(buffer, sectorIdx, (unsigned char*) buf, pNibbleDescr);
+    EncodeNibbleData(buffer, sectorIdx, (uint8_t*) buf, pNibbleDescr);
 
     dierr = SaveNibbleTrack();
     if (dierr != kDIErrNone) {
@@ -828,14 +809,12 @@ DiskImg::WriteNibbleSector(long track, int sector, const void* buf,
     return dierr;
 }
 
-
 /*
  * Get the contents of the nibble track.
  *
  * "buf" must be able to hold kTrackAllocSize bytes.
  */
-DIError
-DiskImg::ReadNibbleTrack(long track, unsigned char* buf, long* pTrackLen)
+DIError DiskImg::ReadNibbleTrack(long track, uint8_t* buf, long* pTrackLen)
 {
     DIError dierr;
 
@@ -856,8 +835,7 @@ DiskImg::ReadNibbleTrack(long track, unsigned char* buf, long* pTrackLen)
  * .nib.  Fixed-length formats shouldn't be allowed to interact.  Figure
  * this out someday.  For now, the higher-level code prevents it.
  */
-DIError
-DiskImg::WriteNibbleTrack(long track, const unsigned char* buf, long trackLen)
+DIError DiskImg::WriteNibbleTrack(long track, const uint8_t* buf, long trackLen)
 {
     DIError dierr;
     long oldTrackLen;
@@ -889,7 +867,6 @@ DiskImg::WriteNibbleTrack(long track, const unsigned char* buf, long trackLen)
     return kDIErrNone;
 }
 
-
 /*
  * Create a blank nibble image, using fpNibbleDescr as the template.
  * Sets "fLength".
@@ -909,14 +886,13 @@ DiskImg::WriteNibbleTrack(long track, const unsigned char* buf, long trackLen)
  * 48 + (14 + 6 + (6 + 1 + 342) + 27) * 16 = 6384
  * 48 + (14 + 6 + (6 + 1 + 410) + 27) * 13 = 6080
  */
-DIError
-DiskImg::FormatNibbles(GenericFD* pGFD) const
+DIError DiskImg::FormatNibbles(GenericFD* pGFD) const
 {
     assert(fHasNibbles);
     assert(GetNumTracks() > 0);
 
     DIError dierr = kDIErrNone;
-    unsigned char trackBuf[kTrackAllocSize];
+    uint8_t trackBuf[kTrackAllocSize];
     /* these should be the same except for var-len images */
     long trackAllocLen = GetNibbleTrackAllocLength();
     long trackLen = GetNibbleTrackFormatLength();
@@ -954,8 +930,8 @@ DiskImg::FormatNibbles(GenericFD* pGFD) const
      * Create a prototype sector.  The data for a sector full of zeroes
      * is exactly the same; only the address header changes.
      */
-    unsigned char sampleSource[256];
-    unsigned char sampleBuf[512];      // must hold 5&3 and 6&2
+    uint8_t sampleSource[256];
+    uint8_t sampleBuf[512];      // must hold 5&3 and 6&2
     CircularBufferAccess sample(sampleBuf, 512);
     long dataLen;
 
@@ -973,7 +949,7 @@ DiskImg::FormatNibbles(GenericFD* pGFD) const
      */
     for (track = 0; track < GetNumTracks(); track++) {
         //LOGI("Formatting track %d", track);
-        unsigned char* trackPtr = trackBuf;
+        uint8_t* trackPtr = trackBuf;
 
         /*
          * Fill with "self-sync" bytes.
@@ -987,7 +963,7 @@ DiskImg::FormatNibbles(GenericFD* pGFD) const
             /*
              * Write address field.
              */
-            unsigned short hdrTrack, hdrSector, hdrVol, hdrChksum;
+            uint16_t hdrTrack, hdrSector, hdrVol, hdrChksum;
             hdrTrack = track;
             hdrSector = sector;
             hdrVol = fDOSVolumeNum;
@@ -1043,4 +1019,3 @@ DiskImg::FormatNibbles(GenericFD* pGFD) const
 
     return dierr;
 }
-

@@ -22,23 +22,22 @@
  * If "pCRC" is non-NULL, this computes a CRC32 as it goes, using the zlib
  * library function.
  */
-/*static*/ DIError
-GenericFD::CopyFile(GenericFD* pDst, GenericFD* pSrc, di_off_t length,
-    unsigned long* pCRC)
+/*static*/ DIError GenericFD::CopyFile(GenericFD* pDst, GenericFD* pSrc,
+    di_off_t length, uint32_t* pCRC)
 {
     DIError dierr = kDIErrNone;
     const int kCopyBufSize = 32768;
-    unsigned char* copyBuf = NULL;
+    uint8_t* copyBuf = NULL;
     int copySize;
 
-    LOGI("+++ CopyFile: %ld bytes", (long) length);
+    LOGD("+++ CopyFile: %ld bytes", (long) length);
 
     if (pDst == NULL || pSrc == NULL || length < 0)
         return kDIErrInvalidArg;
     if (length == 0)
         return kDIErrNone;
 
-    copyBuf = new unsigned char[kCopyBufSize];
+    copyBuf = new uint8_t[kCopyBufSize];
     if (copyBuf == NULL)
         return kDIErrMalloc;
 
@@ -86,11 +85,13 @@ bail:
  * an off_t, so we can continue to use the FILE* functions there.  Under
  * Windows "lseek" takes a long, so we have to use their specific 64-bit
  * variant.
+ *
+ * TODO: Visual Studio 2005 added _fseeki64.  We should be able to merge
+ * the bulk of the implementation now.
  */
 #ifdef HAVE_FSEEKO
 
-DIError
-GFDFile::Open(const char* filename, bool readOnly)
+DIError GFDFile::Open(const char* filename, bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
@@ -119,8 +120,7 @@ GFDFile::Open(const char* filename, bool readOnly)
     return dierr;
 }
 
-DIError
-GFDFile::Read(void* buf, size_t length, size_t* pActual)
+DIError GFDFile::Read(void* buf, size_t length, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
     size_t actual;
@@ -152,8 +152,7 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
     return dierr;
 }
 
-DIError
-GFDFile::Write(const void* buf, size_t length, size_t* pActual)
+DIError GFDFile::Write(const void* buf, size_t length, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
 
@@ -170,8 +169,7 @@ GFDFile::Write(const void* buf, size_t length, size_t* pActual)
     return dierr;
 }
 
-DIError
-GFDFile::Seek(di_off_t offset, DIWhence whence)
+DIError GFDFile::Seek(di_off_t offset, DIWhence whence)
 {
     DIError dierr = kDIErrNone;
     //static const long kOneGB = 1024*1024*1024;
@@ -189,8 +187,7 @@ GFDFile::Seek(di_off_t offset, DIWhence whence)
     return dierr;
 }
 
-di_off_t
-GFDFile::Tell(void)
+di_off_t GFDFile::Tell(void)
 {
     DIError dierr = kDIErrNone;
     di_off_t result;
@@ -207,8 +204,7 @@ GFDFile::Tell(void)
     return result;
 }
 
-DIError
-GFDFile::Truncate(void)
+DIError GFDFile::Truncate(void)
 {
 #if defined(HAVE_FTRUNCATE)
     int cc;
@@ -227,8 +223,7 @@ GFDFile::Truncate(void)
     return kDIErrNone;
 }
 
-DIError
-GFDFile::Close(void)
+DIError GFDFile::Close(void)
 {
     if (fFp == NULL)
         return kDIErrNotReady;
@@ -241,8 +236,7 @@ GFDFile::Close(void)
 
 #else /*HAVE_FSEEKO*/
 
-DIError
-GFDFile::Open(const char* filename, bool readOnly)
+DIError GFDFile::Open(const char* filename, bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
@@ -271,8 +265,7 @@ GFDFile::Open(const char* filename, bool readOnly)
     return dierr;
 }
 
-DIError
-GFDFile::Read(void* buf, size_t length, size_t* pActual)
+DIError GFDFile::Read(void* buf, size_t length, size_t* pActual)
 {
     DIError dierr;
     ssize_t actual;
@@ -301,8 +294,7 @@ GFDFile::Read(void* buf, size_t length, size_t* pActual)
     return kDIErrNone;
 }
 
-DIError
-GFDFile::Write(const void* buf, size_t length, size_t* pActual)
+DIError GFDFile::Write(const void* buf, size_t length, size_t* pActual)
 {
     DIError dierr;
     ssize_t actual;
@@ -322,8 +314,7 @@ GFDFile::Write(const void* buf, size_t length, size_t* pActual)
     return kDIErrNone;
 }
 
-DIError
-GFDFile::Seek(di_off_t offset, DIWhence whence)
+DIError GFDFile::Seek(di_off_t offset, DIWhence whence)
 {
     DIError dierr = kDIErrNone;
     if (fFd < 0)
@@ -340,16 +331,15 @@ GFDFile::Seek(di_off_t offset, DIWhence whence)
 #endif
 
     if (newPosn == kFailure) {
-        assert((unsigned long) offset != 0xccccccccUL); // uninitialized data!
+        assert((uint32_t) offset != 0xccccccccUL); // uninitialized data!
         dierr = ErrnoOrGeneric();
         LOGI("  GDFile Seek %ld-%lu failed (err=%d)",
-            (long) (offset >> 32), (unsigned long) offset, dierr);
+            (long) (offset >> 32), (uint32_t) offset, dierr);
     }
     return dierr;
 }
 
-di_off_t
-GFDFile::Tell(void)
+di_off_t GFDFile::Tell(void)
 {
     DIError dierr = kDIErrNone;
     di_off_t result;
@@ -371,8 +361,7 @@ GFDFile::Tell(void)
     return result;
 }
 
-DIError
-GFDFile::Truncate(void)
+DIError GFDFile::Truncate(void)
 {
 #if defined(HAVE_FTRUNCATE)
     int cc;
@@ -390,8 +379,7 @@ GFDFile::Truncate(void)
     return kDIErrNone;
 }
 
-DIError
-GFDFile::Close(void)
+DIError GFDFile::Close(void)
 {
     if (fFd < 0)
         return kDIErrNotReady;
@@ -410,9 +398,8 @@ GFDFile::Close(void)
  * ===========================================================================
  */
 
-DIError
-GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
-    bool readOnly)
+DIError GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete,
+    bool doExpand, bool readOnly)
 {
     if (fBuffer != NULL)
         return kDIErrAlreadyOpen;
@@ -444,8 +431,7 @@ GFDBuffer::Open(void* buffer, di_off_t length, bool doDelete, bool doExpand,
     return kDIErrNone;
 }
 
-DIError
-GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
+DIError GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
 {
     if (fBuffer == NULL)
         return kDIErrNotReady;
@@ -476,8 +462,7 @@ GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
     return kDIErrNone;
 }
 
-DIError
-GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
+DIError GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
 {
     if (fBuffer == NULL)
         return kDIErrNotReady;
@@ -527,8 +512,7 @@ GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
     return kDIErrNone;
 }
 
-DIError
-GFDBuffer::Seek(di_off_t offset, DIWhence whence)
+DIError GFDBuffer::Seek(di_off_t offset, DIWhence whence)
 {
     if (fBuffer == NULL)
         return kDIErrNotReady;
@@ -561,16 +545,14 @@ GFDBuffer::Seek(di_off_t offset, DIWhence whence)
     return kDIErrNone;
 }
 
-di_off_t
-GFDBuffer::Tell(void)
+di_off_t GFDBuffer::Tell(void)
 {
     if (fBuffer == NULL)
         return (di_off_t) -1;
     return fCurrentOffset;
 }
 
-DIError
-GFDBuffer::Close(void)
+DIError GFDBuffer::Close(void)
 {
     if (fBuffer == NULL)
         return kDIErrNone;
@@ -609,12 +591,11 @@ GFDBuffer::Close(void)
  * must have the form "N:\" for a logical volume or "80:\" for a physical
  * volume.
  */
-DIError
-GFDWinVolume::Open(const char* deviceName, bool readOnly)
+DIError GFDWinVolume::Open(const char* deviceName, bool readOnly)
 {
     DIError dierr = kDIErrNone;
     HANDLE handle = NULL;
-    //unsigned long kTwoGBBlocks;
+    //uint32_t kTwoGBBlocks;
     
     if (fVolAccess.Ready())
         return kDIErrAlreadyOpen;
@@ -643,7 +624,7 @@ GFDWinVolume::Open(const char* deviceName, bool readOnly)
     assert(fBlockSize > 0);
     //kTwoGBBlocks = kTwoGB / fBlockSize;
 
-    unsigned long totalBlocks;
+    long totalBlocks;
     totalBlocks = fVolAccess.GetTotalBlocks();
     fVolumeEOF = (di_off_t)totalBlocks * fBlockSize;
 
@@ -655,11 +636,10 @@ bail:
     return dierr;
 }
 
-DIError
-GFDWinVolume::Read(void* buf, size_t length, size_t* pActual)
+DIError GFDWinVolume::Read(void* buf, size_t length, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* blkBuf = NULL;
+    uint8_t* blkBuf = NULL;
 
     //LOGI(" GFDWinVolume: reading %ld bytes from offset %ld", length,
     //  fCurrentOffset);
@@ -680,7 +660,7 @@ GFDWinVolume::Read(void* buf, size_t length, size_t* pActual)
 
     long advanceLen = length;
 
-    blkBuf = new unsigned char[fBlockSize];     // get this off the heap??
+    blkBuf = new uint8_t[fBlockSize];     // get this off the heap??
     long blockIndex = (long) (fCurrentOffset / fBlockSize);
     int bufOffset = (int) (fCurrentOffset % fBlockSize);    // req power of 2
     assert(blockIndex >= 0);
@@ -739,11 +719,10 @@ bail:
     return dierr;
 }
 
-DIError
-GFDWinVolume::Write(const void* buf, size_t length, size_t* pActual)
+DIError GFDWinVolume::Write(const void* buf, size_t length, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* blkBuf = NULL;
+    uint8_t* blkBuf = NULL;
 
     //LOGI(" GFDWinVolume: writing %ld bytes at offset %ld", length,
     //  fCurrentOffset);
@@ -766,7 +745,7 @@ GFDWinVolume::Write(const void* buf, size_t length, size_t* pActual)
 
     long advanceLen = length;
 
-    blkBuf = new unsigned char[fBlockSize];     // get this out of the heap??
+    blkBuf = new uint8_t[fBlockSize];     // get this out of the heap??
     long blockIndex = (long) (fCurrentOffset / fBlockSize);
     int bufOffset = (int) (fCurrentOffset % fBlockSize);    // req power of 2
     assert(blockIndex >= 0);
@@ -829,8 +808,7 @@ bail:
     return dierr;
 }
 
-DIError
-GFDWinVolume::Seek(di_off_t offset, DIWhence whence)
+DIError GFDWinVolume::Seek(di_off_t offset, DIWhence whence)
 {
     if (!fVolAccess.Ready())
         return kDIErrNotReady;
@@ -863,16 +841,14 @@ GFDWinVolume::Seek(di_off_t offset, DIWhence whence)
     return kDIErrNone;
 }
 
-di_off_t
-GFDWinVolume::Tell(void)
+di_off_t GFDWinVolume::Tell(void)
 {
     if (!fVolAccess.Ready())
         return (di_off_t) -1;
     return fCurrentOffset;
 }
 
-DIError
-GFDWinVolume::Close(void)
+DIError GFDWinVolume::Close(void)
 {
     if (!fVolAccess.Ready())
         return kDIErrNotReady;

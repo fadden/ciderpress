@@ -44,9 +44,8 @@ const int kMaxCatalogIterations = 64;
  * Read a track/sector, adjusting for 32-sector disks being treated as
  * if they were 16-sector.
  */
-static DIError
-ReadTrackSectorAdjusted(DiskImg* pImg, int track, int sector,
-    int trackOffset, unsigned char* buf, DiskImg::SectorOrder imageOrder)
+static DIError ReadTrackSectorAdjusted(DiskImg* pImg, int track, int sector,
+    int trackOffset, uint8_t* buf, DiskImg::SectorOrder imageOrder)
 {
     track += trackOffset;
     track *= 2;
@@ -61,12 +60,11 @@ ReadTrackSectorAdjusted(DiskImg* pImg, int track, int sector,
 /*
  * Test for presence of 400K DOS 3.3 volumes.
  */
-static DIError
-TestImageHalf(DiskImg* pImg, int trackOffset, DiskImg::SectorOrder imageOrder,
-    int* pGoodCount)
+static DIError TestImageHalf(DiskImg* pImg, int trackOffset,
+    DiskImg::SectorOrder imageOrder, int* pGoodCount)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int numTracks, numSectors;
     int catTrack, catSect;
     int foundGood = 0;
@@ -140,8 +138,8 @@ bail:
 /*
  * Test both of the DOS partitions.
  */
-static DIError
-TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
+static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
+    int* pGoodCount)
 {
     DIError dierr;
     int goodCount1, goodCount2;
@@ -169,8 +167,7 @@ TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
 /*
  * Test to see if the image is a UNIDOS volume.
  */
-/*static*/ DIError
-DiskFSUNIDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSUNIDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     /* only on 800K disks (at the least, insist on numTracks being even) */
@@ -219,8 +216,7 @@ DiskFSUNIDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
  * swap can return a "good" value of 7 (much less than the expected 30, but
  * above a threshold of reasonableness).
  */
-/*static*/ DIError
-DiskFSUNIDOS::TestWideFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSUNIDOS::TestWideFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     /* only on 400K "disks" */
@@ -269,8 +265,7 @@ DiskFSUNIDOS::TestWideFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 /*
  * Set up our sub-volumes.
  */
-DIError
-DiskFSUNIDOS::Initialize(void)
+DIError DiskFSUNIDOS::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -294,8 +289,7 @@ DiskFSUNIDOS::Initialize(void)
 /*
  * Open up one of the DOS 3.3 sub-volumes.
  */
-DIError
-DiskFSUNIDOS::OpenSubVolume(int idx)
+DIError DiskFSUNIDOS::OpenSubVolume(int idx)
 {
     DIError dierr = kDIErrNone;
     DiskFS* pNewFS = NULL;

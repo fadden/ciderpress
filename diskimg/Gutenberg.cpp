@@ -35,8 +35,7 @@ const int kMaxTSIterations = 32;
 /*
  * Get a pointer to the Nth entry in a catalog sector.
  */
-static inline unsigned char*
-GetCatalogEntryPtr(unsigned char* basePtr, int entryNum)
+static inline uint8_t* GetCatalogEntryPtr(uint8_t* basePtr, int entryNum)
 {
     assert(entryNum >= 0 && entryNum < kCatalogEntriesPerSect);
     return basePtr + kCatalogEntryOffset + entryNum * kCatalogEntrySize;
@@ -47,11 +46,11 @@ GetCatalogEntryPtr(unsigned char* basePtr, int entryNum)
  * Test this image for Gutenberg-ness.
  *
  */
-static DIError
-TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
+static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
+    int* pGoodCount)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
 //  int numTracks, numSectors;
     int catTrack = kVTOCTrack;
     int catSect = kVTOCSector;
@@ -106,8 +105,7 @@ bail:
 /*
  * Test to see if the image is a Gutenberg word processor data disk.
  */
-/*static*/ DIError
-DiskFSGutenberg::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSGutenberg::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     if (pImg->GetNumTracks() > kMaxInterestingTracks)
@@ -155,8 +153,7 @@ DiskFSGutenberg::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
  * on out must be handled somehow, possibly by claiming that the disk is
  * completely full and has no files on it.
  */
-DIError
-DiskFSGutenberg::Initialize(InitMode initMode)
+DIError DiskFSGutenberg::Initialize(InitMode initMode)
 {
     DIError dierr = kDIErrNone;
 
@@ -185,8 +182,7 @@ bail:
 /*
  * Get the amount of free space remaining.
  */
-DIError
-DiskFSGutenberg::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
+DIError DiskFSGutenberg::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     int* pUnitSize) const
 {
     *pTotalUnits = fpImg->GetNumTracks() * fpImg->GetNumSectPerTrack();
@@ -195,16 +191,13 @@ DiskFSGutenberg::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     return kDIErrNone;
 }
 
-
 /*
  * Read the disk's catalog.
- *
  */
-DIError
-DiskFSGutenberg::ReadCatalog(void)
+DIError DiskFSGutenberg::ReadCatalog(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int catTrack, catSect;
     int iterations;
 
@@ -222,7 +215,7 @@ DiskFSGutenberg::ReadCatalog(void)
             goto bail;
         memcpy(fDiskVolumeName, &sctBuf[6], kMaxVolNameLen);    // Copy out the volume name; it should be the same on all catalog sectors.
         fDiskVolumeName[kMaxVolNameLen] = 0x00;
-        DiskFSGutenberg::LowerASCII((unsigned char*)fDiskVolumeName, kMaxVolNameLen);
+        DiskFSGutenberg::LowerASCII((uint8_t*)fDiskVolumeName, kMaxVolNameLen);
         A2FileGutenberg::TrimTrailingSpaces(fDiskVolumeName);
 
         dierr = ProcessCatalogSector(catTrack, catSect, sctBuf);
@@ -253,12 +246,11 @@ bail:
  * Pass in the track, sector, and the contents of that track and sector.
  * (We only use "catTrack" and "catSect" to fill out some fields.)
  */
-DIError
-DiskFSGutenberg::ProcessCatalogSector(int catTrack, int catSect,
-    const unsigned char* sctBuf)
+DIError DiskFSGutenberg::ProcessCatalogSector(int catTrack, int catSect,
+    const uint8_t* sctBuf)
 {
     A2FileGutenberg* pFile;
-    const unsigned char* pEntry;
+    const uint8_t* pEntry;
     int i;
 
     pEntry = &sctBuf[kCatalogEntryOffset];
@@ -298,31 +290,27 @@ DiskFSGutenberg::ProcessCatalogSector(int catTrack, int catSect,
     return kDIErrNone;
 }
 
-
 /*
  * Perform consistency checks on the filesystem.
  *
  * Returns "true" if disk appears to be perfect, "false" otherwise.
  */
-bool
-DiskFSGutenberg::CheckDiskIsGood(void)
+bool DiskFSGutenberg::CheckDiskIsGood(void)
 {
     bool result = true;
     return result;
 }
 
-
 /*
  * Run through our list of files, computing the lengths and marking file
  * usage in the VolumeUsage object.
  */
-DIError
-DiskFSGutenberg::GetFileLengths(void)
+DIError DiskFSGutenberg::GetFileLengths(void)
 {
     A2FileGutenberg* pFile;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int tsCount = 0;
-    unsigned short currentTrack, currentSector;
+    uint16_t currentTrack, currentSector;
 
     pFile = (A2FileGutenberg*) GetNextFile(NULL);
     while (pFile != NULL) {
@@ -352,7 +340,6 @@ bail:
     return kDIErrNone;
 }
 
-
 /*
  * Convert high ASCII to low ASCII.
  *
@@ -361,8 +348,7 @@ bail:
  *
  * We modify the first "len" bytes of "buf" in place.
  */
-/*static*/ void
-DiskFSGutenberg::LowerASCII(unsigned char* buf, long len)
+/*static*/ void DiskFSGutenberg::LowerASCII(uint8_t* buf, long len)
 {
     while (len--) {
         if (*buf & 0x80) {
@@ -415,13 +401,11 @@ A2FileGutenberg::~A2FileGutenberg(void)
     delete fpOpenFile;
 }
 
-
 /*
  * Convert the filetype enum to a ProDOS type.
  *
  */
-long
-A2FileGutenberg::GetFileType(void) const
+long A2FileGutenberg::GetFileType(void) const
 {
     return 0x04;    // TXT;
 }
@@ -430,10 +414,9 @@ A2FileGutenberg::GetFileType(void) const
  * "Fix" a filename.  Convert DOS-ASCII to normal ASCII, and strip
  * trailing spaces.
  */
-void
-A2FileGutenberg::FixFilename(void)
+void A2FileGutenberg::FixFilename(void)
 {
-    DiskFSGutenberg::LowerASCII((unsigned char*)fFileName, kMaxFileName);
+    DiskFSGutenberg::LowerASCII((uint8_t*)fFileName, kMaxFileName);
     TrimTrailingSpaces(fFileName);
 }
 
@@ -442,8 +425,7 @@ A2FileGutenberg::FixFilename(void)
  *
  * Assumes the filename has already been converted to low ASCII.
  */
-/*static*/ void
-A2FileGutenberg::TrimTrailingSpaces(char* filename)
+/*static*/ void A2FileGutenberg::TrimTrailingSpaces(char* filename)
 {
     char* lastspc = filename + strlen(filename);
 
@@ -464,8 +446,7 @@ A2FileGutenberg::TrimTrailingSpaces(char* filename)
  *
  * "buf" must be able to hold kMaxFileName+1 chars.
  */
-/*static*/ void
-A2FileGutenberg::MakeDOSName(char* buf, const char* name)
+/*static*/ void A2FileGutenberg::MakeDOSName(char* buf, const char* name)
 {
     for (int i = 0; i < kMaxFileName; i++) {
         if (*name == '\0')
@@ -480,8 +461,7 @@ A2FileGutenberg::MakeDOSName(char* buf, const char* name)
 /*
  * Set up state for this file.
  */
-DIError
-A2FileGutenberg::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FileGutenberg::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     DIError dierr = kDIErrNone;
@@ -520,8 +500,7 @@ bail:
 /*
  * Dump the contents of an A2FileGutenberg.
  */
-void
-A2FileGutenberg::Dump(void) const
+void A2FileGutenberg::Dump(void) const
 {
     LOGI("A2FileGutenberg '%s'", fFileName);
     LOGI("  TS T=%-2d S=%-2d", fTrack, fSector);
@@ -542,8 +521,7 @@ A2FileGutenberg::Dump(void) const
  * Read data from the current offset.
  *
  */
-DIError
-A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
 {
     LOGI(" Gutenberg reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
@@ -551,7 +529,7 @@ A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
     A2FileGutenberg* pFile = (A2FileGutenberg*) fpFile;
 
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     short currentTrack, currentSector;
     di_off_t actualOffset = fOffset + pFile->fDataOffset;   // adjust for embedded len
     int bufOffset = 6;
@@ -587,10 +565,8 @@ A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
 
 /*
  * Writing Gutenberg files isn't supported.
- *
  */
-DIError
-A2FDGutenberg::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDGutenberg::Write(const void* buf, size_t len, size_t* pActual)
 {
     return kDIErrNotSupported;
 }
@@ -598,8 +574,7 @@ A2FDGutenberg::Write(const void* buf, size_t len, size_t* pActual)
 /*
  * Seek to the specified offset.
  */
-DIError
-A2FDGutenberg::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDGutenberg::Seek(di_off_t offset, DIWhence whence)
 {
     return kDIErrNotSupported;
 }
@@ -607,8 +582,7 @@ A2FDGutenberg::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDGutenberg::Tell(void)
+di_off_t A2FDGutenberg::Tell(void)
 {
     return kDIErrNotSupported;
 }
@@ -627,8 +601,7 @@ A2FDGutenberg::Tell(void)
  * Most applications don't check the value of "Close", or call it from a
  * destructor, so we call CloseDescr whether we succeed or not.
  */
-DIError
-A2FDGutenberg::Close(void)
+DIError A2FDGutenberg::Close(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -636,17 +609,15 @@ A2FDGutenberg::Close(void)
     return dierr;
 }
 
-
 /*
  * Return the #of sectors/blocks in the file.
  */
-long
-A2FDGutenberg::GetSectorCount(void) const
+long A2FDGutenberg::GetSectorCount(void) const
 {
     return fTSCount;
 }
-long
-A2FDGutenberg::GetBlockCount(void) const
+
+long A2FDGutenberg::GetBlockCount(void) const
 {
     return (fTSCount+1)/2;
 }
@@ -656,16 +627,15 @@ A2FDGutenberg::GetBlockCount(void) const
  *
  * Returns (0,0) for a sparse sector.
  */
-DIError
-A2FDGutenberg::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDGutenberg::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
         return kDIErrInvalidIndex;
 }
+
 /*
  * Unimplemented
  */
-DIError
-A2FDGutenberg::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDGutenberg::GetStorage(long blockIdx, long* pBlock) const
 {
         return kDIErrInvalidIndex;
 }

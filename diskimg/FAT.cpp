@@ -22,23 +22,23 @@
 
 const int kBlkSize = 512;
 const long kBootBlock = 0;
-const unsigned short kSignature = 0xaa55;   // MBR or boot sector
+const uint16_t kSignature = 0xaa55;   // MBR or boot sector
 const int kSignatureOffset = 0x1fe;
-const unsigned char kOpcodeMumble = 0x33;   // seen on 2nd drive
-const unsigned char kOpcodeBranch = 0xeb;
-const unsigned char kOpcodeSetInt = 0xfa;
+const uint8_t kOpcodeMumble = 0x33;   // seen on 2nd drive
+const uint8_t kOpcodeBranch = 0xeb;
+const uint8_t kOpcodeSetInt = 0xfa;
 
 typedef struct PartitionTableEntry {
-    unsigned char   driveNum;           // dl (0x80 or 0x00)
-    unsigned char   startHead;          // dh
-    unsigned char   startSector;        // cl (&0x3f=sector, +two hi bits cyl)
-    unsigned char   startCylinder;      // ch (low 8 bits of 10-bit cylinder)
-    unsigned char   type;               // partition type
-    unsigned char   endHead;            // dh
-    unsigned char   endSector;          // cl
-    unsigned char   endCylinder;        // ch
-    unsigned long   startLBA;           // in blocks
-    unsigned long   size;               // in blocks
+    uint8_t     driveNum;           // dl (0x80 or 0x00)
+    uint8_t     startHead;          // dh
+    uint8_t     startSector;        // cl (&0x3f=sector, +two hi bits cyl)
+    uint8_t     startCylinder;      // ch (low 8 bits of 10-bit cylinder)
+    uint8_t     type;               // partition type
+    uint8_t     endHead;            // dh
+    uint8_t     endSector;          // cl
+    uint8_t     endCylinder;        // ch
+    uint32_t    startLBA;           // in blocks
+    uint32_t    size;               // in blocks
 } PartitionTableEntry;
 
 /*
@@ -49,7 +49,7 @@ typedef struct DiskFSFAT::MasterBootRecord {
      * Begins immediately with code, usually 0xfa (set interrupt flag) or
      * 0xeb (relative branch).
      */
-    unsigned char   firstByte;
+    uint8_t     firstByte;
 
     /*
      * Partition table starts at 0x1be.  Four entries, each 16 bytes.
@@ -65,20 +65,20 @@ typedef struct DiskFSFAT::BootSector {
      * The first few bytes of the boot sector is called the BIOS Parameter
      * Block, or BPB.
      */
-    unsigned char   jump[3];            // usually EB XX 90
-    unsigned char   oemName[8];         // e.g. "MSWIN4.1" or "MSDOS5.0"
-    unsigned short  bytesPerSector;     // usually (always?) 512
-    unsigned char   sectPerCluster;
-    unsigned short  reservedSectors;
-    unsigned char   numFAT;
-    unsigned short  numRootDirEntries;
-    unsigned short  numSectors;         // if set, ignore numSectorsHuge
-    unsigned char   mediaType;
-    unsigned short  numFATSectors;
-    unsigned short  sectorsPerTrack;
-    unsigned short  numHeads;
-    unsigned long   numHiddenSectors;
-    unsigned long   numSectorsHuge;     // only if numSectors==0
+    uint8_t     jump[3];            // usually EB XX 90
+    uint8_t     oemName[8];         // e.g. "MSWIN4.1" or "MSDOS5.0"
+    uint16_t    bytesPerSector;     // usually (always?) 512
+    uint8_t     sectPerCluster;
+    uint16_t    reservedSectors;
+    uint8_t     numFAT;
+    uint16_t    numRootDirEntries;
+    uint16_t    numSectors;         // if set, ignore numSectorsHuge
+    uint8_t     mediaType;
+    uint16_t    numFATSectors;
+    uint16_t    sectorsPerTrack;
+    uint16_t    numHeads;
+    uint32_t    numHiddenSectors;
+    uint32_t    numSectorsHuge;     // only if numSectors==0
     /*
      * This next part can start immediately after the above (at 0x24) for
      * FAT12/FAT16, or somewhat later (0x42) for FAT32.  It doesn't seem
@@ -88,12 +88,12 @@ typedef struct DiskFSFAT::BootSector {
      * partition type, but if this is our block 0 then we can't know what
      * that is.
      */
-    unsigned char   driveNum;
-    unsigned char   reserved;
-    unsigned char   signature;          // 0x29
-    unsigned long   volumeID;
-    unsigned char   volumeLabel[11];    // e.g. "FUBAR      "
-    unsigned char   fileSysType[8];     // e.g. "FAT12   "
+    uint8_t     driveNum;
+    uint8_t     reserved;
+    uint8_t     signature;          // 0x29
+    uint32_t    volumeID;
+    uint8_t     volumeLabel[11];    // e.g. "FUBAR      "
+    uint8_t     fileSysType[8];     // e.g. "FAT12   "
 
     /*
      * Code follows.  Signature 0xaa55 in the last two bytes.
@@ -114,10 +114,9 @@ enum MediaType {
  *
  * Returns "true" if this looks like an MBR, "false" otherwise.
  */
-/*static*/ bool
-DiskFSFAT::UnpackMBR(const unsigned char* buf, MasterBootRecord* pOut)
+/*static*/ bool DiskFSFAT::UnpackMBR(const uint8_t* buf, MasterBootRecord* pOut)
 {
-    const unsigned char* ptr;
+    const uint8_t* ptr;
     int i;
 
     pOut->firstByte = buf[0x00];
@@ -160,8 +159,7 @@ DiskFSFAT::UnpackMBR(const unsigned char* buf, MasterBootRecord* pOut)
  *
  * Returns "true" if this looks like a boot sector, "false" otherwise.
  */
-/*static*/ bool
-DiskFSFAT::UnpackBootSector(const unsigned char* buf, BootSector* pOut)
+/*static*/ bool DiskFSFAT::UnpackBootSector(const uint8_t* buf, BootSector* pOut)
 {
     memcpy(pOut->jump, &buf[0x00], sizeof(pOut->jump));
     memcpy(pOut->oemName, &buf[0x03], sizeof(pOut->oemName));
@@ -188,11 +186,10 @@ DiskFSFAT::UnpackBootSector(const unsigned char* buf, BootSector* pOut)
 /*
  * See if this looks like a FAT volume.
  */
-/*static*/ DIError
-DiskFSFAT::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+/*static*/ DIError DiskFSFAT::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     MasterBootRecord mbr;
     BootSector bs;
 
@@ -244,8 +241,7 @@ bail:
 /*
  * Test to see if the image is a FAT disk.
  */
-/*static*/ DIError
-DiskFSFAT::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSFAT::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     /* must be block format, should be at least 360K */
@@ -275,8 +271,7 @@ DiskFSFAT::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 /*
  * Get things rolling.
  */
-DIError
-DiskFSFAT::Initialize(void)
+DIError DiskFSFAT::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -297,8 +292,7 @@ DiskFSFAT::Initialize(void)
 /*
  * Blank out the volume usage map.
  */
-void
-DiskFSFAT::SetVolumeUsageMap(void)
+void DiskFSFAT::SetVolumeUsageMap(void)
 {
     VolumeUsage::ChunkState cstate;
     long block;
@@ -317,8 +311,7 @@ DiskFSFAT::SetVolumeUsageMap(void)
 /*
  * Fill a buffer with some interesting stuff, and add it to the file list.
  */
-void
-DiskFSFAT::CreateFakeFile(void)
+void DiskFSFAT::CreateFakeFile(void)
 {
     A2FileFAT* pFile;
     char buf[768];      // currently running about 430
@@ -340,7 +333,7 @@ DiskFSFAT::CreateFakeFile(void)
     capacity = fTotalBlocks;
 
     memset(buf, 0, sizeof(buf));
-    sprintf(buf, kFormatMsg,
+    snprintf(buf, NELEM(buf), kFormatMsg,
         fVolumeName,
         capacity,
         (double) capacity / 2048.0);
@@ -362,17 +355,15 @@ DiskFSFAT::CreateFakeFile(void)
 /*
  * Dump the contents of the A2File structure.
  */
-void
-A2FileFAT::Dump(void) const
+void A2FileFAT::Dump(void) const
 {
-    LOGI("A2FileFAT '%s'", fFileName);
+    LOGD("A2FileFAT '%s'", fFileName);
 }
 
 /*
  * Not a whole lot to do.
  */
-DIError
-A2FileFAT::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FileFAT::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     A2FDFAT* pOpenFile = NULL;
@@ -401,10 +392,9 @@ A2FileFAT::Open(A2FileDescr** ppOpenFile, bool readOnly,
 /*
  * Read a chunk of data from the fake file.
  */
-DIError
-A2FDFAT::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDFAT::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" FAT reading %d bytes from '%s' (offset=%ld)",
+    LOGD(" FAT reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileFAT* pFile = (A2FileFAT*) fpFile;
@@ -428,8 +418,7 @@ A2FDFAT::Read(void* buf, size_t len, size_t* pActual)
 /*
  * Write data at the current offset.
  */
-DIError
-A2FDFAT::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDFAT::Write(const void* buf, size_t len, size_t* pActual)
 {
     return kDIErrNotSupported;
 }
@@ -437,8 +426,7 @@ A2FDFAT::Write(const void* buf, size_t len, size_t* pActual)
 /*
  * Seek to a new offset.
  */
-DIError
-A2FDFAT::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDFAT::Seek(di_off_t offset, DIWhence whence)
 {
     di_off_t fileLen = ((A2FileFAT*) fpFile)->fLength;
 
@@ -473,8 +461,7 @@ A2FDFAT::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDFAT::Tell(void)
+di_off_t A2FDFAT::Tell(void)
 {
     return fOffset;
 }
@@ -482,8 +469,7 @@ A2FDFAT::Tell(void)
 /*
  * Release file state, and tell our parent to destroy us.
  */
-DIError
-A2FDFAT::Close(void)
+DIError A2FDFAT::Close(void)
 {
     fpFile->CloseDescr(this);
     return kDIErrNone;
@@ -492,14 +478,13 @@ A2FDFAT::Close(void)
 /*
  * Return the #of sectors/blocks in the file.
  */
-long
-A2FDFAT::GetSectorCount(void) const
+long A2FDFAT::GetSectorCount(void) const
 {
     A2FileFAT* pFile = (A2FileFAT*) fpFile;
     return (long) ((pFile->fLength+255) / 256);
 }
-long
-A2FDFAT::GetBlockCount(void) const
+
+long A2FDFAT::GetBlockCount(void) const
 {
     A2FileFAT* pFile = (A2FileFAT*) fpFile;
     return (long) ((pFile->fLength+511) / 512);
@@ -508,16 +493,15 @@ A2FDFAT::GetBlockCount(void) const
 /*
  * Return the Nth track/sector in this file.
  */
-DIError
-A2FDFAT::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDFAT::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
     return kDIErrNotSupported;
 }
+
 /*
  * Return the Nth 512-byte block in this file.
  */
-DIError
-A2FDFAT::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDFAT::GetStorage(long blockIdx, long* pBlock) const
 {
     return kDIErrNotSupported;
 }

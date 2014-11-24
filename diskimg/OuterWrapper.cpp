@@ -34,11 +34,10 @@
  * to be "helpful" and reads the file whether it's in gz format or not.
  * Some days I could do with a little less "help".
  */
-/*static*/ DIError
-OuterGzip::Test(GenericFD* pGFD, di_off_t outerLength)
+/*static*/ DIError OuterGzip::Test(GenericFD* pGFD, di_off_t outerLength)
 {
     const int kGzipMagic = 0x8b1f;  // 0x1f 0x8b
-    unsigned short magic, magicBuf;
+    uint16_t magic, magicBuf;
     const char* imagePath;
 
     LOGI("Testing for gzip");
@@ -54,14 +53,13 @@ OuterGzip::Test(GenericFD* pGFD, di_off_t outerLength)
 
     if (pGFD->Read(&magicBuf, 2) != kDIErrNone)
         return kDIErrGeneric;
-    magic = GetShortLE((unsigned char*) &magicBuf);
+    magic = GetShortLE((uint8_t*) &magicBuf);
 
     if (magic == kGzipMagic)
         return kDIErrNone;
     else
         return kDIErrGeneric;
 }
-
 
 /*
  * The gzip file format has a length embedded in the footer, but
@@ -81,8 +79,7 @@ OuterGzip::Test(GenericFD* pGFD, di_off_t outerLength)
  * to a temp file, or allowing the caller to specify what the largest
  * size they can handle is.
  */
-DIError
-OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
+DIError OuterGzip::ExtractGzipImage(gzFile gzfp, char** pBuf, di_off_t* pLength)
 {
     DIError dierr = kDIErrNone;
     const int kMinEmpty = 256 * 1024;
@@ -222,8 +219,7 @@ bail:
 /*
  * Open the archive, and extract the disk image into a memory buffer.
  */
-DIError
-OuterGzip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
+DIError OuterGzip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
     di_off_t* pWrapperLength, GenericFD** ppWrapperGFD)
 {
     DIError dierr = kDIErrNone;
@@ -285,8 +281,7 @@ bail:
  * "pOuterGFD" isn't disturbed (same as Load).  All we want is to get the
  * filename and then do everything through gzio.
  */
-DIError
-OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
+DIError OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     di_off_t wrapperLength)
 {
     DIError dierr = kDIErrNone;
@@ -366,8 +361,7 @@ bail:
 /*
  * Test to see if this is a ZIP archive.
  */
-/*static*/ DIError
-OuterZip::Test(GenericFD* pGFD, di_off_t outerLength)
+/*static*/ DIError OuterZip::Test(GenericFD* pGFD, di_off_t outerLength)
 {
     DIError dierr = kDIErrNone;
     CentralDirEntry cde;
@@ -410,14 +404,13 @@ bail:
 /*
  * Open the archive, and extract the disk image into a memory buffer.
  */
-DIError
-OuterZip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
+DIError OuterZip::Load(GenericFD* pOuterGFD, di_off_t outerLength, bool readOnly,
     di_off_t* pWrapperLength, GenericFD** ppWrapperGFD)
 {
     DIError dierr = kDIErrNone;
     GFDBuffer* pNewGFD = NULL;
     CentralDirEntry cde;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
     di_off_t length = -1;
     const char* pExt;
 
@@ -471,8 +464,7 @@ bail:
  * Save the contents of "pWrapperGFD" to the file pointed to by
  * "pOuterGFD".
  */
-DIError
-OuterZip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
+DIError OuterZip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     di_off_t wrapperLength)
 {
     DIError dierr = kDIErrNone;
@@ -527,7 +519,7 @@ OuterZip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     /*
      * Write the compressed data.
      */
-    unsigned long crc;
+    uint32_t crc;
     di_off_t compressedLen;
     if (lfh.fCompressionMethod == kCompressDeflated) {
         dierr = DeflateGFDToGFD(pOuterGFD, pWrapperGFD, wrapperLength,
@@ -556,8 +548,8 @@ OuterZip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
      * local file header is easy enough.
      */
     lfh.fCRC32 = crc;
-    lfh.fCompressedSize = (unsigned long) compressedLen;
-    lfh.fUncompressedSize = (unsigned long) wrapperLength;
+    lfh.fCompressedSize = (uint32_t) compressedLen;
+    lfh.fUncompressedSize = (uint32_t) wrapperLength;
 
     di_off_t curPos;
     curPos = pOuterGFD->Tell();
@@ -590,7 +582,7 @@ OuterZip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     cde.fUncompressedSize = lfh.fUncompressedSize;
     assert(lfh.fExtraFieldLength == 0 && cde.fExtraFieldLength == 0);
     cde.fExternalAttrs = 0x81b60020;    // matches what WinZip does
-    cde.fLocalHeaderRelOffset = (unsigned long) lfhOffset;
+    cde.fLocalHeaderRelOffset = (uint32_t) lfhOffset;
     cde.SetFileName(fStoredFileName);
     dierr = cde.Write(pOuterGFD);
     if (dierr != kDIErrNone)
@@ -603,8 +595,8 @@ OuterZip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
      */
     eocd.fNumEntries = 1;
     eocd.fTotalNumEntries = 1;
-    eocd.fCentralDirSize = (unsigned long) (cdeFinish - cdeStart);
-    eocd.fCentralDirOffset = (unsigned long) cdeStart;
+    eocd.fCentralDirSize = (uint32_t) (cdeFinish - cdeStart);
+    eocd.fCentralDirOffset = (uint32_t) cdeStart;
     assert(eocd.fCentralDirSize >= EndOfCentralDir::kEOCDLen);
     dierr = eocd.Write(pOuterGFD);
     if (dierr != kDIErrNone)
@@ -619,17 +611,14 @@ bail:
     return dierr;
 }
 
-
 /*
  * Track the name of the file stored in the ZIP archive.
  */
-void
-OuterZip::SetStoredFileName(const char* name)
+void OuterZip::SetStoredFileName(const char* name)
 {
     delete[] fStoredFileName;
     fStoredFileName = StrcpyNew(name);
 }
-
 
 /*
  * Find the central directory and read the contents.
@@ -651,13 +640,12 @@ OuterZip::SetStoredFileName(const char* name)
  * area, we're hosed.  This appears to be the way that the Info-ZIP guys
  * do it though, so we're in pretty good company if this fails.
  */
-/*static*/ DIError
-OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
+/*static*/ DIError OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
     CentralDirEntry* pDirEntry)
 {
     DIError dierr = kDIErrNone;
     EndOfCentralDir eocd;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
     di_off_t seekStart;
     long readAmount;
     int i;
@@ -666,7 +654,7 @@ OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
     if (outerLength < EndOfCentralDir::kEOCDLen + 4)
         return kDIErrGeneric;
 
-    buf = new unsigned char[kMaxEOCDSearch];
+    buf = new uint8_t[kMaxEOCDSearch];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -745,7 +733,7 @@ OuterZip::ReadCentralDir(GenericFD* pGFD, di_off_t outerLength,
     pDirEntry->Dump();
 
     {
-        unsigned char checkBuf[4];
+        uint8_t checkBuf[4];
         dierr = pGFD->Read(checkBuf, 4);
         if (dierr != kDIErrNone)
             goto bail;
@@ -763,18 +751,16 @@ bail:
     return dierr;
 }
 
-
 /*
  * The central directory tells us where to find the local header.  We
- * have to skip over that to get to the start of the data.s
+ * have to skip over that to get to the start of the data.
  */
-DIError
-OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
-    unsigned char** pBuf, di_off_t* pLength)
+DIError OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
+    uint8_t** pBuf, di_off_t* pLength)
 {
     DIError dierr = kDIErrNone;
     LocalFileHeader lfh;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
 
     /* seek to the start of the local header */
     dierr = pOuterGFD->Seek(pCDE->fLocalHeaderRelOffset, kSeekSet);
@@ -795,7 +781,7 @@ OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
     /* we should now be pointing at the data */
     LOGI("File offset is 0x%08lx", (long) pOuterGFD->Tell());
 
-    buf = new unsigned char[pCDE->fUncompressedSize];
+    buf = new uint8_t[pCDE->fUncompressedSize];
     if (buf == NULL) {
         /* a very real possibility */
         LOGI(" ZIP unable to allocate buffer of %lu bytes",
@@ -821,7 +807,7 @@ OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
     }
 
     /* check the CRC32 */
-    unsigned long crc;
+    uint32_t crc;
     crc = crc32(0L, Z_NULL, 0);
     crc = crc32(crc, buf, pCDE->fUncompressedSize);
 
@@ -849,18 +835,17 @@ bail:
  *
  * "buf" must be able to hold "uncompSize" bytes.
  */
-DIError
-OuterZip::InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
-    unsigned long uncompSize, unsigned char* buf)
+DIError OuterZip::InflateGFDToBuffer(GenericFD* pGFD, unsigned long compSize,
+    unsigned long uncompSize, uint8_t* buf)
 {
     DIError dierr = kDIErrNone;
-    const unsigned long kReadBufSize = 65536;
-    unsigned char* readBuf = NULL;
+    const size_t kReadBufSize = 65536;
+    uint8_t* readBuf = NULL;
     z_stream zstream;
     int zerr;
     unsigned long compRemaining;
 
-    readBuf = new unsigned char[kReadBufSize];
+    readBuf = new uint8_t[kReadBufSize];
     if (readBuf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -949,12 +934,10 @@ bail:
     return dierr;
 }
 
-
 /*
  * Get the current date/time, in MS-DOS format.
  */
-void
-OuterZip::GetMSDOSTime(unsigned short* pDate, unsigned short* pTime)
+void OuterZip::GetMSDOSTime(uint16_t* pDate, uint16_t* pTime)
 {
 #if 0
     /* this gets gmtime; we want localtime */
@@ -976,8 +959,7 @@ OuterZip::GetMSDOSTime(unsigned short* pDate, unsigned short* pTime)
 /*
  * Convert a time_t to MS-DOS date and time values.
  */
-void
-OuterZip::DOSTime(time_t when, unsigned short* pDate, unsigned short* pTime)
+void OuterZip::DOSTime(time_t when, uint16_t* pDate, uint16_t* pTime)
 {
     time_t even;
 
@@ -1000,27 +982,25 @@ OuterZip::DOSTime(time_t when, unsigned short* pDate, unsigned short* pTime)
     *pTime = ptm->tm_hour << 11 | ptm->tm_min << 5 | ptm->tm_sec >> 1;
 }
 
-
 /*
  * Compress "length" bytes of data from "pSrc" to "pDst".
  */
-DIError
-OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc, di_off_t srcLen,
-    di_off_t* pCompLength, unsigned long* pCRC)
+DIError OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc,
+    di_off_t srcLen, di_off_t* pCompLength, uint32_t* pCRC)
 {
     DIError dierr = kDIErrNone;
-    const unsigned long kBufSize = 32768;
-    unsigned char* inBuf = NULL;
-    unsigned char* outBuf = NULL;
+    const size_t kBufSize = 32768;
+    uint8_t* inBuf = NULL;
+    uint8_t* outBuf = NULL;
     z_stream zstream;
-    unsigned long crc;
+    uint32_t crc;
     int zerr;
 
     /*
      * Create an input buffer and an output buffer.
      */
-    inBuf = new unsigned char[kBufSize];
-    outBuf = new unsigned char[kBufSize];
+    inBuf = new uint8_t[kBufSize];
+    outBuf = new uint8_t[kBufSize];
     if (inBuf == NULL || outBuf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -1126,8 +1106,7 @@ bail:
 /*
  * Set the "fExtension" field.
  */
-void
-OuterZip::SetExtension(const char* ext)
+void OuterZip::SetExtension(const char* ext)
 {
     delete[] fExtension;
     fExtension = StrcpyNew(ext);
@@ -1146,11 +1125,10 @@ OuterZip::SetExtension(const char* ext)
  * On entry, "pGFD" points to the signature at the start of the header.
  * On exit, "pGFD" points to the start of data.
  */
-DIError
-OuterZip::LocalFileHeader::Read(GenericFD* pGFD)
+DIError OuterZip::LocalFileHeader::Read(GenericFD* pGFD)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[kLFHLen];
+    uint8_t buf[kLFHLen];
 
     dierr = pGFD->Read(buf, kLFHLen);
     if (dierr != kDIErrNone)
@@ -1176,7 +1154,7 @@ OuterZip::LocalFileHeader::Read(GenericFD* pGFD)
     /* grab filename */
     if (fFileNameLength != 0) {
         assert(fFileName == NULL);
-        fFileName = new unsigned char[fFileNameLength+1];
+        fFileName = new uint8_t[fFileNameLength+1];
         if (fFileName == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
@@ -1199,11 +1177,10 @@ bail:
 /*
  * Write a local file header.
  */
-DIError
-OuterZip::LocalFileHeader::Write(GenericFD* pGFD)
+DIError OuterZip::LocalFileHeader::Write(GenericFD* pGFD)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[kLFHLen];
+    uint8_t buf[kLFHLen];
 
     PutLongLE(&buf[0x00], kSignature);
     PutShortLE(&buf[0x04], fVersionToExtract);
@@ -1236,8 +1213,7 @@ bail:
 /*
  * Change the filename field.
  */
-void
-OuterZip::LocalFileHeader::SetFileName(const char* name)
+void OuterZip::LocalFileHeader::SetFileName(const char* name)
 {
     delete[] fFileName;
     fFileName = NULL;
@@ -1245,15 +1221,15 @@ OuterZip::LocalFileHeader::SetFileName(const char* name)
 
     if (name != NULL) {
         fFileNameLength = strlen(name);
-        fFileName = new unsigned char[fFileNameLength+1];
+        fFileName = new uint8_t[fFileNameLength+1];
         if (fFileName == NULL) {
-            LOGI("Malloc failure in SetFileName %u", fFileNameLength);
+            LOGW("Malloc failure in SetFileName %u", fFileNameLength);
             fFileName = NULL;
             fFileNameLength = 0;
         } else {
             memcpy(fFileName, name, fFileNameLength);
             fFileName[fFileNameLength] = '\0';
-            LOGI("+++ OuterZip LFH filename set to '%s'", fFileName);
+            LOGD("+++ OuterZip LFH filename set to '%s'", fFileName);
         }
     }
 }
@@ -1261,8 +1237,7 @@ OuterZip::LocalFileHeader::SetFileName(const char* name)
 /*
  * Dump the contents of a LocalFileHeader object.
  */
-void
-OuterZip::LocalFileHeader::Dump(void) const
+void OuterZip::LocalFileHeader::Dump(void) const
 {
     LOGI(" LocalFileHeader contents:");
     LOGI("  versToExt=%u gpBits=0x%04x compression=%u",
@@ -1289,11 +1264,10 @@ OuterZip::LocalFileHeader::Dump(void) const
  * entry.  On exit, "pGFD" will point at the signature word for the next
  * entry or for the EOCD.
  */
-DIError
-OuterZip::CentralDirEntry::Read(GenericFD* pGFD)
+DIError OuterZip::CentralDirEntry::Read(GenericFD* pGFD)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[kCDELen];
+    uint8_t buf[kCDELen];
 
     dierr = pGFD->Read(buf, kCDELen);
     if (dierr != kDIErrNone)
@@ -1325,7 +1299,7 @@ OuterZip::CentralDirEntry::Read(GenericFD* pGFD)
     /* grab filename */
     if (fFileNameLength != 0) {
         assert(fFileName == NULL);
-        fFileName = new unsigned char[fFileNameLength+1];
+        fFileName = new uint8_t[fFileNameLength+1];
         if (fFileName == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
@@ -1345,7 +1319,7 @@ OuterZip::CentralDirEntry::Read(GenericFD* pGFD)
     /* grab comment, if any */
     if (fFileCommentLength != 0) {
         assert(fFileComment == NULL);
-        fFileComment = new unsigned char[fFileCommentLength+1];
+        fFileComment = new uint8_t[fFileCommentLength+1];
         if (fFileComment == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
@@ -1364,11 +1338,10 @@ bail:
 /*
  * Write a central dir entry.
  */
-DIError
-OuterZip::CentralDirEntry::Write(GenericFD* pGFD)
+DIError OuterZip::CentralDirEntry::Write(GenericFD* pGFD)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[kCDELen];
+    uint8_t buf[kCDELen];
 
     PutLongLE(&buf[0x00], kSignature);
     PutShortLE(&buf[0x04], fVersionMadeBy);
@@ -1408,8 +1381,7 @@ bail:
 /*
  * Change the filename field.
  */
-void
-OuterZip::CentralDirEntry::SetFileName(const char* name)
+void OuterZip::CentralDirEntry::SetFileName(const char* name)
 {
     delete[] fFileName;
     fFileName = NULL;
@@ -1417,7 +1389,7 @@ OuterZip::CentralDirEntry::SetFileName(const char* name)
 
     if (name != NULL) {
         fFileNameLength = strlen(name);
-        fFileName = new unsigned char[fFileNameLength+1];
+        fFileName = new uint8_t[fFileNameLength+1];
         if (fFileName == NULL) {
             LOGI("Malloc failure in SetFileName %u", fFileNameLength);
             fFileName = NULL;
@@ -1430,12 +1402,10 @@ OuterZip::CentralDirEntry::SetFileName(const char* name)
     }
 }
 
-
 /*
  * Dump the contents of a CentralDirEntry object.
  */
-void
-OuterZip::CentralDirEntry::Dump(void) const
+void OuterZip::CentralDirEntry::Dump(void) const
 {
     LOGI(" CentralDirEntry contents:");
     LOGI("  versMadeBy=%u versToExt=%u gpBits=0x%04x compression=%u",
@@ -1470,8 +1440,7 @@ OuterZip::CentralDirEntry::Dump(void) const
  *
  * "buf" should be positioned at the EOCD signature.
  */
-DIError
-OuterZip::EndOfCentralDir::ReadBuf(const unsigned char* buf, int len)
+DIError OuterZip::EndOfCentralDir::ReadBuf(const uint8_t* buf, int len)
 {
     if (len < kEOCDLen) {
         /* looks like ZIP file got truncated */
@@ -1497,11 +1466,10 @@ OuterZip::EndOfCentralDir::ReadBuf(const unsigned char* buf, int len)
 /*
  * Write an end-of-central-directory section.
  */
-DIError
-OuterZip::EndOfCentralDir::Write(GenericFD* pGFD)
+DIError OuterZip::EndOfCentralDir::Write(GenericFD* pGFD)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[kEOCDLen];
+    uint8_t buf[kEOCDLen];
 
     PutLongLE(&buf[0x00], kSignature);
     PutShortLE(&buf[0x04], fDiskNumber);
@@ -1521,6 +1489,7 @@ OuterZip::EndOfCentralDir::Write(GenericFD* pGFD)
 bail:
     return dierr;
 }
+
 /*
  * Dump the contents of an EndOfCentralDir object.
  */

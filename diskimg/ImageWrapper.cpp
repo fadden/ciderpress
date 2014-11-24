@@ -42,8 +42,7 @@
  * The easiest way to do that is to open up the header and see if
  * it looks valid.
  */
-/*static*/ DIError
-Wrapper2MG::Test(GenericFD* pGFD, di_off_t wrappedLength)
+/*static*/ DIError Wrapper2MG::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     TwoImgHeader header;
 
@@ -62,8 +61,7 @@ Wrapper2MG::Test(GenericFD* pGFD, di_off_t wrappedLength)
 /*
  * Get the header (again) and use it to locate the data.
  */
-DIError
-Wrapper2MG::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
+DIError Wrapper2MG::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
@@ -108,8 +106,7 @@ Wrapper2MG::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
 /*
  * Initialize fields for a new file.
  */
-DIError
-Wrapper2MG::Create(di_off_t length, DiskImg::PhysicalFormat physical,
+DIError Wrapper2MG::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
@@ -185,8 +182,7 @@ Wrapper2MG::Create(di_off_t length, DiskImg::PhysicalFormat physical,
  * Since there's no checksum, none of the header fields change, so we
  * don't even deal with that.
  */
-DIError
-Wrapper2MG::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError Wrapper2MG::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     return kDIErrNone;
@@ -207,8 +203,8 @@ Wrapper2MG::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
 /*
  * Display error messages... or not.
  */
-/*static*/ NuResult
-WrapperNuFX::ErrMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
+/*static*/ NuResult WrapperNuFX::ErrMsgHandler(NuArchive* /*pArchive*/,
+    void* vErrorMessage)
 {
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
@@ -229,8 +225,7 @@ WrapperNuFX::ErrMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
  * On success, the NuArchive pointer and thread idx are set, and 0 is
  * returned.  Returns -1 on failure.
  */
-/*static*/ DIError
-WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
+/*static*/ DIError WrapperNuFX::OpenNuFX(const char* pathName, NuArchive** ppArchive,
     NuThreadIdx* pThreadIdx, long* pLength, bool readOnly)
 {
     NuError nerr = kNuErrNone;
@@ -362,16 +357,15 @@ file_archive:
  *
  * Returns 0 on success, -1 on error.
  */
-DIError
-WrapperNuFX::GetNuFXDiskImage(NuArchive* pArchive, NuThreadIdx threadIdx,
+DIError WrapperNuFX::GetNuFXDiskImage(NuArchive* pArchive, NuThreadIdx threadIdx,
     long length, char** ppData)
 {
     NuError err;
     NuDataSink* pDataSink = NULL;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
 
     assert(length > 0);
-    buf = new unsigned char[length];
+    buf = new uint8_t[length];
     if (buf == NULL)
         return kDIErrMalloc;
 
@@ -417,8 +411,7 @@ bail:
  * Test to see if this is a single-record NuFX archive with a disk archive
  * in it.
  */
-/*static*/ DIError
-WrapperNuFX::Test(GenericFD* pGFD, di_off_t wrappedLength)
+/*static*/ DIError WrapperNuFX::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DIError dierr;
     NuArchive* pArchive = NULL;
@@ -446,8 +439,7 @@ WrapperNuFX::Test(GenericFD* pGFD, di_off_t wrappedLength)
 /*
  * Open the archive, extract the disk image into a memory buffer.
  */
-DIError
-WrapperNuFX::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
+DIError WrapperNuFX::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
@@ -511,8 +503,7 @@ bail:
  *
  * Returns a string allocated with new[].
  */
-/*static*/ char*
-WrapperNuFX::GenTempPath(const char* path)
+/*static*/ char* WrapperNuFX::GenTempPath(const char* path)
 {
     static const char* kTmpTemplate = "DItmp_XXXXXX";
     char* tmpPath;
@@ -551,8 +542,7 @@ WrapperNuFX::GenTempPath(const char* path)
  * recreating the underlying file.  (If it doesn't have an underlying
  * file, then we're hosed.)
  */
-DIError
-WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
+DIError WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
@@ -563,7 +553,7 @@ WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     NuArchive* pArchive;
     const char* imagePath;
     char* tmpPath = NULL;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
     NuError nerr;
 
     /*
@@ -594,7 +584,7 @@ WrapperNuFX::Create(di_off_t length, DiskImg::PhysicalFormat physical,
      * Create a blank chunk of memory for the image.
      */
     assert(length > 0);
-    buf = new unsigned char[(int) length];
+    buf = new uint8_t[(int) length];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -625,8 +615,7 @@ bail:
 /*
  * Close the NuFX archive.
  */
-DIError
-WrapperNuFX::CloseNuFX(void)
+DIError WrapperNuFX::CloseNuFX(void)
 {
     NuError nerr;
 
@@ -650,8 +639,7 @@ WrapperNuFX::CloseNuFX(void)
  * pWrapperGFD, we can't have a gzip wrapper, so there's no point in
  * updating it.
  */
-DIError
-WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     NuError nerr = kNuErrNone;
@@ -727,7 +715,7 @@ WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
      * feed the data into NufxLib.
      */
     nerr = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed, 0,
-            (const unsigned char*) ((GFDBuffer*) pDataGFD)->GetBuffer(),
+            (const uint8_t*) ((GFDBuffer*) pDataGFD)->GetBuffer(),
             0, (long) dataLen, NULL, &pDataSource);
     if (nerr != kNuErrNone) {
         LOGI(" NuFX unable to create NufxLib data source (nerr=%d)", nerr);
@@ -770,8 +758,7 @@ bail:
 /*
  * Common NuFX utility function.  This ought to be in NufxLib.
  */
-void
-WrapperNuFX::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime)
+void WrapperNuFX::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime)
 {
     struct tm* ptm;
 
@@ -802,8 +789,7 @@ WrapperNuFX::UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime)
  * runs of repeated bytes, which will be impossible in a DDD file because
  * we compress runs of repeated bytes with RLE.
  */
-/*static*/ DIError
-WrapperDDD::Test(GenericFD* pGFD, di_off_t wrappedLength)
+/*static*/ DIError WrapperDDD::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DIError dierr;
     GenericFD* pNewGFD = NULL;
@@ -846,12 +832,11 @@ WrapperDDD::Test(GenericFD* pGFD, di_off_t wrappedLength)
  * bytes of the file, because DOS DDD just fills it with junk, and it's
  * possible that junk might have runs in it.
  */
-/*static*/ DIError
-WrapperDDD::CheckForRuns(GenericFD* pGFD)
+/*static*/ DIError WrapperDDD::CheckForRuns(GenericFD* pGFD)
 {
     DIError dierr = kDIErrNone;
     int kRunThreshold = 5;
-    unsigned char buf[8192];
+    uint8_t buf[8192];
     size_t bufCount;
     int runLen;
     di_off_t fileLen;
@@ -904,8 +889,7 @@ bail:
 /*
  * Prepping is much the same as testing, but we fill in a few more details.
  */
-DIError
-WrapperDDD::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
+DIError WrapperDDD::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
@@ -930,17 +914,17 @@ WrapperDDD::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
  * Unpack a compressed disk image from "pGFD" to a new memory buffer
  * created in "*ppNewGFD".
  */
-/*static*/ DIError
-WrapperDDD::Unpack(GenericFD* pGFD, GenericFD** ppNewGFD, short* pDiskVolNum)
+/*static*/ DIError WrapperDDD::Unpack(GenericFD* pGFD, GenericFD** ppNewGFD,
+    short* pDiskVolNum)
 {
     DIError dierr;
     GFDBuffer* pNewGFD = NULL;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
     short diskVolNum;
 
     pGFD->Rewind();
 
-    buf = new unsigned char[kNumTracks * kTrackLen];
+    buf = new uint8_t[kNumTracks * kTrackLen];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -975,8 +959,7 @@ bail:
  * Initialize stuff for a new file.  There's no file header or other
  * goodies, so we leave "pWrapperGFD" and "pWrappedLength" alone.
  */
-DIError
-WrapperDDD::Create(di_off_t length, DiskImg::PhysicalFormat physical,
+DIError WrapperDDD::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
@@ -985,12 +968,12 @@ WrapperDDD::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     assert(order == DiskImg::kSectorOrderDOS);
 
     DIError dierr;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
 
     /*
      * Create a blank chunk of memory for the image.
      */
-    buf = new unsigned char[(int) length];
+    buf = new uint8_t[(int) length];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -1021,8 +1004,7 @@ bail:
 /*
  * Compress the disk image.
  */
-DIError
-WrapperDDD::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError WrapperDDD::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     DIError dierr;
@@ -1061,14 +1043,14 @@ const int kDC42PrivateMagic = 0x100;
 const int kDC42FakeTagLen = 19200;      // add a "fake" tag to match Mac
 
 typedef struct DiskImgLib::DC42Header {
-    char            diskName[kDC42NameLen+1];   // from pascal string
-    long            dataSize;           // in bytes
-    long            tagSize;
-    unsigned long   dataChecksum;
-    unsigned long   tagChecksum;
-    unsigned char   diskFormat;         // should be 1 for 800K
-    unsigned char   formatByte;         // should be $24, sometimes $22
-    unsigned short  privateWord;        // must be 0x0100
+    char        diskName[kDC42NameLen+1];   // from pascal string
+    long        dataSize;           // in bytes
+    long        tagSize;
+    uint32_t    dataChecksum;
+    uint32_t    tagChecksum;
+    uint8_t     diskFormat;         // should be 1 for 800K
+    uint8_t     formatByte;         // should be $24, sometimes $22
+    uint16_t    privateWord;        // must be 0x0100
     // userData begins at +84
     // tagData follows user data
 } DC42Header;
@@ -1076,8 +1058,7 @@ typedef struct DiskImgLib::DC42Header {
 /*
  * Dump the contents of a DC42Header.
  */
-/*static*/ void
-WrapperDiskCopy42::DumpHeader(const DC42Header* pHeader)
+/*static*/ void WrapperDiskCopy42::DumpHeader(const DC42Header* pHeader)
 {
     LOGI("--- header contents:");
     LOGI("\tdiskName      = '%s'", pHeader->diskName);
@@ -1094,8 +1075,7 @@ WrapperDiskCopy42::DumpHeader(const DC42Header* pHeader)
 /*
  * Init a DC42 header for an 800K ProDOS disk.
  */
-void
-WrapperDiskCopy42::InitHeader(DC42Header* pHeader)
+void WrapperDiskCopy42::InitHeader(DC42Header* pHeader)
 {
     memset(pHeader, 0, sizeof(*pHeader));
     if (fStorageName == NULL || strlen(fStorageName) == 0)
@@ -1116,10 +1096,9 @@ WrapperDiskCopy42::InitHeader(DC42Header* pHeader)
  *
  * Returns 0 on success, -1 on error or invalid header.
  */
-/*static*/ int
-WrapperDiskCopy42::ReadHeader(GenericFD* pGFD, DC42Header* pHeader)
+/*static*/ int WrapperDiskCopy42::ReadHeader(GenericFD* pGFD, DC42Header* pHeader)
 {
-    unsigned char hdrBuf[kDC42DataOffset];
+    uint8_t hdrBuf[kDC42DataOffset];
 
     if (pGFD->Read(hdrBuf, kDC42DataOffset) != kDIErrNone)
         return -1;
@@ -1153,10 +1132,9 @@ WrapperDiskCopy42::ReadHeader(GenericFD* pGFD, DC42Header* pHeader)
 /*
  * Write the header for a DC42 file.
  */
-DIError
-WrapperDiskCopy42::WriteHeader(GenericFD* pGFD, const DC42Header* pHeader)
+DIError WrapperDiskCopy42::WriteHeader(GenericFD* pGFD, const DC42Header* pHeader)
 {
-    unsigned char hdrBuf[kDC42DataOffset];
+    uint8_t hdrBuf[kDC42DataOffset];
 
     pGFD->Rewind();
 
@@ -1190,8 +1168,7 @@ WrapperDiskCopy42::WriteHeader(GenericFD* pGFD, const DC42Header* pHeader)
  * about our interpretation of some of the header fields (e.g. we only
  * recognize 800K disks) we should be okay.
  */
-/*static*/ DIError
-WrapperDiskCopy42::Test(GenericFD* pGFD, di_off_t wrappedLength)
+/*static*/ DIError WrapperDiskCopy42::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DC42Header header;
 
@@ -1214,14 +1191,12 @@ WrapperDiskCopy42::Test(GenericFD* pGFD, di_off_t wrappedLength)
  *
  * Position "pGFD" at the start of data.
  */
-/*static*/ DIError
-WrapperDiskCopy42::ComputeChecksum(GenericFD* pGFD,
-    unsigned long* pChecksum)
+/*static*/ DIError WrapperDiskCopy42::ComputeChecksum(GenericFD* pGFD, uint32_t* pChecksum)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[512];
+    uint8_t buf[512];
     long dataRem = 800 * 1024 /*pHeader->dataSize*/;
-    unsigned long checksum;
+    uint32_t checksum;
 
     assert(dataRem % sizeof(buf) == 0);
     assert((sizeof(buf) & 0x01) == 0);  // we take it two bytes at a time
@@ -1237,7 +1212,7 @@ WrapperDiskCopy42::ComputeChecksum(GenericFD* pGFD,
         }
 
         for (i = 0; i < (int) sizeof(buf); i += 2) {
-            unsigned short val = GetShortBE(buf+i);
+            uint16_t val = GetShortBE(buf+i);
 
             checksum += val;
             if (checksum & 0x01)
@@ -1257,9 +1232,8 @@ WrapperDiskCopy42::ComputeChecksum(GenericFD* pGFD,
 /*
  * Prepare a DiskCopy image for use.
  */
-DIError
-WrapperDiskCopy42::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
-    di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
+DIError WrapperDiskCopy42::Prep(GenericFD* pGFD, di_off_t wrappedLength,
+    bool readOnly, di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
@@ -1274,7 +1248,7 @@ WrapperDiskCopy42::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     /*
      * Verify checksum.  File should already be seeked to appropriate place.
      */
-    unsigned long checksum;
+    uint32_t checksum;
     dierr = ComputeChecksum(pGFD, &checksum);
     if (dierr != kDIErrNone)
         return dierr;
@@ -1302,8 +1276,7 @@ WrapperDiskCopy42::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
 /*
  * Initialize fields for a new file.
  */
-DIError
-WrapperDiskCopy42::Create(di_off_t length, DiskImg::PhysicalFormat physical,
+DIError WrapperDiskCopy42::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
@@ -1331,12 +1304,11 @@ WrapperDiskCopy42::Create(di_off_t length, DiskImg::PhysicalFormat physical,
  * We only use GFDGFD, so there's no data to write.  However, we do need
  * to update the checksum, and append our "fake" tag section.
  */
-DIError
-WrapperDiskCopy42::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError WrapperDiskCopy42::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     DIError dierr;
-    unsigned long checksum;
+    uint32_t checksum;
 
     /* compute the data checksum */
     dierr = pWrapperGFD->Seek(kDC42DataOffset, kSeekSet);
@@ -1411,8 +1383,7 @@ static const char* kSim2eID = "SIMSYSTEM_HDV";
  * Test for a virtual hard-drive image.  This is either a "raw" unadorned
  * image, or one with a 15-byte "SimIIe" header on it.
  */
-DIError
-WrapperSim2eHDV::Test(GenericFD* pGFD, di_off_t wrappedLength)
+DIError WrapperSim2eHDV::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     char buf[kSim2eHeaderLen];
 
@@ -1438,9 +1409,8 @@ WrapperSim2eHDV::Test(GenericFD* pGFD, di_off_t wrappedLength)
 /*
  * These are always ProDOS volumes.
  */
-DIError
-WrapperSim2eHDV::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
-    di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
+DIError WrapperSim2eHDV::Prep(GenericFD* pGFD, di_off_t wrappedLength,
+    bool readOnly, di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
@@ -1455,12 +1425,11 @@ WrapperSim2eHDV::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
 /*
  * Initialize fields for a new file.
  */
-DIError
-WrapperSim2eHDV::Create(di_off_t length, DiskImg::PhysicalFormat physical,
+DIError WrapperSim2eHDV::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
-    unsigned char header[kSim2eHeaderLen];
+    uint8_t header[kSim2eHeaderLen];
     long blocks = (long) (length / 512);
 
     assert(physical == DiskImg::kPhysicalFormatSectors);
@@ -1474,8 +1443,8 @@ WrapperSim2eHDV::Create(di_off_t length, DiskImg::PhysicalFormat physical,
         blocks = 65535;
 
     memcpy(header, kSim2eID, strlen(kSim2eID));
-    header[13] = (unsigned char) blocks;
-    header[14] = (unsigned char) ((blocks & 0xff00) >> 8);
+    header[13] = (uint8_t) blocks;
+    header[14] = (uint8_t) ((blocks & 0xff00) >> 8);
     DIError dierr = pWrapperGFD->Write(header, kSim2eHeaderLen);
     if (dierr != kDIErrNone) {
         LOGI(" Sim2eHDV header write failed (err=%d)", dierr);
@@ -1491,8 +1460,7 @@ WrapperSim2eHDV::Create(di_off_t length, DiskImg::PhysicalFormat physical,
 /*
  * We only use GFDGFD, so there's nothing to do here.
  */
-DIError
-WrapperSim2eHDV::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError WrapperSim2eHDV::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     return kDIErrNone;
@@ -1553,8 +1521,7 @@ WrapperSim2eHDV::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
  *
  * There is currently no way for the API to set the number of tracks.
  */
-/*static*/ DIError
-WrapperTrackStar::Test(GenericFD* pGFD, di_off_t wrappedLength)
+/*static*/ DIError WrapperTrackStar::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DIError dierr = kDIErrNone;
     LOGI("Testing for TrackStar");
@@ -1571,7 +1538,7 @@ WrapperTrackStar::Test(GenericFD* pGFD, di_off_t wrappedLength)
     LOGI("  Checking for %d-track image", numTracks);
 
     /* verify each track */
-    unsigned char trackBuf[kFileTrackStorageLen];
+    uint8_t trackBuf[kFileTrackStorageLen];
     pGFD->Rewind();
     for (int trk = 0; trk < numTracks; trk++) {
         dierr = pGFD->Read(trackBuf, sizeof(trackBuf));
@@ -1590,8 +1557,7 @@ bail:
 /*
  * Check the format.
  */
-/*static*/ DIError
-WrapperTrackStar::VerifyTrack(int track, const unsigned char* trackBuf)
+/*static*/ DIError WrapperTrackStar::VerifyTrack(int track, const uint8_t* trackBuf)
 {
     unsigned int dataLen;
 
@@ -1628,9 +1594,8 @@ WrapperTrackStar::VerifyTrack(int track, const unsigned char* trackBuf)
 /*
  * Fill in some details.
  */
-DIError
-WrapperTrackStar::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
-    di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
+DIError WrapperTrackStar::Prep(GenericFD* pGFD, di_off_t wrappedLength,
+    bool readOnly, di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
@@ -1659,16 +1624,15 @@ WrapperTrackStar::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
  * Unpack reverse-order nibbles from "pGFD" to a new memory buffer
  * created in "*ppNewGFD".
  */
-DIError
-WrapperTrackStar::Unpack(GenericFD* pGFD, GenericFD** ppNewGFD)
+DIError WrapperTrackStar::Unpack(GenericFD* pGFD, GenericFD** ppNewGFD)
 {
     DIError dierr;
     GFDBuffer* pNewGFD = NULL;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
 
     pGFD->Rewind();
 
-    buf = new unsigned char[kTrackStarNumTracks * kTrackAllocSize];
+    buf = new uint8_t[kTrackStarNumTracks * kTrackAllocSize];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -1712,12 +1676,11 @@ bail:
  *
  * This fills out "fNibbleTrackInfo".
  */
-DIError
-WrapperTrackStar::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD)
+DIError WrapperTrackStar::UnpackDisk(GenericFD* pGFD, GenericFD* pNewGFD)
 {
     DIError dierr = kDIErrNone;
-    unsigned char inBuf[kFileTrackStorageLen];
-    unsigned char outBuf[kTrackAllocSize];
+    uint8_t inBuf[kFileTrackStorageLen];
+    uint8_t outBuf[kTrackAllocSize];
     int i, trk;
 
     assert(kTrackStarNumTracks <= kMaxNibbleTracks525);
@@ -1768,8 +1731,7 @@ bail:
  * Initialize stuff for a new file.  There's no file header or other
  * goodies, so we leave "pWrapperGFD" and "pWrappedLength" alone.
  */
-DIError
-WrapperTrackStar::Create(di_off_t length, DiskImg::PhysicalFormat physical,
+DIError WrapperTrackStar::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
@@ -1779,7 +1741,7 @@ WrapperTrackStar::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     assert(order == DiskImg::kSectorOrderPhysical);
 
     DIError dierr;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
     int numTracks = (int) (length / kTrackLenTrackStar525);
     int i;
 
@@ -1798,7 +1760,7 @@ WrapperTrackStar::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     /*
      * Create a blank chunk of memory for the image.
      */
-    buf = new unsigned char[(int) length];
+    buf = new uint8_t[(int) length];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -1827,8 +1789,7 @@ bail:
  * The source data is in "pDataGFD" in a layout described by fNibbleTrackInfo.
  * We need to create the new file in "pWrapperGFD".
  */
-DIError
-WrapperTrackStar::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError WrapperTrackStar::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     DIError dierr = kDIErrNone;
@@ -1839,8 +1800,8 @@ WrapperTrackStar::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
 
     pDataGFD->Rewind();
 
-    unsigned char writeBuf[kFileTrackStorageLen];
-    unsigned char dataBuf[kTrackLenTrackStar525];
+    uint8_t writeBuf[kFileTrackStorageLen];
+    uint8_t dataBuf[kTrackLenTrackStar525];
     int track, trackLen;
 
     for (track = 0; track < kTrackStarNumTracks; track++) {
@@ -1883,7 +1844,7 @@ WrapperTrackStar::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
         if (trackLen == kMaxTrackLen)
             PutShortLE(writeBuf + 0x19fe, 0);
         else
-            PutShortLE(writeBuf + 0x19fe, (unsigned short) trackLen);
+            PutShortLE(writeBuf + 0x19fe, (uint16_t) trackLen);
 
         dierr = pWrapperGFD->Write(writeBuf, sizeof(writeBuf));
         if (dierr != kDIErrNone)
@@ -1897,8 +1858,7 @@ bail:
     return dierr;
 }
 
-void
-WrapperTrackStar::SetNibbleTrackLength(int track, int length)
+void WrapperTrackStar::SetNibbleTrackLength(int track, int length)
 {
     assert(track >= 0);
     assert(length > 0 && length <= kMaxTrackLen);
@@ -1930,11 +1890,10 @@ WrapperTrackStar::SetNibbleTrackLength(int track, int length)
 /*
  * Test to see if this is an FDI disk image.
  */
-/*static*/ DIError
-WrapperFDI::Test(GenericFD* pGFD, di_off_t wrappedLength)
+/*static*/ DIError WrapperFDI::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     DIError dierr = kDIErrNone;
-    unsigned char headerBuf[kMinHeaderLen];
+    uint8_t headerBuf[kMinHeaderLen];
     FDIHeader hdr;
 
     LOGI("Testing for FDI");
@@ -1961,8 +1920,7 @@ bail:
 /*
  * Unpack a 512-byte buffer with the FDI header into its components.
  */
-/*static*/ void
-WrapperFDI::UnpackHeader(const unsigned char* headerBuf, FDIHeader* pHdr)
+/*static*/ void WrapperFDI::UnpackHeader(const uint8_t* headerBuf, FDIHeader* pHdr)
 {
     memcpy(pHdr->signature, &headerBuf[0], kSignatureLen);
     pHdr->signature[kSignatureLen] = '\0';
@@ -1985,8 +1943,7 @@ WrapperFDI::UnpackHeader(const unsigned char* headerBuf, FDIHeader* pHdr)
 /*
  * Dump the contents of an FDI header.
  */
-/*static*/ void
-WrapperFDI::DumpHeader(const FDIHeader* pHdr)
+/*static*/ void WrapperFDI::DumpHeader(const FDIHeader* pHdr)
 {
     static const char* kTypes[] = {
         "8\"", "5.25\"", "3.5\"", "3\""
@@ -2019,8 +1976,7 @@ WrapperFDI::DumpHeader(const FDIHeader* pHdr)
 /*
  * Unpack the disk to heap storage.
  */
-DIError
-WrapperFDI::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
+DIError WrapperFDI::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
     di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
@@ -2113,13 +2069,12 @@ bail:
 /*
  * Unpack pulse timing values to nibbles.
  */
-DIError
-WrapperFDI::Unpack525(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
+DIError WrapperFDI::Unpack525(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
     int numHeads)
 {
     DIError dierr = kDIErrNone;
     GFDBuffer* pNewGFD = NULL;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
     int numTracks;
 
     numTracks = numCyls * numHeads;
@@ -2128,7 +2083,7 @@ WrapperFDI::Unpack525(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
 
     pGFD->Rewind();
 
-    buf = new unsigned char[numTracks * kTrackAllocSize];
+    buf = new uint8_t[numTracks * kTrackAllocSize];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -2161,17 +2116,16 @@ bail:
 /*
  * Unpack pulse timing values to fully-decoded blocks.
  */
-DIError
-WrapperFDI::Unpack35(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
+DIError WrapperFDI::Unpack35(GenericFD* pGFD, GenericFD** ppNewGFD, int numCyls,
     int numHeads, LinearBitmap** ppBadBlockMap)
 {
     DIError dierr = kDIErrNone;
     GFDBuffer* pNewGFD = NULL;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
 
     pGFD->Rewind();
 
-    buf = new unsigned char[800 * 1024];
+    buf = new uint8_t[800 * 1024];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -2210,14 +2164,13 @@ bail:
  * Initialize stuff for a new file.  There's no file header or other
  * goodies, so we leave "pWrapperGFD" and "pWrappedLength" alone.
  */
-DIError
-WrapperFDI::Create(di_off_t length, DiskImg::PhysicalFormat physical,
+DIError WrapperFDI::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
     DIError dierr = kDIErrGeneric;      // not yet
 #if 0
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
     int numTracks = (int) (length / kTrackLenTrackStar525);
     int i;
 
@@ -2241,7 +2194,7 @@ WrapperFDI::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     /*
      * Create a blank chunk of memory for the image.
      */
-    buf = new unsigned char[(int) length];
+    buf = new uint8_t[(int) length];
     if (buf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -2271,8 +2224,7 @@ bail:
  * The source data is in "pDataGFD" in a layout described by fNibbleTrackInfo.
  * We need to create the new file in "pWrapperGFD".
  */
-DIError
-WrapperFDI::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError WrapperFDI::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     DIError dierr = kDIErrGeneric;      // not yet
@@ -2284,8 +2236,8 @@ WrapperFDI::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
 
     pDataGFD->Rewind();
 
-    unsigned char writeBuf[kFileTrackStorageLen];
-    unsigned char dataBuf[kTrackLenTrackStar525];
+    uint8_t writeBuf[kFileTrackStorageLen];
+    uint8_t dataBuf[kTrackLenTrackStar525];
     int track, trackLen;
 
     for (track = 0; track < kTrackStarNumTracks; track++) {
@@ -2322,7 +2274,7 @@ WrapperFDI::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
         if (trackLen == kMaxTrackLen)
             PutShortLE(writeBuf + 0x19fe, 0);
         else
-            PutShortLE(writeBuf + 0x19fe, (unsigned short) trackLen);
+            PutShortLE(writeBuf + 0x19fe, (uint16_t) trackLen);
 
         dierr = pWrapperGFD->Write(writeBuf, sizeof(writeBuf));
         if (dierr != kDIErrNone)
@@ -2337,8 +2289,7 @@ bail:
     return dierr;
 }
 
-void
-WrapperFDI::SetNibbleTrackLength(int track, int length)
+void WrapperFDI::SetNibbleTrackLength(int track, int length)
 {
     assert(false);      // not yet
 #if 0
@@ -2361,8 +2312,8 @@ WrapperFDI::SetNibbleTrackLength(int track, int length)
 /*
  * See if this is unadorned nibble format.
  */
-/*static*/ DIError
-WrapperUnadornedNibble::Test(GenericFD* pGFD, di_off_t wrappedLength)
+/*static*/ DIError WrapperUnadornedNibble::Test(GenericFD* pGFD,
+    di_off_t wrappedLength)
 {
     LOGI("Testing for unadorned nibble");
 
@@ -2375,7 +2326,7 @@ WrapperUnadornedNibble::Test(GenericFD* pGFD, di_off_t wrappedLength)
 
     /* quick scan for invalid data */
     const int kScanSize = 512;
-    unsigned char buf[kScanSize];
+    uint8_t buf[kScanSize];
 
     pGFD->Rewind();
     if (pGFD->Read(buf, sizeof(buf)) != kDIErrNone)
@@ -2389,11 +2340,11 @@ WrapperUnadornedNibble::Test(GenericFD* pGFD, di_off_t wrappedLength)
      */
     for (int i = 0; i < kScanSize; i++) {
         if (buf[i] < 0x80) {
-            LOGI("  Disqualifying len=%ld from nibble, byte=0x%02x",
+            LOGD("  Disqualifying len=%ld from nibble, byte=0x%02x",
                 (long) wrappedLength, buf[i]);
             return kDIErrGeneric;
         } else if (buf[i] < 0x96) {
-            LOGI("  Warning: funky byte 0x%02x in file", buf[i]);
+            LOGD("  Warning: funky byte 0x%02x in file", buf[i]);
         }
     }
 
@@ -2403,9 +2354,8 @@ WrapperUnadornedNibble::Test(GenericFD* pGFD, di_off_t wrappedLength)
 /*
  * Prepare unadorned nibble for use.  Not much to do here.
  */
-DIError
-WrapperUnadornedNibble::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
-    di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
+DIError WrapperUnadornedNibble::Prep(GenericFD* pGFD, di_off_t wrappedLength,
+    bool readOnly, di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
@@ -2433,9 +2383,9 @@ WrapperUnadornedNibble::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readO
 /*
  * Initialize fields for a new file.
  */
-DIError
-WrapperUnadornedNibble::Create(di_off_t length, DiskImg::PhysicalFormat physical,
-    DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
+DIError WrapperUnadornedNibble::Create(di_off_t length,
+    DiskImg::PhysicalFormat physical, DiskImg::SectorOrder order,
+    short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
     LOGI("Create unadorned nibble");
@@ -2448,8 +2398,7 @@ WrapperUnadornedNibble::Create(di_off_t length, DiskImg::PhysicalFormat physical
 /*
  * We only use GFDGFD, so there's nothing to do here.
  */
-DIError
-WrapperUnadornedNibble::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError WrapperUnadornedNibble::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     return kDIErrNone;
@@ -2473,11 +2422,10 @@ WrapperUnadornedNibble::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
  * It also holds for 35-track 6656-byte unadorned nibble images, so we need
  * to test for them first.
  */
-/*static*/ DIError
-WrapperUnadornedSector::Test(GenericFD* pGFD, di_off_t wrappedLength)
+/*static*/ DIError WrapperUnadornedSector::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
     LOGI("Testing for unadorned sector (wrappedLength=%ld/%lu)",
-        (long) (wrappedLength >> 32), (unsigned long) wrappedLength);
+        (long) (wrappedLength >> 32), (uint32_t) wrappedLength);
     if (wrappedLength >= 1536 && (wrappedLength % 512) == 0)
         return kDIErrNone;
     if (wrappedLength == kD13Length)        // 13-sector image?
@@ -2489,9 +2437,8 @@ WrapperUnadornedSector::Test(GenericFD* pGFD, di_off_t wrappedLength)
 /*
  * Prepare unadorned sector for use.  Not much to do here.
  */
-DIError
-WrapperUnadornedSector::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly,
-    di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
+DIError WrapperUnadornedSector::Prep(GenericFD* pGFD, di_off_t wrappedLength,
+    bool readOnly, di_off_t* pLength, DiskImg::PhysicalFormat* pPhysical,
     DiskImg::SectorOrder* pOrder, short* pDiskVolNum,
     LinearBitmap** ppBadBlockMap, GenericFD** ppNewGFD)
 {
@@ -2508,8 +2455,7 @@ WrapperUnadornedSector::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readO
 /*
  * Initialize fields for a new file.
  */
-DIError
-WrapperUnadornedSector::Create(di_off_t length, DiskImg::PhysicalFormat physical,
+DIError WrapperUnadornedSector::Create(di_off_t length, DiskImg::PhysicalFormat physical,
     DiskImg::SectorOrder order, short dosVolumeNum, GenericFD* pWrapperGFD,
     di_off_t* pWrappedLength, GenericFD** pDataFD)
 {
@@ -2523,8 +2469,7 @@ WrapperUnadornedSector::Create(di_off_t length, DiskImg::PhysicalFormat physical
 /*
  * We only use GFDGFD, so there's nothing to do here.
  */
-DIError
-WrapperUnadornedSector::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
+DIError WrapperUnadornedSector::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     di_off_t dataLen, di_off_t* pWrappedLen)
 {
     return kDIErrNone;

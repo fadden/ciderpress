@@ -39,8 +39,7 @@ const int kMaxTSIterations = 32;
 /*
  * Get a pointer to the Nth entry in a catalog sector.
  */
-static inline unsigned char*
-GetCatalogEntryPtr(unsigned char* basePtr, int entryNum)
+static inline uint8_t* GetCatalogEntryPtr(uint8_t* basePtr, int entryNum)
 {
     assert(entryNum >= 0 && entryNum < kCatalogEntriesPerSect);
     return basePtr + kCatalogEntryOffset + entryNum * kCatalogEntrySize;
@@ -70,11 +69,11 @@ GetCatalogEntryPtr(unsigned char* basePtr, int entryNum)
  *
  * DISK198B (Aliens+docs) gets 3 and bails with a self-reference.
  */
-static DIError
-TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder, int* pGoodCount)
+static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
+    int* pGoodCount)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int numTracks, numSectors;
     int catTrack, catSect;
     int foundGood = 0;
@@ -147,8 +146,7 @@ bail:
 /*
  * Test to see if the image is a DOS 3.2 or DOS 3.3 disk.
  */
-/*static*/ DIError
-DiskFSDOS33::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSDOS33::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     if (pImg->GetNumTracks() > kMaxInterestingTracks)
@@ -198,8 +196,7 @@ DiskFSDOS33::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
  * on out must be handled somehow, possibly by claiming that the disk is
  * completely full and has no files on it.
  */
-DIError
-DiskFSDOS33::Initialize(InitMode initMode)
+DIError DiskFSDOS33::Initialize(InitMode initMode)
 {
     DIError dierr = kDIErrNone;
 
@@ -250,8 +247,7 @@ bail:
 /*
  * Read some fields from the disk Volume Table of Contents.
  */
-DIError
-DiskFSDOS33::ReadVTOC(void)
+DIError DiskFSDOS33::ReadVTOC(void)
 {
     DIError dierr;
 
@@ -291,8 +287,7 @@ bail:
  * Call this if fpImg's volume num (derived from nibble formats) or
  * the VTOC's volume number changes.
  */
-void
-DiskFSDOS33::UpdateVolumeNum(void)
+void DiskFSDOS33::UpdateVolumeNum(void)
 {
     /* use the sector-embedded volume number, if available */
     if (fpImg->GetDOSVolumeNum() == DiskImg::kVolumeNumNotSet)
@@ -308,8 +303,7 @@ DiskFSDOS33::UpdateVolumeNum(void)
 /*
  * Set the disk volume number (fDiskVolumeNum) and derived fields.
  */
-void
-DiskFSDOS33::SetDiskVolumeNum(int val)
+void DiskFSDOS33::SetDiskVolumeNum(int val)
 {
     if (val < 0 || val > 255) {
         // Actual valid range should be 1-254, but it's possible for a
@@ -330,8 +324,7 @@ DiskFSDOS33::SetDiskVolumeNum(int val)
 /*
  * Dump some VTOC fields.
  */
-void
-DiskFSDOS33::DumpVTOC(void)
+void DiskFSDOS33::DumpVTOC(void)
 {
 
     LOGI("VTOC catalog: track=%d sector=%d",
@@ -343,8 +336,7 @@ DiskFSDOS33::DumpVTOC(void)
 /*
  * Update an entry in the VolumeUsage map, watching for conflicts.
  */
-void
-DiskFSDOS33::SetSectorUsage(long track, long sector,
+void DiskFSDOS33::SetSectorUsage(long track, long sector,
     VolumeUsage::ChunkPurpose purpose)
 {
     VolumeUsage::ChunkState cstate;
@@ -378,8 +370,7 @@ DiskFSDOS33::SetSectorUsage(long track, long sector,
  * various files, and mark the tracks as owned by DOS if nobody else
  * claims them.
  */
-DIError
-DiskFSDOS33::ScanVolBitmap(void)
+DIError DiskFSDOS33::ScanVolBitmap(void)
 {
     DIError dierr;
     VolumeUsage::ChunkState cstate;
@@ -397,13 +388,13 @@ DiskFSDOS33::ScanVolBitmap(void)
 
     int i;
     for (i = 0; i < kMaxTracks; i++) {
-        unsigned long val, origVal;
+        uint32_t val, origVal;
         int bit;
 
-        val = (unsigned long) fVTOC[0x38 + i*4] << 24;
-        val |= (unsigned long) fVTOC[0x39 + i*4] << 16;
-        val |= (unsigned long) fVTOC[0x3a + i*4] << 8;
-        val |= (unsigned long) fVTOC[0x3b + i*4];
+        val = (uint32_t) fVTOC[0x38 + i*4] << 24;
+        val |= (uint32_t) fVTOC[0x39 + i*4] << 16;
+        val |= (uint32_t) fVTOC[0x3a + i*4] << 8;
+        val |= (uint32_t) fVTOC[0x3b + i*4];
         origVal = val;
 
         /* init the VolumeUsage stuff */
@@ -433,8 +424,7 @@ bail:
 /*
  * Load the VTOC into the buffer.
  */
-DIError
-DiskFSDOS33::LoadVolBitmap(void)
+DIError DiskFSDOS33::LoadVolBitmap(void)
 {
     DIError dierr;
 
@@ -451,8 +441,7 @@ DiskFSDOS33::LoadVolBitmap(void)
 /*
  * Save our copy of the volume bitmap.
  */
-DIError
-DiskFSDOS33::SaveVolBitmap(void)
+DIError DiskFSDOS33::SaveVolBitmap(void)
 {
     if (!fVTOCLoaded) {
         assert(false);
@@ -467,8 +456,7 @@ DiskFSDOS33::SaveVolBitmap(void)
  *
  * It's okay to call this if the bitmap isn't loaded.
  */
-void
-DiskFSDOS33::FreeVolBitmap(void)
+void DiskFSDOS33::FreeVolBitmap(void)
 {
     fVTOCLoaded = false;
 
@@ -480,14 +468,13 @@ DiskFSDOS33::FreeVolBitmap(void)
 /*
  * Return entry N from the VTOC.
  */
-inline unsigned long
-DiskFSDOS33::GetVTOCEntry(const unsigned char* pVTOC, long track) const
+inline uint32_t DiskFSDOS33::GetVTOCEntry(const uint8_t* pVTOC, long track) const
 {
-    unsigned long val;
-    val = (unsigned long) pVTOC[0x38 + track*4] << 24;
-    val |= (unsigned long) pVTOC[0x39 + track*4] << 16;
-    val |= (unsigned long) pVTOC[0x3a + track*4] << 8;
-    val |= (unsigned long) pVTOC[0x3b + track*4];
+    uint32_t val;
+    val = (uint32_t) pVTOC[0x38 + track*4] << 24;
+    val |= (uint32_t) pVTOC[0x39 + track*4] << 16;
+    val |= (uint32_t) pVTOC[0x3a + track*4] << 8;
+    val |= (uint32_t) pVTOC[0x3b + track*4];
 
     return val;
 }
@@ -497,11 +484,10 @@ DiskFSDOS33::GetVTOCEntry(const unsigned char* pVTOC, long track) const
  *
  * Only touches the in-memory copy.
  */
-DIError
-DiskFSDOS33::AllocSector(TrackSector* pTS)
+DIError DiskFSDOS33::AllocSector(TrackSector* pTS)
 {
-    unsigned long val;
-    unsigned long mask;
+    uint32_t val;
+    uint32_t mask;
     long track, numSectPerTrack;
 
     /* we could compute "mask", but it's faster and easier to do this */
@@ -567,7 +553,7 @@ DiskFSDOS33::AllocSector(TrackSector* pTS)
     /*
      * Mostly for fun, update the VTOC allocation thingy.
      */
-    fVTOC[0x30] = (unsigned char) track; // last track where alloc happened
+    fVTOC[0x30] = (uint8_t) track; // last track where alloc happened
     if (track < kVTOCTrack)
         fVTOC[0x31] = 0xff;     // descending
     else
@@ -584,8 +570,7 @@ DiskFSDOS33::AllocSector(TrackSector* pTS)
  *
  * If "withDOS" is set, mark the first 3 tracks as in-use.
  */
-DIError
-DiskFSDOS33::CreateEmptyBlockMap(bool withDOS)
+DIError DiskFSDOS33::CreateEmptyBlockMap(bool withDOS)
 {
     DIError dierr;
     long track, sector, maxTrack;
@@ -627,20 +612,19 @@ DiskFSDOS33::CreateEmptyBlockMap(bool withDOS)
  *
  * Returns "true" if it's in use, "false" otherwise.
  */
-bool
-DiskFSDOS33::GetSectorUseEntry(long track, int sector) const
+bool DiskFSDOS33::GetSectorUseEntry(long track, int sector) const
 {
     assert(fVTOCLoaded);
     assert(track >= 0 && track < fpImg->GetNumTracks());
     assert(sector >= 0 && sector < fpImg->GetNumSectPerTrack());
 
-    unsigned long val, mask;
+    uint32_t val, mask;
 
     val = GetVTOCEntry(fVTOC, track);
-    //val = (unsigned long) fVTOC[0x38 + track*4] << 24;
-    //val |= (unsigned long) fVTOC[0x39 + track*4] << 16;
-    //val |= (unsigned long) fVTOC[0x3a + track*4] << 8;
-    //val |= (unsigned long) fVTOC[0x3b + track*4];
+    //val = (uint32_t) fVTOC[0x38 + track*4] << 24;
+    //val |= (uint32_t) fVTOC[0x39 + track*4] << 16;
+    //val |= (uint32_t) fVTOC[0x3a + track*4] << 8;
+    //val |= (uint32_t) fVTOC[0x3b + track*4];
 
     /*
      * The highest-numbered sector is now in the high bit.  If this is a
@@ -655,14 +639,13 @@ DiskFSDOS33::GetSectorUseEntry(long track, int sector) const
 /*
  * Change the state of an entry in the VTOC sector use map.
  */
-void
-DiskFSDOS33::SetSectorUseEntry(long track, int sector, bool inUse)
+void DiskFSDOS33::SetSectorUseEntry(long track, int sector, bool inUse)
 {
     assert(fVTOCLoaded);
     assert(track >= 0 && track < fpImg->GetNumTracks());
     assert(sector >= 0 && sector < fpImg->GetNumSectPerTrack());
 
-    unsigned long val, mask;
+    uint32_t val, mask;
 
     val = GetVTOCEntry(fVTOC, track);
 
@@ -673,18 +656,17 @@ DiskFSDOS33::SetSectorUseEntry(long track, int sector, bool inUse)
     else
         val |= mask;
 
-    fVTOC[0x38 + track*4] = (unsigned char) (val >> 24);
-    fVTOC[0x39 + track*4] = (unsigned char) (val >> 16);
-    fVTOC[0x3a + track*4] = (unsigned char) (val >> 8);
-    fVTOC[0x3b + track*4] = (unsigned char) val;
+    fVTOC[0x38 + track*4] = (uint8_t) (val >> 24);
+    fVTOC[0x39 + track*4] = (uint8_t) (val >> 16);
+    fVTOC[0x3a + track*4] = (uint8_t) (val >> 8);
+    fVTOC[0x3b + track*4] = (uint8_t) val;
 }
 
 
 /*
  * Get the amount of free space remaining.
  */
-DIError
-DiskFSDOS33::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
+DIError DiskFSDOS33::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     int* pUnitSize) const
 {
     DIError dierr;
@@ -720,8 +702,7 @@ DiskFSDOS33::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
  * disks had DOS removed to add space, un-set the last few sectors of track 2
  * that weren't actually used by DOS, or did some other funky thing.
  */
-void
-DiskFSDOS33::FixVolumeUsageMap(void)
+void DiskFSDOS33::FixVolumeUsageMap(void)
 {
     VolumeUsage::ChunkState cstate;
     int track, sector;
@@ -749,11 +730,10 @@ DiskFSDOS33::FixVolumeUsageMap(void)
  *
  * Fills out "fCatalogSectors" as it works.
  */
-DIError
-DiskFSDOS33::ReadCatalog(void)
+DIError DiskFSDOS33::ReadCatalog(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int catTrack, catSect;
     int iterations;
 
@@ -821,12 +801,11 @@ bail:
  * Pass in the track, sector, and the contents of that track and sector.
  * (We only use "catTrack" and "catSect" to fill out some fields.)
  */
-DIError
-DiskFSDOS33::ProcessCatalogSector(int catTrack, int catSect,
-    const unsigned char* sctBuf)
+DIError DiskFSDOS33::ProcessCatalogSector(int catTrack, int catSect,
+    const uint8_t* sctBuf)
 {
     A2FileDOS* pFile;
-    const unsigned char* pEntry;
+    const uint8_t* pEntry;
     int i;
 
     pEntry = &sctBuf[kCatalogEntryOffset];
@@ -862,7 +841,7 @@ DiskFSDOS33::ProcessCatalogSector(int catTrack, int catSect,
             pFile->FixFilename();
 
             pFile->fLengthInSectors = pEntry[0x21];
-            pFile->fLengthInSectors |= (unsigned short) pEntry[0x22] << 8;
+            pFile->fLengthInSectors |= (uint16_t) pEntry[0x22] << 8;
 
             pFile->fCatTS.track = catTrack;
             pFile->fCatTS.sector = catSect;
@@ -888,8 +867,7 @@ DiskFSDOS33::ProcessCatalogSector(int catTrack, int catSect,
  *
  * Returns "true" if disk appears to be perfect, "false" otherwise.
  */
-bool
-DiskFSDOS33::CheckDiskIsGood(void)
+bool DiskFSDOS33::CheckDiskIsGood(void)
 {
     DIError dierr;
     const DiskImg* pDiskImg = GetDiskImg();
@@ -994,8 +972,7 @@ bail:
  * Run through our list of files, computing the lengths and marking file
  * usage in the VolumeUsage object.
  */
-DIError
-DiskFSDOS33::GetFileLengths(void)
+DIError DiskFSDOS33::GetFileLengths(void)
 {
     A2FileDOS* pFile;
     TrackSector* tsList = NULL;
@@ -1076,12 +1053,11 @@ DiskFSDOS33::GetFileLengths(void)
  *  pFile->fSparseLength
  *  pFile->fDataOffset
  */
-DIError
-DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
+DIError DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
     int tsCount)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
 
     assert(pFile != NULL);
     assert(tsList != NULL);
@@ -1110,13 +1086,13 @@ DiskFSDOS33::ComputeLength(A2FileDOS* pFile, const TrackSector* tsList,
 
         if (pFile->fFileType == A2FileDOS::kTypeBinary) {
             pFile->fAuxType =
-                sctBuf[0x00] | (unsigned short) sctBuf[0x01] << 8;
+                sctBuf[0x00] | (uint16_t) sctBuf[0x01] << 8;
             pFile->fLength =
-                sctBuf[0x02] | (unsigned short) sctBuf[0x03] << 8;
+                sctBuf[0x02] | (uint16_t) sctBuf[0x03] << 8;
             pFile->fDataOffset = 4; // take the above into account
         } else {
             pFile->fLength =
-                sctBuf[0x00] | (unsigned short) sctBuf[0x01] << 8;
+                sctBuf[0x00] | (uint16_t) sctBuf[0x01] << 8;
             pFile->fDataOffset = 2; // take the above into account
         }
 
@@ -1208,11 +1184,10 @@ bail:
  * the body of the file.  They're valid in the middle for random-access
  * text files.
  */
-DIError
-DiskFSDOS33::TrimLastSectorUp(A2FileDOS* pFile, TrackSector lastTS)
+DIError DiskFSDOS33::TrimLastSectorUp(A2FileDOS* pFile, TrackSector lastTS)
 {
     DIError dierr;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int i;
 
     if (lastTS.track == 0) {
@@ -1242,8 +1217,7 @@ bail:
  * Given lists of tracks and sector for data and TS index sectors, set the
  * entries in the volume usage map.
  */
-void
-DiskFSDOS33::MarkFileUsage(A2FileDOS* pFile, TrackSector* tsList, int tsCount,
+void DiskFSDOS33::MarkFileUsage(A2FileDOS* pFile, TrackSector* tsList, int tsCount,
     TrackSector* indexList, int indexCount)
 {
     int i;
@@ -1283,11 +1257,11 @@ DiskFSDOS33::MarkFileUsage(A2FileDOS* pFile, TrackSector* tsList, int tsCount,
  * worthwhile given the otherwise flaky nature of DDD storage.
  */
 DIError
-DiskFSDOS33::TrimLastSectorDown(A2FileDOS* pFile, unsigned short* tsBuf,
+DiskFSDOS33::TrimLastSectorDown(A2FileDOS* pFile, uint16_t* tsBuf,
     int maxZeroCount)
 {
     DIError dierr;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int i;
 
     //LOGI(" DOS reading LAST file sector");
@@ -1328,8 +1302,7 @@ bail:
  *
  * We modify the first "len" bytes of "buf" in place.
  */
-/*static*/ void
-DiskFSDOS33::LowerASCII(unsigned char* buf, long len)
+/*static*/ void DiskFSDOS33::LowerASCII(uint8_t* buf, long len)
 {
     while (len--) {
         if (*buf & 0x80) {
@@ -1358,8 +1331,7 @@ DiskFSDOS33::LowerASCII(unsigned char* buf, long len)
  * "invalid" character is a trailing space.  Because we're using C-style
  * strings, we implicitly ban the use of '\0' in the name.
  */
-/*static*/ bool
-DiskFSDOS33::IsValidFileName(const char* name)
+/*static*/ bool DiskFSDOS33::IsValidFileName(const char* name)
 {
     bool nonSpace = false;
     int len = 0;
@@ -1387,8 +1359,7 @@ DiskFSDOS33::IsValidFileName(const char* name)
 /*
  * Determine whether "name" is a valid volume number.
  */
-/*static*/ bool
-DiskFSDOS33::IsValidVolumeName(const char* name)
+/*static*/ bool DiskFSDOS33::IsValidVolumeName(const char* name)
 {
     long val;
     char* endp;
@@ -1418,11 +1389,10 @@ DiskFSDOS33::IsValidVolumeName(const char* name)
  * some other path for specifying "add DOS image", I continue to use the
  * defined ways of setting the volume number and abuse "volName" slightly.
  */
-DIError
-DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
+DIError DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[256];
+    uint8_t sctBuf[256];
     bool addDOS = false;
 
     if (pDiskImg->GetNumTracks() < kMinTracks ||
@@ -1493,11 +1463,11 @@ DiskFSDOS33::Format(DiskImg* pDiskImg, const char* volName)
     if (fpImg->GetDOSVolumeNum() == DiskImg::kVolumeNumNotSet)
         fVTOC[0x06] = kDefaultVolumeNum;            // VTOC volume number
     else
-        fVTOC[0x06] = (unsigned char) fpImg->GetDOSVolumeNum();
+        fVTOC[0x06] = (uint8_t) fpImg->GetDOSVolumeNum();
     fVTOC[0x27] = 122;                              // max T/S pairs
     fVTOC[0x30] = kVTOCTrack+1;                     // last alloc
     fVTOC[0x31] = 1;                                // ascending
-    fVTOC[0x34] = (unsigned char)fpImg->GetNumTracks(); // #of tracks
+    fVTOC[0x34] = (uint8_t)fpImg->GetNumTracks(); // #of tracks
     fVTOC[0x35] = fpImg->GetNumSectPerTrack();      // #of sectors
     fVTOC[0x36] = 0x00;                             // bytes/sector (lo)
     fVTOC[0x37] = 0x01;                             // bytes/sector (hi)
@@ -1554,12 +1524,11 @@ bail:
  * out which version of DOS to write.  This probably ought to be an enum so
  * we can specify various versions of DOS.
  */
-DIError
-DiskFSDOS33::WriteDOSTracks(int sectPerTrack)
+DIError DiskFSDOS33::WriteDOSTracks(int sectPerTrack)
 {
     DIError dierr = kDIErrNone;
     long track, sector;
-    const unsigned char* buf = gDOS33Tracks;
+    const uint8_t* buf = gDOS33Tracks;
 
     if (sectPerTrack == 13) {
         LOGI("  DOS33 writing DOS 3.3 tracks");
@@ -1604,8 +1573,7 @@ bail:
  * "*pNormalizedBufLen" is used to pass in the length of the buffer and
  * pass out the length of the string (should the buffer prove inadequate).
  */
-DIError
-DiskFSDOS33::NormalizePath(const char* path, char fssep,
+DIError DiskFSDOS33::NormalizePath(const char* path, char fssep,
     char* normalizedBuf, int* pNormalizedBufLen)
 {
     DIError dierr = kDIErrNone;
@@ -1630,8 +1598,7 @@ DiskFSDOS33::NormalizePath(const char* path, char fssep,
  *
  * "outBuf" must be able to hold kMaxFileName+1 characters.
  */
-void
-DiskFSDOS33::DoNormalizePath(const char* name, char fssep, char* outBuf)
+void DiskFSDOS33::DoNormalizePath(const char* name, char fssep, char* outBuf)
 {
     char* outp = outBuf;
     const char* cp;
@@ -1684,8 +1651,7 @@ DiskFSDOS33::DoNormalizePath(const char* name, char fssep, char* outBuf)
  * sector of the file now, and modifying the Write() function to understand
  * that the first block is already there.  Need to do that someday.)
  */
-DIError
-DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
+DIError DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
 {
     DIError dierr = kDIErrNone;
     const bool createUnique = (GetParameter(kParm_CreateUnique) != 0);
@@ -1730,7 +1696,7 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
     /*
      * Allocate a directory entry and T/S list.
      */
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     TrackSector catSect;
     TrackSector tsSect;
     int catEntry;
@@ -1764,7 +1730,7 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
 
     /* create the new dir entry at the specified location */
     CreateDirEntry(sctBuf, catEntry, normalName, &tsSect,
-        (unsigned char) fileType, pParms->access);
+        (uint8_t) fileType, pParms->access);
 
     /*
      * Flush everything to disk.
@@ -1796,7 +1762,7 @@ DiskFSDOS33::CreateFile(const CreateParms* pParms,  A2File** ppNewFile)
     pNewFile->fCatTS.sector = catSect.sector;
     pNewFile->fCatEntryNum = catEntry;
 
-    pNewFile->fAuxType = (unsigned short) pParms->auxType;
+    pNewFile->fAuxType = (uint16_t) pParms->auxType;
     pNewFile->fDataOffset = 0;
     switch (pNewFile->fFileType) {
     case A2FileDOS::kTypeInteger:
@@ -1843,8 +1809,7 @@ bail:
  *
  * Returns an error on failure, which should be impossible.
  */
-DIError
-DiskFSDOS33::MakeFileNameUnique(char* fileName)
+DIError DiskFSDOS33::MakeFileNameUnique(char* fileName)
 {
     assert(fileName != NULL);
     assert(strlen(fileName) <= A2FileDOS::kMaxFileName);
@@ -1911,12 +1876,11 @@ DiskFSDOS33::MakeFileNameUnique(char* fileName)
  *
  * The contents of the catalog sector will be in "sctBuf".
  */
-DIError
-DiskFSDOS33::GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
-    unsigned char* sctBuf, A2FileDOS** ppPrevEntry)
+DIError DiskFSDOS33::GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
+    uint8_t* sctBuf, A2FileDOS** ppPrevEntry)
 {
     DIError dierr = kDIErrNone;
-    unsigned char* pEntry;
+    uint8_t* pEntry;
     int sct, ent;
     bool found = false;
 
@@ -1998,13 +1962,12 @@ bail:
 /*
  * Fill out the catalog entry in the location specified.
  */
-void
-DiskFSDOS33::CreateDirEntry(unsigned char* sctBuf, int catEntry,
-    const char* fileName, TrackSector* pTSSect, unsigned char fileType,
+void DiskFSDOS33::CreateDirEntry(uint8_t* sctBuf, int catEntry,
+    const char* fileName, TrackSector* pTSSect, uint8_t fileType,
     int access)
 {
     char highName[A2FileDOS::kMaxFileName+1];
-    unsigned char* pEntry;
+    uint8_t* pEntry;
 
     pEntry = GetCatalogEntryPtr(sctBuf, catEntry);
     if (pEntry[0x00] != 0x00 && pEntry[0x00] != kEntryDeleted) {
@@ -2019,7 +1982,7 @@ DiskFSDOS33::CreateDirEntry(unsigned char* sctBuf, int catEntry,
     pEntry[0x01] = pTSSect->sector;
     pEntry[0x02] = fileType;
     if ((access & A2FileProDOS::kAccessWrite) == 0)
-        pEntry[0x02] |= (unsigned char) A2FileDOS::kTypeLocked;
+        pEntry[0x02] |= (uint8_t) A2FileDOS::kTypeLocked;
     memcpy(&pEntry[0x03], highName, A2FileDOS::kMaxFileName);
     PutShortLE(&pEntry[0x21], 1);       // assume file is 1 sector long
 }
@@ -2030,16 +1993,15 @@ DiskFSDOS33::CreateDirEntry(unsigned char* sctBuf, int catEntry,
  * This entails freeing up the allocated sectors and changing a byte in
  * the directory entry.  We then remove it from the DiskFS file list.
  */
-DIError
-DiskFSDOS33::DeleteFile(A2File* pGenericFile)
+DIError DiskFSDOS33::DeleteFile(A2File* pGenericFile)
 {
     DIError dierr = kDIErrNone;
     A2FileDOS* pFile = (A2FileDOS*) pGenericFile;
     TrackSector* tsList = NULL;
     TrackSector* indexList = NULL;
     int tsCount, indexCount;
-    unsigned char sctBuf[kSctSize];
-    unsigned char* pEntry;
+    uint8_t sctBuf[kSctSize];
+    uint8_t* pEntry;
 
     if (pGenericFile == NULL) {
         assert(false);
@@ -2110,8 +2072,7 @@ bail:
 /*
  * Mark all of the track/sector entries in "pList" as free.
  */
-void
-DiskFSDOS33::FreeTrackSectors(TrackSector* pList, int count)
+void DiskFSDOS33::FreeTrackSectors(TrackSector* pList, int count)
 {
     VolumeUsage::ChunkState cstate;
     int i;
@@ -2140,15 +2101,14 @@ DiskFSDOS33::FreeTrackSectors(TrackSector* pList, int count)
  *
  * "newName" must already be normalized.
  */
-DIError
-DiskFSDOS33::RenameFile(A2File* pGenericFile, const char* newName)
+DIError DiskFSDOS33::RenameFile(A2File* pGenericFile, const char* newName)
 {
     DIError dierr = kDIErrNone;
     A2FileDOS* pFile = (A2FileDOS*) pGenericFile;
     char normalName[A2FileDOS::kMaxFileName+1];
     char dosName[A2FileDOS::kMaxFileName+1];
-    unsigned char sctBuf[kSctSize];
-    unsigned char* pEntry;
+    uint8_t sctBuf[kSctSize];
+    uint8_t* pEntry;
 
     if (pFile == NULL || newName == NULL)
         return kDIErrInvalidArg;
@@ -2185,7 +2145,7 @@ DiskFSDOS33::RenameFile(A2File* pGenericFile, const char* newName)
      */
     char storedName[A2FileDOS::kMaxFileName+1];
     strcpy(storedName, dosName);
-    LowerASCII((unsigned char*)storedName, A2FileDOS::kMaxFileName);
+    LowerASCII((uint8_t*)storedName, A2FileDOS::kMaxFileName);
     A2FileDOS::TrimTrailingSpaces(storedName);
 
     strcpy(pFile->fFileName, storedName);
@@ -2205,8 +2165,7 @@ bail:
  *
  * Changing the aux type is only allowed for BIN files.
  */
-DIError
-DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
+DIError DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     long accessFlags)
 {
     DIError dierr = kDIErrNone;
@@ -2249,8 +2208,8 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
      */
     if (nowLocked != pFile->fLocked || typeChanged) {
         A2FileDOS::FileType newFileType;
-        unsigned char sctBuf[kSctSize];
-        unsigned char* pEntry;
+        uint8_t sctBuf[kSctSize];
+        uint8_t* pEntry;
 
         LOGI("Updating file '%s'", pFile->GetPathName());
 
@@ -2262,7 +2221,7 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
         pEntry = GetCatalogEntryPtr(sctBuf, pFile->fCatEntryNum);
 
         newFileType = A2FileDOS::ConvertFileType(fileType, 0);
-        pEntry[0x02] = (unsigned char) newFileType;
+        pEntry[0x02] = (uint8_t) newFileType;
         if (nowLocked)
             pEntry[0x02] |= 0x80;
 
@@ -2297,8 +2256,8 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
      * On top of all this, if we changed the file type at all then we need to
      * re-scan the file length and "data offset" value.
      */
-    unsigned short newAuxType;
-    newAuxType = (unsigned short) auxType;
+    uint16_t newAuxType;
+    newAuxType = (uint16_t) auxType;
 
     dierr = pFile->LoadTSList(&tsList, &tsCount);
     if (dierr != kDIErrNone) {
@@ -2307,7 +2266,7 @@ DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
     }
 
     if (fileType == 0x06 && tsCount > 0) {
-        unsigned char sctBuf[kSctSize];
+        uint8_t sctBuf[kSctSize];
 
         dierr = fpImg->ReadTrackSector(tsList[0].track,
                     tsList[0].sector, sctBuf);
@@ -2366,11 +2325,10 @@ bail:
  * We can't change the 2MG header, and we can't change the values embedded
  * in the sector headers, so all we do is change the VTOC entry.
  */
-DIError
-DiskFSDOS33::RenameVolume(const char* newName)
+DIError DiskFSDOS33::RenameVolume(const char* newName)
 {
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     long newNumber;
     char* endp;
 
@@ -2386,7 +2344,7 @@ DiskFSDOS33::RenameVolume(const char* newName)
     if (dierr != kDIErrNone)
         goto bail;
 
-    sctBuf[0x06] = (unsigned char) newNumber;
+    sctBuf[0x06] = (uint8_t) newNumber;
 
     dierr = fpImg->WriteTrackSector(kVTOCTrack, kVTOCSector, sctBuf);
     if (dierr != kDIErrNone)
@@ -2453,8 +2411,7 @@ A2FileDOS::~A2FileDOS(void)
  * because I can't find any information on the REL format.  However, Copy ][+
  * does convert to REL, and the Binary ][ standard says I should as well.
  */
-long
-A2FileDOS::GetFileType(void) const
+long A2FileDOS::GetFileType(void) const
 {
     long retval;
 
@@ -2491,8 +2448,8 @@ A2FileDOS::GetFileType(void) const
  * be hoped.  We can make life a little less confusing for the caller by
  * using type 'S' for any unknown type.
  */
-/*static*/ A2FileDOS::FileType
-A2FileDOS::ConvertFileType(long prodosType, di_off_t fileLen)
+/*static*/ A2FileDOS::FileType A2FileDOS::ConvertFileType(long prodosType,
+    di_off_t fileLen)
 {
     const long kMaxBinary = 65535;
     FileType newType;
@@ -2524,8 +2481,7 @@ A2FileDOS::ConvertFileType(long prodosType, di_off_t fileLen)
 /*
  * Determine whether the specified type has a valid DOS mapping.
  */
-/*static*/ bool
-A2FileDOS::IsValidType(long prodosType)
+/*static*/ bool A2FileDOS::IsValidType(long prodosType)
 {
     switch (prodosType) {
     case 0xb0:  // SRC
@@ -2546,8 +2502,7 @@ A2FileDOS::IsValidType(long prodosType)
 /*
  * Match the ProDOS equivalents of "locked" and "unlocked".
  */
-long
-A2FileDOS::GetAccess(void) const
+long A2FileDOS::GetAccess(void) const
 {
     if (fLocked)
         return DiskFS::kFileAccessLocked;   // 0x01 read
@@ -2559,10 +2514,9 @@ A2FileDOS::GetAccess(void) const
  * "Fix" a DOS3.3 filename.  Convert DOS-ASCII to normal ASCII, and strip
  * trailing spaces.
  */
-void
-A2FileDOS::FixFilename(void)
+void A2FileDOS::FixFilename(void)
 {
-    DiskFSDOS33::LowerASCII((unsigned char*)fFileName, kMaxFileName);
+    DiskFSDOS33::LowerASCII((uint8_t*)fFileName, kMaxFileName);
     TrimTrailingSpaces(fFileName);
 }
 
@@ -2571,8 +2525,7 @@ A2FileDOS::FixFilename(void)
  *
  * Assumes the filename has already been converted to low ASCII.
  */
-/*static*/ void
-A2FileDOS::TrimTrailingSpaces(char* filename)
+/*static*/ void A2FileDOS::TrimTrailingSpaces(char* filename)
 {
     char* lastspc = filename + strlen(filename);
 
@@ -2593,8 +2546,7 @@ A2FileDOS::TrimTrailingSpaces(char* filename)
  *
  * "buf" must be able to hold kMaxFileName+1 chars.
  */
-/*static*/ void
-A2FileDOS::MakeDOSName(char* buf, const char* name)
+/*static*/ void A2FileDOS::MakeDOSName(char* buf, const char* name)
 {
     for (int i = 0; i < kMaxFileName; i++) {
         if (*name == '\0')
@@ -2609,8 +2561,7 @@ A2FileDOS::MakeDOSName(char* buf, const char* name)
 /*
  * Set up state for this file.
  */
-DIError
-A2FileDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FileDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*=false*/)
 {
     DIError dierr = kDIErrNone;
@@ -2656,8 +2607,7 @@ bail:
 /*
  * Dump the contents of an A2FileDOS.
  */
-void
-A2FileDOS::Dump(void) const
+void A2FileDOS::Dump(void) const
 {
     LOGI("A2FileDOS '%s'", fFileName);
     LOGI("  TS T=%-2d S=%-2d", fTSListTrack, fTSListSector);
@@ -2690,8 +2640,7 @@ A2FileDOS::Dump(void) const
  * impossible.  Currently this isn't a problem, but for e.g. T/S lists
  * with garbage at the end would could deal with the problem more generally.
  */
-DIError
-A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
+DIError A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
     TrackSector** pIndexList, int* pIndexCount)
 {
     DIError dierr = kDIErrNone;
@@ -2702,7 +2651,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
     TrackSector* indexList = NULL;
     int tsCount, tsAlloc;
     int indexCount, indexAlloc;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     int track, sector, iterations;
 
     LOGI("--- DOS loading T/S list for '%s'", GetPathName());
@@ -2742,7 +2691,7 @@ A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
      */
     iterations = 0;
     do {
-        unsigned short sectorOffset;
+        uint16_t sectorOffset;
         int lastNonZero;
 
         /*
@@ -2875,13 +2824,12 @@ bail:
  * entries have been copied.  If it looks to be partially valid, only the
  * valid parts are copied out, with the rest zeroed.
  */
-DIError
-A2FileDOS::ExtractTSPairs(const unsigned char* sctBuf, TrackSector* tsList,
+DIError A2FileDOS::ExtractTSPairs(const uint8_t* sctBuf, TrackSector* tsList,
     int* pLastNonZero)
 {
     DIError dierr = kDIErrNone;
     const DiskImg* pDiskImg = fpDiskFS->GetDiskImg();
-    const unsigned char* ptr;
+    const uint8_t* ptr;
     int i, track, sector;
 
     *pLastNonZero = -1;
@@ -2935,8 +2883,7 @@ bail:
  * Files read back as they would from ProDOS, i.e. if you read a binary
  * file you won't see the 4 bytes of length and address.
  */
-DIError
-A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
 {
     LOGI(" DOS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
@@ -2958,7 +2905,7 @@ A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
     long incrLen = len;
 
     DIError dierr = kDIErrNone;
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
     di_off_t actualOffset = fOffset + pFile->fDataOffset;   // adjust for embedded len
     int tsIndex = (int) (actualOffset / kSctSize);
     int bufOffset = (int) (actualOffset % kSctSize);        // (& 0xff)
@@ -3023,13 +2970,12 @@ A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
  *
  * Modifies fOpenEOF, fOpenSectorsUsed, and sets fModified.
  */
-DIError
-A2FDDOS::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDDOS::Write(const void* buf, size_t len, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
     A2FileDOS* pFile = (A2FileDOS*) fpFile;
     DiskFSDOS33* pDiskFS = (DiskFSDOS33*) fpFile->GetDiskFS();
-    unsigned char sctBuf[kSctSize];
+    uint8_t sctBuf[kSctSize];
 
     LOGI("   DOS Write len=%u %s", len, pFile->GetPathName());
 
@@ -3117,10 +3063,10 @@ A2FDDOS::Write(const void* buf, size_t len, size_t* pActual)
     /*
      * Write the sectors into the T/S list.
      */
-    const unsigned char* curPtr;
+    const uint8_t* curPtr;
     int sectorIdx;
 
-    curPtr = (const unsigned char*) buf;
+    curPtr = (const uint8_t*) buf;
     sectorIdx = 0;
 
     if (pFile->fDataOffset > 0) {
@@ -3229,8 +3175,7 @@ bail:
 /*
  * Seek to the specified offset.
  */
-DIError
-A2FDDOS::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDDOS::Seek(di_off_t offset, DIWhence whence)
 {
     //di_off_t fileLength = fpFile->GetDataLength();
 
@@ -3265,8 +3210,7 @@ A2FDDOS::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDDOS::Tell(void)
+di_off_t A2FDDOS::Tell(void)
 {
     return fOffset;
 }
@@ -3285,16 +3229,15 @@ A2FDDOS::Tell(void)
  * Most applications don't check the value of "Close", or call it from a
  * destructor, so we call CloseDescr whether we succeed or not.
  */
-DIError
-A2FDDOS::Close(void)
+DIError A2FDDOS::Close(void)
 {
     DIError dierr = kDIErrNone;
 
     if (fModified) {
         DiskFSDOS33* pDiskFS = (DiskFSDOS33*) fpFile->GetDiskFS();
         A2FileDOS* pFile = (A2FileDOS*) fpFile;
-        unsigned char sctBuf[kSctSize];
-        unsigned char* pEntry;
+        uint8_t sctBuf[kSctSize];
+        uint8_t* pEntry;
 
         /*
          * Fill in the length and address, if needed for this type of file.
@@ -3307,30 +3250,30 @@ A2FDDOS::Close(void)
             assert(pFile->fDataOffset > 0);
             //assert(fOpenEOF < 65536);
             if (fOpenEOF > 65535) {
-                LOGI("WARNING: DOS Close trimming A/I/B file from %ld to 65535",
+                LOGW("WARNING: DOS Close trimming A/I/B file from %ld to 65535",
                     (long) fOpenEOF);
                 fOpenEOF = 65535;
             }
             dierr = pDiskFS->GetDiskImg()->ReadTrackSector(fTSList[0].track,
                         fTSList[0].sector, sctBuf);
             if (dierr != kDIErrNone) {
-                LOGI("DOS Close: unable to get first sector of file");
+                LOGW("DOS Close: unable to get first sector of file");
                 goto bail;
             }
 
             if (pFile->fFileType == A2FileDOS::kTypeInteger ||
                 pFile->fFileType == A2FileDOS::kTypeApplesoft)
             {
-                PutShortLE(&sctBuf[0x00], (unsigned short) fOpenEOF);
+                PutShortLE(&sctBuf[0x00], (uint16_t) fOpenEOF);
             } else {
                 PutShortLE(&sctBuf[0x00], pFile->fAuxType);
-                PutShortLE(&sctBuf[0x02], (unsigned short) fOpenEOF);
+                PutShortLE(&sctBuf[0x02], (uint16_t) fOpenEOF);
             }
 
             dierr = pDiskFS->GetDiskImg()->WriteTrackSector(fTSList[0].track,
                         fTSList[0].sector, sctBuf);
             if (dierr != kDIErrNone) {
-                LOGI("DOS Close: unable to write first sector of file");
+                LOGW("DOS Close: unable to write first sector of file");
                 goto bail;
             }
         } else if (pFile->fFileType == A2FileDOS::kTypeText) {
@@ -3358,7 +3301,7 @@ A2FDDOS::Close(void)
          */
         pFile->fLength = fOpenEOF;
         pFile->fSparseLength = pFile->fLength;
-        pFile->fLengthInSectors = (unsigned short) fOpenSectorsUsed;
+        pFile->fLengthInSectors = (uint16_t) fOpenSectorsUsed;
 
         /*
          * Update the sector count in the directory entry.
@@ -3384,13 +3327,12 @@ bail:
 /*
  * Return the #of sectors/blocks in the file.
  */
-long
-A2FDDOS::GetSectorCount(void) const
+long A2FDDOS::GetSectorCount(void) const
 {
     return fTSCount;
 }
-long
-A2FDDOS::GetBlockCount(void) const
+
+long A2FDDOS::GetBlockCount(void) const
 {
     return (fTSCount+1)/2;
 }
@@ -3400,8 +3342,7 @@ A2FDDOS::GetBlockCount(void) const
  *
  * Returns (0,0) for a sparse sector.
  */
-DIError
-A2FDDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
     if (sectorIdx < 0 || sectorIdx >= fTSCount)
         return kDIErrInvalidIndex;
@@ -3415,8 +3356,7 @@ A2FDDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
  * in 512-byte blocks, we're reduced to finding storage at (tsIndex*2) and
  * converting it to a block number.
  */
-DIError
-A2FDDOS::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDDOS::GetStorage(long blockIdx, long* pBlock) const
 {
     long sectorIdx = blockIdx * 2;
     if (sectorIdx < 0 || sectorIdx >= fTSCount)
@@ -3433,8 +3373,7 @@ A2FDDOS::GetStorage(long blockIdx, long* pBlock) const
 /*
  * Dump the T/S list for an open file.
  */
-void
-A2FDDOS::DumpTSList(void) const
+void A2FDDOS::DumpTSList(void) const
 {
     //A2FileDOS* pFile = (A2FileDOS*) fpFile;
     LOGI(" DOS T/S list for '%s' (count=%d)",

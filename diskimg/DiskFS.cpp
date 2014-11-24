@@ -21,8 +21,7 @@
  *
  * Refuse to "improve" the quality level of a file.
  */
-void
-A2File::SetQuality(FileQuality quality)
+void A2File::SetQuality(FileQuality quality)
 {
     if (quality == kQualityGood &&
         (fFileQuality == kQualitySuspicious || fFileQuality == kQualityDamaged))
@@ -41,8 +40,7 @@ A2File::SetQuality(FileQuality quality)
 /*
  * Reset the quality level after making repairs.
  */
-void
-A2File::ResetQuality(void)
+void A2File::ResetQuality(void)
 {
     fFileQuality = kQualityGood;
 }
@@ -59,8 +57,7 @@ A2File::ResetQuality(void)
  * so that it can be sure there are no DiskFS objects left dangling when the
  * DiskImg is deleted.
  */
-void
-DiskFS::SetDiskImg(DiskImg* pImg)
+void DiskFS::SetDiskImg(DiskImg* pImg)
 {
     if (pImg == NULL && fpImg == NULL) {
         LOGI("SetDiskImg: no-op (both NULL)");
@@ -80,8 +77,7 @@ DiskFS::SetDiskImg(DiskImg* pImg)
 /*
  * Flush changes to disk.
  */
-DIError
-DiskFS::Flush(DiskImg::FlushMode mode)
+DIError DiskFS::Flush(DiskImg::FlushMode mode)
 {
     SubVolume* pSubVol = GetNextSubVolume(NULL);
     DIError dierr;
@@ -106,8 +102,7 @@ DiskFS::Flush(DiskImg::FlushMode mode)
 /*
  * Set the "read only" flag on our DiskImg and those of our sub-volumes.
  */
-void
-DiskFS::SetAllReadOnly(bool val)
+void DiskFS::SetAllReadOnly(bool val)
 {
     SubVolume* pSubVol = GetNextSubVolume(NULL);
 
@@ -161,8 +156,7 @@ DiskFS::SetAllReadOnly(bool val)
 /*
  * Add a file to the end of our list.
  */
-void
-DiskFS::AddFileToList(A2File* pFile)
+void DiskFS::AddFileToList(A2File* pFile)
 {
     assert(pFile->GetNext() == NULL);
 
@@ -193,8 +187,7 @@ DiskFS::AddFileToList(A2File* pFile)
  * but odds are that there isn't a "next" entry if we're busily creating
  * files.)
  */
-void
-DiskFS::InsertFileInList(A2File* pFile, A2File* pPrev)
+void DiskFS::InsertFileInList(A2File* pFile, A2File* pPrev)
 {
     assert(pFile->GetNext() == NULL);
 
@@ -228,8 +221,7 @@ DiskFS::InsertFileInList(A2File* pFile, A2File* pPrev)
  *
  * The return value is the very last entry in the subdir.
  */
-A2File*
-DiskFS::SkipSubdir(A2File* pSubdir)
+A2File* DiskFS::SkipSubdir(A2File* pSubdir)
 {
     if (pSubdir->GetNext() == NULL)
         return pSubdir;     // end of list reached -- subdir is empty
@@ -262,8 +254,7 @@ DiskFS::SkipSubdir(A2File* pSubdir)
  *
  * We're currently singly-linked, making this rather expensive.
  */
-void
-DiskFS::DeleteFileFromList(A2File* pFile)
+void DiskFS::DeleteFileFromList(A2File* pFile)
 {
     if (fpA2Head == pFile) {
         /* delete the head of the list */
@@ -296,8 +287,7 @@ DiskFS::DeleteFileFromList(A2File* pFile)
  * Because we apparently can't declare an anonymous class as a friend
  * in MSVC++6.0, this can't be an inline function.
  */
-A2File*
-DiskFS::GetNextFile(A2File* pFile) const
+A2File* DiskFS::GetNextFile(A2File* pFile) const
 {
     if (pFile == NULL)
         return fpA2Head;
@@ -311,8 +301,7 @@ DiskFS::GetNextFile(A2File* pFile) const
  * Right now the only code that calls this is the disk info panel in
  * CiderPress, so we don't need it to be efficient.
  */
-long
-DiskFS::GetFileCount(void) const
+long DiskFS::GetFileCount(void) const
 {
     long count = 0;
 
@@ -328,8 +317,7 @@ DiskFS::GetFileCount(void) const
 /*
  * Delete all entries in the list.
  */
-void
-DiskFS::DeleteFileList(void)
+void DiskFS::DeleteFileList(void)
 {
     A2File* pFile;
     A2File* pNext;
@@ -345,8 +333,7 @@ DiskFS::DeleteFileList(void)
 /*
  * Dump file list.
  */
-void
-DiskFS::DumpFileList(void)
+void DiskFS::DumpFileList(void)
 {
     A2File* pFile;
 
@@ -367,8 +354,7 @@ DiskFS::DumpFileList(void)
  * e.g. by prepending the sub-volume's volume name to the filename.  May
  * be best to let the application dig for the sub-volume.
  */
-A2File*
-DiskFS::GetFileByName(const char* fileName, StringCompareFunc func)
+A2File* DiskFS::GetFileByName(const char* fileName, StringCompareFunc func)
 {
     A2File* pFile;
 
@@ -395,8 +381,7 @@ DiskFS::GetFileByName(const char* fileName, StringCompareFunc func)
  *
  * Note this happens AFTER the disk has been scanned.
  */
-void
-DiskFS::AddSubVolumeToList(DiskImg* pDiskImg, DiskFS* pDiskFS)
+void DiskFS::AddSubVolumeToList(DiskImg* pDiskImg, DiskFS* pDiskFS)
 {
     SubVolume* pSubVol;
 
@@ -458,8 +443,7 @@ DiskFS::AddSubVolumeToList(DiskImg* pDiskImg, DiskFS* pDiskFS)
 /*
  * Copy parameters to a sub-volume.
  */
-void
-DiskFS::CopyInheritables(DiskFS* pNewFS)
+void DiskFS::CopyInheritables(DiskFS* pNewFS)
 {
     for (int i = 0; i < (int) NELEM(fParmTable); i++)
         pNewFS->fParmTable[i] = fParmTable[i];
@@ -481,8 +465,7 @@ DiskFS::CopyInheritables(DiskFS* pNewFS)
  * Because we apparently can't declare an anonymous class as a friend
  * in MSVC++6.0, this can't be an inline function.
  */
-DiskFS::SubVolume*
-DiskFS::GetNextSubVolume(const SubVolume* pSubVol) const
+DiskFS::SubVolume* DiskFS::GetNextSubVolume(const SubVolume* pSubVol) const
 {
     if (pSubVol == NULL)
         return fpSubVolumeHead;
@@ -493,8 +476,7 @@ DiskFS::GetNextSubVolume(const SubVolume* pSubVol) const
 /*
  * Delete all entries in the list.
  */
-void
-DiskFS::DeleteSubVolumeList(void)
+void DiskFS::DeleteSubVolumeList(void)
 {
     SubVolume* pSubVol;
     SubVolume* pNext;
@@ -511,8 +493,7 @@ DiskFS::DeleteSubVolumeList(void)
 /*
  * Get a parameter.
  */
-long
-DiskFS::GetParameter(DiskFSParameter parm)
+long DiskFS::GetParameter(DiskFSParameter parm)
 {
     assert(parm > kParmUnknown && parm < kParmMax);
     return fParmTable[parm];
@@ -523,8 +504,7 @@ DiskFS::GetParameter(DiskFSParameter parm)
  *
  * The setting propagates to all sub-volumes.
  */
-void
-DiskFS::SetParameter(DiskFSParameter parm, long val)
+void DiskFS::SetParameter(DiskFSParameter parm, long val)
 {
     assert(parm > kParmUnknown && parm < kParmMax);
     fParmTable[parm] = val;
@@ -540,8 +520,7 @@ DiskFS::SetParameter(DiskFSParameter parm, long val)
 /*
  * Scan for damaged or suspicious files.
  */
-void
-DiskFS::ScanForDamagedFiles(bool* pDamaged, bool* pSuspicious)
+void DiskFS::ScanForDamagedFiles(bool* pDamaged, bool* pSuspicious)
 {
     A2File* pFile;
 

@@ -21,43 +21,43 @@ const int kPartMapStart = 1;    // start of partition map
  * Format of DDR (block 0).
  */
 typedef struct DiskFSMacPart::DriverDescriptorRecord {
-    unsigned short  sbSig;              // {device signature}
-    unsigned short  sbBlkSize;          // {block size of the device}
-    unsigned long   sbBlkCount;         // {number of blocks on the device}
-    unsigned short  sbDevType;          // {reserved}
-    unsigned short  sbDevId;            // {reserved}
-    unsigned long   sbData;             // {reserved}
-    unsigned short  sbDrvrCount;        // {number of driver descriptor entries}
-    unsigned short  hiddenPad;          // implicit in specification
-    unsigned long   ddBlock;            // {first driver's starting block}
-    unsigned short  ddSize;             // {size of the driver, in 512-byte blocks}
-    unsigned short  ddType;             // {operating system type (MacOS = 1)}
-    unsigned short  ddPad[242];         // {additional drivers, if any}
+    uint16_t    sbSig;              // {device signature}
+    uint16_t    sbBlkSize;          // {block size of the device}
+    uint32_t    sbBlkCount;         // {number of blocks on the device}
+    uint16_t    sbDevType;          // {reserved}
+    uint16_t    sbDevId;            // {reserved}
+    uint32_t    sbData;             // {reserved}
+    uint16_t    sbDrvrCount;        // {number of driver descriptor entries}
+    uint16_t    hiddenPad;          // implicit in specification
+    uint32_t    ddBlock;            // {first driver's starting block}
+    uint16_t    ddSize;             // {size of the driver, in 512-byte blocks}
+    uint16_t    ddType;             // {operating system type (MacOS = 1)}
+    uint16_t    ddPad[242];         // {additional drivers, if any}
 } DriverDescriptorRecord;
 
 /*
  * Format of partition map blocks.  The partition map is an array of these.
  */
 typedef struct DiskFSMacPart::PartitionMap {
-    unsigned short  pmSig;              // {partition signature}
-    unsigned short  pmSigPad;           // {reserved}
-    unsigned long   pmMapBlkCnt;        // {number of blocks in partition map}
-    unsigned long   pmPyPartStart;      // {first physical block of partition}
-    unsigned long   pmPartBlkCnt;       // {number of blocks in partition}
-    unsigned char   pmPartName[32];     // {partition name}
-    unsigned char   pmParType[32];      // {partition type}
-    unsigned long   pmLgDataStart;      // {first logical block of data area}
-    unsigned long   pmDataCnt;          // {number of blocks in data area}
-    unsigned long   pmPartStatus;       // {partition status information}
-    unsigned long   pmLgBootStart;      // {first logical block of boot code}
-    unsigned long   pmBootSize;         // {size of boot code, in bytes}
-    unsigned long   pmBootAddr;         // {boot code load address}
-    unsigned long   pmBootAddr2;        // {reserved}
-    unsigned long   pmBootEntry;        // {boot code entry point}
-    unsigned long   pmBootEntry2;       // {reserved}
-    unsigned long   pmBootCksum;        // {boot code checksum}
-    unsigned char   pmProcessor[16];    // {processor type}
-    unsigned short  pmPad[188];         // {reserved}
+    uint16_t    pmSig;              // {partition signature}
+    uint16_t    pmSigPad;           // {reserved}
+    uint32_t    pmMapBlkCnt;        // {number of blocks in partition map}
+    uint32_t    pmPyPartStart;      // {first physical block of partition}
+    uint32_t    pmPartBlkCnt;       // {number of blocks in partition}
+    uint8_t     pmPartName[32];     // {partition name}
+    uint8_t     pmParType[32];      // {partition type}
+    uint32_t    pmLgDataStart;      // {first logical block of data area}
+    uint32_t    pmDataCnt;          // {number of blocks in data area}
+    uint32_t    pmPartStatus;       // {partition status information}
+    uint32_t    pmLgBootStart;      // {first logical block of boot code}
+    uint32_t    pmBootSize;         // {size of boot code, in bytes}
+    uint32_t    pmBootAddr;         // {boot code load address}
+    uint32_t    pmBootAddr2;        // {reserved}
+    uint32_t    pmBootEntry;        // {boot code entry point}
+    uint32_t    pmBootEntry2;       // {reserved}
+    uint32_t    pmBootCksum;        // {boot code checksum}
+    uint8_t     pmProcessor[16];    // {processor type}
+    uint16_t    pmPad[188];         // {reserved}
 } PartitionMap;
 
 
@@ -70,11 +70,11 @@ typedef struct DiskFSMacPart::PartitionMap {
  * It would be difficult to guess the block order based on the partition
  * structure, because the partition map entries can appear in any order.
  */
-/*static*/ DIError
-DiskFSMacPart::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+/*static*/ DIError DiskFSMacPart::TestImage(DiskImg* pImg,
+    DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     DriverDescriptorRecord ddr;
     long pmMapBlkCnt;
 
@@ -146,8 +146,7 @@ bail:
 /*
  * Unpack a DDR disk block into a DDR data structure.
  */
-/*static*/ void
-DiskFSMacPart::UnpackDDR(const unsigned char* buf,
+/*static*/ void DiskFSMacPart::UnpackDDR(const uint8_t* buf,
     DriverDescriptorRecord* pDDR)
 {
     pDDR->sbSig = GetShortBE(&buf[0x00]);
@@ -172,8 +171,7 @@ DiskFSMacPart::UnpackDDR(const unsigned char* buf,
 /*
  * Debug: dump the contents of the DDR.
  */
-/*static*/ void
-DiskFSMacPart::DumpDDR(const DriverDescriptorRecord* pDDR)
+/*static*/ void DiskFSMacPart::DumpDDR(const DriverDescriptorRecord* pDDR)
 {
     LOGI(" MacPart driver descriptor record");
     LOGI("    sbSig=0x%04x sbBlkSize=%d sbBlkCount=%ld",
@@ -187,8 +185,7 @@ DiskFSMacPart::DumpDDR(const DriverDescriptorRecord* pDDR)
 /*
  * Unpack a partition map disk block into a partition map data structure.
  */
-/*static*/ void
-DiskFSMacPart::UnpackPartitionMap(const unsigned char* buf,
+/*static*/ void DiskFSMacPart::UnpackPartitionMap(const uint8_t* buf,
     PartitionMap* pMap)
 {
     pMap->pmSig = GetShortBE(&buf[0x00]);
@@ -223,8 +220,7 @@ DiskFSMacPart::UnpackPartitionMap(const unsigned char* buf,
 /*
  * Debug: dump the contents of the partition map.
  */
-/*static*/ void
-DiskFSMacPart::DumpPartitionMap(long block, const PartitionMap* pMap)
+/*static*/ void DiskFSMacPart::DumpPartitionMap(long block, const PartitionMap* pMap)
 {
     LOGI(" MacPart partition map: block=%ld", block);
     LOGI("    pmSig=0x%04x (pad=0x%04x)  pmMapBlkCnt=%ld",
@@ -250,8 +246,7 @@ DiskFSMacPart::DumpPartitionMap(long block, const PartitionMap* pMap)
 /*
  * Open up a sub-volume.
  */
-DIError
-DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
+DIError DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
 {
     DIError dierr = kDIErrNone;
     DiskFS* pNewFS = NULL;
@@ -380,8 +375,7 @@ bail:
 /*
  * Check to see if this is a MacPart volume.
  */
-/*static*/ DIError
-DiskFSMacPart::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSMacPart::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     if (pImg->GetNumBlocks() < kMinInterestingBlocks)
@@ -400,12 +394,10 @@ DiskFSMacPart::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     return kDIErrFilesystemNotFound;
 }
 
-
 /*
  * Prep the MacPart "container" for use.
  */
-DIError
-DiskFSMacPart::Initialize(void)
+DIError DiskFSMacPart::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -424,18 +416,16 @@ DiskFSMacPart::Initialize(void)
     return dierr;
 }
 
-
 /*
  * Find the various sub-volumes and open them.
  *
  * Because the partitions are explicitly typed, we don't need to probe
  * their contents.  But we do anyway.
  */
-DIError
-DiskFSMacPart::FindSubVolumes(void)
+DIError DiskFSMacPart::FindSubVolumes(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[kBlkSize];
+    uint8_t buf[kBlkSize];
     PartitionMap map;
     int i, numMapBlocks;
 

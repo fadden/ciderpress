@@ -28,16 +28,16 @@ const int kSignatureLen = 14;
  * We also make space here for the partition names, which live on blocks 1+2.
  */
 typedef struct DiskFSFocusDrive::PartitionMap {
-    unsigned char   signature[kSignatureLen];
-    unsigned char   unknown1;
-    unsigned char   partCount;      // could be ushort, combined w/unknown1
-    unsigned char   unknown2[16];
+    uint8_t     signature[kSignatureLen];
+    uint8_t     unknown1;
+    uint8_t     partCount;      // could be ushort, combined w/unknown1
+    uint8_t     unknown2[16];
     struct Entry {
-        unsigned long   startBlock;
-        unsigned long   blockCount;
-        unsigned long   unknown1;
-        unsigned long   unknown2;
-        unsigned char   name[kPartNameLen+1];
+        uint32_t    startBlock;
+        uint32_t    blockCount;
+        uint32_t    unknown1;
+        uint32_t    unknown2;
+        uint8_t     name[kPartNameLen+1];
     } entry[kMaxPartitions];
 } PartitionMap;
 
@@ -48,11 +48,11 @@ typedef struct DiskFSFocusDrive::PartitionMap {
  * The "imageOrder" parameter has no use here, because (in the current
  * version) embedded parent volumes are implicitly ProDOS-ordered.
  */
-/*static*/ DIError
-DiskFSFocusDrive::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+/*static*/ DIError DiskFSFocusDrive::TestImage(DiskImg* pImg,
+    DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     int partCount;
 
     /*
@@ -83,16 +83,14 @@ bail:
     return dierr;
 }
 
-
 /*
  * Unpack a partition map block into a partition map data structure.
  */
-/*static*/ void
-DiskFSFocusDrive::UnpackPartitionMap(const unsigned char* buf,
-    const unsigned char* nameBuf, PartitionMap* pMap)
+/*static*/ void DiskFSFocusDrive::UnpackPartitionMap(const uint8_t* buf,
+    const uint8_t* nameBuf, PartitionMap* pMap)
 {
-    const unsigned char* ptr;
-    const unsigned char* namePtr;
+    const uint8_t* ptr;
+    const uint8_t* namePtr;
     int i;
 
     memcpy(pMap->signature, &buf[0x00], kSignatureLen);
@@ -121,8 +119,7 @@ DiskFSFocusDrive::UnpackPartitionMap(const unsigned char* buf,
 /*
  * Debug: dump the contents of the partition map.
  */
-/*static*/ void
-DiskFSFocusDrive::DumpPartitionMap(const PartitionMap* pMap)
+/*static*/ void DiskFSFocusDrive::DumpPartitionMap(const PartitionMap* pMap)
 {
     int i;
 
@@ -133,12 +130,10 @@ DiskFSFocusDrive::DumpPartitionMap(const PartitionMap* pMap)
     }
 }
 
-
 /*
  * Open up a sub-volume.
  */
-DIError
-DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
+DIError DiskFSFocusDrive::OpenSubVolume(long startBlock, long numBlocks,
     const char* name)
 {
     DIError dierr = kDIErrNone;
@@ -248,8 +243,7 @@ bail:
 /*
  * Check to see if this is a FocusDrive volume.
  */
-/*static*/ DIError
-DiskFSFocusDrive::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSFocusDrive::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     if (pImg->GetNumBlocks() < kMinInterestingBlocks)
@@ -272,8 +266,7 @@ DiskFSFocusDrive::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 /*
  * Prep the FocusDrive "container" for use.
  */
-DIError
-DiskFSFocusDrive::Initialize(void)
+DIError DiskFSFocusDrive::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -296,12 +289,11 @@ DiskFSFocusDrive::Initialize(void)
 /*
  * Find the various sub-volumes and open them.
  */
-DIError
-DiskFSFocusDrive::FindSubVolumes(void)
+DIError DiskFSFocusDrive::FindSubVolumes(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char buf[kBlkSize];
-    unsigned char nameBuf[kBlkSize*2];
+    uint8_t buf[kBlkSize];
+    uint8_t nameBuf[kBlkSize*2];
     PartitionMap map;
     int i;
 
@@ -332,8 +324,7 @@ bail:
  * Open the volume.  If it fails, open a placeholder instead.  (If *that*
  * fails, return with an error.)
  */
-DIError
-DiskFSFocusDrive::OpenVol(int idx, long startBlock, long numBlocks,
+DIError DiskFSFocusDrive::OpenVol(int idx, long startBlock, long numBlocks,
     const char* name)
 {
     DIError dierr;

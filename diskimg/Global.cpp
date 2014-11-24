@@ -21,8 +21,7 @@ const char* DiskImgLib::kASPIDev = "ASPI:";
 /*
  * Perform one-time DLL initialization.
  */
-/*static*/ DIError
-Global::AppInit(void)
+/*static*/ DIError Global::AppInit(void)
 {
     NuError nerr;
     long major, minor, bug;
@@ -89,8 +88,7 @@ Global::AppInit(void)
 /*
  * Perform cleanup at application shutdown time.
  */
-/*static*/ DIError
-Global::AppCleanup(void)
+/*static*/ DIError Global::AppCleanup(void)
 {
     LOGI("DiskImgLib cleanup");
     delete fpASPI;
@@ -125,8 +123,7 @@ Global::AppCleanup(void)
 /*
  * Return current library versions.
  */
-/*static*/ void
-Global::GetVersion(long* pMajor, long* pMinor, long* pBug)
+/*static*/ void Global::GetVersion(long* pMajor, long* pMinor, long* pBug)
 {
     if (pMajor != NULL)
         *pMajor = kDiskImgVersionMajor;
@@ -145,8 +142,7 @@ Global::GetVersion(long* pMajor, long* pMinor, long* pBug)
 /*
  * Change the debug message handler.  The previous handler is returned.
  */
-Global::DebugMsgHandler
-Global::SetDebugMsgHandler(DebugMsgHandler handler)
+Global::DebugMsgHandler Global::SetDebugMsgHandler(DebugMsgHandler handler)
 {
     DebugMsgHandler oldHandler;
 
@@ -161,8 +157,7 @@ Global::SetDebugMsgHandler(DebugMsgHandler handler)
  * Even if _DEBUG_MSGS is disabled we can still get here from the NuFX error
  * handler.
  */
-/*static*/ void
-Global::PrintDebugMsg(const char* file, int line, const char* fmt, ...)
+/*static*/ void Global::PrintDebugMsg(const char* file, int line, const char* fmt, ...)
 {
     if (gDebugMsgHandler == NULL) {
         /*

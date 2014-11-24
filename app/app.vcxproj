@@ -93,8 +93,6 @@
     <PostBuildEvent>
       <Message>
       </Message>
-      <Command>copy   Help\CiderPress.hlp  Release\
-copy   Help\CiderPress.cnt  Release\</Command>
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -137,13 +135,7 @@ copy   Help\CiderPress.cnt  Release\</Command>
       <TypeLibraryName>.\Debug/app.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
-    <PostBuildEvent>
-      <Message>Copying help</Message>
-      <Command>copy   Help\CiderPress.hlp  Debug\
-copy   Help\CiderPress.cnt  Debug\
-
-</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>

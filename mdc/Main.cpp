@@ -599,7 +599,8 @@ MainWindow::ScanDiskImage(const WCHAR* pathName, ScanOpts* pScanOpts)
         ext.Delete(0, 1);
     }
 
-    dierr = diskImg.OpenImage(pathName, '\\', true);
+    CStringA pathNameA(pathName);
+    dierr = diskImg.OpenImage(pathNameA, '\\', true);
     if (dierr != kDIErrNone) {
         errMsg.Format(L"Unable to open '%ls': %hs", pathName,
             DiskImgLib::DIStrError(dierr));

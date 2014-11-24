@@ -43,8 +43,7 @@
 /*
  * Open a logical volume.
  */
-DIError
-Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
+DIError Win32VolumeAccess::Open(const WCHAR* deviceName, bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
@@ -107,8 +106,7 @@ bail:
 /*
  * Close the device.
  */
-void
-Win32VolumeAccess::Close(void)
+void Win32VolumeAccess::Close(void)
 {
     if (fpBlockAccess != NULL) {
         DIError dierr;
@@ -130,7 +128,6 @@ Win32VolumeAccess::Close(void)
     }
 }
 
-
 /*
  * Read a range of blocks from the device.
  *
@@ -142,8 +139,7 @@ Win32VolumeAccess::Close(void)
  *
  * Returns with an error if any of the blocks could not be read.
  */
-DIError
-Win32VolumeAccess::ReadBlocks(long startBlock, short blockCount,
+DIError Win32VolumeAccess::ReadBlocks(long startBlock, short blockCount,
     void* buf)
 {
     DIError dierr = kDIErrNone;
@@ -192,15 +188,13 @@ bail:
     return dierr;
 }
 
-
 /*
  * Write a range of blocks to the device.  For the most part this just
  * writes to the cache.
  *
  * Returns with an error if any of the blocks could not be read.
  */
-DIError
-Win32VolumeAccess::WriteBlocks(long startBlock, short blockCount,
+DIError Win32VolumeAccess::WriteBlocks(long startBlock, short blockCount,
     const void* buf)
 {
     DIError dierr = kDIErrNone;
@@ -242,7 +236,6 @@ bail:
     return dierr;
 }
 
-
 /*
  * Write all blocks in the cache to disk if any of them are dirty.  In some
  * ways this is wasteful -- we could be writing stuff that isn't dirty,
@@ -255,8 +248,7 @@ bail:
  *
  * If "purge" is set, we discard the blocks after writing them.
  */
-DIError
-Win32VolumeAccess::FlushCache(bool purge)
+DIError Win32VolumeAccess::FlushCache(bool purge)
 {
     DIError dierr = kDIErrNone;
 
@@ -305,8 +297,7 @@ bail:
  *
  * On success, "*pNumBlocks" gets the number of 512-byte blocks.
  */
-DIError
-Win32VolumeAccess::BlockAccess::DetectCapacitySPTI(HANDLE handle,
+DIError Win32VolumeAccess::BlockAccess::DetectCapacitySPTI(HANDLE handle,
     bool isCDROM, long* pNumBlocks)
 {
 #ifndef HAVE_WINDOWS_CDROM
@@ -315,17 +306,17 @@ Win32VolumeAccess::BlockAccess::DetectCapacitySPTI(HANDLE handle,
 #endif
 
     DIError dierr = kDIErrNone;
-    unsigned long lba, blockLen;
+    uint32_t lba, blockLen;
 
     dierr = SPTI::GetDeviceCapacity(handle, &lba, &blockLen);
     if (dierr != kDIErrNone)
         goto bail;
 
-    LOGI("READ CAPACITY reports lba=%lu blockLen=%lu (total=%lu)",
+    LOGI("READ CAPACITY reports lba=%u blockLen=%u (total=%u)",
         lba, blockLen, lba*blockLen);
 
     if (isCDROM && blockLen != kCDROMSectorSize) {
-        LOGI("Unacceptable CD-ROM blockLen=%ld, bailing", blockLen);
+        LOGW("Unacceptable CD-ROM blockLen=%ld, bailing", blockLen);
         dierr = kDIErrReadFailed;
         goto bail;
     }
@@ -351,8 +342,8 @@ bail:
  * This sets "*pNumBlocks" on success.  The largest size this will detect
  * is currently 8GB.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::ScanCapacity(BlockAccess* pThis, long* pNumBlocks)
+/*static*/ DIError Win32VolumeAccess::BlockAccess::ScanCapacity(BlockAccess* pThis,
+    long* pNumBlocks)
 {
     DIError dierr = kDIErrNone;
     // max out at 8GB (-1 block)
@@ -441,11 +432,11 @@ bail:
 /*
  * Figure out if the block at "blockNum" exists.
  */
-/*static*/ bool
-Win32VolumeAccess::BlockAccess::CanReadBlock(BlockAccess* pThis, long blockNum)
+/*static*/ bool Win32VolumeAccess::BlockAccess::CanReadBlock(BlockAccess* pThis,
+    long blockNum)
 {
     DIError dierr;
-    unsigned char buf[BlockAccess::kBlockSize];
+    uint8_t buf[BlockAccess::kBlockSize];
 
     dierr = pThis->ReadBlocks(blockNum, 1, buf);
     if (dierr == kDIErrNone) {
@@ -515,8 +506,8 @@ typedef struct _DRIVEMAPINFO {
  *
  * Pass in the vwin32 handle.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::GetInt13Unit(HANDLE handle, int driveNum, int* pInt13Unit)
+/*static*/ DIError Win32VolumeAccess::BlockAccess::GetInt13Unit(HANDLE handle,
+    int driveNum, int* pInt13Unit)
 {
     DIError dierr = kDIErrNone;
     BOOL result;
@@ -606,8 +597,7 @@ bail:
  * is returned, "*pNumTracks", "*pNumHeads", and "*pNumSectors" will receive
  * values if the pointers are non-NULL.
  */
-/*static*/ bool
-Win32VolumeAccess::BlockAccess::LookupFloppyGeometry(long totalBlocks,
+/*static*/ bool Win32VolumeAccess::BlockAccess::LookupFloppyGeometry(long totalBlocks,
     DiskGeometry* pGeometry)
 {
     static const struct {
@@ -661,8 +651,7 @@ Win32VolumeAccess::BlockAccess::LookupFloppyGeometry(long totalBlocks,
  *
  * Returns "true" on success, "false" on failure.
  */
-/*static*/ bool
-Win32VolumeAccess::BlockAccess::BlockToCylinderHeadSector(long blockNum,
+/*static*/ bool Win32VolumeAccess::BlockAccess::BlockToCylinderHeadSector(long blockNum,
     const DiskGeometry* pGeometry, int* pCylinder, int* pHead,
     int* pSector, long* pLastBlockOnTrack)
 {
@@ -696,9 +685,8 @@ Win32VolumeAccess::BlockAccess::BlockToCylinderHeadSector(long blockNum,
 /*
  * Get the floppy drive kind (*not* the media kind) using Int13h func 8.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::GetFloppyDriveKind(HANDLE handle, int unitNum,
-    FloppyKind* pKind)
+/*static*/ DIError Win32VolumeAccess::BlockAccess::GetFloppyDriveKind(HANDLE handle,
+    int unitNum, FloppyKind* pKind)
 {
     DIOC_REGISTERS  reg = {0};
     DWORD           cb;
@@ -740,9 +728,8 @@ Win32VolumeAccess::BlockAccess::GetFloppyDriveKind(HANDLE handle, int unitNum,
  * Returns 0 on success, the status code from AH on failure.  If the call
  * fails but AH is zero, -1 is returned.
  */
-/*static*/ int
-Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
-    int cylinder, int head, int sector, short blockCount, void* buf)
+/*static*/ int Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle,
+    int unitNum, int cylinder, int head, int sector, short blockCount, void* buf)
 {
     DIOC_REGISTERS  reg = {0};
     DWORD           cb;
@@ -787,7 +774,6 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
     return 0;
 }
 
-
 /*
  * Read one or more blocks using Int13h services.  This only works on
  * floppy drives due to Win9x limitations.
@@ -796,9 +782,8 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
  * reasons.  Because this is fairly "raw", we have to retry it 3x before
  * giving up.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
-    const DiskGeometry* pGeometry, long startBlock, short blockCount,
+/*static*/ DIError Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle,
+    int unitNum, const DiskGeometry* pGeometry, long startBlock, short blockCount,
     void* buf)
 {
     int cylinder, head, sector;
@@ -861,9 +846,8 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt13h(HANDLE handle, int unitNum,
  * reasons.  Because this is fairly "raw", we have to retry it 3x before
  * giving up.
  */
-/*static*/ int
-Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
-    int cylinder, int head, int sector, short blockCount,
+/*static*/ int Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle,
+    int unitNum, int cylinder, int head, int sector, short blockCount,
     const void* buf)
 {
     DIOC_REGISTERS  reg = {0};
@@ -910,9 +894,8 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
  *
  * Returns "true" on success, "false" on failure.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
-    const DiskGeometry* pGeometry, long startBlock, short blockCount,
+/*static*/ DIError Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle,
+    int unitNum, const DiskGeometry* pGeometry, long startBlock, short blockCount,
     const void* buf)
 {
     int cylinder, head, sector;
@@ -962,16 +945,14 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt13h(HANDLE handle, int unitNum,
     return kDIErrNone;
 }
 
-
 /*
  * Read blocks from a Win9x logical volume, using Int21h func 7305h.  Pass in
  * a handle to vwin32 and the logical drive number (A=1, B=2, etc).
  *
  * Works on Win95 OSR2 and later.  Earlier versions require Int25 or Int13.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle, int driveNum,
-    long startBlock, short blockCount, void* buf)
+/*static*/ DIError Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle,
+    int driveNum, long startBlock, short blockCount, void* buf)
 {
 #if 0
     assert(false);      // discouraged
@@ -1040,9 +1021,8 @@ Win32VolumeAccess::BlockAccess::ReadBlocksInt21h(HANDLE handle, int driveNum,
  *
  * Works on Win95 OSR2 and later.  Earlier versions require Int26 or Int13.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::WriteBlocksInt21h(HANDLE handle, int driveNum,
-    long startBlock, short blockCount, const void* buf)
+/*static*/ DIError Win32VolumeAccess::BlockAccess::WriteBlocksInt21h(HANDLE handle,
+    int driveNum, long startBlock, short blockCount, const void* buf)
 {
     BOOL            result;
     DWORD           cb;
@@ -1076,12 +1056,10 @@ Win32VolumeAccess::BlockAccess::WriteBlocksInt21h(HANDLE handle, int driveNum,
     return kDIErrNone;
 }
 
-
 /*
  * Read blocks from a Win2K logical or physical volume.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::ReadBlocksWin2K(HANDLE handle,
+/*static*/ DIError Win32VolumeAccess::BlockAccess::ReadBlocksWin2K(HANDLE handle,
     long startBlock, short blockCount, void* buf)
 {
     /*
@@ -1122,12 +1100,10 @@ Win32VolumeAccess::BlockAccess::ReadBlocksWin2K(HANDLE handle,
     return kDIErrNone;
 }
 
-
 /*
  * Write blocks to a Win2K logical or physical volume.
  */
-/*static*/ DIError
-Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
+/*static*/ DIError Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
     long startBlock, short blockCount, const void* buf)
 {
     DWORD posn, actual;
@@ -1165,8 +1141,8 @@ Win32VolumeAccess::BlockAccess::WriteBlocksWin2K(HANDLE handle,
 /*
  * Open a logical device.  The device name should be of the form "A:\".
  */
-DIError
-Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName, bool readOnly)
+DIError Win32VolumeAccess::LogicalBlockAccess::Open(const WCHAR* deviceName,
+    bool readOnly)
 {
     DIError dierr = kDIErrNone;
     const bool kPreferASPI = true;
@@ -1307,8 +1283,7 @@ bail:
 /*
  * Close the device handle.
  */
-DIError
-Win32VolumeAccess::LogicalBlockAccess::Close(void)
+DIError Win32VolumeAccess::LogicalBlockAccess::Close(void)
 {
     if (fHandle != NULL) {
         ::CloseHandle(fHandle);
@@ -1317,12 +1292,10 @@ Win32VolumeAccess::LogicalBlockAccess::Close(void)
     return kDIErrNone;
 }
 
-
 /*
  * Read 512-byte blocks from CD-ROM media using SPTI calls.
  */
-DIError
-Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
+DIError Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
     long startBlock, short blockCount, void* buf)
 {
 #ifdef HAVE_WINDOWS_CDROM
@@ -1337,7 +1310,7 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
 
     /* alloc sector buffer on first use */
     if (fLastSectorCache == NULL) {
-        fLastSectorCache = new unsigned char[kCDROMSectorSize];
+        fLastSectorCache = new uint8_t[kCDROMSectorSize];
         if (fLastSectorCache == NULL)
             return kDIErrMalloc;
         assert(fLastSectorNum == -1);
@@ -1384,7 +1357,7 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
                 thisNumBlocks * kBlockSize);
 
             blockCount -= thisNumBlocks;
-            buf = (unsigned char*) buf + (thisNumBlocks * kBlockSize);
+            buf = (uint8_t*) buf + (thisNumBlocks * kBlockSize);
 
             sectorOffset = 0;
             sectorIndex++;
@@ -1402,7 +1375,7 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
                 return dierr;
 
             blockCount -= numSectors * kFactor;
-            buf = (unsigned char*) buf + (numSectors * kCDROMSectorSize);
+            buf = (uint8_t*) buf + (numSectors * kCDROMSectorSize);
 
             sectorIndex += numSectors;
         }
@@ -1425,8 +1398,8 @@ Win32VolumeAccess::LogicalBlockAccess::ReadBlocksCDROM(HANDLE handle,
 /*
  * Open a physical device.  The device name should be of the form "80:\".
  */
-DIError
-Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName, bool readOnly)
+DIError Win32VolumeAccess::PhysicalBlockAccess::Open(const WCHAR* deviceName,
+    bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
@@ -1537,8 +1510,7 @@ bail:
  *
  * Sets "fFloppyKind" and "fGeometry".
  */
-DIError
-Win32VolumeAccess::PhysicalBlockAccess::DetectFloppyGeometry(void)
+DIError Win32VolumeAccess::PhysicalBlockAccess::DetectFloppyGeometry(void)
 {
     DIError dierr = kDIErrNone;
     static const struct {
@@ -1552,7 +1524,7 @@ Win32VolumeAccess::PhysicalBlockAccess::DetectFloppyGeometry(void)
         { kFloppy35_1440,   { 80,   2,  18, 1440*2  } },
         { kFloppy35_2880,   { 80,   2,  36, 2880*2  } }
     };
-    unsigned char buf[kBlockSize];
+    uint8_t buf[kBlockSize];
     FloppyKind driveKind;
     int status;
 
@@ -1631,8 +1603,7 @@ bail:
 /*
  * Flush the system disk cache.
  */
-DIError
-Win32VolumeAccess::PhysicalBlockAccess::FlushBlockDevice(void)
+DIError Win32VolumeAccess::PhysicalBlockAccess::FlushBlockDevice(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -1649,8 +1620,7 @@ Win32VolumeAccess::PhysicalBlockAccess::FlushBlockDevice(void)
 /*
  * Close the device handle.
  */
-DIError
-Win32VolumeAccess::PhysicalBlockAccess::Close(void)
+DIError Win32VolumeAccess::PhysicalBlockAccess::Close(void)
 {
     if (fHandle != NULL) {
         ::CloseHandle(fHandle);
@@ -1671,8 +1641,8 @@ Win32VolumeAccess::PhysicalBlockAccess::Close(void)
  * Unpack device name and verify that the device is a CD-ROM drive or
  * direct-access storage device.
  */
-DIError
-Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName, bool readOnly)
+DIError Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName,
+    bool readOnly)
 {
     DIError dierr = kDIErrNone;
 
@@ -1708,7 +1678,7 @@ Win32VolumeAccess::ASPIBlockAccess::Open(const char* deviceName, bool readOnly)
     fTarget = target;
     fLun = lun;
 
-    unsigned char deviceType;
+    uint8_t deviceType;
     dierr = fpASPI->GetDeviceType(fAdapter, fTarget, fLun, &deviceType);
     if (dierr != kDIErrNone ||
         (deviceType != kScsiDevTypeCDROM && deviceType != kScsiDevTypeDASD))
@@ -1738,8 +1708,7 @@ bail:
  *
  * Returns 0 on success, -1 on failure.
  */
-int
-Win32VolumeAccess::ASPIBlockAccess::ExtractInt(const char** pStr, int* pResult)
+int Win32VolumeAccess::ASPIBlockAccess::ExtractInt(const char** pStr, int* pResult)
 {
     char* end = NULL;
 
@@ -1763,8 +1732,7 @@ Win32VolumeAccess::ASPIBlockAccess::ExtractInt(const char** pStr, int* pResult)
  *
  * Sets fChunkSize as a side-effect.
  */
-DIError
-Win32VolumeAccess::ASPIBlockAccess::DetectCapacity(long* pNumBlocks)
+DIError Win32VolumeAccess::ASPIBlockAccess::DetectCapacity(long* pNumBlocks)
 {
     DIError dierr = kDIErrNone;
     unsigned long lba, blockLen;
@@ -1801,9 +1769,8 @@ bail:
  * SCSI doesn't promise it'll be in a chunk size we like, but it's pretty
  * safe to assume that it'll be at least 512 bytes, and divisible by 512.
  */
-DIError
-Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount,
-    void* buf)
+DIError Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock,
+    short blockCount, void* buf)
 {
     DIError dierr;
 
@@ -1813,7 +1780,7 @@ Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount
 
     /* alloc chunk buffer on first use */
     if (fLastChunkCache == NULL) {
-        fLastChunkCache = new unsigned char[fChunkSize];
+        fLastChunkCache = new uint8_t[fChunkSize];
         if (fLastChunkCache == NULL)
             return kDIErrMalloc;
         assert(fLastChunkNum == -1);
@@ -1859,7 +1826,7 @@ Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount
                 thisNumBlocks * kBlockSize);
 
             blockCount -= thisNumBlocks;
-            buf = (unsigned char*) buf + (thisNumBlocks * kBlockSize);
+            buf = (uint8_t*) buf + (thisNumBlocks * kBlockSize);
 
             chunkOffset = 0;
             chunkIndex++;
@@ -1877,7 +1844,7 @@ Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount
                 return dierr;
 
             blockCount -= numChunks * kFactor;
-            buf = (unsigned char*) buf + (numChunks * fChunkSize);
+            buf = (uint8_t*) buf + (numChunks * fChunkSize);
 
             chunkIndex += numChunks;
         }
@@ -1892,9 +1859,8 @@ Win32VolumeAccess::ASPIBlockAccess::ReadBlocks(long startBlock, short blockCount
  * SCSI doesn't promise it'll be in a chunk size we like, but it's pretty
  * safe to assume that it'll be at least 512 bytes, and divisible by 512.
  */
-DIError
-Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock, short blockCount,
-    const void* buf)
+DIError Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock,
+    short blockCount, const void* buf)
 {
     DIError dierr;
 
@@ -1942,7 +1908,7 @@ Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock, short blockCoun
                 thisNumBlocks * kBlockSize);
 
             blockCount -= thisNumBlocks;
-            buf = (const unsigned char*) buf + (thisNumBlocks * kBlockSize);
+            buf = (const uint8_t*) buf + (thisNumBlocks * kBlockSize);
 
             chunkOffset = 0;
             chunkIndex++;
@@ -1958,7 +1924,7 @@ Win32VolumeAccess::ASPIBlockAccess::WriteBlocks(long startBlock, short blockCoun
                 return dierr;
 
             blockCount -= numChunks * kFactor;
-            buf = (const unsigned char*) buf + (numChunks * fChunkSize);
+            buf = (const uint8_t*) buf + (numChunks * fChunkSize);
 
             chunkIndex += numChunks;
         }
@@ -1988,8 +1954,7 @@ Win32VolumeAccess::ASPIBlockAccess::Close(void)
 /*
  * Determine whether we're holding a block in the cache.
  */
-bool
-CBCache::IsBlockInCache(long blockNum) const
+bool CBCache::IsBlockInCache(long blockNum) const
 {
     if (fFirstBlock == kEmpty)
         return false;
@@ -2004,8 +1969,7 @@ CBCache::IsBlockInCache(long blockNum) const
 /*
  * Retrieve a single block from the cache.
  */
-DIError
-CBCache::GetFromCache(long blockNum, void* buf)
+DIError CBCache::GetFromCache(long blockNum, void* buf)
 {
     if (!IsBlockInCache(blockNum)) {
         assert(false);
@@ -2025,8 +1989,7 @@ CBCache::GetFromCache(long blockNum, void* buf)
  * criteria: (1) there must actually be room at the end, and (2) the
  * block in question must be the next consecutive block.
  */
-bool
-CBCache::IsRoomInCache(long blockNum) const
+bool CBCache::IsRoomInCache(long blockNum) const
 {
     if (fFirstBlock == kEmpty)
         return true;
@@ -2055,8 +2018,7 @@ CBCache::IsRoomInCache(long blockNum) const
  * they're trying to overwrite dirty cached data with the result of a new
  * read, which is a bug.  Trap it here.
  */
-DIError
-CBCache::PutInCache(long blockNum, const void* buf, bool isDirty)
+DIError CBCache::PutInCache(long blockNum, const void* buf, bool isDirty)
 {
     int blockOffset = -1;
     if (!IsRoomInCache(blockNum)) {
@@ -2101,8 +2063,7 @@ CBCache::PutInCache(long blockNum, const void* buf, bool isDirty)
 /*
  * Determine whether there are any dirty blocks in the cache.
  */
-bool
-CBCache::IsDirty(void) const
+bool CBCache::IsDirty(void) const
 {
     if (fFirstBlock == kEmpty)
         return false;
@@ -2123,8 +2084,7 @@ CBCache::IsDirty(void) const
  * Return a pointer to the cache goodies, so that the object sitting
  * on the disk hardware can write our stuff.
  */
-void
-CBCache::GetCachePointer(long* pFirstBlock, int* pNumBlocks, void** pBuf) const
+void CBCache::GetCachePointer(long* pFirstBlock, int* pNumBlocks, void** pBuf) const
 {
     assert(fFirstBlock != kEmpty);  // not essential, but why call here if not?
 
@@ -2136,8 +2096,7 @@ CBCache::GetCachePointer(long* pFirstBlock, int* pNumBlocks, void** pBuf) const
 /*
  * Clear all the dirty flags.
  */
-void
-CBCache::Scrub(void)
+void CBCache::Scrub(void)
 {
     if (fFirstBlock == kEmpty)
         return;
@@ -2149,15 +2108,14 @@ CBCache::Scrub(void)
 /*
  * Trash all of our entries.  If any are dirty, scream bloody murder.
  */
-void
-CBCache::Purge(void)
+void CBCache::Purge(void)
 {
     if (fFirstBlock == kEmpty)
         return;
 
     if (IsDirty()) {
         // Should only happen after a write failure causes us to clean up.
-        LOGI("HEY: CBCache purging dirty blocks!");
+        LOGE("HEY: CBCache purging dirty blocks!");
         //assert(false);
     }
     Scrub();
@@ -2165,6 +2123,5 @@ CBCache::Purge(void)
     fFirstBlock = kEmpty;
     fNumBlocks = 0;
 }
-
 
 #endif /*_WIN32*/

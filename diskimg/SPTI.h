@@ -25,15 +25,15 @@ public:
 
     // Get the capacity, expressed as the highest-available LBA and the device
     //  block size.
-    static DIError GetDeviceCapacity(HANDLE handle, unsigned long* pLastBlock,
-        unsigned long* pBlockSize);
+    static DIError GetDeviceCapacity(HANDLE handle, uint32_t* pLastBlock,
+        uint32_t* pBlockSize);
 
 private:
     SPTI(void) {}
     ~SPTI(void) {}
 };
 
-}  // namespace DiskImgLib
+}   // namespace DiskImgLib
 
 #endif /*_WIN32*/
 

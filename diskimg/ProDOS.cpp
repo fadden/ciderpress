@@ -44,25 +44,21 @@ const int kTypeDIR = 0x0f;
  * Directory header.  All fields not marked as "only for subdirs" also apply
  * to the volume directory header.
  */
-//namespace DiskImgLib {
-    
 typedef struct DiskFSProDOS::DirHeader {
-    unsigned char   storageType;
-    char            dirName[A2FileProDOS::kMaxFileName+1];
-    DiskFSProDOS::ProDate   createWhen;
-    unsigned char   version;
-    unsigned char   minVersion;
-    unsigned char   access;
-    unsigned char   entryLength;
-    unsigned char   entriesPerBlock;
-    unsigned short  fileCount;
+    uint8_t     storageType;
+    char        dirName[A2FileProDOS::kMaxFileName+1];
+    DiskFSProDOS::ProDate createWhen;
+    uint8_t     version;
+    uint8_t     minVersion;
+    uint8_t     access;
+    uint8_t     entryLength;
+    uint8_t     entriesPerBlock;
+    uint16_t    fileCount;
     /* the rest are only for subdirs */
-    unsigned short  parentPointer;
-    unsigned char   parentEntry;
-    unsigned char   parentEntryLength;
+    uint16_t    parentPointer;
+    uint8_t     parentEntry;
+    uint8_t     parentEntryLength;
 } DirHeader;
-
-//};    // namespace DiskImgLib
 
 
 /*
@@ -70,11 +66,10 @@ typedef struct DiskFSProDOS::DirHeader {
  *
  * We test a few fields in the volume directory header for validity.
  */
-static DIError
-TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
+static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     int volDirEntryLength;
     int volDirEntriesPerBlock;
 
@@ -105,8 +100,7 @@ bail:
 /*
  * Test to see if the image is a ProDOS disk.
  */
-/*static*/ DIError
-DiskFSProDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSProDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     DiskImg::SectorOrder ordering[DiskImg::kSectorOrderMax];
@@ -134,8 +128,7 @@ DiskFSProDOS::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
  * on out must be handled somehow, possibly by claiming that the disk has
  * no files on it.
  */
-DIError
-DiskFSProDOS::Initialize(InitMode initMode)
+DIError DiskFSProDOS::Initialize(InitMode initMode)
 {
     DIError dierr = kDIErrNone;
     char msg[kMaxVolumeName + 32];
@@ -227,11 +220,10 @@ bail:
  * The "test" function verified certain things, e.g. the storage type
  * is $f and the volume name length is nonzero.
  */
-DIError
-DiskFSProDOS::LoadVolHeader(void)
+DIError DiskFSProDOS::LoadVolHeader(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     int nameLen;
 
     dierr = fpImg->ReadBlock(kVolHeaderBlock, blkBuf);
@@ -276,7 +268,7 @@ DiskFSProDOS::LoadVolHeader(void)
          * the start of the block, which is marked as "reserved" in Beneath
          * Apple ProDOS.
          */
-        unsigned short lcFlags = GetShortLE(&blkBuf[0x1a]);
+        uint16_t lcFlags = GetShortLE(&blkBuf[0x1a]);
 
         GenerateLowerCaseName(fVolumeName, fVolumeName, lcFlags, false);
     }
@@ -306,7 +298,7 @@ DiskFSProDOS::LoadVolHeader(void)
             fpImg->AddNote(DiskImg::kNoteWarning,
                 "ProDOS filesystem blockcount (%d) exceeds disk image blocks (%ld).",
                 fTotalBlocks, fpImg->GetNumBlocks());
-            fTotalBlocks = (unsigned short) fpImg->GetNumBlocks();
+            fTotalBlocks = (uint16_t) fpImg->GetNumBlocks();
             fEarlyDamage = true;
         }
     }
@@ -391,18 +383,15 @@ bail:
 /*
  * Set the volume ID field.
  */
-void
-DiskFSProDOS::SetVolumeID(void)
+void DiskFSProDOS::SetVolumeID(void)
 {
     sprintf(fVolumeID, "ProDOS /%s", fVolumeName);
 }
 
-
 /*
  * Dump what we pulled out of the volume header.
  */
-void
-DiskFSProDOS::DumpVolHeader(void)
+void DiskFSProDOS::DumpVolHeader(void)
 {
     LOGI(" ProDOS volume header for '%s'", fVolumeName);
     LOGI("  CreateWhen=0x%08lx access=0x%02x bitmap=%d totalbl=%d",
@@ -420,14 +409,12 @@ DiskFSProDOS::DumpVolHeader(void)
     //LOGI("  volume dir fileCount=%d", fFileCount);
 }
 
-
 /*
  * Load the disk's volume bitmap into the object's "fBlockUseMap" pointer.
  *
  * Does not attempt to analyze the data.
  */
-DIError
-DiskFSProDOS::LoadVolBitmap(void)
+DIError DiskFSProDOS::LoadVolBitmap(void)
 {
     DIError dierr = kDIErrNone;
     int bitBlock, numBlocks;
@@ -446,7 +433,7 @@ DiskFSProDOS::LoadVolBitmap(void)
     numBlocks = GetNumBitmapBlocks();   // based on fTotalBlocks
     assert(numBlocks > 0);
 
-    fBlockUseMap = new unsigned char[kBlkSize * numBlocks];
+    fBlockUseMap = new uint8_t[kBlkSize * numBlocks];
     if (fBlockUseMap == NULL)
         return kDIErrMalloc;
 
@@ -466,8 +453,7 @@ DiskFSProDOS::LoadVolBitmap(void)
 /*
  * Save our copy of the volume bitmap.
  */
-DIError
-DiskFSProDOS::SaveVolBitmap(void)
+DIError DiskFSProDOS::SaveVolBitmap(void)
 {
     DIError dierr = kDIErrNone;
     int bitBlock, numBlocks;
@@ -499,8 +485,7 @@ DiskFSProDOS::SaveVolBitmap(void)
  *
  * It's okay to call this if the bitmap isn't loaded.
  */
-void
-DiskFSProDOS::FreeVolBitmap(void)
+void DiskFSProDOS::FreeVolBitmap(void)
 {
     delete[] fBlockUseMap;
     fBlockUseMap = NULL;
@@ -510,8 +495,7 @@ DiskFSProDOS::FreeVolBitmap(void)
  * Examine the volume bitmap, setting fields in the VolumeUsage map
  * as appropriate.
  */
-DIError
-DiskFSProDOS::ScanVolBitmap(void)
+DIError DiskFSProDOS::ScanVolBitmap(void)
 {
     DIError dierr;
 
@@ -540,7 +524,7 @@ DiskFSProDOS::ScanVolBitmap(void)
     long block = 0;
     long numBytes = (fTotalBlocks + 7) / 8;
     for (i = 0; i < numBytes; i++) {
-        unsigned char val = fBlockUseMap[i];
+        uint8_t val = fBlockUseMap[i];
 
         for (int j = 0; j < 8; j++) {
             if (!(val & 0x80)) {
@@ -570,8 +554,7 @@ DiskFSProDOS::ScanVolBitmap(void)
 /*
  * Generate an empty block use map.
  */
-DIError
-DiskFSProDOS::CreateEmptyBlockMap(void)
+DIError DiskFSProDOS::CreateEmptyBlockMap(void)
 {
     DIError dierr;
 
@@ -605,14 +588,13 @@ DiskFSProDOS::CreateEmptyBlockMap(void)
  *
  * Returns "true" if it's in use, "false" otherwise.
  */
-bool
-DiskFSProDOS::GetBlockUseEntry(long block) const
+bool DiskFSProDOS::GetBlockUseEntry(long block) const
 {
     assert(block >= 0 && block < fTotalBlocks);
     assert(fBlockUseMap != NULL);
 
     int offset;
-    unsigned char mask;
+    uint8_t mask;
 
     offset = block / 8;
     mask = 0x80 >> (block & 0x07);
@@ -625,8 +607,7 @@ DiskFSProDOS::GetBlockUseEntry(long block) const
 /*
  * Change the state of an entry in the block use map.
  */
-void
-DiskFSProDOS::SetBlockUseEntry(long block, bool inUse)
+void DiskFSProDOS::SetBlockUseEntry(long block, bool inUse)
 {
     assert(block >= 0 && block < fTotalBlocks);
     assert(fBlockUseMap != NULL);
@@ -637,7 +618,7 @@ DiskFSProDOS::SetBlockUseEntry(long block, bool inUse)
     }
 
     int offset;
-    unsigned char mask;
+    uint8_t mask;
 
     offset = block / 8;
     mask = 0x80 >> (block & 0x07);
@@ -652,8 +633,7 @@ DiskFSProDOS::SetBlockUseEntry(long block, bool inUse)
  *
  * Returns "true" if bogus entries were found, "false" if all is well.
  */
-bool
-DiskFSProDOS::ScanForExtraEntries(void) const
+bool DiskFSProDOS::ScanForExtraEntries(void) const
 {
     assert(fBlockUseMap != NULL);
 
@@ -681,8 +661,7 @@ DiskFSProDOS::ScanForExtraEntries(void) const
  *
  * Returns the block number (0-65535) on success or -1 on failure.
  */
-long
-DiskFSProDOS::AllocBlock(void)
+long DiskFSProDOS::AllocBlock(void)
 {
     assert(fBlockUseMap != NULL);
 
@@ -712,7 +691,7 @@ DiskFSProDOS::AllocBlock(void)
         if (fBlockUseMap[offset] != 0) {
             /* got one, figure out which */
             int subBlock = 0;
-            unsigned char uch = fBlockUseMap[offset];
+            uint8_t uch = fBlockUseMap[offset];
             while ((uch & 0x80) == 0) {
                 subBlock++;
                 uch <<= 1;
@@ -736,8 +715,7 @@ DiskFSProDOS::AllocBlock(void)
 /*
  * Tally up the number of free blocks.
  */
-DIError
-DiskFSProDOS::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
+DIError DiskFSProDOS::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     int* pUnitSize) const
 {
     DIError dierr;
@@ -761,14 +739,12 @@ DiskFSProDOS::GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
     return kDIErrNone;
 }
 
-
 /*
  * Update an entry in the VolumeUsage map.
  *
  * The VolumeUsage map spans the range of blocks 
  */
-void
-DiskFSProDOS::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
+void DiskFSProDOS::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
 {
     VolumeUsage::ChunkState cstate;
 
@@ -788,13 +764,12 @@ DiskFSProDOS::SetBlockUsage(long block, VolumeUsage::ChunkPurpose purpose)
  *
  * Start with "pParent" set to the magic entry for the volume dir.
  */
-DIError
-DiskFSProDOS::RecursiveDirAdd(A2File* pParent, unsigned short dirBlock,
+DIError DiskFSProDOS::RecursiveDirAdd(A2File* pParent, uint16_t dirBlock,
     const char* basePath, int depth)
 {
     DIError dierr = kDIErrNone;
     DirHeader header;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     int numEntries, iterations, foundCount;
     bool first;
 
@@ -874,14 +849,13 @@ bail:
  *
  * "*pFound" is increased by the number of valid entries found in this block.
  */
-DIError
-DiskFSProDOS::SlurpEntries(A2File* pParent, const DirHeader* pHeader,
-    const unsigned char* blkBuf, bool skipFirst, int* pCount,
-    const char* basePath, unsigned short thisBlock, int depth)
+DIError DiskFSProDOS::SlurpEntries(A2File* pParent, const DirHeader* pHeader,
+    const uint8_t* blkBuf, bool skipFirst, int* pCount,
+    const char* basePath, uint16_t thisBlock, int depth)
 {
     DIError dierr = kDIErrNone;
     int entriesThisBlock = pHeader->entriesPerBlock;
-    const unsigned char* entryBuf;
+    const uint8_t* entryBuf;
     A2FileProDOS* pFile;
 
     int idx = 0;
@@ -963,12 +937,10 @@ bail:
     return dierr;
 }
 
-
 /*
  * Pull the directory header out of the first block of a directory.
  */
-DIError
-DiskFSProDOS::GetDirHeader(const unsigned char* blkBuf, DirHeader* pHeader)
+DIError DiskFSProDOS::GetDirHeader(const uint8_t* blkBuf, DirHeader* pHeader)
 {
     int nameLen;
 
@@ -1011,11 +983,10 @@ DiskFSProDOS::GetDirHeader(const unsigned char* blkBuf, DirHeader* pHeader)
  * There's some "HFS Finder information" stuffed into the key block
  * right after the data fork info, but I'm planning to ignore that.
  */
-DIError
-DiskFSProDOS::ReadExtendedInfo(A2FileProDOS* pFile)
+DIError DiskFSProDOS::ReadExtendedInfo(A2FileProDOS* pFile)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
 
     dierr = fpImg->ReadBlock(pFile->fDirEntry.keyPointer, blkBuf);
     if (dierr != kDIErrNone) {
@@ -1055,14 +1026,13 @@ bail:
  *
  * As a side-effect, we set the "sparse" length for the file.
  */
-DIError
-DiskFSProDOS::ScanFileUsage(void)
+DIError DiskFSProDOS::ScanFileUsage(void)
 {
     DIError dierr = kDIErrNone;
     A2FileProDOS* pFile;
     long blockCount, indexCount, sparseCount;
-    unsigned short* blockList = NULL;
-    unsigned short* indexList = NULL;
+    uint16_t* blockList = NULL;
+    uint16_t* indexList = NULL;
 
     pFile = (A2FileProDOS*) GetNextFile(NULL);
     while (pFile != NULL) {
@@ -1197,9 +1167,8 @@ bail:
 /*
  * Scan a block list into the volume usage map.
  */
-void
-DiskFSProDOS::ScanBlockList(long blockCount, unsigned short* blockList,
-    long indexCount, unsigned short* indexList, long* pSparseCount)
+void DiskFSProDOS::ScanBlockList(long blockCount, uint16_t* blockList,
+    long indexCount, uint16_t* indexList, long* pSparseCount)
 {
     assert(blockList != NULL);
     assert(indexCount == 0 || indexList != NULL);
@@ -1223,7 +1192,6 @@ DiskFSProDOS::ScanBlockList(long blockCount, unsigned short* blockList,
     }
 }
 
-
 /*
  * ProDOS disks may contain other filesystems.  The typical DOS-in-ProDOS
  * strategy involves marking a bunch of blocks at the end of the disc as
@@ -1233,8 +1201,7 @@ DiskFSProDOS::ScanBlockList(long blockCount, unsigned short* blockList,
  * usage patterns and then testing those with the standard disk testing
  * facilities.
  */
-DIError
-DiskFSProDOS::ScanForSubVolumes(void)
+DIError DiskFSProDOS::ScanForSubVolumes(void)
 {
     DIError dierr = kDIErrNone;
     VolumeUsage::ChunkState cstate;
@@ -1377,8 +1344,7 @@ DiskFSProDOS::ScanForSubVolumes(void)
  * On success, "*ppDiskImg" and "*ppDiskFS" are newly-allocated objects
  * of the appropriate kind.
  */
-DIError
-DiskFSProDOS::FindSubVolume(long blockStart, long blockCount,
+DIError DiskFSProDOS::FindSubVolume(long blockStart, long blockCount,
     DiskImg** ppDiskImg, DiskFS** ppDiskFS)
 {
     DIError dierr = kDIErrNone;
@@ -1443,8 +1409,7 @@ bail:
 /*
  * Mark the blocks used by a sub-volume as in-use.
  */
-void
-DiskFSProDOS::MarkSubVolumeBlocks(long block, long count)
+void DiskFSProDOS::MarkSubVolumeBlocks(long block, long count)
 {
     VolumeUsage::ChunkState cstate;
 
@@ -1466,16 +1431,14 @@ DiskFSProDOS::MarkSubVolumeBlocks(long block, long count)
     }
 }
 
-
 /*
  * Put a ProDOS filesystem image on the specified DiskImg.
  */
-DIError
-DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
+DIError DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
 {
     DIError dierr = kDIErrNone;
     const bool allowLowerCase = (GetParameter(kParmProDOS_AllowLowerCase) != 0);
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     long formatBlocks;
 
     if (!IsValidVolumeName(volName))
@@ -1547,7 +1510,7 @@ DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
     }
 
     char upperName[A2FileProDOS::kMaxFileName+1];
-    unsigned short lcFlags;
+    uint16_t lcFlags;
     time_t now;
 
     now = time(NULL);
@@ -1578,7 +1541,7 @@ DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
     blkBuf[0x24] = 0x0d;        // entries_per_block: always $0d
     /* file_count is zero - does not include volume dir */
     PutShortLE(&blkBuf[0x27], kVolHeaderBlock + kVolDirExpectedNumBlocks); // bit_map_pointer
-    PutShortLE(&blkBuf[0x29], (unsigned short) formatBlocks); // total_blocks
+    PutShortLE(&blkBuf[0x29], (uint16_t) formatBlocks); // total_blocks
     dierr = fpImg->WriteBlock(kVolHeaderBlock, blkBuf);
     if (dierr != kDIErrNone) {
         LOGI(" Format: block %d write failed (err=%d)",
@@ -1617,7 +1580,7 @@ bail:
  * This is block 0; block 1 is either zeroed out or filled with a repeating
  * pattern.
  */
-const unsigned char gFloppyBlock0[512] = {
+const uint8_t gFloppyBlock0[512] = {
     0x01, 0x38, 0xb0, 0x03, 0x4c, 0x32, 0xa1, 0x86, 0x43, 0xc9, 0x03, 0x08,
     0x8a, 0x29, 0x70, 0x4a, 0x4a, 0x4a, 0x4a, 0x09, 0xc0, 0x85, 0x49, 0xa0,
     0xff, 0x84, 0x48, 0x28, 0xc8, 0xb1, 0x48, 0xd0, 0x3a, 0xb0, 0x0e, 0xa9,
@@ -1663,7 +1626,7 @@ const unsigned char gFloppyBlock0[512] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-unsigned char gHDBlock0[] = {
+const uint8_t gHDBlock0[] = {
     0x01, 0x38, 0xb0, 0x03, 0x4c, 0x1c, 0x09, 0x78, 0x86, 0x43, 0xc9, 0x03,
     0x08, 0x8a, 0x29, 0x70, 0x4a, 0x4a, 0x4a, 0x4a, 0x09, 0xc0, 0x85, 0x49,
     0xa0, 0xff, 0x84, 0x48, 0x28, 0xc8, 0xb1, 0x48, 0xd0, 0x3a, 0xb0, 0x0e,
@@ -1712,12 +1675,11 @@ unsigned char gHDBlock0[] = {
 /*
  * Write the ProDOS boot blocks onto the disk image.
  */
-DIError
-DiskFSProDOS::WriteBootBlocks(void)
+DIError DiskFSProDOS::WriteBootBlocks(void)
 {
     DIError dierr;
-    unsigned char block0[512];
-    unsigned char block1[512];
+    uint8_t block0[512];
+    uint8_t block1[512];
     bool isHD;
 
     assert(fpImg->GetHasBlocks());
@@ -1731,7 +1693,7 @@ DiskFSProDOS::WriteBootBlocks(void)
         memcpy(block0, gHDBlock0, sizeof(block0));
         // repeating 0x42 0x48 pattern
         int i;
-        unsigned char* ucp;
+        uint8_t* ucp;
         for (i = 0, ucp = block1; i < (int)sizeof(block1); i++)
             *ucp++ = 0x42 + 6 * (i & 0x01);
     } else {
@@ -1752,7 +1714,6 @@ DiskFSProDOS::WriteBootBlocks(void)
 
     return kDIErrNone;
 }
-
 
 /*
  * Create a new, empty file.  There are three different kinds of files we
@@ -1779,8 +1740,7 @@ DiskFSProDOS::WriteBootBlocks(void)
  *
  * NOTE: kParm_CreateUnique does *not* apply to creating subdirectories.
  */
-DIError
-DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
+DIError DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
 {
     DIError dierr = kDIErrNone;
     char* normalizedPath = NULL;
@@ -1789,7 +1749,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     A2FileProDOS* pSubdir = NULL;
     A2FileDescr* pOpenSubdir = NULL;
     A2FileProDOS* pNewFile = NULL;
-    unsigned char* subdirBuf = NULL;
+    uint8_t* subdirBuf = NULL;
     const bool allowLowerCase = (GetParameter(kParmProDOS_AllowLowerCase) != 0);
     const bool createUnique = (GetParameter(kParm_CreateUnique) != 0);
     char upperName[A2FileProDOS::kMaxFileName+1];
@@ -1940,9 +1900,9 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     if (dierr != kDIErrNone)
         goto bail;
 
-    unsigned char* dirEntryPtr;
+    uint8_t* dirEntryPtr;
     long dirLen;
-    unsigned short dirBlock, dirKeyBlock;
+    uint16_t dirBlock, dirKeyBlock;
     int dirEntrySlot;
     dierr = AllocDirEntry(pOpenSubdir, &subdirBuf, &dirLen, &dirEntryPtr,
                 &dirKeyBlock, &dirEntrySlot, &dirBlock);
@@ -2016,16 +1976,16 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     dirEntryPtr[0x00] = (pParms->storageType << 4) | strlen(upperName);
     strncpy((char*) &dirEntryPtr[0x01], upperName, A2FileProDOS::kMaxFileName);
     if (pParms->fileType >= 0 && pParms->fileType <= 0xff)
-        dirEntryPtr[0x10] = (unsigned char) pParms->fileType;
+        dirEntryPtr[0x10] = (uint8_t) pParms->fileType;
     else
         dirEntryPtr[0x10] = 0;      // HFS long type?
-    PutShortLE(&dirEntryPtr[0x11], (unsigned short) keyBlock);
+    PutShortLE(&dirEntryPtr[0x11], (uint16_t) keyBlock);
     PutShortLE(&dirEntryPtr[0x13], blocksUsed);
     PutShortLE(&dirEntryPtr[0x15], newEOF);
     dirEntryPtr[0x17] = 0;      // high byte of EOF
     PutLongLE(&dirEntryPtr[0x18], A2FileProDOS::ConvertProDate(pParms->createWhen));
     if (allowLowerCase) {
-        unsigned short lcBits;
+        uint16_t lcBits;
         lcBits = GenerateLowerCaseBits(upperName, fileName, false);
         GenerateLowerCaseName(upperName, lowerName, lcBits, false);
         lowerName[strlen(upperName)] = '\0';
@@ -2037,7 +1997,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
     }
     dirEntryPtr[0x1e] = pParms->access;
     if (pParms->auxType >= 0 && pParms->auxType <= 0xffff)
-        PutShortLE(&dirEntryPtr[0x1f], (unsigned short) pParms->auxType);
+        PutShortLE(&dirEntryPtr[0x1f], (uint16_t) pParms->auxType);
     else
         PutShortLE(&dirEntryPtr[0x1f], 0);
     PutLongLE(&dirEntryPtr[0x21], A2FileProDOS::ConvertProDate(pParms->modWhen));
@@ -2128,7 +2088,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      * worry too much about weirdness.  The directory entry allocator always
      * returns the first available, so we know the previous entry is valid.
      */
-    unsigned char* prevDirEntryPtr;
+    uint8_t* prevDirEntryPtr;
     prevDirEntryPtr = GetPrevDirEntry(subdirBuf, dirEntryPtr);
     if (prevDirEntryPtr == NULL) {
         /* previous entry is volume or subdir header */
@@ -2137,7 +2097,7 @@ DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
             pNewFile->GetPathName(), pNewFile->GetParent()->GetPathName());
     } else {
         /* dig out the key block pointer and find the matching file */
-        unsigned short prevKeyBlock;
+        uint16_t prevKeyBlock;
         assert((prevDirEntryPtr[0x00] & 0xf0) != 0);        // verify storage type
         prevKeyBlock = GetShortLE(&prevDirEntryPtr[0x11]);
         A2File* pPrev;
@@ -2174,8 +2134,7 @@ bail:
  * Run through the DiskFS file list, looking for an entry with a matching
  * key block.
  */
-A2File*
-DiskFSProDOS::FindFileByKeyBlock(A2File* pStart, unsigned short keyBlock)
+A2File* DiskFSProDOS::FindFileByKeyBlock(A2File* pStart, uint16_t keyBlock)
 {
     while (pStart != NULL) {
         A2FileProDOS* pPro = (A2FileProDOS*) pStart;
@@ -2200,13 +2159,12 @@ DiskFSProDOS::FindFileByKeyBlock(A2File* pStart, unsigned short keyBlock)
  * file, and are only needed when creating a new subdir (because the first
  * entry in a subdir points to its entry in the parent dir).
  */
-DIError
-DiskFSProDOS::AllocInitialFileStorage(const CreateParms* pParms,
-    const char* upperName, unsigned short dirBlock, int dirEntrySlot,
+DIError DiskFSProDOS::AllocInitialFileStorage(const CreateParms* pParms,
+    const char* upperName, uint16_t dirBlock, int dirEntrySlot,
     long* pKeyBlock, int* pBlocksUsed, int* pNewEOF)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     long keyBlock;
     int blocksUsed;
     int newEOF;
@@ -2251,8 +2209,8 @@ DiskFSProDOS::AllocInitialFileStorage(const CreateParms* pParms,
 
         /* fill in extended key block details */
         blkBuf[0x00] = blkBuf[0x100] = A2FileProDOS::kStorageSeedling;
-        PutShortLE(&blkBuf[0x01], (unsigned short) dataBlock);
-        PutShortLE(&blkBuf[0x101], (unsigned short) rsrcBlock);
+        PutShortLE(&blkBuf[0x01], (uint16_t) dataBlock);
+        PutShortLE(&blkBuf[0x101], (uint16_t) rsrcBlock);
         blkBuf[0x03] = blkBuf[0x103] = 1;       // blocks used (lo byte)
         /* 3 bytes at 0x05 hold EOF, currently 0 */
 
@@ -2282,7 +2240,7 @@ DiskFSProDOS::AllocInitialFileStorage(const CreateParms* pParms,
         blkBuf[0x24] = kEntriesPerBlock;
         PutShortLE(&blkBuf[0x25], 0);       // file count
         PutShortLE(&blkBuf[0x27], dirBlock);
-        blkBuf[0x29] = (unsigned char) dirEntrySlot;
+        blkBuf[0x29] = (uint8_t) dirEntrySlot;
         blkBuf[0x2a] = kEntryLength;    // the parent dir's entry length
 
         dierr = fpImg->WriteBlock(keyBlock, blkBuf);
@@ -2302,7 +2260,6 @@ bail:
     return dierr;
 }
 
-
 /*
  * Scan for damaged files and mysterious or conflicting block usage map
  * entries.
@@ -2315,8 +2272,7 @@ bail:
  *
  * Returns "true" if disk appears to be perfect, "false" otherwise.
  */
-bool
-DiskFSProDOS::CheckDiskIsGood(void)
+bool DiskFSProDOS::CheckDiskIsGood(void)
 {
     DIError dierr;
     bool result = true;
@@ -2425,13 +2381,11 @@ bail:
     return result;
 }
 
-
 /*
  * Test a string for validity as a ProDOS volume name.  Syntax is the same as
  * ProDOS file names, but we also disallow spaces.
  */
-/*static*/ bool
-DiskFSProDOS::IsValidVolumeName(const char* name)
+/*static*/ bool DiskFSProDOS::IsValidVolumeName(const char* name)
 {
     assert((int) A2FileProDOS::kMaxFileName == (int) kMaxVolumeName);
     if (!IsValidFileName(name))
@@ -2451,8 +2405,7 @@ DiskFSProDOS::IsValidVolumeName(const char* name)
  * Lower case and spaces (a/k/a lower-case '.') are accepted.  Trailing
  * spaces are not allowed.
  */
-/*static*/ bool
-DiskFSProDOS::IsValidFileName(const char* name)
+/*static*/ bool DiskFSProDOS::IsValidFileName(const char* name)
 {
     if (name == NULL) {
         assert(false);
@@ -2502,12 +2455,11 @@ DiskFSProDOS::IsValidFileName(const char* name)
  * Returns the mask to use in a ProDOS dir.  If "forAppleWorks" is set to
  * "true", the mask is modified for use with an AppleWorks aux type.
  */
-/*static*/ unsigned short
-DiskFSProDOS::GenerateLowerCaseBits(const char* upperName,
+/*static*/ uint16_t DiskFSProDOS::GenerateLowerCaseBits(const char* upperName,
     const char* lowerName, bool forAppleWorks)
 {
-    unsigned short caseMask = 0x8000;
-    unsigned short caseBit = 0x8000;
+    uint16_t caseMask = 0x8000;
+    uint16_t caseBit = 0x8000;
     int len, i;
     char lowch;
     
@@ -2522,7 +2474,7 @@ DiskFSProDOS::GenerateLowerCaseBits(const char* upperName,
     }
 
     if (forAppleWorks) {
-        unsigned short adjusted;
+        uint16_t adjusted;
         caseMask <<= 1;
         adjusted = caseMask << 8 | caseMask >> 8;
         return adjusted;
@@ -2548,9 +2500,8 @@ DiskFSProDOS::GenerateLowerCaseBits(const char* upperName,
  * "lcFlags" is either ProDOS directory flags or AppleWorks aux type flags,
  * depending on the value of "fromAppleWorks".
  */
-/*static*/ void
-DiskFSProDOS::GenerateLowerCaseName(const char* upperName, char* lowerName,
-    unsigned short lcFlags, bool fromAppleWorks)
+/*static*/ void DiskFSProDOS::GenerateLowerCaseName(const char* upperName,
+    char* lowerName, uint16_t lcFlags, bool fromAppleWorks)
 {
     int nameLen = strlen(upperName);
     int bit;
@@ -2558,7 +2509,7 @@ DiskFSProDOS::GenerateLowerCaseName(const char* upperName, char* lowerName,
 
     if (fromAppleWorks) {
         /* handle AppleWorks lower-case-in-auxtype */
-        unsigned short caseMask =   // swap bytes
+        uint16_t caseMask =   // swap bytes
             (lcFlags << 8) | (lcFlags >> 8);
         for (bit = 0; bit < nameLen ; bit++) {
             if ((caseMask & 0x8000) != 0)
@@ -2599,8 +2550,7 @@ DiskFSProDOS::GenerateLowerCaseName(const char* upperName, char* lowerName,
  * This is invoked from the generalized "add" function in CiderPress, which
  * doesn't want to understand the ins and outs of ProDOS pathnames.
  */
-DIError
-DiskFSProDOS::NormalizePath(const char* path, char fssep,
+DIError DiskFSProDOS::NormalizePath(const char* path, char fssep,
     char* normalizedBuf, int* pNormalizedBufLen)
 {
     DIError dierr = kDIErrNone;
@@ -2646,8 +2596,7 @@ bail:
  *
  * The caller must delete[] "*pNormalizedPath".
  */
-DIError
-DiskFSProDOS::DoNormalizePath(const char* path, char fssep,
+DIError DiskFSProDOS::DoNormalizePath(const char* path, char fssep,
     char** pNormalizedPath)
 {
     DIError dierr = kDIErrNone;
@@ -2777,8 +2726,7 @@ bail:
  * "upperName" must be a buffer that holds at least kMaxFileName+1 characters.
  * If "name" is longer than kMaxFileName, it will be truncated.
  */
-void
-DiskFSProDOS::UpperCaseName(char* upperName, const char* name)
+void DiskFSProDOS::UpperCaseName(char* upperName, const char* name)
 {
     int i;
 
@@ -2827,10 +2775,9 @@ DiskFSProDOS::UpperCaseName(char* upperName, const char* name)
  * We guarantee that we will return the first available entry in the current
  * directory.
  */
-DIError
-DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
-    long* pDirLen, unsigned char** ppDirEntry, unsigned short* pDirKeyBlock,
-    int* pDirEntrySlot, unsigned short* pDirBlock)
+DIError DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, uint8_t** ppDir,
+    long* pDirLen, uint8_t** ppDirEntry, uint16_t* pDirKeyBlock,
+    int* pDirEntrySlot, uint16_t* pDirBlock)
 {
     assert(pOpenSubdir != NULL);
     *ppDirEntry = NULL;
@@ -2840,7 +2787,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
     *pDirBlock = 0;
 
     DIError dierr = kDIErrNone;
-    unsigned char* dirBuf = NULL;
+    uint8_t* dirBuf = NULL;
     long dirLen;
     A2FileProDOS* pFile;
     long newBlock = -1;
@@ -2856,7 +2803,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
         dierr = kDIErrBadFile;
         goto bail;
     }
-    dirBuf = new unsigned char[dirLen];
+    dirBuf = new uint8_t[dirLen];
     if (dirBuf == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -2879,7 +2826,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
      * step through this by blocks, because the data is block-oriented.
      * If we run off the end of the last block, (re)alloc a new one.
      */
-    unsigned char* pDirEntry;
+    uint8_t* pDirEntry;
     int blockIdx;
     int entryIdx;
 
@@ -2915,7 +2862,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
          * in the last block at it, so that when we go to write this dir
          * we will know where to put it.
          */
-        unsigned char* pBlock;
+        uint8_t* pBlock;
         pBlock = dirBuf + 512 * (blockIdx-1);
         if (pBlock[0x02] != 0) {
             LOGI(" ProDOS GLITCH: adding to block with nonzero next ptr!");
@@ -2929,12 +2876,12 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
             goto bail;
         }
 
-        PutShortLE(&pBlock[0x02], (unsigned short) newBlock);   // set "next"
+        PutShortLE(&pBlock[0x02], (uint16_t) newBlock);   // set "next"
 
         /*
          * Extend our memory buffer to hold the new entry.
          */
-        unsigned char* newSpace = new unsigned char[dirLen + 512];
+        uint8_t* newSpace = new uint8_t[dirLen + 512];
         if (newSpace == NULL) {
             dierr = kDIErrMalloc;
             goto bail;
@@ -2954,7 +2901,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
         if (dierr != kDIErrNone)
             goto bail;
         pBlock = dirBuf + 512 * blockIdx;
-        PutShortLE(&pBlock[0x00], (unsigned short) lastBlock);  // set "prev"
+        PutShortLE(&pBlock[0x00], (uint16_t) lastBlock);    // set "prev"
         assert(GetShortLE(&pBlock[0x02]) == 0);             // "next" pointer
 
         /*
@@ -2968,7 +2915,7 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
     /*
      * Success.  Update the file count in the header.
      */
-    unsigned short count;
+    uint16_t count;
     count = GetShortLE(&dirBuf[0x25]);
     count++;
     PutShortLE(&dirBuf[0x25], count);
@@ -2983,12 +2930,12 @@ DiskFSProDOS::AllocDirEntry(A2FileDescr* pOpenSubdir, unsigned char** ppDir,
     if (blockIdx == ((A2FDProDOS*)pOpenSubdir)->GetBlockCount()) {
         /* not yet added to block list, so can't use GetStorage */
         assert(newBlock > 0);
-        *pDirBlock = (unsigned short) newBlock;
+        *pDirBlock = (uint16_t) newBlock;
     } else {
         assert(newBlock < 0);
         dierr = pOpenSubdir->GetStorage(blockIdx, &whichBlock);
         assert(dierr == kDIErrNone);
-        *pDirBlock = (unsigned short) whichBlock;
+        *pDirBlock = (uint16_t) whichBlock;
     }
     dirBuf = NULL;
 
@@ -3011,8 +2958,7 @@ bail:
  * in the same block we can just return (ptr-0x27), but if it's in a previous
  * block we need to return the last entry in the previous.
  */
-unsigned char*
-DiskFSProDOS::GetPrevDirEntry(unsigned char* buf, unsigned char* ptr)
+uint8_t* DiskFSProDOS::GetPrevDirEntry(uint8_t* buf, uint8_t* ptr)
 {
     assert(buf != NULL);
     assert(ptr != NULL);
@@ -3045,8 +2991,7 @@ DiskFSProDOS::GetPrevDirEntry(unsigned char* buf, unsigned char* ptr)
  * Returns an error on failure, which should only happen if there are a
  * large number of files with similar names.
  */
-DIError
-DiskFSProDOS::MakeFileNameUnique(const unsigned char* dirBuf, long dirLen,
+DIError DiskFSProDOS::MakeFileNameUnique(const uint8_t* dirBuf, long dirLen,
     char* fileName)
 {
     assert(dirBuf != NULL);
@@ -3121,11 +3066,10 @@ DiskFSProDOS::MakeFileNameUnique(const unsigned char* dirBuf, long dirLen,
  *
  * This should be called with the upper-case-only version of the filename.
  */
-bool
-DiskFSProDOS::NameExistsInDir(const unsigned char* dirBuf, long dirLen,
+bool DiskFSProDOS::NameExistsInDir(const uint8_t* dirBuf, long dirLen,
     const char* fileName)
 {
-    const unsigned char* pDirEntry;
+    const uint8_t* pDirEntry;
     int blockIdx;
     int entryIdx;
     int nameLen = strlen(fileName);
@@ -3154,7 +3098,6 @@ DiskFSProDOS::NameExistsInDir(const unsigned char* dirBuf, long dirLen,
     return false;
 }
 
-
 /*
  * Delete a file.
  *
@@ -3165,14 +3108,13 @@ DiskFSProDOS::NameExistsInDir(const unsigned char* dirBuf, long dirLen,
  *
  * We only allow deletion of a subdirectory when the subdir is empty.
  */
-DIError
-DiskFSProDOS::DeleteFile(A2File* pGenericFile)
+DIError DiskFSProDOS::DeleteFile(A2File* pGenericFile)
 {
     DIError dierr = kDIErrNone;
     long blockCount = -1;
     long indexCount = -1;
-    unsigned short* blockList = NULL;
-    unsigned short* indexList = NULL;
+    uint16_t* blockList = NULL;
+    uint16_t* indexList = NULL;
 
     if (pGenericFile == NULL) {
         assert(false);
@@ -3223,7 +3165,7 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
 
         // handle the key block "manually"
         blockCount = 1;
-        blockList = new unsigned short[blockCount];
+        blockList = new uint16_t[blockCount];
         blockList[0] = pFile->fDirEntry.keyPointer;
         FreeBlocks(blockCount, blockList);
         delete[] blockList;
@@ -3276,8 +3218,8 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
      * and write it back, but the A2FileProDOS structure has the directory
      * block and entry index stored in it.  Makes it a little easier.
      */
-    unsigned char blkBuf[kBlkSize];
-    unsigned char* ptr;
+    uint8_t blkBuf[kBlkSize];
+    uint8_t* ptr;
     assert(pFile->fParentDirBlock > 0);
     assert(pFile->fParentDirIdx >= 0 &&
            pFile->fParentDirIdx < kEntriesPerBlock);
@@ -3324,7 +3266,7 @@ DiskFSProDOS::DeleteFile(A2File* pGenericFile)
      * to fix it.
      */
     A2FileProDOS* pParent;
-    unsigned short fileCount;
+    uint16_t fileCount;
     int storageType;
     pParent = (A2FileProDOS*) pFile->GetParent();
     assert(pParent != NULL);
@@ -3375,8 +3317,7 @@ bail:
  *
  * The in-use map must already be loaded.
  */
-DIError
-DiskFSProDOS::FreeBlocks(long blockCount, unsigned short* blockList)
+DIError DiskFSProDOS::FreeBlocks(long blockCount, uint16_t* blockList)
 {
     VolumeUsage::ChunkState cstate;
     int i;
@@ -3406,7 +3347,6 @@ DiskFSProDOS::FreeBlocks(long blockCount, unsigned short* blockList)
     return kDIErrNone;
 }
 
-
 /*
  * Rename a file.
  *
@@ -3425,8 +3365,7 @@ DiskFSProDOS::FreeBlocks(long blockCount, unsigned short* blockList)
  *    according to the upper/lower case flags.  This holds even if the
  *    "allow lower case" flag is disabled.
  */
-DIError
-DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
+DIError DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
 {
     DIError dierr = kDIErrNone;
     A2FileProDOS* pFile = (A2FileProDOS*) pGenericFile;
@@ -3480,8 +3419,8 @@ DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
      * minimize the chances of a partial update, we load both blocks up
      * front, modify both, then write them both back.
      */
-    unsigned char parentDirBuf[kBlkSize];
-    unsigned char thisDirBuf[kBlkSize];
+    uint8_t parentDirBuf[kBlkSize];
+    uint8_t thisDirBuf[kBlkSize];
 
     dierr = fpImg->ReadBlock(pFile->fParentDirBlock, parentDirBuf);
     if (dierr != kDIErrNone)
@@ -3493,11 +3432,11 @@ DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
     }
 
     /* compute lower case flags as needed */
-    unsigned short lcFlags, lcAuxType;
+    uint16_t lcFlags, lcAuxType;
     bool allowLowerCase, isAW;
 
     allowLowerCase = GetParameter(kParmProDOS_AllowLowerCase) != 0;
-    isAW = A2FileProDOS::UsesAppleWorksAuxType((unsigned char)pFile->GetFileType());
+    isAW = A2FileProDOS::UsesAppleWorksAuxType((uint8_t)pFile->GetFileType());
 
     if (allowLowerCase)
         lcFlags = GenerateLowerCaseBits(upperName, newName, false);
@@ -3520,7 +3459,7 @@ DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
      */
 
     /* find the right entry, and copy our filename in */
-    unsigned char* ptr;
+    uint8_t* ptr;
     assert(pFile->fParentDirIdx >= 0 &&
            pFile->fParentDirIdx < kEntriesPerBlock);
     ptr = parentDirBuf + 4 + pFile->fParentDirIdx * kEntryLength;
@@ -3606,8 +3545,7 @@ bail:
  * This could be implemented more efficiently, but it's only used when
  * renaming files, so there's not much point.
  */
-DIError
-DiskFSProDOS::RegeneratePathName(A2FileProDOS* pFile)
+DIError DiskFSProDOS::RegeneratePathName(A2FileProDOS* pFile)
 {
     A2FileProDOS* pParent;
     char* buf = NULL;
@@ -3657,7 +3595,6 @@ DiskFSProDOS::RegeneratePathName(A2FileProDOS* pFile)
     return kDIErrNone;
 }
 
-
 /*
  * Change the attributes of the specified file.
  *
@@ -3670,9 +3607,8 @@ DiskFSProDOS::RegeneratePathName(A2FileProDOS* pFile)
  * This does, of course, mean that there's no meaning in attempts to change
  * the file access permissions of the volume directory.
  */
-DIError
-DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
-    long accessFlags)
+DIError DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType,
+    long auxType, long accessFlags)
 {
     DIError dierr = kDIErrNone;
     A2FileProDOS* pFile = (A2FileProDOS*) pGenericFile;
@@ -3698,13 +3634,13 @@ DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
         pFile->GetPathName(), fileType, auxType, accessFlags);
 
     /* load the directory block for this file */
-    unsigned char thisDirBuf[kBlkSize];
+    uint8_t thisDirBuf[kBlkSize];
     dierr = fpImg->ReadBlock(pFile->fParentDirBlock, thisDirBuf);
     if (dierr != kDIErrNone)
         goto bail;
 
     /* find the right entry, and set the fields */
-    unsigned char* ptr;
+    uint8_t* ptr;
     assert(pFile->fParentDirIdx >= 0 &&
            pFile->fParentDirIdx < kEntriesPerBlock);
     ptr = thisDirBuf + 4 + pFile->fParentDirIdx * kEntryLength;
@@ -3723,23 +3659,22 @@ DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
         goto bail;
     }
 
-    ptr[0x10] = (unsigned char) fileType;
-    ptr[0x1e] = (unsigned char) accessFlags;
-    PutShortLE(&ptr[0x1f], (unsigned short) auxType);
+    ptr[0x10] = (uint8_t) fileType;
+    ptr[0x1e] = (uint8_t) accessFlags;
+    PutShortLE(&ptr[0x1f], (uint16_t) auxType);
 
     dierr = fpImg->WriteBlock(pFile->fParentDirBlock, thisDirBuf);
     if (dierr != kDIErrNone)
         goto bail;
 
     /* update our local copy */
-    pFile->fDirEntry.fileType = (unsigned char) fileType;
-    pFile->fDirEntry.auxType = (unsigned short) auxType;
-    pFile->fDirEntry.access = (unsigned char) accessFlags;
+    pFile->fDirEntry.fileType = (uint8_t) fileType;
+    pFile->fDirEntry.auxType = (uint16_t) auxType;
+    pFile->fDirEntry.access = (uint8_t) accessFlags;
 
 bail:
     return dierr;
 }
-
 
 /*
  * Change the disk volume name.
@@ -3751,8 +3686,7 @@ bail:
  * Internally we need to update the "fake" entry and the cached copies in
  * fVolumeName and fVolumeID.
  */
-DIError
-DiskFSProDOS::RenameVolume(const char* newName)
+DIError DiskFSProDOS::RenameVolume(const char* newName)
 {
     DIError dierr = kDIErrNone;
     char upperName[A2FileProDOS::kMaxFileName+1];
@@ -3773,7 +3707,7 @@ DiskFSProDOS::RenameVolume(const char* newName)
     /*
      * Figure out the lower-case flags.
      */
-    unsigned short lcFlags;
+    uint16_t lcFlags;
     bool allowLowerCase;
 
     UpperCaseName(upperName, newName);
@@ -3786,8 +3720,8 @@ DiskFSProDOS::RenameVolume(const char* newName)
     /*
      * Update the volume dir header.
      */
-    unsigned char thisDirBuf[kBlkSize];
-    unsigned char* ptr;
+    uint8_t thisDirBuf[kBlkSize];
+    uint8_t* ptr;
     assert(pFile->fDirEntry.keyPointer == kVolHeaderBlock);
 
     dierr = fpImg->ReadBlock(pFile->fDirEntry.keyPointer, thisDirBuf);
@@ -3847,17 +3781,16 @@ bail:
  * be a valid date since "day" ranges from 1 to 31).  If this is found then
  * ((time_t) 0) is returned.
  */
-/*static*/ time_t
-A2FileProDOS::ConvertProDate(ProDate proDate)
+/*static*/ time_t A2FileProDOS::ConvertProDate(ProDate proDate)
 {
-    unsigned short prodosDate, prodosTime;
+    uint16_t prodosDate, prodosTime;
     int year, month, day, hour, minute, second;
 
     if (proDate == 0)
         return 0;
 
-    prodosDate = (unsigned short) (proDate & 0x0000ffff);
-    prodosTime = (unsigned short) ((proDate >> 16) & 0x0000ffff);
+    prodosDate = (uint16_t) (proDate & 0x0000ffff);
+    prodosTime = (uint16_t) ((proDate >> 16) & 0x0000ffff);
 
     second = 0;
     minute = prodosTime & 0x3f;
@@ -3893,11 +3826,10 @@ A2FileProDOS::ConvertProDate(ProDate proDate)
  *
  * CiderPress uses kDateInvalid==-1 and kDateNone==-2.
  */
-/*static*/ A2FileProDOS::ProDate
-A2FileProDOS::ConvertProDate(time_t unixDate)
+/*static*/ A2FileProDOS::ProDate A2FileProDOS::ConvertProDate(time_t unixDate)
 {
     ProDate proDate;
-    unsigned long prodosDate, prodosTime;
+    uint32_t prodosDate, prodosTime;
     struct tm* ptm;
     int year;
 
@@ -3929,12 +3861,10 @@ A2FileProDOS::ConvertProDate(time_t unixDate)
     return proDate;
 }
 
-
 /*
  * Return the file creation time as a time_t.
  */
-time_t
-A2FileProDOS::GetCreateWhen(void) const
+time_t A2FileProDOS::GetCreateWhen(void) const
 {
     return ConvertProDate(fDirEntry.createWhen);
 }
@@ -3942,8 +3872,7 @@ A2FileProDOS::GetCreateWhen(void) const
 /*
  * Return the file modification time as a time_t.
  */
-time_t
-A2FileProDOS::GetModWhen(void) const
+time_t A2FileProDOS::GetModWhen(void) const
 {
     return ConvertProDate(fDirEntry.modWhen);
 }
@@ -3954,8 +3883,7 @@ A2FileProDOS::GetModWhen(void) const
  *
  * If we're in the volume directory, pass in "" for the base path (not NULL).
  */
-void
-A2FileProDOS::SetPathName(const char* basePath, const char* fileName)
+void A2FileProDOS::SetPathName(const char* basePath, const char* fileName)
 {
     assert(basePath != NULL && fileName != NULL);
     if (fPathName != NULL)
@@ -3973,15 +3901,13 @@ A2FileProDOS::SetPathName(const char* basePath, const char* fileName)
     strcpy(fPathName + baseLen, fileName);
 }
 
-
 /*
  * Convert a character in a ProDOS name to lower case.
  *
  * This is special in that '.' is considered upper case, with ' ' as its
  * lower-case counterpart.
  */
-/*static*/ char
-A2FileProDOS::NameToLower(char ch)
+/*static*/ char A2FileProDOS::NameToLower(char ch)
 {
     if (ch == '.')
         return ' ';
@@ -3995,9 +3921,8 @@ A2FileProDOS::NameToLower(char ch)
  *
  * Deals with lower case conversions on the filename.
  */
-/*static*/ void
-A2FileProDOS::InitDirEntry(A2FileProDOS::DirEntry* pEntry,
-    const unsigned char* entryBuf)
+/*static*/ void A2FileProDOS::InitDirEntry(A2FileProDOS::DirEntry* pEntry,
+    const uint8_t* entryBuf)
 {
     int nameLen;
 
@@ -4029,14 +3954,12 @@ A2FileProDOS::InitDirEntry(A2FileProDOS::DirEntry* pEntry,
     pEntry->fileName[sizeof(pEntry->fileName)-1] = '\0';
 }
 
-
 /*
  * Open one fork of this file.
  *
  * I really, really dislike forked files.
  */
-DIError
-A2FileProDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
+DIError A2FileProDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     bool rsrcFork /*= false*/)
 {
     DIError dierr = kDIErrNone;
@@ -4127,7 +4050,6 @@ bail:
     return dierr;
 }
 
-
 /*
  * Gather a linear, non-sparse list of file blocks into an array.
  *
@@ -4147,10 +4069,9 @@ bail:
  *
  * The caller must delete[] "*pBlockList" and "*pIndexBlockList".
  */
-DIError
-A2FileProDOS::LoadBlockList(int storageType, unsigned short keyBlock,
-    long eof, long* pBlockCount, unsigned short** pBlockList,
-    long* pIndexBlockCount, unsigned short** pIndexBlockList)
+DIError A2FileProDOS::LoadBlockList(int storageType, uint16_t keyBlock,
+    long eof, long* pBlockCount, uint16_t** pBlockList,
+    long* pIndexBlockCount, uint16_t** pIndexBlockList)
 {
     if (storageType == kStorageDirectory ||
         storageType == kStorageVolumeDirHeader)
@@ -4178,14 +4099,14 @@ A2FileProDOS::LoadBlockList(int storageType, unsigned short keyBlock,
     }
 
     DIError dierr = kDIErrNone;
-    unsigned short* list = NULL;
+    uint16_t* list = NULL;
     long count;
 
     assert(eof < 1024*1024*16);
     count = (eof + kBlkSize -1) / kBlkSize;
     if (count == 0)
         count = 1;
-    list = new unsigned short[count+1];
+    list = new uint16_t[count+1];
     if (list == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -4197,7 +4118,7 @@ A2FileProDOS::LoadBlockList(int storageType, unsigned short keyBlock,
     }
 
     /* this should take care of trailing sparse entries */
-    memset(list, 0, sizeof(unsigned short) * count);
+    memset(list, 0, sizeof(uint16_t) * count);
     list[count] = kInvalidBlockNum;     // overrun check
 
     if (storageType == kStorageSeedling) {
@@ -4214,13 +4135,13 @@ A2FileProDOS::LoadBlockList(int storageType, unsigned short keyBlock,
 
         if (pIndexBlockList != NULL) {
             *pIndexBlockCount = 1;
-            *pIndexBlockList = new unsigned short[1];
+            *pIndexBlockList = new uint16_t[1];
             **pIndexBlockList = keyBlock;
         }
     } else if (storageType == kStorageTree) {
-        unsigned char blkBuf[kBlkSize];
-        unsigned short* listPtr = list;
-        unsigned short* outIndexPtr = NULL;
+        uint8_t blkBuf[kBlkSize];
+        uint16_t* listPtr = list;
+        uint16_t* outIndexPtr = NULL;
         long countDown = count;
         int idx = 0;
 
@@ -4231,7 +4152,7 @@ A2FileProDOS::LoadBlockList(int storageType, unsigned short keyBlock,
         if (pIndexBlockList != NULL) {
             int numIndices = (count + kMaxBlocksPerIndex-1) / kMaxBlocksPerIndex;
             numIndices++;   // add one for the master index block
-            *pIndexBlockList = new unsigned short[numIndices];
+            *pIndexBlockList = new uint16_t[numIndices];
             outIndexPtr = *pIndexBlockList;
             *outIndexPtr++ = keyBlock;
             *pIndexBlockCount = 1;
@@ -4241,13 +4162,13 @@ A2FileProDOS::LoadBlockList(int storageType, unsigned short keyBlock,
             long blockCount = countDown;
             if (blockCount > kMaxBlocksPerIndex)
                 blockCount = kMaxBlocksPerIndex;
-            unsigned short idxBlock;
+            uint16_t idxBlock;
 
-            idxBlock = blkBuf[idx] | (unsigned short) blkBuf[idx+256] << 8;
+            idxBlock = blkBuf[idx] | (uint16_t) blkBuf[idx+256] << 8;
             if (idxBlock == 0) {
                 /* fully sparse index block */
                 //LOGI(" ProDOS that's seriously sparse (%d)!", idx);
-                memset(listPtr, 0, blockCount * sizeof(unsigned short));
+                memset(listPtr, 0, blockCount * sizeof(uint16_t));
                 if (pIndexBlockList != NULL) {
                     *outIndexPtr++ = idxBlock;
                     (*pIndexBlockCount)++;
@@ -4313,8 +4234,7 @@ bail:
  *
  * What we really need is three states for each file: good, suspect, damaged.
  */
-DIError
-A2FileProDOS::ValidateBlockList(const unsigned short* list, long count)
+DIError A2FileProDOS::ValidateBlockList(const uint16_t* list, long count)
 {
     DiskImg* pImg = fpDiskFS->GetDiskImg();
     bool foundBad = false;
@@ -4344,12 +4264,11 @@ A2FileProDOS::ValidateBlockList(const unsigned short* list, long count)
  * Copy the entries from the index block in "block" to "list", copying
  * at most "maxCount" entries.
  */
-DIError
-A2FileProDOS::LoadIndexBlock(unsigned short block, unsigned short* list,
+DIError A2FileProDOS::LoadIndexBlock(uint16_t block, uint16_t* list,
     int maxCount)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     int i;
 
     if (maxCount > kMaxBlocksPerIndex)
@@ -4361,7 +4280,7 @@ A2FileProDOS::LoadIndexBlock(unsigned short block, unsigned short* list,
 
     //LOGI("LOADING 0x%04x", block);
     for (i = 0; i < maxCount; i++) {
-        *list++ = blkBuf[i] | (unsigned short) blkBuf[i+256] << 8;
+        *list++ = blkBuf[i] | (uint16_t) blkBuf[i+256] << 8;
     }
 
 bail:
@@ -4372,14 +4291,13 @@ bail:
  * Load the block list from a directory, which is essentially a linear
  * linked list.
  */
-DIError
-A2FileProDOS::LoadDirectoryBlockList(unsigned short keyBlock,
-    long eof, long* pBlockCount, unsigned short** pBlockList)
+DIError A2FileProDOS::LoadDirectoryBlockList(uint16_t keyBlock,
+    long eof, long* pBlockCount, uint16_t** pBlockList)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
-    unsigned short* list = NULL;
-    unsigned short* listPtr;
+    uint8_t blkBuf[kBlkSize];
+    uint16_t* list = NULL;
+    uint16_t* listPtr;
     int iterations;
     long count;
 
@@ -4387,14 +4305,14 @@ A2FileProDOS::LoadDirectoryBlockList(unsigned short keyBlock,
     count = (eof + kBlkSize -1) / kBlkSize;
     if (count == 0)
         count = 1;
-    list = new unsigned short[count+1];
+    list = new uint16_t[count+1];
     if (list == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
     }
 
     /* this should take care of trailing sparse entries */
-    memset(list, 0, sizeof(unsigned short) * count);
+    memset(list, 0, sizeof(uint16_t) * count);
     list[count] = kInvalidBlockNum;     // overrun check
 
     iterations = 0;
@@ -4438,8 +4356,7 @@ bail:
 /*
  * Dump the contents.
  */
-void
-A2FileProDOS::Dump(void) const
+void A2FileProDOS::Dump(void) const
 {
     LOGI(" ProDOS file '%s' (path='%s')",
         fDirEntry.fileName, fPathName);
@@ -4473,8 +4390,7 @@ A2FileProDOS::Dump(void) const
 /*
  * Read a chunk of data from whichever fork is open.
  */
-DIError
-A2FDProDOS::Read(void* buf, size_t len, size_t* pActual)
+DIError A2FDProDOS::Read(void* buf, size_t len, size_t* pActual)
 {
     LOGI(" ProDOS reading %d bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
@@ -4492,7 +4408,7 @@ A2FDProDOS::Read(void* buf, size_t len, size_t* pActual)
     long incrLen = len;
 
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlkSize];
+    uint8_t blkBuf[kBlkSize];
     long blockIndex = (long) (fOffset / kBlkSize);
     int bufOffset = (int) (fOffset % kBlkSize);     // (& 0x01ff)
     size_t thisCount;
@@ -4572,15 +4488,14 @@ A2FDProDOS::Read(void* buf, size_t len, size_t* pActual)
  * to read the indexes (which, at the moment, appear at the end of the file).
  * A bit tricky, but doable.
  */
-DIError
-A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
+DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
     A2FileProDOS* pFile = (A2FileProDOS*) fpFile;
     DiskFSProDOS* pDiskFS = (DiskFSProDOS*) fpFile->GetDiskFS();
     bool allocSparse = (pDiskFS->GetParameter(DiskFS::kParmProDOS_AllocSparse) != 0);
-    unsigned char blkBuf[kBlkSize];
-    unsigned short keyBlock;
+    uint8_t blkBuf[kBlkSize];
+    uint16_t keyBlock;
 
     if (len >= 0x01000000) {    // 16MB
         assert(false);
@@ -4644,7 +4559,7 @@ A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
     fBlockCount = (len + kBlkSize-1) / kBlkSize;
     assert(fBlockCount > 0);
     delete[] fBlockList;
-    fBlockList = new unsigned short[fBlockCount+1];
+    fBlockList = new uint16_t[fBlockCount+1];
     if (fBlockList == NULL) {
         dierr = kDIErrMalloc;
         goto bail;
@@ -4655,14 +4570,14 @@ A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
      * Write the data blocks to disk, allocating as we go.  We have to treat
      * the last entry specially because it might not fill an entire block.
      */
-    const unsigned char* blkPtr;
+    const uint8_t* blkPtr;
     long blockIdx;
     bool allZero;
     long progressCounter;
 
     progressCounter = 0;
     allZero = true;
-    blkPtr = (const unsigned char*) buf;
+    blkPtr = (const uint8_t*) buf;
     for (blockIdx = 0; blockIdx < fBlockCount; blockIdx++) {
         long newBlock;
 
@@ -4689,7 +4604,7 @@ A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
             goto bail;
         }
 
-        fBlockList[blockIdx] = (unsigned short) newBlock;
+        fBlockList[blockIdx] = (uint16_t) newBlock;
 
         if (newBlock != 0) {
             dierr = pDiskFS->GetDiskImg()->WriteBlock(newBlock, blkPtr);
@@ -4769,7 +4684,7 @@ A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
         fOpenStorageType = A2FileProDOS::kStorageSapling;
     } else {
         /* tree file, write two or more indexes and write master into key */
-        unsigned char masterBlk[kBlkSize];
+        uint8_t masterBlk[kBlkSize];
         int idx;
 
         memset(masterBlk, 0, sizeof(masterBlk));
@@ -4797,8 +4712,8 @@ A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
                     goto bail;
             }
 
-            masterBlk[(idx-1) / 256] = (unsigned char) newBlock;
-            masterBlk[256 + (idx-1)/256] = (unsigned char) (newBlock >> 8);
+            masterBlk[(idx-1) / 256] = (uint8_t) newBlock;
+            masterBlk[256 + (idx-1)/256] = (uint8_t) (newBlock >> 8);
         }
 
         dierr = pDiskFS->GetDiskImg()->WriteBlock(keyBlock, masterBlk);
@@ -4832,8 +4747,7 @@ bail:
 /*
  * Determine whether a block is filled entirely with zeroes.
  */
-bool
-A2FDProDOS::IsEmptyBlock(const unsigned char* blk)
+bool A2FDProDOS::IsEmptyBlock(const uint8_t* blk)
 {
     int i;
 
@@ -4854,8 +4768,7 @@ A2FDProDOS::IsEmptyBlock(const unsigned char* blk)
  * would have to update the volume bitmap when another function is already
  * making lots of changes to it.)
  */
-DIError
-A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
+DIError A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
 
@@ -4871,16 +4784,16 @@ A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
          * Extend the block list, remembering that we add an extra item
          * on the end to check for overruns.
          */
-        unsigned short* newBlockList;
+        uint16_t* newBlockList;
 
         fBlockCount++;
-        newBlockList = new unsigned short[fBlockCount+1];
+        newBlockList = new uint16_t[fBlockCount+1];
         memcpy(newBlockList, fBlockList,
-            sizeof(unsigned short) * fBlockCount);
+            sizeof(uint16_t) * fBlockCount);
         newBlockList[fBlockCount] = A2FileProDOS::kInvalidBlockNum;
 
-        unsigned char* blkPtr;
-        blkPtr = (unsigned char*)buf + fOpenEOF - kBlkSize;
+        uint8_t* blkPtr;
+        blkPtr = (uint8_t*)buf + fOpenEOF - kBlkSize;
         assert(blkPtr >= buf);
         assert(GetShortLE(&blkPtr[0x02]) != 0);
         newBlockList[fBlockCount-1] = GetShortLE(&blkPtr[0x02]);
@@ -4900,7 +4813,7 @@ A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
     for (idx = 0; idx < fBlockCount; idx++) {
         assert(fBlockList[idx] >= kVolHeaderBlock);
         dierr = fpFile->GetDiskFS()->GetDiskImg()->WriteBlock(fBlockList[idx],
-                    (unsigned char*)buf + idx * kBlkSize);
+                    (uint8_t*)buf + idx * kBlkSize);
         if (dierr != kDIErrNone) {
             LOGI(" ProDOS failed writing dir, block=%d", fBlockList[idx]);
             goto bail;
@@ -4908,7 +4821,7 @@ A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
     }
 
     fOpenEOF = len;
-    fOpenBlocksUsed = (unsigned short) fBlockCount; // very simple for subdirs
+    fOpenBlocksUsed = (uint16_t) fBlockCount; // very simple for subdirs
     //fOpenStorageType
     fModified = true;
 
@@ -4919,8 +4832,7 @@ bail:
 /*
  * Seek to a new position within the file.
  */
-DIError
-A2FDProDOS::Seek(di_off_t offset, DIWhence whence)
+DIError A2FDProDOS::Seek(di_off_t offset, DIWhence whence)
 {
     DIError dierr = kDIErrNone;
     switch (whence) {
@@ -4955,8 +4867,7 @@ A2FDProDOS::Seek(di_off_t offset, DIWhence whence)
 /*
  * Return current offset.
  */
-di_off_t
-A2FDProDOS::Tell(void)
+di_off_t A2FDProDOS::Tell(void)
 {
     //if (fBlockList == NULL)
     //  return kDIErrNotReady;
@@ -4970,19 +4881,18 @@ A2FDProDOS::Tell(void)
  * Most applications don't check the value of "Close", or call it from a
  * destructor, so we call CloseDescr whether we succeed or not.
  */
-DIError
-A2FDProDOS::Close(void)
+DIError A2FDProDOS::Close(void)
 {
     DIError dierr = kDIErrNone;
 
     if (fModified) {
         A2FileProDOS* pFile = (A2FileProDOS*) fpFile;
-        unsigned char blkBuf[kBlkSize];
-        unsigned char newStorageType = fOpenStorageType;
-        unsigned short newBlocksUsed = fOpenBlocksUsed;
-        unsigned long newEOF = (unsigned long) fOpenEOF;
-        unsigned short combinedBlocksUsed;
-        unsigned long combinedEOF;
+        uint8_t blkBuf[kBlkSize];
+        uint8_t newStorageType = fOpenStorageType;
+        uint16_t newBlocksUsed = fOpenBlocksUsed;
+        uint32_t newEOF = (uint32_t) fOpenEOF;  // TODO: assert range
+        uint16_t combinedBlocksUsed;
+        uint32_t combinedEOF;
 
         /*
          * If this is an extended file, fix the entries in the extended
@@ -5004,9 +4914,9 @@ A2FDProDOS::Close(void)
             blkBuf[0x00 + offset] = fOpenStorageType;
             // key block doesn't change
             PutShortLE(&blkBuf[0x03 + offset], newBlocksUsed);
-            blkBuf[0x05 + offset] = (unsigned char) newEOF;
-            blkBuf[0x06 + offset] = (unsigned char) (newEOF >> 8);
-            blkBuf[0x07 + offset] = (unsigned char) (newEOF >> 16);
+            blkBuf[0x05 + offset] = (uint8_t) newEOF;
+            blkBuf[0x06 + offset] = (uint8_t) (newEOF >> 8);
+            blkBuf[0x07 + offset] = (uint8_t) (newEOF >> 16);
 
             dierr = fpFile->GetDiskFS()->GetDiskImg()->WriteBlock(
                         pFile->fDirEntry.keyPointer, blkBuf);
@@ -5032,12 +4942,12 @@ A2FDProDOS::Close(void)
             if (dierr != kDIErrNone)
                 goto bail;
 
-            unsigned char* pParentPtr;
+            uint8_t* pParentPtr;
             pParentPtr = blkBuf + 0x04 + pFile->fParentDirIdx * kEntryLength;
             assert(pParentPtr + kEntryLength < blkBuf + kBlkSize);
             if (toupper(pParentPtr[0x01]) != toupper(pFile->fDirEntry.fileName[0]))
             {
-                LOGI("ProDOS ERROR: parent pointer has wrong entry??");
+                LOGW("ProDOS ERROR: parent pointer has wrong entry??");
                 assert(false);
                 dierr = kDIErrInternal;
                 goto bail;
@@ -5049,8 +4959,8 @@ A2FDProDOS::Close(void)
             PutShortLE(&pParentPtr[0x13], combinedBlocksUsed);
             if (pFile->fDirEntry.storageType != A2FileProDOS::kStorageExtended)
             {
-                PutShortLE(&pParentPtr[0x15], (unsigned short) newEOF);
-                pParentPtr[0x17] = (unsigned char) (newEOF >> 16);
+                PutShortLE(&pParentPtr[0x15], (uint16_t) newEOF);
+                pParentPtr[0x17] = (uint8_t) (newEOF >> 16);
             }
             /* don't update the mod date for now */
             //PutLongLE(&pParentPtr[0x21], A2FileProDOS::ConvertProDate(time(NULL)));
@@ -5116,15 +5026,14 @@ bail:
 /*
  * Return the #of sectors/blocks in the file.
  */
-long
-A2FDProDOS::GetSectorCount(void) const
+long A2FDProDOS::GetSectorCount(void) const
 {
     //if (fBlockList == NULL)
     //  return kDIErrNotReady;
     return fBlockCount * 2;
 }
-long
-A2FDProDOS::GetBlockCount(void) const
+
+long A2FDProDOS::GetBlockCount(void) const
 {
     //if (fBlockList == NULL)
     //  return kDIErrNotReady;
@@ -5134,8 +5043,7 @@ A2FDProDOS::GetBlockCount(void) const
 /*
  * Return the Nth track/sector in this file.
  */
-DIError
-A2FDProDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
+DIError A2FDProDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 {
     //if (fBlockList == NULL)
     //  return kDIErrNotReady;
@@ -5153,8 +5061,7 @@ A2FDProDOS::GetStorage(long sectorIdx, long* pTrack, long* pSector) const
 /*
  * Return the Nth 512-byte block in this file.
  */
-DIError
-A2FDProDOS::GetStorage(long blockIdx, long* pBlock) const
+DIError A2FDProDOS::GetStorage(long blockIdx, long* pBlock) const
 {
     //if (fBlockList == NULL)
     //  return kDIErrNotReady;
@@ -5171,8 +5078,7 @@ A2FDProDOS::GetStorage(long blockIdx, long* pBlock) const
  * Dump the list of blocks from an open file, skipping over
  * "sparsed-out" entries.
  */
-void
-A2FDProDOS::DumpBlockList(void) const
+void A2FDProDOS::DumpBlockList(void) const
 {
     long ll;
 

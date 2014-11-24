@@ -133,7 +133,7 @@ public:
      * be seeked to their initial positions.  "length" bytes will be copied.
      */
     static DIError CopyFile(GenericFD* pDst, GenericFD* pSrc, di_off_t length,
-            unsigned long* pCRC = NULL);
+            uint32_t* pCRC = NULL);
 
 protected:
     GenericFD& operator=(const GenericFD&);

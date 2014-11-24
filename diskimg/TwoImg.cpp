@@ -25,10 +25,10 @@
  *
  * Returns 0 on success, -1 if one of the arguments was bad.
  */
-int
-TwoImgHeader::InitHeader(int imageFormat, long imageSize, long imageBlockCount)
+int TwoImgHeader::InitHeader(int imageFormat, uint32_t imageSize,
+    uint32_t imageBlockCount)
 {
-    if (imageSize <= 0)
+    if (imageSize == 0)
         return -1;
     if (imageFormat < kImageFormatDOS || imageFormat > kImageFormatNibble)
         return -1;
@@ -36,7 +36,7 @@ TwoImgHeader::InitHeader(int imageFormat, long imageSize, long imageBlockCount)
     if (imageFormat != kImageFormatNibble &&
         imageSize != imageBlockCount * 512)
     {
-        LOGI("2MG InitHeader: bad sizes %d %ld %ld", imageFormat,
+        LOGW("2MG InitHeader: bad sizes %d %ld %ld", imageFormat,
             imageSize, imageBlockCount);
         return -1;
     }
@@ -70,8 +70,7 @@ TwoImgHeader::InitHeader(int imageFormat, long imageSize, long imageBlockCount)
  * default volume number.  For the way we currently make use of this, this
  * makes the most sense.
  */
-short
-TwoImgHeader::GetDOSVolumeNum(void) const
+int16_t TwoImgHeader::GetDOSVolumeNum(void) const
 {
     assert(fFlags & kDOSVolumeSet);
     return fDOSVolumeNum;
@@ -80,8 +79,7 @@ TwoImgHeader::GetDOSVolumeNum(void) const
 /*
  * Set the DOS volume number.
  */
-void
-TwoImgHeader::SetDOSVolumeNum(short dosVolumeNum)
+void TwoImgHeader::SetDOSVolumeNum(short dosVolumeNum)
 {
     assert(dosVolumeNum >= 0 && dosVolumeNum < 256);
     fFlags |= dosVolumeNum;
@@ -91,8 +89,7 @@ TwoImgHeader::SetDOSVolumeNum(short dosVolumeNum)
 /*
  * Set the comment.
  */
-void
-TwoImgHeader::SetComment(const char* comment)
+void TwoImgHeader::SetComment(const char* comment)
 {
     delete[] fComment;
     if (comment == NULL) {
@@ -120,8 +117,7 @@ TwoImgHeader::SetComment(const char* comment)
 /*
  * Set the creator chunk.
  */
-void
-TwoImgHeader::SetCreatorChunk(const void* chunk, long len)
+void TwoImgHeader::SetCreatorChunk(const void* chunk, long len)
 {
     assert(len >= 0);
 
@@ -155,10 +151,9 @@ TwoImgHeader::SetCreatorChunk(const void* chunk, long len)
  *
  * Returns 0 on success, nonzero on error or invalid header.
  */
-int
-TwoImgHeader::ReadHeader(FILE* fp, long totalLength)
+int TwoImgHeader::ReadHeader(FILE* fp, uint32_t totalLength)
 {
-    unsigned char buf[kOurHeaderLen];
+    uint8_t buf[kOurHeaderLen];
 
     fread(buf, kOurHeaderLen, 1, fp);
     if (ferror(fp))
@@ -205,11 +200,10 @@ TwoImgHeader::ReadHeader(FILE* fp, long totalLength)
  *
  * Returns 0 on success, nonzero on error or invalid header.
  */
-int
-TwoImgHeader::ReadHeader(GenericFD* pGFD, long totalLength)
+int TwoImgHeader::ReadHeader(GenericFD* pGFD, uint32_t totalLength)
 {
     DIError dierr;
-    unsigned char buf[kOurHeaderLen];
+    uint8_t buf[kOurHeaderLen];
 
     dierr = pGFD->Read(buf, kOurHeaderLen);
     if (dierr != kDIErrNone)
@@ -254,8 +248,7 @@ TwoImgHeader::ReadHeader(GenericFD* pGFD, long totalLength)
 /*
  * Grab a chunk of data from a relative offset.
  */
-int
-TwoImgHeader::GetChunk(GenericFD* pGFD, di_off_t relOffset, long len,
+int TwoImgHeader::GetChunk(GenericFD* pGFD, di_off_t relOffset, long len,
     void** pBuf)
 {
     DIError dierr;
@@ -295,8 +288,7 @@ TwoImgHeader::GetChunk(GenericFD* pGFD, di_off_t relOffset, long len,
 /*
  * Grab a chunk of data from a relative offset.
  */
-int
-TwoImgHeader::GetChunk(FILE* fp, di_off_t relOffset, long len,
+int TwoImgHeader::GetChunk(FILE* fp, di_off_t relOffset, long len,
     void** pBuf)
 {
     long curPos;
@@ -340,8 +332,7 @@ TwoImgHeader::GetChunk(FILE* fp, di_off_t relOffset, long len,
  *
  * Performs some sanity checks.  Returns 0 on success, -1 on failure.
  */
-int
-TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
+int TwoImgHeader::UnpackHeader(const uint8_t* buf, uint32_t totalLength)
 {
     fMagic = GetLongBE(&buf[0x00]);
     fCreator = GetLongBE(&buf[0x04]);
@@ -378,7 +369,7 @@ TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
     }
 
     if (fVersion > 1) {
-        LOGI("ERROR: unsupported version=%d", fVersion);
+        LOGW("ERROR: unsupported version=%d", fVersion);
         return -1;      // bad header until I hear otherwise
     }
 
@@ -402,22 +393,22 @@ TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
     if (fImageFormat != kImageFormatNibble &&
         fNumBlocks * kBlockSize != fDataLen)
     {
-        LOGI("numBlocks/dataLen mismatch (%ld vs %ld)",
+        LOGW("numBlocks/dataLen mismatch (%ld vs %ld)",
             fNumBlocks * kBlockSize, fDataLen);
         return -1;
     }
     if (fDataLen + fDataOffset > totalLength) {
-        LOGI("Invalid dataLen/offset/fileLength (dl=%ld, off=%ld, tlen=%ld)",
+        LOGW("Invalid dataLen/offset/fileLength (dl=%ld, off=%ld, tlen=%ld)",
             fDataLen, fDataOffset, totalLength);
         return -1;
     }
     if (fImageFormat < kImageFormatDOS || fImageFormat > kImageFormatNibble) {
-        LOGI("Invalid image format %ld", fImageFormat);
+        LOGW("Invalid image format %ld", fImageFormat);
         return -1;
     }
 
     if (fCmtOffset > 0 && fCmtOffset < fDataOffset + fDataLen) {
-        LOGI("2MG comment is inside the data section (off=%ld, data end=%ld)",
+        LOGW("2MG comment is inside the data section (off=%ld, data end=%ld)",
             fCmtOffset, fDataOffset+fDataLen);
         DebugBreak();
         // ignore the comment
@@ -425,10 +416,10 @@ TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
         fCmtLen = 0;
     }
     if (fCreatorOffset > 0 && fCreatorLen > 0) {
-        long prevEnd = fDataOffset + fDataLen + fCmtLen;
+        uint32_t prevEnd = fDataOffset + fDataLen + fCmtLen;
 
         if (fCreatorOffset < prevEnd) {
-            LOGI("2MG creator chunk is inside prev data (off=%ld, data end=%ld)",
+            LOGW("2MG creator chunk is inside prev data (off=%ld, data end=%ld)",
                 fCreatorOffset, prevEnd);
             DebugBreak();
             // ignore the creator chunk
@@ -448,7 +439,7 @@ TwoImgHeader::UnpackHeader(const unsigned char* buf, long totalLength)
 int
 TwoImgHeader::WriteHeader(FILE* fp) const
 {
-    unsigned char buf[kOurHeaderLen];
+    uint8_t buf[kOurHeaderLen];
 
     PackHeader(buf);
     if (fwrite(buf, kOurHeaderLen, 1, fp) != 1)
@@ -464,7 +455,7 @@ TwoImgHeader::WriteHeader(FILE* fp) const
 int
 TwoImgHeader::WriteHeader(GenericFD* pGFD) const
 {
-    unsigned char buf[kOurHeaderLen];
+    uint8_t buf[kOurHeaderLen];
 
     PackHeader(buf);
 
@@ -519,7 +510,7 @@ TwoImgHeader::WriteFooter(GenericFD* pGFD) const
  * Pack the header values into a 64-byte buffer.
  */
 void
-TwoImgHeader::PackHeader(unsigned char* buf) const
+TwoImgHeader::PackHeader(uint8_t* buf) const
 {
     if (fCmtLen > 0 && fCmtOffset == 0) {
         assert(false);

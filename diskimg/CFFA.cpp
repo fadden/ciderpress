@@ -50,9 +50,8 @@
  * force the "disk format verification" dialog to come up.  No such
  * mechanism exists, and for now it doesn't seem worthwhile to add one.
  */
-/*static*/ DIError
-DiskFSCFFA::TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
-    DiskImg::FSFormat* pFormatFound)
+/*static*/ DIError DiskFSCFFA::TestImage(DiskImg* pImg,
+    DiskImg::SectorOrder imageOrder, DiskImg::FSFormat* pFormatFound)
 {
     DIError dierr;
     long totalBlocks = pImg->GetNumBlocks();
@@ -359,9 +358,8 @@ bail:
  * If "scanOnly" is set, the full DiskFS initialization isn't performed.
  * We just do enough to get the volume size info.
  */
-/*static*/ DIError
-DiskFSCFFA::OpenSubVolume(DiskImg* pImg, long startBlock, long numBlocks,
-    bool scanOnly, DiskImg** ppNewImg, DiskFS** ppNewFS)
+/*static*/ DIError DiskFSCFFA::OpenSubVolume(DiskImg* pImg, long startBlock,
+    long numBlocks, bool scanOnly, DiskImg** ppNewImg, DiskFS** ppNewFS)
 {
     DIError dierr = kDIErrNone;
     DiskFS* pNewFS = NULL;
@@ -439,8 +437,7 @@ bail:
 /*
  * Check to see if this is a CFFA volume.
  */
-/*static*/ DIError
-DiskFSCFFA::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
+/*static*/ DIError DiskFSCFFA::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
     DiskImg::FSFormat* pFormat, FSLeniency leniency)
 {
     if (pImg->GetNumBlocks() < kMinInterestingBlocks)
@@ -467,8 +464,7 @@ DiskFSCFFA::TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
 /*
  * Prep the CFFA "container" for use.
  */
-DIError
-DiskFSCFFA::Initialize(void)
+DIError DiskFSCFFA::Initialize(void)
 {
     DIError dierr = kDIErrNone;
 
@@ -494,8 +490,7 @@ DiskFSCFFA::Initialize(void)
  * We don't handle the volume specially unless it's at least 32MB, which
  * means there are at least 2 partitions.
  */
-DIError
-DiskFSCFFA::FindSubVolumes(void)
+DIError DiskFSCFFA::FindSubVolumes(void)
 {
     DIError dierr;
     long startBlock, blocksLeft;
@@ -542,8 +537,7 @@ bail:
  *
  * Updates "startBlock" and "totalBlocksLeft".
  */
-DIError
-DiskFSCFFA::AddVolumeSeries(int start, int count, long blocksPerVolume,
+DIError DiskFSCFFA::AddVolumeSeries(int start, int count, long blocksPerVolume,
     long& startBlock, long& totalBlocksLeft)
 {
     DIError dierr = kDIErrNone;

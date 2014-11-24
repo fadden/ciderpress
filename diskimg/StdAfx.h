@@ -63,6 +63,7 @@ typedef unsigned int ssize_t;
 
 #define HAVE__VSNPRINTF
 #define strcasecmp stricmp
+#define snprintf _snprintf
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

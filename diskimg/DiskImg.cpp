@@ -270,8 +270,7 @@ DiskImg::~DiskImg(void)
 /*
  * Set the nibble descr pointer.
  */
-void
-DiskImg::SetNibbleDescr(int idx)
+void DiskImg::SetNibbleDescr(int idx)
 {
     assert(idx >= 0 && idx < kNibbleDescrMAX);
     fpNibbleDescr = &fpNibbleDescrTable[idx];
@@ -280,8 +279,7 @@ DiskImg::SetNibbleDescr(int idx)
 /*
  * Set up a custom nibble descriptor.
  */
-void
-DiskImg::SetCustomNibbleDescr(const NibbleDescr* pDescr)
+void DiskImg::SetCustomNibbleDescr(const NibbleDescr* pDescr)
 {
     if (pDescr == NULL) {
         fpNibbleDescr = NULL;
@@ -301,8 +299,7 @@ DiskImg::SetCustomNibbleDescr(const NibbleDescr* pDescr)
  * For Windows, we need to handle logical/physical volumes specially.  If
  * the filename matches the appropriate pattern, use a different GFD.
  */
-DIError
-DiskImg::OpenImage(const char* pathName, char fssep, bool readOnly)
+DIError DiskImg::OpenImage(const char* pathName, char fssep, bool readOnly)
 {
     DIError dierr = kDIErrNone;
     bool isWinDevice = false;
@@ -393,11 +390,10 @@ DIError DiskImg::OpenImageFromBufferRW(uint8_t* buffer, long length) {
  * Open from a buffer, which could point to unadorned ready-to-go content
  * or to a preloaded image file.
  */
-DIError
-DiskImg::OpenImageFromBuffer(uint8_t* buffer, long length, bool readOnly)
+DIError DiskImg::OpenImageFromBuffer(uint8_t* buffer, long length, bool readOnly)
 {
     if (fpDataGFD != NULL) {
-        LOGI(" DI already open!");
+        LOGW(" DI already open!");
         return kDIErrAlreadyOpen;
     }
     LOGI(" DI OpenImage %08lx %ld ro=%d", (long) buffer, length, readOnly);
@@ -440,13 +436,12 @@ DiskImg::OpenImageFromBuffer(uint8_t* buffer, long length, bool readOnly)
  * ProDOS-ordered blocks, so it works out okay, but the "linear" requirement
  * above goes beyond just having contiguous blocks.
  */
-DIError
-DiskImg::OpenImage(DiskImg* pParent, long firstBlock, long numBlocks)
+DIError DiskImg::OpenImage(DiskImg* pParent, long firstBlock, long numBlocks)
 {
     LOGI(" DI OpenImage parent=0x%08lx %ld %ld", (long) pParent, firstBlock,
         numBlocks);
     if (fpDataGFD != NULL) {
-        LOGI(" DI already open!");
+        LOGI(" DW already open!");
         return kDIErrAlreadyOpen;
     }
 
@@ -487,14 +482,14 @@ DiskImg::OpenImage(DiskImg* pParent, long firstBlock, long numBlocks)
 
     return dierr;
 }
-DIError
-DiskImg::OpenImage(DiskImg* pParent, long firstTrack, long firstSector,
+
+DIError DiskImg::OpenImage(DiskImg* pParent, long firstTrack, long firstSector,
     long numSectors)
 {
     LOGI(" DI OpenImage parent=0x%08lx %ld %ld %ld", (long) pParent,
         firstTrack, firstSector, numSectors);
     if (fpDataGFD != NULL) {
-        LOGI(" DI already open!");
+        LOGW(" DI already open!");
         return kDIErrAlreadyOpen;
     }
 
@@ -547,8 +542,7 @@ DiskImg::OpenImage(DiskImg* pParent, long firstTrack, long firstSector,
 /*
  * Enable sector pairing.  Useful for OzDOS.
  */
-void
-DiskImg::SetPairedSectors(bool enable, int idx)
+void DiskImg::SetPairedSectors(bool enable, int idx)
 {
     fSectorPairing = enable;
     fSectorPairOffset = idx;
@@ -571,8 +565,7 @@ DiskImg::SetPairedSectors(bool enable, int idx)
  * image creation instead of completing it.  That's a higher-level decision
  * though. ++ATM 20040506 ]
  */
-DIError
-DiskImg::CloseImage(void)
+DIError DiskImg::CloseImage(void)
 {
     DIError dierr;
 
@@ -580,7 +573,7 @@ DiskImg::CloseImage(void)
 
     /* check for DiskFS objects that still point to us */
     if (fDiskFSRefCnt != 0) {
-        LOGI("ERROR: CloseImage: fDiskFSRefCnt=%d", fDiskFSRefCnt);
+        LOGE("ERROR: CloseImage: fDiskFSRefCnt=%d", fDiskFSRefCnt);
         assert(false); //DebugBreak();
     }
 
@@ -640,8 +633,7 @@ DiskImg::CloseImage(void)
  * changed" to "what's in the file and what's in memory differ".  I want it
  * to be a "dirty" flag.
  */
-DIError
-DiskImg::FlushImage(FlushMode mode)
+DIError DiskImg::FlushImage(FlushMode mode)
 {
     DIError dierr = kDIErrNone;
 
@@ -726,7 +718,6 @@ DiskImg::FlushImage(FlushMode mode)
 }
 
 
-
 /*
  * Given the filename extension and a GFD, figure out what's inside.
  *
@@ -773,8 +764,7 @@ DiskImg::FlushImage(FlushMode mode)
  * This may set fReadOnly if one of the wrappers looks okay but is reporting
  * a bad checksum.
  */
-DIError
-DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
+DIError DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
 {
     DIError dierr = kDIErrNone;
     FileFormat probableFormat;
@@ -800,7 +790,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
     fLength = -1;
     dierr = fpWrapperGFD->Seek(0, kSeekEnd);
     if (dierr != kDIErrNone) {
-        LOGI("  DI Couldn't seek to end of wrapperGFD");
+        LOGW("  DI Couldn't seek to end of wrapperGFD");
         goto bail;
     }
     fWrappedLength = fOuterLength = fpWrapperGFD->Tell();
@@ -878,7 +868,7 @@ DiskImg::AnalyzeImageFile(const char* pathName, char fssep)
         dierr = fpOuterWrapper->Load(fpWrapperGFD, fOuterLength, fReadOnly,
                     &fWrappedLength, &pNewGFD);
         if (dierr != kDIErrNone) {
-            LOGI("  DI outer prep failed");
+            LOGI("  DW outer prep failed");
             /* extensions are "reliable", so failure is unavoidable */
             goto bail;
         }
@@ -1161,8 +1151,7 @@ bail:
  *  fFileSysOrder is set
  *  fpNibbleDescr will be set for nibble images
  */
-DIError
-DiskImg::AnalyzeImage(void)
+DIError DiskImg::AnalyzeImage(void)
 {
     assert(fLength >= 0);
     assert(fpDataGFD != NULL);
@@ -1329,8 +1318,7 @@ DiskImg::AnalyzeImage(void)
  *
  * Sets fFormat, fOrder, and fFileSysOrder.
  */
-void
-DiskImg::AnalyzeImageFS(void)
+void DiskImg::AnalyzeImageFS(void)
 {
     /*
      * In some circumstances it would be useful to have a set describing
@@ -1438,8 +1426,7 @@ DiskImg::AnalyzeImageFS(void)
  * structure, the "unadorned" format should be specified, and the contents
  * identified by the PhysicalFormat.
  */
-DIError
-DiskImg::OverrideFormat(PhysicalFormat physical, FSFormat format,
+DIError DiskImg::OverrideFormat(PhysicalFormat physical, FSFormat format,
     SectorOrder order)
 {
     DIError dierr = kDIErrNone;
@@ -1568,8 +1555,7 @@ bail:
  * NOTE: this table is redundant with some knowledge embedded in the
  * individual "TestFS" functions.
  */
-DiskImg::SectorOrder
-DiskImg::CalcFSSectorOrder(void) const
+DiskImg::SectorOrder DiskImg::CalcFSSectorOrder(void) const
 {
     /* in the absence of information, just leave it alone */
     if (fFormat == kFormatUnknown || fOrder == kSectorOrderUnknown) {
@@ -1624,8 +1610,7 @@ DiskImg::CalcFSSectorOrder(void) const
  * Based on the disk format, figure out if we should prefer blocks or
  * sectors when examining disk contents.
  */
-bool
-DiskImg::ShowAsBlocks(void) const
+bool DiskImg::ShowAsBlocks(void) const
 {
     if (!fHasBlocks)
         return false;
@@ -1678,8 +1663,7 @@ DiskImg::ShowAsBlocks(void) const
  * Format an image with the requested fileystem format.  This only works if
  * the matching DiskFS supports formatting of disks.
  */
-DIError
-DiskImg::FormatImage(FSFormat format, const char* volName)
+DIError DiskImg::FormatImage(FSFormat format, const char* volName)
 {
     DIError dierr = kDIErrNone;
     DiskFS* pDiskFS = NULL;
@@ -1724,11 +1708,10 @@ bail:
  * optimized path that just writes to the GFD or something.  Maybe even just
  * a "ZeroBlock" instead of "WriteBlock" so we can memset instead of memcpy?
  */
-DIError
-DiskImg::ZeroImage(void)
+DIError DiskImg::ZeroImage(void)
 {
     DIError dierr = kDIErrNone;
-    unsigned char blkBuf[kBlockSize];
+    uint8_t blkBuf[kBlockSize];
     long block;
 
     LOGI(" DI ZeroImage (%ld blocks)", GetNumBlocks());
@@ -1749,8 +1732,7 @@ DiskImg::ZeroImage(void)
  *
  * We want to use the same function for our sub-volumes too.
  */
-void
-DiskImg::SetScanProgressCallback(ScanProgressCallback func, void* cookie)
+void DiskImg::SetScanProgressCallback(ScanProgressCallback func, void* cookie)
 {
     if (fpParentImg != NULL) {
         /* unexpected, but perfectly okay */
@@ -1768,8 +1750,7 @@ DiskImg::SetScanProgressCallback(ScanProgressCallback func, void* cookie)
  * Update the progress.  Call with a string at the start of a volume, then
  * call with a NULL pointer every time we add a file.
  */
-bool
-DiskImg::UpdateScanProgress(const char* newStr)
+bool DiskImg::UpdateScanProgress(const char* newStr)
 {
     ScanProgressCallback func = fpScanProgressCallback;
     DiskImg* pImg = this;
@@ -1815,8 +1796,7 @@ DiskImg::UpdateScanProgress(const char* newStr)
 /*
  * Handle sector order conversions.
  */
-DIError
-DiskImg::CalcSectorAndOffset(long track, int sector, SectorOrder imageOrder,
+DIError DiskImg::CalcSectorAndOffset(long track, int sector, SectorOrder imageOrder,
     SectorOrder fsOrder, di_off_t* pOffset, int* pNewSector)
 {
     if (!fHasSectors)
@@ -1967,8 +1947,7 @@ DiskImg::CalcSectorAndOffset(long track, int sector, SectorOrder imageOrder,
  * The "imageOrder" argument usually comes from fOrder, and "fsOrder"
  * comes from "fFileSysOrder".
  */
-inline bool
-DiskImg::IsLinearBlocks(SectorOrder imageOrder, SectorOrder fsOrder)
+inline bool DiskImg::IsLinearBlocks(SectorOrder imageOrder, SectorOrder fsOrder)
 {
     /*
      * Any time fOrder==fFileSysOrder, we know that we have a linear
@@ -1987,8 +1966,7 @@ DiskImg::IsLinearBlocks(SectorOrder imageOrder, SectorOrder fsOrder)
  *
  * Returns 0 on success, nonzero on failure.
  */
-DIError
-DiskImg::ReadTrackSectorSwapped(long track, int sector, void* buf,
+DIError DiskImg::ReadTrackSectorSwapped(long track, int sector, void* buf,
     SectorOrder imageOrder, SectorOrder fsOrder)
 {
     DIError dierr;
@@ -2041,8 +2019,7 @@ DiskImg::ReadTrackSectorSwapped(long track, int sector, void* buf,
  *
  * Returns 0 on success, nonzero on failure.
  */
-DIError
-DiskImg::WriteTrackSector(long track, int sector, const void* buf)
+DIError DiskImg::WriteTrackSector(long track, int sector, const void* buf)
 {
     DIError dierr;
     di_off_t offset;
@@ -2093,8 +2070,7 @@ DiskImg::WriteTrackSector(long track, int sector, const void* buf)
  *
  * Copies 512 bytes into "*buf".
  */
-DIError
-DiskImg::ReadBlockSwapped(long block, void* buf, SectorOrder imageOrder,
+DIError DiskImg::ReadBlockSwapped(long block, void* buf, SectorOrder imageOrder,
     SectorOrder fsOrder)
 {
     if (!fHasBlocks)
@@ -2146,8 +2122,7 @@ bail:
  * probably not contain data from all readable sectors.  The application is
  * expected to retry the blocks individually.
  */
-DIError
-DiskImg::ReadBlocks(long startBlock, int numBlocks, void* buf)
+DIError DiskImg::ReadBlocks(long startBlock, int numBlocks, void* buf)
 {
     DIError dierr = kDIErrNone;
 
@@ -2182,7 +2157,7 @@ DiskImg::ReadBlocks(long startBlock, int numBlocks, void* buf)
             if (dierr != kDIErrNone)
                 goto bail;
             startBlock++;
-            buf = (unsigned char*)buf + kBlockSize;
+            buf = (uint8_t*)buf + kBlockSize;
         }
     } else {
         if (startBlock == 0) {
@@ -2204,8 +2179,7 @@ bail:
  *
  * Returns "true" if we found bad blocks, "false" if not.
  */
-bool
-DiskImg::CheckForBadBlocks(long startBlock, int numBlocks)
+bool DiskImg::CheckForBadBlocks(long startBlock, int numBlocks)
 {
     int i;
 
@@ -2225,8 +2199,7 @@ DiskImg::CheckForBadBlocks(long startBlock, int numBlocks)
  * Returns immediately when a block write fails.  Does not try to write all
  * blocks before returning failure.
  */
-DIError
-DiskImg::WriteBlock(long block, const void* buf)
+DIError DiskImg::WriteBlock(long block, const void* buf)
 {
     if (!fHasBlocks)
         return kDIErrUnsupportedAccess;
@@ -2265,8 +2238,7 @@ DiskImg::WriteBlock(long block, const void* buf)
 /*
  * Write multiple blocks.
  */
-DIError
-DiskImg::WriteBlocks(long startBlock, int numBlocks, const void* buf)
+DIError DiskImg::WriteBlocks(long startBlock, int numBlocks, const void* buf)
 {
     DIError dierr = kDIErrNone;
 
@@ -2295,7 +2267,7 @@ DiskImg::WriteBlocks(long startBlock, int numBlocks, const void* buf)
             if (dierr != kDIErrNone)
                 goto bail;
             startBlock++;
-            buf = (unsigned char*)buf + kBlockSize;
+            buf = (uint8_t*)buf + kBlockSize;
         }
     } else {
         if (startBlock == 0) {
@@ -2315,8 +2287,7 @@ bail:
  *
  * (This is the lowest-level read routine in this class.)
  */
-DIError
-DiskImg::CopyBytesOut(void* buf, di_off_t offset, int size) const
+DIError DiskImg::CopyBytesOut(void* buf, di_off_t offset, int size) const
 {
     DIError dierr;
 
@@ -2343,8 +2314,7 @@ DiskImg::CopyBytesOut(void* buf, di_off_t offset, int size) const
  *
  * (This is the lowest-level write routine in DiskImg.)
  */
-DIError
-DiskImg::CopyBytesIn(const void* buf, di_off_t offset, int size)
+DIError DiskImg::CopyBytesIn(const void* buf, di_off_t offset, int size)
 {
     DIError dierr;
 
@@ -2389,8 +2359,7 @@ DiskImg::CopyBytesIn(const void* buf, di_off_t offset, int size)
  *
  * "storageName" and "pNibbleDescr" may be NULL.
  */
-DIError
-DiskImg::CreateImage(const char* pathName, const char* storageName,
+DIError DiskImg::CreateImage(const char* pathName, const char* storageName,
     OuterFormat outerFormat, FileFormat fileFormat, PhysicalFormat physical,
     const NibbleDescr* pNibbleDescr, SectorOrder order,
     FSFormat format, long numBlocks, bool skipFormat)
@@ -2415,8 +2384,8 @@ DiskImg::CreateImage(const char* pathName, const char* storageName,
 
     return CreateImageCommon(pathName, storageName, skipFormat);
 }
-DIError
-DiskImg::CreateImage(const char* pathName, const char* storageName,
+
+DIError DiskImg::CreateImage(const char* pathName, const char* storageName,
     OuterFormat outerFormat, FileFormat fileFormat, PhysicalFormat physical,
     const NibbleDescr* pNibbleDescr, SectorOrder order,
     FSFormat format, long numTracks, long numSectPerTrack, bool skipFormat)
@@ -2458,8 +2427,7 @@ DiskImg::CreateImage(const char* pathName, const char* storageName,
 /*
  * Do the actual disk image creation.
  */
-DIError
-DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
+DIError DiskImg::CreateImageCommon(const char* pathName, const char* storageName,
     bool skipFormat)
 {
     DIError dierr;
@@ -2722,8 +2690,7 @@ bail:
  * to call AnalyzeImage later on to set the actual FS once data has
  * been written.
  */
-DIError
-DiskImg::ValidateCreateFormat(void) const
+DIError DiskImg::ValidateCreateFormat(void) const
 {
     /*
      * Check for invalid arguments.
@@ -2916,8 +2883,7 @@ DiskImg::ValidateCreateFormat(void) const
  * If "quickFormat" is set, only the very last sector is written (to set
  * the EOF on the file).
  */
-DIError
-DiskImg::FormatSectors(GenericFD* pGFD, bool quickFormat) const
+DIError DiskImg::FormatSectors(GenericFD* pGFD, bool quickFormat) const
 {
     DIError dierr = kDIErrNone;
     char sctBuf[kSectorSize];
@@ -3010,8 +2976,7 @@ DiskImg::FormatBlocks(GenericFD* pGFD) const
  *
  * The maximum length of a single note is set by the size of "buf".
  */
-void
-DiskImg::AddNote(NoteType type, const char* fmt, ...)
+void DiskImg::AddNote(NoteType type, const char* fmt, ...)
 {
     char buf[512];
     char* cp = buf;
@@ -3055,12 +3020,12 @@ DiskImg::AddNote(NoteType type, const char* fmt, ...)
         len++;
     }
 
-    LOGI("+++ adding note '%s'", buf);
+    LOGD("+++ adding note '%s'", buf);
 
     if (fNotes == NULL) {
         fNotes = new char[len +1];
         if (fNotes == NULL) {
-            LOGI("Unable to create notes[%d]", len+1);
+            LOGW("Unable to create notes[%d]", len+1);
             assert(false);
             return;
         }
@@ -3069,7 +3034,7 @@ DiskImg::AddNote(NoteType type, const char* fmt, ...)
         int existingLen = strlen(fNotes);
         char* newNotes = new char[existingLen + len +1];
         if (newNotes == NULL) {
-            LOGI("Unable to create newNotes[%d]", existingLen+len+1);
+            LOGW("Unable to create newNotes[%d]", existingLen+len+1);
             assert(false);
             return;
         }
@@ -3083,8 +3048,7 @@ DiskImg::AddNote(NoteType type, const char* fmt, ...)
 /*
  * Return a string with the notes in it.
  */
-const char*
-DiskImg::GetNotes(void) const
+const char* DiskImg::GetNotes(void) const
 {
     if (fNotes == NULL)
         return "";
@@ -3097,14 +3061,13 @@ DiskImg::GetNotes(void) const
  * Get length and offset of tracks in a nibble image.  This is necessary
  * because of formats with variable-length tracks (e.g. TrackStar).
  */
-int
-DiskImg::GetNibbleTrackLength(long track) const
+int DiskImg::GetNibbleTrackLength(long track) const
 {
     assert(fpImageWrapper != NULL);
     return fpImageWrapper->GetNibbleTrackLength(fPhysical, track);
 }
-int
-DiskImg::GetNibbleTrackOffset(long track) const
+
+int DiskImg::GetNibbleTrackOffset(long track) const
 {
     assert(fpImageWrapper != NULL);
     return fpImageWrapper->GetNibbleTrackOffset(fPhysical, track);
@@ -3121,8 +3084,7 @@ DiskImg::GetNibbleTrackOffset(long track) const
  * This doesn't inspire the DiskFS to do any processing, just creates the
  * new object.
  */
-DiskFS*
-DiskImg::OpenAppropriateDiskFS(bool allowUnknown)
+DiskFS* DiskImg::OpenAppropriateDiskFS(bool allowUnknown)
 {
     DiskFS* pDiskFS = NULL;
 
@@ -3203,8 +3165,8 @@ DiskImg::OpenAppropriateDiskFS(bool allowUnknown)
  *
  * "orderArray" must have kSectorOrderMax elements.
  */
-/*static*/ void
-DiskImg::GetSectorOrderArray(SectorOrder* orderArray, SectorOrder first)
+/*static*/ void DiskImg::GetSectorOrderArray(SectorOrder* orderArray,
+    SectorOrder first)
 {
     // init array
     for (int i = 0; i < kSectorOrderMax; i++)
@@ -3226,9 +3188,8 @@ DiskImg::GetSectorOrderArray(SectorOrder* orderArray, SectorOrder first)
  *
  * These are semi-duplicated in ImageFormatDialog.cpp in CiderPress.
  */
-/*static*/ const char*
-DiskImg::ToStringCommon(int format, const ToStringLookup* pTable,
-    int tableSize)
+/*static*/ const char* DiskImg::ToStringCommon(int format,
+    const ToStringLookup* pTable, int tableSize)
 {
     for (int i = 0; i < tableSize; i++) {
         if (pTable[i].format == format)
@@ -3239,8 +3200,7 @@ DiskImg::ToStringCommon(int format, const ToStringLookup* pTable,
     return "(unknown)";
 }
 
-/*static*/ const char*
-DiskImg::ToString(OuterFormat format)
+/*static*/ const char* DiskImg::ToString(OuterFormat format)
 {
     static const ToStringLookup kOuterFormats[] = {
         { DiskImg::kOuterFormatUnknown,         "Unknown format" },
@@ -3253,8 +3213,8 @@ DiskImg::ToString(OuterFormat format)
 
     return ToStringCommon(format, kOuterFormats, NELEM(kOuterFormats));
 }
-/*static*/ const char*
-DiskImg::ToString(FileFormat format)
+
+/*static*/ const char* DiskImg::ToString(FileFormat format)
 {
     static const ToStringLookup kFileFormats[] = {
         { DiskImg::kFileFormatUnknown,          "Unknown format" },
@@ -3273,8 +3233,8 @@ DiskImg::ToString(FileFormat format)
 
     return ToStringCommon(format, kFileFormats, NELEM(kFileFormats));
 };
-/*static*/ const char*
-DiskImg::ToString(PhysicalFormat format)
+
+/*static*/ const char* DiskImg::ToString(PhysicalFormat format)
 {
     static const ToStringLookup kPhysicalFormats[] = {
         { DiskImg::kPhysicalFormatUnknown,      "Unknown format" },
@@ -3286,8 +3246,8 @@ DiskImg::ToString(PhysicalFormat format)
 
     return ToStringCommon(format, kPhysicalFormats, NELEM(kPhysicalFormats));
 };
-/*static*/ const char*
-DiskImg::ToString(SectorOrder format)
+
+/*static*/ const char* DiskImg::ToString(SectorOrder format)
 {
     static const ToStringLookup kSectorOrders[] = {
         { DiskImg::kSectorOrderUnknown,         "Unknown ordering" },
@@ -3299,8 +3259,8 @@ DiskImg::ToString(SectorOrder format)
 
     return ToStringCommon(format, kSectorOrders, NELEM(kSectorOrders));
 };
-/*static*/ const char*
-DiskImg::ToString(FSFormat format)
+
+/*static*/ const char* DiskImg::ToString(FSFormat format)
 {
     static const ToStringLookup kFSFormats[] = {
         { DiskImg::kFormatUnknown,              "Unknown" },
@@ -3337,8 +3297,7 @@ DiskImg::ToString(FSFormat format)
 /*
  * strerror() equivalent for DiskImg errors.
  */
-const char*
-DiskImgLib::DIStrError(DIError dierr)
+const char* DiskImgLib::DIStrError(DIError dierr)
 {
     if (dierr > 0) {
         const char* msg;
@@ -3517,7 +3476,7 @@ DiskImgLib::DIStrError(DIError dierr)
  * blurry PDF or a pair of GIFs created with small fonts, but I think I
  * have mostly captured it.
  */
-/*static*/ const unsigned char DiskImg::kMacHighASCII[128+1] =
+/*static*/ const uint8_t DiskImg::kMacHighASCII[128+1] =
     "AACENOUaaaaaaceeeeiiiinooooouuuu"      // 0x80 - 0x9f
     "tocL$oPBrct'.=AO%+<>YudsPpSaoOao"      // 0xa0 - 0xbf
     "?!-vf=d<>. AAOOo--\"\"''/oyY/o<> f"    // 0xc0 - 0xdf
