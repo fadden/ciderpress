@@ -4,7 +4,9 @@
  * See the file LICENSE for distribution terms.
  */
 /*
- * Process UCSD Pascal text and code files.
+ * Process UCSD Pascal text and code files.  Files with this format, but
+ * usually containing 6502 assembly rather than p-code, can appear on
+ * Apple /// SOS disks.
  */
 #include "StdAfx.h"
 #include "PascalFiles.h"
@@ -18,8 +20,7 @@
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatPascalCode::Examine(ReformatHolder* pHolder)
+void ReformatPascalCode::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -40,8 +41,7 @@ ReformatPascalCode::Examine(ReformatHolder* pHolder)
  * Rather than dump the header and follow it with bits and pieces, we gather
  * up all the header data and present it with the contents of the block.
  */
-int
-ReformatPascalCode::Process(const ReformatHolder* pHolder,
+int ReformatPascalCode::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -141,8 +141,7 @@ bail:
 /*
  * Print information about and the contents of one segment.
  */
-void
-ReformatPascalCode::PrintSegment(PCDSegment* pSegment, int segNum,
+void ReformatPascalCode::PrintSegment(PCDSegment* pSegment, int segNum,
     const uint8_t* srcBuf, long srcLen)
 {
     const char* segKindStr;
@@ -210,8 +209,7 @@ ReformatPascalCode::PrintSegment(PCDSegment* pSegment, int segNum,
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatPascalText::Examine(ReformatHolder* pHolder)
+void ReformatPascalText::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -231,8 +229,7 @@ ReformatPascalText::Examine(ReformatHolder* pHolder)
  * that the next value is 32+indent.  Lines end with a CR.  If the next line
  * won't fit in the block, the remainder of the block is filled with zeroes.
  */
-int
-ReformatPascalText::Process(const ReformatHolder* pHolder,
+int ReformatPascalText::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -277,8 +274,7 @@ bail:
  * I'm not sure if the format mandates full 1024-byte blocks -- it
  * appears to -- but I'm not going to assume it.
  */
-void
-ReformatPascalText::ProcessBlock(const uint8_t* srcBuf, long length)
+void ReformatPascalText::ProcessBlock(const uint8_t* srcBuf, long length)
 {
     ASSERT(srcBuf != NULL);
     ASSERT(length > 0 && length <= kPTXBlockSize);

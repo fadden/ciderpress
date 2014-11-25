@@ -43,7 +43,7 @@ public:
     virtual BOOL ReplaceDlgCtrl(CDialog* pDialog, int editID);
 
 private:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG* pMsg) override;
 
     bool        fCapsOnly;
     bool        fHexOnly;

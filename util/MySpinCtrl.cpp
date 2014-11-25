@@ -37,13 +37,7 @@ void MySpinCtrl::PreSubclassWindow()
 }
 #endif
 
-/*
- * Convert a decimal or hex string to a long.
- *
- * Returns "true" on success, "false" on error.
- */
-bool
-MySpinCtrl::ConvLong(const WCHAR* str, long* pVal) const
+bool MySpinCtrl::ConvLong(const WCHAR* str, long* pVal) const
 {
     WCHAR* endp;
 
@@ -57,8 +51,7 @@ MySpinCtrl::ConvLong(const WCHAR* str, long* pVal) const
 /*
  * Handle UDN_DELTAPOS notification.
  */
-void
-MySpinCtrl::OnDeltaPos(NMHDR* pNMHDR, LRESULT* pResult)
+void MySpinCtrl::OnDeltaPos(NMHDR* pNMHDR, LRESULT* pResult)
 {
     _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
 //  _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
@@ -101,8 +94,7 @@ bail:
  *
  * Returns the previous position.
  */
-int
-MySpinCtrl::SetPos(int nPos)
+int MySpinCtrl::SetPos(int nPos)
 {
     _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
 //  _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
@@ -129,8 +121,7 @@ MySpinCtrl::SetPos(int nPos)
  *
  * Returns -1 on error.  Yes, that's bogus, but it's good enough for now.
  */
-int
-MySpinCtrl::GetPos() const
+int MySpinCtrl::GetPos() const
 {
     _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
 //  _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");
@@ -158,8 +149,7 @@ MySpinCtrl::GetPos() const
     return val;
 }
 
-DWORD
-MySpinCtrl::GetRange(void) const
+DWORD MySpinCtrl::GetRange(void) const
 {
     _ASSERTE(! "Do NOT use this method!");
     return 0;
@@ -168,8 +158,7 @@ MySpinCtrl::GetRange(void) const
 /*
  * Get 32-bit ranges.
  */
-void
-MySpinCtrl::GetRange32(int& lower, int& upper) const
+void MySpinCtrl::GetRange32(int& lower, int& upper) const
 {
     lower = fLow;
     upper = fHigh;
@@ -179,8 +168,7 @@ MySpinCtrl::GetRange32(int& lower, int& upper) const
 /*
  * Set 32-bit ranges.
  */
-void
-MySpinCtrl::SetRange32(int nLo, int nHi)
+void MySpinCtrl::SetRange32(int nLo, int nHi)
 {
     _ASSERTE(! (UDS_SETBUDDYINT & GetStyle())  &&  "'Auto Buddy Int' style *MUST* be unchecked");
 //  _ASSERTE(  (UDS_AUTOBUDDY   & GetStyle())  &&  "'Auto Buddy' style *MUST* be checked");

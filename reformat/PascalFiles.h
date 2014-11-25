@@ -19,10 +19,10 @@ public:
     ReformatPascalCode(void) {}
     virtual ~ReformatPascalCode(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
     enum {
         // VC++6.0 demands this be public, probably because it's used to
@@ -84,10 +84,10 @@ public:
     ReformatPascalText(void) {}
     virtual ~ReformatPascalText(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     enum {

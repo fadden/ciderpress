@@ -45,8 +45,7 @@
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatSCAssem::Examine(ReformatHolder* pHolder)
+void ReformatSCAssem::Examine(ReformatHolder* pHolder)
 {
     if (pHolder->GetFileType() == kTypeINT && pHolder->GetAuxType() == 0) {
         if (ReformatSCAssem::IsSCAssem(pHolder)) {
@@ -76,8 +75,7 @@ ReformatSCAssem::Examine(ReformatHolder* pHolder)
  * for marking the end of a line, and have different sets of valid chars.  We
  * don't need to fully validate the file, just test the first line.
  */
-/*static*/ bool
-ReformatSCAssem::IsSCAssem(const ReformatHolder* pHolder)
+/*static*/ bool ReformatSCAssem::IsSCAssem(const ReformatHolder* pHolder)
 {
     const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
@@ -103,8 +101,7 @@ ReformatSCAssem::IsSCAssem(const ReformatHolder* pHolder)
  * Reformat an S-C Assembler listing into text.  I don't know exactly what the
  * original listings looked like, so I'm just doing what A2FID.C does.
  */
-int
-ReformatSCAssem::Process(const ReformatHolder* pHolder,
+int ReformatSCAssem::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -222,8 +219,7 @@ done:
  * since the text file contents will match.  However, it's probably useful
  * to support DOS ED/ASM sources with this.
  */
-void
-ReformatMerlin::Examine(ReformatHolder* pHolder)
+void ReformatMerlin::Examine(ReformatHolder* pHolder)
 {
     if (pHolder->GetFileType() == kTypeTXT) {
         bool isAsm = ReformatMerlin::IsMerlin(pHolder);
@@ -271,8 +267,7 @@ ReformatMerlin::Examine(ReformatHolder* pHolder)
  *
  * This will also return "true" for DOS ED/ASM files.
  */
-/*static*/ bool
-ReformatMerlin::IsMerlin(const ReformatHolder* pHolder)
+/*static*/ bool ReformatMerlin::IsMerlin(const ReformatHolder* pHolder)
 {
     const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
@@ -329,8 +324,7 @@ ReformatMerlin::IsMerlin(const ReformatHolder* pHolder)
  * has been "washed" through a converter or if this is actually a DOS ED/ASM
  * file, tracking quotes is almost always beneficial.
  */
-int
-ReformatMerlin::Process(const ReformatHolder* pHolder,
+int ReformatMerlin::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -430,8 +424,7 @@ ReformatMerlin::Process(const ReformatHolder* pHolder,
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatLISA2::Examine(ReformatHolder* pHolder)
+void ReformatLISA2::Examine(ReformatHolder* pHolder)
 {
     if (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS &&
         pHolder->GetFileType() == kTypeDOS_B)
@@ -458,8 +451,7 @@ ReformatLISA2::Examine(ReformatHolder* pHolder)
 /*
  * Quick sanity check on the file contents.
  */
-bool
-ReformatLISA2::IsLISA(const ReformatHolder* pHolder)
+bool ReformatLISA2::IsLISA(const ReformatHolder* pHolder)
 {
     const uint8_t* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
@@ -518,8 +510,7 @@ static const char gOpcodes[] =
 /*
  * Parse a file.
  */
-int
-ReformatLISA2::Process(const ReformatHolder* pHolder,
+int ReformatLISA2::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -579,8 +570,7 @@ bail:
     return retval;
 }
 
-void
-ReformatLISA2::ProcessLine(const uint8_t* buf)
+void ReformatLISA2::ProcessLine(const uint8_t* buf)
 {
     int len = *buf;
     uint8_t uch;
@@ -663,7 +653,7 @@ ReformatLISA2::ProcessLine(const uint8_t* buf)
 
 /*
  * ===========================================================================
- *      LISA Assembler - v4 and v5
+ *      LISA Assembler - v3
  * ===========================================================================
  */
 
@@ -747,8 +737,7 @@ static const char gMnemonics3[256*3 +1] =
 /*
  * Determine whether this is one of our files.
  */
-void
-ReformatLISA3::Examine(ReformatHolder* pHolder)
+void ReformatLISA3::Examine(ReformatHolder* pHolder)
 {
     /*
      * Note we cannot false-positive on an INT file on a DOS disk, because
@@ -780,8 +769,7 @@ ReformatLISA3::Examine(ReformatHolder* pHolder)
  * Decide if this is one of ours or perhaps an Integer BASIC or S-C
  * assembler source.
  */
-/*static*/ bool
-ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
+/*static*/ bool ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
 {
     bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
     const uint8_t* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
@@ -817,8 +805,7 @@ ReformatLISA3::IsLISA(const ReformatHolder* pHolder)
 /*
  * Parse a file.
  */
-int
-ReformatLISA3::Process(const ReformatHolder* pHolder,
+int ReformatLISA3::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -966,8 +953,7 @@ bail:
 /*
  * BIGONE
  */
-void
-ReformatLISA3::ProcessLine(const uint8_t* codePtr, int len)
+void ReformatLISA3::ProcessLine(const uint8_t* codePtr, int len)
 {
     uint8_t mnemonic = 0;
 
@@ -1054,8 +1040,7 @@ bail:
 /*
  * CNVOPRND
  */
-void
-ReformatLISA3::ConvertOperand(uint8_t mnemonic,
+void ReformatLISA3::ConvertOperand(uint8_t mnemonic,
     const uint8_t** pCodePtr, int* pLen)
 {
     static const char kOPRTRST1[] = "+-*/&|^=<>%<><";
@@ -1163,8 +1148,7 @@ bail:
 /*
  * Output a single byte as a binary string.
  */
-void
-ReformatLISA3::PrintBin(uint8_t val)
+void ReformatLISA3::PrintBin(uint8_t val)
 {
     char buf[9];
     buf[8] = '\0';
@@ -1177,9 +1161,8 @@ ReformatLISA3::PrintBin(uint8_t val)
 /*
  * OUTNUM
  */
-ReformatLISA3::OperandResult
-ReformatLISA3::PrintNum(int adrsMode, uint8_t val,
-const uint8_t** pCodePtr, int* pLen)
+ReformatLISA3::OperandResult ReformatLISA3::PrintNum(int adrsMode, uint8_t val,
+    const uint8_t** pCodePtr, int* pLen)
 {
     const uint8_t* codePtr = *pCodePtr;
     int len = *pLen;
@@ -1315,8 +1298,7 @@ bail:
  * Print symbol table entry.  Each entry is an 8-byte label packed into
  * 6 bytes.
  */
-void
-ReformatLISA3::PrintSymEntry(int ent)
+void ReformatLISA3::PrintSymEntry(int ent)
 {
     if (ent < 0 || ent >= fSymCount) {
         Output("!BAD SYM!");
@@ -1349,8 +1331,7 @@ ReformatLISA3::PrintSymEntry(int ent)
     }
 }
 
-void
-ReformatLISA3::PrintMnemonic(uint8_t val)
+void ReformatLISA3::PrintMnemonic(uint8_t val)
 {
     const char* ptr = &gMnemonics3[val * 3];
     Output(ptr[0]);
@@ -1363,8 +1344,7 @@ ReformatLISA3::PrintMnemonic(uint8_t val)
  *
  * Prints the comment.  Finishes off the operand if necessary.
  */
-void
-ReformatLISA3::PrintComment(int adrsMode, const uint8_t* codePtr, int len)
+void ReformatLISA3::PrintComment(int adrsMode, const uint8_t* codePtr, int len)
 {
     assert(len >= 0);
 
@@ -1411,8 +1391,7 @@ ReformatLISA3::PrintComment(int adrsMode, const uint8_t* codePtr, int len)
 /*
  * Determine whether this is one of our files.
  */
-void
-ReformatLISA4::Examine(ReformatHolder* pHolder)
+void ReformatLISA4::Examine(ReformatHolder* pHolder)
 {
     /*
      * Note we cannot false-positive on an INT file on a DOS disk, because
@@ -1444,8 +1423,7 @@ ReformatLISA4::Examine(ReformatHolder* pHolder)
  * Decide if this is one of ours or perhaps an Integer BASIC or S-C
  * assembler source.
  */
-/*static*/ bool
-ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
+/*static*/ bool ReformatLISA4::IsLISA(const ReformatHolder* pHolder)
 {
     bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
     const uint8_t* srcPtr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
@@ -1558,8 +1536,7 @@ static const char* gMnemonics4[] = {
 /*
  * Parse a file.
  */
-int
-ReformatLISA4::Process(const ReformatHolder* pHolder,
+int ReformatLISA4::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -1585,9 +1562,9 @@ ReformatLISA4::Process(const ReformatHolder* pHolder,
     fComTab = srcPtr[0x08];
     fCpuType = srcPtr[0x09];
 
-    LOGI("  LISA4 version = 0x%04x  symEnd=%d  symCount=%d",
+    LOGD("  LISA4 version = 0x%04x  symEnd=%d  symCount=%d",
         version, symEnd, fSymCount);
-    LOGI("  LISA4  opTab=%d adTab=%d comTab=%d cpuType=%d",
+    LOGD("  LISA4  opTab=%d adTab=%d comTab=%d cpuType=%d",
         fOpTab, fAdTab, fComTab, fCpuType);
 
     if (symEnd > srcLen) {
@@ -1731,8 +1708,7 @@ bail:
     return retval;
 }
 
-void
-ReformatLISA4::ProcessLine(const uint8_t* codePtr, int len)
+void ReformatLISA4::ProcessLine(const uint8_t* codePtr, int len)
 {
     uint8_t mnemonic = 0;
 
@@ -1835,8 +1811,7 @@ bail:
 /*
  * ConvtOperand
  */
-void
-ReformatLISA4::ConvertOperand(uint8_t mnemonic,
+void ReformatLISA4::ConvertOperand(uint8_t mnemonic,
     const uint8_t** pCodePtr, int* pLen)
 {
     /*
@@ -2095,8 +2070,7 @@ not_operator:
 /*
  * CnvrtDec - convert to decimal output.
  */
-void
-ReformatLISA4::PrintDec(int count, const uint8_t** pCodePtr,
+void ReformatLISA4::PrintDec(int count, const uint8_t** pCodePtr,
     int* pLen)
 {
     const uint8_t* codePtr = *pCodePtr;
@@ -2118,8 +2092,7 @@ ReformatLISA4::PrintDec(int count, const uint8_t** pCodePtr,
 /*
  * CnvrtHex - convert to hex output.
  */
-void
-ReformatLISA4::PrintHex(int count, const uint8_t** pCodePtr,
+void ReformatLISA4::PrintHex(int count, const uint8_t** pCodePtr,
     int* pLen)
 {
     const uint8_t* codePtr = *pCodePtr;
@@ -2142,8 +2115,7 @@ ReformatLISA4::PrintHex(int count, const uint8_t** pCodePtr,
 /*
  * CnvrtBin - convert to binary output.
  */
-void
-ReformatLISA4::PrintBin(int count, const uint8_t** pCodePtr,
+void ReformatLISA4::PrintBin(int count, const uint8_t** pCodePtr,
     int* pLen)
 {
     const uint8_t* codePtr = *pCodePtr;
@@ -2171,9 +2143,8 @@ ReformatLISA4::PrintBin(int count, const uint8_t** pCodePtr,
 /*
  * OUTNUM
  */
-ReformatLISA4::OperandResult
-ReformatLISA4::PrintNum(uint8_t opr, const uint8_t** pCodePtr,
-    int* pLen)
+ReformatLISA4::OperandResult ReformatLISA4::PrintNum(uint8_t opr,
+    const uint8_t** pCodePtr, int* pLen)
 {
     OperandResult result = kResultUnknown;
     const uint8_t* codePtr = *pCodePtr;
@@ -2295,9 +2266,8 @@ ReformatLISA4::PrintNum(uint8_t opr, const uint8_t** pCodePtr,
 /*
  * OutOprComp
  */
-ReformatLISA4::OperandResult
-ReformatLISA4::PrintComplexOperand(uint8_t opr,
-const uint8_t** pCodePtr, int* pLen)
+ReformatLISA4::OperandResult ReformatLISA4::PrintComplexOperand(uint8_t opr,
+    const uint8_t** pCodePtr, int* pLen)
 {
     if (opr != kBign_tkn)
         return PrintNum(opr, pCodePtr, pLen);
@@ -2360,8 +2330,7 @@ const uint8_t** pCodePtr, int* pLen)
 /*
  * Print symbol table entry.
  */
-void
-ReformatLISA4::PrintSymEntry(int ent)
+void ReformatLISA4::PrintSymEntry(int ent)
 {
     if (ent < 0 || ent >= fSymCount) {
         Output("!BAD SYM!");

@@ -19,10 +19,10 @@ public:
     ReformatDHR(void) {}
     virtual ~ReformatDHR(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
     enum {
         kPixelsPerLine = 560,

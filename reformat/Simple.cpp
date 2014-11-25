@@ -13,8 +13,7 @@
 /*
  * Indicate that we handle all parts of all files.
  */
-void
-ReformatRaw::Examine(ReformatHolder* pHolder)
+void ReformatRaw::Examine(ReformatHolder* pHolder)
 {
     pHolder->SetApplic(ReformatHolder::kReformatRaw,
         ReformatHolder::kApplicAlways,
@@ -37,20 +36,17 @@ ReformatRaw::Examine(ReformatHolder* pHolder)
  * This should inspire whoever is calling us to present the data without
  * reformatting it first.
  */
-int
-ReformatRaw::Process(const ReformatHolder* pHolder,
+int ReformatRaw::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
     return -1;
 }
 
-
 /*
  * Indicate that we handle all parts of all files.
  */
-void
-ReformatHexDump::Examine(ReformatHolder* pHolder)
+void ReformatHexDump::Examine(ReformatHolder* pHolder)
 {
     pHolder->SetApplic(ReformatHolder::kReformatHexDump,
         ReformatHolder::kApplicAlways,
@@ -60,8 +56,7 @@ ReformatHexDump::Examine(ReformatHolder* pHolder)
 /*
  * Convert a file to a hex dump.
  */
-int
-ReformatHexDump::Process(const ReformatHolder* pHolder,
+int ReformatHexDump::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -91,12 +86,10 @@ ReformatHexDump::Process(const ReformatHolder* pHolder,
     return 0;
 }
 
-
 /*
  * Indicate that we handle all parts of all files.
  */
-void
-ReformatEOL_HA::Examine(ReformatHolder* pHolder)
+void ReformatEOL_HA::Examine(ReformatHolder* pHolder)
 {
     pHolder->SetApplic(ReformatHolder::kReformatTextEOL_HA,
         ReformatHolder::kApplicAlways,
@@ -109,8 +102,7 @@ ReformatEOL_HA::Examine(ReformatHolder* pHolder)
  *
  * Sadly, this most likely requires expanding the original.
  */
-int
-ReformatEOL_HA::Process(const ReformatHolder* pHolder,
+int ReformatEOL_HA::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {

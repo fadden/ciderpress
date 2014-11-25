@@ -19,10 +19,10 @@ public:
     ReformatMacPaint(void) {}
     virtual ~ReformatMacPaint(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     MyDIBitmap* ConvertMacPaint(const uint8_t* srcBuf, long length);

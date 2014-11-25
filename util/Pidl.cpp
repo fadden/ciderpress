@@ -15,13 +15,7 @@
  * ==========================================================================
  */
 
-/*
- * Return the next item in the PIDL.
- *
- * "pidl->mkid.cb" will be zero at the end of the list.
- */
-LPITEMIDLIST
-Pidl::Next(LPCITEMIDLIST pidl)
+LPITEMIDLIST Pidl::Next(LPCITEMIDLIST pidl)
 {
    LPSTR lpMem = (LPSTR)pidl;
 
@@ -30,11 +24,7 @@ Pidl::Next(LPCITEMIDLIST pidl)
    return (LPITEMIDLIST)lpMem;
 }
 
-/*
- * Compute the size in bytes of a PIDL.
- */
-UINT
-Pidl::GetSize(LPCITEMIDLIST pidl)
+UINT Pidl::GetSize(LPCITEMIDLIST pidl)
 {
     UINT cbTotal = 0;
 
@@ -49,11 +39,7 @@ Pidl::GetSize(LPCITEMIDLIST pidl)
     return cbTotal;
 }
 
-/*
- * Allocate a PIDL of the specified size.
- */
-LPITEMIDLIST
-Pidl::CreatePidl(UINT cbSize)
+LPITEMIDLIST Pidl::CreatePidl(UINT cbSize)
 {
     LPMALLOC lpMalloc;
     HRESULT hr;
@@ -74,13 +60,7 @@ Pidl::CreatePidl(UINT cbSize)
     return pidl;
 }
 
-/*
- * Concatenates two PIDLs.  The PIDL returned is newly-allocated storage.
- *
- * "pidl1" may be NULL.
- */
-LPITEMIDLIST
-Pidl::ConcatPidls(LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2)
+LPITEMIDLIST Pidl::ConcatPidls(LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2)
 {
     LPITEMIDLIST pidlNew;
     UINT cb1;
@@ -102,13 +82,7 @@ Pidl::ConcatPidls(LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2)
     return pidlNew;
 }
 
-/*
- * Make a copy of a PIDL.
- *
- * The PIDL returned is newly-allocated storage.
- */
-LPITEMIDLIST
-Pidl::CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi)
+LPITEMIDLIST Pidl::CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi)
 {
     LPITEMIDLIST lpiTemp;
     
@@ -119,16 +93,7 @@ Pidl::CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi)
     return lpiTemp;
 }
 
-/*
- * Get the display name of a file in a ShellFolder.
- *
- * "lpsf" is the ShellFolder that contains the file, "lpi" is the PIDL for
- * the file, "dwFlags" is passed to GetDisplayNameOf and affects which
- * name is returned, and "lpFriendlyName" is a buffer of at least MAX_PATH
- * bytes.
- */
-BOOL
-Pidl::GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, DWORD dwFlags,
+BOOL Pidl::GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, DWORD dwFlags,
     CString* pFriendlyName)
 {
     BOOL   bSuccess=TRUE;
@@ -176,20 +141,7 @@ Pidl::GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, DWORD dwFlags,
     return bSuccess;
 }
 
-
-
-/*
- * Get a fully qualified PIDL for a ShellFolder.
- *
- * This is a rather roundabout way of doing things (converting to a full
- * display name and then converting that to a PIDL).  However, there doesn't
- * seem to be a way to just ask a ShellFolder for its fully qualified PIDL.
- * TODO: see if there's a better way now.
- *
- * Pass in the parent ShellFolder and the item's partial PIDL.
- */
-LPITEMIDLIST
-Pidl::GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi)
+LPITEMIDLIST Pidl::GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi)
 {
     //char szBuff[MAX_PATH];
     //OLECHAR szOleChar[MAX_PATH];
@@ -223,13 +175,7 @@ Pidl::GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi)
     return lpifq;
 }
 
-/*
- * Convert a PIDL to a filesystem path.
- *
- * Returns TRUE on success, FALSE on failure.
- */
-BOOL
-Pidl::GetPath(LPCITEMIDLIST pidl, CString* pPath)
+BOOL Pidl::GetPath(LPCITEMIDLIST pidl, CString* pPath)
 {
     BOOL result;
     WCHAR buf[MAX_PATH];
@@ -336,14 +282,7 @@ Pidl::DoTheMenuThing(HWND hwnd, LPSHELLFOLDER lpsfParent,
 }
 #endif
 
-/*
- * Get the index for an icon for a ShellFolder object.
- *
- * "lpi" is the fully-qualified PIDL for the object in question.  "uFlags"
- * specifies which of the object's icons to retrieve.
- */
-int
-Pidl::GetItemIcon(LPITEMIDLIST lpi, UINT uFlags)
+int Pidl::GetItemIcon(LPITEMIDLIST lpi, UINT uFlags)
 {
     SHFILEINFO sfi = { 0 };
     

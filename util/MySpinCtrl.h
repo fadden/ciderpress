@@ -26,7 +26,7 @@ public:
     MySpinCtrl(void) : fLow(0), fHigh(100) {}
     virtual ~MySpinCtrl(void) {}
 
-    // override original methods (AFXCMN.H)
+    // replacements for superclass methods (AFXCMN.H)
     int     SetPos(int nPos);
     int     GetPos() const;
     void    SetRange(int nLower, int nUpper) { SetRange32(nLower, nUpper); }
@@ -42,6 +42,11 @@ protected:
 private:
     int fLow, fHigh;
 
+    /*
+     * Convert a decimal or hex string to a long.
+     *
+     * Returns "true" on success, "false" on error.
+     */
     bool ConvLong(const WCHAR* str, long* pVal) const;
 
     DECLARE_MESSAGE_MAP()

@@ -50,8 +50,7 @@
 /*
  * Load the NiftyList data file.
  */
-/*static*/ bool
-NiftyList::AppInit(const WCHAR* fileName)
+/*static*/ bool NiftyList::AppInit(const WCHAR* fileName)
 {
     FILE* fp = NULL;
     long fileLen;
@@ -124,8 +123,7 @@ bail:
 /*
  * Discard all allocated storage.
  */
-/*static*/ bool
-NiftyList::AppCleanup(void)
+/*static*/ bool NiftyList::AppCleanup(void)
 {
     delete[] fP8MLI.pEntries;
     delete[] fGSOS.pEntries;
@@ -148,9 +146,8 @@ NiftyList::AppCleanup(void)
  * Leaves "*ppData" pointing at the start of the next section.  "*pRemLen"
  * is updated appropriately.
  */
-/*static*/ bool
-NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
-    LoadMode mode)
+/*static*/ bool NiftyList::ReadSection(char** ppData, long* pRemLen,
+    DataSet* pSet, LoadMode mode)
 {
     assert(ppData != NULL);
     assert(pRemLen != NULL);
@@ -265,8 +262,7 @@ NiftyList::ReadSection(char** ppData, long* pRemLen, DataSet* pSet,
  * Returns 0 if there's no data, which can only happen if "remLen" is zero
  * (i.e. we hit EOF).
  */
-/*static*/ int
-NiftyList::ScanLine(const char* pData, long remLen)
+/*static*/ int NiftyList::ScanLine(const char* pData, long remLen)
 {
     bool atEOL = false;
     int lineLen = 0;
@@ -286,8 +282,7 @@ NiftyList::ScanLine(const char* pData, long remLen)
 /*
  * qsort() sort function.
  */
-/*static*/ int
-NiftyList::SortNameValue(const void* v1, const void* v2)
+/*static*/ int NiftyList::SortNameValue(const void* v1, const void* v2)
 {
     const NameValue* pnv1 = (const NameValue*) v1;
     const NameValue* pnv2 = (const NameValue*) v2;
@@ -305,8 +300,7 @@ NiftyList::SortNameValue(const void* v1, const void* v2)
 /*
  * Hex digit converter.
  */
-static inline int
-HexValue(char ch)
+static inline int HexValue(char ch)
 {
     if (ch >= '0' && ch <= '9')
         return ch - '0';
@@ -321,8 +315,7 @@ HexValue(char ch)
 /*
  * Convert a 4-char hexadecimal value to an unsigned 16-bit value.
  */
-/*static*/ uint16_t
-NiftyList::ConvHexFour(const char* data)
+/*static*/ uint16_t NiftyList::ConvHexFour(const char* data)
 {
     return HexValue(data[0]) << 12 |
           HexValue(data[1]) << 8 |
@@ -333,8 +326,7 @@ NiftyList::ConvHexFour(const char* data)
 /*
  * Dump the contents of a section.
  */
-/*static*/ void
-NiftyList::DumpSection(const DataSet& dataSet)
+/*static*/ void NiftyList::DumpSection(const DataSet& dataSet)
 {
     long ent;
 
@@ -346,15 +338,13 @@ NiftyList::DumpSection(const DataSet& dataSet)
     }
 }
 
-
 /*
  * Look up a value in the specified table.  Returns the name, or NULL if
  * not found.
  *
  * This uses a binary search, so the entries must be in sorted order.
  */
-/*static*/ const char*
-NiftyList::Lookup(const DataSet& dataSet, uint16_t key)
+/*static*/ const char* NiftyList::Lookup(const DataSet& dataSet, uint16_t key)
 {
     if (!fDataReady) {
         return NULL;

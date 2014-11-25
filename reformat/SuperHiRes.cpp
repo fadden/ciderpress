@@ -46,16 +46,14 @@
  *
  * This is a reasonably generic routine shared by SHR functions.
  */
-MyDIBitmap*
-ReformatSHR::SHRScreenToBitmap8(const SHRScreen* pScreen)
+MyDIBitmap* ReformatSHR::SHRScreenToBitmap8(const SHRScreen* pScreen)
 {
     return SHRDataToBitmap8(pScreen->pixels, pScreen->scb,
                 pScreen->colorTable, kPixelBytesPerLine, kNumLines,
                 kOutputWidth, kOutputHeight);
 }
 
-MyDIBitmap*
-ReformatSHR::SHRDataToBitmap8(const uint8_t* pPixels,
+MyDIBitmap* ReformatSHR::SHRDataToBitmap8(const uint8_t* pPixels,
     const uint8_t* pSCB, const uint8_t* pColorTable,
     int pixelBytesPerLine, int numScanLines,
     int outputWidth, int outputHeight)
@@ -223,8 +221,7 @@ bail:
  * Occasionally somebody slaps the wrong aux type on, so if we're in
  * "relaxed" mode we accept just about anything that's the right size.
  */
-void
-ReformatUnpackedSHR::Examine(ReformatHolder* pHolder)
+void ReformatUnpackedSHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -255,8 +252,7 @@ ReformatUnpackedSHR::Examine(ReformatHolder* pHolder)
 /*
  * Convert an unpacked Super Hi-Res image.
  */
-int
-ReformatUnpackedSHR::Process(const ReformatHolder* pHolder,
+int ReformatUnpackedSHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -283,6 +279,7 @@ bail:
     return retval;
 }
 
+
 /*
  * ==========================================================================
  *      ReformatAppSHR
@@ -295,8 +292,7 @@ bail:
  * This file type seems exclusive to the IIgs version of "John Elway
  * Quarterback".
  */
-void
-ReformatJEQSHR::Examine(ReformatHolder* pHolder)
+void ReformatJEQSHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -324,8 +320,7 @@ ReformatJEQSHR::Examine(ReformatHolder* pHolder)
  * and only one color table is stored.  Total savings of 480 bytes -- less
  * than a ProDOS block.  Sorta dumb.
  */
-int
-ReformatJEQSHR::Process(const ReformatHolder* pHolder,
+int ReformatJEQSHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -366,8 +361,7 @@ bail:
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatPaintworksSHR::Examine(ReformatHolder* pHolder)
+void ReformatPaintworksSHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -385,7 +379,6 @@ ReformatPaintworksSHR::Examine(ReformatHolder* pHolder)
     pHolder->SetApplic(ReformatHolder::kReformatSHR_Paintworks, applies,
         ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
 }
-
 
 /*
  * Convert a PaintWorks format Super Hi-Res image.
@@ -405,8 +398,7 @@ ReformatPaintworksSHR::Examine(ReformatHolder* pHolder)
  * Sometimes it runs a few bytes over.  If it runs significantly under, it's
  * probably a generic packed image (PNT/0001) with the wrong auxtype.
  */
-int
-ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
+int ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -493,8 +485,7 @@ bail:
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatPackedSHR::Examine(ReformatHolder* pHolder)
+void ReformatPackedSHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -516,8 +507,7 @@ ReformatPackedSHR::Examine(ReformatHolder* pHolder)
 /*
  * Convert a packed Super Hi-Res image (PNT/$0001).
  */
-int
-ReformatPackedSHR::Process(const ReformatHolder* pHolder,
+int ReformatPackedSHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -560,8 +550,7 @@ bail:
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatAPFSHR::Examine(ReformatHolder* pHolder)
+void ReformatAPFSHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -590,8 +579,7 @@ ReformatAPFSHR::Examine(ReformatHolder* pHolder)
  * All we're really interested in is the "MAIN" block, though we need
  * to handle MULTIPAL as well for 3200-color images.
  */
-int
-ReformatAPFSHR::Process(const ReformatHolder* pHolder,
+int ReformatAPFSHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -707,8 +695,7 @@ bail:
  * that happens to be 640 pixels wide?  Did all //gs applications set this
  * correctly?  Can the format be different on every line?
  */
-int
-ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
+int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
 {
     const int kColorTableSize = kNumEntriesPerColorTable * kColorTableEntrySize;
     uint16_t masterMode;
@@ -733,7 +720,7 @@ ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
         goto bail;
     }
 
-    LOGI(" APFSHR  masterMode=0x%04x, ppsl=%d, nct=%d",
+    LOGD(" APFSHR  masterMode=0x%04x, ppsl=%d, nct=%d",
         masterMode, fPixelsPerScanLine, numColorTables);
     if (numColorTables <= 0 || numColorTables > kNumColorTables) {
         LOGI(" APFSHR unexpected numColorTables %d", numColorTables);
@@ -773,7 +760,7 @@ ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
     {
         /* standard-sized image, use fScreen */
         ASSERT(!fNonStandard);
-        LOGI("  Assuming this is a standard, full-width SHR image");
+        LOGD("  Assuming this is a standard, full-width SHR image");
         fPixelBytesPerLine = kPixelBytesPerLine;        // 160
         fPixelStore = fScreen.pixels;
         fSCBStore = fScreen.scb;
@@ -820,7 +807,7 @@ ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
             goto bail;
         }
     }
-    LOGI(" APFSHR  numScanLines=%d, outputWidth=%d, pixelBytesPerLine=%d",
+    LOGD(" APFSHR  numScanLines=%d, outputWidth=%d, pixelBytesPerLine=%d",
         fNumScanLines, fOutputWidth, fPixelBytesPerLine);
 
     /*
@@ -881,8 +868,7 @@ bail:
  * Brooks format by stuffing them into the file the wrong way.  We could
  * fix it here, but we can't reliably detect the files.
  */
-int
-ReformatAPFSHR::UnpackMultipal(uint8_t* dstPtr,
+int ReformatAPFSHR::UnpackMultipal(uint8_t* dstPtr,
     const uint8_t* srcPtr, long srcLen)
 {
     const int kMultipalSize = kNumLines *
@@ -934,8 +920,7 @@ ReformatAPFSHR::UnpackMultipal(uint8_t* dstPtr,
  * Unpack a "NOTE" chunk.  This seems to be a 16-bit count followed by
  * ASCII data.
  */
-void
-ReformatAPFSHR::UnpackNote(const uint8_t* srcPtr, long srcLen)
+void ReformatAPFSHR::UnpackNote(const uint8_t* srcPtr, long srcLen)
 {
     int numChars;
 
@@ -965,8 +950,7 @@ ReformatAPFSHR::UnpackNote(const uint8_t* srcPtr, long srcLen)
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-Reformat3200SHR::Examine(ReformatHolder* pHolder)
+void Reformat3200SHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -997,8 +981,7 @@ Reformat3200SHR::Examine(ReformatHolder* pHolder)
 /*
  * Convert a 3200-color Super Hi-Res Image.
  */
-int
-Reformat3200SHR::Process(const ReformatHolder* pHolder,
+int Reformat3200SHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -1049,8 +1032,7 @@ bail:
  *
  * This is shared among the 3200-color SHR formats.
  */
-MyDIBitmap*
-Reformat3200SHR::SHR3200ToBitmap24(void)
+MyDIBitmap* Reformat3200SHR::SHR3200ToBitmap24(void)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
     RGBTRIPLE colorLookup[kExtNumColorTables][kNumEntriesPerColorTable];
@@ -1139,8 +1121,7 @@ bail:
  * This *might* also be $c0/0004, but there's no file type note
  * for that.
  */
-void
-Reformat3201SHR::Examine(ReformatHolder* pHolder)
+void Reformat3201SHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -1159,12 +1140,10 @@ Reformat3201SHR::Examine(ReformatHolder* pHolder)
         ReformatHolder::kApplicNot, ReformatHolder::kApplicNot);
 }
 
-
 /*
  * Convert a 3201-format packed 3200-color Super Hi-Res Image.
  */
-int
-Reformat3201SHR::Process(const ReformatHolder* pHolder,
+int Reformat3201SHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {

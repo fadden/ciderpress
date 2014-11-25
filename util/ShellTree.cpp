@@ -25,14 +25,7 @@ BEGIN_MESSAGE_MAP(ShellTree, CTreeCtrl)
 END_MESSAGE_MAP()
 
 
-/*
- * Replace a CTreeCtrl in a dialog box with us.  All of the styles are
- * copied from the original dialog window.
- *
- * Returns TRUE on success, FALSE on failure.
- */
-BOOL
-ShellTree::ReplaceDlgCtrl(CDialog* pDialog, int treeID)
+BOOL ShellTree::ReplaceDlgCtrl(CDialog* pDialog, int treeID)
 {
     CWnd* pWnd = pDialog->GetDlgItem(treeID);
     if (pWnd == NULL)
@@ -55,13 +48,7 @@ ShellTree::ReplaceDlgCtrl(CDialog* pDialog, int treeID)
     return TRUE;
 }
 
-/*
- * Populate the tree, starting from "nFolder".
- *
- * Returns TRUE on success, FALSE on failure.
- */
-BOOL
-ShellTree::PopulateTree(int nFolder) 
+BOOL ShellTree::PopulateTree(int nFolder) 
 {
     LPSHELLFOLDER lpsf = NULL, lpsf2 = NULL;
     LPITEMIDLIST lpi = NULL;
@@ -121,11 +108,7 @@ bail:
     return retval;
 }
 
-/*
- * Open up and select My Computer.
- */
-void
-ShellTree::ExpandMyComputer(void)
+void ShellTree::ExpandMyComputer(void)
 {
     HTREEITEM hItem;
     hItem = FindMyComputer();
@@ -135,17 +118,7 @@ ShellTree::ExpandMyComputer(void)
     Select(hItem, TVGN_CARET);
 }
 
-
-/*
- * Fills a branch of the TreeView control.  Given the shell folder (both as
- * a shell folder and the fully-qualified item ID list to it) and the parent
- * item in the tree (TVI_ROOT to start off), add all the kids to the tree.
- *
- * Does not try to add the current entry, as a result of which we don't
- * have a root "Desktop" node that everything is a child of.  This is okay.
- */
-void
-ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
+void ShellTree::FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST lpifq,
     HTREEITEM hParent)
 {
     CWaitCursor     wait;
@@ -323,13 +296,7 @@ Done:
     //LOGI("FillTreeView DONE");
 }
 
-/*
- * Add a node to the tree.
- *
- * Returns TRUE on success, FALSE on failure.
- */
-BOOL
-ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
+BOOL ShellTree::AddNode(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi, LPITEMIDLIST lpifq,
     unsigned long ulAttrs, HTREEITEM hParent, HTREEITEM* phPrev)
 {
     TVITEM          tvi;
@@ -411,14 +378,7 @@ bail:
     return result;
 }
 
-/*
- * Set the TreeView normal and selected icons for the specified entry.
- *
- * "lpifq" is the fully-qualified PIDL, LPTV_ITEM is an item in the tree.
- */
-void
-ShellTree::GetNormalAndSelectedIcons(LPITEMIDLIST lpifq,
-                               LPTV_ITEM lptvitem)
+void ShellTree::GetNormalAndSelectedIcons(LPITEMIDLIST lpifq, LPTV_ITEM lptvitem)
 {
    //Note that we don't check the return value here because if GetIcon()
    //fails, then we're in big trouble...
@@ -435,13 +395,8 @@ ShellTree::GetNormalAndSelectedIcons(LPITEMIDLIST lpifq,
    return;
 }
 
-
-
-/*
- * Sort function callback for TreeView SortChildrenCB.
- */
-int CALLBACK 
-ShellTree::TreeViewCompareProc(LPARAM lparam1, LPARAM lparam2, LPARAM)
+/*static*/ int CALLBACK ShellTree::TreeViewCompareProc(LPARAM lparam1,
+    LPARAM lparam2, LPARAM)
 {
     TVItemData* lptvid1 = (TVItemData*)lparam1;
     TVItemData* lptvid2 = (TVItemData*)lparam2;
@@ -473,16 +428,7 @@ ShellTree::TreeViewCompareProc(LPARAM lparam1, LPARAM lparam2, LPARAM)
     return (short) HRESULT_CODE(hr);
 }
 
-
-/*
- * Add a new folder to the tree at the currently-selected node.  This may
- * not actually add a folder if the new folder is at a point in the tree
- * below where we have already expanded.
- *
- * Returns TRUE on success, or FALSE on failure.
- */
-BOOL
-ShellTree::AddFolderAtSelection(const CString& name)
+BOOL ShellTree::AddFolderAtSelection(const CString& name)
 {
     LPSHELLFOLDER lpsf = NULL;
     LPITEMIDLIST lpi = NULL;
@@ -607,12 +553,6 @@ bail:
     return result;
 }
 
-
-/*
- * Respond to TVN_ITEMEXPANDING message.
- *
- * If the subtree hasn't been expanded yet, dig in.
- */
 void ShellTree::OnFolderExpanding(NMHDR* pNMHDR, LRESULT* pResult) 
 {
     TVItemData*     lptvid; //Long pointer to TreeView item data
@@ -691,24 +631,14 @@ void ShellTree::GetContextMenu(NMHDR*, LRESULT* pResult)
 }
 #endif
 
-/*
- * Respond to TVN_SELCHANGED notification.
- */
-BOOL
-ShellTree::OnSelectionChange(NMHDR* pnmh, LRESULT* pResult)
+BOOL ShellTree::OnSelectionChange(NMHDR* pnmh, LRESULT* pResult)
 {
     fFolderPathValid = OnFolderSelected(pnmh, pResult, fFolderPath);
     *pResult = 0;
     return FALSE;   // allow window parent to handle notification
 }
 
-/*
- * This does the bulk of the work when the selection changes.
- *
- * The filesystem path (if any) to the object is placed in "szFolderPath".
- */
-BOOL
-ShellTree::OnFolderSelected(NMHDR* pNMHDR, LRESULT* pResult,
+BOOL ShellTree::OnFolderSelected(NMHDR* pNMHDR, LRESULT* pResult,
     CString &szFolderPath) 
 {
     TVItemData*     lptvid;
@@ -780,11 +710,7 @@ ShellTree::OnFolderSelected(NMHDR* pNMHDR, LRESULT* pResult,
     return bRet;
 }
 
-/*
- * Handle TVN_DELETEITEM notification by cleaning up our stuff.
- */
-void
-ShellTree::OnDeleteShellItem(NMHDR* pNMHDR, LRESULT* pResult)
+void ShellTree::OnDeleteShellItem(NMHDR* pNMHDR, LRESULT* pResult)
 {
     TVItemData* lptvid=NULL;
     HRESULT hr;
@@ -809,14 +735,7 @@ ShellTree::OnDeleteShellItem(NMHDR* pNMHDR, LRESULT* pResult)
     *pResult = 0;
 }
 
-/*
- * Gets a handle to the system image list (by just grabbing whatever is
- * in place for C:\) and makes it available to the tree control.
- *
- * The image list should NOT be deleted.
- */
-void
-ShellTree::EnableImages()
+void ShellTree::EnableImages()
 {
     // Get the handle to the system image list, for our icons
     HIMAGELIST hImageList;
@@ -832,18 +751,6 @@ ShellTree::EnableImages()
             (LPARAM)hImageList);
 }
 
-/****************************************************************************
-*
-*   FUNCTION:   GetSelectedFolderPath(CString &szFolderPath)
-*
-*   PURPOSE:    Retrieves the path of the currently selected string.
-*               Pass a CString object that will hold the folder path. 
-*               If the path is not in the filesystem(eg MyComputer) 
-*               or none is selected it returns false.
-*
-*   MESSAGEMAP: NONE
-*
-****************************************************************************/
 BOOL ShellTree::GetSelectedFolderPath(CString &szFolderPath)
 {
     TVItemData*     lptvid;  //Long pointer to TreeView item data
@@ -887,16 +794,6 @@ BOOL ShellTree::GetSelectedFolderPath(CString &szFolderPath)
     return bRet;
 }
 
-/****************************************************************************
-*
-*   FUNCTION:   GetParentShellFolder(HTREEITEM folderNode)
-*
-*   PURPOSE:    Retrieves the pointer to the ISHELLFOLDER interface
-*               of the tree node passed as the paramter.
-*
-*   MESSAGEMAP: NONE
-*
-****************************************************************************/
 LPSHELLFOLDER ShellTree::GetParentShellFolder(HTREEITEM folderNode)
 {
     TVItemData* lptvid;  //Long pointer to TreeView item data
@@ -908,17 +805,6 @@ LPSHELLFOLDER ShellTree::GetParentShellFolder(HTREEITEM folderNode)
         return NULL;
 }
 
-/****************************************************************************
-*
-*   FUNCTION:   GetRelativeIDLIST(HTREEITEM folderNode)
-*
-*   PURPOSE:    Retrieves the Pointer to an ITEMIDLIST structure that
-*               identifies the subfolder relative to its parent folder.
-*               see GetParentShellFolder();
-*
-*   MESSAGEMAP: NONE
-*
-****************************************************************************/
 LPITEMIDLIST ShellTree::GetRelativeIDLIST(HTREEITEM folderNode)
 {
     TVItemData* lptvid;  //Long pointer to TreeView item data
@@ -930,17 +816,6 @@ LPITEMIDLIST ShellTree::GetRelativeIDLIST(HTREEITEM folderNode)
         return NULL;
 }
 
-/****************************************************************************
-*
-*   FUNCTION:   GetFullyQualifiedIDLIST(HTREEITEM folderNode)
-*
-*   PURPOSE:    Retrieves the Pointer to an ITEMIDLIST
-*               structure that identifies the subfolder relative to the
-*               desktop. This is a fully qualified Item Identifier
-*
-*   MESSAGEMAP: NONE
-*
-****************************************************************************/
 LPITEMIDLIST ShellTree::GetFullyQualifiedID(HTREEITEM folderNode)
 {
     TVItemData* lptvid;  //Long pointer to TreeView item data
@@ -952,26 +827,18 @@ LPITEMIDLIST ShellTree::GetFullyQualifiedID(HTREEITEM folderNode)
         return NULL;
 }
 
-
-/*
- * Tunnel into the tree, finding the node that corresponds to the
- * requested pathname.
- *
- * Sets "resultMsg" to a non-empty string on error.
- */
-void
-ShellTree::TunnelTree(CString path, CString* pResultStr)
+void ShellTree::TunnelTree(CString path, CString* pResultStr)
 {
     const WCHAR* str = path;
     int len;
 
     if (str[0] == '\\' && str[1] == '\\') {
-        *pResultStr = "Can't expand network locations directly.";
+        *pResultStr = L"Can't expand network locations directly.";
         return;
     }
     len = path.GetLength();
     if (len < 1) {
-        *pResultStr = "You must enter a folder name.";
+        *pResultStr = L"You must enter a folder name.";
         return;
     }
 
@@ -1023,24 +890,21 @@ ShellTree::TunnelTree(CString path, CString* pResultStr)
     }
 }
 
-/*
- * Find the tree entry that corresponds to "My Computer".
- *
- * This is hampered somewhat by the absence of a way to compare two
- * shell folders for equality.  The PIDL compare function is meant for
- * sorting only (at least as far as it has been documented), and the My
- * Computer "folder" has no path to examine.
- *
- * It helps greatly to assume that My Computer is right under Desktop.
- * If it moved, or if we started the tree somewhere other than right at
- * the desktop, we'd have to recursively search the tree.
- *
- * Returns a handle to the tree item, or NULL if My Computer wasn't found
- * or didn't have any children.
- */
-HTREEITEM
-ShellTree::FindMyComputer(void)
+HTREEITEM ShellTree::FindMyComputer(void)
 {
+    /*
+     * Find the tree entry that corresponds to "My Computer".
+     *
+     * This is hampered somewhat by the absence of a way to compare two
+     * shell folders for equality.  The PIDL compare function is meant for
+     * sorting only (at least as far as it has been documented), and the My
+     * Computer "folder" has no path to examine.
+     *
+     * It helps greatly to assume that My Computer is right under Desktop.
+     * If it moved, or if we started the tree somewhere other than right at
+     * the desktop, we'd have to recursively search the tree.
+     */
+
     LPSHELLFOLDER desktop = NULL;
     LPITEMIDLIST myComputerPidl = NULL;
     LPMALLOC lpMalloc = NULL;
@@ -1088,15 +952,7 @@ bail:
     return result;
 }
 
-/*
- * Given a pointer to the My Computer node in the tree, find the node
- * corresponding to the requested drive (which should be of the form
- * "C:").
- *
- * Returns a pointer to the drive's node on success, or NULL on failure.
- */
-HTREEITEM
-ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
+HTREEITEM ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
 {
     CString udrive;
 
@@ -1135,17 +991,9 @@ ShellTree::FindDrive(HTREEITEM myComputer, const CString& drive)
     return node;
 }
 
-/*
- * Given a path, search a subtree following the components.
- *
- * Pass in the tree's root (it's children will be searched for a
- * match with the first path component) and the path to look for
- * (which must start and end with '\\').
- */
-HTREEITEM
-ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
+HTREEITEM ShellTree::SearchTree(HTREEITEM treeNode, const CString& path)
 {
-    LOGI("SearchTree node=0x%p path='%ls'", treeNode, (LPCWSTR) path);
+    LOGD("SearchTree node=0x%p path='%ls'", treeNode, (LPCWSTR) path);
 
     HTREEITEM node;
     CString mangle(path);

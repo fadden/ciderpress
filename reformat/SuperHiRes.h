@@ -84,10 +84,10 @@ public:
     ReformatUnpackedSHR(void) {}
     virtual ~ReformatUnpackedSHR(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     SHRScreen   fScreen;
@@ -102,10 +102,10 @@ public:
     ReformatJEQSHR(void) {}
     virtual ~ReformatJEQSHR(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     enum { kExpectedLen = 32288 };
@@ -121,10 +121,10 @@ public:
     ReformatPaintworksSHR(void) {}
     virtual ~ReformatPaintworksSHR(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     enum { kMinSize = 223 };
@@ -140,10 +140,10 @@ public:
     ReformatPackedSHR(void) {}
     virtual ~ReformatPackedSHR(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     SHRScreen   fScreen;
@@ -166,10 +166,10 @@ public:
             delete[] fSCBStore;
     }
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     int UnpackMain(const uint8_t* srcPtr, long srcLen);
@@ -206,10 +206,10 @@ public:
         memcpy(fExtColorTable, multiPal, sizeof(fExtColorTable));
     }
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
     MyDIBitmap* SHR3200ToBitmap24(void);
 
@@ -234,10 +234,10 @@ public:
     Reformat3201SHR(void) {}
     virtual ~Reformat3201SHR(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 };
 
 
@@ -279,10 +279,10 @@ public:
     ReformatDG256SHR(void) {}
     virtual ~ReformatDG256SHR(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     DreamGrafix fDG;
@@ -297,10 +297,10 @@ public:
     ReformatDG3200SHR(void) {}
     virtual ~ReformatDG3200SHR(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     DreamGrafix fDG;

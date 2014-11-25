@@ -69,9 +69,8 @@
  * Return zero to enable standard processing, nonzero to claim ownership of
  * the message.
  */
-/*static*/ UINT CALLBACK
-SelectFilesDialog::OFNHookProc(HWND hDlg, UINT uiMsg, WPARAM wParam,
-    LPARAM lParam)
+/*static*/ UINT CALLBACK SelectFilesDialog::OFNHookProc(HWND hDlg, UINT uiMsg,
+    WPARAM wParam, LPARAM lParam)
 {
     OPENFILENAME* pOfn;
     SelectFilesDialog* pSFD = NULL;
@@ -117,8 +116,7 @@ SelectFilesDialog::OFNHookProc(HWND hDlg, UINT uiMsg, WPARAM wParam,
  * You can indicate displeasure with the CDN_* messages by using SetWindowLong
  * to alter the DWL_MSGRESULT value.
  */
-UINT
-SelectFilesDialog::HandleNotify(HWND hDlg, LPOFNOTIFY pofn)
+UINT SelectFilesDialog::HandleNotify(HWND hDlg, LPOFNOTIFY pofn)
 {
 //  int count;
 
@@ -173,8 +171,7 @@ SelectFilesDialog::HandleNotify(HWND hDlg, LPOFNOTIFY pofn)
 /*
  * Handle WM_COMMAND messages.
  */
-UINT
-SelectFilesDialog::HandleCommand(HWND hDlg, WPARAM wParam, LPARAM lParam)
+UINT SelectFilesDialog::HandleCommand(HWND hDlg, WPARAM wParam, LPARAM lParam)
 {
     LOGI("  HandleCommand wParam=%d lParam=0x%08lx", wParam, lParam);
 
@@ -192,8 +189,7 @@ SelectFilesDialog::HandleCommand(HWND hDlg, WPARAM wParam, LPARAM lParam)
 /*
  * Handle WM_SIZE.
  */
-UINT
-SelectFilesDialog::HandleSize(HWND hDlg, UINT nType, int cx, int cy)
+UINT SelectFilesDialog::HandleSize(HWND hDlg, UINT nType, int cx, int cy)
 {
     //LOGI("Dialog: old size %d,%d  (ready=%d)",
     //  fLastWinSize.Width(), fLastWinSize.Height(), fReady);
@@ -219,8 +215,7 @@ SelectFilesDialog::HandleSize(HWND hDlg, UINT nType, int cx, int cy)
  * User hit F1 or applied the '?' button to something.  Our heritage is
  * dubious, so use global functions to access the help file.
  */
-UINT
-SelectFilesDialog::HandleHelp(HWND hDlg, LPHELPINFO lpHelpInfo)
+UINT SelectFilesDialog::HandleHelp(HWND hDlg, LPHELPINFO lpHelpInfo)
 {
     CWnd* pWndMain = ::AfxGetMainWnd();
     CWinApp* pAppMain = ::AfxGetApp();
@@ -243,8 +238,7 @@ SelectFilesDialog::HandleHelp(HWND hDlg, LPHELPINFO lpHelpInfo)
  * We need to shift everything up by the difference between the IDOK button
  * and our "accept" button.
  */
-void
-SelectFilesDialog::MyOnInitDone(void)
+void SelectFilesDialog::MyOnInitDone(void)
 {
     LOGI("OnInitDone!");
     CWnd* pParent = GetParent();
@@ -293,8 +287,7 @@ SelectFilesDialog::MyOnInitDone(void)
  * because the CFileDialog is also moving the controls, though it doesn't
  * move them in quite the way we want.
  */
-void
-SelectFilesDialog::ShiftControls(int deltaX, int deltaY)
+void SelectFilesDialog::ShiftControls(int deltaX, int deltaY)
 {
     if (deltaX == 0 && deltaY == 0) {
         LOGI("SFD OnSize: no meaningful change");
@@ -316,8 +309,7 @@ SelectFilesDialog::ShiftControls(int deltaX, int deltaY)
  *
  * Returns "NULL" if it can't find it.
  */
-CWnd*
-SelectFilesDialog::GetListCtrl(void)
+CWnd* SelectFilesDialog::GetListCtrl(void)
 {
     CWnd* pItem;
     CWnd* pList;
@@ -338,8 +330,7 @@ SelectFilesDialog::GetListCtrl(void)
 /*
  * When the selection changes, update our dialog.
  */
-void
-SelectFilesDialog::MyOnFileNameChange(void)
+void SelectFilesDialog::MyOnFileNameChange(void)
 {
     //LOGI("OnFileNameChange");
 
@@ -364,8 +355,7 @@ SelectFilesDialog::MyOnFileNameChange(void)
 /*
  * The user hit the "Accept" button.  Package up the file selection.
  */
-void
-SelectFilesDialog::MyOnAccept(void)
+void SelectFilesDialog::MyOnAccept(void)
 {
     //LOGI("OnAccept!");
     PrepEndDialog();
@@ -378,8 +368,7 @@ SelectFilesDialog::MyOnAccept(void)
  * Returns "true" if all went well, "false" if it failed (e.g. because the
  * user hasn't selected any files).
  */
-bool
-SelectFilesDialog::PrepEndDialog(void)
+bool SelectFilesDialog::PrepEndDialog(void)
 {
     CListCtrl* pList;
     int nextSpot = 0;
@@ -569,8 +558,7 @@ SelectFilesDialog::PrepEndDialog(void)
 /*
  * User hit our cancel button.
  */
-void
-SelectFilesDialog::MyOnCancel(void)
+void SelectFilesDialog::MyOnCancel(void)
 {
     fExitStatus = IDCANCEL;
     CDialog* pDialog = (CDialog*) GetParent();
@@ -580,8 +568,7 @@ SelectFilesDialog::MyOnCancel(void)
 /*
  * Clear the filename field.
  */
-void
-SelectFilesDialog::ClearFileName(void)
+void SelectFilesDialog::ClearFileName(void)
 {
     CWnd* pWnd = GetParent()->GetDlgItem(edt1);
     if (pWnd != NULL)

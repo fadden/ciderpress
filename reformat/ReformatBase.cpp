@@ -166,8 +166,7 @@ const int kUnk = 0x3f;      // for unmappable chars, use '?'
  * if we want to have a reversible transformation someday, it'll make our
  * lives easier then.
  */
-void
-ReformatText::CheckGSCharConv(void)
+void ReformatText::CheckGSCharConv(void)
 {
 #ifdef _DEBUG
     bool test[256];
@@ -185,14 +184,12 @@ ReformatText::CheckGSCharConv(void)
 #endif
 }
 
-
 /*
  * Set the output format and buffer.
  *
  * Clears our work buffer pointer so we don't free it.
  */
-void
-ReformatText::SetResultBuffer(ReformatOutput* pOutput, bool multiFont)
+void ReformatText::SetResultBuffer(ReformatOutput* pOutput, bool multiFont)
 {
     char* buf;
     long len;
@@ -225,7 +222,6 @@ ReformatText::SetResultBuffer(ReformatOutput* pOutput, bool multiFont)
         pOutput->SetMultipleFontsFlag(true);
 }
 
-
 /*
  * Output the RTF header.
  *
@@ -235,8 +231,7 @@ ReformatText::SetResultBuffer(ReformatOutput* pOutput, bool multiFont)
  *
  * The default font is Courier New (\f0) at 10 points (\fs20).
  */
-void
-ReformatText::RTFBegin(int flags)
+void ReformatText::RTFBegin(int flags)
 {
 //  static const char* rtfHdr =
 //"{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1033{\\fonttbl{\\f0\\fmodern\\fprq1\\fcharset0 Courier New;}}\r\n"
@@ -274,15 +269,16 @@ ReformatText::RTFBegin(int flags)
 /*
  * Output the RTF footer.
  */
-void
-ReformatText::RTFEnd(void) { if (fUseRTF) BufPrintf("}\r\n%c", '\0'); }
+void ReformatText::RTFEnd(void)
+{
+    if (fUseRTF) BufPrintf("}\r\n%c", '\0');
+}
 
 /*
  * Output RTF paragraph definition marker.  Do this every time we change some
  * aspect of paragraph formatting, such as margins or justification.
  */
-void
-ReformatText::RTFSetPara(void)
+void ReformatText::RTFSetPara(void)
 {
     if (!fUseRTF)
         return;
@@ -320,8 +316,7 @@ ReformatText::RTFSetPara(void)
  * If you're producing RTF output, this is the right way to output an
  * end-of-line character.
  */
-void
-ReformatText::RTFNewPara(void)
+void ReformatText::RTFNewPara(void)
 {
     if (fUseRTF)
         BufPrintf("\\par\r\n");
@@ -335,8 +330,7 @@ ReformatText::RTFNewPara(void)
  * so it won't appear in CiderPress or WordPad, but it will come out in
  * Microsoft Word if you extract to a file.
  */
-void
-ReformatText::RTFPageBreak(void)
+void ReformatText::RTFPageBreak(void)
 {
     if (fUseRTF)
         BufPrintf("\\page ");
@@ -345,8 +339,7 @@ ReformatText::RTFPageBreak(void)
 /*
  * RTF tab character.
  */
-void
-ReformatText::RTFTab(void)
+void ReformatText::RTFTab(void)
 {
     if (fUseRTF)
         BufPrintf("\\tab ");
@@ -355,8 +348,7 @@ ReformatText::RTFTab(void)
 /*
  * Minor formatting.
  */
-void
-ReformatText::RTFBoldOn(void)
+void ReformatText::RTFBoldOn(void)
 {
     if (fBoldEnabled)
         return;
@@ -365,8 +357,8 @@ ReformatText::RTFBoldOn(void)
         fBoldEnabled = true;
     }
 }
-void
-ReformatText::RTFBoldOff(void)
+
+void ReformatText::RTFBoldOff(void)
 {
     if (!fBoldEnabled)
         return;
@@ -375,8 +367,8 @@ ReformatText::RTFBoldOff(void)
         fBoldEnabled = false;
     }
 }
-void
-ReformatText::RTFItalicOn(void)
+
+void ReformatText::RTFItalicOn(void)
 {
     if (fItalicEnabled)
         return;
@@ -385,8 +377,8 @@ ReformatText::RTFItalicOn(void)
         fItalicEnabled = true;
     }
 }
-void
-ReformatText::RTFItalicOff(void)
+
+void ReformatText::RTFItalicOff(void)
 {
     if (!fItalicEnabled)
         return;
@@ -395,8 +387,8 @@ ReformatText::RTFItalicOff(void)
         fItalicEnabled = false;
     }
 }
-void
-ReformatText::RTFUnderlineOn(void)
+
+void ReformatText::RTFUnderlineOn(void)
 {
     if (fUnderlineEnabled)
         return;
@@ -405,8 +397,8 @@ ReformatText::RTFUnderlineOn(void)
         fUnderlineEnabled = true;
     }
 }
-void
-ReformatText::RTFUnderlineOff(void)
+
+void ReformatText::RTFUnderlineOff(void)
 {
     if (!fUnderlineEnabled)
         return;
@@ -415,8 +407,8 @@ ReformatText::RTFUnderlineOff(void)
         fUnderlineEnabled = false;
     }
 }
-void
-ReformatText::RTFSubscriptOn(void)
+
+void ReformatText::RTFSubscriptOn(void)
 {
     if (fSubscriptEnabled)
         return;
@@ -425,8 +417,8 @@ ReformatText::RTFSubscriptOn(void)
         fSubscriptEnabled = true;
     }
 }
-void
-ReformatText::RTFSubscriptOff(void)
+
+void ReformatText::RTFSubscriptOff(void)
 {
     if (!fSubscriptEnabled)
         return;
@@ -435,8 +427,8 @@ ReformatText::RTFSubscriptOff(void)
         fSubscriptEnabled = false;
     }
 }
-void
-ReformatText::RTFSuperscriptOn(void)
+
+void ReformatText::RTFSuperscriptOn(void)
 {
     if (fSuperscriptEnabled)
         return;
@@ -445,8 +437,8 @@ ReformatText::RTFSuperscriptOn(void)
         fSuperscriptEnabled = true;
     }
 }
-void
-ReformatText::RTFSuperscriptOff(void)
+
+void ReformatText::RTFSuperscriptOff(void)
 {
     if (!fSuperscriptEnabled)
         return;
@@ -455,8 +447,8 @@ ReformatText::RTFSuperscriptOff(void)
         fSuperscriptEnabled = false;
     }
 }
-void
-ReformatText::RTFSetColor(TextColor color)
+
+void ReformatText::RTFSetColor(TextColor color)
 {
     if (color == fTextColor)
         return;
@@ -469,32 +461,31 @@ ReformatText::RTFSetColor(TextColor color)
 /*
  * Change paragraph formatting.
  */
-void
-ReformatText::RTFParaLeft(void)
+void ReformatText::RTFParaLeft(void)
 {
     if (fJustified != kJustifyLeft) {
         fJustified = kJustifyLeft;
         RTFSetPara();
     }
 }
-void
-ReformatText::RTFParaRight(void)
+
+void ReformatText::RTFParaRight(void)
 {
     if (fJustified != kJustifyRight) {
         fJustified = kJustifyRight;
         RTFSetPara();
     }
 }
-void
-ReformatText::RTFParaCenter(void)
+
+void ReformatText::RTFParaCenter(void)
 {
     if (fJustified != kJustifyCenter) {
         fJustified = kJustifyCenter;
         RTFSetPara();
     }
 }
-void
-ReformatText::RTFParaJustify(void)
+
+void ReformatText::RTFParaJustify(void)
 {
     if (fJustified != kJustifyFull) {
         fJustified = kJustifyFull;
@@ -505,27 +496,24 @@ ReformatText::RTFParaJustify(void)
 /*
  * Page margins, in 1/10th inches.
  */
-void
-ReformatText::RTFLeftMargin(int margin)
+void ReformatText::RTFLeftMargin(int margin)
 {
     //LOGI("+++ Left margin now %d", margin);
     fLeftMargin = margin;
     RTFSetPara();
 }
-void
-ReformatText::RTFRightMargin(int margin)
+
+void ReformatText::RTFRightMargin(int margin)
 {
     //LOGI("+++ Right margin now %d", margin);
     fRightMargin = margin;
     RTFSetPara();
 }
 
-
 /*
  * Switch to a different font size.
  */
-void
-ReformatText::RTFSetFontSize(int points)
+void ReformatText::RTFSetFontSize(int points)
 {
     if (fUseRTF && fPointSize != points)
         BufPrintf("\\fs%d ", points * 2);
@@ -534,8 +522,7 @@ ReformatText::RTFSetFontSize(int points)
 /*
  * Switch to a different font.
  */
-void
-ReformatText::RTFSetFont(RTFFont font)
+void ReformatText::RTFSetFont(RTFFont font)
 {
     if (fUseRTF)
         BufPrintf("\\f%d ", font);
@@ -544,8 +531,7 @@ ReformatText::RTFSetFont(RTFFont font)
 /*
  * Set the font by specifying a IIgs QuickDraw II font family number.
  */
-void
-ReformatText::RTFSetGSFont(uint16_t family)
+void ReformatText::RTFSetGSFont(uint16_t family)
 {
     float newMult;
 
@@ -629,8 +615,7 @@ ReformatText::RTFSetGSFont(uint16_t family)
  * BUG: we should track the state of the "underline" mode, and turn it
  * on and off based on the font size (8-point fonts aren't underlined).
  */
-void
-ReformatText::RTFSetGSFontSize(int points)
+void ReformatText::RTFSetGSFontSize(int points)
 {
     RTFSetFontSize((int) roundf(points * fGSFontSizeMult));
 
@@ -650,8 +635,7 @@ ReformatText::RTFSetGSFontSize(int points)
  * bold as they do in plain.  This doesn't hold true for Windows
  * fonts, so we're going to look different in some circumstances.
  */
-void
-ReformatText::RTFSetGSFontStyle(uint8_t qdStyle)
+void ReformatText::RTFSetGSFontStyle(uint8_t qdStyle)
 {
     if (!fUseRTF)
         return;
@@ -701,8 +685,7 @@ ReformatText::RTFProportionalOff(void) {
  * If "stripHiBits" is set, the high bit of each character is cleared before
  * the value is considered.
  */
-void
-ReformatText::ConvertEOL(const uint8_t* srcBuf, long srcLen,
+void ReformatText::ConvertEOL(const uint8_t* srcBuf, long srcLen,
     bool stripHiBits)
 {
     /* Compatibility - assume we're not stripping nulls */
@@ -715,11 +698,10 @@ ReformatText::ConvertEOL(const uint8_t* srcBuf, long srcLen,
  *
  * If "stripHiBits" is set, the high bit of each character is cleared before
  * the value is considered.
- *
+ *2
  * If "stripNulls" is true, no null values will make it through.
  */
-void
-ReformatText::ConvertEOL(const uint8_t* srcBuf, long srcLen,
+void ReformatText::ConvertEOL(const uint8_t* srcBuf, long srcLen,
     bool stripHiBits, bool stripNulls)
 {
     uint8_t ch;
@@ -760,8 +742,7 @@ ReformatText::ConvertEOL(const uint8_t* srcBuf, long srcLen,
 /*
  * Write a hex dump into the buffer.
  */
-void
-ReformatText::BufHexDump(const uint8_t* srcBuf, long srcLen)
+void ReformatText::BufHexDump(const uint8_t* srcBuf, long srcLen)
 {
     const uint8_t* origSrcBuf = srcBuf;
     char chBuf[17];
@@ -863,8 +844,7 @@ ReformatText::BufHexDump(const uint8_t* srcBuf, long srcLen)
  * Initialize the Apple II color palette, used for Hi-Res and DHR
  * conversions.  Could also be used for lo-res mode.
  */
-void
-ReformatGraphics::InitPalette(void)
+void ReformatGraphics::InitPalette(void)
 {
     ASSERT(kPaletteSize == 16);
 
@@ -894,15 +874,13 @@ ReformatGraphics::InitPalette(void)
 /*
  * Stuff out DIB into the output fields, and set the appropriate flags.
  */
-void
-ReformatGraphics::SetResultBuffer(ReformatOutput* pOutput, MyDIBitmap* pDib)
+void ReformatGraphics::SetResultBuffer(ReformatOutput* pOutput, MyDIBitmap* pDib)
 {
     ASSERT(pOutput != NULL);
     ASSERT(pDib != NULL);
     pOutput->SetOutputKind(ReformatOutput::kOutputBitmap);
     pOutput->SetDIB(pDib);
 }
-
 
 /*
  * Unpack the Apple PackBytes format.
@@ -922,8 +900,7 @@ ReformatGraphics::SetResultBuffer(ReformatOutput* pOutput, MyDIBitmap* pDib)
  *
  * Returns 0 on success, nonzero if the buffer is overfilled or underfilled.
  */
-int
-ReformatGraphics::UnpackBytes(uint8_t* dst, const uint8_t* src,
+int ReformatGraphics::UnpackBytes(uint8_t* dst, const uint8_t* src,
     long dstRem, long srcLen)
 {
     while (srcLen > 0) {
@@ -1028,7 +1005,6 @@ ReformatGraphics::UnpackBytes(uint8_t* dst, const uint8_t* src,
     return 0;
 }
 
-
 /*
  * Unpack Macintosh PackBits format.  See Technical Note TN1023.
  *
@@ -1047,8 +1023,7 @@ ReformatGraphics::UnpackBytes(uint8_t* dst, const uint8_t* src,
  *
  * We have to watch for underruns on the input and overruns on the output.
  */
-void
-ReformatGraphics::UnPackBits(const uint8_t** pSrcBuf, long* pSrcLen,
+void ReformatGraphics::UnPackBits(const uint8_t** pSrcBuf, long* pSrcLen,
     uint8_t** pOutPtr, long dstLen, uint8_t xorVal)
 {
     const uint8_t* srcBuf = *pSrcBuf;

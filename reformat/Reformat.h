@@ -15,6 +15,7 @@
 #define REFORMAT_REFORMAT_H
 
 #include "../util/UtilLib.h"
+#include <stdint.h>
 
 class Reformat;
 class ReformatOutput;

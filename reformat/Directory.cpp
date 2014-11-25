@@ -16,8 +16,7 @@ using namespace DiskImgLib;
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatDirectory::Examine(ReformatHolder* pHolder)
+void ReformatDirectory::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -33,8 +32,7 @@ ReformatDirectory::Examine(ReformatHolder* pHolder)
  * Convert a ProDOS directory into a format resembling BASIC.System's
  * 80-column "catalog" command.
  */
-int
-ReformatDirectory::Process(const ReformatHolder* pHolder,
+int ReformatDirectory::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -70,8 +68,7 @@ ReformatDirectory::Process(const ReformatHolder* pHolder,
  * The "showDeleted" flag determines whether we show active entries or
  * deleted entries.
  */
-void
-ReformatDirectory::PrintDirEntries(const uint8_t* srcBuf,
+void ReformatDirectory::PrintDirEntries(const uint8_t* srcBuf,
     long srcLen, bool showDeleted)
 {
     const int kEntriesPerBlock = 0x0d;      // expected value for entries per blk

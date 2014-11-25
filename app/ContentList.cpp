@@ -445,7 +445,7 @@ void ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
             {
                 CString modDate;
                 FormatDate(pEntry->GetModWhen(), &modDate);
-                ::lstrcpy(plvdi->item.pszText, (LPCTSTR) modDate);
+                ::lstrcpy(plvdi->item.pszText, (LPCWSTR) modDate);
             }
             break;
         case 4:     // format

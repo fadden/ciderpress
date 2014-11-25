@@ -30,9 +30,6 @@
 //using namespace libfadden;
 
 
-/*
- * Destroy allocated memory and delete the DIB object.
- */
 MyDIBitmap::~MyDIBitmap(void)
 {
     if (mhBitmap != NULL)
@@ -43,18 +40,12 @@ MyDIBitmap::~MyDIBitmap(void)
     /* fpPixels point to system-allocated memory inside fhBitmap */
 }
 
-/*
- * Create a blank DIB with the requested dimensions.
- *
- * We probably don't need to allocate DIB storage here.  We can do most
- * operations ourselves, in local memory, and only convert when needed.
- *
- * Returns a pointer to the pixel storage on success, or NULL on failure.
- */
-void*
-MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
+void* MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
     bool dibSection /*=false*/)
 {
+     // We probably don't need to allocate DIB storage here.  We can do most
+     // operations ourselves, in local memory, and only convert when needed.
+
     if (mhBitmap != NULL || mpPixels != NULL || mpFileBuffer != NULL) {
         LOGI(" DIB GLITCH: already created");
         assert(false);
@@ -146,11 +137,7 @@ MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed,
     return mpPixels;
 }
 
-/*
- * Open the file and call the FILE* version.
- */
-int
-MyDIBitmap::CreateFromFile(const WCHAR* fileName)
+int MyDIBitmap::CreateFromFile(const WCHAR* fileName)
 {
     FILE* fp = NULL;
     int err;
@@ -173,11 +160,7 @@ MyDIBitmap::CreateFromFile(const WCHAR* fileName)
     return err;
 }
 
-/*
- * Create a DIB by reading a BMP or TGA file into memory.
- */
-int
-MyDIBitmap::CreateFromFile(FILE* fp, long len)
+int MyDIBitmap::CreateFromFile(FILE* fp, long len)
 {
     void* buf = NULL;
     int err = -1;
@@ -198,14 +181,7 @@ bail:
     return err;
 }
 
-/*
- * Create object from a copy of the file in memory.
- *
- * We want to hang on to the data buffer, but if we don't own it then we
- * have to make a copy.
- */
-int
-MyDIBitmap::CreateFromBuffer(void* buf, long len, bool doDelete)
+int MyDIBitmap::CreateFromBuffer(void* buf, long len, bool doDelete)
 {
     assert(len > 0);
 
@@ -221,18 +197,7 @@ MyDIBitmap::CreateFromBuffer(void* buf, long len, bool doDelete)
     }
 }
 
-/*
- * Create object from a buffer of new[]-created memory that we own.
- *
- * The memory will be discarded if this function fails.
- *
- * We don't want to create a DIB section if the eventual user of this data
- * doesn't need it (e.g. it's just getting converted into a 3D texture
- * without using any GDI calls), so we just leave the pixels in the file
- * buffer for now.
- */
-int
-MyDIBitmap::CreateFromNewBuffer(void* vbuf, long len)
+int MyDIBitmap::CreateFromNewBuffer(void* vbuf, long len)
 {
     BITMAPFILEHEADER* pHeader = (BITMAPFILEHEADER*) vbuf;
     unsigned char* buf = (unsigned char*) vbuf;
@@ -256,13 +221,7 @@ MyDIBitmap::CreateFromNewBuffer(void* vbuf, long len)
     }
 }
 
-/*
- * Set up internal structures for the BMP file.
- *
- * On error, "vbuf" is discarded.
- */
-int
-MyDIBitmap::ImportBMP(void* vbuf, long len)
+int MyDIBitmap::ImportBMP(void* vbuf, long len)
 {
     BITMAPFILEHEADER* pHeader = (BITMAPFILEHEADER*) vbuf;
     BITMAPINFO* pInfo;
@@ -328,18 +287,7 @@ bail:
     return err;
 }
 
-/*
- * Set up internal structures for the TGA file.
- *
- * We handle 16-, 24-, and 32-bit .TGA files only.  They happen to use the
- * same byte layout as BMP files, so we do very little work here.  If we
- * tried to write the raw data to a BMP file we could end up in trouble,
- * because we don't force the "pitch must be multiple of 4 bytes" rule.
- *
- * On error, "vbuf" is discarded.
- */
-int
-MyDIBitmap::ImportTGA(void* vbuf, long len)
+int MyDIBitmap::ImportTGA(void* vbuf, long len)
 {
     TargaHeader targaHdr;
     unsigned char* hdr = (unsigned char*) vbuf;
@@ -422,15 +370,7 @@ MyDIBitmap::ImportTGA(void* vbuf, long len)
     return err;
 }
 
-
-/*
- * If the bitmap wasn't initially created as a DIB section, transform it now
- * so the application can use it in GDI calls.
- *
- * Returns 0 on success, -1 on error.
- */
-int
-MyDIBitmap::ConvertBufToDIBSection(void)
+int MyDIBitmap::ConvertBufToDIBSection(void)
 {
     void* oldPixels = mpPixels;
 
@@ -478,13 +418,7 @@ MyDIBitmap::ConvertBufToDIBSection(void)
     return 0;
 }
 
-/*
- * Create the object from a resource embedded in the application.
- *
- * Use MAKEINTRESOURCE to load a resource by ordinal.
- */
-void*
-MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
+void* MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
 {
     mhBitmap = (HBITMAP) ::LoadImage(hInstance, rsrc, IMAGE_BITMAP, 0, 0,
                     LR_DEFAULTCOLOR | LR_CREATEDIBSECTION);
@@ -539,7 +473,7 @@ MyDIBitmap::CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc)
             DWORD err = ::GetLastError();
             CString buf;
             GetWin32ErrorString(err, &buf);
-            LOGI(" DIB GetDIBColorTable failed (err=0x%x '%ls')",
+            LOGW(" DIB GetDIBColorTable failed (err=0x%x '%ls')",
                 err, (LPCWSTR) buf);
         }
         SelectObject(memDC, oldBits);
@@ -587,12 +521,7 @@ bail:
             memcpy( m_pResourceBuffer, pvRes, dwSize );
 #endif
 
-
-/*
- * Zero out a bitmap's pixels.  Does not touch the color table.
- */
-void
-MyDIBitmap::ClearPixels(void)
+void MyDIBitmap::ClearPixels(void)
 {
     assert(mpPixels != NULL);
 
@@ -600,12 +529,7 @@ MyDIBitmap::ClearPixels(void)
     memset(mpPixels, 0, mPitchBytes * mHeight);
 }
 
-
-/*
- * Set the values in the color table.
- */
-void
-MyDIBitmap::SetColorTable(const RGBQUAD* pColorTable)
+void MyDIBitmap::SetColorTable(const RGBQUAD* pColorTable)
 {
     assert(pColorTable != NULL);
 
@@ -627,14 +551,7 @@ MyDIBitmap::SetColorTable(const RGBQUAD* pColorTable)
     mColorTableInitialized = true;
 }
 
-
-/*
- * Retrieve the transparency color key, if any.
- *
- * Returns "false" if no color key has been set.
- */
-bool
-MyDIBitmap::GetTransparentColor(RGBQUAD* pColor) const
+bool MyDIBitmap::GetTransparentColor(RGBQUAD* pColor) const
 {
     if (mAlphaType != kAlphaTransparency)
         return false;
@@ -642,11 +559,7 @@ MyDIBitmap::GetTransparentColor(RGBQUAD* pColor) const
     return true;
 }
 
-/*
- * Set the transparent color.  Changes the alpha mode to kAlphaTransparency.
- */
-void
-MyDIBitmap::SetTransparentColor(const RGBQUAD* pColor)
+void MyDIBitmap::SetTransparentColor(const RGBQUAD* pColor)
 {
     if (mAlphaType == kAlphaFull) {
         LOGI(" NOTE: switching from full alpha to transparent-color alpha");
@@ -656,15 +569,7 @@ MyDIBitmap::SetTransparentColor(const RGBQUAD* pColor)
     mAlphaType = kAlphaTransparency;
 }
 
-
-/*
- * Look up an RGB color in an indexed color table.
- *
- * Returns the index of the color, or -1 if not found (-2 on error, e.g. this
- * isn't an indexed-color bitmap or the color table hasn't been created).
- */
-int
-MyDIBitmap::LookupColor(const RGBQUAD* pRgbQuad)
+int MyDIBitmap::LookupColor(const RGBQUAD* pRgbQuad)
 {
     if (mBpp > 8) {
         LOGI(" DIB LookupColor on %d-bit image", mBpp);
@@ -688,14 +593,12 @@ MyDIBitmap::LookupColor(const RGBQUAD* pRgbQuad)
     return -1;
 }
 
-
 /*
  * Return the RGB value of a single pixel in a bitmap.
  *
  * "rgbReserved" is always set to zero.
  */
-void
-MyDIBitmap::GetPixelRGB(int x, int y, RGBQUAD* pRgbQuad) const
+void MyDIBitmap::GetPixelRGB(int x, int y, RGBQUAD* pRgbQuad) const
 {
     GetPixelRGBA(x, y, pRgbQuad);
     pRgbQuad->rgbReserved = 0;
@@ -706,8 +609,7 @@ MyDIBitmap::GetPixelRGB(int x, int y, RGBQUAD* pRgbQuad) const
  *
  * This sets rgbReserved appropriately for the current alpha mode.
  */
-void
-MyDIBitmap::GetPixelRGBA(int x, int y, RGBQUAD* pRgbQuad) const
+void MyDIBitmap::GetPixelRGBA(int x, int y, RGBQUAD* pRgbQuad) const
 {
     assert(x >= 0 && x < mWidth && y >= 0 && y < mHeight);
     y = mHeight - y -1; // upside-down
@@ -799,8 +701,7 @@ MyDIBitmap::GetPixelRGBA(int x, int y, RGBQUAD* pRgbQuad) const
  *
  * The "rgbReserved" channel is forced to zero.
  */
-void
-MyDIBitmap::SetPixelRGB(int x, int y, const RGBQUAD* pRgbQuad)
+void MyDIBitmap::SetPixelRGB(int x, int y, const RGBQUAD* pRgbQuad)
 {
     if (pRgbQuad->rgbReserved == 0) {
         SetPixelRGBA(x, y, pRgbQuad);
@@ -816,8 +717,7 @@ MyDIBitmap::SetPixelRGB(int x, int y, const RGBQUAD* pRgbQuad)
  *
  * For index-color bitmaps, this requires a (slow) table lookup.
  */
-void
-MyDIBitmap::SetPixelRGBA(int x, int y, const RGBQUAD* pRgbQuad)
+void MyDIBitmap::SetPixelRGBA(int x, int y, const RGBQUAD* pRgbQuad)
 {
     assert(x >= 0 && x < mWidth && y >= 0 && y < mHeight);
     y = mHeight - y -1; // upside-down
@@ -854,8 +754,7 @@ MyDIBitmap::SetPixelRGBA(int x, int y, const RGBQUAD* pRgbQuad)
  *
  * Only works on indexed-color formats (8bpp or less).
  */
-void
-MyDIBitmap::GetPixelIndex(int x, int y, int* pIdx) const
+void MyDIBitmap::GetPixelIndex(int x, int y, int* pIdx) const
 {
     assert(x >= 0 && x < mWidth && y >= 0 && y < mHeight);
     y = mHeight - y -1; // upside-down
@@ -881,8 +780,7 @@ MyDIBitmap::GetPixelIndex(int x, int y, int* pIdx) const
 /*
  * Set the index value of a pixel in an indexed-color bitmap (8bpp or less).
  */
-void
-MyDIBitmap::SetPixelIndex(int x, int y, int idx)
+void MyDIBitmap::SetPixelIndex(int x, int y, int idx)
 {
     if (x < 0 || x >= mWidth || y < 0 || y >= mHeight) {
         LOGI("BAD x=%d y=%d idx=%d", x, y, idx);
@@ -911,38 +809,29 @@ MyDIBitmap::SetPixelIndex(int x, int y, int idx)
     }
 }
 
-
-/*
- * Blit a block of pixels from one bitmap to another.
- *
- * The bitmaps must share a common format, and the rectangles must be the
- * same size.  We could implement color conversion and resizing here, but
- * for now let's not.
- */
-/*static*/ bool
-MyDIBitmap::Blit(MyDIBitmap* pDstBits, const RECT* pDstRect,
+/*static*/ bool MyDIBitmap::Blit(MyDIBitmap* pDstBits, const RECT* pDstRect,
     const MyDIBitmap* pSrcBits, const RECT* pSrcRect)
 {
     if (pDstRect->right - pDstRect->left !=
         pSrcRect->right - pSrcRect->left)
     {
-        LOGI("DIB blit: widths differ");
+        LOGW("DIB blit: widths differ");
         return false;
     }
     if (pDstRect->bottom - pDstRect->top !=
         pSrcRect->bottom - pSrcRect->top)
     {
-        LOGI("DIB blit: heights differ");
+        LOGW("DIB blit: heights differ");
         return false;
     }
     if (pSrcBits->mBpp != pDstBits->mBpp) {
-        LOGI("DIB blit: different formats");
+        LOGW("DIB blit: different formats");
         return false;
     }
     if (pDstRect->right <= pDstRect->left ||
         pDstRect->bottom <= pDstRect->top)
     {
-        LOGI("DIB blit: poorly formed rect");
+        LOGW("DIB blit: poorly formed rect");
         return false;
     }
 
@@ -988,18 +877,7 @@ MyDIBitmap::Blit(MyDIBitmap* pDstBits, const RECT* pDstRect,
     return true;
 }
 
-
-/*
- * Create a DDB from the current bitmap in the specified DC, and return its
- * handle.  The returned handle must eventually be disposed with DeleteObject.
- *
- * Since we're just supplying pointers to various pieces of data, there's no
- * need for us to have a DIB section.
- *
- * Returns NULL on failure.
- */
-HBITMAP
-MyDIBitmap::ConvertToDDB(HDC dc) const
+HBITMAP MyDIBitmap::ConvertToDDB(HDC dc) const
 {
     HBITMAP hBitmap = NULL;
 
@@ -1079,13 +957,7 @@ MyDIBitmap::ConvertToDDB(HDC dc) const
     return hBitmap;
 }
 
-
-/*
- * Write the bitmap to the named file.  Opens the file and calls the FILE*
- * function.
- */
-int
-MyDIBitmap::WriteToFile(const WCHAR* fileName) const
+int MyDIBitmap::WriteToFile(const WCHAR* fileName) const
 {
     FILE* fp = NULL;
     int err;
@@ -1104,15 +976,7 @@ MyDIBitmap::WriteToFile(const WCHAR* fileName) const
     return err;
 }
 
-/*
- * Write the bitmap to a file.
- *
- * Pass in an open, seeked file pointer (make sure to use "wb" mode).
- *
- * Returns 0 on success, or nonzero (errno) on failure.
- */
-int
-MyDIBitmap::WriteToFile(FILE* fp) const
+int MyDIBitmap::WriteToFile(FILE* fp) const
 {
     BITMAPFILEHEADER fileHeader;
     long pixelBufSize;

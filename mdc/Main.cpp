@@ -27,10 +27,6 @@ BEGIN_MESSAGE_MAP(MainWindow, CFrameWnd)
 END_MESSAGE_MAP()
 
 
-/*
- * MainWindow constructor.  Creates the main window and sets
- * its properties.
- */
 MainWindow::MainWindow()
 {
     static const WCHAR* kAppName = L"MDC";
@@ -61,11 +57,6 @@ MainWindow::MainWindow()
     fCancelFlag = false;
 }
 
-/*
- * MainWindow destructor.  Close the archive if one is open, but don't try
- * to shut down any controls in child windows.  By this point, Windows has
- * already snuffed them.
- */
 MainWindow::~MainWindow()
 {
 //  int cc;
@@ -75,21 +66,15 @@ MainWindow::~MainWindow()
     DiskImgLib::Global::AppCleanup();
 }
 
-/*
- * Handle Exit item by sending a close request.
- */
-void
-MainWindow::OnFileExit(void)
+void MainWindow::OnFileExit(void)
 {
+    // Handle Exit item by sending a close request.
     SendMessage(WM_CLOSE, 0, 0);
 }
 
-/*
- * Go to the faddenSoft web site.
- */
-void
-MainWindow::OnHelpWebSite(void)
+void MainWindow::OnHelpWebSite(void)
 {
+    // Go to the faddenSoft web site.
     int err;
 
     err = (int) ::ShellExecute(m_hWnd, L"open", kWebSiteURL, NULL, NULL,
@@ -101,11 +86,7 @@ MainWindow::OnHelpWebSite(void)
     }
 }
 
-/*
- * Pop up the About box.
- */
-void
-MainWindow::OnHelpAbout(void)
+void MainWindow::OnHelpAbout(void)
 {
     int result;
 
@@ -116,11 +97,7 @@ MainWindow::OnHelpAbout(void)
 }
 
 
-/*
- * Handle "scan" item.
- */
-void
-MainWindow::OnFileScan(void)
+void MainWindow::OnFileScan(void)
 {
     if (0) {
         CString msg;
@@ -131,19 +108,7 @@ MainWindow::OnFileScan(void)
     }
 }
 
-/*
- * Allow events to flow through the message queue whenever the
- * progress meter gets updated.  This will allow us to redraw with
- * reasonable frequency.
- *
- * Calling this can result in other code being called, such as Windows
- * message handlers, which can lead to reentrancy problems.  Make sure
- * you're adequately semaphored before calling here.
- *
- * Returns TRUE if all is well, FALSE if we're trying to quit.
- */
-BOOL
-MainWindow::PeekAndPump(void)
+BOOL MainWindow::PeekAndPump(void)
 {
     MSG msg;
 
@@ -167,9 +132,6 @@ MainWindow::PeekAndPump(void)
  * ==========================================================================
  */
 
-/*
- * Handle a debug message from the DiskImg library.
- */
 /*static*/ void
 MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
 {
@@ -179,11 +141,9 @@ MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
     LOG_BASE(DebugLog::LOG_INFO, file, line, "<diskimg> %hs", msg);
 }
 
-/*
- * Handle a global error message from the NufxLib library.
- */
-/*static*/ NuResult
-MainWindow::NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
+
+/*static*/ NuResult MainWindow::NufxErrorMsgHandler(NuArchive* /*pArchive*/,
+    void* vErrorMessage)
 {
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
@@ -201,11 +161,7 @@ typedef struct ScanOpts {
     ProgressDlg*    pProgress;
 } ScanOpts;
 
-/*
- * Scan a set of files.
- */
-void
-MainWindow::ScanFiles(void)
+void MainWindow::ScanFiles(void)
 {
     ChooseFilesDlg chooseFiles;
     ScanOpts scanOpts;
@@ -361,13 +317,7 @@ typedef struct Win32dirent {
 
 static const WCHAR kWildMatchAll[] = L"*.*";
 
-/*
- * Prepare a directory for reading.
- *
- * Allocates a Win32dirent struct that must be freed by the caller.
- */
-Win32dirent*
-MainWindow::OpenDir(const WCHAR* name)
+Win32dirent* MainWindow::OpenDir(const WCHAR* name)
 {
     Win32dirent* dir = NULL;
     WCHAR* tmpStr = NULL;
@@ -411,13 +361,7 @@ failed:
     goto bail;
 }
 
-/*
- * Get an entry from an open directory.
- *
- * Returns a NULL pointer after the last entry has been read.
- */
-Win32dirent*
-MainWindow::ReadDir(Win32dirent* dir)
+Win32dirent* MainWindow::ReadDir(Win32dirent* dir)
 {
     if (dir->d_first)
         dir->d_first = 0;
@@ -433,11 +377,7 @@ MainWindow::ReadDir(Win32dirent* dir)
     return dir;
 }
 
-/*
- * Close a directory.
- */
-void
-MainWindow::CloseDir(Win32dirent* dir)
+void MainWindow::CloseDir(Win32dirent* dir)
 {
     if (dir == NULL)
         return;
@@ -446,14 +386,7 @@ MainWindow::CloseDir(Win32dirent* dir)
     free(dir);
 }
 
-/*
- * Process a file or directory.  These are expected to be names of files in
- * the current directory.
- *
- * Returns 0 on success, nonzero on error with a message in "*pErrMsg".
- */
-int
-MainWindow::Process(const WCHAR* pathname, ScanOpts* pScanOpts,
+int MainWindow::Process(const WCHAR* pathname, ScanOpts* pScanOpts,
     CString* pErrMsg)
 {
     bool exists, isDir, isReadable;
@@ -498,13 +431,7 @@ bail:
     return result;
 }
 
-/*
- * Win32 recursive directory descent.  Scan the contents of a directory.
- * If a subdirectory is found, follow it; otherwise, call Win32AddFile to
- * add the file.
- */
-int
-MainWindow::ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
+int MainWindow::ProcessDirectory(const WCHAR* dirName, ScanOpts* pScanOpts,
     CString* pErrMsg)
 {
     Win32dirent* dirp = NULL;
@@ -560,14 +487,7 @@ bail:
     return result;
 }
 
-
-/*
- * Open a disk image and dump the contents.
- *
- * Returns 0 on success, nonzero on failure.
- */
-int
-MainWindow::ScanDiskImage(const WCHAR* pathName, ScanOpts* pScanOpts)
+int MainWindow::ScanDiskImage(const WCHAR* pathName, ScanOpts* pScanOpts)
 {
     ASSERT(pathName != NULL);
     ASSERT(pScanOpts != NULL);
@@ -677,11 +597,7 @@ bail:
     }
 }
 
-/*
- * Analyze a file's characteristics.
- */
-void
-MainWindow::AnalyzeFile(const A2File* pFile, RecordKind* pRecordKind,
+void MainWindow::AnalyzeFile(const A2File* pFile, RecordKind* pRecordKind,
     LONGLONG* pTotalLen, LONGLONG* pTotalCompLen)
 {
     if (pFile->IsVolumeDirectory()) {
@@ -710,14 +626,7 @@ MainWindow::AnalyzeFile(const A2File* pFile, RecordKind* pRecordKind,
     }
 }
 
-/*
- * Determine whether the access bits on the record make it a read-only
- * file or not.
- *
- * Uses a simplified view of the access flags.
- */
-bool
-MainWindow::IsRecordReadOnly(int access)
+bool MainWindow::IsRecordReadOnly(int access)
 {
     if (access == 0x21L || access == 0x01L)
         return true;
@@ -761,13 +670,7 @@ static const char gFileTypeNames[256][4] = {
     "$F8", "OS ", "INT", "IVR", "BAS", "VAR", "REL", "SYS"
 };
 
-/*
- * Return a pointer to the three-letter representation of the file type name.
- *
- * Note to self: code down below tests first char for '?'.
- */
-/*static*/ const char*
-MainWindow::GetFileTypeString(unsigned long fileType)
+/*static*/ const char* MainWindow::GetFileTypeString(unsigned long fileType)
 {
     if (fileType < NELEM(gFileTypeNames))
         return gFileTypeNames[fileType];
@@ -778,9 +681,10 @@ MainWindow::GetFileTypeString(unsigned long fileType)
 /*  
  * Sanitize a string.  The Mac likes to stick control characters into
  * things, e.g. ^C and ^M, and uses high ASCII for special characters.
+ *
+ * TODO: use Mac Roman unicode translation instead
  */
-static void
-MacSanitize(char* str)
+static void MacSanitize(char* str)
 {       
     while (*str != '\0') {
         *str = DiskImg::MacToASCII(*str);
@@ -788,13 +692,7 @@ MacSanitize(char* str)
     }
 }   
 
-/*
- * Load the contents of a DiskFS.
- *
- * Recursively handle sub-volumes.
- */
-int
-MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
+int MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
     ScanOpts* pScanOpts)
 {
     static const char* kBlankFileName = "<blank filename>";

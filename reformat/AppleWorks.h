@@ -19,10 +19,10 @@ public:
     ReformatAWP(void) { fShowEmbeds = true; }
     virtual ~ReformatAWP(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
 
@@ -156,10 +156,10 @@ public:
     ReformatADB(void) {}
     virtual ~ReformatADB(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     enum {
@@ -179,10 +179,10 @@ public:
     ReformatASP(void) { fCurrentRow = fCurrentCol = 1; }
     virtual ~ReformatASP(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     enum {

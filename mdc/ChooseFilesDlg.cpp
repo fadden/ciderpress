@@ -10,14 +10,7 @@
 #include "ChooseFilesDlg.h"
 
 
-/*
- * Override base class version so we can move our stuff around.
- *
- * It's important that the base class be called last, because it calls
- * Invalidate to redraw the dialog.
- */
-void
-ChooseFilesDlg::ShiftControls(int deltaX, int deltaY)
+void ChooseFilesDlg::ShiftControls(int deltaX, int deltaY)
 {
     /*
      * These only need to be here so that the initial move puts them

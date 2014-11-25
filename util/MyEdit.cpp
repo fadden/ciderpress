@@ -18,8 +18,7 @@
  *
  * Returns TRUE on success, FALSE on failure.
  */
-BOOL
-MyEdit::ReplaceDlgCtrl(CDialog* pDialog, int editID)
+BOOL MyEdit::ReplaceDlgCtrl(CDialog* pDialog, int editID)
 {
     CWnd* pWnd = pDialog->GetDlgItem(editID);
     if (pWnd == NULL)
@@ -34,20 +33,17 @@ MyEdit::ReplaceDlgCtrl(CDialog* pDialog, int editID)
 /*
  * Set the properties that make us special.
  */
-void
-MyEdit::SetProperties(int props)
+void MyEdit::SetProperties(int props)
 {
     fCapsOnly = (props & kCapsOnly) != 0;
     fHexOnly = (props & kHexOnly) != 0;
     fNoWhiteSpace = (props & kNoWhiteSpace) != 0;
 }
 
-
 /*
  * Special keypress handling.
  */
-BOOL
-MyEdit::PreTranslateMessage(MSG* pMsg)
+BOOL MyEdit::PreTranslateMessage(MSG* pMsg)
 {
     if (pMsg->message == WM_CHAR) {
         if (fCapsOnly)

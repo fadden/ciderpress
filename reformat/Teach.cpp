@@ -22,8 +22,7 @@
  * document.  Possibly useful for converting the special characters.  We'll
  * activate it for any GWP file other than the two known types.
  */
-void
-ReformatGWP::Examine(ReformatHolder* pHolder)
+void ReformatGWP::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -40,8 +39,7 @@ ReformatGWP::Examine(ReformatHolder* pHolder)
 /*
  * Convert GWP into formatted text.
  */
-int
-ReformatGWP::Process(const ReformatHolder* pHolder,
+int ReformatGWP::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -89,8 +87,7 @@ ReformatGWP::Process(const ReformatHolder* pHolder,
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatTeach::Examine(ReformatHolder* pHolder)
+void ReformatTeach::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -106,8 +103,7 @@ ReformatTeach::Examine(ReformatHolder* pHolder)
  *
  * The text is in the data fork and the formatting is in the resource fork.
  */
-int
-ReformatTeach::Process(const ReformatHolder* pHolder,
+int ReformatTeach::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -238,8 +234,7 @@ ReformatTeach::Process(const ReformatHolder* pHolder,
 /*
  * Unpack an rStyleBlock resource.
  */
-bool
-RStyleBlock::Create(const uint8_t* buf, long len)
+bool RStyleBlock::Create(const uint8_t* buf, long len)
 {
     uint16_t version;
     uint32_t partLen;
@@ -326,14 +321,12 @@ RStyleBlock::Create(const uint8_t* buf, long len)
     return true;
 }
 
-
 /*
  * Construct a TERuler from a chunk of data.
  *
  * Returns the #of bytes consumed, or -1 on failure.
  */
-int
-RStyleBlock::TERuler::Create(const uint8_t* buf, long len)
+int RStyleBlock::TERuler::Create(const uint8_t* buf, long len)
 {
     long origLen = len;
 
@@ -395,8 +388,7 @@ RStyleBlock::TERuler::Create(const uint8_t* buf, long len)
 /*
  * Extract a TEStyle object from the buffer.
  */
-void
-RStyleBlock::TEStyle::Create(const uint8_t* buf)
+void RStyleBlock::TEStyle::Create(const uint8_t* buf)
 {
     fFontID = Reformat::Get32LE(buf);
     fForeColor = Reformat::Get16LE(buf + 4);
@@ -410,8 +402,7 @@ RStyleBlock::TEStyle::Create(const uint8_t* buf)
 /*
  * Extract a StyleItem object from the buffer.
  */
-void
-RStyleBlock::StyleItem::Create(const uint8_t* buf)
+void RStyleBlock::StyleItem::Create(const uint8_t* buf)
 {
     fLength = Reformat::Get32LE(buf);
     fOffset = Reformat::Get32LE(buf + 4);

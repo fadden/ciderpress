@@ -18,8 +18,7 @@
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatPrintShop::Examine(ReformatHolder* pHolder)
+void ReformatPrintShop::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -58,8 +57,7 @@ ReformatPrintShop::Examine(ReformatHolder* pHolder)
 /*
  * Convert Print Shop clip art into a DIB.
  */
-int
-ReformatPrintShop::Process(const ReformatHolder* pHolder,
+int ReformatPrintShop::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -94,8 +92,7 @@ ReformatPrintShop::Process(const ReformatHolder* pHolder,
  * The file is a linear 1-bit 88x52 image, with four extra bytes of data
  * at the end.
  */
-MyDIBitmap*
-ReformatPrintShop::ConvertBW(const uint8_t* srcBuf)
+MyDIBitmap* ReformatPrintShop::ConvertBW(const uint8_t* srcBuf)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
     uint8_t* outBuf;
@@ -145,8 +142,7 @@ bail:
  * is actually 100% blue and "magenta" is 100% red.  The values in the color
  * table below come from a screen capture of KEGS.
  */
-MyDIBitmap*
-ReformatPrintShop::ConvertColor(const uint8_t* srcBuf)
+MyDIBitmap* ReformatPrintShop::ConvertColor(const uint8_t* srcBuf)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
     uint8_t* outBuf;

@@ -58,8 +58,7 @@ static const char gIsBinary[256] = {
  * End-of-file is at the first Ctrl-Z, but we can't stop there because it
  * could be a binary file with a leading Ctrl-Z (e.g. PNG).
  */
-void
-ReformatCPMText::Examine(ReformatHolder* pHolder)
+void ReformatCPMText::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
@@ -118,8 +117,7 @@ done:
  * Generally speaking, CP/M text files should already be in CRLF format, so
  * this will go quickly.
  */
-int
-ReformatCPMText::Process(const ReformatHolder* pHolder,
+int ReformatCPMText::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {

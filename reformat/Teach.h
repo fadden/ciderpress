@@ -10,6 +10,7 @@
 #define REFORMAT_TEACH_H
 
 #include "ReformatBase.h"
+#include <assert.h>
 
 /*
  * Reformat a generic IIgs text file.
@@ -19,10 +20,10 @@ public:
     ReformatGWP(void) {}
     virtual ~ReformatGWP(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 };
 
 /*
@@ -33,10 +34,10 @@ public:
     ReformatTeach(void) {}
     virtual ~ReformatTeach(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
 };
@@ -206,6 +207,5 @@ private:
     TEStyle*    fpStyles;
     StyleItem*  fpStyleItems;
 };
-
 
 #endif /*REFORMAT_TEACH_H*/

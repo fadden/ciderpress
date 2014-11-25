@@ -31,7 +31,7 @@ BOOL UseSelectionDialog::OnInitDialog(void)
         pWnd->SetWindowText(str);
     } else {
         str.LoadString(fSelCountsID);
-        selStr.Format((LPCTSTR) str, fSelectedCount);
+        selStr.Format((LPCWSTR) str, fSelectedCount);
         pWnd->SetWindowText(selStr);
 
         if (fSelectedCount == 0)

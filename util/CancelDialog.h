@@ -37,11 +37,11 @@ protected:
 
 private:
     /* override Cancel button to just raise the flag */
-    virtual void OnCancel(void) {
+    virtual void OnCancel(void) override {
         /* "cancel" button or escape hit */
         *fpCancelFlag = true;
     }
-    //void PostNcDestroy(void) { delete this; }
+    //void PostNcDestroy(void) override { delete this; }
 
 };
 

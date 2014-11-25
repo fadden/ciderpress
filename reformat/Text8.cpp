@@ -37,8 +37,7 @@
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatMagicWindow::Examine(ReformatHolder* pHolder)
+void ReformatMagicWindow::Examine(ReformatHolder* pHolder)
 {
     if (pHolder->GetFileType() == kTypeBIN) {
         bool isMW = ReformatMagicWindow::IsFormatted(pHolder);
@@ -79,8 +78,7 @@ ReformatMagicWindow::Examine(ReformatHolder* pHolder)
  * I don't know much about the format, so this is based on the similarities
  * observed between half a dozen documents from different sources.
  */
-/*static*/ bool
-ReformatMagicWindow::IsFormatted(const ReformatHolder* pHolder)
+/*static*/ bool ReformatMagicWindow::IsFormatted(const ReformatHolder* pHolder)
 {
     const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
@@ -145,8 +143,7 @@ ReformatMagicWindow::IsFormatted(const ReformatHolder* pHolder)
 /*
  * Skip the header and text-convert the rest.
  */
-int
-ReformatMagicWindow::Process(const ReformatHolder* pHolder,
+int ReformatMagicWindow::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -184,10 +181,9 @@ bail:
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatGutenberg::Examine(ReformatHolder* pHolder)
+void ReformatGutenberg::Examine(ReformatHolder* pHolder)
 {
-    if ((pHolder->GetFileType() == kTypeTXT)  && 
+    if ((pHolder->GetFileType() == kTypeTXT) && 
         (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatGutenberg)) {
 
         pHolder->SetApplic(ReformatHolder::kReformatGutenberg,
@@ -196,12 +192,10 @@ ReformatGutenberg::Examine(ReformatHolder* pHolder)
     }
 }
 
-
 /*
  * Convert the text.
  */
-int
-ReformatGutenberg::Process(const ReformatHolder* pHolder,
+int ReformatGutenberg::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {

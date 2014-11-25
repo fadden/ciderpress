@@ -24,14 +24,13 @@ public:
     virtual ~ChooseFilesDlg(void) {}
 
 private:
-    //virtual bool MyDataExchange(bool saveAndValidate);
-    virtual void ShiftControls(int deltaX, int deltaY);
-    //virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam);
-
-    //void OnIDHelp(void);
-
-    //int GetButtonCheck(int id);
-    //void SetButtonCheck(int id, int checkVal);
+    /*
+     * Override base class version so we can move our stuff around.
+     *
+     * It's important that the base class be called last, because it calls
+     * Invalidate to redraw the dialog.
+     */
+    virtual void ShiftControls(int deltaX, int deltaY) override;
 
     //DECLARE_MESSAGE_MAP()
 };

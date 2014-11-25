@@ -598,8 +598,7 @@ const int kOpXCE_Implied            = OPMODE(kOpXCE, kAddrImplied);         // 0
  *
  * Returns "true" on success, "false" on failure.
  */
-bool
-ReformatDisasm65xxx::ValidateOpMap(void)
+bool ReformatDisasm65xxx::ValidateOpMap(void)
 {
     if (NELEM(kOpMap) != 256) {
         ASSERT(false);
@@ -754,8 +753,7 @@ ReformatDisasm65xxx::ValidateOpMap(void)
  *
  * Returns "true" on success, "false" on failure.
  */
-bool
-ReformatDisasm65xxx::ValidateOpCodeDetails(void)
+bool ReformatDisasm65xxx::ValidateOpCodeDetails(void)
 {
     if (NELEM(kOpCodeDetails) != kOpCodeMAX) {
         LOGI("Found %d entries in details, max=%d",

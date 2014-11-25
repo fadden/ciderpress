@@ -34,12 +34,28 @@ public:
         return FALSE;
     }
 
-    virtual BOOL SetBitmapID(int id);
+    /*
+     * Replace a button control in a dialog with ourselves.
+     *
+     * Returns TRUE on success, FALSE on failure.
+     */
     virtual BOOL ReplaceDlgCtrl(CDialog* pDialog, int buttonID);
 
+    /*
+     * Set the bitmap ID, and update the button appropriately.
+     */
+    virtual BOOL SetBitmapID(int id);
+
 protected:
-    virtual void UpdateBitmap(void);
+    /*
+     * If the system colors have changed, reload the bitmap.
+     */
     afx_msg void OnSysColorChange(void);
+
+    /*
+     * (Re-)load the bitmap and attach it to the button.
+     */
+    virtual void UpdateBitmap(void);
 
 private:
     HBITMAP     fhBitmap;

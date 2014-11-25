@@ -38,15 +38,7 @@
 
 #define kFilenameExtDelim   '.'     /* separates extension from filename */
 
-/*
- * Find the filename component of a local pathname.  Uses the fssep passed
- * in.  If the fssep is '\0' (as is the case for DOS 3.3), then the entire
- * pathname is returned.
- *
- * Always returns a pointer to a string; never returns NULL.
- */
-const WCHAR*
-PathName::FilenameOnly(const WCHAR* pathname, WCHAR fssep)
+const WCHAR* PathName::FilenameOnly(const WCHAR* pathname, WCHAR fssep)
 {
     const WCHAR* retstr;
     const WCHAR* pSlash;
@@ -99,19 +91,7 @@ bail:
     return retstr;
 }
 
-/*
- * Return the filename extension found in a full pathname.
- *
- * An extension is the stuff following the last '.' in the filename.  If
- * there is nothing following the last '.', then there is no extension.
- *
- * Returns a pointer to the '.' preceding the extension, or NULL if no
- * extension was found.
- *
- * We guarantee that there is at least one character after the '.'.
- */
-const WCHAR*
-PathName::FindExtension(const WCHAR* pathname, WCHAR fssep)
+const WCHAR* PathName::FindExtension(const WCHAR* pathname, WCHAR fssep)
 {
     const WCHAR* pFilename;
     const WCHAR* pExt;
@@ -131,13 +111,7 @@ PathName::FindExtension(const WCHAR* pathname, WCHAR fssep)
     return NULL;
 }
 
-
-
-/*
- * Get just the file name.
- */
-CString
-PathName::GetFileName(void)
+CString PathName::GetFileName(void)
 {
     CString str;
 
@@ -157,22 +131,14 @@ PathName::GetFileName(void)
     return str;
 }
 
-/*
- * Get just the drive name.
- */
-CString
-PathName::GetDriveOnly(void)
+CString PathName::GetDriveOnly(void)
 {
     SplitIFN();
 
     return fDrive;
 }
 
-/*
- * Get directory names, prefixed with the drive.
- */
-CString
-PathName::GetDriveAndPath(void)
+CString PathName::GetDriveAndPath(void)
 {
     CString str;
 
@@ -183,22 +149,14 @@ PathName::GetDriveAndPath(void)
     return str;
 }
 
-/*
- * Get just the directory names.
- */
-CString
-PathName::GetPathOnly(void)
+CString PathName::GetPathOnly(void)
 {
     SplitIFN();
 
     return fDir;
 }
 
-/*
- * Get just the extension.
- */
-CString
-PathName::GetExtension(void)
+CString PathName::GetExtension(void)
 {
     SplitIFN();
 
@@ -216,13 +174,7 @@ PathName::GetExtension(void)
     return fExt;
 }
 
-/*
- * Expand the short file name of an existing file into its long form.
- *
- * Returns 0 on success, -1 on failure.
- */
-int
-PathName::SFNToLFN(void)
+int PathName::SFNToLFN(void)
 {
     WCHAR buf[MAX_PATH];
     WIN32_FIND_DATA findFileData;
@@ -310,11 +262,7 @@ PathName::SFNToLFN(void)
     return 0;
 }
 
-/*
- * Return the description of the file type.
- */
-CString
-PathName::GetDescription()
+CString PathName::GetDescription()
 {
     CString     szTypeName;
     SHFILEINFO  sfi = { 0 };
@@ -326,21 +274,14 @@ PathName::GetDescription()
     return szTypeName;
 }
 
-/*
- * Check to see if the file exists.
- *
- * If we use something simple like access(), we will catch all files including
- * the ones in Network Neighborhood.  Using the FindFirstFile stuff avoids
- * the problem, but raises the difficulty of being unable to find simple
- * things like "D:\".
- */
-bool
-PathName::Exists(void)
+bool PathName::Exists(void)
 {
-//  if (strncmp(fPathName, "\\\\", 2) == 0) {
-//      LOGI("Refusing to check for network path '%ls'", fPathName);
-//      return false;
-//  }
+    /*
+     * If we use something simple like access(), we will catch all files including
+     * the ones in Network Neighborhood.  Using the FindFirstFile stuff avoids
+     * the problem, but raises the difficulty of being unable to find simple
+     * things like "D:\".
+     */
 
     return (::_waccess(fPathName, 0) != -1);
 
@@ -409,11 +350,7 @@ with
 ----------------------
 */
 
-/*
- * Invoke the system-dependent directory creation function.
- */
-int
-PathName::Mkdir(const WCHAR* dir)
+int PathName::Mkdir(const WCHAR* dir)
 {
     int err = 0;
 
@@ -425,16 +362,7 @@ PathName::Mkdir(const WCHAR* dir)
     return err;
 }
 
-/*
- * Determine if a file exists, and if so whether or not it's a directory.
- *
- * Set fields you're not interested in to NULL.
- *
- * On success, returns 0 and fields are set appropriately.  On failure,
- * returns nonzero and result values are undefined.
- */
-int
-PathName::GetFileInfo(const WCHAR* pathname, struct _stat* psb,
+int PathName::GetFileInfo(const WCHAR* pathname, struct _stat* psb,
     time_t* pModWhen, bool* pExists, bool* pIsReadable, bool* pIsDirectory)
 {
     struct _stat sbuf;
@@ -494,21 +422,13 @@ PathName::GetFileInfo(const WCHAR* pathname, struct _stat* psb,
     return 0;
 }
 
-/*
- * Check the status of a file.
- */
-int
-PathName::CheckFileStatus(struct _stat* psb, bool* pExists, bool* pIsReadable,
+int PathName::CheckFileStatus(struct _stat* psb, bool* pExists, bool* pIsReadable,
     bool* pIsDir)
 {
     return GetFileInfo(fPathName, psb, NULL, pExists, pIsReadable, pIsDir);
 }
 
-/*
- * Get the modification date of a file.
- */
-time_t
-PathName::GetModWhen(void)
+time_t PathName::GetModWhen(void)
 {
     time_t when;
 
@@ -518,11 +438,7 @@ PathName::GetModWhen(void)
     return when;
 }
 
-/*
- * Set the modification date on a file.
- */
-int
-PathName::SetModWhen(time_t when)
+int PathName::SetModWhen(time_t when)
 {
     struct _utimbuf utbuf;
 
@@ -539,16 +455,7 @@ PathName::SetModWhen(time_t when)
     return 0;
 }
 
-/*
- * Create a single subdirectory if it doesn't exist.  If the next-highest
- * subdirectory level doesn't exist either, cut down the pathname and
- * recurse.
- *
- * "pathEnd" points at the last valid character.  The length of the valid
- * path component is therefore (pathEnd-pathStart+1).
- */
-int
-PathName::CreateSubdirIFN(const WCHAR* pathStart, const WCHAR* pathEnd,
+int PathName::CreateSubdirIFN(const WCHAR* pathStart, const WCHAR* pathEnd,
     WCHAR fssep)
 {
     int err = 0;
@@ -597,17 +504,7 @@ bail:
     return err;
 }
 
-/*
- * Create subdirectories, if needed.  The paths leading up to the filename
- * in "pathname" will be created.
- *
- * If "pathname" is just a filename, or the set of directories matches
- * the last directory we created, we don't do anything.
- *
- * Returns 0 on success, or a Windows error code on failure.
- */
-int
-PathName::CreatePathIFN(void)
+int PathName::CreatePathIFN(void)
 {
     int err = 0;
     CString pathName(fPathName);

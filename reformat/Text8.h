@@ -20,10 +20,10 @@ public:
     ReformatMagicWindow(void) {}
     virtual ~ReformatMagicWindow(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     static bool IsFormatted(const ReformatHolder* pHolder);
@@ -39,10 +39,10 @@ public:
     ReformatGutenberg(void) {}
     virtual ~ReformatGutenberg(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 };
 

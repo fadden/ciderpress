@@ -15,13 +15,7 @@ BEGIN_MESSAGE_MAP(MyBitmapButton, CButton)
 END_MESSAGE_MAP()
 
 
-/*
- * Replace a button control in a dialog with ourselves.
- *
- * Returns TRUE on success, FALSE on failure.
- */
-BOOL
-MyBitmapButton::ReplaceDlgCtrl(CDialog* pDialog, int buttonID)
+BOOL MyBitmapButton::ReplaceDlgCtrl(CDialog* pDialog, int buttonID)
 {
     CWnd* pWnd = pDialog->GetDlgItem(buttonID);
     if (pWnd == NULL)
@@ -50,27 +44,19 @@ MyBitmapButton::ReplaceDlgCtrl(CDialog* pDialog, int buttonID)
     return TRUE;
 }
 
-/*
- * Set the bitmap ID, and update the button appropriately.
- */
-BOOL
-MyBitmapButton::SetBitmapID(int id)
+BOOL MyBitmapButton::SetBitmapID(int id)
 {
     fBitmapID = id;
     UpdateBitmap();
     return TRUE;
 }
 
-/*
- * (Re-)load the bitmap and attach it to the button.
- */
-void
-MyBitmapButton::UpdateBitmap(void)
+void MyBitmapButton::UpdateBitmap(void)
 {
     HBITMAP hNewBits;
 
     if (fBitmapID == -1) {
-        LOGI("ERROR: UpdateBitmap called before bitmap set");
+        LOGE("ERROR: UpdateBitmap called before bitmap set");
         ASSERT(false);
         return;
     }
@@ -78,7 +64,7 @@ MyBitmapButton::UpdateBitmap(void)
     hNewBits = (HBITMAP) ::LoadImage(AfxGetInstanceHandle(),
         MAKEINTRESOURCE(fBitmapID), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
     if (hNewBits == NULL) {
-        LOGI("WARNING: LoadImage failed (bitID=%d)", fBitmapID);
+        LOGW("WARNING: LoadImage failed (bitID=%d)", fBitmapID);
         ASSERT(false);
         return;
     }
@@ -89,11 +75,7 @@ MyBitmapButton::UpdateBitmap(void)
     fhBitmap = hNewBits;
 }
 
-/*
- * If the system colors have changed, reload the bitmap.
- */
-void
-MyBitmapButton::OnSysColorChange(void)
+void MyBitmapButton::OnSysColorChange(void)
 {
     LOGD("MyBitmapButton 0x%p tracking color change", this);
     UpdateBitmap();

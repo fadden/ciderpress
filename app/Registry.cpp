@@ -241,7 +241,7 @@ void MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
                 iconStr.Format(L"%ls,%d", exeName, iconIdx);
 
                 if (RegSetValueEx(hIconKey, L"", 0, REG_SZ,
-                    (const BYTE*)(LPCTSTR) iconStr,
+                    (const BYTE*)(LPCWSTR) iconStr,
                     wcslen(iconStr) * sizeof(WCHAR)) == ERROR_SUCCESS)
                 {
                     LOGI("  Set icon for '%ls' to '%ls'", appID,

@@ -55,8 +55,7 @@ static const char* kRsrcC000[0x04] = {
 /*
  * We handle all files, but only the resource fork.
  */
-void
-ReformatResourceFork::Examine(ReformatHolder* pHolder)
+void ReformatResourceFork::Examine(ReformatHolder* pHolder)
 {
     pHolder->SetApplic(ReformatHolder::kReformatResourceFork,
         ReformatHolder::kApplicNot,
@@ -66,8 +65,7 @@ ReformatResourceFork::Examine(ReformatHolder* pHolder)
 /*
  * Split a resource fork into its individual resources, and display them.
  */
-int
-ReformatResourceFork::Process(const ReformatHolder* pHolder,
+int ReformatResourceFork::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -166,9 +164,8 @@ done:
 /*
  * Extract and verify the header of a resource fork.
  */
-/*static*/ bool
-ReformatResourceFork::ReadHeader(const uint8_t* srcBuf, long srcLen,
-    long* pFileVersion, long* pFileToMap, long* pFileMapSize,
+/*static*/ bool ReformatResourceFork::ReadHeader(const uint8_t* srcBuf,
+    long srcLen, long* pFileVersion, long* pFileToMap, long* pFileMapSize,
     bool* pLittleEndian)
 {
     if (srcLen < 128) {
@@ -197,15 +194,13 @@ ReformatResourceFork::ReadHeader(const uint8_t* srcBuf, long srcLen,
     return true;
 }
 
-
 /*
  * For use by other reformatters: find a specific resource.
  *
  * Returns "true" on success, "false" on failure.
  */
-/*static*/ bool
-ReformatResourceFork::GetResource(const uint8_t* srcBuf, long srcLen,
-    uint16_t resourceType, uint32_t resourceID,
+/*static*/ bool ReformatResourceFork::GetResource(const uint8_t* srcBuf,
+    long srcLen, uint16_t resourceType, uint32_t resourceID,
     const uint8_t** pResource, long* pResourceLen)
 {
     /* read the file header */

@@ -29,8 +29,7 @@
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatAWP::Examine(ReformatHolder* pHolder)
+void ReformatAWP::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -44,8 +43,7 @@ ReformatAWP::Examine(ReformatHolder* pHolder)
 /*
  * Reformat an AppleWorks WP document.
  */
-int
-ReformatAWP::Process(const ReformatHolder* pHolder,
+int ReformatAWP::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -157,8 +155,7 @@ bail:
 /*
  * Initialize the DocState structure.
  */
-void
-ReformatAWP::InitDocState(void)
+void ReformatAWP::InitDocState(void)
 {
     memset(&fDocState, 0, sizeof(fDocState));
     fDocState.line = 1;
@@ -167,8 +164,7 @@ ReformatAWP::InitDocState(void)
 /*
  * Process a line record.
  */
-int
-ReformatAWP::ProcessLineRecord(uint8_t lineRecData, uint8_t lineRecCode,
+int ReformatAWP::ProcessLineRecord(uint8_t lineRecData, uint8_t lineRecCode,
     const uint8_t** pSrcPtr, long* pLength)
 {
     int err = 0;
@@ -304,8 +300,7 @@ ReformatAWP::ProcessLineRecord(uint8_t lineRecData, uint8_t lineRecCode,
  *
  * "lineRecData" has the number of bytes of input that we have yet to read.
  */
-int
-ReformatAWP::HandleTextRecord(uint8_t lineRecData,
+int ReformatAWP::HandleTextRecord(uint8_t lineRecData,
     const uint8_t** pSrcPtr, long* pLength)
 {
     int err = 0;
@@ -473,8 +468,7 @@ bail:
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatADB::Examine(ReformatHolder* pHolder)
+void ReformatADB::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -488,8 +482,7 @@ ReformatADB::Examine(ReformatHolder* pHolder)
 /*
  * Reformat an AppleWorks DB document.
  */
-int
-ReformatADB::Process(const ReformatHolder* pHolder,
+int ReformatADB::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -731,8 +724,7 @@ bail:
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatASP::Examine(ReformatHolder* pHolder)
+void ReformatASP::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -746,8 +738,7 @@ ReformatASP::Examine(ReformatHolder* pHolder)
 /*
  * Reformat an AppleWorks SS document.
  */
-int
-ReformatASP::Process(const ReformatHolder* pHolder,
+int ReformatASP::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -842,8 +833,7 @@ bail:
 /*
  * Process one row of spreadsheet data.
  */
-int
-ReformatASP::ProcessRow(int rowNum, const uint8_t** pSrcPtr, long* pLength)
+int ReformatASP::ProcessRow(int rowNum, const uint8_t** pSrcPtr, long* pLength)
 {
     uint8_t ctrl;
     bool first = true;
@@ -898,8 +888,7 @@ ReformatASP::ProcessRow(int rowNum, const uint8_t** pSrcPtr, long* pLength)
 /*
  * Process the contents of a single cell.
  */
-void
-ReformatASP::ProcessCell(const uint8_t* srcPtr, long cellLength)
+void ReformatASP::ProcessCell(const uint8_t* srcPtr, long cellLength)
 {
     uint8_t flag1, flag2;
     double dval;
@@ -969,8 +958,7 @@ ReformatASP::ProcessCell(const uint8_t* srcPtr, long cellLength)
  * Print the AppleWorks SS token pointed to by srcPtr.  Some tokens require
  * several bytes to express.
  */
-void
-ReformatASP::PrintToken(const uint8_t** pSrcPtr, long* pLength)
+void ReformatASP::PrintToken(const uint8_t** pSrcPtr, long* pLength)
 {
     /* string constants; note these must NOT contain '"' chars */
     const int kTokenStart = 0xc0;
@@ -1048,8 +1036,7 @@ ReformatASP::PrintToken(const uint8_t** pSrcPtr, long* pLength)
  * Format the current column number into something like 'A' or 'BA'.  This
  * stores the value in fPrintColBuf and returns a pointer to it.
  */
-const char*
-ReformatASP::PrintCol(int col)
+const char* ReformatASP::PrintCol(int col)
 {
     if (col < 0 || col >= 702) {
         LOGI("  ASP can't PrintCol(%d)", col);
@@ -1100,8 +1087,7 @@ ReformatASP::PrintCol(int col)
  * 3F847AE147AE147A
  * -----
  */
-double
-ReformatASP::ConvertSANEDouble(const uint8_t* srcPtr)
+double ReformatASP::ConvertSANEDouble(const uint8_t* srcPtr)
 {
     double newVal;
     uint8_t* dptr;

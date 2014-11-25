@@ -26,8 +26,7 @@
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatDHR::Examine(ReformatHolder* pHolder)
+void ReformatDHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
@@ -86,8 +85,7 @@ ReformatDHR::Examine(ReformatHolder* pHolder)
 /*
  * Convert a Double-Hi-Res image to a bitmap.
  */
-int
-ReformatDHR::Process(const ReformatHolder* pHolder,
+int ReformatDHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -139,8 +137,7 @@ bail:
 /*
  * Initialize the 4-bit-window color lookup table.
  */
-void
-ReformatDHR::InitColorLookup(void)
+void ReformatDHR::InitColorLookup(void)
 {
     for (int ii = 0; ii < 4; ii++) {
         for (int jj = 0; jj < kNumDHRColors; jj++) {
@@ -161,8 +158,7 @@ ReformatDHR::InitColorLookup(void)
 /*
  * Convert a buffer of double-hires data to a 16-color DIB.
  */
-MyDIBitmap*
-ReformatDHR::DHRScreenToBitmap(const uint8_t* buf)
+MyDIBitmap* ReformatDHR::DHRScreenToBitmap(const uint8_t* buf)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
     uint8_t* outBuf;

@@ -39,8 +39,7 @@
  * If the file ends in ".mac", we accept it if it has a MacBinary header or
  * if it begins with 00000002 and exceeds the minimum size required.
  */
-void
-ReformatMacPaint::Examine(ReformatHolder* pHolder)
+void ReformatMacPaint::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     const uint8_t* ptr = pHolder->GetSourceBuf(ReformatHolder::kPartData);
@@ -78,8 +77,7 @@ done:
 /*
  * Convert the image to a monochrome bitmap.
  */
-int
-ReformatMacPaint::Process(const ReformatHolder* pHolder,
+int ReformatMacPaint::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -110,8 +108,7 @@ bail:
  * 576 pixels per line == 72 bytes per line, which is a multiple of 4 bytes
  * (required for windows BMP).
  */
-MyDIBitmap*
-ReformatMacPaint::ConvertMacPaint(const uint8_t* srcBuf, long length)
+MyDIBitmap* ReformatMacPaint::ConvertMacPaint(const uint8_t* srcBuf, long length)
 {
     MyDIBitmap* pDib = NULL;
     uint8_t* outBuf;

@@ -43,7 +43,7 @@ BOOL ExtractOptionsDialog::OnInitDialog(void)
         pWnd->SetWindowText(countFmt);
     } else {
         countFmt.LoadString(IDS_EXT_SELECTED_COUNTS_FMT);
-        selStr.Format((LPCTSTR) countFmt, fSelectedCount);
+        selStr.Format((LPCWSTR) countFmt, fSelectedCount);
         pWnd->SetWindowText(selStr);
 
         if (fSelectedCount == 0)

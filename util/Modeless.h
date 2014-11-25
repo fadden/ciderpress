@@ -33,7 +33,7 @@ public:
      * OK button clicked.  Must override to prevent standard EndDialog
      * behavior.
      */
-    virtual void OnOK(void) {
+    virtual void OnOK(void) override {
         if (UpdateData() != FALSE)      // try the DDX/DDV stuff, if any
             DestroyWindow();
     }
@@ -41,12 +41,12 @@ public:
      * ESC key hit or Cancel button clicked.  Must override to prevent
      * standard EndDialog behavior.
      */
-    virtual void OnCancel(void) {
+    virtual void OnCancel(void) override {
         DestroyWindow();
     }
 
 protected:
-    void PostNcDestroy(void) {
+    void PostNcDestroy(void) override {
         // this may not arrive immediately
         fOkayToDelete = true;
         delete this;
@@ -77,7 +77,7 @@ public:
     }
 
     /* enable the parent window before we're destroyed */
-    virtual BOOL DestroyWindow(void) {
+    virtual BOOL DestroyWindow(void) override {
         if (fpParentWnd != NULL)
             fpParentWnd->EnableWindow(TRUE);
         return ModelessDialog::DestroyWindow();

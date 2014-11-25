@@ -42,8 +42,7 @@
  * Width is always > 0.  This guarantees that we don't loop forever even if
  * we hit stuff we don't recognize.
  */
-int
-ReformatDisasm65xxx::GetOpWidth(OpCode opCode, AddrMode addrMode, CPU cpu,
+int ReformatDisasm65xxx::GetOpWidth(OpCode opCode, AddrMode addrMode, CPU cpu,
     bool emul, bool shortM, bool shortX)
 {
     int width = 0;
@@ -148,8 +147,7 @@ ReformatDisasm65xxx::GetOpWidth(OpCode opCode, AddrMode addrMode, CPU cpu,
  *
  * The caller is expected to check to see if we're in bank 0.
  */
-bool
-ReformatDisasm65xxx::IsP8Call(const uint8_t* srcBuf, long srcLen)
+bool ReformatDisasm65xxx::IsP8Call(const uint8_t* srcBuf, long srcLen)
 {
     if (srcLen >= 6 &&
         srcBuf[0] == 0x20 && srcBuf[1] == 0x00 && srcBuf[2] == 0xbf)
@@ -162,8 +160,7 @@ ReformatDisasm65xxx::IsP8Call(const uint8_t* srcBuf, long srcLen)
 /*
  * Returns "true" if it looks like we're pointing at a IIgs toolbox call.
  */
-bool
-ReformatDisasm65xxx::IsToolboxCall(const uint8_t* srcBuf, long srcLen,
+bool ReformatDisasm65xxx::IsToolboxCall(const uint8_t* srcBuf, long srcLen,
     long backState)
 {
     if (srcLen >= 4 && backState >= 3 &&
@@ -178,8 +175,7 @@ ReformatDisasm65xxx::IsToolboxCall(const uint8_t* srcBuf, long srcLen,
 /*
  * Returns "true" if it looks like we're pointing at an inline GS/OS call.
  */
-bool
-ReformatDisasm65xxx::IsInlineGSOS(const uint8_t* srcBuf, long srcLen)
+bool ReformatDisasm65xxx::IsInlineGSOS(const uint8_t* srcBuf, long srcLen)
 {
     if (srcLen >= 10 &&
         srcBuf[0] == 0x22 && srcBuf[1] == 0xa8 && srcBuf[2] == 0x00 &&
@@ -193,8 +189,7 @@ ReformatDisasm65xxx::IsInlineGSOS(const uint8_t* srcBuf, long srcLen)
 /*
  * Returns "true" if it looks like we're pointing at a stack GS/OS call.
  */
-bool
-ReformatDisasm65xxx::IsStackGSOS(const uint8_t* srcBuf, long srcLen,
+bool ReformatDisasm65xxx::IsStackGSOS(const uint8_t* srcBuf, long srcLen,
     long backState)
 {
     if (srcLen >= 4 && backState >= 3 &&
@@ -213,8 +208,7 @@ ReformatDisasm65xxx::IsStackGSOS(const uint8_t* srcBuf, long srcLen,
  *
  * Returns the number of bytes consumed.
  */
-int
-ReformatDisasm65xxx::OutputMonitor8(const uint8_t* srcBuf, long srcLen,
+int ReformatDisasm65xxx::OutputMonitor8(const uint8_t* srcBuf, long srcLen,
     long backState, uint16_t addr)
 {
     const CPU kCPU = kCPU65C02;     // 6502 or 65C02
@@ -265,10 +259,8 @@ ReformatDisasm65xxx::OutputMonitor8(const uint8_t* srcBuf, long srcLen,
 /*
  * Output one line of 8-bit monitor stuff.
  */
-void
-ReformatDisasm65xxx::PrintMonitor8Line(OpCode opCode, AddrMode addrMode,
-    uint16_t addr, const uint8_t* srcBuf, long srcLen,
-    const char* comment)
+void ReformatDisasm65xxx::PrintMonitor8Line(OpCode opCode, AddrMode addrMode,
+    uint16_t addr, const uint8_t* srcBuf, long srcLen, const char* comment)
 {
     char lineBuf[64];   // actual length is about 30 -- does not hold comment
     char* cp;
@@ -393,15 +385,13 @@ ReformatDisasm65xxx::PrintMonitor8Line(OpCode opCode, AddrMode addrMode,
     RTFNewPara();
 }
 
-
 /*
  * Output one or more lines of text similar to what the monitor would output
  * on an 8-bit Apple II.
  *
  * Returns the number of bytes consumed.
  */
-int
-ReformatDisasm65xxx::OutputMonitor16(const uint8_t* srcBuf, long srcLen,
+int ReformatDisasm65xxx::OutputMonitor16(const uint8_t* srcBuf, long srcLen,
     long backState, uint32_t addr, bool shortRegs)
 {
     const CPU kCPU = kCPU65816;
@@ -472,10 +462,8 @@ ReformatDisasm65xxx::OutputMonitor16(const uint8_t* srcBuf, long srcLen,
 /*
  * Output one line of 16-bit monitor stuff.
  */
-void
-ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
-    uint32_t addr, const uint8_t* srcBuf, long srcLen,
-    const char* comment)
+void ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
+    uint32_t addr, const uint8_t* srcBuf, long srcLen, const char* comment)
 {
     char lineBuf[64];   // actual length is about 30 -- does not hold comment
     char* cp;
@@ -671,8 +659,7 @@ ReformatDisasm65xxx::PrintMonitor16Line(OpCode opCode, AddrMode addrMode,
  * file is code or, say, a hi-res graphic.  We use "maybe" level to put
  * disassembly below other formats.
  */
-void
-ReformatDisasm8::Examine(ReformatHolder* pHolder)
+void ReformatDisasm8::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     int fileType = pHolder->GetFileType();
@@ -703,8 +690,7 @@ ReformatDisasm8::Examine(ReformatHolder* pHolder)
 /*
  * Create a monitor listing or disassembly of a file.
  */
-int
-ReformatDisasm8::Process(const ReformatHolder* pHolder,
+int ReformatDisasm8::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -757,8 +743,7 @@ ReformatDisasm8::Process(const ReformatHolder* pHolder,
  * want to keep 16-bit disassembly available but prioritized below "raw" for
  * BIN files.
  */
-void
-ReformatDisasm16::Examine(ReformatHolder* pHolder)
+void ReformatDisasm16::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileType = pHolder->GetFileType();
@@ -812,8 +797,7 @@ ReformatDisasm16::Examine(ReformatHolder* pHolder)
 /*
  * Disassemble or show monitor listing for 16-bit code.
  */
-int
-ReformatDisasm16::Process(const ReformatHolder* pHolder,
+int ReformatDisasm16::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -861,8 +845,7 @@ ReformatDisasm16::Process(const ReformatHolder* pHolder,
 /*
  * Output one section of a file.
  */
-void
-ReformatDisasm16::OutputSection(const uint8_t* srcBuf, long srcLen,
+void ReformatDisasm16::OutputSection(const uint8_t* srcBuf, long srcLen,
     uint32_t addr, bool shortRegs)
 {
     long backState = 0;
@@ -882,8 +865,7 @@ ReformatDisasm16::OutputSection(const uint8_t* srcBuf, long srcLen,
 /*
  * Break an OMF file into sections, and output each individually.
  */
-bool
-ReformatDisasm16::OutputOMF(const uint8_t* srcBuf, long srcLen,
+bool ReformatDisasm16::OutputOMF(const uint8_t* srcBuf, long srcLen,
     long fileType, bool shortRegs)
 {
     const uint8_t* origBuf = srcBuf;
@@ -948,8 +930,7 @@ ReformatDisasm16::OutputOMF(const uint8_t* srcBuf, long srcLen,
 /*
  * Print the interesting bits of the header.
  */
-void
-ReformatDisasm16::PrintHeader(const OMFSegmentHeader* pSegHdr,
+void ReformatDisasm16::PrintHeader(const OMFSegmentHeader* pSegHdr,
     int segmentNumber, bool longFmt)
 {
     //pSegHdr->Dump();
@@ -1004,8 +985,7 @@ ReformatDisasm16::PrintHeader(const OMFSegmentHeader* pSegHdr,
 /*
  * Print the contents of the segment.
  */
-void
-ReformatDisasm16::PrintSegment(const OMFSegmentHeader* pSegHdr,
+void ReformatDisasm16::PrintSegment(const OMFSegmentHeader* pSegHdr,
     const uint8_t* srcBuf, long srcLen, bool shortRegs)
 {
     uint32_t subLen;
@@ -1065,9 +1045,7 @@ ReformatDisasm16::PrintSegment(const OMFSegmentHeader* pSegHdr,
  *
  * Returns "true" on success, "false" on failure.
  */
-bool
-OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen,
-    int fileType)
+bool OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen, int fileType)
 {
     if (srcLen < kHdrMinSize) {
         LOGI("OMF: Too short to be segment (%ld)", srcLen);
@@ -1238,8 +1216,7 @@ OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen,
 /*
  * Pry the segment type out of the "type" or "kind" field.
  */
-OMFSegmentHeader::SegmentType
-OMFSegmentHeader::GetSegmentType(void) const
+OMFSegmentHeader::SegmentType OMFSegmentHeader::GetSegmentType(void) const
 {
     assert(fReady);
 
@@ -1252,8 +1229,7 @@ OMFSegmentHeader::GetSegmentType(void) const
 /*
  * Return the value of one of the segment header flags.
  */
-bool
-OMFSegmentHeader::GetSegmentFlag(SegmentFlag flag) const
+bool OMFSegmentHeader::GetSegmentFlag(SegmentFlag flag) const
 {
     if (fVersion < 2) {
         switch (flag) {
@@ -1291,12 +1267,10 @@ OMFSegmentHeader::GetSegmentFlag(SegmentFlag flag) const
     }
 }
 
-
 /*
  * Dump the contents of the segment header struct.
  */
-void
-OMFSegmentHeader::Dump(void) const
+void OMFSegmentHeader::Dump(void) const
 {
     LOGI("OMF segment header:");
     LOGI("  segNum=%d loadName='%hs' segName='%hs'",

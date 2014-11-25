@@ -174,8 +174,7 @@ The Apple values seem to be good.
  * $4001 is a compressed DHR image.  In practice, nobody uses these, so
  * any FOT file with a correct-looking length is treated as hi-res.
  */
-void
-ReformatHiRes::Examine(ReformatHolder* pHolder)
+void ReformatHiRes::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
     long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
@@ -222,8 +221,7 @@ ReformatHiRes::Examine(ReformatHolder* pHolder)
 /*
  * Convert a Hi-Res image to a bitmap.
  */
-int
-ReformatHiRes::Process(const ReformatHolder* pHolder,
+int ReformatHiRes::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -259,8 +257,7 @@ bail:
  *
  * Table must be able to hold kNumLines values.
  */
-/*static*/ void
-ReformatHiRes::InitLineOffset(int* pOffsetBuf)
+/*static*/ void ReformatHiRes::InitLineOffset(int* pOffsetBuf)
 {
     long offset;
     int line;
@@ -275,12 +272,10 @@ ReformatHiRes::InitLineOffset(int* pOffsetBuf)
     }
 }
 
-
 /*
  * Convert a buffer of hires data to a 16-color DIB.
  */
-MyDIBitmap*
-ReformatHiRes::HiResScreenToBitmap(const uint8_t* buf)
+MyDIBitmap* ReformatHiRes::HiResScreenToBitmap(const uint8_t* buf)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
     uint8_t* outBuf;

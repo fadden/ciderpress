@@ -31,8 +31,7 @@
 /*
  * Create an instance of the class identified by "id".
  */
-/*static*/ Reformat*
-ReformatHolder::GetReformatInstance(ReformatID id)
+/*static*/ Reformat* ReformatHolder::GetReformatInstance(ReformatID id)
 {
     Reformat* pReformat = NULL;
 
@@ -102,8 +101,7 @@ ReformatHolder::GetReformatInstance(ReformatID id)
  * Would have been nice to embed these in the individual classes, but that's
  * harder to maintain.
  */
-/*static*/ const WCHAR*
-ReformatHolder::GetReformatName(ReformatID id)
+/*static*/ const WCHAR* ReformatHolder::GetReformatName(ReformatID id)
 {
     const WCHAR* descr = NULL;
 
@@ -266,13 +264,11 @@ ReformatHolder::GetReformatName(ReformatID id)
     return descr;
 }
 
-
 /*
  * Set the file attributes.  These are used by TestApplicability tests to
  * decide what it is we're looking at.
  */
-void
-ReformatHolder::SetSourceAttributes(long fileType, long auxType,
+void ReformatHolder::SetSourceAttributes(long fileType, long auxType,
     SourceFormat sourceFormat, const char* nameExt)
 {
     fFileType = fileType;
@@ -300,8 +296,7 @@ ReformatHolder::SetSourceAttributes(long fileType, long auxType,
  * Before calling here, the file data and file attributes (e.g. file type)
  * should be stored in "ReformatHolder".
  */
-void
-ReformatHolder::TestApplicability(void)
+void ReformatHolder::TestApplicability(void)
 {
     Reformat* pReformat;
     int i;
@@ -344,8 +339,8 @@ ReformatHolder::TestApplicability(void)
 /*
  * Return the appropriate applicability level.
  */
-ReformatHolder::ReformatApplies
-ReformatHolder::GetApplic(ReformatPart part, ReformatID id) const
+ReformatHolder::ReformatApplies ReformatHolder::GetApplic(ReformatPart part,
+    ReformatID id) const
 {
     if (id < kReformatUnknown || id >= kReformatMAX) {
         assert(false);
@@ -362,8 +357,7 @@ ReformatHolder::GetApplic(ReformatPart part, ReformatID id) const
 /*
  * Set the appropriate applicability level.
  */
-void
-ReformatHolder::SetApplic(ReformatID id, ReformatApplies applyData,
+void ReformatHolder::SetApplic(ReformatID id, ReformatApplies applyData,
     ReformatApplies applyRsrc, ReformatApplies applyCmmt)
 {
     if (id <= kReformatUnknown || id >= kReformatMAX) {
@@ -385,8 +379,7 @@ ReformatHolder::SetApplic(ReformatID id, ReformatApplies applyData,
  * a BASIC program or choosing a double-hi-res algorithm.  The preference
  * indicates the default choice, but does not exclude others.
  */
-void
-ReformatHolder::SetApplicPreferred(ReformatID id, ReformatPart part)
+void ReformatHolder::SetApplicPreferred(ReformatID id, ReformatPart part)
 {
     for (int i = 0; i < kPartMAX; i++) {
         if (i == kPartUnknown)
@@ -403,13 +396,11 @@ ReformatHolder::SetApplicPreferred(ReformatID id, ReformatPart part)
     }
 }
 
-
 /*
  * Returns <0, 0, or >0 depending on whether app1 is worse, equal to,
  * or better than app2.
  */
-int
-ReformatHolder::CompareApplies(ReformatApplies app1, ReformatApplies app2)
+int ReformatHolder::CompareApplies(ReformatApplies app1, ReformatApplies app2)
 {
     if ((app1 & kApplicPrefMask) < (app2 & kApplicPrefMask))
         return -1;
@@ -421,8 +412,7 @@ ReformatHolder::CompareApplies(ReformatApplies app1, ReformatApplies app2)
 /*
  * Find the best reformatter for the specified part of the loaded file.
  */
-ReformatHolder::ReformatID
-ReformatHolder::FindBest(ReformatPart part)
+ReformatHolder::ReformatID ReformatHolder::FindBest(ReformatPart part)
 {
     ReformatID bestID = kReformatUnknown;
     ReformatApplies bestApply = kApplicNot;
@@ -446,7 +436,7 @@ ReformatHolder::FindBest(ReformatPart part)
     }
 
     if (bestID == kReformatUnknown || bestApply == kApplicNot) {
-        LOGI("Did you forget to call TestApplicability?");
+        LOGW("Did you forget to call TestApplicability?");
         assert(false);
         return kReformatRaw;
     }
@@ -459,8 +449,7 @@ ReformatHolder::FindBest(ReformatPart part)
 /*
  * Apply the requested formatter to the specified part.
  */
-ReformatOutput*
-ReformatHolder::Apply(ReformatPart part, ReformatID id)
+ReformatOutput* ReformatHolder::Apply(ReformatPart part, ReformatID id)
 {
     ReformatOutput* pOutput;
     Reformat* pReformat;
@@ -469,7 +458,7 @@ ReformatHolder::Apply(ReformatPart part, ReformatID id)
     if (id <= kReformatUnknown || id >= kReformatMAX ||
         part <= kPartUnknown || part >= kPartMAX)
     {
-        LOGI("Invalid reformat request (part=%d id=%d)", part, id);
+        LOGW("Invalid reformat request (part=%d id=%d)", part, id);
         assert(false);
         return NULL;
     }
@@ -524,12 +513,10 @@ ReformatHolder::Apply(ReformatPart part, ReformatID id)
     return pOutput;
 }
 
-
 /*
  * Get the appropriate input buffer.
  */
-const uint8_t*
-ReformatHolder::GetSourceBuf(ReformatPart part) const
+const uint8_t* ReformatHolder::GetSourceBuf(ReformatPart part) const
 {
     if (part <= kPartUnknown || part >= kPartMAX) {
         assert(false);
@@ -542,8 +529,7 @@ ReformatHolder::GetSourceBuf(ReformatPart part) const
 /*
  * Get the length of the appropriate input buffer.
  */
-long
-ReformatHolder::GetSourceLen(ReformatPart part) const
+long ReformatHolder::GetSourceLen(ReformatPart part) const
 {
     if (part <= kPartUnknown || part >= kPartMAX) {
         assert(false);
@@ -562,9 +548,7 @@ ReformatHolder::GetSourceLen(ReformatPart part) const
  * The ReformatHolder "owns" the buffer afterward, so the caller should
  * discard its pointer.
  */
-void
-ReformatHolder::SetSourceBuf(ReformatPart part, uint8_t* buf,
-    long len)
+void ReformatHolder::SetSourceBuf(ReformatPart part, uint8_t* buf, long len)
 {
     if (part <= kPartUnknown || part >= kPartMAX) {
         assert(false);
@@ -577,13 +561,11 @@ ReformatHolder::SetSourceBuf(ReformatPart part, uint8_t* buf,
     fSourceLen[part] = len;
 }
 
-
 /*
  * Specify an error message to return instead of reformatted text for a
  * given part.
  */
-void
-ReformatHolder::SetErrorMsg(ReformatPart part, const char* msg)
+void ReformatHolder::SetErrorMsg(ReformatPart part, const char* msg)
 {
     assert(msg != NULL && *msg != '\0');
     assert(part > kPartUnknown && part < kPartMAX);
@@ -593,8 +575,7 @@ ReformatHolder::SetErrorMsg(ReformatPart part, const char* msg)
     LOGI("+++ set error message for part %d to '%hs'", part, msg);
 }
 
-void
-ReformatHolder::SetErrorMsg(ReformatPart part, const CString& str)
+void ReformatHolder::SetErrorMsg(ReformatPart part, const CString& str)
 {
     CStringA stra(str);
     SetErrorMsg(part, (LPCSTR) stra);

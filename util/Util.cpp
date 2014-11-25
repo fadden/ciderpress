@@ -25,8 +25,7 @@ BEGIN_MESSAGE_MAP(CGripper, CScrollBar)
     ON_WM_NCHITTEST()
 END_MESSAGE_MAP()
 
-LRESULT
-CGripper::OnNcHitTest(CPoint point) 
+LRESULT CGripper::OnNcHitTest(CPoint point) 
 {
     UINT ht = CScrollBar::OnNcHitTest(point);
     if (ht == HTCLIENT) {
@@ -50,8 +49,8 @@ CGripper::OnNcHitTest(CPoint point)
  *
  * Returns 0 on success, nonzero on error.
  */
-DWORD
-RichEditXfer::EditStreamCallback(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb)
+DWORD RichEditXfer::EditStreamCallback(DWORD dwCookie, LPBYTE pbBuff,
+    LONG cb, LONG* pcb)
 {
     RichEditXfer* pThis = (RichEditXfer*) dwCookie;
 
@@ -87,11 +86,7 @@ bail:
  * ===========================================================================
  */
 
-/*
- * Allocate the initial buffer.
- */
-int
-ExpandBuffer::CreateWorkBuf(void)
+int ExpandBuffer::CreateWorkBuf(void)
 {
     if (fWorkBuf != NULL) {
         ASSERT(fWorkMax > 0);
@@ -110,36 +105,24 @@ ExpandBuffer::CreateWorkBuf(void)
     return 0;
 }
 
-/*
- * Let the caller seize control of our buffer.  We throw away our pointer to
- * the buffer so we don't free it.
- */
-void
-ExpandBuffer::SeizeBuffer(char** ppBuf, long* pLen)
+void ExpandBuffer::SeizeBuffer(char** ppBuf, long* pLen)
 {
     *ppBuf = fWorkBuf;
     *pLen = fWorkCount;
 
-    fWorkBuf = NULL;
+    fWorkBuf = NULL;    // discard pointer so we don't free it
     fWorkCount = 0;
     fWorkMax = 0;
 }
 
-/*
- * Grow the buffer to the next incremental size.  We keep doubling it until
- * we reach out maximum rate of expansion.
- *
- * Returns 0 on success, -1 on failure.
- */
-int
-ExpandBuffer::GrowWorkBuf(void)
+int ExpandBuffer::GrowWorkBuf(void)
 {
     int newIncr = fWorkMax;
     if (newIncr > kWorkBufMaxIncrement)
         newIncr = kWorkBufMaxIncrement;
 
-    //LOGI("Extending buffer by %d (count=%d, max=%d)",
-    //  newIncr, fWorkCount, fWorkMax);
+    LOGV("Extending buffer by %d (count=%d, max=%d)",
+        newIncr, fWorkCount, fWorkMax);
 
     fWorkMax += newIncr;
 
@@ -148,7 +131,7 @@ ExpandBuffer::GrowWorkBuf(void)
 
     char* newBuf = new char[fWorkMax];
     if (newBuf == NULL) {
-        LOGI("ALLOC FAILURE (%ld)", fWorkMax);
+        LOGE("ALLOC FAILURE (%ld)", fWorkMax);
         ASSERT(false);
         fWorkMax -= newIncr;    // put it back so we don't overrun
         return -1;
@@ -161,11 +144,7 @@ ExpandBuffer::GrowWorkBuf(void)
     return 0;
 }
 
-/*
- * Write binary data to the buffer.
- */
-void
-ExpandBuffer::Write(const unsigned char* buf, long len)
+void ExpandBuffer::Write(const unsigned char* buf, long len)
 {
     if (fWorkBuf == NULL)
         CreateWorkBuf();
@@ -178,20 +157,12 @@ ExpandBuffer::Write(const unsigned char* buf, long len)
     fWorkCount += len;
 }
 
-/*
- * Write one character into the buffer.
- */
-void
-ExpandBuffer::Putc(char ch)
+void ExpandBuffer::Putc(char ch)
 {
     Write((const unsigned char*) &ch, 1);
 }
 
-/*
- * Print a formatted string into the buffer.
- */
-void
-ExpandBuffer::Printf(const char* format, ...)
+void ExpandBuffer::Printf(_Printf_format_string_ const char* format, ...)
 {
     va_list args;
 
@@ -232,11 +203,7 @@ ExpandBuffer::Printf(const char* format, ...)
  * ===========================================================================
  */
 
-/*
- * Enable or disable a control.
- */
-void
-EnableControl(CDialog* pDlg, int id, bool enable)
+void EnableControl(CDialog* pDlg, int id, bool enable)
 {
     CWnd* pWnd = pDlg->GetDlgItem(id);
     if (pWnd == NULL) {
@@ -247,12 +214,7 @@ EnableControl(CDialog* pDlg, int id, bool enable)
     }
 }
 
-/*
- * Move a control so it maintains its same position relative to the bottom
- * and right edges.
- */
-void
-MoveControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
+void MoveControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
 {
     CWnd* pWnd;
     CRect rect;
@@ -271,11 +233,7 @@ MoveControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
     pWnd->MoveWindow(&rect, redraw);
 }
 
-/*
- * Make a control larger by the same delta as the parent window.
- */
-void
-StretchControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
+void StretchControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
 {
     CWnd* pWnd;
     CRect rect;
@@ -292,9 +250,6 @@ StretchControl(CDialog* pDlg, int id, int deltaX, int deltaY, bool redraw)
     pWnd->MoveWindow(&rect, redraw);
 }
 
-/*
- * Stretch and move a control.
- */
 void
 MoveStretchControl(CDialog* pDlg, int id, int moveX, int moveY,
     int stretchX, int stretchY, bool redraw)
@@ -303,12 +258,7 @@ MoveStretchControl(CDialog* pDlg, int id, int moveX, int moveY,
     StretchControl(pDlg, id, stretchX, stretchY, redraw);
 }
 
-/*
- * Move a control so it maintains its same position relative to the bottom
- * and right edges.
- */
-HDWP
-MoveControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
+HDWP MoveControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
     bool redraw)
 {
     CWnd* pWnd;
@@ -331,11 +281,7 @@ MoveControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
     return hdwp;
 }
 
-/*
- * Make a control larger by the same delta as the parent window.
- */
-HDWP
-StretchControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
+HDWP StretchControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
     bool redraw)
 {
     CWnd* pWnd;
@@ -356,11 +302,7 @@ StretchControl(HDWP hdwp, CDialog* pDlg, int id, int deltaX, int deltaY,
     return hdwp;
 }
 
-/*
- * Stretch and move a control.
- */
-HDWP
-MoveStretchControl(HDWP hdwp, CDialog* pDlg, int id, int moveX, int moveY,
+HDWP MoveStretchControl(HDWP hdwp, CDialog* pDlg, int id, int moveX, int moveY,
     int stretchX, int stretchY, bool redraw)
 {
     CWnd* pWnd;
@@ -385,11 +327,7 @@ MoveStretchControl(HDWP hdwp, CDialog* pDlg, int id, int moveX, int moveY,
     return hdwp;
 }
 
-/*
- * Get/set the check state of a button in a dialog.
- */
-int
-GetDlgButtonCheck(CWnd* pWnd, int id)
+int GetDlgButtonCheck(CWnd* pWnd, int id)
 {
     CButton* pButton;
     pButton = (CButton*) pWnd->GetDlgItem(id);
@@ -398,8 +336,8 @@ GetDlgButtonCheck(CWnd* pWnd, int id)
         return -1;
     return pButton->GetCheck();
 }
-void
-SetDlgButtonCheck(CWnd* pWnd, int id, int checkVal)
+
+void SetDlgButtonCheck(CWnd* pWnd, int id, int checkVal)
 {
     CButton* pButton;
     pButton = (CButton*) pWnd->GetDlgItem(id);
@@ -409,12 +347,7 @@ SetDlgButtonCheck(CWnd* pWnd, int id, int checkVal)
     pButton->SetCheck(checkVal);
 }
 
-
-/*
- * Create a font, using defaults for most things.
- */
-void
-CreateSimpleFont(CFont* pFont, CWnd* pWnd, const WCHAR* typeFace,
+void CreateSimpleFont(CFont* pFont, CWnd* pWnd, const WCHAR* typeFace,
         int pointSize)
 {
     CClientDC dc(pWnd);
@@ -426,11 +359,7 @@ CreateSimpleFont(CFont* pFont, CWnd* pWnd, const WCHAR* typeFace,
         DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, typeFace);
 }
 
-/*
- * Get a Win32 error string for an error code returned by GetLastError.
- */
-void
-GetWin32ErrorString(DWORD err, CString* pStr)
+void GetWin32ErrorString(DWORD err, CString* pStr)
 {
     DWORD count;
     LPVOID lpMsgBuf;
@@ -457,11 +386,7 @@ GetWin32ErrorString(DWORD err, CString* pStr)
     }
 }
 
-/*
- * Post a failure message.
- */
-void
-ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID)
+void ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID)
 {
     CString failed;
 
@@ -469,22 +394,13 @@ ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID)
     pWnd->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
 }
 
-/*
- * Show context help, based on the control ID.
- */
-BOOL
-ShowContextHelp(CWnd* pWnd, HELPINFO* lpHelpInfo)
+BOOL ShowContextHelp(CWnd* pWnd, HELPINFO* lpHelpInfo)
 {
     pWnd->WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
     return TRUE;
 }
 
-/*
- * Returns "true" if we're running on Win9x (Win95, Win98, WinME), "false"
- * if not (could be WinNT/2K/XP or even Win31 with Win32s).
- */
-bool
-IsWin9x(void)
+bool IsWin9x(void)
 {
     OSVERSIONINFO osvers;
     BOOL result;
@@ -506,13 +422,7 @@ IsWin9x(void)
  * ===========================================================================
  */
 
-/*
- * Pull a pascal string out of a buffer and stuff it into "*pStr".
- *
- * Returns the length of the string found, or -1 on error.
- */
-int
-GetPascalString(const uint8_t* buf, long maxLen, CString* pStr)
+int GetPascalString(const uint8_t* buf, long maxLen, CString* pStr)
 {
     int len = *buf++;
     int retLen = len;
@@ -537,11 +447,7 @@ GetPascalString(const uint8_t* buf, long maxLen, CString* pStr)
     return retLen;
 }
 
-/*
- * Dump a block of stuff to the log file.
- */
-void
-LogHexDump(const void* vbuf, long len)
+void LogHexDump(const void* vbuf, long len)
 {
     const unsigned char* buf = (const unsigned char*) vbuf;
     char outBuf[10 + 16*3 +1 +8];   // addr: 00 11 22 ... + 8 bytes slop
@@ -586,11 +492,7 @@ LogHexDump(const void* vbuf, long len)
     LOGI("  %hs", outBuf);
 }
 
-/*
- * Compute a percentage.
- */
-int
-ComputePercent(LONGLONG part, LONGLONG full)
+int ComputePercent(LONGLONG part, LONGLONG full)
 {
     LONGLONG perc;
 
@@ -609,14 +511,7 @@ ComputePercent(LONGLONG part, LONGLONG full)
     return (int) perc;
 }
 
-/*
- * Format a time_t into a string.
- *
- * (Should take format as an argument, so we can use global format set by
- * user preferences.)
- */
-void
-FormatDate(time_t when, CString* pStr)
+void FormatDate(time_t when, CString* pStr)
 {
     if (when == kDateNone) {
         *pStr = L"[No Date]";
@@ -628,15 +523,7 @@ FormatDate(time_t when, CString* pStr)
     }
 }
 
-/*
- * Case-insensitive version of strstr(), pulled from the MSDN stuff that
- * comes with VC++6.0.
- *
- * The isalpha() stuff is an optimization, so they can skip the tolower()
- * in the outer loop comparison.
- */
-const WCHAR*
-Stristr(const WCHAR* string1, const WCHAR* string2)
+const WCHAR* Stristr(const WCHAR* string1, const WCHAR* string2)
 {
     WCHAR *cp1 = (WCHAR*)string1, *cp2, *cp1a;
     WCHAR first;              // get the first char in string to find
@@ -679,20 +566,7 @@ Stristr(const WCHAR* string1, const WCHAR* string2)
     return NULL;
 }
 
-
-/*
- * Break a string down into its component parts.
- *
- * "mangle" will be mangled (various bits stomped by '\0'), "argv" will
- * receive pointers to the strings, and "*pArgc" will hold the number of
- * arguments in the vector.  The initial value of "*pArgc" should hold the
- * maximum "argv" capacity (including program name in argv[0]).
- *
- * The argv pointers will point into "mangle"; no new storage will be
- * allocated.
- */
-void
-VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc)
+void VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc)
 {
     bool inWhiteSpace = true;
     bool inQuote = false;
@@ -737,13 +611,11 @@ VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc)
     *pArgc = idx;
 }
 
-
 /*
  * Convert a sub-string to lower case according to rules for English book
  * titles.  Assumes the initial string is in all caps.
  */
-static void
-DowncaseSubstring(CString* pStr, int startPos, int endPos,
+static void DowncaseSubstring(CString* pStr, int startPos, int endPos,
     bool prevWasSpace)
 {
     static const WCHAR* shortWords[] = {
@@ -806,13 +678,7 @@ DowncaseSubstring(CString* pStr, int startPos, int endPos,
     }
 }
 
-/*
- * Convert parts of the filename to lower case.
- *
- * If the name already has lowercase characters, do nothing.
- */
-void
-InjectLowercase(CString* pStr)
+void InjectLowercase(CString* pStr)
 {
     int len = pStr->GetLength();
     static const WCHAR* kGapChars = L" .:&-+/\\()<>@*";
@@ -865,13 +731,7 @@ InjectLowercase(CString* pStr)
     }
 }
 
-
-/*
- * Test to see if a sub-string matches a value in a set of strings.  The set
- * comes from a semicolon-delimited string.
- */
-bool
-MatchSemicolonList(const CString set, const CString match)
+bool MatchSemicolonList(const CString set, const CString match)
 {
     const WCHAR* cp;
     CString mangle(set);
@@ -899,14 +759,7 @@ MatchSemicolonList(const CString set, const CString match)
     return false;
 }
 
-
-/*
- * Like strcpy(), but allocate with new[] instead.
- *
- * If "str" is NULL, or "new" fails, this returns NULL.
- */
-char*
-StrcpyNew(const char* str)
+char* StrcpyNew(const char* str)
 {
     char* newStr;
 

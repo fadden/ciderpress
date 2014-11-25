@@ -19,10 +19,10 @@ public:
     ReformatResourceFork(void) {}
     virtual ~ReformatResourceFork(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
     static bool GetResource(const uint8_t* srcBuf, long srcLen,
         uint16_t resourceType, uint32_t resourceID,

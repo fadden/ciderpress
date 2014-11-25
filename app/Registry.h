@@ -149,7 +149,7 @@ private:
      */
     int OwnExtension(const WCHAR* ext, const WCHAR* appID) const;
 
-    DWORD RegDeleteKeyNT(HKEY hStartKey, LPCTSTR pKeyName) const;
+    DWORD RegDeleteKeyNT(HKEY hStartKey, LPCWSTR pKeyName) const;
 
     /* key validation */
     //static uint16_t CalcCRC16(uint16_t seed,

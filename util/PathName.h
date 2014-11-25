@@ -72,12 +72,13 @@ public:
     CString GetDriveAndPath(void);
     CString GetPathOnly(void);
 
-    // try to normalize a short name into a long name
+    /*
+     * Expand the short file name of an existing file into its long form.
+     *
+     * Returns 0 on success, -1 on failure.
+     */
     int SFNToLFN(void);
 
-    /*
-     * File manipulations.
-     */
     // returns the description of the file type (as seen in explorer)
     CString GetDescription(void);
 
@@ -93,12 +94,38 @@ public:
     // set the modification date
     int SetModWhen(time_t when);
 
-    // create the path, if necessary
+    /*
+     * Create subdirectories, if needed.  The paths leading up to the filename
+     * in "pathname" will be created.
+     *
+     * If "pathname" is just a filename, or the set of directories matches
+     * the last directory we created, we don't do anything.
+     *
+     * Returns 0 on success, or a Windows error code on failure.
+     */
     int CreatePathIFN(void);
 
+    /*
+     * Return the filename extension found in a full pathname.
+     *
+     * An extension is the stuff following the last '.' in the filename.  If
+     * there is nothing following the last '.', then there is no extension.
+     *
+     * Returns a pointer to the '.' preceding the extension, or NULL if no
+     * extension was found.
+     *
+     * We guarantee that there is at least one character after the '.'.
+     */
     static const WCHAR* FindExtension(const WCHAR* pathname, WCHAR fssep);
+
+    /*
+     * Find the filename component of a local pathname.  Uses the fssep passed
+     * in.  If the fssep is '\0' (as is the case for DOS 3.3), then the entire
+     * pathname is returned.
+     *
+     * Always returns a pointer to a string; never returns NULL.
+     */
     static const WCHAR* FilenameOnly(const WCHAR* pathname, WCHAR fssep);
-    //int SFNToLFN(const char* sfn, CString* pLfn);
 
 private:
     void SplitIFN(void) {
@@ -107,9 +134,31 @@ private:
             fSplit = true;
         }
     }
+
+    /*
+     * Invoke the system-dependent directory creation function.
+     */
     int Mkdir(const WCHAR* dir);
+
+    /*
+     * Determine if a file exists, and if so whether or not it's a directory.
+     *
+     * Set fields you're not interested in to NULL.
+     *
+     * On success, returns 0 and fields are set appropriately.  On failure,
+     * returns nonzero and result values are undefined.
+     */
     int GetFileInfo(const WCHAR* pathname, struct _stat* psb, time_t* pModWhen,
         bool* pExists, bool* pIsReadable, bool* pIsDirectory);
+
+    /*
+     * Create a single subdirectory if it doesn't exist.  If the next-highest
+     * subdirectory level doesn't exist either, cut down the pathname and
+     * recurse.
+     *
+     * "pathEnd" points at the last valid character.  The length of the valid
+     * path component is therefore (pathEnd-pathStart+1).
+     */
     int CreateSubdirIFN(const WCHAR* pathStart, const WCHAR* pathEnd,
         WCHAR fssep);
 

@@ -12,8 +12,7 @@
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatAWGS_WP::Examine(ReformatHolder* pHolder)
+void ReformatAWGS_WP::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -27,8 +26,7 @@ ReformatAWGS_WP::Examine(ReformatHolder* pHolder)
 /*
  * Convert AWGS into formatted text.
  */
-int
-ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
+int ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -148,8 +146,7 @@ ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
 /*
  * Read one of the chunks of the file.
  */
-bool
-ReformatAWGS_WP::ReadChunk(const uint8_t** pSrcBuf, long* pSrcLen,
+bool ReformatAWGS_WP::ReadChunk(const uint8_t** pSrcBuf, long* pSrcLen,
     Chunk* pChunk)
 {
     /* starts with the saveArray count */
@@ -205,8 +202,7 @@ ReformatAWGS_WP::ReadChunk(const uint8_t** pSrcBuf, long* pSrcLen,
 /*
  * Output a single chunk.  We do this by walking down the saveArray.
  */
-void
-ReformatAWGS_WP::PrintChunk(const Chunk* pChunk)
+void ReformatAWGS_WP::PrintChunk(const Chunk* pChunk)
 {
     const int kDefaultStatusBits = kAWGSJustifyLeft | kAWGSSingleSpace;
     SaveArrayEntry sae;
@@ -291,8 +287,7 @@ ReformatAWGS_WP::PrintChunk(const Chunk* pChunk)
  * skip through them earlier.  We don't really need to worry about running
  * off the end due to a bad file.
  */
-const uint8_t*
-ReformatAWGS_WP::FindTextBlock(const Chunk* pChunk, int blockNum)
+const uint8_t* ReformatAWGS_WP::FindTextBlock(const Chunk* pChunk, int blockNum)
 {
     const uint8_t* blockPtr = pChunk->textBlocks;
     uint32_t blockSize;
@@ -313,8 +308,7 @@ ReformatAWGS_WP::FindTextBlock(const Chunk* pChunk, int blockNum)
  *
  * Returns the #of bytes consumed.
  */
-int
-ReformatAWGS_WP::PrintParagraph(const uint8_t* ptr, long maxLen)
+int ReformatAWGS_WP::PrintParagraph(const uint8_t* ptr, long maxLen)
 {
     const uint8_t* startPtr = ptr;
     uint16_t firstFont;
@@ -407,8 +401,7 @@ ReformatAWGS_WP::PrintParagraph(const uint8_t* ptr, long maxLen)
 /*
  * Run through the SaveArray and find the highest-numbered ruler index.
  */
-uint16_t
-ReformatAWGS_WP::GetNumRulers(const uint8_t* pSaveArray,
+uint16_t ReformatAWGS_WP::GetNumRulers(const uint8_t* pSaveArray,
     uint16_t saveArrayCount)
 {
     SaveArrayEntry sa;
@@ -438,8 +431,7 @@ ReformatAWGS_WP::GetNumRulers(const uint8_t* pSaveArray,
  *
  * These are stored linearly, so we just need to look at the last entry.
  */
-uint16_t
-ReformatAWGS_WP::GetNumTextBlocks(const uint8_t* pSaveArray,
+uint16_t ReformatAWGS_WP::GetNumTextBlocks(const uint8_t* pSaveArray,
     uint16_t saveArrayCount)
 {
     SaveArrayEntry sa;
@@ -480,8 +472,7 @@ ReformatAWGS_WP::GetNumTextBlocks(const uint8_t* pSaveArray,
 /*
  * Unpack a SaveArray entry.
  */
-void
-ReformatAWGS_WP::UnpackSaveArrayEntry(const uint8_t* pSaveArray,
+void ReformatAWGS_WP::UnpackSaveArrayEntry(const uint8_t* pSaveArray,
     SaveArrayEntry* pSAE)
 {
     pSAE->textBlock = Get16LE(pSaveArray + 0);
@@ -501,8 +492,7 @@ ReformatAWGS_WP::UnpackSaveArrayEntry(const uint8_t* pSaveArray,
  *
  * Returns "true" on success, "false" on failure.
  */
-bool
-ReformatAWGS_WP::SkipTextBlocks(const uint8_t** pSrcBuf,
+bool ReformatAWGS_WP::SkipTextBlocks(const uint8_t** pSrcBuf,
     long* pSrcLen, int textBlockCount)
 {
     uint32_t blockSize;

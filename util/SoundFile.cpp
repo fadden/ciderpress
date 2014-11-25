@@ -21,13 +21,12 @@
  * The constant is expected to match 4-character values read from a binary
  * file, so the value is endian-dependent.
  */
-static inline unsigned long
-MakeFourCC(unsigned char c0, unsigned char c1, unsigned char c2,
-    unsigned char c3)
+static inline uint32_t MakeFourCC(uint8_t c0, uint8_t c1, uint8_t c2,
+    uint8_t c3)
 {
     /* little-endian */
-    return  ((unsigned long)c0) | ((unsigned long)c1 << 8) |
-            ((unsigned long)c2 << 16) | ((unsigned long)c3 << 24);
+    return  ((uint32_t)c0) | ((uint32_t)c1 << 8) |
+            ((uint32_t)c2 << 16) | ((uint32_t)c3 << 24);
 }
 
 /*
@@ -35,8 +34,7 @@ MakeFourCC(unsigned char c0, unsigned char c1, unsigned char c2,
  *
  * Returns 0 on success.
  */
-int
-SoundFile::Create(const WCHAR* fileName, CString* pErrMsg)
+int SoundFile::Create(const WCHAR* fileName, CString* pErrMsg)
 {
     FILE* fp = NULL;
     long fileLen;
@@ -61,19 +59,18 @@ SoundFile::Create(const WCHAR* fileName, CString* pErrMsg)
  *
  * Returns 0 on success.
  */
-int
-SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
+int SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
 {
     struct {
-        unsigned long   riff;
-        unsigned long   fileLen;
-        unsigned long   wav;
+        uint32_t    riff;
+        uint32_t    fileLen;
+        uint32_t    wav;
     } fileHeader;
-    unsigned long chunkLen;
+    uint32_t chunkLen;
     int err = 0;
 
     if (mFP != NULL) {
-        LOGI("SoundFile object already created");
+        LOGW("SoundFile object already created");
         assert(false);
         return -1;
     }
@@ -99,7 +96,7 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
     }
     if (fileHeader.riff != MakeFourCC('R','I','F','F') ||
         fileHeader.wav != MakeFourCC('W','A','V','E') ||
-        fileHeader.fileLen > (unsigned long) len)
+        fileHeader.fileLen > (uint32_t) len)
     {
         *pErrMsg = L"File is not a WAV file";
         LOGI("Not a valid WAV header (0x%08lx %d 0x%08lx)",
@@ -154,10 +151,10 @@ SoundFile::Create(FILE* fp, long len, bool doClose, CString* pErrMsg)
     mSampleStart = ftell(mFP);
     mSampleLen = chunkLen;
 
-    LOGI("WAV: chan=%d samples/sec=%d avgBPS=%d block=%d",
+    LOGD("WAV: chan=%d samples/sec=%d avgBPS=%d block=%d",
         mFormat.nChannels, mFormat.nSamplesPerSec, mFormat.nAvgBytesPerSec,
         mFormat.nBlockAlign);
-    LOGI("  bits/sample=%d [start=%d len=%d]", mFormat.wBitsPerSample,
+    LOGD("  bits/sample=%d [start=%d len=%d]", mFormat.wBitsPerSample,
         mSampleStart, mSampleLen);
 
 bail:
@@ -168,12 +165,11 @@ bail:
  * Skip forward until we find the named chunk.  The file should be
  * positioned immediately before the first chunk.
  */
-int
-SoundFile::SkipToHeader(unsigned long hdrID, unsigned long* pChunkLen)
+int SoundFile::SkipToHeader(uint32_t hdrID, uint32_t* pChunkLen)
 {
     struct {
-        unsigned long   fourcc;
-        unsigned long   chunkLen;
+        uint32_t    fourcc;
+        uint32_t    chunkLen;
     } chunkHeader;
     int err = 0;
 
@@ -205,10 +201,9 @@ SoundFile::SkipToHeader(unsigned long hdrID, unsigned long* pChunkLen)
 /*
  * Read a block of data from the specified offset.
  */
-int
-SoundFile::ReadData(void* buf, long sampleOffset, long len) const
+int SoundFile::ReadData(void* buf, long sampleOffset, long len) const
 {
-    if ((unsigned long)(sampleOffset+len) > mSampleLen) {
+    if ((uint32_t)(sampleOffset+len) > mSampleLen) {
         LOGI("ERROR: invalid read request (%d bytes, %d into %d)",
             len, sampleOffset, mSampleLen);
         return -1;

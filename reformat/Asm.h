@@ -71,10 +71,10 @@ public:
     ReformatSCAssem(void) {}
     virtual ~ReformatSCAssem(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
     /* this gets called by Integer BASIC converter */
     static bool IsSCAssem(const ReformatHolder* pHolder);
@@ -89,10 +89,10 @@ public:
     ReformatMerlin(void) {}
     virtual ~ReformatMerlin(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     static bool IsMerlin(const ReformatHolder* pHolder);
@@ -107,10 +107,10 @@ public:
     ReformatLISA2(void) {}
     virtual ~ReformatLISA2(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
 private:
     bool IsLISA(const ReformatHolder* pHolder);
@@ -132,10 +132,10 @@ public:
     ReformatLISA3(void) : fSymTab(NULL) {}
     virtual ~ReformatLISA3(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
     static bool IsLISA(const ReformatHolder* pHolder);
 
@@ -200,10 +200,10 @@ public:
     ReformatLISA4(void) : fSymTab(NULL) {}
     virtual ~ReformatLISA4(void) { delete[] fSymTab; }
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
     static bool IsLISA(const ReformatHolder* pHolder);
 

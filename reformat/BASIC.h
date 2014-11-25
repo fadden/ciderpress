@@ -19,10 +19,10 @@ public:
     ReformatApplesoft(void) {}
     virtual ~ReformatApplesoft(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 
     /* share our token list with others */
     // TODO: this is a hack; find a better way to do this
@@ -38,10 +38,10 @@ public:
     ReformatInteger(void) {}
     virtual ~ReformatInteger(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 };
 
 /*
@@ -52,10 +52,10 @@ public:
     ReformatBusiness(void) {}
     virtual ~ReformatBusiness(void) {}
 
-    virtual void Examine(ReformatHolder* pHolder);
+    virtual void Examine(ReformatHolder* pHolder) override;
     virtual int Process(const ReformatHolder* pHolder,
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
-        ReformatOutput* pOutput);
+        ReformatOutput* pOutput) override;
 };
 
 #endif /*REFORMAT_BASIC_H*/

@@ -44,8 +44,7 @@ const ReformatText::TextColor kColonColor   = ReformatText::kColorRed;
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatApplesoft::Examine(ReformatHolder* pHolder)
+void ReformatApplesoft::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -101,8 +100,7 @@ static const char gApplesoftTokens[128 * ReformatApplesoft::kTokenLen] = {
  * Reformat an Applesoft BASIC program into a text format that mimics the
  * output of the "LIST" command (with POKE 33,73 to suppress CRs).
  */
-int
-ReformatApplesoft::Process(const ReformatHolder* pHolder,
+int ReformatApplesoft::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -306,8 +304,7 @@ static const char* const gIntegerTokens[128] = {
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatInteger::Examine(ReformatHolder* pHolder)
+void ReformatInteger::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies apply = ReformatHolder::kApplicNot;
     if (pHolder->GetFileType() == kTypeINT) {
@@ -346,8 +343,7 @@ ReformatInteger::Examine(ReformatHolder* pHolder)
  * Reformat an Integer BASIC program into a text format that mimics the
  * output of the "LIST" command.
  */
-int
-ReformatInteger::Process(const ReformatHolder* pHolder,
+int ReformatInteger::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -550,8 +546,7 @@ bail:
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatBusiness::Examine(ReformatHolder* pHolder)
+void ReformatBusiness::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -574,7 +569,7 @@ ReformatBusiness::Examine(ReformatHolder* pHolder)
  * show up as error messages.  The goal here is to produce values that are
  * human-readable and/or EXECable, so no attempt has been made to display
  * the error values.
- * TODO: replace this with something accurate -- looks like copy & paste leftover
+ * TODO: verify this comment -- looks like copy & paste from BAS token table
  */
 static const char gBusinessTokens[128*10] = {
 /* 0x80 */ "END\0      FOR\0      NEXT\0     INPUT\0    OUTPUT\0   DIM\0      READ\0     WRITE\0    "
@@ -618,8 +613,7 @@ static const char gExtendedBusinessTokens[128*10] = {
  * Reformat an Apple /// Business BASIC program into a text format that
  * mimics the output of the "LIST" command.
  */
-int
-ReformatBusiness::Process(const ReformatHolder* pHolder,
+int ReformatBusiness::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {

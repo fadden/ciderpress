@@ -58,33 +58,84 @@ public:
     {
         memset(&mBitmapInfoHdr, 0, sizeof(mBitmapInfoHdr));
     }
+
+    /*
+     * Destroys allocated memory and delete the DIB object.
+     */
     virtual ~MyDIBitmap(void);
 
-    // create an empty bitmap with the specified characteristics; returns a
-    // pointer to the pixel storage
+    /*
+     * Creates a blank DIB with the requested dimensions.
+     *
+     * Returns a pointer to the pixel storage on success, or NULL on failure.
+     */
     void* Create(int width, int height, int bitsPerPixel, int colorsUsed,
         bool dibSection = false);
+
+    /*
+     * Set the values in the color table.
+     */
     void SetColorTable(const RGBQUAD* pColorTable);
+
     const RGBQUAD* GetColorTable(void) const { return mpColorTable; }
 
-    // zero out the pixels
+    /*
+     * Zero out a bitmap's pixels.  Does not touch the color table.
+     */
     void ClearPixels(void);
 
+    /*
+     * Create a DDB from the current bitmap in the specified DC, and return its
+     * handle.  The returned handle must eventually be disposed with DeleteObject.
+     *
+     * Since we're just supplying pointers to various pieces of data, there's no
+     * need for us to have a DIB section.
+     *
+     * Returns NULL on failure.
+     */
     HBITMAP ConvertToDDB(HDC dc) const;
 
-    // create a DIB from a file on disk
+    /*
+     * Opens the file and call the FILE* version.
+     */
     int CreateFromFile(const WCHAR* fileName);
+
+    /*
+     * Create a DIB by reading a BMP or TGA file into memory.
+     */
     int CreateFromFile(FILE* fp, long len);
-    // create from memory buffer; set "doDelete" if object should own mem
-    // (if "doDelete" is set, memory will be deleted if function fails)
-    // contents of buffer will be analyzed to determine file type
+
+    /*
+     * Creates object from a copy of the file in memory.  Set "doDelete" to
+     * transfer ownership of object.
+     *
+     * We want to hang on to the data buffer, but if we don't own it then we
+     * have to make a copy.
+     *
+     * If "doDelete" is set, memory will be deleted if function fails.
+     */
     int CreateFromBuffer(void* buffer, long len, bool doDelete);
 
-    // create a DIB from an embedded resource
+    /*
+     * Creates the object from a resource embedded in the application.
+     *
+     * Use MAKEINTRESOURCE to load a resource by ordinal.
+     */
     void* CreateFromResource(HINSTANCE hInstance, const WCHAR* rsrc);
 
-    // write bitmap to file (for FILE*, make sure it's open in "wb" mode)
+    /*
+     * Write the bitmap to the named file.  Opens the file and calls the FILE*
+     * function.
+     */
     int WriteToFile(const WCHAR* fileName) const;
+
+    /*
+     * Write the bitmap to a file.
+     *
+     * Pass in an open, seeked file pointer (make sure to use "wb" mode).
+     *
+     * Returns 0 on success, or nonzero (errno) on failure.
+     */
     int WriteToFile(FILE* fp) const;
 
     // simple getters
@@ -95,16 +146,30 @@ public:
 
     // retrieve current alpha mode
     AlphaType GetAlphaType(void) const { return mAlphaType; }
-    // get transparent color; returns "false" if none has been set
+
+    /*
+     * Retrieve the transparency color key, if any.
+     *
+     * Returns "false" if no color key has been set.
+     */
     bool GetTransparentColor(RGBQUAD* pColor) const;
-    // set transparent color and change alpha to kAlphaTransparency
+
+    /*
+     * Set the transparent color.  Changes the alpha mode to kAlphaTransparency.
+     */
     void SetTransparentColor(const RGBQUAD* pColor);
 
-    // return the index of the specified color (-1 if not found, -2 on err)
+    /*
+     * Look up an RGB color in an indexed color table.
+     *
+     * Returns the index of the color, or -1 if not found (-2 on error, e.g. this
+     * isn't an indexed-color bitmap or the color table hasn't been created).
+     */
     int LookupColor(const RGBQUAD* pRgbQuad);
 
     // set/get individual pixel values; the "RGB" functions always set
     //  alpha to zero, while "RGBA" follow the current alpha mode
+
     void FASTCALL GetPixelRGB(int x, int y, RGBQUAD* pRgbQuad) const;
     void FASTCALL SetPixelRGB(int x, int y, const RGBQUAD* pRgbQuad);
     void FASTCALL GetPixelRGBA(int x, int y, RGBQUAD* pRgbQuad) const;
@@ -125,7 +190,13 @@ public:
 
     int GetPitch(void) const { return mPitchBytes; }
 
-    // Blit pixels from one bitmap to another.
+    /*
+     * Blit a block of pixels from one bitmap to another.
+     *
+     * The bitmaps must share a common format, and the rectangles must be the
+     * same size.  We could implement color conversion and resizing here, but
+     * for now let's not.
+     */
     static bool Blit(MyDIBitmap* pDstBits, const RECT* pDstRect,
         const MyDIBitmap* pSrcBits, const RECT* pSrcRect);
 
@@ -152,9 +223,43 @@ private:
         kTargaUnmappedRGB = 2,      // for imageType field
     };
 
+    /*
+     * Set up internal structures for the BMP file.
+     *
+     * On error, "vbuf" is discarded.
+     */
     int ImportBMP(void* vbuf, long len);
+
+    /*
+     * Set up internal structures for the TGA file.
+     *
+     * We handle 16-, 24-, and 32-bit .TGA files only.  They happen to use the
+     * same byte layout as BMP files, so we do very little work here.  If we
+     * tried to write the raw data to a BMP file we could end up in trouble,
+     * because we don't force the "pitch must be multiple of 4 bytes" rule.
+     *
+     * On error, "vbuf" is discarded.
+     */
     int ImportTGA(void* vbuf, long len);
+
+    /*
+     * If the bitmap wasn't initially created as a DIB section, transform it now
+     * so the application can use it in GDI calls.
+     *
+     * Returns 0 on success, -1 on error.
+     */
     int ConvertBufToDIBSection(void);
+
+    /*
+     * Create object from a buffer of new[]-created memory that we own.
+     *
+     * The memory will be discarded if this function fails.
+     *
+     * We don't want to create a DIB section if the eventual user of this data
+     * doesn't need it (e.g. it's just getting converted into a 3D texture
+     * without using any GDI calls), so we just leave the pixels in the file
+     * buffer for now.
+     */
     int CreateFromNewBuffer(void* vbuf, long len);
 
     BITMAPINFOHEADER    mBitmapInfoHdr;

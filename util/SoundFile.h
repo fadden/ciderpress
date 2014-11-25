@@ -16,7 +16,7 @@
 
 /*
  * Class providing read-only access to uncompressed sound samples and
- * associated meta-data.  The sound is assumed to fit in main memory.
+ * associated meta-data.  The sound file is assumed to fit in main memory.
  *
  * Because game sound effects are generally loaded into "secondary sound
  * buffers" allocated by DirectX, this class doesn't load the sound data
@@ -56,7 +56,7 @@ public:
     int SeekAbs(long offset) { return fseek(mFP, offset, SEEK_SET); }
 
     long GetDataOffset(void) const { return mSampleStart; }
-    unsigned long GetDataLen(void) const { return mSampleLen; }
+    uint32_t GetDataLen(void) const { return mSampleLen; }
     const WAVEFORMATEX* GetWaveFormat(void) { return &mFormat; }
 
     /* returns the #of bytes per sample (all channels) */
@@ -66,7 +66,7 @@ public:
     }
 
 private:
-    int SkipToHeader(unsigned long hdrID, unsigned long* pChunkLen);
+    int SkipToHeader(uint32_t hdrID, uint32_t* pChunkLen);
 
     enum { kWAVMinSize = 40 };
 
@@ -76,7 +76,7 @@ private:
 
     long            mFileStart;     // so we can rewind the sound file
     long            mSampleStart;   // offset in mem or file to sound samples
-    unsigned long   mSampleLen;     // length in bytes of audio sample section
+    uint32_t        mSampleLen;     // length in bytes of audio sample section
 
     WAVEFORMATEX    mFormat;        // WAV parameters (from mmsystem.h/mmreg.h)
 };

@@ -21,8 +21,7 @@
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatDG256SHR::Examine(ReformatHolder* pHolder)
+void ReformatDG256SHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -36,8 +35,7 @@ ReformatDG256SHR::Examine(ReformatHolder* pHolder)
 /*
  * Convert a 256-color DreamGrafix Super Hi-Res Image.
  */
-int
-ReformatDG256SHR::Process(const ReformatHolder* pHolder,
+int ReformatDG256SHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -66,8 +64,7 @@ ReformatDG256SHR::Process(const ReformatHolder* pHolder,
 /*
  * Decide whether or not we want to handle this file.
  */
-void
-ReformatDG3200SHR::Examine(ReformatHolder* pHolder)
+void ReformatDG3200SHR::Examine(ReformatHolder* pHolder)
 {
     ReformatHolder::ReformatApplies applies = ReformatHolder::kApplicNot;
 
@@ -81,8 +78,7 @@ ReformatDG3200SHR::Examine(ReformatHolder* pHolder)
 /*
  * Convert a 3200-color DreamGrafix Super Hi-Res Image.
  */
-int
-ReformatDG3200SHR::Process(const ReformatHolder* pHolder,
+int ReformatDG3200SHR::Process(const ReformatHolder* pHolder,
     ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
     ReformatOutput* pOutput)
 {
@@ -102,8 +98,6 @@ ReformatDG3200SHR::Process(const ReformatHolder* pHolder,
 }
 
 
-
-
 /*
  * ==========================================================================
  *      ReformatDreamGrafix
@@ -114,8 +108,7 @@ ReformatDG3200SHR::Process(const ReformatHolder* pHolder,
  * Examine a DreamGrafix file.  This figures out if its any of the
  * DreamGrafix formats, i.e. 256-color, 3200-color, packed, or unpacked.
  */
-bool
-DreamGrafix::ScanDreamGrafix(ReformatHolder* pHolder)
+bool DreamGrafix::ScanDreamGrafix(ReformatHolder* pHolder)
 {
     long fileType = pHolder->GetFileType();
     long auxType = pHolder->GetAuxType();
@@ -163,8 +156,7 @@ DreamGrafix::ScanDreamGrafix(ReformatHolder* pHolder)
  * Returns true on success, false if the uncompress step failed to produce
  * exactly 32768+32*200 bytes.
  */
-bool
-DreamGrafix::UnpackDG(const uint8_t* srcBuf, long srcLen,
+bool DreamGrafix::UnpackDG(const uint8_t* srcBuf, long srcLen,
 ReformatSHR::SHRScreen* pScreen, uint8_t* extColorTable)
 {
     int expectedLen;
@@ -195,7 +187,7 @@ ReformatSHR::SHRScreen* pScreen, uint8_t* extColorTable)
 
     actual = UnpackLZW(srcBuf, srcLen, tmpBuf, expectedLen);
     if (actual != expectedLen && actual != (expectedLen-512)) {
-        LOGI("UnpackLZW expected %d, got %d", expectedLen, actual);
+        LOGW("UnpackLZW expected %d, got %d", expectedLen, actual);
         delete[] tmpBuf;
         return false;
     }
@@ -266,8 +258,7 @@ static const unsigned int bitMasks[] = {
         bitOffset += nBitMod1;                  \
     };
 
-/*static*/ int
-DreamGrafix::UnpackLZW(const uint8_t* srcBuf, long srcLen,
+/*static*/ int DreamGrafix::UnpackLZW(const uint8_t* srcBuf, long srcLen,
     uint8_t* dstBuf, long dstLen)
 {
     uint16_t finChar, oldCode, inCode, freeCode, maxCode, k;
