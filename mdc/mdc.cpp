@@ -43,7 +43,7 @@ MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
  */
 MyApp::~MyApp(void)
 {
-    LOGI("MDC SHUTTING DOWN");
+    LOGI("MDC shutting down");
     delete gDebugLog;
 }
 

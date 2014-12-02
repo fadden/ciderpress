@@ -13,8 +13,8 @@
 #include "resource.h"
 
 /* MDC version numbers */
-#define kAppMajorVersion    2
-#define kAppMinorVersion    2
+#define kAppMajorVersion    3
+#define kAppMinorVersion    0
 #define kAppBugVersion      0
 
 /*

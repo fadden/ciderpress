@@ -72,7 +72,8 @@ private:
         void* vErrorMessage);
 
     /*
-     * Scan a set of files.
+     * Prompts the user to select the input set and output file, then starts
+     * the scan.
      */
     void ScanFiles(void);
 

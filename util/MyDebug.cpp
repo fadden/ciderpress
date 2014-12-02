@@ -65,6 +65,13 @@ void DebugLog::Log(LogSeverity severity, const char* file, int line,
     if (severity < 0 || severity > sizeof(kSeverityChars) - 1) {
         severity = LOG_UNKNOWN;
     }
+    if (severity == LOG_VERBOSE) {
+        // Globally disable.  They still get compiled, which helps to
+        // prevent bit-rot.  TODO: be fancier and have LOGV map to
+        // a do-nothing inline function that the compiler will effectively
+        // eliminate.
+        return;
+    }
 
     va_list argptr;
     char textBuf[4096];

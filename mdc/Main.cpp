@@ -10,13 +10,12 @@
 #include "Main.h"
 #include "mdc.h"
 #include "AboutDlg.h"
-#include "ChooseFilesDlg.h"
 #include "ProgressDlg.h"
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
 #include "../zlib/zlib.h"
 
-const WCHAR* kWebSiteURL = L"http://www.faddensoft.com/";
+const WCHAR* kWebSiteURL = L"http://www.a2ciderpress.com/";
 
 
 BEGIN_MESSAGE_MAP(MainWindow, CFrameWnd)
@@ -59,10 +58,6 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
-//  int cc;
-//  cc = ::WinHelp(m_hWnd, ::AfxGetApp()->m_pszHelpFilePath, HELP_QUIT, 0);
-//  LOGI("Turning off WinHelp returned %d", cc);
-
     DiskImgLib::Global::AppCleanup();
 }
 
@@ -74,7 +69,7 @@ void MainWindow::OnFileExit(void)
 
 void MainWindow::OnHelpWebSite(void)
 {
-    // Go to the faddenSoft web site.
+    // Go to the CiderPress web site.
     int err;
 
     err = (int) ::ShellExecute(m_hWnd, L"open", kWebSiteURL, NULL, NULL,
@@ -95,7 +90,6 @@ void MainWindow::OnHelpAbout(void)
     result = dlg.DoModal();
     LOGI("HelpAbout returned %d", result);
 }
-
 
 void MainWindow::OnFileScan(void)
 {
@@ -132,15 +126,14 @@ BOOL MainWindow::PeekAndPump(void)
  * ==========================================================================
  */
 
-/*static*/ void
-MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
+/*static*/ void MainWindow::DebugMsgHandler(const char* file, int line,
+    const char* msg)
 {
     ASSERT(file != NULL);
     ASSERT(msg != NULL);
 
     LOG_BASE(DebugLog::LOG_INFO, file, line, "<diskimg> %hs", msg);
 }
-
 
 /*static*/ NuResult MainWindow::NufxErrorMsgHandler(NuArchive* /*pArchive*/,
     void* vErrorMessage)
@@ -154,38 +147,37 @@ MainWindow::DebugMsgHandler(const char* file, int line, const char* msg)
     return kNuOK;
 }
 
+
 const int kLocalFssep = '\\';
 
-typedef struct ScanOpts {
+struct ScanOpts {
     FILE*           outfp;
     ProgressDlg*    pProgress;
-} ScanOpts;
+};
 
 void MainWindow::ScanFiles(void)
 {
-    ChooseFilesDlg chooseFiles;
-    ScanOpts scanOpts;
     WCHAR curDir[MAX_PATH] = L"";
-    CString errMsg;
-    CString outPath;
+    CString errMsg, newDir;
     bool doResetDir = false;
+    ScanOpts scanOpts;
 
     memset(&scanOpts, 0, sizeof(scanOpts));
 
-    /* choose input files */
-    chooseFiles.DoModal();
-    if (chooseFiles.GetExitStatus() != IDOK) {
+    // choose input files
+    SelectFilesDialog2 chooseFiles(L"IDD_CHOOSE_FILES", this);
+    chooseFiles.SetWindowTitle(L"Choose Files...");
+    INT_PTR retval = chooseFiles.DoModal();
+    if (retval != IDOK) {
         return;
     }
 
-    const WCHAR* buf = chooseFiles.GetFileNames();
-    LOGI("Selected path = '%ls' (offset=%d)", buf,
-        chooseFiles.GetFileNameOffset());
-
-    /* choose output file */
+    // choose output file; use an Explorer-style dialog for consistency
+    CString outPath;
     CFileDialog dlg(FALSE, L"txt", NULL,
         OFN_OVERWRITEPROMPT|OFN_NOREADONLYRETURN,
-        L"Text Files (*.txt)|*.txt|All Files (*.*)|*.*||", this);
+        L"Text Files (*.txt)|*.txt|All Files (*.*)|*.*||", this,
+        0, FALSE /*disable Vista style*/);
 
     dlg.m_ofn.lpstrTitle = L"Save Output As...";
     wcscpy(dlg.m_ofn.lpstrFile, L"mdc-out.txt");
@@ -209,9 +201,9 @@ void MainWindow::ScanFiles(void)
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
         major, minor, bug);
     fprintf(scanOpts.outfp,
-        "Copyright (C) 2006 by faddenSoft, LLC.  All rights reserved.\n");
+        "Copyright (C) 2014 by faddenSoft, LLC.  All rights reserved.\n");
     fprintf(scanOpts.outfp,
-        "MDC is part of CiderPress, available from http://www.faddensoft.com/.\n");
+        "MDC is part of CiderPress, available from http://www.a2ciderpress.com/.\n");
     NuGetVersion(&major, &minor, &bug, NULL, NULL);
     fprintf(scanOpts.outfp,
         "Linked against NufxLib v%ld.%ld.%ld and zlib v%hs\n",
@@ -224,8 +216,10 @@ void MainWindow::ScanFiles(void)
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
-    if (SetCurrentDirectory(buf) == false) {
-        errMsg.Format(L"Unable to set current directory to '%ls'.", buf);
+    newDir = chooseFiles.GetDirectory();
+    if (SetCurrentDirectory(newDir) == false) {
+        errMsg.Format(L"Unable to change current directory to '%ls'.",
+            (LPCWSTR) newDir);
         ShowFailureMsg(this, errMsg, IDS_FAILED);
         goto bail;
     }
@@ -234,7 +228,7 @@ void MainWindow::ScanFiles(void)
     time_t now;
     now = time(NULL);
     fprintf(scanOpts.outfp,
-        "Run started at %.24hs in '%ls'\n\n", ctime(&now), buf);
+        "Run started at %.24hs in '%ls'\n\n", ctime(&now), newDir);
 
     /* obstruct input to the main window */
     EnableWindow(FALSE);
@@ -257,19 +251,18 @@ void MainWindow::ScanFiles(void)
     start = time(NULL);
 
     /* start cranking */
-    buf += chooseFiles.GetFileNameOffset();
-    while (*buf != '\0') {
-        if (Process(buf, &scanOpts, &errMsg) != 0) {
-            LOGI("Skipping '%ls': %ls.", buf, (LPCWSTR) errMsg);
+    const CStringArray& arr = chooseFiles.GetFileNames();
+    for (int i = 0; i < arr.GetCount(); i++) {
+        const CString& name = arr.GetAt(i);
+        if (Process(name, &scanOpts, &errMsg) != 0) {
+            LOGI("Skipping '%ls': %ls.", (LPCWSTR) name, (LPCWSTR) errMsg);
         }
 
         if (fCancelFlag) {
-            LOGI("CANCELLED by user");
-            MessageBox(L"Cancelled!", L"MDC", MB_OK);
+            LOGI("Canceled by user");
+            MessageBox(L"Canceled!", L"MDC", MB_OK);
             goto bail;
         }
-
-        buf += wcslen(buf)+1;
     }
     end = time(NULL);
     fprintf(scanOpts.outfp, "\nScan completed in %ld seconds.\n",
@@ -278,11 +271,10 @@ void MainWindow::ScanFiles(void)
     {
         SetWindowText(L"MDC Done!");
 
-        CString doneMsg;
+        CString doneMsg = L"Processing completed.";
         CString appName;
 
         appName.LoadString(IDS_APP_TITLE);
-        doneMsg.Format(L"Processing completed.");
         scanOpts.pProgress->MessageBox(doneMsg, appName, MB_OK|MB_ICONINFORMATION);
     }
 

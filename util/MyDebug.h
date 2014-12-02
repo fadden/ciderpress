@@ -64,15 +64,17 @@ extern DebugLog* gDebugLog;     // declare and allocate in app
  * Log macros, with priority specifier.  The output will be written to the
  * log file, if one is open, and to the debugger output window, if available.
  *
- * The verbose-level debugging should be enabled on a file-by-file basis,
- * but that doesn't seem to work (pre-compiled header interference, maybe?).
+ * The verbose-level debugging should be enabled on a file-by-file basis
+ * with a compile-time define, but that doesn't seem to work (pre-compiled
+ * header interference, maybe?).
  */
-#ifdef SHOW_LOGV
+//#ifdef SHOW_LOGV
 # define LOGV(format, ...) \
     LOG_BASE(DebugLog::LOG_VERBOSE, __FILE__, __LINE__, format, __VA_ARGS__)
-#else
-# define LOGV(format, ...) ((void)0)
-#endif
+//#else
+//# define LOGV(format, ...) ((void)0)
+//#endif
+
 #define LOGD(format, ...) \
     LOG_BASE(DebugLog::LOG_DEBUG, __FILE__, __LINE__, format, __VA_ARGS__)
 #define LOGI(format, ...) \

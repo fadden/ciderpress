@@ -45,7 +45,7 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "Visit faddenSoft &web site",  IDM_HELP_WEBSITE
+        MENUITEM "Visit CiderPress &web site",  IDM_HELP_WEBSITE
         MENUITEM "&About ...",                  IDM_HELP_ABOUT
     END
 END
@@ -81,14 +81,12 @@ BEGIN
     LTEXT           "Multi-Disk Catalog",IDC_STATIC,33,15,55,8
 END
 
-IDD_CHOOSE_FILES DIALOGEX 0, 0, 272, 131
-STYLE DS_SETFONT | DS_3DLOOK | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
+IDD_CHOOSE_FILES DIALOGEX 0, 0, 270, 112
+STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    LTEXT           "",1119,0,0,272,87,NOT WS_GROUP,WS_EX_STATICEDGE
-    PUSHBUTTON      "&Accept",IDC_SELECT_ACCEPT,220,88,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,220,107,50,14
-    LTEXT           "Select the disk images to scan.  If you select a folder, all files in that folder will be processed.",IDC_CHOOSEFILES_STATIC1,7,104,199,17
+    LTEXT           "",1119,0,0,270,87,NOT WS_GROUP
+    LTEXT           "Select the disk images to scan.  If you select a folder, all files in that folder will be processed.  Use Ctrl-click and Shift-click to select multiple items.",IDC_CHOOSEFILES_STATIC1,7,87,263,17
 END
 
 IDD_PROGRESS DIALOG 0, 0, 250, 66
@@ -151,7 +149,8 @@ BEGIN
     "IDD_CHOOSE_FILES", DIALOG
     BEGIN
         VERTGUIDE, 7
-        BOTTOMMARGIN, 121
+        BOTTOMMARGIN, 104
+        HORZGUIDE, 87
     END
 
     IDD_PROGRESS, DIALOG

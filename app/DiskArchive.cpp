@@ -1161,9 +1161,9 @@ bool DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     WCHAR curDir[MAX_PATH] = L"";
     bool retVal = false;
 
-    LOGI("Opts: '%ls' typePres=%d", (LPCWSTR) pAddOpts->fStoragePrefix,
+    LOGD("Opts: '%ls' typePres=%d", (LPCWSTR) pAddOpts->fStoragePrefix,
         pAddOpts->fTypePreservation);
-    LOGI("      sub=%d strip=%d ovwr=%d",
+    LOGD("      sub=%d strip=%d ovwr=%d",
         pAddOpts->fIncludeSubfolders, pAddOpts->fStripFolderNames,
         pAddOpts->fOverwriteExisting);
 
