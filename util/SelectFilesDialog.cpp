@@ -52,6 +52,10 @@ void SelectFilesDialog2::OnFolderChange()
         LOGW("Can't get folder ID list, len is %d", len);
     } else {
         LPCITEMIDLIST pidlFolder = (LPCITEMIDLIST) CoTaskMemAlloc(len);
+        if (pidlFolder == NULL) {
+            LOGE("Unable to allocate %d bytes", len);
+            return;
+        }
         len = pParent->SendMessage(CDM_GETFOLDERIDLIST, len,
                 (LPARAM) pidlFolder);
         ASSERT(len > 0);    // should fail earlier, or not at all
@@ -426,7 +430,7 @@ int SelectFilesDialog2::ParseFileNames(const CString& str)
         ASSERT(pSFD != NULL);
         return pSFD->HandleHelp(hDlg, (LPHELPINFO) lParam);
     default:
-        LOGV("OFNHookProc: hDlg=0x%08lx uiMsg=0x%08lx "
+        LOGV("OFNHookProc: hDlg=0x%p uiMsg=0x%08lx "
              "wParam=0x%08lx lParam=0x%08lx",
                 hDlg, uiMsg, wParam, lParam);
         break;

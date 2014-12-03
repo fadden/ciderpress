@@ -228,7 +228,7 @@ void MainWindow::ScanFiles(void)
     time_t now;
     now = time(NULL);
     fprintf(scanOpts.outfp,
-        "Run started at %.24hs in '%ls'\n\n", ctime(&now), newDir);
+        "Run started at %.24hs in '%ls'\n\n", ctime(&now), (LPCWSTR) newDir);
 
     /* obstruct input to the main window */
     EnableWindow(FALSE);

@@ -656,7 +656,7 @@ static void DowncaseSubstring(CString* pStr, int startPos, int endPos,
     if (prevWasSpace) {
         for (i = 0; i < NELEM(shortWords); i++) {
             if (token.CompareNoCase(shortWords[i]) == 0) {
-                LOGV("    No leading cap for '%ls'", token);
+                LOGV("    No leading cap for '%ls'", (LPCWSTR) token);
                 firstCap = false;
                 break;
             }
@@ -666,7 +666,7 @@ static void DowncaseSubstring(CString* pStr, int startPos, int endPos,
     /* check for roman numerals; we leave those capitalized */
     CString romanTest = token.SpanIncluding(L"IVX");
     if (romanTest.GetLength() == token.GetLength()) {
-        LOGV("    Looks like roman numerals '%ls'", token);
+        LOGV("    Looks like roman numerals '%ls'", (LPCWSTR) token);
         return;
     }
 

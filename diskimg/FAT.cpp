@@ -333,7 +333,7 @@ void DiskFSFAT::CreateFakeFile(void)
     capacity = fTotalBlocks;
 
     memset(buf, 0, sizeof(buf));
-    snprintf(buf, NELEM(buf), kFormatMsg,
+    snprintf(buf, NELEM(buf)-1, kFormatMsg,
         fVolumeName,
         capacity,
         (double) capacity / 2048.0);

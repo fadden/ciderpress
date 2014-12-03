@@ -874,7 +874,7 @@ bool ReformatDisasm16::OutputOMF(const uint8_t* srcBuf, long srcLen,
     int segmentNumber = 1;
 
     BufPrintf(";\r\n");
-    BufPrintf("; OMF segment summary:\r\n", segmentNumber);
+    BufPrintf("; OMF segment summary:\r\n");
     BufPrintf(";\r\n");
 
     /* pass #1: print a preview */

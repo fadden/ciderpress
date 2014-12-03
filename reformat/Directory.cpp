@@ -128,15 +128,15 @@ void ReformatDirectory::PrintDirEntries(const uint8_t* srcBuf,
                 else if (pDirEntry[0x10] == 0x04)   // txt
                     auxTypeStr.Format("R=%5d", auxType);
 
-                BufPrintf("%c%-15s %-3s  %6d %16s %16s %8d %s\r\n",
+                BufPrintf("%c%-15s %-3ls  %6d %16s %16s %8d %s\r\n",
                     lockedFlag,
                     fileName,
                     PathProposal::FileTypeString(pDirEntry[0x10]),
                     pDirEntry[0x13] | pDirEntry[0x14] << 8,
-                    modStr,
-                    createStr,
+                    (LPCSTR) modStr,
+                    (LPCSTR) createStr,
                     pDirEntry[0x15] | pDirEntry[0x16] << 8 | pDirEntry[0x17] << 16,
-                    auxTypeStr);
+                    (LPCSTR) auxTypeStr);
             }
         }
     }
