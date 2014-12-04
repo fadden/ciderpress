@@ -34,6 +34,8 @@ public:
     static void InsertBitmap(IRichEditOle* pRichEditOle, HBITMAP hBitmap);
 
 private:
+    DECLARE_COPY_AND_OPEQ(CImageDataObject)
+
     ULONG   m_ulRefCnt;
     BOOL    m_bRelease;
 

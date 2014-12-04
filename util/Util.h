@@ -35,6 +35,9 @@ public:
 
     const char* fBuf;
     long        fLen;
+
+private:
+    DECLARE_COPY_AND_OPEQ(RichEditXfer)
 };
 
 
@@ -97,6 +100,9 @@ protected:
     char*       fWorkBuf;       // work in progress
     long        fWorkCount;     // quantity of data in buffer
     long        fWorkMax;       // maximum size of buffer
+
+private:
+    DECLARE_COPY_AND_OPEQ(ExpandBuffer)
 };
 
 

@@ -208,6 +208,9 @@ protected:
     BOOL    fFolderPathValid;
 
     DECLARE_MESSAGE_MAP()
+
+private:
+    DECLARE_COPY_AND_OPEQ(ShellTree)
 };
 
 #endif /*UTIL_SHELLTREE_H*/

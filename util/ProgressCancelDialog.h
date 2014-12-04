@@ -58,6 +58,8 @@ public:
     }
 
 private:
+    DECLARE_COPY_AND_OPEQ(ProgressCancelDialog)
+
     BOOL OnInitDialog(void) {
         CancelDialog::OnInitDialog();
 

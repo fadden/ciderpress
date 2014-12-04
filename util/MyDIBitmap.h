@@ -201,6 +201,8 @@ public:
         const MyDIBitmap* pSrcBits, const RECT* pSrcRect);
 
 private:
+    DECLARE_COPY_AND_OPEQ(MyDIBitmap)
+
     enum { kBMPMagic = 0x4d42 };            // "BM"
 
     /* for .TGA files; does not map directly to file */

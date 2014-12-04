@@ -332,6 +332,8 @@ protected:
     const char* GetNameExt(void) const { return fNameExt; }
 
 private:
+    DECLARE_COPY_AND_OPEQ(ReformatHolder)
+
     /*
      * Utility functions.
      */
@@ -427,6 +429,8 @@ public:
     }
 
 private:
+    DECLARE_COPY_AND_OPEQ(ReformatOutput)
+
     /* what we're holding */
     OutputKind      fOutputKind;
     //ReformatID        fOutputID;
@@ -482,8 +486,8 @@ public:
     }
 
 private:
-    NiftyList(void) { assert(false); }
-    ~NiftyList(void) {}
+    NiftyList(void);        // do not instantiate
+    ~NiftyList(void);
 
     /*
      * Structures for holding data.

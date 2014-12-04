@@ -40,6 +40,8 @@ protected:
     afx_msg void OnDeltaPos(NMHDR* pNMHDR, LRESULT* pResult);
 
 private:
+    DECLARE_COPY_AND_OPEQ(MySpinCtrl)
+
     int fLow, fHigh;
 
     /*

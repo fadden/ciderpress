@@ -36,6 +36,8 @@ protected:
     bool*   fpCancelFlag;
 
 private:
+    DECLARE_COPY_AND_OPEQ(CancelDialog)
+
     /* override Cancel button to just raise the flag */
     virtual void OnCancel(void) override {
         /* "cancel" button or escape hit */

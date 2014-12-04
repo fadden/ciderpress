@@ -13,6 +13,7 @@
 #define UTIL_SOUNDFILE_H
 
 #include <mmsystem.h>
+#include <stdint.h>
 
 /*
  * Class providing read-only access to uncompressed sound samples and
@@ -66,6 +67,8 @@ public:
     }
 
 private:
+    DECLARE_COPY_AND_OPEQ(SoundFile)
+
     int SkipToHeader(uint32_t hdrID, uint32_t* pChunkLen);
 
     enum { kWAVMinSize = 40 };

@@ -110,6 +110,8 @@ protected:
     virtual void HandleHelp() {}
 
 private:
+    DECLARE_COPY_AND_OPEQ(SelectFilesDialog)
+
     /*
      * Finishes configuring the file dialog.
      */

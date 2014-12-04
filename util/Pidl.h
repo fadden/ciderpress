@@ -83,6 +83,10 @@ public:
      * specifies which of the object's icons to retrieve.
      */
     static int GetItemIcon(LPITEMIDLIST lpi, UINT uFlags);
+
+private:
+    Pidl();     // do not instantiate
+    ~Pidl();
 };
 
 #endif /*UTIL_PIDL_H*/

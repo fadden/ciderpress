@@ -53,6 +53,8 @@ protected:
     }
 
 private:
+    DECLARE_COPY_AND_OPEQ(ModelessDialog)
+
     bool fOkayToDelete;     // sanity check
 };
 
@@ -84,6 +86,8 @@ public:
     }
 
 private:
+    DECLARE_COPY_AND_OPEQ(ExclusiveModelessDialog)
+
     CWnd*   fpParentWnd;
 };
 

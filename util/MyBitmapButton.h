@@ -58,6 +58,8 @@ protected:
     virtual void UpdateBitmap(void);
 
 private:
+    DECLARE_COPY_AND_OPEQ(MyBitmapButton)
+
     HBITMAP     fhBitmap;
     int         fBitmapID;
 

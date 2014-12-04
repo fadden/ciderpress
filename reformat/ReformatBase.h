@@ -131,6 +131,9 @@ public:
         else
             return Get32BE(buf);
     }
+
+private:
+    DECLARE_COPY_AND_OPEQ(Reformat)
 };
 
 /*
@@ -164,6 +167,8 @@ protected:
         uint8_t** pOutPtr, long dstLen, uint8_t xorVal);
 
 private:
+    DECLARE_COPY_AND_OPEQ(ReformatGraphics)
+
     void InitPalette();
 };
 
@@ -369,6 +374,7 @@ protected:
     void CheckGSCharConv(void);
 
 private:
+    DECLARE_COPY_AND_OPEQ(ReformatText)
     int CreateWorkBuf(void);
     enum { kRTFUnitsPerInch = 1440 };   // TWIPS
 

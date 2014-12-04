@@ -43,6 +43,8 @@ public:
     virtual BOOL ReplaceDlgCtrl(CDialog* pDialog, int editID);
 
 private:
+    DECLARE_COPY_AND_OPEQ(MyEdit)
+
     virtual BOOL PreTranslateMessage(MSG* pMsg) override;
 
     bool        fCapsOnly;
