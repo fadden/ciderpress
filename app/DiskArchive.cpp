@@ -1180,38 +1180,37 @@ bool DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     /*
      * Save the current directory and change to the one from the file dialog.
      */
-    const WCHAR* buf = pAddOpts->GetFileNames();
-    LOGI("Selected path = '%ls' (offset=%d)", buf,
-        pAddOpts->GetFileNameOffset());
+    const CString& directory = pAddOpts->GetDirectory();
+    LOGI("Selected path = '%ls'", (LPCWSTR) directory);
 
     if (GetCurrentDirectory(NELEM(curDir), curDir) == 0) {
         errMsg = L"Unable to get current directory.\n";
         ShowFailureMsg(pActionProgress, errMsg, IDS_FAILED);
         goto bail;
     }
-    if (SetCurrentDirectory(buf) == false) {
-        errMsg.Format(L"Unable to set current directory to '%ls'.\n", buf);
+    if (SetCurrentDirectory(directory) == false) {
+        errMsg.Format(L"Unable to set current directory to '%ls'.\n",
+            (LPCWSTR) directory);
         ShowFailureMsg(pActionProgress, errMsg, IDS_FAILED);
         goto bail;
     }
 
-    buf += pAddOpts->GetFileNameOffset();
-    while (*buf != '\0') {
-        LOGI("  file '%ls'", buf);
+    const CStringArray& fileNames = pAddOpts->GetFileNames();
+    for (int i = 0; i < fileNames.GetCount(); i++) {
+        const CString& name = fileNames.GetAt(i);
+        LOGI("  file '%ls'", (LPCWSTR) name);
 
         /* add the file, calling DoAddFile via the generic AddFile */
-        nerr = AddFile(pAddOpts, buf, &errMsg);
+        nerr = AddFile(pAddOpts, name, &errMsg);
         if (nerr != kNuErrNone) {
             if (errMsg.IsEmpty())
                 errMsg.Format(L"Failed while adding file '%ls': %hs.",
-                    (LPCWSTR) buf, NuStrError(nerr));
+                    (LPCWSTR) name, NuStrError(nerr));
             if (nerr != kNuErrAborted) {
                 ShowFailureMsg(pActionProgress, errMsg, IDS_FAILED);
             }
             goto bail;
         }
-
-        buf += wcslen(buf)+1;
     }
 
     if (fpAddDataHead == NULL) {
@@ -1239,7 +1238,7 @@ bool DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
 bail:
     FreeAddDataList();
     if (SetCurrentDirectory(curDir) == false) {
-        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", buf);
+        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", curDir);
         ShowFailureMsg(pActionProgress, errMsg, IDS_FAILED);
         // bummer, but don't signal failure
     }

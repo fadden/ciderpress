@@ -189,8 +189,8 @@ void MainWindow::OnActionsAddFiles(void)
 
     addFiles.m_ofn.lpstrInitialDir = fPreferences.GetPrefString(kPrAddFileFolder);
 
-    addFiles.DoModal();
-    if (addFiles.GetExitStatus() == IDOK) {
+    LRESULT addResult = addFiles.DoModal();
+    if (addResult == IDOK) {
         fPreferences.SetPrefBool(kPrAddIncludeSubFolders,
             addFiles.fIncludeSubfolders != 0);
         if (addFiles.fStripFolderNamesEnable) {
@@ -206,8 +206,7 @@ void MainWindow::OnActionsAddFiles(void)
             fPreferences.SetPrefLong(kPrAddConvEOL,
                 addFiles.fConvEOL);
 
-        CString saveFolder = addFiles.GetFileNames();
-        saveFolder = saveFolder.Left(addFiles.GetFileNameOffset());
+        CString saveFolder = addFiles.GetDirectory();
         fPreferences.SetPrefString(kPrAddFileFolder, saveFolder);
 
         /*
@@ -401,15 +400,14 @@ void MainWindow::OnActionsAddDisks(void)
     /*
      * Set up an AddFilesDialog, but don't actually use it as a dialog.
      * Instead, we just configure the various options appropriately.
-     *
-     * To conform to multi-file-selection semantics, we need to drop a
-     * null byte in right after the pathname.
      */
     ASSERT(dlg.m_ofn.nFileOffset > 0);
-    int len;
-    len = wcslen(dlg.m_ofn.lpstrFile) + 2;
-    dlg.m_ofn.lpstrFile[dlg.m_ofn.nFileOffset-1] = '\0';
-    addOpts.SetFileNames(dlg.m_ofn.lpstrFile, len, dlg.m_ofn.nFileOffset);
+    {
+        CString directory(dlg.m_ofn.lpstrFile, dlg.m_ofn.nFileOffset - 1);
+        CString file(dlg.m_ofn.lpstrFile + dlg.m_ofn.nFileOffset);
+        LOGD("Stuffing '%ls' '%ls'", (LPCWSTR) directory, (LPCWSTR) file);
+        addOpts.StuffSingleFilename(directory, file);
+    }
     addOpts.fStoragePrefix = "";
     addOpts.fIncludeSubfolders = false;
     addOpts.fStripFolderNames = false;

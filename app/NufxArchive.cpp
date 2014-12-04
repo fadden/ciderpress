@@ -908,38 +908,37 @@ bool NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     /* initialize count */
     fNumAdded = 0;
 
-    const WCHAR* buf = pAddOpts->GetFileNames();
-    LOGI("Selected path = '%ls' (offset=%d)", buf,
-        pAddOpts->GetFileNameOffset());
+    const CString& directory = pAddOpts->GetDirectory();
+    LOGI("Selected path = '%ls'", (LPCWSTR) directory);
 
     if (GetCurrentDirectory(NELEM(curDir), curDir) == 0) {
         errMsg = L"Unable to get current directory.\n";
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
         goto bail;
     }
-    if (SetCurrentDirectory(buf) == false) {
-        errMsg.Format(L"Unable to set current directory to '%ls'.\n", buf);
+    if (SetCurrentDirectory(directory) == false) {
+        errMsg.Format(L"Unable to set current directory to '%ls'.\n",
+            (LPCWSTR) directory);
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
         goto bail;
     }
 
-    buf += pAddOpts->GetFileNameOffset();
-    while (*buf != '\0') {
-        LOGI("  file '%ls'", buf);
+    const CStringArray& fileNames = pAddOpts->GetFileNames();
+    for (int i = 0; i < fileNames.GetCount(); i++) {
+        const CString& name = fileNames.GetAt(i);
+        LOGI("  file '%ls'", (LPCWSTR) name);
 
         /* this just provides the list of files to NufxLib */
-        nerr = AddFile(pAddOpts, buf, &errMsg);
+        nerr = AddFile(pAddOpts, name, &errMsg);
         if (nerr != kNuErrNone) {
             if (errMsg.IsEmpty())
                 errMsg.Format(L"Failed while adding file '%ls': %hs.",
-                    buf, NuStrError(nerr));
+                    name, NuStrError(nerr));
             if (nerr != kNuErrAborted) {
                 ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
             }
             goto bail;
         }
-
-        buf += wcslen(buf)+1;
     }
 
     /* actually do the work */
@@ -970,7 +969,7 @@ bool NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
 bail:
     NuAbort(fpArchive);     // abort anything that didn't get flushed
     if (SetCurrentDirectory(curDir) == false) {
-        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", buf);
+        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", curDir);
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
         // bummer, but don't signal failure
     }
@@ -993,13 +992,19 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     bool retVal = false;
     CStringA storageNameA, origNameA;
 
-    LOGI("AddDisk: '%ls' %d", pAddOpts->GetFileNames(),
-        pAddOpts->GetFileNameOffset());
-    LOGI("Opts: '%ls' type=%d", (LPCWSTR) pAddOpts->fStoragePrefix,
+    LOGI("AddDisk: '%ls' (count=%d)", (LPCWSTR) pAddOpts->GetDirectory(),
+        pAddOpts->GetFileNames().GetCount());
+    LOGI("Opts: stpfx='%ls' pres=%d", (LPCWSTR) pAddOpts->fStoragePrefix,
         pAddOpts->fTypePreservation);
     LOGI("      sub=%d strip=%d ovwr=%d",
         pAddOpts->fIncludeSubfolders, pAddOpts->fStripFolderNames,
         pAddOpts->fOverwriteExisting);
+
+    if (pAddOpts->GetFileNames().GetCount() != 1) {
+        LOGW("GLITCH: expected only one filename, found %d",
+            pAddOpts->GetFileNames().GetCount());
+        goto bail;
+    }
 
     pDiskImg = pAddOpts->fpDiskImg;
     ASSERT(pDiskImg != NULL);
@@ -1016,27 +1021,27 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     /* prepare to add */
     AddPrep(pActionProgress, pAddOpts);
 
-    const WCHAR* buf;
-    buf = pAddOpts->GetFileNames();
-    LOGI("Selected path = '%ls' (offset=%d)", buf,
-        pAddOpts->GetFileNameOffset());
+    const CString& directory = pAddOpts->GetDirectory();
+    const CStringArray& fileNames = pAddOpts->GetFileNames();
+    LOGD("Selected path = '%ls'", (LPCWSTR) directory);
 
     if (GetCurrentDirectory(NELEM(curDir), curDir) == 0) {
         errMsg = L"Unable to get current directory.\n";
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
         goto bail;
     }
-    if (SetCurrentDirectory(buf) == false) {
-        errMsg.Format(L"Unable to set current directory to '%ls'.\n", buf);
+    if (SetCurrentDirectory(directory) == false) {
+        errMsg.Format(L"Unable to set current directory to '%ls'.\n",
+            (LPCWSTR) directory);
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
         goto bail;
     }
 
-    buf += pAddOpts->GetFileNameOffset();
-    LOGI("  file '%ls'", buf);
+    const CString& fileName = pAddOpts->GetFileNames().GetAt(0);
+    LOGI("  file '%ls'", (LPCWSTR) fileName);
 
     /* strip off preservation stuff, and ignore it */
-    pathProp.Init(buf);
+    pathProp.Init(fileName);
     pathProp.fStripDiskImageSuffix = true;
     pathProp.LocalToArchive(pAddOpts);
 
@@ -1047,7 +1052,7 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     details.storageType = kBlockSize;
     details.access = kNuAccessUnlocked;
     details.extraType = pAddOpts->fpDiskImg->GetNumBlocks();
-    origNameA = buf;
+    origNameA = fileName;   // narrowing conversion
     storageNameA = pathProp.fStoredPathName;
     details.origName = origNameA;
     details.storageName = storageNameA;
@@ -1056,7 +1061,7 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
 
     time_t now, then;
 
-    pathName = buf;
+    pathName.SetPathName(fileName);
     now = time(NULL);
     then = pathName.GetModWhen();
     UNIXTimeToDateTime(&now, &details.archiveWhen);
@@ -1065,7 +1070,7 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
 
     /* set up the progress updater */
     pActionProgress->SetArcName(pathProp.fStoredPathName);
-    pActionProgress->SetFileName(buf);
+    pActionProgress->SetFileName(fileName);
 
     /* read the disk now that we have progress update titles in place */
     int block, numBadBlocks;
@@ -1142,7 +1147,7 @@ bail:
     NuAbort(fpArchive);     // abort anything that didn't get flushed
     NuFreeDataSource(pSource);
     if (SetCurrentDirectory(curDir) == false) {
-        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", buf);
+        errMsg.Format(L"Unable to reset current directory to '%ls'.\n", curDir);
         ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
         // bummer
     }

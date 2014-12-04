@@ -40,129 +40,11 @@
 #define UTIL_SELECTFILESDIALOG_H
 
 /*
- * File selection, based on an "open" file dialog.
- *
- * DoModal will return with IDCANCEL to indicate that the standard fields
- * (like lpstrFile) are not actually filled in.  Use the provided fields
- * to get exit status and filename info.
- *
- * Defer any dialog initialization to MyDataExchange.
+ * File selection, based on an "open" common file dialog.
  */
 class SelectFilesDialog : public CFileDialog {
 public:
-    enum { kFileNameBufSize = 32768 };
-    SelectFilesDialog(const WCHAR* rctmpl, CWnd* pParentWnd = NULL) :
-        CFileDialog(true, NULL, NULL, OFN_HIDEREADONLY, NULL, pParentWnd,
-            0, FALSE /*disable Vista style*/)
-    {
-        m_ofn.Flags |= OFN_ENABLETEMPLATE | OFN_ALLOWMULTISELECT |
-            OFN_HIDEREADONLY | OFN_EXPLORER | OFN_ENABLESIZING;
-        m_ofn.lpTemplateName = rctmpl;
-        m_ofn.hInstance = AfxGetInstanceHandle();
-        m_ofn.lpstrFile = new WCHAR[kFileNameBufSize];
-        m_ofn.lpstrFile[0] = m_ofn.lpstrFile[1] = '\0';
-        m_ofn.nMaxFile = kFileNameBufSize;
-        m_ofn.nFileOffset = -1;
-        m_ofn.Flags |= OFN_ENABLEHOOK;
-        m_ofn.lpfnHook = OFNHookProc;
-        m_ofn.lCustData = (LPARAM) this;
-
-        fExitStatus = IDABORT;
-        fFileNames = new WCHAR[2];
-        fFileNames[0] = fFileNames[1] = '\0';
-        fFileNameOffset = 0;
-
-        fAcceptButtonID = IDOK;
-
-        fReady = false;     // used by WM_SIZE handler
-    }
-    virtual ~SelectFilesDialog(void) {
-        delete[] m_ofn.lpstrFile;
-        delete[] fFileNames;
-    }
-
-    int GetExitStatus(void) const { return fExitStatus; }
-    const WCHAR* GetFileNames(void) const { return fFileNames; }
-    int GetFileNameOffset(void) const { return fFileNameOffset; }
-
-    // set the window title; must be called before DoModal
-    void SetWindowTitle(const WCHAR* title) {
-        m_ofn.lpstrTitle = title;
-    }
-
-    // stuff values into our filename holder
-    void SetFileNames(const WCHAR* fileNames, size_t len, int fileNameOffset) {
-        ASSERT(len > wcslen(fileNames));
-        ASSERT(fileNames[len] == '\0');
-        ASSERT(fileNames[len-1] == '\0');
-        LOGD("SetFileNames '%ls' %d %d", fileNames, len, fileNameOffset);
-        delete[] fFileNames;
-        fFileNames = new WCHAR[len];
-        memcpy(fFileNames, fileNames, len * sizeof(WCHAR));
-        fFileNameOffset = fileNameOffset;
-    }
-
-protected:
-    // would be overrides
-    virtual void MyOnInitDone(void);
-    virtual void MyOnFileNameChange(void);
-    // like DoDataExchange, but ret val replaces pDX->Fail()
-    virtual bool MyDataExchange(bool saveAndValidate) { return true; }
-
-    // would be message handlers
-    virtual UINT HandleNotify(HWND hDlg, LPOFNOTIFY pofn);
-    virtual UINT HandleCommand(HWND hDlg, WPARAM wParam, LPARAM lParam);
-    virtual UINT HandleSize(HWND hDlg, UINT nType, int cx, int cy);
-    virtual UINT HandleHelp(HWND hDlg, LPHELPINFO lpHelp);
-    virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam) { return 0; }
-
-    virtual void MyOnAccept(void);
-    virtual void MyOnCancel(void);
-
-    // utility functions
-    virtual CWnd* GetListCtrl(void);
-    virtual void ShiftControls(int deltaX, int deltaY);
-    virtual void DestroyItem(CWnd* pDlg, int id) {
-        CWnd* pWnd = pDlg->GetDlgItem(id);
-        if (pWnd == NULL) {
-            LOGW("Could not find item %p %d", pDlg, id);
-            return;
-        }
-        pWnd->DestroyWindow();
-    }
-    virtual bool PrepEndDialog(void);
-
-    // make this a little easier
-    int MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
-        UINT nType = MB_OK)
-    {
-        return GetParent()->MessageBox(lpszText, lpszCaption, nType);
-    }
-
-    // we're in a library, so the app resources have to tell us this
-    int     fAcceptButtonID;
-
-private:
-    static UINT CALLBACK OFNHookProc(HWND hdlg, UINT uiMsg, WPARAM wParam,
-        LPARAM lParam);
-    void ClearFileName(void);
-
-    bool    fReady;
-    int     fExitStatus;
-    int     fFileNameOffset;
-    WCHAR*  fFileNames;
-    CRect   fLastWinSize;
-
-    //DECLARE_MESSAGE_MAP()
-};
-
-
-/*
- * File selection, based on an "open" common file dialog.
- */
-class SelectFilesDialog2 : public CFileDialog {
-public:
-    SelectFilesDialog2(const WCHAR* rctmpl, CWnd* pParentWnd = NULL) :
+    SelectFilesDialog(const WCHAR* rctmpl, bool showHelp, CWnd* pParentWnd = NULL) :
         CFileDialog(true, NULL, NULL, OFN_HIDEREADONLY, NULL, pParentWnd,
             0, FALSE /*disable Vista style*/)
     {
@@ -170,7 +52,8 @@ public:
         // we want the multi-select behavior but we don't want to return
         // the filenames in the filename buf.
         m_ofn.Flags |= OFN_ENABLETEMPLATE | OFN_ALLOWMULTISELECT |
-            OFN_HIDEREADONLY | OFN_EXPLORER | OFN_ENABLESIZING;
+            OFN_HIDEREADONLY | OFN_EXPLORER | OFN_ENABLESIZING |
+            (showHelp ? OFN_SHOWHELP : 0);
 
         // Configure use of a template.  The dialog template must have
         // WS_CHILD and WS_CLIPSIBLINGS set, and should have DS_3DLOOK and
@@ -179,7 +62,7 @@ public:
         m_ofn.hInstance = AfxGetInstanceHandle();
     }
 
-    virtual ~SelectFilesDialog2(void) {}
+    virtual ~SelectFilesDialog(void) {}
 
     /*
      * Gets the directory name where the files live.  This is a full path.
@@ -200,14 +83,40 @@ public:
         m_ofn.lpstrTitle = (LPCWSTR) fCustomTitle;
     }
 
-protected:
     /*
-     * Finish configuring the file dialog.
+     * Stuffs a single file/directory into the return value fields.  This is
+     * (mis-)used by code that treats AddFilesDialog as a way to pass data
+     * around.
+     *
+     * TODO: don't do this -- change the callers to pass data around differently
+     */
+    void StuffSingleFilename(const CString& directory, const CString& filename) {
+        fCurrentDirectory = directory;
+        fFileNameArray.RemoveAll();
+        fFileNameArray.Add(filename);
+    }
+
+protected:
+    // This is much like DoDataExchange, but ret val replaces pDX->Fail().
+    // This will be called with saveAndValidate==true during OnInitDialog,
+    // and with false when we've extracted the filenames and are about to
+    // close the dialog.
+    //
+    // Return true on success, false if something failed and we want to keep
+    // the dialog open.
+    virtual bool MyDataExchange(bool saveAndValidate) { return true; }
+
+    // Handles a click on the "help" button.
+    virtual void HandleHelp() {}
+
+private:
+    /*
+     * Finishes configuring the file dialog.
      */
     virtual void OnInitDone() override;
 
     /*
-     * Track changes to the current directory.
+     * Tracks changes to the current directory.
      *
      * Updates fCurrentDirectory with the path currently being used by the
      * dialog.  For items with no path (e.g. Computer or Libraries), this
@@ -215,7 +124,6 @@ protected:
      */
     virtual void OnFolderChange() override;
 
-private:
     /*
      * Custom filename validation; in our case, it's a double-click trap.
      *
@@ -266,7 +174,7 @@ private:
     CString         fCustomTitle;
 
     // Directory the dialog is currently accessing.  Prepend this to the
-    // entries in fFileNameArray to get the full path.
+    // entries in fFileNameArray to get full paths.
     CString         fCurrentDirectory;
 
     // File names of selected files.

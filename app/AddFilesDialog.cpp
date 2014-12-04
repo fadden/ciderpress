@@ -24,6 +24,7 @@ bool AddFilesDialog::MyDataExchange(bool saveAndValidate)
 {
     CWnd* pWnd;
 
+    LOGD("AddFilesDialog MyDataExchange(%d)", saveAndValidate);
     if (saveAndValidate) {
         if (GetDlgButtonCheck(this, IDC_ADDFILES_NOPRESERVE) == BST_CHECKED)
             fTypePreservation = kPreserveNone;
@@ -126,56 +127,9 @@ bool AddFilesDialog::ValidateStoragePrefix(void)
     return true;
 }
 
-
-UINT AddFilesDialog::MyOnCommand(WPARAM wParam, LPARAM lParam)
+void AddFilesDialog::HandleHelp()
 {
-    switch (wParam) {
-    case IDHELP:
-        OnIDHelp();
-        return 1;
-    default:
-        return SelectFilesDialog::MyOnCommand(wParam, lParam);
-    }
-}
-
-void AddFilesDialog::ShiftControls(int deltaX, int deltaY)
-{
-    /*
-     * These only need to be here so that the initial move puts them
-     * where they belong.  Once the dialog has been created, the
-     * CFileDialog will move things where they need to go.
-     */
-    MoveControl(this, IDC_ADDFILES_STATIC1, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_NOPRESERVE, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_PRESERVE, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_PRESERVEPLUS, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_STATIC2, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_STRIP_FOLDER, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_INCLUDE_SUBFOLDERS, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_OVERWRITE, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_STATIC3, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_PREFIX, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_STATIC4, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_CONVEOLNONE, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_CONVEOLTYPE, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_CONVEOLTEXT, 0, deltaY, false);
-    MoveControl(this, IDC_ADDFILES_CONVEOLALL, 0, deltaY, false);
-
-    /*
-     * These actively move.
-     */
-    MoveControl(this, IDHELP, deltaX, deltaY, false);
-    StretchControl(this, IDC_ADDFILES_PREFIX, deltaX, 0, false);
-
-    /*
-     * It's important that the base class be called last, because it calls
-     * Invalidate to redraw the dialog.
-     */
-    SelectFilesDialog::ShiftControls(deltaX, deltaY);
-}
-
-void AddFilesDialog::OnIDHelp(void)
-{
+    LOGD("AddFilesDialog HandleHelp");
     CWnd* pWndMain = ::AfxGetMainWnd();
     CWinApp* pAppMain = ::AfxGetApp();
 

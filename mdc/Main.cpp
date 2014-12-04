@@ -165,7 +165,7 @@ void MainWindow::ScanFiles(void)
     memset(&scanOpts, 0, sizeof(scanOpts));
 
     // choose input files
-    SelectFilesDialog2 chooseFiles(L"IDD_CHOOSE_FILES", this);
+    SelectFilesDialog chooseFiles(L"IDD_CHOOSE_FILES", false, this);
     chooseFiles.SetWindowTitle(L"Choose Files...");
     INT_PTR retval = chooseFiles.DoModal();
     if (retval != IDOK) {

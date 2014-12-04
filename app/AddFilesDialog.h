@@ -23,7 +23,7 @@
 class AddFilesDialog : public SelectFilesDialog {
 public:
     AddFilesDialog(CWnd* pParentWnd = NULL) :
-        SelectFilesDialog(L"IDD_ADD_FILES", pParentWnd)
+        SelectFilesDialog(L"IDD_ADD_FILES", true, pParentWnd)
     {
         SetWindowTitle(L"Add Files...");
         fStoragePrefix = "";
@@ -35,8 +35,6 @@ public:
         fTypePreservation = 0;
         fConvEOL = 0;
         fConvEOLEnable = true;
-
-        fAcceptButtonID = IDC_SELECT_ACCEPT;
 
         fpTargetDiskFS = NULL;
         //fpTargetSubdir = NULL;
@@ -69,21 +67,11 @@ public:
 private:
     virtual bool MyDataExchange(bool saveAndValidate) override;
 
-    /*
-     * Overrides base class version so we can move our stuff around.
-     */
-    virtual void ShiftControls(int deltaX, int deltaY) override;
-
-    // Grabs OnIDHelp; otherwise forwards to base class.
-    virtual UINT MyOnCommand(WPARAM wParam, LPARAM lParam) override;
-
     // User hit the Help button.
-    void OnIDHelp(void);
+    virtual void HandleHelp() override;
 
-    /*
-     * Make sure the storage prefix they entered is valid.
-     */
-    bool ValidateStoragePrefix(void);
+    // Make sure the storage prefix they entered is valid.
+    bool ValidateStoragePrefix();
 
     //DECLARE_MESSAGE_MAP()
 };

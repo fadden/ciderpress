@@ -128,6 +128,8 @@ public:
     static const WCHAR* FilenameOnly(const WCHAR* pathname, WCHAR fssep);
 
 private:
+    DECLARE_COPY_AND_OPEQ(PathName)
+
     void SplitIFN(void) {
         if (!fSplit) {
             _wsplitpath(fPathName, fDrive, fDir, fFileName, fExt);
