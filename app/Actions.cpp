@@ -266,7 +266,7 @@ bool MainWindow::ChooseAddTarget(DiskImgLib::A2File** ppTargetSubdir,
          */
         DiskArchive* pDiskArchive = (DiskArchive*) fpOpenArchive;
 
-        LOGI("Trying ChooseAddTarget");
+        LOGD("Trying ChooseAddTarget");
 
         ChooseAddTargetDialog targetDialog(this);
         targetDialog.fpDiskFS = pDiskArchive->GetDiskFS();
@@ -1653,7 +1653,7 @@ void MainWindow::OnActionsRenameVolume(void)
     result = fpOpenArchive->RenameVolume(this, rvDialog.fpChosenDiskFS,
                 rvDialog.fNewName);
     if (!result) {
-        LOGI("RenameVolume FAILED");
+        LOGW("RenameVolume FAILED");
         /* keep going -- reload just in case something partially happened */
     }
 
@@ -1933,7 +1933,7 @@ void MainWindow::OnUpdateActionsConvDisk(CCmdUI* pCmdUI)
 
 /*
  * ==========================================================================
- *      Convert to file archive
+ *      Convert disk image to NuFX file archive
  * ==========================================================================
  */
 
@@ -2025,7 +2025,7 @@ void MainWindow::OnActionsConvFile(void)
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
     filename = dlg.GetPathName();
-    LOGI(" Will xfer to file '%ls'", (LPCWSTR) filename);
+    LOGD(" Will xfer to file '%ls'", (LPCWSTR) filename);
 
     /* remove file if it already exists */
     CString errMsg;

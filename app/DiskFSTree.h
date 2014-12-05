@@ -14,8 +14,13 @@
 #include "../diskimg/DiskImg.h"
 
 /*
- * This class could probably be part of DiskArchive, but things are pretty
- * cluttered up there already.
+ * Utility class for extracting a directory hierarchy from a DiskFS and
+ * adding it to a CTreeCtrl.
+ *
+ * The storage for some of the strings provided to the tree control is
+ * managed by this class, so delete this object after the CTreeCtrl is
+ * deleted.  (Generally, this should be paired with a CTreeCtrl in a dialog
+ * object.)
  */
 class DiskFSTree {
 public:
@@ -36,13 +41,18 @@ public:
 
     /* if set, includes folders as well as disks */
     bool    fIncludeSubdirs;
+
     /* start with the tree expanded to this depth (0=none, -1=all) */
     int     fExpandDepth;
 
     typedef enum {
         kTargetUnknown = 0, kTargetDiskFS, kTargetSubdir
     } TargetKind;
-    typedef struct TargetData {
+    struct TargetData {
+        TargetData()
+            : kind(kTargetUnknown), selectable(false), pDiskFS(NULL),
+              pFile(NULL), pNext(NULL)
+            {}
         TargetKind          kind;
         bool                selectable;
         DiskImgLib::DiskFS* pDiskFS;
@@ -50,9 +60,9 @@ public:
 
         // easier to keep a list than to chase through the tree
         struct TargetData*  pNext;
-    } TargetData;
+    };
 
-    private:
+private:
     /*
      * Load the specified DiskFS into the tree, recursively adding any
      * sub-volumes.  Pass in an initial depth of 1.
@@ -88,11 +98,16 @@ public:
      */
     void FreeAllTargetData(void);
 
+    /*
+     * Load bitmaps used in the tree control.
+     */
     void LoadTreeImages(void) {
-        if (!fTreeImageList.Create(IDB_TREE_PICS, 16, 1, CLR_DEFAULT))
-            LOGI("GLITCH: list image create failed");
+        if (!fTreeImageList.Create(IDB_TREE_PICS, 16, 1, CLR_DEFAULT)) {
+            LOGW("GLITCH: list image create failed");
+        }
         fTreeImageList.SetBkColor(::GetSysColor(COLOR_WINDOW));
     }
+
     enum {  // defs for IDB_TREE_PICS
         kTreeImageFolderClosed = 0,
         kTreeImageFolderOpen = 1,
@@ -103,6 +118,9 @@ public:
 
     DiskImgLib::DiskFS* fpDiskFS;
     TargetData*     fpTargetData;
+
+    // Storage for wide strings that were converted from DiskFS narrow strings.
+    CStringArray    fStringHolder;
 };
 
 #endif /*APP_DISKFSTREE_H*/

@@ -970,17 +970,33 @@ GenericArchive::FileDetails::operator const NuFileDetails() const
         break;
     case kFileKindDirectory:
     default:
-        LOGI("Invalid entryKind (%d) for NuFileDetails conversion",
+        LOGW("Invalid entryKind (%d) for NuFileDetails conversion",
             entryKind);
         ASSERT(false);
         details.threadID = 0;       // that makes it an old-style comment?!
         break;
     }
 
-    // TODO(xyzzy): need narrow-string versions of origName and storageName
-    //  (probably need to re-think this automatic-cast-conversion stuff)
-    details.origName = "XYZZY-GenericArchive1"; // origName;
-    details.storageName = "XYZZY-GenericArchive2"; // storageName;
+    // The NuFileDetails origName field was added to NufxLib so that CiderPress
+    // could receive the original Windows pathname in the NuErrorStatus
+    // callback.  This is a fairly compelling argument for making origName
+    // an opaque field.
+    //
+    // Whatever the case, we need to pass narrow-string versions of the
+    // names into NufxLib via the NuFileDetails struct.  Since we're returning
+    // the NuFileDetails struct, the strings will out-live the scope of this
+    // function, so we have to store them somewhere else.  There's nowhere
+    // in NuFileDetails, so we have to keep them in FileDetails, which currently
+    // exposes all of its fields publicly.  I'm going to kluge it for now and
+    // just "snapshot" the wide strings into narrow-string fields.  This is
+    // all pretty rickety and needs to be redone.
+
+    // TODO: make origName an opaque (void*) field in NufxLib and pass the
+    //  wide char representation through
+    fOrigNameA = origName;
+    details.origName = fOrigNameA;
+    fStorageNameA = storageName;
+    details.storageName = fStorageNameA;
     //details.fileSysID = fileSysID;
     details.fileSysInfo = fileSysInfo;
     details.access = access;
@@ -1019,7 +1035,6 @@ GenericArchive::FileDetails::operator const NuFileDetails() const
         details.fileSysID = kNuFileSysUnknown;
         break;
     }
-
 
     // Return stack copy, which copies into compiler temporary with our
     // copy constructor.

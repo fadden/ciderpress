@@ -3,10 +3,8 @@
  * Copyright (C) 2007 by faddenSoft, LLC.  All Rights Reserved.
  * See the file LICENSE for distribution terms.
  */
-/*
- * DiskFSTree implementation.
- */
 #include "StdAfx.h"
+#include "DiskFSTree.h"
 #include "ChooseAddTargetDialog.h"
 #include "HelpTopics.h"
 
@@ -32,14 +30,22 @@ bool DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
 
     /*
      * Insert an entry for the current item.
+     *
+     * The TVITEM struct wants a pointer to WCHAR* storage for the item
+     * text.  The DiskFS only provides narrow chars, so we need to create
+     * some local storage for the widened version.  Some calls that take a
+     * TVITEM allow the text to be edited, so the field is LPWSTR rather
+     * than LPCWSTR, but our uses don't allow editing, so we're okay
+     * passing it a pointer to storage inside a CString.
      */
     pTarget = AllocTargetData();
     pTarget->kind = kTargetDiskFS;
     pTarget->pDiskFS = pDiskFS;
     pTarget->pFile = NULL;   // could also use volume dir for ProDOS
     tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-    // TODO(xyzzy): need storage for wide-char version
-    tvi.pszText = L"XYZZY-DiskFSTree1"; // pDiskFS->GetVolumeID();
+    CString volumeIdW(pDiskFS->GetVolumeID());  // convert to wide string
+    int index = fStringHolder.Add(volumeIdW);
+    tvi.pszText = (LPWSTR)(LPCWSTR) fStringHolder.GetAt(index);
     tvi.cchTextMax = 0;     // not needed for insertitem
 //  tvi.iImage = kTreeImageFolderClosed;
 //  tvi.iSelectedImage = kTreeImageFolderOpen;
@@ -57,7 +63,7 @@ bool DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     tvins.hParent = parent;
     hLocalRoot = pTree->InsertItem(&tvins);
     if (hLocalRoot == NULL) {
-        LOGI("Tree root InsertItem failed");
+        LOGW("Tree root InsertItem failed");
         return false;
     }
 
@@ -99,7 +105,6 @@ bool DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
         pTree->Select(hLocalRoot, TVGN_CARET);
     }
 
-
     return true;
 }
 
@@ -137,6 +142,8 @@ DiskImgLib::A2File* DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
     } else {
         /*
          * Add an entry for this subdir (the "parent" entry).
+         *
+         * This has the same wide-vs-narrow storage issues as AddDiskFS().
          */
         pTarget = AllocTargetData();
         pTarget->kind = kTargetSubdir;
@@ -144,8 +151,9 @@ DiskImgLib::A2File* DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
         pTarget->pDiskFS = pDiskFS;
         pTarget->pFile = pParentFile;
         tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-        // TODO(xyzzy): need storage for wide-char version
-        tvi.pszText = L"XYZZY-DiskFSTree2"; // pParentFile->GetFileName();
+        CString fileNameW(pParentFile->GetFileName());
+        int index = fStringHolder.Add(fileNameW);
+        tvi.pszText = (LPWSTR)(LPCWSTR) fStringHolder.GetAt(index);
         tvi.cchTextMax = 0;     // not needed for insertitem
         tvi.iImage = kTreeImageFolderClosed;
         tvi.iSelectedImage = kTreeImageFolderOpen;
@@ -155,7 +163,7 @@ DiskImgLib::A2File* DiskFSTree::AddSubdir(CTreeCtrl* pTree, HTREEITEM parent,
         tvins.hParent = parent;
         hLocalRoot = pTree->InsertItem(&tvins);
         if (hLocalRoot == NULL) {
-            LOGI("Tree insert '%ls' failed", tvi.pszText);
+            LOGW("Tree insert '%ls' failed", tvi.pszText);
             return NULL;
         }
     }
@@ -191,7 +199,6 @@ DiskFSTree::TargetData* DiskFSTree::AllocTargetData(void)
 
     if (pNew == NULL)
         return NULL;
-    memset(pNew, 0, sizeof(*pNew));
 
     /* insert it at the head of the list, and update the head pointer */
     pNew->pNext = fpTargetData;

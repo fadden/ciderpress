@@ -1073,7 +1073,7 @@ void PathProposal::LocalToArchive(const AddFilesDialog* pAddOpts)
     if ((livePathStr[0] == '.' && livePathStr[1] == '.') ||
         (wcsstr(livePathStr, slashDotDotSlash) != NULL))
     {
-        LOGI("Found dot dot in '%ls', keeping only filename", livePathStr);
+        LOGD("Found dot dot in '%ls', keeping only filename", livePathStr);
         doJunk = true;
     }
 

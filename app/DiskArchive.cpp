@@ -1276,7 +1276,7 @@ NuError DiskArchive::DoAddFile(const AddFilesDialog* pAddOpts,
      * on CreateFile's "make unique" feature and let the filesystem-specific
      * code handle uniqueness.
      *
-     * Any fields we want to keep from the NuFileDetails struct need to be
+     * Any fields we want to keep from the FileDetails struct need to be
      * copied out.  It's a "hairy" struct, so we need to duplicate the strings.
      */
     NuError nuerr = kNuErrNone;
@@ -1954,11 +1954,16 @@ bail:
     return dierr;
 }
 
+// TODO: make this a member of FileDetails, and return a struct owned by
+//  FileDetails.  This is necessary because we put const strings into
+//  pCreateParms that are owned by FileDetails, and need to coordinate the
+//  object lifetime.
 void DiskArchive::ConvertFDToCP(const FileDetails* pDetails,
     DiskFS::CreateParms* pCreateParms)
 {
-    // TODO(xyzzy): need to store 8-bit form
-    pCreateParms->pathName = "XYZZY-DiskArchive"; // pDetails->storageName;
+    // ugly hack to get storage for narrow string
+    pDetails->fStorageNameA = pDetails->storageName;
+    pCreateParms->pathName = pDetails->fStorageNameA;
     pCreateParms->fssep = (char) pDetails->fileSysInfo;
     pCreateParms->storageType = pDetails->storageType;
     pCreateParms->fileType = pDetails->fileType;

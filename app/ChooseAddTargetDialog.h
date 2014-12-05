@@ -40,6 +40,7 @@ private:
      * archive.
      */
     virtual BOOL OnInitDialog(void) override;
+
     virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnHelp(void);
