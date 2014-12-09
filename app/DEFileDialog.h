@@ -21,6 +21,7 @@
 
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
+
 using namespace DiskImgLib;
 
 
@@ -61,7 +62,9 @@ protected:
      */
     afx_msg virtual void OnChange(void);
 
-    afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
 private:
     DiskFS*     fpDiskFS;

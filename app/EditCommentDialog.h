@@ -34,8 +34,12 @@ protected:
     virtual BOOL OnInitDialog(void) override;
     virtual void DoDataExchange(CDataExchange* pDX) override;
 
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-    afx_msg void OnHelp(void);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_EDIT_COMMENT);
+    }
 
     /*
      * User wants to delete the comment.  Verify first.

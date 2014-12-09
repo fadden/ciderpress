@@ -40,7 +40,9 @@ public:
 protected:
     void DoDataExchange(CDataExchange* pDX) override;
 
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     // on exit, set to "true" if we created the folder in "fNewFolder"
     bool        fFolderCreated;

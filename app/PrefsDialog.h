@@ -12,6 +12,7 @@
 #include "Preferences.h"
 #include "../util/UtilLib.h"
 #include "resource.h"
+#include "HelpTopics.h"
 
 /*
  * The "general" page, which controls how we display information to the user.
@@ -57,8 +58,13 @@ protected:
     afx_msg void OnChangeRange(UINT);
     afx_msg void OnDefaults(void);
     afx_msg void OnAssociations(void);
-    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnHelpInfo(UINT wParam, LONG lParam) {
+        return MyApp::HandleHelpInfo((HELPINFO*) lParam);
+    }
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam) {
+        MyApp::HandleHelp(this, HELP_TOPIC_PREFS_GENERAL);
+        return TRUE;
+    }
 
     DECLARE_MESSAGE_MAP()
 };
@@ -92,8 +98,13 @@ protected:
 
     afx_msg void OnChange(void);
     //afx_msg void OnChangeRange(UINT);
-    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnHelpInfo(UINT wParam, LONG lParam) {
+        return MyApp::HandleHelpInfo((HELPINFO*) lParam);
+    }
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam) {
+        MyApp::HandleHelp(this, HELP_TOPIC_PREFS_DISK_IMAGE);
+        return TRUE;
+    }
 
     DECLARE_MESSAGE_MAP()
 };
@@ -122,8 +133,13 @@ protected:
     virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnChangeRange(UINT);
-    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnHelpInfo(UINT wParam, LONG lParam) {
+        return MyApp::HandleHelpInfo((HELPINFO*) lParam);
+    }
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam) {
+        MyApp::HandleHelp(this, HELP_TOPIC_PREFS_COMPRESSION);
+        return TRUE;
+    }
 
 private:
     /*
@@ -185,8 +201,13 @@ protected:
 
     afx_msg void OnChange(void);
     afx_msg void OnChangeRange(UINT);
-    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnHelpInfo(UINT wParam, LONG lParam) {
+        return MyApp::HandleHelpInfo((HELPINFO*) lParam);
+    }
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam) {
+        MyApp::HandleHelp(this, HELP_TOPIC_PREFS_FVIEW);
+        return TRUE;
+    }
 
     DECLARE_MESSAGE_MAP()
 };
@@ -213,8 +234,13 @@ protected:
 
     afx_msg void OnChange(void);
     afx_msg void OnChooseFolder(void);
-    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
-    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam);
+    afx_msg LONG OnHelpInfo(UINT wParam, LONG lParam) {
+        return MyApp::HandleHelpInfo((HELPINFO*) lParam);
+    }
+    afx_msg LONG OnCommandHelp(UINT wParam, LONG lParam) {
+        MyApp::HandleHelp(this, HELP_TOPIC_PREFS_FILES);
+        return TRUE;
+    }
 
     MyBitmapButton  fChooseFolderButton;
 
@@ -271,13 +297,15 @@ protected:
      * it to the active PropertyPage.  Each page must handle WM_COMMANDHELP by
      * opening an appropriate chapter in the help file.
      */
-    afx_msg LONG OnHelp(UINT wParam, LONG lParam);
+    afx_msg void OnIDHelp(void);
 
     /*
      * Context help request (question mark button) on something outside of the
      * property page, most likely the Apply or Cancel button.
      */
-    afx_msg void OnIDHelp(void);
+    afx_msg LONG OnHelpInfo(UINT wParam, LONG lParam) {
+        return MyApp::HandleHelpInfo((HELPINFO*) lParam);
+    }
 
     DECLARE_MESSAGE_MAP()
 };

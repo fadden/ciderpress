@@ -13,7 +13,6 @@
  */
 #include "stdafx.h"
 #include "VolumeCopyDialog.h"
-#include "HelpTopics.h"
 #include "Main.h"
 
 
@@ -379,11 +378,6 @@ bool VolumeCopyDialog::GetSelectedDisk(DiskImg** ppDiskImg, DiskFS** ppDiskFS)
     assert(*ppDiskFS != NULL);
     *ppDiskImg = (*ppDiskFS)->GetDiskImg();
     return true;
-}
-
-void VolumeCopyDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_VOLUME_COPIER, HELP_CONTEXT);
 }
 
 void VolumeCopyDialog::OnCopyToFile(void)

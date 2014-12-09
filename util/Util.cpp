@@ -394,12 +394,6 @@ void ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID)
     pWnd->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
 }
 
-BOOL ShowContextHelp(CWnd* pWnd, HELPINFO* lpHelpInfo)
-{
-    pWnd->WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;
-}
-
 bool IsWin9x(void)
 {
     OSVERSIONINFO osvers;

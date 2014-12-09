@@ -8,7 +8,6 @@
  */
 #include "stdafx.h"
 #include "OpenVolumeDialog.h"
-#include "HelpTopics.h"
 #include "Main.h"
 #include "../diskimg/Win32Extra.h"  // need disk geometry calls
 #include "../diskimg/ASPI.h"
@@ -665,11 +664,6 @@ void OpenVolumeDialog::OnOK(void)
 
         CDialog::OnOK();
     }
-}
-
-void OpenVolumeDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_OPEN_VOLUME, HELP_CONTEXT);
 }
 
 void OpenVolumeDialog::ForceReadOnly(bool readOnly) const

@@ -47,7 +47,10 @@ protected:
      */
     afx_msg void OnVolumeFilterSelChange(void);
 
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_OPEN_VOLUME);
+    }
+
     afx_msg void OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult);
 
     // 0 is default; numbers must match up with pop-up menu order

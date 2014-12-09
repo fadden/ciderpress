@@ -66,9 +66,3 @@ void NewFolderDialog::DoDataExchange(CDataExchange* pDX)
         }
     }
 }
-
-BOOL NewFolderDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}

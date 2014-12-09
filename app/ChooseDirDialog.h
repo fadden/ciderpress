@@ -16,6 +16,8 @@
  * Choose a directory.  This is distinctly different from what the standard
  * "Open" and "Save As" dialogs do, because those want to choose normal files
  * only, while this wants to select a folder.
+ *
+ * TODO: Vista-style dialogs support folder selection.
  */
 class ChooseDirDialog : public CDialog {
 public:
@@ -43,10 +45,6 @@ protected:
      */
     afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
 
-    // F1 key hit, or '?' button in title bar used to select help for an
-    // item in the dialog.  For ON_WM_HELPINFO.
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-
     // User pressed "Expand Tree" button.
     afx_msg void OnExpandTree(void);
 
@@ -54,7 +52,15 @@ protected:
     afx_msg void OnNewFolder(void);
 
     // User pressed "Help" button.
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_CHOOSE_FOLDER);
+    }
+
+    // F1 key hit, or '?' button in title bar used to select help for an
+    // item in the dialog.  For ON_WM_HELPINFO.
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
 private:
     CString         fPathName;

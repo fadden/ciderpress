@@ -153,9 +153,3 @@ void TwoImgPropsDialog::OnChange(void)
     checked = pButton->GetCheck();
     GetDlgItem(IDC_TWOIMG_DOSVOLNUM)->EnableWindow(checked == BST_CHECKED);
 }
-
-BOOL TwoImgPropsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}

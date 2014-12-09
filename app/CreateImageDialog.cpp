@@ -9,7 +9,6 @@
 #include "stdafx.h"
 #include "CreateImageDialog.h"
 #include "NewDiskSize.h"
-#include "HelpTopics.h"
 #include "../diskimg/DiskImgDetail.h"       // need ProDOS filename validator
 
 BEGIN_MESSAGE_MAP(CreateImageDialog, CDialog)
@@ -294,15 +293,4 @@ bool CreateImageDialog::IsValidVolumeName_HFS(const WCHAR* name)
 {
     CStringA nameStr(name);
     return DiskImgLib::DiskFSHFS::IsValidVolumeName(nameStr);
-}
-
-BOOL CreateImageDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-void CreateImageDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_IMAGE_CREATOR, HELP_CONTEXT);
 }

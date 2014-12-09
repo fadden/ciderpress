@@ -6,7 +6,6 @@
 #include "StdAfx.h"
 #include "DiskFSTree.h"
 #include "ChooseAddTargetDialog.h"
-#include "HelpTopics.h"
 
 using namespace DiskImgLib;
 

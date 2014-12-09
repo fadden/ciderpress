@@ -21,7 +21,6 @@
 #include "stdafx.h"
 #include "SubVolumeDialog.h"
 #include "DEFileDialog.h"
-#include "HelpTopics.h"
 #include "DiskEditDialog.h"
 
 
@@ -229,34 +228,6 @@ BOOL DiskEditDialog::PreTranslateMessage(MSG* pMsg)
     }
 
     return CDialog::PreTranslateMessage(pMsg);
-}
-
-BOOL DiskEditDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    LOGI("HELP: size=%d contextType=%d ctrlID=0x%x contextID=0x%08lx",
-        lpHelpInfo->cbSize, lpHelpInfo->iContextType, lpHelpInfo->iCtrlId,
-        lpHelpInfo->dwContextId);
-
-    DWORD context = lpHelpInfo->iCtrlId;
-
-    /* map all of the track/sector selection stuff to one item */
-    if (context == IDC_DISKEDIT_TRACK ||
-        context == IDC_DISKEDIT_TRACKSPIN ||
-        context == IDC_STEXT_TRACK ||
-        context == IDC_DISKEDIT_SECTOR ||
-        context == IDC_DISKEDIT_SECTORSPIN ||
-        context == IDC_STEXT_SECTOR)
-    {
-        context = IDC_DISKEDIT_TRACK;
-    }
-
-    WinHelp(context, HELP_CONTEXTPOPUP);
-    return TRUE;    // indicate success??
-}
-
-void DiskEditDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_DISKEDIT, HELP_CONTEXT);
 }
 
 void DiskEditDialog::OnDone(void)

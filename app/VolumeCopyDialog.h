@@ -59,7 +59,9 @@ protected:
      */
     afx_msg void OnCopyFromFile(void);
 
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_VOLUME_COPIER);
+    }
 
     /*
      * When the focus changes, e.g. after dialog construction completes, see if

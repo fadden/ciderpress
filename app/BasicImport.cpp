@@ -13,7 +13,6 @@
 #include "StdAfx.h"
 #include "../reformat/BASIC.h"
 #include "BasicImport.h"
-#include "HelpTopics.h"
 
 /*
  * ==========================================================================
@@ -651,9 +650,4 @@ bail:
         return;
     }
     return;
-}
-
-void ImportBASDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_IMPORT_BASIC, HELP_CONTEXT);
 }

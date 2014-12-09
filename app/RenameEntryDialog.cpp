@@ -5,7 +5,6 @@
  */
 #include "stdafx.h"
 #include "RenameEntryDialog.h"
-#include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(RenameEntryDialog, CDialog)
     ON_WM_HELPINFO()
@@ -100,15 +99,4 @@ void RenameEntryDialog::OnSkip(void)
      * skips the rename but continues with the series.
      */
     EndDialog(IDIGNORE);
-}
-
-BOOL RenameEntryDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-void RenameEntryDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_RENAME_ENTRY, HELP_CONTEXT);
 }

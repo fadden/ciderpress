@@ -7,7 +7,6 @@
 #include "EditAssocDialog.h"
 #include "MyApp.h"
 #include "Registry.h"
-#include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(EditAssocDialog, CDialog)
     ON_WM_HELPINFO()
@@ -118,14 +117,4 @@ void EditAssocDialog::DoDataExchange(CDataExchange* pDX)
             idx++;
         }
     }
-}
-
-BOOL EditAssocDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    return ShowContextHelp(this, lpHelpInfo);
-}
-
-void EditAssocDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_EDIT_ASSOC, HELP_CONTEXT);
 }

@@ -9,7 +9,6 @@
 #include "EditAssocDialog.h"
 #include "Main.h"
 #include "NufxArchive.h"
-#include "HelpTopics.h"
 #include "resource.h"
 #include <afxpriv.h>        // need WM_COMMANDHELP
 
@@ -31,7 +30,7 @@ BEGIN_MESSAGE_MAP(PrefsGeneralPage, CPropertyPage)
     ON_BN_CLICKED(IDC_PREF_SUCCESS_BEEP, OnChange)
     ON_BN_CLICKED(IDC_COL_DEFAULTS, OnDefaults)
     ON_BN_CLICKED(IDC_PREF_ASSOCIATIONS, OnAssociations)
-    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_HELP, OnHelpInfo)
     ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
@@ -125,18 +124,6 @@ void PrefsGeneralPage::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_PREF_SUCCESS_BEEP, fBeepOnSuccess);
 }
 
-LONG PrefsGeneralPage::OnHelp(UINT wParam, LONG lParam)
-{
-    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-LONG PrefsGeneralPage::OnCommandHelp(UINT, LONG)
-{
-    WinHelp(HELP_TOPIC_PREFS_GENERAL, HELP_CONTEXT);
-    return 0;       // doesn't matter
-}
-
 
 /*
  * ===========================================================================
@@ -150,7 +137,7 @@ BEGIN_MESSAGE_MAP(PrefsDiskImagePage, CPropertyPage)
     ON_BN_CLICKED(IDC_PDISK_OPENVOL_PHYS0, OnChange)
     ON_BN_CLICKED(IDC_PDISK_PRODOS_ALLOWLOWER, OnChange)
     ON_BN_CLICKED(IDC_PDISK_PRODOS_USESPARSE, OnChange)
-    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_HELP, OnHelpInfo)
     ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
@@ -183,18 +170,6 @@ void PrefsDiskImagePage::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_PDISK_PRODOS_USESPARSE, fProDOSUseSparse);
 }
 
-LONG PrefsDiskImagePage::OnHelp(UINT wParam, LONG lParam)
-{
-    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-LONG PrefsDiskImagePage::OnCommandHelp(UINT, LONG)
-{
-    WinHelp(HELP_TOPIC_PREFS_DISK_IMAGE, HELP_CONTEXT);
-    return 0;       // doesn't matter
-}
-
 
 /*
  * ===========================================================================
@@ -204,7 +179,7 @@ LONG PrefsDiskImagePage::OnCommandHelp(UINT, LONG)
 
 BEGIN_MESSAGE_MAP(PrefsCompressionPage, CPropertyPage)
     ON_CONTROL_RANGE(BN_CLICKED, IDC_DEFC_UNCOMPRESSED, IDC_DEFC_BZIP2, OnChangeRange)
-    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_HELP, OnHelpInfo)
     ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
@@ -280,18 +255,6 @@ void PrefsCompressionPage::DoDataExchange(CDataExchange* pDX)
     DDX_Radio(pDX, IDC_DEFC_UNCOMPRESSED, fCompressType);
 }
 
-LONG PrefsCompressionPage::OnHelp(UINT wParam, LONG lParam)
-{
-    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-LONG PrefsCompressionPage::OnCommandHelp(UINT, LONG)
-{
-    WinHelp(HELP_TOPIC_PREFS_COMPRESSION, HELP_CONTEXT);
-    return 0;       // doesn't matter
-}
-
 
 /*
  * ===========================================================================
@@ -304,7 +267,7 @@ BEGIN_MESSAGE_MAP(PrefsFviewPage, CPropertyPage)
     ON_CONTROL_RANGE(BN_CLICKED, IDC_PVIEW_HITEXT, IDC_PVIEW_TEXT8, OnChangeRange)
     ON_EN_CHANGE(IDC_PVIEW_SIZE_EDIT, OnChange)
     ON_CBN_SELCHANGE(IDC_PVIEW_DHR_CONV_COMBO, OnChange)
-    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_HELP, OnHelpInfo)
     ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
@@ -377,18 +340,6 @@ void PrefsFviewPage::DoDataExchange(CDataExchange* pDX)
     DDV_MinMaxUInt(pDX, fMaxViewFileSizeKB, 1, 32767);
 }
 
-LONG PrefsFviewPage::OnHelp(UINT wParam, LONG lParam)
-{
-    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-LONG PrefsFviewPage::OnCommandHelp(UINT, LONG)
-{
-    WinHelp(HELP_TOPIC_PREFS_FVIEW, HELP_CONTEXT);
-    return 0;       // doesn't matter
-}
-
 
 /*
  * ===========================================================================
@@ -400,7 +351,7 @@ BEGIN_MESSAGE_MAP(PrefsFilesPage, CPropertyPage)
     ON_EN_CHANGE(IDC_PREF_TEMP_FOLDER, OnChange)
     ON_EN_CHANGE(IDC_PREF_EXTVIEWER_EXTS, OnChange)
     ON_BN_CLICKED(IDC_PREF_CHOOSE_TEMP_FOLDER, OnChooseFolder)
-    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_HELP, OnHelpInfo)
     ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
@@ -465,18 +416,6 @@ void PrefsFilesPage::OnChooseFolder(void)
     }
 }
 
-LONG PrefsFilesPage::OnHelp(UINT wParam, LONG lParam)
-{
-    WinHelp((DWORD) ((HELPINFO*) lParam)->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-LONG PrefsFilesPage::OnCommandHelp(UINT, LONG)
-{
-    WinHelp(HELP_TOPIC_PREFS_FILES, HELP_CONTEXT);
-    return 0;       // doesn't matter
-}
-
 
 /*
  * ===========================================================================
@@ -488,7 +427,7 @@ BEGIN_MESSAGE_MAP(PrefsSheet, CPropertySheet)
     ON_WM_NCCREATE()
     ON_BN_CLICKED(ID_APPLY_NOW, OnApplyNow)
     ON_COMMAND(ID_HELP, OnIDHelp)
-    ON_MESSAGE(WM_HELP, OnHelp)
+    ON_MESSAGE(WM_HELP, OnHelpInfo)
 END_MESSAGE_MAP()
 
 PrefsSheet::PrefsSheet(CWnd* pParentWnd) :
@@ -563,15 +502,4 @@ void PrefsSheet::OnIDHelp(void)
 {
     LOGD("PrefsSheet OnIDHelp");
     SendMessage(WM_COMMANDHELP);
-}
-
-LONG PrefsSheet::OnHelp(UINT wParam, LONG lParam)
-{
-    HELPINFO* lpHelpInfo = (HELPINFO*) lParam;
-
-    LOGD("PrefsSheet OnHelp");
-    DWORD context = lpHelpInfo->iCtrlId;
-    WinHelp(context, HELP_CONTEXTPOPUP);
-
-    return TRUE;    // yes, we handled it
 }

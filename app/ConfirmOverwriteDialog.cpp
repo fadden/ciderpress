@@ -50,12 +50,6 @@ void RenameOverwriteDialog::DoDataExchange(CDataExchange* pDX)
     }
 }
 
-BOOL RenameOverwriteDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
 
 /*
  * ==========================================================================
@@ -103,12 +97,6 @@ BOOL ConfirmOverwriteDialog::OnInitDialog(void)
     pWnd->EnableWindow(fAllowRename);
 
     return CDialog::OnInitDialog();
-}
-
-BOOL ConfirmOverwriteDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
 }
 
 void ConfirmOverwriteDialog::OnYes(void)

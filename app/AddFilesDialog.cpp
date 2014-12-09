@@ -6,7 +6,6 @@
 #include "stdafx.h"
 #include "AddFilesDialog.h"
 #include "FileNameConv.h"
-#include "HelpTopics.h"
 #include "resource.h"
 
 
@@ -130,9 +129,5 @@ bool AddFilesDialog::ValidateStoragePrefix(void)
 void AddFilesDialog::HandleHelp()
 {
     LOGD("AddFilesDialog HandleHelp");
-    CWnd* pWndMain = ::AfxGetMainWnd();
-    CWinApp* pAppMain = ::AfxGetApp();
-
-    ::WinHelp(pWndMain->m_hWnd, pAppMain->m_pszHelpFilePath,
-                HELP_CONTEXT, HELP_TOPIC_ADD_FILES_DLG);
+    MyApp::HandleHelp(this, HELP_TOPIC_ADD_FILES_DLG);
 }

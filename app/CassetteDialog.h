@@ -48,7 +48,9 @@ private:
     afx_msg void OnImport(void);
 
     afx_msg void OnListDblClick(NMHDR* pNotifyStruct, LRESULT* pResult);
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_IMPORT_CASSETTE);
+    }
 
     /*
      * This holds converted data from the WAV file, plus some meta-data

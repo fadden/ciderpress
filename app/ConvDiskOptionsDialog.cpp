@@ -14,7 +14,6 @@
 
 BEGIN_MESSAGE_MAP(ConvDiskOptionsDialog, CDialog)
     ON_WM_HELPINFO()
-    //ON_COMMAND(IDHELP, OnHelp)
     ON_BN_CLICKED(IDC_CONVDISK_COMPUTE, OnCompute)
     ON_BN_CLICKED(IDC_USE_SELECTED, ResetSizeControls)
     ON_BN_CLICKED(IDC_USE_ALL, ResetSizeControls)

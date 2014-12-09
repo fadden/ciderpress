@@ -231,15 +231,15 @@ BOOL MyApp::OnIdle(LONG lCount)
     IDC_DISKEDIT_DOREAD, IDH_DISKEDIT_DOREAD,
     IDC_DISKEDIT_DOWRITE, IDH_DISKEDIT_DOWRITE,
     IDC_DISKEDIT_TRACK, IDH_DISKEDIT_TRACK,
-    IDC_DISKEDIT_TRACKSPIN, IDH_DISKEDIT_TRACKSPIN,
-    IDC_DISKEDIT_SECTOR, IDH_DISKEDIT_SECTOR,
-    IDC_DISKEDIT_SECTORSPIN, IDH_DISKEDIT_SECTORSPIN,
+    IDC_DISKEDIT_TRACKSPIN, IDH_DISKEDIT_TRACK,         // remapped
+    IDC_DISKEDIT_SECTOR, IDH_DISKEDIT_TRACK,            // remapped
+    IDC_DISKEDIT_SECTORSPIN, IDH_DISKEDIT_TRACK,        // remapped
     IDC_DISKEDIT_OPENFILE, IDH_DISKEDIT_OPENFILE,
     IDC_DISKEDIT_EDIT, IDH_DISKEDIT_EDIT,
     IDC_DISKEDIT_PREV, IDH_DISKEDIT_PREV,
     IDC_DISKEDIT_NEXT, IDH_DISKEDIT_NEXT,
-    IDC_STEXT_SECTOR, IDH_STEXT_SECTOR,
-    IDC_STEXT_TRACK, IDH_STEXT_TRACK,
+    IDC_STEXT_SECTOR, IDH_DISKEDIT_TRACK,               // remapped
+    IDC_STEXT_TRACK, IDH_DISKEDIT_TRACK,                // remapped
     IDC_DISKEDIT_DONE, IDH_DISKEDIT_DONE,
     IDC_DISKEDIT_HEX, IDH_DISKEDIT_HEX,
     IDC_DISKEDIT_SUBVOLUME, IDH_DISKEDIT_SUBVOLUME,
@@ -523,8 +523,11 @@ BOOL MyApp::OnIdle(LONG lCount)
 
 /*static*/ void MyApp::HandleHelp(CWnd* pWnd, DWORD topicId)
 {
+    // The CWnd#HtmlHelp() function is insisting on using the top-level
+    // parent, but if we do that with the Add Files custom file dialog
+    // then the help window pops up behind the app rather than in front.
     CWnd* pParent = pWnd->GetTopLevelParent();
-    LOGD("HandleHelp ID=%lu parent=%p", topicId, pParent);
-    ::HtmlHelp(pParent->m_hWnd, gMyApp.m_pszHelpFilePath,
+    LOGD("HandleHelp ID=%lu pWnd=%p parent=%p", topicId, pWnd, pParent);
+    ::HtmlHelp(pWnd->m_hWnd, gMyApp.m_pszHelpFilePath,
         HH_HELP_CONTEXT, topicId);
 }

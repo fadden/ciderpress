@@ -115,8 +115,12 @@ protected:
      */
     afx_msg virtual void OnNibbleParms(void);
 
-    afx_msg virtual void OnHelp(void);
-    afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_DISKEDIT);
+    }
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     /*
      * Change the mode of a spin button.  The Windows control doesn't

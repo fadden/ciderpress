@@ -43,9 +43,3 @@ void DEFileDialog::OnChange(void)
     ASSERT(pWnd != NULL);
     pWnd->EnableWindow(!str.IsEmpty());
 }
-
-BOOL DEFileDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}

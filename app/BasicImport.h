@@ -74,7 +74,9 @@ private:
     //virtual void DoDataExchange(CDataExchange* pDX);
     virtual void OnOK(void) override;
 
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_IMPORT_BASIC);
+    }
 
     /*
      * Import an Applesoft BASIC program from the specified file.

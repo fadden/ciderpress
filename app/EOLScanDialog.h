@@ -30,7 +30,9 @@ public:
 private:
     BOOL OnInitDialog(void) override;
 
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_EOL_SCAN);
+    }
 
     DECLARE_MESSAGE_MAP()
 };

@@ -11,7 +11,6 @@
  */
 #include "StdAfx.h"
 #include "EOLScanDialog.h"
-#include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(EOLScanDialog, CDialog)
     ON_COMMAND(IDHELP, OnHelp)
@@ -43,9 +42,4 @@ BOOL EOLScanDialog::OnInitDialog(void)
     pWnd->SetWindowText(fmt);
 
     return CDialog::OnInitDialog();
-}
-
-void EOLScanDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_EOL_SCAN, HELP_CONTEXT);
 }

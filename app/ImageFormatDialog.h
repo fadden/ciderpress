@@ -66,8 +66,12 @@ protected:
      */
     void OnOK(void) override;
 
-    afx_msg virtual void OnHelp(void);
-    afx_msg virtual BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_DISK_IMAGES);
+    }
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     struct ConvTable;
 

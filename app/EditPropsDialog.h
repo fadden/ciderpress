@@ -68,8 +68,13 @@ private:
      * Called when something is typed in one of the HFS type boxes.
      */
     afx_msg void OnHFSTypeChange(void);
-    afx_msg void OnHelp(void);
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_EDIT_PROPS);
+    }
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     /*
      * For "simple" access formats, i.e. DOS 3.2/3.3, the "write" button acts

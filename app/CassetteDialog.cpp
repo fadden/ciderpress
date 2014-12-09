@@ -9,7 +9,6 @@
 #include "StdAfx.h"
 #include "CassetteDialog.h"
 #include "CassImpTargetDialog.h"
-#include "HelpTopics.h"
 #include "GenericArchive.h"
 #include "Main.h"
 #include "../diskimg/DiskImg.h"     // need kStorageSeedling
@@ -385,11 +384,6 @@ void CassetteDialog::OnAlgorithmChange(void)
     LOGI("+++ SELECTION IS NOW %d", pCombo->GetCurSel());
     fAlgorithm = (CassetteData::Algorithm) pCombo->GetCurSel();
     AnalyzeWAV();
-}
-
-void CassetteDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_IMPORT_CASSETTE, HELP_CONTEXT);
 }
 
 void CassetteDialog::OnImport(void)

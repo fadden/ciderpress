@@ -8,7 +8,6 @@
  */
 #include "StdAfx.h"
 #include "ChooseAddTargetDialog.h"
-#include "HelpTopics.h"
 #include "DiskFSTree.h"
 
 using namespace DiskImgLib;
@@ -83,9 +82,4 @@ void ChooseAddTargetDialog::DoDataExchange(CDataExchange* pDX)
         fpChosenDiskFS = pTargetData->pDiskFS;
         fpChosenSubdir = pTargetData->pFile;
     }
-}
-
-void ChooseAddTargetDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_CHOOSE_TARGET, HELP_CONTEXT);
 }

@@ -6,7 +6,6 @@
 #include "StdAfx.h"
 #include "EditPropsDialog.h"
 #include "FileNameConv.h"
-#include "HelpTopics.h"
 
 using namespace DiskImgLib;
 
@@ -459,15 +458,4 @@ long EditPropsDialog::GetAuxType(void)
         return -1;
     }
     return val;
-}
-
-BOOL EditPropsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-void EditPropsDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_EDIT_PROPS, HELP_CONTEXT);
 }

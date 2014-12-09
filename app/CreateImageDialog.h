@@ -70,10 +70,14 @@ private:
     afx_msg void OnSizeChangeRange(UINT nID);
 
     // Context help (question mark).
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     // Dialog help ("help" button).
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_IMAGE_CREATOR);
+    }
 
     bool IsValidVolumeName_DOS(const WCHAR* name);
     bool IsValidVolumeName_ProDOS(const WCHAR* name);

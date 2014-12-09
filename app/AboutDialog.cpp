@@ -9,7 +9,6 @@
 #include "stdafx.h"
 #include "AboutDialog.h"
 #include "EnterRegDialog.h"
-#include "HelpTopics.h"
 #include "MyApp.h"
 #include "resource.h"
 #include "../nufxlib/NufxLib.h"
@@ -174,10 +173,9 @@ void AboutDialog::ShowRegistrationInfo(void)
 }
 #endif
 
-
 void AboutDialog::OnAboutCredits(void)
 {
-    WinHelp(HELP_TOPIC_CREDITS, HELP_CONTEXT /*HELP_CONTEXTPOPUP*/);
+    MyApp::HandleHelp(this, HELP_TOPIC_CREDITS);
 }
 
 #if 0

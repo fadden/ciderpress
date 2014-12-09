@@ -5,7 +5,6 @@
  */
 #include "stdafx.h"
 #include "UseSelectionDialog.h"
-#include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(UseSelectionDialog, CDialog)
     ON_WM_HELPINFO()
@@ -58,10 +57,4 @@ BOOL UseSelectionDialog::OnInitDialog(void)
 void UseSelectionDialog::DoDataExchange(CDataExchange* pDX)
 {
     DDX_Radio(pDX, IDC_USE_SELECTED, fFilesToAction);
-}
-
-BOOL UseSelectionDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
 }

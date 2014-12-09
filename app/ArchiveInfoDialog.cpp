@@ -7,7 +7,6 @@
  * Implementation of the various ArchiveInfo dialog classes.
  */
 #include "StdAfx.h"
-#include "HelpTopics.h"
 #include "ArchiveInfoDialog.h"
 #include "../nufxlib/NufxLib.h"
 
@@ -20,11 +19,6 @@
 BEGIN_MESSAGE_MAP(ArchiveInfoDialog, CDialog)
     ON_COMMAND(IDHELP, OnHelp)
 END_MESSAGE_MAP()
-
-void ArchiveInfoDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_ARCHIVE_INFO, HELP_CONTEXT);
-}
 
 
 /*

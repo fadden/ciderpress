@@ -106,7 +106,9 @@ protected:
     afx_msg void OnFviewFmtHex(void);
     afx_msg void OnFviewFmtRaw(void);
     afx_msg void OnFormatSelChange(void);
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_FILE_VIEWER);
+    }
     //afx_msg void OnFviewWrap(void);
     afx_msg LRESULT OnFindDialogMessage(WPARAM wParam, LPARAM lParam);
 

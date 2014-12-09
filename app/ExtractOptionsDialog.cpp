@@ -5,7 +5,6 @@
  */
 #include "stdafx.h"
 #include "ExtractOptionsDialog.h"
-#include "HelpTopics.h"
 #include "ChooseDirDialog.h"
 
 BEGIN_MESSAGE_MAP(ExtractOptionsDialog, CDialog)
@@ -162,15 +161,4 @@ void ExtractOptionsDialog::OnChooseFolder(void)
 
         pEditWnd->SetWindowText(ccp);
     }
-}
-
-BOOL ExtractOptionsDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-void ExtractOptionsDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_EXT_OPTIONS, HELP_CONTEXT);
 }

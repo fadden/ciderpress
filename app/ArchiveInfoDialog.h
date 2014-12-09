@@ -31,7 +31,9 @@ private:
     /*
      * Show general help for the archive info dialogs.
      */
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_ARCHIVE_INFO);
+    }
 
     DECLARE_MESSAGE_MAP()
 };

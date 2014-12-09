@@ -8,7 +8,6 @@
  */
 #include "stdafx.h"
 #include "EditCommentDialog.h"
-#include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(EditCommentDialog, CDialog)
     ON_BN_CLICKED(IDC_COMMENT_DELETE, OnDelete)
@@ -47,15 +46,4 @@ void EditCommentDialog::OnDelete(void)
         return;
 
     EndDialog(kDeleteCommentID);
-}
-
-BOOL EditCommentDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-void EditCommentDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_EDIT_COMMENT, HELP_CONTEXT);
 }

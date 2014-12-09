@@ -19,7 +19,6 @@
 #include "EnterRegDialog.h"
 #include "OpenVolumeDialog.h"
 #include "Print.h"
-#include "HelpTopics.h"
 #include "../util/UtilLib.h"
 #include "resource.h"
 
@@ -182,8 +181,6 @@ BEGIN_MESSAGE_MAP(MainWindow, CFrameWnd)
     ON_COMMAND(          IDM_HELP_ABOUT, OnHelpAbout)
 //  ON_COMMAND(          IDM_RTCLK_DEFAULT, OnRtClkDefault)
 
-    /* this is required to allow "Help" button to work in PropertySheets (!) */
-//  ON_COMMAND(ID_HELP, OnHelp)
     ON_COMMAND(ID_HELP_FINDER, CFrameWnd::OnHelpFinder)
     ON_COMMAND(ID_HELP, CFrameWnd::OnHelp)
     ON_COMMAND(ID_CONTEXT_HELP, CFrameWnd::OnContextHelp)
@@ -253,9 +250,10 @@ MainWindow::~MainWindow()
     //LOGI("MainWindow destructor");
     CloseArchiveWOControls();
 
-    int cc;
-    cc = ::WinHelp(m_hWnd, ::AfxGetApp()->m_pszHelpFilePath, HELP_QUIT, 0);
-    LOGI("Turning off WinHelp returned %d", cc);
+    //int cc;
+    //cc = ::WinHelp(m_hWnd, ::AfxGetApp()->m_pszHelpFilePath, HELP_QUIT, 0);
+    //LOGI("Turning off WinHelp returned %d", cc);
+    ::HtmlHelp(NULL, NULL, HH_CLOSE_ALL, 0);
 
     // free stuff used by print dialog
     ::GlobalFree(fhDevMode);
@@ -723,26 +721,10 @@ void MainWindow::OnSetFocus(CWnd* /*pOldWnd*/)
 
 BOOL MainWindow::OnHelpInfo(HELPINFO* /*lpHelpInfo*/)
 {
-    WinHelp(HELP_TOPIC_WELCOME, HELP_CONTEXT);
+    LOGD("MainWindow::OnHelpInfo");
+    MyApp::HandleHelp(this, HELP_TOPIC_WELCOME);
     return TRUE;
 }
-
-#if 0
-/*
- * Catch-all Help handler, necessary to allow CPropertySheet to display a
- * "Help" button.  (WTF?)
- */
-LONG MainWindow::OnHelp(UINT wParam, LONG lParam)
-{
-    HELPINFO* lpHelpInfo = (HELPINFO*) lParam;
-
-    DWORD context = lpHelpInfo->iCtrlId;
-    LOGI("MainWindow OnHelp (context=%d)", context);
-    WinHelp(context, HELP_CONTEXTPOPUP);
-
-    return TRUE;    // yes, we handled it
-}
-#endif
 
 void MainWindow::OnEditPreferences(void)
 {
@@ -1042,7 +1024,8 @@ void MainWindow::OnUpdateEditSort(CCmdUI* pCmdUI)
 
 void MainWindow::OnHelpContents(void)
 {
-    WinHelp(0, HELP_FINDER);
+    MyApp::HandleHelp(this, HELP_TOPIC_WELCOME);
+    //WinHelp(0, HELP_FINDER);
 }
 
 void MainWindow::OnHelpWebSite(void)
@@ -1068,7 +1051,9 @@ void MainWindow::OnHelpWebSite(void)
 void MainWindow::OnHelpOrdering(void)
 {
     // How to order... ka-ching!
-    WinHelp(HELP_TOPIC_ORDERING_INFO, HELP_CONTEXT);
+    // TODO: no longer used?
+    LOGW("OnHelpOrdering -- not implemented");
+    //WinHelp(HELP_TOPIC_ORDERING_INFO, HELP_CONTEXT);
 }
 
 void MainWindow::OnHelpAbout(void)

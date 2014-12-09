@@ -7,7 +7,6 @@
 #include "RenameVolumeDialog.h"
 #include "DiskFSTree.h"
 #include "DiskArchive.h"
-#include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(RenameVolumeDialog, CDialog)
     ON_NOTIFY(TVN_SELCHANGED, IDC_RENAMEVOL_TREE, OnSelChanged)
@@ -134,15 +133,4 @@ void RenameVolumeDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)
     pEdit->SetSel(0, -1);
 
     *pResult = 0;
-}
-
-BOOL RenameVolumeDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-void RenameVolumeDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_RENAME_VOLUME, HELP_CONTEXT);
 }

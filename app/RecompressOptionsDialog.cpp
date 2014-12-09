@@ -6,7 +6,6 @@
 #include "stdafx.h"
 #include "RecompressOptionsDialog.h"
 #include "NufxArchive.h"
-#include "HelpTopics.h"
 
 //BEGIN_MESSAGE_MAP(UseSelectionDialog, CDialog)
 //  ON_WM_HELPINFO()

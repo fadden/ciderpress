@@ -10,7 +10,6 @@
 #include "ViewFilesDialog.h"
 #include "Main.h"
 #include "Print.h"
-#include "HelpTopics.h"
 #include "../util/UtilLib.h"
 
 
@@ -1256,9 +1255,4 @@ void ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
         MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
         pMain->FailureBeep();
     }
-}
-
-void ViewFilesDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_FILE_VIEWER, HELP_CONTEXT);
 }

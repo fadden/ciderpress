@@ -62,9 +62,3 @@ fail:
     pDX->Fail();
     return;
 }
-
-BOOL CreateSubdirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}

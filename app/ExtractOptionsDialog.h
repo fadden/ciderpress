@@ -11,6 +11,7 @@
 
 #include "../util/UtilLib.h"
 #include "resource.h"
+#include "HelpTopics.h"
 
 /*
  * Our somewhat complicated extraction options dialog.
@@ -93,10 +94,14 @@ private:
     afx_msg void OnChooseFolder(void);
 
     // Context help request (question mark button).
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     // User pressed the "Help" button.
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_EXT_OPTIONS);
+    }
 
     MyBitmapButton  fChooseFolderButton;
     int     fSelectedCount;

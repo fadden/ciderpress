@@ -36,7 +36,9 @@ protected:
     virtual BOOL OnInitDialog(void) override;
     virtual void DoDataExchange(CDataExchange* pDX) override;
 
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     /*
      * If they changed anything, enable the "save" button.

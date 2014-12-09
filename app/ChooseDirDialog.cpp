@@ -7,7 +7,6 @@
 #include "ChooseDirDialog.h"
 #include "NewFolderDialog.h"
 #include "DiskFSTree.h"
-#include "HelpTopics.h"
 
 BEGIN_MESSAGE_MAP(ChooseDirDialog, CDialog)
     ON_NOTIFY(TVN_SELCHANGED, IDC_CHOOSEDIR_TREE, OnSelChanged)
@@ -69,18 +68,6 @@ BOOL ChooseDirDialog::PreTranslateMessage(MSG* pMsg)
     }
 
     return CDialog::PreTranslateMessage(pMsg);
-}
-
-BOOL ChooseDirDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    DWORD context = lpHelpInfo->iCtrlId;
-    WinHelp(context, HELP_CONTEXTPOPUP);
-    return TRUE;    // indicate success??
-}
-
-void ChooseDirDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_CHOOSE_FOLDER, HELP_CONTEXT);
 }
 
 void ChooseDirDialog::OnSelChanged(NMHDR* pnmh, LRESULT* pResult)

@@ -48,8 +48,12 @@ protected:
      */
     afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
 
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-    afx_msg void OnHelp(void);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_RENAME_VOLUME);
+    }
 
     DiskFSTree  fDiskFSTree;
 

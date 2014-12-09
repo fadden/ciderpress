@@ -159,6 +159,7 @@ BOOL SelectFilesDialog::OnFileNameOK()
                 }
             } else if (LOWORD(wParam) == pshHelp) {
                 pSFD->HandleHelp();
+                return 0;   // default handler will post "unable to open help"
             }
         }
     }

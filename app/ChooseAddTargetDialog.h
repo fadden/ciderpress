@@ -43,7 +43,9 @@ private:
 
     virtual void DoDataExchange(CDataExchange* pDX) override;
 
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_CHOOSE_TARGET);
+    }
 
     DiskFSTree      fDiskFSTree;
 

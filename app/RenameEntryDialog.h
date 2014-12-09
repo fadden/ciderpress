@@ -53,8 +53,12 @@ protected:
     virtual void DoDataExchange(CDataExchange* pDX) override;
 
     afx_msg void OnSkip(void);
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
-    afx_msg void OnHelp(void);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
+    afx_msg void OnHelp(void) {
+        MyApp::HandleHelp(this, HELP_TOPIC_RENAME_ENTRY);
+    }
 
 private:
     //CString       fOldPath;       // pathname component, or empty if canRenFull

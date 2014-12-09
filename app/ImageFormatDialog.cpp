@@ -5,7 +5,6 @@
  */
 #include "stdafx.h"
 #include "ImageFormatDialog.h"
-#include "HelpTopics.h"
 #include "../diskimg/DiskImg.h"
 
 
@@ -302,15 +301,4 @@ void ImageFormatDialog::OnOK(void)
     }
 
     CDialog::OnOK();
-}
-
-BOOL ImageFormatDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp(lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // indicate success??
-}
-
-void ImageFormatDialog::OnHelp(void)
-{
-    WinHelp(HELP_TOPIC_DISK_IMAGES, HELP_CONTEXT);
 }

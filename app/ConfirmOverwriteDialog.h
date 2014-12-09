@@ -54,7 +54,9 @@ private:
     afx_msg void OnRename(void);
 
     // Handle a click on the question-mark button.
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     DECLARE_MESSAGE_MAP()
 };
@@ -87,7 +89,9 @@ private:
     virtual BOOL OnInitDialog(void) override;
     virtual void DoDataExchange(CDataExchange* pDX) override;
 
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     DECLARE_MESSAGE_MAP()
 };
