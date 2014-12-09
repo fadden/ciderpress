@@ -1,0 +1,104 @@
+<HTML><HEAD>
+	
+	<TITLE>Import From Cassette</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="cassette">
+		<PARAM NAME="Keyword" VALUE="import">
+		<PARAM NAME="Keyword" VALUE="wav">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Import From Cassette</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Back in the early days of the Apple II, the most popular way to distribute commercial software was on audio cassettes.&nbsp; Cassette tapes are slow, transferring data at an average of 1350 bits per second (better than a 1200 baud modem, but about a thousand times slower than a 1x CD-ROM).&nbsp; If stored properly, however, they can last a long time.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Technical Background</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The basic layout of Apple II data on a cassette looks like this:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>(1) Ten seconds of 770Hz tone.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>(2) Short pulse indicating start of data.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>(3) Data (one cycle at 1000Hz for a '1', one cycle at 2000Hz for a '0').</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The last byte of data is a checksum that can be used to verify that the previous data read correctly.&nbsp; The data length is not stored, and there is no explicit "end" marker, so it's necessary to either know the length ahead of time or guess the position of the end based on the absence of data.&nbsp; Because of the way the code works, you're limited to 64K of data, though in practice you'd be limited to less than 48K on a real Apple II unless you were using custom read routines.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Applesoft and Integer BASIC programs write two consecutive blocks of data.&nbsp; The first block contains the length of the second block.&nbsp; CiderPress doesn't really need the first block, because the end of the recording is usually pretty obvious, but the existence of the first block makes it easier to guess what the second block contains.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Most cassettes include more than one copy of a program.&nbsp; In some cases (such as Adventure International's "Asteroid") they are slightly different implementations, while in others it's the same program repeated.&nbsp; Sometimes the program is repeated on the back side of the tape.&nbsp; Magnetic tapes wear out if you play them too much, so redundancy was common.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Getting the Audio Data</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You will need to capture the audio from the cassette tape on your computer.&nbsp; This requires connecting a tape player to your PC while running audio capture software.&nbsp; Using a sound editor is recommended.&nbsp; Some examples:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;text-indent:-17pt;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">Adobe Audition (www.adobe.com; expensive)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;text-indent:-17pt;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">GoldWave (www.goldwave.com; shareware)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;text-indent:-17pt;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">Audacity (audacity.sourceforge.net; freeware)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">It isn't necessary to record each section of data from the cassette into its own WAV file.&nbsp; CiderPress will try to find every chunk of data in a WAV file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you have a "line out" on your tape player and a "line in" on your PC sound card, use those.&nbsp; If not, you can use the "microphone" input and the "headphone" out, though you will have to set the volume levels correctly.&nbsp; In the "speaker" or "multimedia" control panel, set the microphone input gain to 50%.&nbsp; Start up your sound editor.&nbsp; If you have an input level meter (e.g. hit F10 in Adobe Audition), turn that on.&nbsp; Play the cassette tape out loud until you hear a tone, then plug it into the computer and watch the input level.&nbsp; You want to set the volume so that the input is as high as you can get it without exceeding the limit (this causes "clipping", which is a lot like a square wave but probably isn't going to help us here).&nbsp; In Adobe Audition, make sure it stays above -3dB.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Once you have the volume level figured out, back the tape up to the start of the tone.&nbsp; Hit "record" in your software and "play" on your tape player.&nbsp; Record at 22.05KHz with 8-bit samples.&nbsp; (Recording at CD quality -- 44.1KHz with 16-bit samples -- doesn't help and requires 4x the space.)&nbsp; If your software shows an input meter while recording, continue to record until the volume level drops and stays low for at least 10 seconds.&nbsp; If you can't monitor the input, you will either need to time the cassette, or just record for a long time and perhaps trim the excess off in the sound editor.&nbsp; Make sure you get all of the data from the tape.&nbsp; When you think you're done, pull the audio plug out of the tape player and keep listening for a little bit.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Tip: CiderPress only needs to see about a second of the lead-in, so it's okay to fiddle with the volume while the initial tone is playing.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Tip: in some cases, setting the volume a little too high can be beneficial.&nbsp; It's better to clip some samples than have too little signal.&nbsp; If at first you don't succeed, crank up the volume a notch and try again.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Save the WAV file, launch CiderPress, and open a ShrinkIt archive or disk image.&nbsp; Files extracted from WAV files are added to the currently open archive.&nbsp; Select the "import file from WAV" option in the Actions menu, and open the WAV file you created.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Decoding the Data</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The display shows the name of an algorithm, and a box with six columns:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Index</U>: relative position of the program on the tape.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Format</U>: best guess at the nature of the data (Applesoft, Integer BASIC, etc).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Length</U>: decoded length, in bytes, not including the checksum.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Checksum</U>: the checksum, with "Good" if the checksum matched, "BAD" if it didn't.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Start sample</U>: sample number (not byte offset) where the data began.&nbsp; Useful when examining the data in a sound editor.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>End sample</U>: last good sample in the data.&nbsp; If the data is bad, this is probably where things went wrong.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The text in the "format" column is a guess at the contents, based on the length of the current and previous segment.&nbsp; For BASIC headers, the contents (e.g. length of program that follows) are shown in hexadecimal.&nbsp; Applesoft also has an "auto-run" flag, set to either $55 or $D5.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The output of the Apple II is a blocky "square wave" rather than a smooth "sine wave".&nbsp; Because of limitations in how quickly voltage levels can change, the output isn't perfectly square.&nbsp; Because of the physical properties of and variations in magnetic media, the not-quite-square wave is rather rounded and wiggly.&nbsp; After being stored in less-than-perfect conditions for 25-30 years, what you read back from an Apple II tape is pretty crazy.&nbsp; Deciphering it can be tricky.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress provides different algorithms that you can apply:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>"Zero Crossing" works very much like the Apple II does, and measures the distance between points where the signal changes from positive to negative.&nbsp; This is usually a good place to start.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>"Peak to Peak Width (Sharp)" measure the distance between peaks, which works a little better when the input has been affected by a DC bias (i.e. the entire signal has been shifted up or down, in some cases so far that it no longer crosses zero).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>"Peak to Peak Width (Round)" is the same as "Sharp" but with different parameters.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>"Peak to Peak Width (Shallow)" is another peak-width variant with different parameters.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Usually one will work better than the others.&nbsp; In some cases, different algorithms may pull out different copies of a program from the same tape.&nbsp; You can use the "start offset" column in the display to see which copy has been found.&nbsp; (Note the start offset may vary by a couple of samples for different algorithms.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Most cassettes can be recovered, even those that will no longer play on an Apple II.&nbsp; If you find one that can't, you may want to keep the WAV recording anyway, on the off chance that in the future an improved algorithm can be developed that will decode it.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">When CiderPress encounters data that it can't interpret, it stops trying to read from that section of the WAV file.&nbsp; For this reason, damaged entries will usually be shorter than undamaged ones.&nbsp; If a file appears to have the correct length but the checksum still doesn't match, it means the signal was sufficiently distorted to make a '0' bit look like a '1' bit, which is actually pretty hard to do.&nbsp; In most cases the decoder will either make an accurate determination or will conclude that the signal is too distorted to process.&nbsp; So far only one case has been found where the checksum was deliberately altered, as part of a copy protection scheme (Sargon II).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If the tape has more than one program on it, you can usually tell if it's multiple copies of the same thing by comparing lengths and checksums.&nbsp; If the checkums say "good" but have different values, you probably have two different programs, or two slightly different versions of the same program.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Saving the Data</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The best way to save cassette programs is to a DOS 3.3 disk image, because it's difficult to run Integer BASIC programs under ProDOS.&nbsp; If you're only extracting Applesoft or binary programs, the choice of disk format doesn't really matter.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Click on the file to save and then click "import".&nbsp; This brings up the import options screen.&nbsp; You can change the file name, file type, and for binary files you can alter the start address.&nbsp; The file name you enter will be altered as needed for compatibility with the currently open archive or disk image.&nbsp; If it's the same as an existing file, numbers will be appended to the end of the name.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">For binary files, a range of addresses should be shown on the cassette tape or on instructions included with it.&nbsp; It should say something like "800.1A6FR", which is the Apple II system monitor command to read data from the tape and store it in memory (for this example, in locations $0800 through $1A6F, inclusive).&nbsp; CiderPress is able to determine the length accurately, so when you supply the start address CiderPress fills out the end address for you.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can import files with bad checksums.&nbsp; They will almost certainly be damaged or, more likely, incomplete.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Once the file has been imported, you will be able to view it as you would any other file.&nbsp; Because loading machine language subroutines from disk wasn't an option, many BASIC programs included embedded routines.&nbsp; It's not uncommon for Integer BASIC programs to appear to have only one or two lines of POKEs and HIMEM: statements until they're run for the first time.&nbsp; In some cases, the entire program was written in assembly language and then wrapped in BASIC so that the tape could be loaded with "LOAD" instead of from the monitor.&nbsp; Such programs may not be all that interesting to look at when listed with the BASIC file viewer.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There are three cases where CiderPress currently guesses the file type incorrectly:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">Applesoft BASIC arrays stored on tape.&nbsp; These have a 3-byte header section like Applesoft programs, but just contain data.&nbsp; The "RECALL" statement is used to load these.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Shape tables stored on tape.&nbsp; These have a 2-byte header section like Integer BASIC programs, but contain shape table data.&nbsp; The "SHLOAD" statement is used to load these.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Custom data load routines.&nbsp; For example, the Integer BASIC program "Starfleet Orion" calls the F8 ROM tape read routines directly, so no BASIC header is present.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">A quick examination of the file with the CiderPress file viewer should reveal whether or not it is not a BASIC program.&nbsp; Anything that isn't should be saved as a binary file.&nbsp; Actually making use of them is left as an exercise for the reader -- start with the Applesoft BASIC reference manual, or find an Apple II emulator that emulates the cassette I/O port.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Other Notes</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You may be tempted to store copies of the WAV file in MP3 format.&nbsp; This is not recommended.&nbsp; CiderPress cannot decode MP3s, and the decoded MP3 file is less likely to work than the original.&nbsp; However, experiments with converting the sound files in and out of MP3 format suggest that "healthy" files are unharmed at reasonable compression ratios.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You don't need fancy equipment.&nbsp; Connecting the headphone jack of a 15-year-old "boom box" to the microphone jack of a low-cost PC with on-motherboard audio works just fine.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

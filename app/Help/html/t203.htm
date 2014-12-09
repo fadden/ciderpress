@@ -1,0 +1,43 @@
+<HTML><HEAD>
+	
+	<TITLE>Edit File Attributes</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="access">
+		<PARAM NAME="Keyword" VALUE="attributes">
+		<PARAM NAME="Keyword" VALUE="file type">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Edit File Attributes</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">To edit an entry's attributes, select the entry from the list., and activate the "Edit attributes..." command.&nbsp; You may only select one entry at a time.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The pathname and modification date will be displayed but may not be changed.&nbsp; (To change the pathname, use the <A HREF="t42.htm">rename</A> feature.)&nbsp; The file type will be shown in the drop-down box, and may be changed by selecting a new entry.&nbsp; Tip: if you click in the drop box and type a letter, you will move to the next entry that begins with that letter.&nbsp; This can make it easier to find a file type by its three-letter abbreviation.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The auxilliary type (usually called "aux type") is shown as a 4-digit hexadecimal number, and may be edited freely.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The type description is based on both the file type and the aux type.&nbsp; For example, type "LBR $E0" with aux type "8002" is listed as a "ShrinkIt (NuFX) document" in the Apple File Type Notes.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The access flags may be enabled or disabled individually with the checkboxes.&nbsp; Most files have "Read" enabled and possibly the "Backup needed" flag.&nbsp; Checking the bottom three boxes results in a "locked" file, while unchecking them indicates an "unlocked" file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Not all formats support all possible values.&nbsp; For example, on DOS 3.3 disks, checking the "write enabled" flag unlocks the file, while un-checking it locks the file.&nbsp; DOS 3.3 only supports a few file types, and only BIN has a meaningful aux type.&nbsp; HFS directories don't have file types at all.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Changing the file type on a DOS 3.2/3.3 disk should be done with caution.&nbsp; BASIC programs and binary files have the file length embedded in the first sector of the file, and binary files have a start address as well.&nbsp; CiderPress does not add or remove these values when changing the file type.&nbsp; If, for example, you change a file of type TXT to type BIN, you will find that the first four bytes of the text file have mysteriously vanished, and the start address and length are strange.&nbsp; If you change the aux type, and then change it back to TXT, you will find that the first two characters in the text file are different.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2"><B>WARNING</B>: if you change a DOS file to BAS, INT, or BIN, there's a good chance that the length value pulled out of the first sector will be larger than the file.&nbsp; This may not be immediately apparent because CiderPress truncates the length for safety.&nbsp; The next time CiderPress opens the disk, it will mark the file as "suspicious", and mark the disk read-only.&nbsp; The only way to change the file type back will be to use a sector editor in an emulator.&nbsp; If you want a file from another source (Windows text file, ProDOS disk, etc) to have a specific file type, add it to a ShrinkIt archive or ProDOS disk image, change the file type, and then copy it to a DOS volume.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">This behavior is by design.&nbsp; You can take advantage of it when copying certain types of files around.&nbsp; Cracked games with short DOS loaders can be copied by first changing the file type to 'S' ($F2), copying the file, pasting it into the new disk, and then changing the type back to BIN.&nbsp; This works because 'S' has no embedded length, and CiderPress does not alter the embedded aux type unless you explicitly change it.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">When changing the file type to BIN, you will have the opportunity to change the aux type.&nbsp; If you leave it alone, the aux type will be pulled out of the first sector of the file.&nbsp; If you change the value in the edit box, the new value will replace the old.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">DOS 3.2/3.3 disks only support eight file types.&nbsp; The most common are 'B' (BIN), 'A' (BAS), 'I' (INT), and 'T' (TXT).&nbsp; Less common are 'R' (REL) and 'S' ($F2), and you will rarely see the alternate 'A' ($F3) and 'B' ($F4).&nbsp; The hex-valued types, like $F2, are used because there is no direct mapping between the DOS type and a ProDOS type.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Pascal disks are similar.&nbsp; Three types are commonly used: PDA (generic data), PTX (Pascal text editor format), and PCD (Pascal code format).&nbsp; The others are "untyped" (NON), "bad blocks" (BAD), "info" ($F3), "graffile" ($F4), "foto" (FOT), and "securdir" ($F5).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">HFS uses 4-character values for the file type and "creator type".&nbsp; Apple defined special handling for files with a creator type of "pdos".&nbsp; CiderPress automatically recognizes those values, and presents them as standard ProDOS file types.&nbsp; You can choose between ProDOS and HFS types on HFS disks and ShrinkIt archives.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

@@ -1,0 +1,159 @@
+<HTML><HEAD>
+	
+	<TITLE>Appendix - File Format Converters</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="converter">
+		<PARAM NAME="Keyword" VALUE="file format">
+		<PARAM NAME="Keyword" VALUE="reformat">
+		<PARAM NAME="Keyword" VALUE="viewer">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">File Format Converters</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress can convert a variety of Apple II files into formats more easily accessible on a PC.&nbsp; BASIC programs can be converted into text program listings, AppleWorks word-processing documents become RTF (Rich Text Format) documents, and graphics become Windows BMPs.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The end-of-line (EOL) marker on text files changes from system to system.&nbsp; Macintosh and the Apple II use carriage returns (CR), UNIX systems use linefeeds (LF), and MS-DOS uses one of each (CRLF).&nbsp; Windows programs vary in their ability to handle text files with different EOL formats, but they all handle CRLF.&nbsp; CiderPress can convert all text files to Windows format if you desire.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>DOS High ASCII (TXT)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Apple DOS stores text files with the high bit of every 8-bit byte set.&nbsp; This causes most other operating systems to display characters from an "extended" character set (accents, tildes, etc.) instead of the intended characters.&nbsp; This is usually undesirable, so all files from DOS disks with file type 'T' should be run through this converter to strip the high bit off.&nbsp; This will also convert the end-of-line character to CRLF.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>CP/M Text (NON)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CP/M text files use CRLF line terminators, but also follow a convention that has fallen out of use under Windows: a Ctrl-Z marks the end of the file.&nbsp; This converter identifies text files on CP/M disks, and drops everything after the first Ctrl-Z.&nbsp; Files with unusual control characters embedded in them may not be identified as text.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>UCSD Pascal Text (PTX)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">UCSD Pascal disks have text files with an unusual format (done so for the benefit of the editor).&nbsp; These can be converted to text in a format that mimics the on-screen and printed output of the original.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>UCSD Pascal Code (PCD)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The executable code files can be broken into segments, each of which is named and has a data type.&nbsp; The converter breaks the file into segments, and displays the segment header along with a hex dump of the contents.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Applesoft BASIC (BAS)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Applesoft programs are stored in a "tokenized" format, meaning that BASIC keywords like "FOR" and "NEXT" are stored as a single byte rather than a text string.&nbsp; This reduces program size and improves execution speed, but makes them hard to read on a PC.&nbsp; The Applesoft converter produces output identical to what you would see if you loaded the program and typed "LIST".&nbsp; If the <A HREF="t23.htm">appropriate preference</A> is enabled, BASIC keywords, comments, and quoted text will be highlighted in color by default.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Integer BASIC (INT)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This is similar to the Applesoft converter, but for the older Integer BASIC format.&nbsp; Again, the output is identical to the "LIST" command.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">It was not uncommon to stash machine-language code snippets at the start or end of an Integer BASIC program, resulting in a collection of junk.&nbsp; Usually some "LOMEM:" and "HIMEM:" commands were used to rearrange things so that the code gets hidden and only the BASIC program remains ("APPLEVISION", from the DOS 3.3 system master disk, is a classic example).&nbsp; The converted output of the machine-language parts may not match what "LIST" does, which is a good thing -- in some cases LIST would loop forever.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>Asm source (TXT, INT, and $F4)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The S-C Assembler used the DOS 'I' file type, but doesn't use the Integer BASIC file format (it's a line-oriented compressed text file).&nbsp; Fortunately it's easy to tell the difference between S-C files and Integer programs.&nbsp; This converts the file to plain text.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The DOS versions of LISA (Lazerware's Interactive Symbolic Assembler), v2.5 and earlier, used a mildly tokenized format stored in DOS 'B' files.&nbsp; (This is the alternate type 'B', not the standard binary format; it shows up as type $F4 in CiderPress.)&nbsp; The ProDOS and GS/OS versions used the ProDOS INT type reserved for Integer BASIC, with the source written in a compressed format.&nbsp; The output is plain text, and matches the converted output of the original when written to a text file with the "write" command.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The file formats for LISA versions 2, 3, and 4 are different.&nbsp; All three are handled.&nbsp; Version 5 is equivalent to version 4, and the format for version 1 is unknown.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Merlin and Merlin-16 used a text format that crunched out excess spaces.&nbsp; The Merlin converter puts the spaces back in, so the output resembles what you'd see in the Merlin-16 full-screen editor.&nbsp; Merlin source files usually have filenames ending in ".S".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Disassembly (various)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Two modes of disassembly are currently supported:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">Apple //e monitor listing.&nbsp; This produces output identical to the monitor 'L' command on an Apple ][+ or //e, with two changes: 65C02 operands are supported, and NiftyList-style annotations are added.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Apple IIgs monitor listing.&nbsp; Output is identical to the monitor 'L' command on an Apple IIgs, with the addition of NiftyList-style annotations.&nbsp; You may choose "short" (8-bit) or "long" (16-bit) registers.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">See the <A HREF="t109.htm">Disassembly Notes</A> section for more information.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>8-bit Word Processor (various)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Currently supports Magic Window / Magic Window II "formatted" documents.&nbsp; These have file type BIN and end in ".MW".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>AppleWorks Word Processor (AWP)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress does a fairly good job of converting AWP documents to Rich Text Format (RTF) files that can be edited with WordPad or Microsoft Word (the former is a Windows "accessory", and should be available on all systems).&nbsp; Most text styles are supported (bold, italic, underline, subscript, superscript), as well as paragraph formatting (left/right justified, centering) and some page layout features (left/right margins, page breaks).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>AppleWorks Database (ADB)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Database files in AppleWorks are two-dimensional, with a fixed set of columns and one row for each entry.&nbsp; This converts easily to CSV (Comma-Separated Value) format, which can be imported into Microsoft Excel or other applications.&nbsp; The file viewer will show the data in CSV form, which isn't ideal but is much easier to read than the raw unconverted format.&nbsp; The first row of data holds the column titles.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>AppleWorks Spreadsheet (ASP)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Spreadsheets tend to be tied to a specific application, and AppleWorks ASP files are no exception.&nbsp; Microsoft Excel does a pretty good job of converting formulas over, but you can expect to do some amount of hand-tweaking after conversion.&nbsp; Most formulas will transfer, but some (like @AVG) don't, and multi-cell labels will be chopped up.&nbsp; As with database files, these are converted to CSV format, which should be accepted by just about any modern spreadsheet application.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Apple IIgs Word Processor (GWP)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There are actually three formats here.&nbsp; All of them convert common symbols and accented characters from the IIgs fonts to Windows fonts.&nbsp; Not all of the symbols have equivalents, but many of them do.&nbsp; Text written in languages other than English should convert correctly.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The supported formats are:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">Teach document (GWP $5445).&nbsp; The "Teach" application on the Apple IIgs created these, which have text in the data fork and formatting information in the resource fork.&nbsp; Font size and style changes are supported, accented characters are converted, and an attempt is made to convert the typeface to something similar to the original.&nbsp; The results are ususally pretty good.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">AppleWorks GS Word Processor (GWP $8010).&nbsp; Same basic features as "Teach", plus some basic formatting features like centered and justified paragraphs.&nbsp; The "header" and "footer" sections are displayed at the top of the converted document.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Generic (GWP, any aux type except the two above).&nbsp; Does a IIgs text conversion without any other reformatting.&nbsp; If you have a text file that uses symbols or accented characters from the IIgs font values, you can change its file type to GWP to enable this converter.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>ProDOS Folders (DIR)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you select a folder from a ProDOS disk for viewing, this converter will display it in a format similar to the 80-column output produced by the ProDOS "catalog" command.&nbsp; The active set of files are shown, followed by any deleted files that can be identified.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Enabling or disabling this converter has no effect on file extraction, because CiderPress doesn't explicitly extract folders.&nbsp; (It simply creates them when needed.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>Resources (resource fork of any file)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Resource forks have a well-defined structure.&nbsp; Each fork is a series of resources whose formats are defined by the user or by the system.&nbsp; This converter separates the fork into individual resources and displays their contents as hex dumps.&nbsp; Any recognized system-defined resources will have a type description displayed next to the resource type.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Hi-Res Graphics (FOT or 8K BIN, 280x192, six colors)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The classic Apple II graphics mode is "hi-res", featuring a resolution of 280x192.&nbsp; In some respects it's 140x192 (because two pixels are combined to form one color), in others it's 560x192 (because the Apple II display hardware used a half-pixel shift to get colors on a television).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The Hi-Res converter produces a 16-color, 560x384 bitmap file (BMP) that takes into account half-pixel shifting and other oddities.&nbsp; The results are usually identical to what you would see on an Apple IIgs RGB monitor.&nbsp; (If you set just the right pixels you can get yellow and brown on the hi-res screen of a real Apple II; in practice, this never really came up, so it isn't emulated here.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you select the black &amp; white output mode, you will get a 16-color 560x384 image using only black and white.&nbsp; The image matches the Apple IIgs RGB monitor output except that the half-pixel shifting is left enabled.&nbsp; This was done to match the display of the IIgs composite output and other members of the Apple II line, which don't disable half-pixel shifting in monochrome mode by default.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Double Hi-Res Graphics (FOT or 16K BIN, 560x192, sixteen colors)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This graphics mode, first introduced on the enhanced Apple //e, can also be treated as 140x192, because four pixels are combined to form each color.&nbsp; In monochrome mode, the output is fully 560x192.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The Double Hi-Res converter produces a 16-color, 560x384 bitmap file (BMP) that attempts to recreate the output from an Apple IIgs RGB or composite output.&nbsp; Because of various weirdnesses in the Apple II display hardware, this is harder than you might think.&nbsp; As a result, there are actually four different ways to process the file.&nbsp; You can choose between them in the file viewer, or pick a default from the "Double Hi-Res mode" setting in the File Viewer tab of Preferences.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Black &amp; White</U>: output is in black and white only, full 560 pixels across.&nbsp; Output matches Apple IIgs RGB monitor display exactly.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Simple 140</U>: produces 560x384 output as if the input were 140x384.&nbsp; The simplest and most "obvious" approach, it produces inferior results because the Apple II video hardware doesn't work this way.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Sliding window</U>: converts the picture the way Apple IIe Tech Note #3 describes, using a 4-bit sliding window.&nbsp; The result closely matches the composite output on an NTSC device (monitor or television), but is much more blurry than the output of an RGB monitor because most transitions have a lot of color "fringes".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span><U>Latched color</U>: a variation on "sliding window", this tries to reduce the fringes around transitions to and from black and white.&nbsp; The result renders the colors fairly well while sharpening up text.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Super Hi-Res Graphics (PIC/PNT or 32K BIN, 320/640x200)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">First introduced on the Apple IIgs, Super-Res was the first mode largely devoid of video idiosyncracies.&nbsp; When you set pixels to certain colors, the output on an RGB monitor was exactly what you expected.&nbsp; The resolution, which could be changed on every line, was 200 lines of either 320 pixels across with 4 bits of color per pixel, or 640 pixels across with 2 bits of color per pixel.&nbsp; The way colors in the file were translated to colors on screen involves some minor color palette gymnastics.&nbsp; The output of the converter is a 256-color 640x400 BMP.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Super-Res images were also the first to be regularly compressed, which isn't surprising since they're 4x as large as standard hi-res.&nbsp; CiderPress can convert images in the following formats:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>Unpacked ("PIC" $c1/0000)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>Activision Paintworks ("PNT" $c0/0000)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>Packed with PackBytes ("PNT" $c0/0001)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>Packed Apple Preferred Format ("PNT" $c0/0002)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The Apple Preferred Format allows for images of arbitrary dimensions.&nbsp; CiderPress supports up to 1280x1024.&nbsp; Paintworks images are 320x396, and convert to a 640x792 BMP.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>3200-Color Super Hi-Res Graphics</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">A clever fellow named John Brooks figured out that, if you changed palettes at just the right time, you could get more colors on the screen than would be otherwise possible.&nbsp; The results were sufficiently compelling to cause a number of GIF and JPEG converters to spring up, as well as one full-fledged 3200-color paint program.&nbsp; The files are always 320x200, and the output from the file converter is a 24-bit 640x400 BMP.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Most 3200-color pictures were stored in BIN files and given names like ".3200".&nbsp; Later on, official filetypes were specified, and some additional formats were developed.&nbsp; CiderPress can convert the following:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>Unpacked ($c1/0002 or BIN ".3200")</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>Packed with PackBytes (BIN ".3201")</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>Packed Apple Preferred Format ($c0/0002 with "MULTIPAL" block)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">For Apple Preferred Format, only 320x200 images are handled.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Print Shop Clip Art</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Clip art from Print Shop "classic" usually comes on DOS 3.3 disks as a 576-byte 'B' file with a load address (aux type) of $4800, $5800, $6800, or $7800.&nbsp; The images unpack to 88x52 black &amp; white BMP files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Clip art files for Print Shop GS are 1716 bytes long, and use ProDOS file type $F8 with aux type $C323.&nbsp; The images unpack to 4-bit 88x52 BMP files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The Print Shop GS editor doubles the width and triples the height, displaying a nearly-square 176x156 image.&nbsp; CiderPress does not magnify the image because that would make it awkward to manipulate the original pixels in an image editor.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>MacPaint Graphics (*.mac)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The original Macintosh Paint program created monochrome 576x720 images.&nbsp; These represented a full printed page on a 72dpi ImageWriter printer.&nbsp; While not really an Apple II format, these were commonly found on BBS systems in the years when Apple IIs were popular.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress will attempt to identify MacPaint files that don't end in ".mac" by looking for a 128-byte MacBinary header with a 'PNTG' file type.&nbsp; MacPaint files transferred to other systems usually had this header.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

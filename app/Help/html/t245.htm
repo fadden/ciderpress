@@ -1,0 +1,44 @@
+<HTML><HEAD>
+	
+	<TITLE>Tool - Windows Volume Copier</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="cffa">
+		<PARAM NAME="Keyword" VALUE="floppy">
+		<PARAM NAME="Keyword" VALUE="image">
+		<PARAM NAME="Keyword" VALUE="volume">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Windows Volume Copier</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This tool lets you copy all or part of a Windows volume to or from a file.&nbsp; This can be used to make images of 3.5" floppy disks, copy disk images onto 3.5" disks, back up a CFFA card, or swap partitions in and out of a hard drive.&nbsp; This can also operate on normal disk image files and block images extracted from devices.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">WARNING:</FONT><FONT FACE="MS Sans Serif" SIZE="2"> it's possible to destroy all data on your hard drive.&nbsp; <B>Make sure</B> you're opening the right volume!&nbsp; When in doubt, open the disk in "read only" mode.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There are two versions of the tool.&nbsp; If you select "Volume copier (open volume)", you will be given a list of volumes to choose from.&nbsp; <A HREF="t241.htm">Select the volume</A> you want to work with.&nbsp; If you check "read only", copying data into the volume will be disallowed.&nbsp; If it's not checked, the volume will be opened with write access enabled.&nbsp; In either case, under Windows 2000 or XP you will need to have administrator privileges to access volumes other than the floppy drive.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you select "Volume copier (open file)", you can open any disk image of your choosing.&nbsp; This can be a handy way to extract from or modify a multi-partition image file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress will try to figure out what format the volume is in, automatically detecting any sub-volumes, such as CFFA partitions and hard drive partitions.&nbsp; If the volume has a single filesystem on it, CiderPress will display the volume name, format, and volume size in blocks and megabytes.&nbsp; If the volume has sub-volumes, you will see one entry for the entire volume (shown with a large green dot) and below it one entry for each sub-volume (with a smaller blue dot).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Click on the volume or sub-volume you want to manipulate.&nbsp; To copy the volume to a file, click on "copy to file".&nbsp; This will create a ProDOS ordered ("xxx.po") disk image that some Apple II emulators will be able to use directly.&nbsp; To copy a file onto the volume, click on "copy from file".&nbsp; This pulls blocks out of the disk image file and writes them to the volume or sub-volume.&nbsp; You can open any disk image format that CiderPress supports.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">When copying from a file to a volume, the file must be smaller than the volume.&nbsp; You cannot, for example, copy a 32MB ProDOS volume onto a 1.4MB floppy.&nbsp; If you copy a 1.4MB floppy image onto a 32MB CFFA partition, you will have a 1.4MB ProDOS partition and 30.6MB of wasted space.&nbsp; If you copy a 140K DOS 3.3 image onto a 32MB CFFA partition, you will end up with a useless partition, because nothing will look for a DOS volume there.&nbsp; For safety, CiderPress will not allow you to copy data onto a volume 8GB or larger.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">When copying large volumes to disk, CiderPress starts by creating an empty disk image file.&nbsp; For large (512MB+) volumes, this may take several seconds as Windows creates an empty file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you are overwriting the first volume of a CFFA image, make sure you're copying ProDOS or HFS in.&nbsp; If CiderPress can't recognize the first partition, it may not be able to detect that the volume is a CFFA card, and will not display the CFFA sub-volumes.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The sizes used are for the entire partition.&nbsp; If you formatted a 32MB ProDOS volume in a 1GB partition on a CFFA card, CiderPress will treat it as a 1GB volume, even though ProDOS is only on the first part of it.&nbsp; Extracting that ProDOS volume may be awkward.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Hard drives with Macintosh-style partioning have explicit filesystem identification for each partition.&nbsp; That is, each partition will be labeled as ProDOS, HFS, a device driver, or whatever is appropriate.&nbsp; CiderPress does not currently have the ability to change these labels.&nbsp; Copying the wrong thing onto a partition, such as putting a ProDOS volume into a partition meant for HFS, could have unexpected results.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Bear in mind that old hard drives are pretty slow by today's standards.&nbsp; A 2GB drive purchased in the mid-1990s will deliver 4-5MB/sec on bulk reads, which means it'll take about 8 minutes to back up the entire drive.&nbsp; These drives tended to have small caches and slow seeks though, so it can take 30 seconds to a minute for the contents of the disk to be loaded, because scanning the list of files requires lots of single-block reads.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If CiderPress encounters errors while reading, it will start doing single-block reads instead of bulk reads.&nbsp; This can be *significantly* slower, on the order of 5-10x for some types of drives.&nbsp; Errors encountered while writing halt copying immediately.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

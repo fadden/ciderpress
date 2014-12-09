@@ -1,0 +1,70 @@
+<HTML><HEAD>
+	
+	<TITLE>Add Files Dialog</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="add">
+		<PARAM NAME="Keyword" VALUE="add files">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Add Files</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Use this feature to add files to a disk image or ShrinkIt archive.&nbsp; This dialog is similar in many ways to the standard Windows "open file(s)" dialog, but it has been customized to allow you to select folders as well as files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Select the files and folders you want to add, then click on "Accept".&nbsp; You can click on a file and then shift-click on another to select a range of files.&nbsp; Use control-click to select or unselect a single file in a group.&nbsp; Double-clicking a file immediately selects that file and starts the "add files" process, while double-clicking a folder simply opens the folder.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">(The differences from the standard Windows "open files" behavior may occasionally cause confusion.&nbsp; For the most part you shouldn't notice anything unusual.&nbsp; Just remember that clicking on "Accept" will add everything selected, including folders.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress tries to ensure that all files you select are added without conflicting with each other.&nbsp; For example, if you add "ReallyLongFilenameA" and "ReallyLongFilenameB" to a ProDOS disk, it will add them as "ReallyLongFilen" and "ReallyLongFile1".&nbsp; CiderPress will try to preserve filename extensions, so "ReallyLongFileName.c" becomes "ReallyLongFil.c".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The dialog has a few options you can change, described below.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>File attribute preservation</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Use this to decide whether CiderPress will accept or ignore <A HREF="t68.htm">file attribute preservation</A> sequences in filenames.&nbsp; If a file was extracted with tags (strings that look like "#062000"), they will be used to determine the file type and fork of the file being added.&nbsp; Also, any characters that were invalid in Windows filenames and had to be changed to "%xx" sequences will be converted back.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If the option is set to "Ignore file attribute preservation tags", CiderPress will act as if it has never heard of the things.&nbsp; Files will be added as type NON, and the "#062000" and "%xx" stuff will be added exactly as it appears on disk.&nbsp; You should only use this when adding files that have '#' or '%' characters that are confusing CiderPress.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If the option is set to "Use file attribute preservation tags", CiderPress will use them whenever it finds them.&nbsp; If it doesn't find them, the file will be added with type NON.&nbsp; This is the default setting.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Use tags and guess type from extension" goes a little farther, and tries to set the ProDOS file type based on the Windows extension.&nbsp; For example, ".txt" files will be added with type TXT, and ".shk" files will become $e0 with auxtype $8002.&nbsp; This is very useful when adding files to DOS 3.3 disks, because it ensures that ".txt" files get file type 'T'.&nbsp; Without this, ".txt" files will be added as 'B'.&nbsp; Use this option if you are adding files that weren't generated on an Apple II, like Windows text files or graphics.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Text conversion</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This option allows you to convert text files from Windows text conventions (carriage return followed by linefeed at the end of each line) to Apple II conventions (carriage return at the end of each line).&nbsp; Due to limitations in the NufxLib library -- as well as philosophical concerns about altering archived files -- the feature is disabled when adding files to ShrinkIt archives.&nbsp; It's enabled for disk images only.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You have four choices.&nbsp; The most basic are "Don't convert text files", which adds every file exactly as it is, and "Convert ALL files", which converts all EOL markers found in every file.&nbsp; The "convert all" option is generally not recommended, because it will try to convert non-text files, potentially rendering them unusable.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Convert text files by file type" option will convert anything added as "TXT or "SRC", and leave everything else alone.&nbsp; The file type is determined based on the file attribute preservation setting (discussed above).&nbsp; If CiderPress is configured to ignore attribute preservation tags, files will be added with type "NON", which does not undergo a text conversion with this setting.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">When "Auto-detect &amp; convert files with text" is selected, CiderPress scans the file to see if it appears to be text.&nbsp; The file type is ignored.&nbsp; This can be helpful, because it'll convert Windows files with names like "README" or old documents called "file.doc".&nbsp; (It was common practice to name text files ".doc" until Microsoft Word claimed that extension.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If CiderPress gets the auto-detection wrong, delete the files, and re-add the files that didn't work, setting the conversion to be always off or always on.&nbsp; (Tip: if you delete the bad ones, you can re-add the entire set, and when asked if you want to overwrite an existing file, say "no to all".&nbsp; That way you don't have to hand-select just the files to re-add.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There is a small performance boost when text conversion is turned off.&nbsp; If you're adding files that previously came out of an Apple II disk image, and no text conversion was performed during the extraction, turn text conversion off when adding files.&nbsp; Conversely, if you're adding text files or source code that you've been editing under Windows, set it to "by type" or "auto".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Resource forks are never converted, regardless of their contents and the current settings.&nbsp; Any file added to a DOS disk that is identified as text will also be converted to "high ASCII".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Miscellaneous</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If "Include subfolders" is checked, then CiderPress will descend into any folders you have selected, adding files found in them and descending into their sub-folders.&nbsp; If it's not checked, only files in the current directory will be added.&nbsp; You will usually want to have this checked.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you decide you don't want folder names, check the "Strip folder names" box.&nbsp; This removes the folder names, effectively putting all files into the same folder in the archive.&nbsp; This option is enabled automatically when adding files to DOS 3.3 and Pascal disks, which don't have folders.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Overwrite existing files" setting will cause any entries with the same name (case-insensitive) as a file being added to be overwritten by the newly-added file.&nbsp; If this box is not checked, you will be presented with the option of overwriting the existing file, skipping the add of the new file, or renaming the new file.&nbsp; (The option to rename the file being added is not available for ShrinkIt archives, because NufxLib doesn't support it.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Storage prefix</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This option is only available when adding to a ShrinkIt archive.&nbsp; Anything you put here will be prepended to the filename stored in the archive.&nbsp; The reasons for doing this may not be immediately obvious.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Suppose you want to add a file called "foo" to an archive.&nbsp; If you move to the folder with "foo" in it, select it, and click on "Accept", it will be added to the archive as "foo".&nbsp; This is fine, unless you want it to appear in the same sub-folder in the archive as other files.&nbsp; Perhaps you have a file called "bar" stored as "dir1:subdir2:bar", and you want "foo" and "bar" to be extracted to the same place.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You could create a folder called "dir1" under Windows, and then create another folder called "subdir2" in that, and then put "foo" in that folder, and finally have CiderPress do an Add Files on "dir1".&nbsp; If you put "dir1:subdir2" into the Storage Prefix box, and then just add "foo", you will get exactly the same result -- files added as "dir1:subdir2:foo" -- with significantly less effort.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">(You could, in this case, just add "foo" and then use the <A HREF="t42.htm">Rename Entry</A> feature to change the pathname, but that becomes tedious when a large set of files is involved.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

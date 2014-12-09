@@ -1,0 +1,675 @@
+.topic IDH_IDOK
+Click this to accept values and continue.
+
+.topic IDH_IDCANCEL
+Click this to go back without doing anything.
+
+.topic IDH_IDHELP
+Click this for help on this screen.
+
+.topic IDH_COL_PATHNAME
+The pathname column may not be hidden.
+
+.topic IDH_COL_TYPE
+Un-check to hide the "type" column.
+
+.topic IDH_COL_AUXTYPE
+Un-check to hide the "aux type" column.
+
+.topic IDH_COL_MODDATE
+Un-check to hide the "mod date" column.
+
+.topic IDH_COL_FORMAT
+Un-check to hide the "format" column.
+
+.topic IDH_COL_SIZE
+Un-check to hide the "size" column.
+
+.topic IDH_COL_RATIO
+Un-check to hide the "ratio" column.
+
+.topic IDH_COL_PACKED
+Un-check to hide the "packed" column.
+
+.topic IDH_COL_ACCESS
+Un-check to hide the "access" column.
+
+.topic IDH_COL_DEFAULTS
+Press this to reset the columns to default sizes.
+
+.topic IDH_DEFC_UNCOMPRESSED
+Do not compress files.
+
+.topic IDH_DEFC_SQUEEZE
+The "SQueeze" format was popularized under CP/M by the "sq" and "usq" commands, which created ".QQ" files.  Commonly used as part of the Binary II application "BLU" to create .BQY files.  Generally inferior to LZW, it was rarely used once ShrinkIt was released.  Supported in NuFX archives by all versions of ShrinkIt, but due to program bugs only GS/ShrinkIt can actually unpack it.
+
+.topic IDH_DEFC_LZW1
+ShrinkIt's "Dynamic LZW/1" compression, part of the original ShrinkIt.  A combination of RLE and 12-bit LZW.
+
+.topic IDH_DEFC_LZW2
+ShrinkIt's "Dynamic LZW/2" compression, first introduced in GS/ShrinkIt.  A combination of RLE and 12-bit LZW.  Slightly more efficient than LZW/1, this algorithm is well-supported on the Apple II.
+
+.topic IDH_DEFC_LZC12
+This creates the same output as UNIX "compress", one of the early LZW compressors, restricted to 12-bit codes.  First introduced in the original NuLib utility, this format is supported by NuLib, NuLib2, and GS/ShrinkIt.
+
+.topic IDH_DEFC_LZC16
+Like LZC-12, but with 16-bit codes.  Performs better than 12-bit LZW, but the improvement is only noticeable on larger files.
+
+.topic IDH_DEFC_DEFLATE
+The "deflate" algorithm from zlib is used in ZIP archives, gzip ".gz" files, PNG graphics, and is defined by an Internet RFC.  It is currently one of the most common ways to compress data.  Its compression performance is considerably better than LZW, but support on the Apple II is limited.  Its use was first defined as a NuFX extension in NuLib2 v1.1.
+
+.topic IDH_DEFC_BZIP2
+The "bzip2" program uses the Burrows-Wheeler Transform (BWT) compression method.  It's slower and more memory-intensive than "deflate", but it does exceptionally well on large sets of text files or source code.  Support on the Apple II is nonexistent.  Its use was first defined as a NuFX extension in NuLib2 v1.1.
+
+.topic IDH_TOPIC1024
+If enabled, end-of-line characters in text files will be converted when viewing in "raw" mode.
+
+.topic IDH_PVIEW_NOWRAP_TEXT
+This determines whether lines of text wrap when they reach the right edge of the file viewer, or run off the edge and are viewed with a scroll bar.
+
+.topic IDH_PVIEW_BOLD_HEXDUMP
+If enabled, some columns in the hex dump display will be highlighted for easier viewing.
+
+.topic IDH_PVIEW_BOLD_BASIC
+If enabled, Applesoft and Integer BASIC programs will be converted to Rich Text Format with colored highlights.
+
+.topic IDH_PVIEW_DISASM_ONEBYTEBRKCOP
+The IIgs monitor disassembles BRK and COP instructions as two bytes, which can make some disassemblies harder to read.  When this option is enabled, BRK and COP are shown as single-byte operations.
+
+.topic IDH_PVIEW_HIRES_BW
+If enabled, hi-res graphics are converted to black & white images by default.
+
+.topic IDH_PVIEW_DHR_CONV_COMBO
+Selects the preferred conversion algorithm for double-hi-res graphics.
+
+.topic IDH_PVIEW_HITEXT
+Enables the text converter, which strips "high ASCII" text and converts end-of-line characters.
+
+.topic IDH_PVIEW_PASCALTEXT
+Enables the Pascal text (PTX) converter.
+
+.topic IDH_PVIEW_APPLESOFT
+Enables the Applesoft BASIC converter.
+
+.topic IDH_PVIEW_INTEGER
+Enables the Integer BASIC converter.
+
+.topic IDH_PVIEW_HIRES
+Enables the hi-res graphics converter.
+
+.topic IDH_PVIEW_DHR
+Enables the double-hi-res graphics converter.
+
+.topic IDH_PVIEW_SHR
+Enables the super-hi-res graphics converter.
+
+.topic IDH_PVIEW_AWP
+Enables the AppleWorks Word Processor document converter.
+
+.topic IDH_PVIEW_PRODOSFOLDER
+Display ProDOS folders in a format similar to the ProDOS 8 BASIC.System 80-column "catalog" command.  (Folders are never extracted, so this only affects the way folders are viewed.)
+
+.topic IDH_PVIEW_RESOURCES
+View and extract resource forks by breaking them down into individual resources, which are displayed as hex dumps.
+
+.topic IDH_PVIEW_RELAX_GFX
+Relaxes strict type-checking requirements for graphics files.  Useful for hi-res and double-hi-res images, which often are stored with the generic "BIN" type.
+
+.topic IDH_PVIEW_ADB
+Enables the AppleWorks Database document converter.
+
+.topic IDH_PVIEW_SCASSEM
+Enables conversion of assembly source files (S-C Assembler, LISA, Merlin) to text.
+
+.topic IDH_PVIEW_ASP
+Enables the AppleWorks Spreadsheet document converter.
+
+.topic IDH_PVIEW_MACPAINT
+Enables conversion of MacPaint 'PNTG' graphics files.  These are monochrome 576x720 images from the original MacPaint program.  The newer 'PICT' format is not supported.
+
+.topic IDH_PVIEW_PASCALCODE
+Enables conversion of UCSD Pascal code files to a partially analyzed hex dump format.
+
+.topic IDH_PVIEW_CPMTEXT
+Enables the CP/M text converter.  Only applies to files that appear to contain text and reside on CP/M disks.
+
+.topic IDH_PVIEW_GWP
+Enables IIgs word processor file conversion, including AWGS and Teach.
+
+.topic IDH_PVIEW_DISASM
+Enables code disassembly, including //e and IIgs monitor output.
+
+.topic IDH_PVIEW_PRINTSHOP
+Enable conversion of Print Shop and Print Shop GS clip art.
+
+.topic IDH_PVIEW_TEXT8
+Convert 8-bit word processor documents, such as Magic Window.
+
+.topic IDH_PVIEW_SIZE_EDIT
+Set the size of the largest file that the file viewer will open, in 1K increments.
+
+.topic IDH_PVIEW_SIZE_SPIN
+Set the size of the largest file that the file viewer will open, in 1K increments.
+
+.topic IDH_DISKEDIT_DOREAD
+Read the block or sector specified.
+
+.topic IDH_DISKEDIT_DOWRITE
+Click here to write the current block or sector.  This is disabled for disks open in read-only mode.
+
+.topic IDH_DISKEDIT_TRACK
+Enter a track/sector or block number.
+
+.topic IDH_DISKEDIT_OPENFILE
+Open a file.  This option is only available when the disk's filesystem is recognized.
+
+.topic IDH_DISKEDIT_EDIT
+The contents of the block or sector are displayed here.  If you are following a file and reach a sparse block, "SPARSE" will be displayed instead.
+
+.topic IDH_DISKEDIT_PREV
+When following a file, move to the previous block or sector.
+
+.topic IDH_DISKEDIT_NEXT
+When following a file, move to the next block or sector.
+
+.topic IDH_DISKEDIT_DONE
+Closes the window.
+
+.topic IDH_DISKEDIT_HEX
+Display and enter track/sector or block numbers in hexadecimal instead of decimal.
+
+.topic IDH_DISKEDIT_SUBVOLUME
+Open a sub-volume.  This option is not available if the disk image doesn't have any sub-volumes.
+
+.topic IDH_TOPIC1082
+Click for help on this screen.
+
+.topic IDH_TOPIC1089
+This determines whether the disk is accessed as 256-byte sectors or 512-byte blocks.
+
+.topic IDH_DECONF_FSFORMAT
+The filesystem used on the disk image, i.e. how the disk was formatted on the Apple II.
+
+.topic IDH_DECONF_SECTORORDER
+The order in which the sectors were written into the image file, defined in terms of the operating system used to write them.
+
+.topic IDH_DECONF_PHYSICAL
+The physical format of the image, usually sectors or nibbles.  This setting may not be changed.
+
+.topic IDH_DECONF_FILEFORMAT
+The image file format.  This setting may not be altered.
+
+.topic IDH_DECONF_SOURCE
+The disk image file being opened.
+
+.topic IDH_FVIEW_EDITBOX
+The contents of the current file.
+
+.topic IDH_SELECTED_COUNT
+The number of entries you have selected.
+
+.topic IDH_TOPIC1103
+If enabled, data forks of selected files will be displayed.
+
+.topic IDH_TOPIC1105
+If enabled, comments attached to selected files will be displayed.
+
+.topic IDH_DECONF_HELP
+Click this for help on this screen.
+
+.topic IDH_SUBV_LIST
+Choose the sub-volume you want to open from the list.
+
+.topic IDH_DEFILE_FILENAME
+Enter the name of the file to open exactly as it appears in the CiderPress file listing.  This means including all path names, separated by ':', and converting ':' to '_' when it's used in a filename.
+
+If the file is in a DOS 3.3 sub-volume (e.g. it starts with "_DOS001:"), you will need to open the sub-volume first and then open the file from there.
+
+.topic IDH_DEFILE_RSRC
+If checked, the resource fork of the file will be opened instead of the data fork.
+
+.topic IDH_PREF_TEMP_FOLDER
+Enter the name of the folder to use for temporary files.
+
+.topic IDH_CHOOSEDIR_TREE
+This is the "folder tree".  Click on '+' to expand folders to see their contents, '-' to collapse them.
+
+.topic IDH_CHOOSEDIR_PATHEDIT
+To jump directly to a folder, type the full pathname here and then click "Expand Tree".
+
+.topic IDH_CHOOSEDIR_EXPAND_TREE
+Click this to expand the tree to show the folder name typed in the box on the left.
+
+.topic IDH_CHOOSEDIR_PATH
+The full pathname of the folder currently selected in the tree.
+
+.topic IDH_CHOOSEDIR_NEW_FOLDER
+Click this to open the "New Folder" dialog.  Folders will be created in the folder currently selected in the tree.
+
+.topic IDH_PREF_CHOOSE_TEMP_FOLDER
+Click here to choose the temporary folder from a list.
+
+.topic IDH_FVIEW_FONT
+Change the font used when displaying text.
+
+.topic IDH_FVIEW_NEXT
+Go to the next selected file.  This button is disabled when there are no more files.
+
+.topic IDH_FVIEW_PREV
+Go to the previous selected file.  This button is disabled when there are no earlier files.
+
+.topic IDH_NEWFOLDER_CURDIR
+The currently selected folder.  The new folder will be created inside this folder.
+
+.topic IDH_NEWFOLDER_NAME
+Enter the filename of the folder you want to create.
+
+.topic IDH_EXT_PATH
+The full pathname of the folder to extract to.
+
+.topic IDH_EXT_CONVEOLTEXT
+Select this to automatically determine which files are text files, and convert them.
+
+.topic IDH_EXT_CONVEOLALL
+Select to treat all files as text files.  (Archived disk images are NOT included.)
+
+.topic IDH_EXT_STRIP_FOLDER
+If enabled, folder names will be removed before the files are extracted, effectively dumping all files into the extraction folder.
+
+.topic IDH_EXT_OVERWRITE_EXIST
+If enabled, existing files will be overwritten without confirmation.
+
+.topic IDH_EXT_SELECTED
+Click this to extract only the files selected in the file list.
+
+.topic IDH_EXT_ALL
+Click this to extract all files in the archive or disk image.
+
+.topic IDH_EXT_REFORMAT
+If enabled, extracted files will be translated using the file format converters.
+
+.topic IDH_EXT_DATAFORK
+If enabled, data forks of selected files will be extracted.
+
+.topic IDH_EXT_RSRCFORK
+If enabled, resource forks of selected files will be extracted.
+
+.topic IDH_EXT_CONVEOLNONE
+Select this to disable conversion of text files.
+
+.topic IDH_EXT_CHOOSE_FOLDER
+Click this to choose the folder to extract to from a list.
+
+.topic IDH_OVWR_YES
+Click to overwrite the existing file with the new one.
+
+.topic IDH_OVWR_YESALL
+Click to overwrite all existing files with the new ones.
+
+.topic IDH_OVWR_NO
+Click this if you want to keep the existing file.
+
+.topic IDH_OVWR_NOALL
+Click this if you want to leave all existing files alone.
+
+.topic IDH_OVWR_NEW_INFO
+The modification date of the new file.
+
+.topic IDH_OVWR_RENAME
+Click to rename the new file.  The existing file will be left untouched.
+
+.topic IDH_OVWR_EXIST_NAME
+The name of the existing file.
+
+.topic IDH_OVWR_EXIST_INFO
+The modification date of the existing file.
+
+.topic IDH_OVWR_NEW_NAME
+The name of the new file.
+
+.topic IDH_RENOVWR_SOURCE_NAME
+The name of the file as it appears in the archive.
+
+.topic IDH_RENOVWR_ORIG_NAME
+The full pathname of the file as CiderPress tried to extract it.
+
+.topic IDH_RENOVWR_NEW_NAME
+Type the full pathname of the file to extract to.
+
+.topic IDH_SELECT_ACCEPT
+Click this to accept the currently selected files and folders.
+
+.topic IDH_ADDFILES_PREFIX
+Enter a path prefix here.  This will be prepended to all files added to the archive.
+
+.topic IDH_ADDFILES_INCLUDE_SUBFOLDERS
+If enabled, files in sub-folders will be added.  If not, only the files in the current directory will be included.
+
+.topic IDH_ADDFILES_STRIP_FOLDER
+If enabled, folder names will be stripped from all files being added.  This effectively piles them into the "root" of the archive.
+
+.topic IDH_ADDFILES_NOPRESERVE
+Select this to ignore file attribute preservation sequences in filenames.
+
+.topic IDH_ADDFILES_PRESERVE
+Select this to look for and make use of file attribute sequences.
+
+.topic IDH_ADDFILES_PRESERVEPLUS
+Select this to make use of file attribute preservation sequences, and to "guess" ProDOS file types from file extensions for files that don't have preservation data.
+
+.topic IDH_ADDFILES_OVERWRITE
+If enabled, existing files will be overwritten without asking for confirmation.
+
+.topic IDH_PREF_SHRINKIT_COMPAT
+When enabled, certain GS/ShrinkIt quirks are emulated.
+
+.topic IDH_USE_SELECTED
+Apply only to selected entries.
+
+.topic IDH_USE_ALL
+Apply to all entries.
+
+.topic IDH_RENAME_OLD
+The current name of the file, possibly modified from its original form.
+
+.topic IDH_RENAME_NEW
+Enter the new name for the entry.  The names of disk images stored in ShrinkIt archives must be simple filenames.
+
+.topic IDH_RENAME_PATHSEP
+The pathname separator character, usually ':' or '/'.  This separates the folder names in a pathname.
+
+.topic IDH_COMMENT_EDIT
+Enter the text of the comment here.
+
+.topic IDH_COMMENT_DELETE
+Click here to delete the comment.  This option will be disabled if you just now added the comment.
+
+.topic IDH_RECOMP_COMP
+Select the compression method that the files will be re-compressed with.  Algorithms not supported by the currently-installed copy of NufxLib will not be shown.
+
+.topic IDH_PREF_ASSOCIATIONS
+Click this to open the Edit File Associations dialog.
+
+.topic IDH_ASSOCIATION_LIST
+Place a checkmark next to the file extensions that you want to associate with CiderPress.
+
+.topic IDH_REGENTER_USER
+Enter the user name shown on the registration letter.
+
+.topic IDH_REGENTER_COMPANY
+Enter the company name shown on the registration letter.
+
+.topic IDH_REGENTER_REG
+Enter the registration key shown on the registration letter.
+
+.topic IDH_EXT_CONVHIGHASCII
+If enabled, "high ASCII" text files will be converted.  This is only done to files identified as text.
+
+.topic IDH_EXT_DISKIMAGE
+If enabled, archived disk images will be extracted.
+
+.topic IDH_EXT_DISK_2MG
+If enabled, disks will be extracted as .2MG files.  If not enabled, disks will be extracted into .PO files.
+
+.topic IDH_EXT_ADD_PRESERVE
+If enabled, file attribute preservation sequences are inserted into filenames, and illegal characters are converted to "%xx".
+
+.topic IDH_EXT_ADD_EXTEN
+If enabled, a three-letter extension will be added to extracted files.  This can make them easier to use in Windows.
+
+.topic IDH_EXT_CONFIG_PRESERVE
+Click this to modify the options on this screen so that extracted files retain their original structure and attributes.
+
+.topic IDH_EXT_CONFIG_CONVERT
+Click this to modify the options on this screen so that extracted files are most readily usable under Windows.
+
+.topic IDH_PREF_COERCE_DOS
+If enabled, DOS 3.3 filenames will be converted to a mix of upper and lower case for improved readability.
+
+.topic IDH_PREF_SPACES_TO_UNDER
+If enabled, all spaces in filenames will be converted to underscores ('_').  Useful for extracting files that will be distributed by a web server.
+
+.topic IDH_REGENTER_USERCRC
+The checksum of the text entered in the Name field.
+
+.topic IDH_REGENTER_COMPCRC
+The checksum of the text entered in the Company field.
+
+.topic IDH_REGENTER_REGCRC
+The checksum of the text entered in the Registration Key field.
+
+.topic IDH_RENAME_SKIP
+Click this to leave the name alone and move on to the next selected entry.
+
+.topic IDH_DECONF_VIEWASBLOCKS
+View the disk as a series of 512-byte blocks.  Recommended for ProDOS, Pascal, and CP/M.  Not available on 13-sector nibble images.
+
+.topic IDH_DECONF_VIEWASSECTORS
+View the disk as a collection of tracks and 256-byte sectors.  Recommended for DOS 3.2 and 3.3.  Not available on odd-sized volumes, e.g. some ProDOS images.
+
+.topic IDH_IMAGE_TYPE
+Basic information about the image.
+
+.topic IDH_DISKCONV_DOS
+Create a plain DOS-ordered image (.DO).  This is the most common format for 5.25" disk images.  It is not available for large volumes or 13-sector disks.
+
+.topic IDH_DISKCONV_DOS2MG
+Create a DOS-ordered image with a 2MG header.  Not available for large volumes or 13-sector disks.
+
+.topic IDH_DISKCONV_PRODOS
+Create a plain ProDOS-ordered image (.PO).  Not available for 13-sector disks.
+
+.topic IDH_DISKCONV_PRODOS2MG
+Create a ProDOS-ordered image with a 2MG header.  Not available for 13-sector disks.
+
+.topic IDH_DISKCONV_NIB
+Create a plain nibble image.  Only available for 5.25" disk images.  Tracks have 6656 bytes.
+
+.topic IDH_DISKCONV_NIB2MG
+Create a nibble image with a 2MG header.  Only available for 5.25" disk images.  Tracks have 6656 bytes.
+
+.topic IDH_DISKCONV_D13
+Create an unadorned 13-sector disk image.  Only available for 5.25" disk images with 13 sectors per track.
+
+.topic IDH_DISKCONV_DC42
+Create a DiskCopy 4.2 image file.  Only available for 3.5" disk images.
+
+.topic IDH_DISKCONV_SDK
+Create a ShrinkIt disk image.  The configured default compression will be used.  Not available for 13-sector disks.
+
+.topic IDH_DISKCONV_TRACKSTAR
+Create a 40-track TrackStar image.  Tracks are variable length and stored in nibble format.  Only available for 5.25" disk images.
+
+.topic IDH_DISKCONV_HDV
+Create a Sim //e "virtual hard drive" image.  Not available for 13-sector disks.  Some applications may have difficulty with the image if it does not contain a ProDOS filesystem.
+
+.topic IDH_DISKCONV_DDD
+Create a DDD compressed disk image, compatible with DDD Pro.  Only available for 5.25" disk images.
+
+.topic IDH_DISKCONV_GZIP
+Compress the file with "gzip" compression, and add ".gz" to the filename extension.  This setting is ignored when creating ShrinkIt disk images.
+
+.topic IDH_DISKEDIT_NIBBLE_PARMS
+When viewing a nibble disk image as blocks or sectors, this lets you choose the sector parameters.  The "Patched" versions will allow you to read sectors from mildly copy-protected disks.
+
+.topic IDH_PROPS_PATHNAME
+The pathname of the entry being edited.
+
+.topic IDH_PROPS_FILETYPE
+The file type, displayed as its hexadecimal code and the common three-letter mnemonic.  Not all types have a mnemonic.
+
+Tip: clicking in the file type box and then typing a letter takes you to the next entry whose mnemonic begins with that letter.  This can make it easier to find an entry by "name".
+
+.topic IDH_PROPS_AUXTYPE
+The file's auxilliary type.  Sometimes used to indicate information about the file (such as a 'BIN' load address), sometimes used to distinguish between files with the same file type (such as the various application-specific 'CFG' config file formats).
+
+Enter a four-digit hexadecimal number.
+
+.topic IDH_PROPS_ACCESS_R
+Enable or disable the ability to read the file.
+
+.topic IDH_PROPS_ACCESS_W
+Enable or disable the ability to write the file.  On a DOS 3.2/3.3 file, this locks or unlocks the file.
+
+.topic IDH_PROPS_ACCESS_N
+Enable or disable the ability to rename the file.
+
+.topic IDH_PROPS_ACCESS_D
+Enable or disable the ability to delete the file.
+
+.topic IDH_PROPS_ACCESS_I
+If set, the file won't be displayed by the IIgs Finder and some other utilities.
+
+.topic IDH_PROPS_ACCESS_B
+Set or clear the "backup needed" flag.
+
+.topic IDH_PROPS_MODWHEN
+Date when the file was modified.
+
+.topic IDH_PROPS_TYPEDESCR
+A brief description of the file's type.  This is based on both the file type and the aux type.
+
+.topic IDH_TOPIC1269
+Select this to convert DOS text files to ProDOS format.  This involves converting the "high ASCII" text to standard ASCII.  Conversion is recommended, because if you don't do this the files may be difficult to read.
+
+.topic IDH_CONVFILE_PRESERVEDIR
+Select this to preserve empty folders on ProDOS volumes.  ShrinkIt archives don't provide a good way to store empty folders, so CiderPress will create an empty ".$$EmptyFolder" file in the archive.  This will be removed automatically if the archive is converted to a ProDOS disk image.  This option should only be enabled if you plan to convert the archive back to a disk image.
+
+.topic IDH_CONVDISK_140K
+Create a 140K image, equivalent to a 5.25" floppy disk.
+
+.topic IDH_CONVDISK_800K
+Create an 800K image, equivalent to a 3.5" floppy disk.
+
+.topic IDH_CONVDISK_1440K
+Create a 1440K image, equivalent to a 3.5" floppy disk on a PC.
+
+.topic IDH_CONVDISK_5MB
+Create a 5MB image.
+
+.topic IDH_CONVDISK_16MB
+Create a 16MB image.
+
+.topic IDH_CONVDISK_20MB
+Create a 20MB image, equivalent to a 20MB floptical disk.
+
+.topic IDH_CONVDISK_32MB
+Create a 32MB image, the largest possible ProDOS volume.  (Technically, it's one 512-byte block short of 32MB.)
+
+.topic IDH_CONVDISK_SPECIFY
+Specify the size in 512-byte blocks.  The largest possible ProDOS volume has 65535 blocks (though 65536 is allowed for compatibility).  The smallest CiderPress allows is 16 blocks.
+
+.topic IDH_PREF_EXTVIEWER_EXTS
+List file extensions that should be opened in an external viewer when double-clicked from the file list.  For example, if you want to view GIF or JPEG images stored in a ShrinkIt archive or disk image, you should put "gif; jpg; jpeg" here.
+
+.topic IDH_CONVDISK_SPECIFY_EDIT
+Specify the size in 512-byte blocks.  The largest possible ProDOS volume has 65535 blocks (though 65536 is allowed for compatibility).  The smallest CiderPress allows is 16 blocks.
+
+.topic IDH_CONVDISK_COMPUTE
+Click this to compute the size required with the currently-specified options.  The computation is performed by creating a 32MB image and examining the number of blocks used.
+
+.topic IDH_CONVDISK_SPACEREQ
+The space required by the selected set of files with the current options.  Click the "Compute" button to calculate this.
+
+.topic IDH_DEOW_CURRENT
+If selected, ProDOS files are allowed to have lower case letters and spaces in them.  This can confuse older versions of ProDOS 8 (pre-v1.8), so only select this if you're using a recent version of ProDOS.
+
+.topic IDH_TOPIC1306
+If selected, empty blocks won't actually be stored.  Instead, the ProDOS "sparse" mechanism is used to indicate the existence of the empty space.  You should generally leave this enabled, as it can save considerable space.
+
+.topic IDH_CONVDISK_VOLNAME
+Enter the desired ProDOS volume name here.  It must start with a letter, and contain nothing but letters, numbers, and dots ('.').
+
+.topic IDH_CREATEFS_DOS32
+Format the disk for DOS 3.2.
+
+.topic IDH_CREATEFS_DOS33
+Format the disk for DOS 3.3.
+
+.topic IDH_CREATEFS_PRODOS
+Format the disk for ProDOS.
+
+.topic IDH_CREATEFS_PASCAL
+Format the image with the UCSD Pascal filesystem.
+
+.topic IDH_TOPIC1320
+Create an image file but leave it completely blank.
+
+.topic IDH_CREATEFSDOS_ALLOCDOS
+If checked, the first three tracks of the disk are marked "in-use" for a DOS image.  If unchecked, two tracks are freed up but the image can't be booted.
+
+.topic IDH_CREATEFSDOS_VOLNUM
+DOS volume number (usually 254).
+
+.topic IDH_CREATEFSPRODOS_VOLNAME
+Enter the desired ProDOS volume name here.  It must start with a letter, and contain nothing but letters, numbers, and dots ('.').
+
+.topic IDH_CREATEFSPASCAL_VOLNAME
+Enter the desired Pascal volume name here.  You may use upper-case letters, numbers, and symbols other than "$=?,[#:".
+
+.topic IDH_PREF_SUCCESS_BEEP
+If set, CiderPress will play a sound when operations complete successfully.
+
+.topic IDH_PDISK_CONFIRM_FORMAT
+When enabled, the Disk Image Characteristics dialog is displayed whenever a disk image is opened.
+
+.topic IDH_PDISK_PRODOS_ALLOWLOWER
+If enabled, files added to ProDOS disk images will have lower case letters in their names when viewed with GS/OS.  ProDOS 8 older than v1.8 can't handle lower case names, so disable this option if you're using an old version of ProDOS.
+
+.topic IDH_PDISK_PRODOS_USESPARSE
+If enabled, files with empty blocks (all zeroes) will be stored more efficiently (recommended.)
+
+.topic IDH_CREATESUBDIR_BASE
+This is the name of the directory in which the new subdirectory will be created.
+
+.topic IDH_CREATESUBDIR_NEW
+Enter the name of the directory to create here.
+
+.topic IDH_RENAMEVOL_TREE
+Select the volume to rename.  (In most cases you will only have one to choose from.)
+
+.topic IDH_RENAMEVOL_NEW
+Enter the new volume name here.  For DOS disks, enter the new volume number.
+
+.topic IDH_ADDFILES_CONVEOLNONE
+Select this to disable conversion of text files.
+
+.topic IDH_ADDFILES_CONVEOLTEXT
+Select this to automatically determine which files are text files, and convert them.
+
+.topic IDH_ADDFILES_CONVEOLALL
+Select to treat all files as text files.
+
+.topic IDH_PREF_PASTE_JUNKPATHS
+If enabled, pathnames will be stripped off of files before they are pasted into an archive.  If disabled, the original directory hierarchy will be preserved.
+
+.topic IDH_EXT_CONVEOLTYPE
+Select this to treat all files of type TXT or SRC as text files.
+
+.topic IDH_ADDFILES_CONVEOLTYPE
+Select this to treat all files of type TXT or SRC as text files.
+
+.topic IDH_TWOIMG_LOCKED
+Indicates whether the "locked" flag is set.  Some emulators will use this flag to decide whether or not to treat the disk as write protected.
+
+.topic IDH_TWOIMG_DOSVOLSET
+If checked, a volume number is specified in the header.  If not checked, no number is specified, and the volume number edit field will be greyed out.
+
+.topic IDH_TWOIMG_DOSVOLNUM
+Volume number (1-254).  Some emulators use this field to emulate the sector-address-header volume number field.  Rarely useful.
+
+.topic IDH_TWOIMG_COMMENT
+The comment field is stored in the 2MG file, and can contain anything you want.
+
+.topic IDH_PDISK_OPENVOL_RO
+If enabled, the "read only" box will be checked by default on all Open Volume requests.
+
+.topic IDH_PREF_REDUCE_SHK_ERROR_CHECKS
+Disable some error checking on ShrinkIt archives.  Specifically, this ignores bad LZW/2 lengths (usually found in "bad Mac" archives) and bad data CRCs.  Leaving this enabled is a bad idea, because you may not discover corrupted data right away.
+
+.topic IDH_PDISK_OPENVOL_PHYS0
+If enabled, you will be allowed to open physical disk 0 for writing.  This is usually your Windows boot disk, so setting this is not recommended.
+
+.topic IDH_PREF_SHK_BAD_MAC
+If set, this attempts to recognize "bad Mac" archives, which have bad pathname separators ('?' instead of ':') and some bad data in the LZW area.
+

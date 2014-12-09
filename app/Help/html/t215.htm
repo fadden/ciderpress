@@ -1,0 +1,31 @@
+<HTML><HEAD>
+	
+	<TITLE>Convert Disk Image to File Archive</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="convert">
+		<PARAM NAME="Keyword" VALUE="disk image">
+		<PARAM NAME="Keyword" VALUE="file archive">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Convert Disk Image to File Archive</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This feature extracts every file it can find in a disk image and stores it in a ShrinkIt archive.&nbsp; This is similar to extracting all files with "preservation mode" enabled and re-adding them, but is faster and easier.&nbsp; It can be used in conjunction with "convert file archive to disk image" to resize a ProDOS volume.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Open a disk image and highlight the files you want to convert.&nbsp; Items will be converted in the order that they appear, so if you want to leave the order undisturbed make sure you have them sorted in the original order (<A HREF="t50.htm">more information on this</A>).&nbsp; Select "Convert to file archive..." from the Actions menu.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Preserve empty folders" feature is useful when you plan to convert the file archive back to a disk archive, perhaps after modifying some files or just choosing a different disk size.&nbsp; The ShrinkIt archive format describes a way to store empty folders, but it has never been used by any ShrinkIt utility and could cause some software to break.&nbsp; Instead, CiderPress creates standard zero-length file entries with the name ".$$EmptyFolder".&nbsp; These are automatically dropped when converting to a disk archive, but will appear as normal entries in the archive.&nbsp; This option should therefore be enabled only when you plan to convert back to a disk image.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The selected <A HREF="t29.htm">default compression</A> will be used when creating the ShrinkIt archive.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Text files on DOS 3.2/3.3 and RDOS disks (file type 'T') will be converted to ProDOS format.&nbsp; This involves stripping "high ASCII" text from the file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">For performance reasons this feature holds most of the files in memory during the operation, making this somewhat memory-intensive.&nbsp; If you are working with 32MB hard drive partitions, performance on systems with insufficient RAM may suffer.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files in embedded volumes, such as a DOS volume inside an 800K ProDOS disk, can be converted.&nbsp; However, they become just like any other file, and if the file archive is converted back to a disk image they will no longer be stored in an embedded volume.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

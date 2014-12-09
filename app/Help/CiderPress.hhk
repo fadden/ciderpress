@@ -1,0 +1,564 @@
+<HTML><HEAD>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+<!-- Sitemap 1.0 -->
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<OBJECT TYPE="text/site properties">
+</OBJECT>
+<UL>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="2img">
+	<PARAM NAME="Local" VALUE="html/t277.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="2mg">
+	<PARAM NAME="Local" VALUE="html/t277.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="access">
+	<PARAM NAME="Name" VALUE="Edit File Attributes">
+	<PARAM NAME="Local" VALUE="html/t203.htm">
+	<PARAM NAME="Name" VALUE="List - Access">
+	<PARAM NAME="Local" VALUE="html/t67.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="add">
+	<PARAM NAME="Name" VALUE="Add Files Dialog">
+	<PARAM NAME="Local" VALUE="html/t41.htm">
+	<PARAM NAME="Name" VALUE="Adding Files and Disks">
+	<PARAM NAME="Local" VALUE="html/t55.htm">
+	<PARAM NAME="Name" VALUE="Select Location">
+	<PARAM NAME="Local" VALUE="html/t257.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="add files">
+	<PARAM NAME="Local" VALUE="html/t41.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="administrator">
+	<PARAM NAME="Local" VALUE="html/t262.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="associations">
+	<PARAM NAME="Local" VALUE="html/t44.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="attributes">
+	<PARAM NAME="Local" VALUE="html/t203.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="auxtype">
+	<PARAM NAME="Local" VALUE="html/t61.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="basic">
+	<PARAM NAME="Local" VALUE="html/t112.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="blank">
+	<PARAM NAME="Local" VALUE="html/t247.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="bulk">
+	<PARAM NAME="Local" VALUE="html/t233.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="cassette">
+	<PARAM NAME="Local" VALUE="html/t111.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="cd-rom">
+	<PARAM NAME="Local" VALUE="html/t244.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="cf">
+	<PARAM NAME="Name" VALUE="Appendix - About Removable Media (CF, floppy, CD-ROM)">
+	<PARAM NAME="Local" VALUE="html/t244.htm">
+	<PARAM NAME="Name" VALUE="Opening a Volume">
+	<PARAM NAME="Local" VALUE="html/t241.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="cffa">
+	<PARAM NAME="Name" VALUE="Appendix - About Removable Media (CF, floppy, CD-ROM)">
+	<PARAM NAME="Local" VALUE="html/t244.htm">
+	<PARAM NAME="Name" VALUE="Opening a Volume">
+	<PARAM NAME="Local" VALUE="html/t241.htm">
+	<PARAM NAME="Name" VALUE="Tool - Windows Volume Copier">
+	<PARAM NAME="Local" VALUE="html/t245.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="characteristics">
+	<PARAM NAME="Local" VALUE="html/t20.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="choose folder">
+	<PARAM NAME="Local" VALUE="html/t38.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="click">
+	<PARAM NAME="Local" VALUE="html/t50.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="close">
+	<PARAM NAME="Local" VALUE="html/t51.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="commands">
+	<PARAM NAME="Name" VALUE="Available Commands">
+	<PARAM NAME="Local" VALUE="html/t48.htm">
+	<PARAM NAME="Name" VALUE="Selecting Commands">
+	<PARAM NAME="Local" VALUE="html/t52.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="comment">
+	<PARAM NAME="Local" VALUE="html/t43.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="company">
+	<PARAM NAME="Local" VALUE="html/t49.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="compatibility">
+	<PARAM NAME="Local" VALUE="html/t69.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="compress">
+	<PARAM NAME="Local" VALUE="html/t58.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="compression">
+	<PARAM NAME="Name" VALUE="Appendix - Compression Algorithms">
+	<PARAM NAME="Local" VALUE="html/t69.htm">
+	<PARAM NAME="Name" VALUE="List - Format">
+	<PARAM NAME="Local" VALUE="html/t63.htm">
+	<PARAM NAME="Name" VALUE="List - Packed">
+	<PARAM NAME="Local" VALUE="html/t66.htm">
+	<PARAM NAME="Name" VALUE="List - Ratio">
+	<PARAM NAME="Local" VALUE="html/t65.htm">
+	<PARAM NAME="Name" VALUE="Preferences - Compression">
+	<PARAM NAME="Local" VALUE="html/t29.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="convert">
+	<PARAM NAME="Name" VALUE="Convert Disk Image to File Archive">
+	<PARAM NAME="Local" VALUE="html/t215.htm">
+	<PARAM NAME="Name" VALUE="Convert File Archive to Disk Image">
+	<PARAM NAME="Local" VALUE="html/t216.htm">
+	<PARAM NAME="Name" VALUE="Tool - Bulk Disk Image Converter">
+	<PARAM NAME="Local" VALUE="html/t233.htm">
+	<PARAM NAME="Name" VALUE="Tool - Disk Image Converter">
+	<PARAM NAME="Local" VALUE="html/t187.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="converter">
+	<PARAM NAME="Name" VALUE="Appendix - File Format Converters">
+	<PARAM NAME="Local" VALUE="html/t22.htm">
+	<PARAM NAME="Name" VALUE="Extracting Files">
+	<PARAM NAME="Local" VALUE="html/t39.htm">
+	<PARAM NAME="Name" VALUE="Preferences - File Viewer">
+	<PARAM NAME="Local" VALUE="html/t23.htm">
+	<PARAM NAME="Name" VALUE="Using the File Viewer">
+	<PARAM NAME="Local" VALUE="html/t25.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="copy">
+	<PARAM NAME="Local" VALUE="html/t273.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="crc">
+	<PARAM NAME="Local" VALUE="html/t56.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="credits">
+	<PARAM NAME="Local" VALUE="html/t24.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="date">
+	<PARAM NAME="Local" VALUE="html/t62.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="delete">
+	<PARAM NAME="Local" VALUE="html/t57.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="diassembly">
+	<PARAM NAME="Local" VALUE="html/t109.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="disk">
+	<PARAM NAME="Name" VALUE="Appendix - About Disk Images">
+	<PARAM NAME="Local" VALUE="html/t18.htm">
+	<PARAM NAME="Name" VALUE="Appendix - About Removable Media (CF, floppy, CD-ROM)">
+	<PARAM NAME="Local" VALUE="html/t244.htm">
+	<PARAM NAME="Name" VALUE="Preferences - Disk Image">
+	<PARAM NAME="Local" VALUE="html/t259.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="disk editor">
+	<PARAM NAME="Local" VALUE="html/t13.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="disk image">
+	<PARAM NAME="Name" VALUE="Appendix - About Disk Images">
+	<PARAM NAME="Local" VALUE="html/t18.htm">
+	<PARAM NAME="Name" VALUE="Convert Disk Image to File Archive">
+	<PARAM NAME="Local" VALUE="html/t215.htm">
+	<PARAM NAME="Name" VALUE="Convert File Archive to Disk Image">
+	<PARAM NAME="Local" VALUE="html/t216.htm">
+	<PARAM NAME="Name" VALUE="Disk Image Characteristics">
+	<PARAM NAME="Local" VALUE="html/t20.htm">
+	<PARAM NAME="Name" VALUE="Disk Image Creator">
+	<PARAM NAME="Local" VALUE="html/t247.htm">
+	<PARAM NAME="Name" VALUE="Tool - Bulk Disk Image Converter">
+	<PARAM NAME="Local" VALUE="html/t233.htm">
+	<PARAM NAME="Name" VALUE="Tool - Disk Image Converter">
+	<PARAM NAME="Local" VALUE="html/t187.htm">
+	<PARAM NAME="Name" VALUE="Tool - SST Image Merge">
+	<PARAM NAME="Local" VALUE="html/t201.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="disks">
+	<PARAM NAME="Local" VALUE="html/t55.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="dos">
+	<PARAM NAME="Local" VALUE="html/t21.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="embedded">
+	<PARAM NAME="Local" VALUE="html/t21.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="eol">
+	<PARAM NAME="Name" VALUE="Extracting Files">
+	<PARAM NAME="Local" VALUE="html/t39.htm">
+	<PARAM NAME="Name" VALUE="Tool - EOL Scanner">
+	<PARAM NAME="Local" VALUE="html/t272.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="extension">
+	<PARAM NAME="Local" VALUE="html/t45.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="extract">
+	<PARAM NAME="Local" VALUE="html/t39.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="faddenSoft">
+	<PARAM NAME="Local" VALUE="html/t46.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="features">
+	<PARAM NAME="Local" VALUE="html/t47.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="file archive">
+	<PARAM NAME="Name" VALUE="Convert Disk Image to File Archive">
+	<PARAM NAME="Local" VALUE="html/t215.htm">
+	<PARAM NAME="Name" VALUE="Convert File Archive to Disk Image">
+	<PARAM NAME="Local" VALUE="html/t216.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="file converter">
+	<PARAM NAME="Local" VALUE="html/t23.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="file format">
+	<PARAM NAME="Local" VALUE="html/t22.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="file list">
+	<PARAM NAME="Local" VALUE="html/t53.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="file type">
+	<PARAM NAME="Name" VALUE="Appendix - File Attribute Preservation">
+	<PARAM NAME="Local" VALUE="html/t68.htm">
+	<PARAM NAME="Name" VALUE="Edit File Attributes">
+	<PARAM NAME="Local" VALUE="html/t203.htm">
+	<PARAM NAME="Name" VALUE="List - File Type">
+	<PARAM NAME="Local" VALUE="html/t60.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="file viewer">
+	<PARAM NAME="Name" VALUE="Preferences - File Viewer">
+	<PARAM NAME="Local" VALUE="html/t23.htm">
+	<PARAM NAME="Name" VALUE="Using the File Viewer">
+	<PARAM NAME="Local" VALUE="html/t25.htm">
+	<PARAM NAME="Name" VALUE="Viewing Files">
+	<PARAM NAME="Local" VALUE="html/t54.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="filename">
+	<PARAM NAME="Local" VALUE="html/t45.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="files">
+	<PARAM NAME="Local" VALUE="html/t28.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="filesystem separator">
+	<PARAM NAME="Local" VALUE="html/t42.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="floppy">
+	<PARAM NAME="Name" VALUE="Appendix - About Removable Media (CF, floppy, CD-ROM)">
+	<PARAM NAME="Local" VALUE="html/t244.htm">
+	<PARAM NAME="Name" VALUE="Tool - Windows Volume Copier">
+	<PARAM NAME="Local" VALUE="html/t245.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="folder">
+	<PARAM NAME="Local" VALUE="html/t263.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="format">
+	<PARAM NAME="Local" VALUE="html/t63.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="general">
+	<PARAM NAME="Local" VALUE="html/t19.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="help">
+		<PARAM NAME="Local" VALUE="html/t284.htm">
+</OBJECT>
+<UL>	<LI><OBJECT TYPE="text/sitemap">
+		<PARAM NAME="Keyword" VALUE="faq">
+		<PARAM NAME="Local" VALUE="html/t284.htm">
+	</OBJECT>
+</UL>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="image">
+	<PARAM NAME="Name" VALUE="Appendix - About Disk Images">
+	<PARAM NAME="Local" VALUE="html/t18.htm">
+	<PARAM NAME="Name" VALUE="Preferences - Disk Image">
+	<PARAM NAME="Local" VALUE="html/t259.htm">
+	<PARAM NAME="Name" VALUE="Tool - Windows Volume Copier">
+	<PARAM NAME="Local" VALUE="html/t245.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="import">
+	<PARAM NAME="Name" VALUE="Import BASIC Program">
+	<PARAM NAME="Local" VALUE="html/t112.htm">
+	<PARAM NAME="Name" VALUE="Import From Cassette">
+	<PARAM NAME="Local" VALUE="html/t111.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="info">
+	<PARAM NAME="Local" VALUE="html/t258.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="list">
+	<PARAM NAME="Local" VALUE="html/t50.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="listing">
+	<PARAM NAME="Local" VALUE="html/t109.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="locked">
+	<PARAM NAME="Local" VALUE="html/t67.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="menu">
+	<PARAM NAME="Local" VALUE="html/t48.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="merge">
+	<PARAM NAME="Local" VALUE="html/t201.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="mod date">
+	<PARAM NAME="Local" VALUE="html/t62.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="modification">
+	<PARAM NAME="Local" VALUE="html/t62.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="monitor">
+	<PARAM NAME="Local" VALUE="html/t109.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="new archive">
+	<PARAM NAME="Local" VALUE="html/t51.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="new folder">
+	<PARAM NAME="Local" VALUE="html/t38.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="nufxlib">
+	<PARAM NAME="Local" VALUE="html/t24.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="open">
+	<PARAM NAME="Name" VALUE="Opening a Volume">
+	<PARAM NAME="Local" VALUE="html/t241.htm">
+	<PARAM NAME="Name" VALUE="Opening, Closing, and Creating Files">
+	<PARAM NAME="Local" VALUE="html/t51.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="packed">
+	<PARAM NAME="Local" VALUE="html/t66.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="paste">
+	<PARAM NAME="Local" VALUE="html/t273.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="pathname">
+	<PARAM NAME="Local" VALUE="html/t59.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="permissions">
+	<PARAM NAME="Local" VALUE="html/t67.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="preferences">
+	<PARAM NAME="Name" VALUE="Preferences - Compression">
+	<PARAM NAME="Local" VALUE="html/t29.htm">
+	<PARAM NAME="Name" VALUE="Preferences - Disk Image">
+	<PARAM NAME="Local" VALUE="html/t259.htm">
+	<PARAM NAME="Name" VALUE="Preferences - File Viewer">
+	<PARAM NAME="Local" VALUE="html/t23.htm">
+	<PARAM NAME="Name" VALUE="Preferences - Files">
+	<PARAM NAME="Local" VALUE="html/t28.htm">
+	<PARAM NAME="Name" VALUE="Preferences - General">
+	<PARAM NAME="Local" VALUE="html/t19.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="preservation">
+	<PARAM NAME="Local" VALUE="html/t68.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="printing">
+	<PARAM NAME="Local" VALUE="html/t53.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="properties">
+	<PARAM NAME="Local" VALUE="html/t277.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="ratio">
+	<PARAM NAME="Local" VALUE="html/t65.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="raw">
+	<PARAM NAME="Local" VALUE="html/t241.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="re-compress">
+	<PARAM NAME="Local" VALUE="html/t58.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="reformat">
+	<PARAM NAME="Local" VALUE="html/t22.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="register">
+	<PARAM NAME="Local" VALUE="html/t49.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="registration">
+	<PARAM NAME="Name" VALUE="Entering Registration Data">
+	<PARAM NAME="Local" VALUE="html/t49.htm">
+	<PARAM NAME="Name" VALUE="How (and Why) to Register">
+	<PARAM NAME="Local" VALUE="html/t46.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="rename">
+	<PARAM NAME="Name" VALUE="Rename Entry">
+	<PARAM NAME="Local" VALUE="html/t42.htm">
+	<PARAM NAME="Name" VALUE="Renaming a Volume">
+	<PARAM NAME="Local" VALUE="html/t268.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="scan">
+	<PARAM NAME="Local" VALUE="html/t272.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="size">
+	<PARAM NAME="Local" VALUE="html/t64.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="SST">
+	<PARAM NAME="Local" VALUE="html/t201.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="subdirectory">
+	<PARAM NAME="Local" VALUE="html/t263.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="sub-volume">
+	<PARAM NAME="Local" VALUE="html/t21.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="test">
+	<PARAM NAME="Local" VALUE="html/t56.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="type">
+	<PARAM NAME="Name" VALUE="List - Aux Type">
+	<PARAM NAME="Local" VALUE="html/t61.htm">
+	<PARAM NAME="Name" VALUE="List - File Type">
+	<PARAM NAME="Local" VALUE="html/t60.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="uncompressed size">
+	<PARAM NAME="Local" VALUE="html/t64.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="unlocked">
+	<PARAM NAME="Local" VALUE="html/t67.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="using">
+	<PARAM NAME="Local" VALUE="html/t48.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="view">
+	<PARAM NAME="Local" VALUE="html/t54.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="viewer">
+	<PARAM NAME="Name" VALUE="Appendix - File Format Converters">
+	<PARAM NAME="Local" VALUE="html/t22.htm">
+	<PARAM NAME="Name" VALUE="Using the File Viewer">
+	<PARAM NAME="Local" VALUE="html/t25.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="volume">
+	<PARAM NAME="Name" VALUE="Appendix - About Removable Media (CF, floppy, CD-ROM)">
+	<PARAM NAME="Local" VALUE="html/t244.htm">
+	<PARAM NAME="Name" VALUE="Appendix - Embedded DOS Volumes">
+	<PARAM NAME="Local" VALUE="html/t21.htm">
+	<PARAM NAME="Name" VALUE="Opening a Volume">
+	<PARAM NAME="Local" VALUE="html/t241.htm">
+	<PARAM NAME="Name" VALUE="Tool - Windows Volume Copier">
+	<PARAM NAME="Local" VALUE="html/t245.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="volume number">
+	<PARAM NAME="Local" VALUE="html/t277.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="wav">
+	<PARAM NAME="Local" VALUE="html/t111.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="Welcome">
+	<PARAM NAME="Local" VALUE="html/t10.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="win2k">
+	<PARAM NAME="Local" VALUE="html/t262.htm">
+</OBJECT>
+<LI><OBJECT TYPE="text/sitemap">
+	<PARAM NAME="Keyword" VALUE="winxp">
+	<PARAM NAME="Local" VALUE="html/t262.htm">
+</OBJECT>
+</UL>
+</BODY></HTML>

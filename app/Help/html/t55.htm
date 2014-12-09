@@ -1,0 +1,39 @@
+<HTML><HEAD>
+	
+	<TITLE>Adding Files and Disks</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="add">
+		<PARAM NAME="Keyword" VALUE="disks">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Adding Files and Disks</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Add files and folders to an archive by selecting "Add files..." from the "Actions" menu.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">In most cases you will immediately be asked to choose the files you want to add.&nbsp; See the explanation of the <A HREF="t41.htm">"Add Files" dialog</A> for details on what to do next.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you're adding files to a ProDOS disk that has subdirectories, or to an image with sub-volumes (e.g. CFFA or Macintosh partition image), you will need to select which disk and which subdirectory you want to add files to.&nbsp; There are two ways to do this.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">The first way is to click on the name of an existing subdirectory, or the ProDOS volume directory.&nbsp; If CiderPress sees that you have a single subdirectory selected, or if there's only one place the files could possibly go, the files will be added there.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">If you don't have a subdirectory selected, and there's more than one place where files could be added, you will be given the opportunity to <A HREF="t257.htm">choose the location</A> from a tree of possible locations.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">In either case, the subdirectory chosen will show up in the "storage prefix" box in the next screen.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files added to a ProDOS disk get file type "NON" and auxtype $0000 unless one of the file attribute preservation options is enabled.&nbsp; DOS 3.3 disks get file types in a similar way, but files that aren't 'A', 'I', or 'T' will be set to type 'B'.&nbsp; Any non-text file over 64K will get file type 'S'.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">All files added to a Pascal disk get the "PDA" type (Pascal Data file), unless they have a ProDOS type that matches one of the Pascal values.&nbsp; (Text files added to a Pascal disk become PDA, not PTX.&nbsp; This may change in a future release.)&nbsp; Some parts of the UCSD Pascal system rely on the filename suffix rather than the file type, e.g. "file.text" vs. "file.code", so changing the file's type may not have an effect on some applications.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Disk images added to a ShrinkIt archive are added one at a time.&nbsp; If the disk image format can't be determined, you will be asked to specify the details on a "<A HREF="t20.htm">disk image characteristics</A>" dialog.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If an entry already exists, you will be given the opportunity to decide if you want to overwrite it.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">When adding "forked" files, you need to add the data and resource forks at the same time.&nbsp; If you try to add them in two steps, CiderPress will assume that they are parts from different files that happen to have the same name, and will offer to replace the existing file with the new one instead of combining the two together.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Tip: if disk images were extracted with <A HREF="t68.htm">file attribute preservation</A> enabled, they can be added en masse using the "Add files..." mechanism.&nbsp; Just tell CiderPress to make use of the preservation sequences, and the disk images will be detected automatically.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

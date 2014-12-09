@@ -1,0 +1,39 @@
+<HTML><HEAD>
+	
+	<TITLE>Copy and Paste</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="copy">
+		<PARAM NAME="Keyword" VALUE="paste">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Copy and Paste</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress can use the Windows clipboard to copy Apple II files around.&nbsp; You can copy files from any disk image or file archive that CiderPress can open, and paste them into NuFX (ShrinkIt) archives and writeable disk images (currently DOS, ProDOS, and Pascal are supported).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">To copy files, open the archive, select the files you want from the file list, and use "Edit-&gt;Copy".&nbsp; (Or, right click and choose "Copy".&nbsp; Or hit Ctrl-C.)&nbsp; The files will be extracted from the archive or disk image and placed on the Windows clipboard.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Next, open the archive where you want the files to go.&nbsp; If it's a ProDOS disk image, select the directory where you want the files to appear.&nbsp; Select "Edit-&gt;Paste".&nbsp; (Or right click and choose "Paste".&nbsp; Or hit Ctrl-V.)&nbsp; The files will be added.&nbsp; You can also have two copies of CiderPress open, and copy from one and paste to the other.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you're pasting to a disk image with sub-volumes, or pasting to a ProDOS disk with subdirectories and didn't select a subdirectory, you will be asked to choose where the files will go.&nbsp; This is similar to the way "add files" works -- if the destination isn't obvious, CiderPress will ask.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Copying and and pasting is meant to be simple, but there's a lot of complexity underneath it.&nbsp; Here are some things you should be aware of:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">Files copied from ProDOS volumes are extracted with their full paths, e.g. "subdir1:subdir2:foo.txt".&nbsp; You may choose to strip the subdirectories off with a <A HREF="t19.htm">global preference</A>.&nbsp; This determines whether pasting "subdir1:subdir2:foo.txt" into "subdir3" yields "subdir3:foo.txt" or "subdir3:subdir1:subdir2:foo.txt".&nbsp; Files pasted to DOS or Pascal disks have their paths stripped automatically.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Unlike the "add files" approach, which prompts you when new filenames clash with existing files, "paste" automatically handles conflicting files for you.&nbsp; If you paste a file called "FOO" to the same disk image twice, the second one will be called "FOO1".&nbsp; If you paste files with the same name multiple times to a NuFX archive, you will simply have multiple entries called "FOO", because NuFX allows duplicate filenames.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Files converted between different operating systems will have their file types converted.&nbsp; The mapping of DOS and Pascal types to ProDOS types is shown <A HREF="t60.htm">here</A>.&nbsp; Files pasted to DOS disks that don't have a direct file type conversion will become 'B' if they are less than 64K, or 'S' if they are more.&nbsp; ProDOS "SRC" files become 'T'.&nbsp; Most files converted to Pascal disks become "PDA" (generic data).&nbsp; CiderPress does not currently convert in and out of Pascal Text (PTX) format.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">DOS text files use "high ASCII" format.&nbsp; Text files pasted to and from DOS volumes will be converted appropriately.&nbsp; (Text files copied from one DOS volume to another are left alone, not converted twice.)&nbsp; Because all Apple II formats use carriage returns to indicate the ends of lines, no end-of-line conversion is done when pasting files.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">The comments stored in NuFX archives are not copied with the files.&nbsp; (This may be fixed in a future release.)</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Copying and pasting files from Windows Explorer is not currently supported.&nbsp; You can, however, paste into an application such as Notepad to get a tab-delimited copy of the file list (pathname, file type, aux type, etc).&nbsp; If you paste this into a spreadsheet, such as Microsoft Excel, each field gets its own row and column.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Selecting a directory on a ProDOS disk copies the directory, not the directory and all of its contents.&nbsp; Pasting the directory into a ProDOS disk image creates an empty directory.&nbsp; If a directory with that name already exists, nothing happens.&nbsp; NuFX archives do not store directories, so pasting a directory into a NuFX archive has no effect.&nbsp; You cannot copy the volume directory of a ProDOS disk, though there is no harm in trying.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Resource forks are not pasted to DOS or Pascal disks.&nbsp; If you paste a forked file, only the data fork is added.&nbsp; (All forked files on ProDOS disks have a data fork, even if it's just an empty one, but forked files in NuFX archives may have just the resource fork.&nbsp; Pasting a forked file to a DOS disk may or may not actually create a file.)</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Some DOS games were stored in 'B' files with a short "loader" segment.&nbsp; The "loader" would start immediately and load the rest of the game itself.&nbsp; CiderPress obeys the shorter length value, and as a result will not copy the entire file (as evidenced by the pasted file being significantly smaller than the original).</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Files are copied and pasted in the order in which they appear in the file list.&nbsp; You can alphabetize your disks by sorting the list by pathname and copying &amp; pasting the files to a new disk.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Damaged files are not copied to the clipboard.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">In Win98, copying 16MB or more to the clipboard causes the system to lock up.&nbsp; CiderPress therefore limits you to copying less than 16MB of data under Win98/ME.&nbsp; Because of overhead added to the clipboard data, it's not possible to copy 16MB files (the largest possible under ProDOS) to the clipboard.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

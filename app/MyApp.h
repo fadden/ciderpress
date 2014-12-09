@@ -31,6 +31,16 @@ public:
     const WCHAR* GetExeFileName(void) const { return fExeFileName; }
     const WCHAR* GetExeBaseName(void) const { return fExeBaseName; }
 
+    /*
+     * Handles pop-up help requests.  Call this from OnHelpInfo.
+     */
+    static BOOL HandleHelpInfo(HELPINFO* lpHelpInfo);
+
+    /*
+     * Handles help topic requests.  Call this from OnHelp.
+     */
+    static void HandleHelp(CWnd* pWnd, DWORD topicId);
+
 private:
     virtual BOOL InitInstance(void) override;
     virtual BOOL OnIdle(LONG lCount) override;
@@ -41,6 +51,15 @@ private:
      * If "name" is NULL, we show the EXE info.
      */
     void LogModuleLocation(const WCHAR* name);
+
+    /*
+     * This holds pairs of control IDs and popup help IDs, for use by
+     * HtmlHelp HH_TP_HELP_WM_HELP.
+     *
+     * The control and help ID values are identical just to make life
+     * simpler, but we need a table anyway.
+     */
+    static const DWORD PopUpHelpIds[];
 
     CString     fExeFileName;
     CString     fExeBaseName;

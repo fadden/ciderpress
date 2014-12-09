@@ -1,0 +1,57 @@
+<HTML><HEAD>
+	
+	<TITLE>Preferences - General</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="general">
+		<PARAM NAME="Keyword" VALUE="preferences">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">General Preferences</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can access General Preferences by selecting "Preferences..." from the "Edit" menu.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This screen is divided into a number of different sections.&nbsp; Click on the tabs near the top to change to a different set of preferences.&nbsp; Click on "OK" to accept the changes and close the dialog, "Apply" to accept the changes without closing the dialog, and "Cancel" to throw away any changes you have made since the last "Apply".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Columns</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Place check marks next to the columns you want to see on the screen, and remove them from those you don't.&nbsp; ("Disabled" columns are actually just zero pixels wide, and can be hidden or restored by clicking on the dividers in the column headers and dragging.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Clicking on the "Defaults" button restores the displayed columns to the default set, and resizes all columns appropriately for the current screen dimensions and font choices.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>NuFX (ShrinkIt) archives</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Options that only affect ShrinkIt archives.&nbsp; If you select "Mimic ShrinkIt quirks", ShrinkIt compatibility mode will be enabled in NufxLib.&nbsp; This has the following effects:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">The first file added to an archive will have an empty 200-byte comment attached.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">All files compressed with Dynamic LZW/1 or /2 will be one byte longer.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Files smaller than 512 bytes are never compressed.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Archives with SEA wrappers have an extra byte added to the end.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There's really no value in enabling any of these, but the archives that are created very closely resemble those created by GS/ShrinkIt.&nbsp; In theory, a poorly-written application might depend on these quirks, and have compatibility problems with CiderPress if they weren't enabled.&nbsp; In practice, everything tested so far works just fine without needing to have these enabled.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you select "Reduce error checking", CiderPress will ignore bad CRCs and some forms of damage to compressed data.&nbsp; Enabling this is generally a bad idea, because it means you will not be notified when corrupted data is found.&nbsp; In some rare circumstances, however, it can allow you to recover some data from damaged or poorly-formed archives.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">See the NufxLib API documentation on </FONT><A HREF="http://www.nulib.com/"><FONT FACE="MS Sans Serif" SIZE="2">www.nulib.com</A> for more details.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Filename munging</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Enabling "Lower-case DOS 3.3 filenames" causes the names of files pulled from DOS 3.3 disks to be converted to a mix of upper and lower case, as if they were book titles.&nbsp; The mixed-case names will be used when the files are extracted, so this is best used when preserving the original names is not important.&nbsp; The flag does not, however, affect the names of files added to DOS disks (which are always upper-case-only).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">"Show spaces as underscores" does exactly what it says: all spaces in all files are converted to underscores.&nbsp; This is similar to the way MP3 files are often distributed, and is useful for files that will be placed directly on a web server.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>File type associations</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Clicking this button brings up the <A HREF="t44.htm">Edit File Associations</A> dialog.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Miscellaneous</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Strip pathnames when pasting files" flag determines how the paths of ProDOS files are handled when pasting files from the clipboard.&nbsp; If set, the leading path is removed before the files are pasted.&nbsp; You should set this flag if you just want to copy files around, but clear it if you're moving entire subdirectories and want to retain the hierarchy.&nbsp; The flag affects pasting, not copying, so you don't need to re-copy files after changing this flag.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If "beep when operations complete successfully" is checked, CiderPress plays a sound when various operations (e.g. adding or extracting files) complete successfully.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

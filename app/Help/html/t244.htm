@@ -1,0 +1,64 @@
+<HTML><HEAD>
+	
+	<TITLE>Appendix - About Removable Media (CF, floppy, CD-ROM)</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="cd-rom">
+		<PARAM NAME="Keyword" VALUE="cf">
+		<PARAM NAME="Keyword" VALUE="cffa">
+		<PARAM NAME="Keyword" VALUE="disk">
+		<PARAM NAME="Keyword" VALUE="floppy">
+		<PARAM NAME="Keyword" VALUE="volume">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">About Removable Media (CF, floppy, CD-ROM, external HD)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The ability to move data between a PC and an Apple II on removable media can be very handy.&nbsp; With a CFFA card installed in an Apple II, and a CF card reader on a PC, you can move entire hard drive volumes around easily.&nbsp; Floppy disks are easier to insert and eject on the Apple II, but hold less.&nbsp; In both cases you need suitable hardware on both the Apple II side and the PC side.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress does not detect media ejections or swapping.&nbsp; Do not eject disks or CF cards while CiderPress has them open.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Floppy Disks</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Formatting a 3.5" disk with ProDOS can be very useful if you have a way to read the disk on an Apple II or Macintosh.&nbsp; Newer Macs, and Apple IIs equipped with appropriate hardware, can read and write PC-formatted 3.5" floppies.&nbsp; An Apple II requires a SuperDrive (with controller card), PC Transporter, or Tulin "floptical" drive.&nbsp; Without one of these, it's not possible to read PC disks.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Inserting a ProDOS disk into a Windows machine can cause some consternation for the OS.&nbsp; For example, the capacity of a PC floppy disk cannot easily be determined.&nbsp; There are BIOS calls to retrieve the type of drive, but not the type of media currently inserted.&nbsp; Common practice is to examine sector counts stored in the floppy boot sector.&nbsp; Since ProDOS and HFS floppies do not follow PC boot sector conventions, the size of a floppy disk must be determined by other means.&nbsp; Specifically, accessing blocks to see which calls succeed and which fail.&nbsp; A disk with bad blocks could be interpreted as smaller than it actually is.&nbsp; Windows may actually refuse to do a "quick format" on a ProDOS formatted disk, because it's unable to tell how large it should be.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress has been tested with 720KB and 1.4MB 3.5" floppy disks.&nbsp; It will not work with 800K or 1.6MB 3.5" floppies from an Apple II or Macintosh, because the drive in a PC is not capable of reading them.&nbsp; For similar reasons, it cannot read 140KB 5.25" floppies created on an Apple II.&nbsp; CiderPress has not been tested with 360KB or 1.2MB 5.25" floppy disks, because they're no longer used in the PC world, and they can't be read on an Apple II or Macintosh.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress does not "format" floppy disks or other volumes directly.&nbsp; Instead, open the disk you want to format with the <A HREF="t245.htm">Volume Copier</A>, and copy a ProDOS volume onto it.&nbsp; If you don't have a ProDOS disk image of the appropriate size, create one with the <A HREF="t247.htm">Disk Image Creator</A> first.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Compact Flash Cards</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Richard Dreher's CFFA card for the Apple II created the ability to access inexpensive high-capacity compact flash card media as a hard drive.&nbsp; Because the cards are relatively easy to install, and CF card readers are common on PCs (especially laptops), they make an ideal way to transport large quantities of information.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">As with floppies, CF cards formatted for ProDOS or HFS are not handled well by Windows.&nbsp; Disks can be accessed as "physical" or "logical" volumes.&nbsp; "Physical" disks correspond to physically connected devices.&nbsp; Block 0 holds a partition table for the rest of the disk.&nbsp; ProDOS and HFS don't have a Windows-style partition table, so Windows can become very confused when a non-Windows CF card is plugged in.&nbsp; "Logical" volumes, such as "C:", are created by the device driver.&nbsp; For a disk device they are generated from the partition table, so a CF card may have one or more logical volumes that correspond to part or all of the physical storage.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Long story short: whether or not your CF card is viewable in Windows depends on what hardware and drivers you're using to access the card.&nbsp; You may be able to access it as a physical disk, logical disk, both, or neither.&nbsp; Sometimes under Win98 the ASPI driver will find it.&nbsp; See "<A HREF="t241.htm">Opening a Volume</A>" for additional information.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Assuming it's possible to access the CF card, figuring out what's on it can be tricky.&nbsp; A CF card can be formatted with 4 partitions or 8 depending on the firmware setting on the CFFA card in the Apple II.&nbsp; With a GS/OS driver, the 4-partition mode can actually hold 6 partitions.&nbsp; If you are using a card larger than 128MB, CiderPress will have to make some educated guesses as to where your partitions are and what's in them.&nbsp; For cards 1GB and smaller, it usually guesses right.&nbsp; However, you can override its choice by enabling "<A HREF="t259.htm">Confirm disk image format</A>" and selecting an alternate partitioning scheme when opening the volume.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">One caution: if you format a disk for ProDOS, and then format it with your camera, you may find that it still appears to have some ProDOS files on it.&nbsp; (CiderPress should identify it as an MS-DOS "FAT" filesystem, but if the camera uses a non-standard boot block it may not be detected correctly.)&nbsp; Some files may appear to be damaged.&nbsp; This is because the camera's format routine didn't zero out all of the blocks, so some of the ProDOS directory structure is still present.&nbsp; Attempting to read or write files to the volume as if it were a ProDOS disk is not recommended.&nbsp; The safe way to switch between Apple II and Windows formatting is to use the image-copy tool to overwrite the entire CF card.&nbsp; Be aware that formatting with a camera can reduce the number of blocks available on the drive, which will make copying images onto it impossible: the image copier only works if the destination volume is at least as large as the source volume.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The speed at which CF cards are read or written depends primarly on your card reader.&nbsp; USB2.0 readers will be faster than USB1.x, and Firewire, PCMCIA, or IDE interfaces will usually be faster than USB2.0.&nbsp; Also, some cards have a higher speed rating than others.&nbsp; Speeds of 200-400KB/sec are typical when copying from a USB1.x device, while writing to it may reach 700KB/sec.&nbsp; Writing tends to be faster than reading because of block caching.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress assumes that the first partition on a CFFA card will be ProDOS or HFS.&nbsp; If it's not, the image will not be detected as CFFA.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>CD-ROM</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CD-ROMs for Apple IIs and Macintoshes were created with a partition table identical to those found on Macintosh hard drives.&nbsp; This allows a CD-ROM to have several ProDOS and HFS partitions.&nbsp; Happily, the format is well defined, and there is no ambiguity in the size or location of each partition.&nbsp; Occasionally the partition information is wrong, and an "Apple_Extra" partition refers to parts of the disc outside the recorded area.&nbsp; In such cases CiderPress will trim its internal copy of the map to fit what's actually on the disc.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Access to files on CD-ROMs can be slow, especially on ProDOS volumes.&nbsp; Unlike ISO-9660 discs, the file layout on Apple II CD-ROMs is not optimized for sequential accesses, and the drive head has to seek to a new position often.&nbsp; If the speed becomes a problem, extract the CD-ROM into a ".ISO" image file and use that instead.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress does not have the ability to write to CD-Rs.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Hard Drives</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Apple II or Macintosh hard drives can be connected, assuming you have the necessary hardware (e.g. SCSI interface).&nbsp; Non-SCSI drives, such as the Applied Ingenuity InnerDrive or Vulcan drives, may not be formatted with the Macintosh partioning scheme and hence may be inaccessible.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Figuring out the size of a hard drive is a bit tricky under Windows, which uses different interfaces in different versions of the OS.&nbsp; Some interfaces return different answers depending on what version you're running.&nbsp; CiderPress currently scans the drive to determine its size.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

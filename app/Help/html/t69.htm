@@ -1,0 +1,62 @@
+<HTML><HEAD>
+	
+	<TITLE>Appendix - Compression Algorithms</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="compatibility">
+		<PARAM NAME="Keyword" VALUE="compression">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Compression Algorithms</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress supports every compression algorithm listed in the NuFX and Binary II specifications, as well as those listed in the "NuFX addendum" on </FONT><A HREF="http://www.nulib.com/"><FONT FACE="MS Sans Serif" SIZE="2">www.nulib.com</A></FONT><FONT FACE="MS Sans Serif" SIZE="2">.&nbsp; The actual compression code lives in the NufxLib library, however, and the library can be built with some or all of the compression code disabled.&nbsp; You can see which algorithms are enabled by going to the <A HREF="t29.htm">Compression Preferences</A> screen.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>No compression</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Exactly what it says: the contents are not compressed in any way.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Squeeze (sometimes "SQueeze")</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This format became popular under CP/M with the "sq" and "usq" commands, which created ".QQ" or ".QQQ" files.&nbsp; These appeared on the Apple II as Donald Elton's "sq3" and "usq2" utilities, and un-squeezing became part of Floyd Zink's "BLU" utility.&nbsp; The algorithm, a combination of RLE (Run-Length Encoding) and Huffman encoding, is generally inferior to LZ-based techniques, and Squeeze fell out of common use after ShrinkIt was released.&nbsp; It was, however, an official part of the NuFX format specification.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Most NuFX utilities can handle Squeezed files, but ProDOS 8 ShrinkIt has a bug that prevents it from unpacking the files correctly.&nbsp; GS/ShrinkIt handles them correctly.&nbsp; No Apple II utility actually creates Squeezed NuFX archives.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Dynamic LZW/1</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Originally designed to compress tracks on 5.25" disks, the original ShrinkIt compression algorithm grabs a 4K chunk of data, compresses it with RLE, and then compresses the result with LZW (Lempel-Ziv-Welch).&nbsp; A 16-bit CRC is computed on each compressed chunk.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">All NuFX utilities can handle this algorithm.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Dynamic LZW/2</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This is a slightly improved version of the original, first introduced in GS/ShrinkIt.&nbsp; All NuFX utilities can handle this algorithm, making this the best choice for compressing Apple II files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>LZC-12</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Before ShrinkIt was born, UNIX systems had the "compress" command.&nbsp; A fairly pure implementation of the LZW algorithm, "compress" was widely used until the Unisys GIF/LZW controversy sped adoption of the superior "gzip".&nbsp; LZC-12 produces output equivalent to "compress -b12", i.e. LZW with a maximum code length of 12 bits.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The algorithm was first supported in NuLib, and can be unpacked by NuLib, NuLib2, and GS/ShrinkIt.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>LZC-16</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Just like LZC-12, but the maximum code length is increased to 16 bits.&nbsp; Usually offers improved compression over LZC-12, though it's only noticeable on larger files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Same compatibility as LZC-12.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Deflate</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This algorithm uses LZH (Lempel-Ziv + Huffman), which is in a different LZ family from LZW.&nbsp; The algorithm became popular in archive utilities like LHArc, and eventually became the standard PKZIP archive format.&nbsp; Some of the authors of the free "Info-Zip" utility decided to write a replacement for UNIX "compress" called GNU Zip ("gzip" for short), using the same algorithm.&nbsp; It quickly became popular, and "deflate" is now defined as an Internet standard (RFC 1951), and is used for everything from file distribution to PNG graphics.&nbsp; It was first implemented for NuFX archives in NuLib2 v1.1, and is the best general-purpose compression that CiderPress has to offer.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Unfortunately, few NuFX utilities can unpack this format.&nbsp; It is unlikely you will ever be able to access "deflated" files on an Apple II.&nbsp; Only use this for archives that will only be accessed from CiderPress or NuLib2.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Bzip2</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This is a relatively new format that relies on the BWT (Burrows-Wheeler Transform) algorithm.&nbsp; It is slower and more memory-intensive than "deflate", but does exceptionally well on large collections of text files or source code.&nbsp; It is becoming the standard way to compress source code distributed on the Internet.&nbsp; It is generally inferior to "deflate" on Apple II files, so unless you have an 800K disk image full of text files there's not much point in using it.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">It was first implemented for NuFX archives in NuLib2 v1.1, and it is unlikely to be supported by anything else, so it's usually disabled in NufxLib.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

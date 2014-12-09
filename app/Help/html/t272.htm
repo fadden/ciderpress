@@ -1,0 +1,46 @@
+<HTML><HEAD>
+	
+	<TITLE>Tool - EOL Scanner</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="eol">
+		<PARAM NAME="Keyword" VALUE="scan">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">EOL Scanner</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">EOL is an acronym for "end of line".&nbsp; Each line of a text file ends with an end-of-line marker.&nbsp; The Apple II and Macintosh use a carriage return, UNIX systems use a linefeed, and Windows uses a carriage return followed by a linefeed.&nbsp; These are usually abbreviated "CR", "LF", and "CRLF".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">When text files are moved from one system to another, the end-of-line markers on text files need to be converted.&nbsp; Unfortunately, overzealous converters will sometimes convert a non-text file, resulting in corrupted data.&nbsp; The only way to tell if a file has been corrupted is to count up the occurrences of CR, LF, and CRLF, and see if they make sense.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The EOL Scanner tool does exactly that.&nbsp; The number of times CR, LF, and CRLF appear are counted and displayed.&nbsp; This information, combined with some knowledge of the format of the file, will tell you if a file has been corrupted by an EOL conversion.&nbsp; The tool also counts up "high-ASCII" characters to test for conversions to and from DOS text files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Take for example a healthy 140K disk image.&nbsp; The scanner reports the following:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>143360 characters</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>43582 high-ASCII characters</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>381 carriage returns</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>863 line feeds</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>3 CRLFs</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">A typical disk image will have a smattering of CR (hex value 0x0d) and LF (hex value 0x0a).&nbsp; Occasionally they will appear near each other and form a CRLF.&nbsp; A disk image with lots of text files will have many more CRs than LFs, while a disk with programs on it could have any amount of either.&nbsp; (To be accurate, a DOS 3.3 disk with text files won't show a large number of CRs, because DOS 3.3 uses "high ASCII" 0x8d instead of 0x0d.)&nbsp; Note that an occurrence of "CRLF" only updates the CRLF counter, not the CR and LF counters.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Now lets look at a disk image that doesn't seem to work.&nbsp; The scanner comes back with:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>143360 characters</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>56085 high-ASCII characters</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>530 carriage returns</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>0 line feeds</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>0 CRLFs</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The disk image has absolutely no line feeds whatsoever.&nbsp; A blank formatted ProDOS disk will have 3 or 4 carriage returns and line feeds, a blank unbootable DOS disk 1 of each.&nbsp; A non-empty disk should never have zero CRs or LFs.&nbsp; This disk was corrupted by a converter that changed all of the linefeeds to carriage returns.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Similar results hold for compressed data archives.&nbsp; Data that is well compressed will show a fairly even distribution of all possible characters, so a total absence of CR or LF is a big red flag.&nbsp; Of course, if the archive is only a few hundred bytes long, it's quite possible that no CRs or LFs will be found.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Disk images in nibble format (.nib) have no CRs or LFs in them.&nbsp; This is normal.&nbsp; The entire file should be "high ASCII" characters.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Besides its use as a diagnostic tool, the EOL Scanner can also tell you what format a text file is in, and also how many lines it has.
+</FONT>
+</P>
+</BODY></HTML>

@@ -1,0 +1,79 @@
+<HTML><HEAD>
+	
+	<TITLE>Extracting Files</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="converter">
+		<PARAM NAME="Keyword" VALUE="eol">
+		<PARAM NAME="Keyword" VALUE="extract">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Extracting Files</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you only want to extract a few files, select them from the file list before clicking on "Extract...".&nbsp; Selected subdirectories are ignored; only plain files are examined.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The extraction options dialog presents a large set of choices.&nbsp; If you find the range of options bewildering, you may want to walk through the tutorial on the <A HREF="http://www.faddensoft.com/ciderpress/tutorial/">faddenSoft web site</A>.&nbsp; The Quick Configuration buttons, described later, can simplify common tasks.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Files to Extract</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You may choose to extract the files selected in the file list, or all of the files in the archive or disk image.&nbsp; If no files have been selected, "all files" will be the only option available.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Parts to Extract</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can further refine your selection by choosing to extract only certain kinds of entries.&nbsp; You will almost always want to leave "data forks" and "disk images" enabled, unless you have an archive that is a mixture of the two.&nbsp; "Disk images" refers to ShrinkIt-archived disk images (the file type is listed as "Disk"), not disk images stored as files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you just want to view the contents of the files under Windows, there's usually not much value in extracting the resource forks.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Attempting to extract a ProDOS subdirectory file (type "DIR") will not work.&nbsp; You can examine them as raw data in the file viewer, but extracting them as raw data doesn't make much sense.&nbsp; Instead, folders are automatically created as they are needed.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Format Conversion</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Two options are available.&nbsp; If you select "Convert to non-Apple II formats", then files will be converted in the same way they would when viewed with the file viewer.&nbsp; For example, BASIC programs will be converted to TXT or RTF files, and graphic files are extracted as Windows bitmaps (BMP).&nbsp; The individual converters can be turned on and off from the file <A HREF="t23.htm">viewer preferences</A> page.&nbsp; Files without specific conversions are treated as text or binary data according to the rules specified in the "text conversion" options (described below).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Extract disks as .2MG" selects whether disk images in NuFX archives are extracted to ProDOS-order ".PO" files or Universal Disk Format 2IMG files.&nbsp; The latter is generally preferred for use with Apple II emulators because the format contains some useful information about the disk image.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Filenames</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There are a couple of ways to tweak the filenames.&nbsp; Selecting "Add file attribute preservation" will extend the filename with an attribute preservation sequence, and will replace any characters not legal in Windows with "%xx" codes.&nbsp; This can be used to restore the file type, aux type, original filename, and whether the file holds a data fork, resource fork, or disk image.&nbsp; More detail can be found <A HREF="t68.htm">here</A>.&nbsp; This setting is useful when you plan to add the files back into an archive.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Add type extension" option adds a three-letter extension to files that lack one.&nbsp; For example, any file of type TXT will be given a ".TXT" extension so that you can open the file with Notepad by double-clicking on it.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The filename alterations that affect the list view, such as converting filenames to lower case or replacing spaces with underscores, are also taken into account here.&nbsp; These are configured in the <A HREF="t19.htm">General Preferences</A> screen.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Text Conversion</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Text files on the Apple II have carriage returns (CR, ASCII code 13) at the end of each line.&nbsp; UNIX and its derivatives use linefeeds (LF, ASCII code 10), and Windows prefers a carriage return followed by a linefeed (CRLF).&nbsp; CiderPress can convert these "end-of-line markers" to CRLF so that Windows applications can read the files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Not all files of type TXT are text files, and not all text files have type TXT, so CiderPress can try to sort things out for you.&nbsp; There are four settings for end-of-line conversion: off, by file type, automatic scan, and on.&nbsp; When it's set to "off", nothing is converted; when it's "on", everything is converted.&nbsp; If you select "Convert text files by file type", only files of type "TXT" or "SRC" are converted.&nbsp; In the "Auto-detect &amp; convert files with text" mode, CiderPress will scan each file and convert the ones that look like text files, regardless of file type.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Apple DOS 3.3 complicates matters somewhat with "high ASCII" text files.&nbsp; These look garbled unless the high bit of every byte is stripped.&nbsp; However, stripping every text file would cause Apple IIgs documents with "smart quotes" and accented characters to appear damaged.&nbsp; CiderPress only strips the high bits if the end-of-line converter is also enabled, and does so only on DOS 3.3 text files or on text files that are entirely composed of characters with the high bit set.&nbsp; (The "strip high ASCII text files" option is dimmed when "don't convert text files" is selected.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Archived disk images (e.g. "Disk" entries in a ShrinkIt Archive) never undergo text conversion, even when "Convert ALL files" is selected.&nbsp; Neither do resource forks.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Miscellaneous</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Two options that you may find useful.&nbsp; These are not affected by the Quick Configuration buttons.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">"Strip folder names" reduces the pathnames shown in the list to just their filenames.&nbsp; Everything you extract will end up in the same folder.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you select "Overwrite existing files", you will not be asked to confirm overwriting of files with the same name as files being extracted.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Quick Configuration Buttons</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There are two large buttons at the bottom of the dialog that allow you to choose from the two most common configurations.&nbsp; Pressing the buttons just changes the state of the controls in the dialog.&nbsp; There are no hidden options or side-effects.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">"Configure to preserve Apple II formats" is useful when you want to extract files from one archive and add them to another.&nbsp; Resource forks are extracted, file attribute preservation is enabled, and format converters (including text conversion) are disabled.&nbsp; These files will most likely not be readily usable under Windows, so file extensions are not added.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Click on "Configure for easy access in Windows" when you want to extract files for viewing under Windows.&nbsp; File viewer and text converters are enabled, and file extensions are added where appropriate.&nbsp; Disks are extracted in 2MG format.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Other Notes</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Extracting a file that already exists brings up a small dialog that lets you choose whether or not to overwrite the file.&nbsp; You can choose to overwrite it, skip it, overwrite it and all other conflicting files, skip it and all other conflicting files, rename the file being extracted, or cancel the whole thing.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">"Damaged" files will not be extracted.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

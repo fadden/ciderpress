@@ -1,0 +1,42 @@
+<HTML><HEAD>
+	
+	<TITLE>Appendix - Embedded DOS Volumes</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="dos">
+		<PARAM NAME="Keyword" VALUE="embedded">
+		<PARAM NAME="Keyword" VALUE="sub-volume">
+		<PARAM NAME="Keyword" VALUE="volume">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Embedded DOS Volumes</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The DOS 3.3 file format is wonderful for 140K 5.25" floppies, but requires some modifications before it will work on other kinds of media.&nbsp; A number of authors came up with ways of putting one or more DOS 3.3 volumes onto an 800K floppy.&nbsp; CiderPress recognizes most of them automatically.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Apple shipped two 3.5" drives, the AppleDisk 3.5 and the UniDisk 3.5.&nbsp; The latter, combined with an interface card, would work on an Apple //e, and is responsible for the suffix used in some of the product names.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>ProSel Uni-DOS (Glen Bredon)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">ProSel-8 and -16 shipped with Uni-DOS, a way to format an 800K disk with 600K of space for ProDOS and 200K of space for DOS 3.3.&nbsp; The embedded volume had 50 16-sector tracks.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>DOS Master (Glen Bredon)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Essentially an enhanced version of Uni-DOS, DOS Master allowed placement of multiple DOS volumes on a single disk.&nbsp; You could, for example, put five 140K DOS 3.3 disks on one 800K disk, and switch between them with the ",v" (volume) parameter.&nbsp; The volumes could also be placed on a hard drive.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>AmDOS 3.5 (Gary Little)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Amateur Disk Operating System version 3.5" software allowed storing two 400K DOS volumes on one 800K floppy.&nbsp; Each DOS volume used 50 tracks of 32 sectors, which is the largest you can get without making significant alterations to DOS.&nbsp; The change from 16 to 32 sectors broke compatibility with some programs (such as the "FID" file copying utility), but was manageable with a few well-placed patches.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>UNIDOS (Unknown)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The disk format is identical to AmDOS.&nbsp; It's unclear what the heritage of this is.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>OzDOS (Richard Bennett)</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This is another two-400K-disks-on-one-800K scheme, but the author decided to do something a little different.&nbsp; Instead of putting the volumes one after the other, he stretched them out across the entire disk, using odd sectors for one volume and even sectors for the other.&nbsp; For a device that reads 512-byte blocks, this makes a certain kind of sense.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

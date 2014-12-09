@@ -1,0 +1,34 @@
+<HTML><HEAD>
+	
+	<TITLE>Disk Image Creator</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="blank">
+		<PARAM NAME="Keyword" VALUE="disk image">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Create Disk Image</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This allows you to create blank, formatted disk images in a variety of formats.&nbsp; The images created can be used with CiderPress or an Apple II emulator.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Start by selecting the filesystem.&nbsp; CiderPress currently supports creation of images in DOS 3.2, DOS 3.3, ProDOS, and UCSD Pascal formats.&nbsp; You can also choose to create a completely blank file with the specified size, though this is only useful in a few circumstances.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The choice of filesystem determines which size options are available to you.&nbsp; DOS 3.2/3.3 formatting is only allowed on 140K floppies, Pascal can be written to 140K or 800K floppies, and ProDOS can be written to images from 16 blocks up to 32MB.&nbsp; Blank images can be as small as 1 block or as large as 8GB.&nbsp; Your filesystem selection also enables some filesystem-specific options:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>DOS 3.2/3.3</B>: choose the disk volume number (default 254) and whether or not a DOS image should be written.&nbsp; If "Allocate DOS tracks" is checked, tracks 1 and 2 are marked "in use", and a bootable DOS image is written to the disk.&nbsp; If it's not checked, tracks 1 and 2 are marked as free space, and the disk will not be bootable.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>ProDOS</B>: choose the volume name.&nbsp; ProDOS volume names must start with a letter, contain only letters, numbers, and '.', and can be at most 15 characters long.&nbsp; To make the disk bootable, you will need to copy the "PRODOS" file from another ProDOS 8 disk.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2"><B>Pascal</B>: choose the volume name.&nbsp; Pascal volume names can only be 7 characters long, but may contain letters, numbers, and symbols other than </FONT><FONT FACE="MS Sans Serif" SIZE="2">"$=?,[#:".&nbsp; To make the disk bootable, you will need "SYSTEM.APPLE" and "SYSTEM.PASCAL" from a Pascal system disk.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">After you hit "OK", you will be prompted for the name of the file to save to.&nbsp; For 140K floppy images you can select DOS order (".do", the default) or ProDOS order (".po").&nbsp; For DOS 3.2, ".d13" must be used.&nbsp; For other images only ProDOS ordering is available.&nbsp; If you want the image to be in a different format, such as .SDK or .2MG, use the <A HREF="t233.htm">Disk Image Converter</A> tool.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you want to create a blank filesystem image on physical media (e.g. format a 1.4MB floppy disk for ProDOS), create an image of the appropriate size, open the floppy disk with the <A HREF="t245.htm">Volume Copier</A>, then copy the image onto the disk with the "load from file" button.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Tip: if you want to create several images of the same kind, create one and then use Windows Explorer commands to make multiple copies of the file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

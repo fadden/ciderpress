@@ -1,0 +1,44 @@
+<HTML><HEAD>
+	
+	<TITLE>Rename Entry</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="filesystem separator">
+		<PARAM NAME="Keyword" VALUE="rename">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Rename Entry</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This feature is disabled when an archive or disk image is opened in read-only mode.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Select one or more files to rename, then activate the "Rename..." command.&nbsp; A dialog opens for the first file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The grey edit field on the top is the current name of the file.&nbsp; The edit field on the bottom is the name to change the file to; it defaults to the current name of the file.&nbsp; The box labeled "Path separator character" shows the character used to separate pathname components from each other in this specific file.&nbsp; This requires a little explanation.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;margin-right:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">If you have a folder "subdir", in which is a file called "foo", you would access it as "subdir\foo" under Windows.&nbsp; Under UNIX or ProDOS 8 you would use "subdir/foo", and under GS/OS you would write "subdir:foo".&nbsp; CiderPress follows the GS/OS convention, so pathnames from disk images and in files archived by CiderPress always use ':'.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;margin-right:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">Suppose you tried to extract a file called "subdir/foo:bar".&nbsp; On a UNIX system this would be a folder called "subdir" with a file called "foo:bar" in it, but on an HFS filesystem that would be a folder called "subdir/foo" with a file called "bar" in it.&nbsp; ShrinkIt archives were intended to be multi-platform, so the format requires the application adding the file to specify the value for the separator.&nbsp; Most archives use '/' or ':', but a few use '\'.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;margin-right:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;margin-right:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">This is important to understand because, when renaming files in a ShrinkIt archive, you're not just changing the filename, you're changing the entire pathname.&nbsp; You can effectively move a file into a different subdirectory by renaming "subdir1:foo" to "subdir2:foo".&nbsp; You need to be aware that the path separator character isn't always the same for every file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can change the path separator character for files in NuFX archives.&nbsp; The NufxLib library used by CiderPress currently does not allow a null value for the separator, so if you try to delete the character altogether, CiderPress will substitute ASCII value 0xff, which looks like a 'y' with an umlaut under Windows.&nbsp; This value can also appear for files copied &amp; pasted from DOS disk images.&nbsp; This behavior may be corrected in a future release of NufxLib.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you're renaming a file on a disk image, you will be shown the full path but can only change the file name.&nbsp; (There is currently no way to "move" a file to a different subdirectory, but you can copy and paste the file to a new folder if the disk has sufficient space.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">After choosing the new name, press "OK" to accept it.&nbsp; The dialog will update to show the name of the next file in the list.&nbsp; If you decide you don't want to rename this file, you can either click on "Skip" to move on to the next entry or "Cancel" to drop out of the process.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">ShrinkIt stores disk images with the disk volume name, not a pathname.&nbsp; For this reason, the filename separator character cannot be part of a disk image name.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you have one of the filename alterations enabled, such as conversion to lower case or replacing spaces with underscores, you will be shown the name with the modifications already made.&nbsp; If you press "OK", the alterations will become a permanent part of the archive, and will not go away when you turn the alterations off.&nbsp; You may want to switch these off before renaming entries.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The aux type of AppleWorks files is not updated in ShrinkIt archives when the filename changes.&nbsp; (The aux type is used as lower-case flags.)&nbsp; This may result in strange-looking filenames when the contents are extracted to a disk image.&nbsp; The lower case flags are set appropriately when AppleWorks files are renamed on a disk image, even if the ProDOS "allow lower case" preference is turned off.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You cannot rename the volume directory of a ProDOS or HFS volume.&nbsp; Attempts to do so will be silently ignored.&nbsp; Use the <A HREF="t268.htm">Rename Volume</A> command instead.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Some HFS files may have strange characters in the filenames.&nbsp; These are "Macintosh Roman" characters that don't translate directly to Windows equivalents.&nbsp; The names in the file list are "sanitized", with characters like '¥' converted to simple letters and numbers, but when renaming a file the name is presented unmodified.
+</FONT>
+</P>
+</BODY></HTML>

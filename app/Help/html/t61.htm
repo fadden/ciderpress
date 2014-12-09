@@ -1,0 +1,26 @@
+<HTML><HEAD>
+	
+	<TITLE>List - Aux Type</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="auxtype">
+		<PARAM NAME="Keyword" VALUE="type">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">List - Aux Type</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The auxiliary type of the file.&nbsp; The exact meaning of this varies depending on the archive or disk image.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">ShrinkIt archives: the ProDOS "aux type", or the size of an archived disk image.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Binary II, ProDOS: the value of the 16-bit "aux type" field.&nbsp; For BIN files this is usually the load address.&nbsp; For Applesoft BAS files it's the start address of the program.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">DOS 3.2/3.3: for 'B' (BIN) the load address is pulled out of the first sector of the file.&nbsp; For 'A' (BAS) the field is always set to $0801, and for 'I' (INT) and 'T' (TXT) it's always set to $0000.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Pascal, CP/M: set to $0000 for all files.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">RDOS: the load address of the file.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;text-indent:39pt;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">ShrinkIt is capable of storing Macintosh files from HFS volumes, in which case the "aux type" field will hold a 32-bit creator type.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

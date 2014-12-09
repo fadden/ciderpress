@@ -1,0 +1,35 @@
+<HTML><HEAD>
+	
+	<TITLE>Opening, Closing, and Creating Files</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="close">
+		<PARAM NAME="Keyword" VALUE="new archive">
+		<PARAM NAME="Keyword" VALUE="open">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Opening, Closing, and Creating Files</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Open an archive or disk image by selecting "Open..." from the "File" menu.&nbsp; Select the file to open, and click the "Open" button.&nbsp; All of the standard Windows "open file dialog" features work here.&nbsp; For example, if you want to change the current folder to "C:\apple2\disks", you could navigate there by selecting "C:" from the drop-down menu and then double-clicking on the "apple2" folder and then the "disks" folder.&nbsp; A perhaps faster approach is to click in the "File name:" box, type "C:\apple2\disks", and hit return.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The class of files you select in the "Files of type:" box does more than just choose which files you get to see.&nbsp; In some cases, it determines how the file is opened.&nbsp; For example, a .BXY file is a ShrinkIt archive with a Binary II header.&nbsp; If you select "ShrinkIt Archives" or "All Files", the file will be opened as a ShrinkIt archive.&nbsp; If you select "Binary II Archives", the file will be opened as a Binary II archive (with a single ShrinkIt archive inside).&nbsp; The same applies to ShrinkIt archives with a single disk image in them.&nbsp; They can be opened either as ShrinkIt archives or as disk images.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You may want to examine the <A HREF="t45.htm">default behavior</A> defined for each file extension when double-clicked from Windows Explorer or opened with "All Files (*.*)".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you select "Open as read-only", the file will be open in read-only mode.&nbsp; This means that operations that modify the file, such as adding, deleting, or renaming files, will be deactivated.&nbsp; The file will automatically be opened in read-only mode if the file itself is marked "read only" in Windows.&nbsp; (You can change this setting before opening the file by right-clicking on the filename, selecting "properties", and un-checking the "Read-only" box.)&nbsp; Disk images that appear to be damaged will also be opened in read-only mode to prevent modifications from exacerbating problems.&nbsp; You can check for damage with the <A HREF="t258.htm">Archive Info</A> feature.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress can open disk images stored in gzip (.gz) or Zip (.zip) archives, so long as the archive contains only one file, and the file is 32MB or less when expanded.&nbsp; Because the disk image is uncompressed to memory, CiderPress does not handle compressed images larger than 32MB.&nbsp; Also, ShrinkIt archives inside Zip or gzip archives cannot be opened.&nbsp; You can extract them with a program like WinZip or by enabling "compressed folder" support in Windows XP.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can create a new, empty ShrinkIt archive by selecting "New -&gt; ShrinkIt archive..." from the File menu.&nbsp; The archive is created immediately.&nbsp; If you close the archive while it is still empty, the file will be removed.&nbsp; You can create disk images with the "<A HREF="t247.htm">New -&gt; Disk image...</A>" function.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">In most cases, any changes you make to a file archive or disk image happen immediately.&nbsp; If you're working with a compressed disk image, stored in a ShrinkIt, ZIP, or gzip file, the image isn't recompressed until you close it.&nbsp; You can flush the changed data sooner by using the "Save changes" menu item.&nbsp; This will automatically be invoked for you if you use one of the tools that can modify disk images (e.g. the volume copier).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Close the current archive or disk image with "Close" from the File menu.&nbsp; You won't often need to use this, since the files are closed automatically when a new file is opened or the program exits.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Changes made to an archive or disk image by another program, such as an Apple II emulator, will not be detected automatically.&nbsp; For example, if you add or delete files from a disk image with Copy ][+ in an emulator, you will need to close and re-open the file.&nbsp; The easiest way to do this is with the "Reopen" command in the File menu.
+</FONT>
+</P>
+</BODY></HTML>

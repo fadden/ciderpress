@@ -8,7 +8,6 @@
  */
 #include "StdAfx.h"
 #include "DiskConvertDialog.h"
-#include "HelpTopics.h"
 
 using namespace DiskImgLib;
 
@@ -258,18 +257,4 @@ void DiskConvertDialog::OnChangeRadio(UINT nID)
         pGzip->EnableWindow(FALSE);
     else
         pGzip->EnableWindow(pNuFX->GetCheck() == BST_UNCHECKED);
-}
-
-BOOL DiskConvertDialog::OnHelpInfo(HELPINFO* lpHelpInfo)
-{
-    WinHelp((DWORD) lpHelpInfo->iCtrlId, HELP_CONTEXTPOPUP);
-    return TRUE;    // yes, we handled it
-}
-
-void DiskConvertDialog::OnHelp(void)
-{
-    if (fBulkFileCount < 0)
-        WinHelp(HELP_TOPIC_DISK_CONV, HELP_CONTEXT);
-    else
-        WinHelp(HELP_TOPIC_BULK_DISK_CONV, HELP_CONTEXT);
 }

@@ -1,0 +1,34 @@
+<HTML><HEAD>
+	
+	<TITLE>Renaming a Volume</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="rename">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Renaming a Volume</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can change the volume name of a ProDOS or Pascal disk image, or the volume number of a DOS 3.3 disk image, by selecting "Rename volume" from the Actions menu.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You will be presented with a tree of volumes to rename.&nbsp; In most cases there will only be one possible, but if you're working with a disk image that has embedded DOS sub-volumes, or a partitioned image like a CFFA card, you will see multiple entries.&nbsp; Click on the one you want to rename.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">In the box at the bottom, enter the new volume name or number.&nbsp; When you click "OK", CiderPress will update the volume name.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Volume names for ProDOS and Pascal are very similar to file names.&nbsp; ProDOS volume names aren't allowed to have a space in them, even if "<A HREF="t259.htm">allow lower case</A>" is enabled, but are otherwise identical.&nbsp; Pascal volume names use the same set of characters as filenames, but are limited to 7 characters.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The volume "name" for a DOS 3.3 disk is its volume number, which can range from 1 to 254.&nbsp; (Initializing a disk under DOS 3.3 with volume number 0 yields volume number 254.&nbsp; Attempting to use volume number 255 results in a "range error".)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The DOS volume number is actually stored in up to three places:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>1. If the file has a 2MG header, the volume number may be specified there.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>2. If the file is a nibble image, a copy of the volume number is stored in the address header of every sector on the disk.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 17pt"><FONT FACE="MS Sans Serif" SIZE="2">  </span>3. A copy is stored in the disk Volume Table of Contents (VTOC).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "rename volume" function only updates #3.&nbsp; The DOS "CATALOG" command uses #2, which means that changing the volume number with CiderPress may not have an impact on what you see in an emulator.&nbsp; For non-nibble images, most emulators just generate the default volume number (254) into each sector.&nbsp; CiderPress itself prefers #2 over #3, so changing the volume number on a nibble image may not have any noticeable impact within CiderPress itself.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Some emulators will obey the 2MG volume number (#1), so you may want to change it in both places.&nbsp; You can set the value in the 2MG header with the <A HREF="t277.htm">2MG Properties Editor</A>.&nbsp; All things considered, it's probably best to just leave it set to 254.
+</FONT>
+</P>
+</BODY></HTML>

@@ -1,0 +1,145 @@
+<HTML><HEAD>
+	
+	<TITLE>Appendix - Disassembly Notes</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="diassembly">
+		<PARAM NAME="Keyword" VALUE="listing">
+		<PARAM NAME="Keyword" VALUE="monitor">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Disassembly Notes</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">A great deal of Apple II source code is written in 6502 or 65816 assembly language.&nbsp; The simplest way to disassemble raw data into something understandable on a real Apple II is to load the program, enter the monitor with "CALL -151", and list the data with the 'L' command ("2000L").&nbsp; The output seen depends on which model of Apple II you have.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The CiderPress file viewer allows you to create monitor-style code disassemblies that closely match the original.&nbsp; The disassembler is selected automatically for appropriate files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">All files are ranked in a priority scheme by file type.&nbsp; "High" priority means that disassembly is the preferred method for viewing the file.&nbsp; "Medium" means use it if nothing better comes along (e.g. an 8192-byte BIN file will be decoded as a hi-res image rather than disassembled, but both options will be available in the file viewer).&nbsp; "Low" means the option to disassemble will be available, but will be prioritized below converted text or "raw" display.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "extract files" feature when used in "easy access in Windows" mode will write the converted data to a text file.&nbsp; This is an easy way to dump a monitor listing of a file to disk.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Apple ][, ][+, //e monitor</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The classic Apple IIs come with the monitor built into the F8 ROM.&nbsp; It's able to display all 6502 operations as three-letter mnemonic operations and hexadecimal values.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress emulates this output as closely as possible, but adds two features for convenience.&nbsp; First, the new operations introduced with the 65C02 CPU are properly displayed.&nbsp; Second, annotations have been added to the following:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">ProDOS 8 MLI calls (the "inline" calls are broken out onto separate lines)</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Softswitches and F8 ROM routines</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files of type SYS, CMD, 8OB, and P8C are categorized "high priority".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files of type BIN are categorized "medium priority".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files of type NON and $F1 through $F8 are categorized "low priority".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Apple IIgs monitor</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The Apple IIgs monitor introduced a number of new features.&nbsp; The 65816 CPU added several new instructions as well as 24-bit addresses and variable-width registers.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The output of the disassembler closely matches the IIgs output.&nbsp; Annotations have been added to the following:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">ProDOS 8 MLI calls (the "inline" calls are broken out onto separate lines)</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">ProDOS 16 and GS/OS calls (again, "inline" calls are broken out)</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">IIgs toolbox calls</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">E1/xxxx vectors</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">E0/xxxx vectors</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">01/xxxx vectors</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Softswitches and F8 ROM routines</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Disassembly of 65816 code is tricky because the width of the registers can change, which affects the size of instructions with "immediate" mode addressing.&nbsp; CiderPress gives you the option of listing a file with "long" (16-bit) or "short" (8-bit) registers, but does not try to track the mode.&nbsp; Obtaining a complete disassembly of a chunk of code may require listing it twice and merging pieces together.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There is also a <A HREF="t23.htm">preference</A> to control whether BRK and COP commands are displayed as two-byte operations ("BRK 00") or single-byte ("BRK").&nbsp; The former matches the behavior of the IIgs monitor, but the latter can make the disassembly easier to read in some circumstances, e.g. instructions following an odd number of zeroes.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The IIgs monitor listing mode includes limited OMF (Object Module Format) support.&nbsp; OMF files are broken into segments, and the disassembly restarts at the top of each segment.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files of type OBJ, LIB, S16, RTL, EXE, PIF, TIF, NDA, CDA, TOL, DVR, LDF, FST and OS are categorized "high priority".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files of type BIN, SYS, CMD, 8OB, P8C, and NON are categorized "low priority".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Notes</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you want to see a disassembly of a file with the wrong type, e.g. you want to view assembly language code embedded in a BAS or INT file, change the file type to "BIN".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If a disassembly is starting at the wrong address, or you want to change the start address because the code relocates itself early on (fairly common for SYS files), change the file type to BIN and set the aux type to the desired start address.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The annotations on memory locations and OS calls come from a file called NList.Data, which can be found in the CiderPress installation directory.&nbsp; The data file was developed by Dave Lyons as part of the Nifty List desk accessory, and is included with permission of the author.&nbsp; If you want to add additional locations (perhaps Applesoft entry points) or expanded commentary, the file format is pretty self-explanatory.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The format of the Nifty List annotations may not be immediately obvious.&nbsp; The following is an excerpt from the Nifty List v3.4 manual.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">------------------------------------</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">Interpreting the parameter summaries</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">------------------------------------</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">Some tools take no parameters and return no information.&nbsp; These</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">appear with an empty pair of parentheses after the tool name:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; GrafOff()</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; SystemTask()</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">Tools that take one or more parameters and return no information are</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">listed like this:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; SetPort(@Port)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; WriteBParam(Data,Parm#)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">An "@" in front of a parameter means it is a pointer and takes 4</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">bytes (2 words).&nbsp; All parameters not specially marked take 2 bytes</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">(1 word).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">Tools that take no parameters but return one are listed like this:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; GetPort():@Port</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; FreeMem():FreeBytes/4</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">A "/" and a digit after a parmeter means it takes the specified number</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">of bytes.&nbsp; (When making a tool call, you must push space on the stack</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">for any result values *before* pushing the input values.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">A few tools return more than one value.&nbsp; In these cases, the</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">results are listed in the order they have been pushed onto the</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">stack (so that the first value PULLED is the last one listed):</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; GetMouseClamp():Xmn,Xmx,Ymn,Ymx</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">Each of these values takes 2 bytes (1 word), since there is no</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">indication of a different size.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">Tools that take and return values are listed like this, where a</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">trailing "H" indicates a Handle (4 bytes):</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; EqualRgn(Rgn1H,Rgn2H):Flag</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">-----</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">Review of parameter sizes:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; Leading&nbsp; "@"&nbsp;&nbsp;&nbsp;&nbsp; 4-byte pointer</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; Trailing "H"&nbsp;&nbsp;&nbsp;&nbsp; Handle (4 bytes)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; Trailing "/n"&nbsp;&nbsp;&nbsp; n bytes</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; All other values are 2 bytes long</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">-----</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">For ProDOS calls, the parameters are shown in parentheses even</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">though they actually belong in a parameter block.&nbsp; For ProDOS 8,</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">the first item in the list is the parameter count, which should</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">be in the first byte of the parameter block.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; P8:RENAME(2:pn1,pn2)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">ProDOS 16 calls (also called class-0 GS/OS calls) do not have a</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">parameter count.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; P16:CHANGE_PATH(@Path1,@Path2)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">Class-1 GS/OS calls have parameter blocks beginning with a parameter</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">count word.&nbsp; Some calls allow a range of values for the parameter</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">count (like Create, which can take from 1 to 7 parameters), and some</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">(like Destroy) have a single acceptable value:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; GS/OS:Create(1-7:@P,Acc,Typ,Aux/4,Stg,EOF/4,rEOF/4)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="Courier New" SIZE="2">&nbsp;&nbsp; GS/OS:Destroy(1:@P)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

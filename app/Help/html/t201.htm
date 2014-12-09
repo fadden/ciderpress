@@ -1,0 +1,29 @@
+<HTML><HEAD>
+	
+	<TITLE>Tool - SST Image Merge</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="disk image">
+		<PARAM NAME="Keyword" VALUE="merge">
+		<PARAM NAME="Keyword" VALUE="SST">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">SST Image Merge</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This tool is used to combine two disk images created by the "SST" utility into a single ".nib" disk image.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">SST is "Saltine's Super Transcopy", a nibble copier modified to read raw nibble data from disks and write it to two floppy disks.&nbsp; The usual approach to creating .nib files is to run SST on a real Apple II, create images of the two disks, copy them to a PC, and then run SST in an emulator to copy the two sides onto a "blank.nib" file.&nbsp; The advantage of this approach over creating ShrinkIt or ".do" files is that in many cases the copy protection can be left more or less intact.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress can't make the first half of the process easier, but it can simplify the second.&nbsp; Instead of running an emulated SST to combine the images, just use the "SST Image Merge" function from the Tools menu.&nbsp; You will be asked to locate the first side, then the second side, then asked for the name of the output file.&nbsp; The pieces are merged immediately.&nbsp; You are given the option of opening the newly-created disk in CiderPress, but as with all disk images this will only work if the disk has a recognizable filesystem.&nbsp; The NIB format is generally used for disks without filesystems, so you may have to test the image by booting it in an Apple II emulator.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If CiderPress notices anything unusual about the images, you will be notified.&nbsp; A warning will be shown if they don't appear to be images of SST-created disks, or if they were specified in the wrong order.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can transfer the SST disk images from your Apple II in any format that CiderPress supports.&nbsp; The most popular are unadorned DOS-order files (.DO) or ShrinkIt (.SHK/.SDK).&nbsp; Since the disks don't have a recognizable filesystem, CiderPress' automatic sector order determination algorithms may not work, so it is important to use the appropriate filename extension on unadorned formats.&nbsp; If CiderPress can't figure it out, or if you have "Confirm disk image format" enabled, you will be prompted to enter it.&nbsp; (The "filesystem format" will usually show "Generic DOS sectors"; this is normal, and can be left alone.)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">SST has some fancy features (nibble counting, track synchronization) that CiderPress does not try to emulate.&nbsp; If you need special parameters in SST, you will need to use the original method.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

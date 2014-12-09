@@ -1,0 +1,22 @@
+<HTML><HEAD>
+	
+	<TITLE>Testing Archives</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="crc">
+		<PARAM NAME="Keyword" VALUE="test">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Testing Archives</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This feature does not work on disk images, because they don't have any sort of checksum or CRC on the files.&nbsp; Every file on a disk archive is scanned when the disk is opened, and any obviously damaged files are labeled as such in the file list.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files in ShrinkIt, Binary II, and AppleLink Compression Utility archives can be tested, but not all of those have CRCs either.&nbsp; In those cases CiderPress will read the data to verify that the archive hasn't been truncated.&nbsp; Errors in compressed data can sometimes be detected without a CRC.&nbsp; The overall structure of the archive, including any CRCs on header fields, is verified when the archive is opened.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">For files that do have checksums or CRCs, CiderPress will use the appropriate error detection algorithm, uncompressing the data when necessary.&nbsp; Testing an archive essentially does a full extraction, doing everything except write the data to disk.
+</FONT>
+</P>
+</BODY></HTML>

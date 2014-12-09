@@ -1,0 +1,48 @@
+<HTML><HEAD>
+	
+	<TITLE>Appendix - File Attribute Preservation</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="file type">
+		<PARAM NAME="Keyword" VALUE="preservation">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">File Attribute Preservation</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The definitive guide to the file attribute preservation mechanism employed by CiderPress can be found in the "library" section of the </FONT><A HREF="http://www.nulib.com/"><FONT FACE="MS Sans Serif" SIZE="2">www.nulib.com</A> web site.&nbsp; This is a brief introduction to the topic.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There are four attributes that must be restored when adding Apple II files: file type, aux type, pathname, and file part (i.e. data fork, resource fork, disk image, or comment).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>File Type and Aux Type</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">ProDOS files use an 8-bit file type and a 16-bit aux type.&nbsp; These can be encoded in a six-character hexadecimal string that looks like "#062000".&nbsp; The '#' is used to indicate the start of an attribute preservation string.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">HFS files with 32-bit file and creator types require more digits, resulting in a 16-character hexadecimal string.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Extracted folders do not have preservation strings added.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Pathname</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Some characters, such as '/', are legal in Apple II filesystems (DOS 3.3, HFS) but illegal under Windows.&nbsp; These are converted to "%nn" sequences, e.g. "foo/bar" becomes "foo%2fbar".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Some words, such as "AUX" and "PRN", cannot be used as filenames under Windows.&nbsp; These are prefixed with "%00", so "Aux" would become "%00Aux".&nbsp; (If file attribute preservation is turned off, these will be prefixed with underscores, e.g. "_Aux".)&nbsp; The "%00" is removed when the file is added.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The complete list of illegal names: CON, PRN, NUL, AUX, LPT1, LPT2, LPT3, LPT4, COM1, COM2, COM3, COM4.&nbsp; This also affects files that start with the name and a dot, e.g. "AUX.FOO" is also illegal and will be altered.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>File Part</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">HFS and ProDOS support the notion of "forked" files.&nbsp; This horrible idea has caused problems for users and developers alike since the Macintosh was first released in 1984.&nbsp; The basic idea is that a file is actually two files with the same name, one of which (the "data fork") has unstructured data such as ASCII text, while the other one (the "resource fork") holds highly-structured data.&nbsp; Some ProDOS literature refers to these as "extended" files.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Because Windows doesn't handle "forked" files, each fork must be stored in a separate file.&nbsp; Resource forks are indicated by adding the letter 'r' to the end of the preservation sequences, and disk images have the letter 'i'.&nbsp; These files are automatically converted back to the correct file part when added to an archive.&nbsp; If two files have the same name, but the preservation sequences indicate one is a data fork and the other a resource fork, then the two forks will be combined into a single file in the archive.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Other Considerations</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The modification date of the original file, if any, can be stored in the local filesystem.&nbsp; Access permissions aren't completely restored, but they usually don't need to be -- most Apple II files are either "locked" or "unlocked", and that can be encoded in Windows access permissions.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The scheme falls apart somewhat if the generated filenames are longer than Windows can support.&nbsp; Windows "vfat", "fat32", and "ntfs" filesystems can handle names far longer than any Apple II filesystem, so this should not be a problem.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

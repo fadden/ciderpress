@@ -1,0 +1,130 @@
+<HTML><HEAD>
+	
+	<TITLE>Appendix - About Disk Images</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="disk">
+		<PARAM NAME="Keyword" VALUE="disk image">
+		<PARAM NAME="Keyword" VALUE="image">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">About Disk Images</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Disk images are copies of entire Apple II floppy disks stored in a single file.&nbsp; There are several different ways to generate and store them, some designed for uploading to web pages, others for use with Apple II emulators.&nbsp; There are also a number of different ways of storing files on an Apple II disk, the most prominent being the DOS 3.3 and ProDOS filesystems, so opening an image file and getting at the files inside can be tricky.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress takes most of the pain out of opening disk images by automatically determining the storage format and filesystem for many common formats.&nbsp; You can view the format for an open disk image with the <A HREF="t258.htm">Archive Info</A> feature, and you can attempt to override the automatic settings by enabling "Confirm disk image format" in <A HREF="t259.htm">Disk Image Preferences</A>.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There are five attributes that must be determined before a disk image can be opened: outer format, image file format, physical format, sector ordering, and file system format.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Outer Format</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Sometimes disk images are compressed with gzip or another program to reduce their size.&nbsp; If CiderPress sees a ".gz" or ".zip" extension, it will automatically uncompress the file when it is opened, and re-compress it if any changes are made.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress supports Zip/gzip compression in conjunction with all formats except ShrinkIt archives, so ".sdk.gz" and ".sdk.zip" won't open.&nbsp; Generally speaking, archives compressed with ShrinkIt don't compress much, so this is uncommon.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Image File Format</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This is the format of the file that you have on your PC.&nbsp; The format is often indicated by the filename extension, e.g. ".sdk" for a disk packed with ShrinkIt.&nbsp; The disk image file formats that CiderPress handles, with their most common extensions, are:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">Universal Disk Image  </span><SPAN STYLE="width: 200pt">.2MG, .2IMG &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">DiskCopy 4.2  </span><SPAN STYLE="width: 200pt">.DSK, .DC, .DC6 &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">Sim //e HDV  </span><SPAN STYLE="width: 200pt">.HDV &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">Dalton's Disk Disintegrator (DDD)  </span><SPAN STYLE="width: 200pt">.DDD &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">Formatted Disk Image (FDI)  </span><SPAN STYLE="width: 200pt">.FDI &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">Unadorned sectors  </span><SPAN STYLE="width: 200pt">.DSK, .DO, .PO, .D13, .HDV, .IMG, .RAW, .ISO &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">Unadorned nibbles  </span><SPAN STYLE="width: 200pt">.NIB, .NB2 &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">NuFX (ShrinkIt)  </span><SPAN STYLE="width: 200pt">.SHK, .SDK &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 199pt"><FONT FACE="MS Sans Serif" SIZE="2">TrackStar  </span><SPAN STYLE="width: 200pt">.APP &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "unadorned" format refers to files that are nothing but disk data.&nbsp; The other formats have headers that must be removed before the data can be accessed.&nbsp; For some formats, such as NuFX and DDD, that data may need to be uncompressed before it can be used.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The Image File Format is reliably detected by CiderPress, and can't be overridden.&nbsp; If you think CiderPress has got it wrong, you can usually override its choice by changing the file extension.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Identifying DDD archives is tricky, because there is little information in the file format to distinguish it from an ordinary file.&nbsp; The only way to tell is to try to unpack the file and see if you run out of compressed data at roughly the same time as you output 140K of uncompressed data.&nbsp; Further complicating matters is that DOS DDD archives are stored as binary files but with a length of zero, so CiderPress has to guess that it's a DDD archive and then modify the length.&nbsp; CiderPress will adjust a DOS 'B' file if it has an address and length of zero, is at least 8 sectors long, and has angle brackets (&lt;&gt;) in the filename.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Please do not use DDD v2.0 under DOS; it has a bug that can cause the last sector on the disk to be corrupted.&nbsp; Because the DDD file format lacks any sort of checksum, the corruption can go undetected.&nbsp; Use DDD v2.1 or later under DOS.&nbsp; Better yet, use ShrinkIt to create your disk images.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">TrackStar images are created and used by the TrackStar Apple II emulator hardware.&nbsp; This board was developed many years ago, and is rare today.&nbsp; The images are stored in nibble format, but have a variable length with a maximum of 6525 bytes per track.&nbsp; Standard ".nib" images use 6656 bytes per track, which means that converting from ".app" to ".nib" requires adding extra bytes in inter-sector gaps, and converting the other way requires finding and removing unnecessary bytes.&nbsp; Neither of these is 100% reliable, especially on copy-protected disks, so converting to and from ".app" only works well for unprotected disks.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The TrackStar's image maker creates 40-track and 80-track images.&nbsp; On a typical 40-track image, the last 5 tracks are empty, but some forms of copy protection used an additional track at the end of the disk.&nbsp; You can view the contents, if any, with the <A HREF="t13.htm">Disk Viewer</A>.&nbsp; When converting to or from standard 35-track disk images, the last 5 tracks are dropped or zero-filled.&nbsp; 80-track images are like 40-track images but with "half tracks" stored as well.&nbsp; No other disk image format supports half-tracking, so CiderPress just skips every other track.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">FDI images, created by "Disk2fdi", are similar to TrackStar in that they can have more than 35 tracks and use a variable-length track format.&nbsp; The "raw" images contain an image of the magnetic pulses captured from a PC floppy drive while reading an Apple II disk.&nbsp; FDI images may also contain nibble images of 3.5" disks, something no other format handles.&nbsp; The images are converted internally to variable-length nibble format, which means they can be converted to TrackStar format without losing data, but not to .NIB.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">A ".ISO" image of a CD-ROM is essentially equivalent to ".PO".&nbsp; ".ISO" images of Macintosh-partitioned or HFS CD-ROMs can be accessed directly.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Physical Format</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Once the headers are stripped and the data is uncompressed, you're left with one of two things: a stream of raw "nibble" data, stored exactly as it appeared when read from a 5.25" Apple II disk drive, or a stream of 256-byte sectors.&nbsp; This value indicates which of the two formats is used.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The most common nibble image format (.nib) has 6656 bytes per track, but occasionally you will find a ".nb2" image with 6384, or a ".app" TrackStar image with variable-length tracks.&nbsp; CiderPress supports all formats.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Sector Ordering</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Apple II floppies typically have 16 sectors.&nbsp; The various Apple II operating systems used different "sector interleave" values for performance reasons, resulting in some confusion about where exactly a given track and sector resides in a sector-based disk image.&nbsp; Nibble images include the sector addresses, so there is no ambiguity.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There are four common ways to order the sectors, defined in terms of the operating system used to create the disk image:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;margin-right:17pt;"><FONT FACE="MS Sans Serif" SIZE="2"><U>Physical order</U>: no interleave is used.&nbsp; Nibbles images always use this, and the Copy ][+ ".IMG" format is an "unadorned" file with this ordering.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;margin-right:17pt;"><FONT FACE="MS Sans Serif" SIZE="2"><U>DOS order</U>: "-2" interleave is used.&nbsp; Programs commonly used for transferring 5.25" disk images will read the disk as DOS sectors, resulting in a DOS-ordered ".DO" image.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;margin-right:17pt;"><FONT FACE="MS Sans Serif" SIZE="2"><U>ProDOS order</U>: "+2" interleave is used.&nbsp; ShrinkIt reads disks as a series of ProDOS blocks, and once extracted the disk is a ProDOS-ordered ".PO" image.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;margin-right:17pt;"><FONT FACE="MS Sans Serif" SIZE="2"><U>CP/M order</U>: "+3" interleave is used.&nbsp; This would only be generated by a disk image creator running under CP/M, so you're unlikely to find an image in this order.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The sector order reflects the sequence in which the sectors were written into the image file.&nbsp; It allows us to convert between "physical" order and the stored order, which is important for proper handling of the "filesystem" attribute (described next).</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">It is possible to override the sector ordering value.&nbsp; If you do, CiderPress takes it as a recommendation, and will try that order first.&nbsp; If it is unable to process the image using the order you requested, it will go ahead and try Physical, DOS, and ProDOS.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">13-sector ".d13" images are always stored in ascending sector order.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>Filesystem Format</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This is the key.&nbsp; It tells CiderPress how it should go about looking for files inside the disk image.&nbsp; The attribute defines not only how the files are arranged, but also how sectors should be pulled out of the image.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The supported filesystems are as follows:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2"><B>Filesystem</B>  </span><SPAN STYLE="width: 100pt"><B>Sector Order</B> &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">ProDOS  </span><SPAN STYLE="width: 100pt">ProDOS &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">HFS  </span><SPAN STYLE="width: 100pt">ProDOS &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">UCSD Pascal  </span><SPAN STYLE="width: 100pt">ProDOS &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">DOS 3.2/3.3  </span><SPAN STYLE="width: 100pt">DOS &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">CP/M  </span><SPAN STYLE="width: 100pt">CP/M &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">RDOS 3.2  </span><SPAN STYLE="width: 100pt">Physical &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">RDOS 3.3  </span><SPAN STYLE="width: 100pt">ProDOS &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">UNIDOS/AmDOS  </span><SPAN STYLE="width: 100pt">DOS &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><SPAN STYLE="width: 99pt"><FONT FACE="MS Sans Serif" SIZE="2">OzDOS  </span><SPAN STYLE="width: 100pt">DOS &nbsp;</FONT></span></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress also supports CFFA-style fixed partitions and Macintosh-style partition maps.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If the sector order for the filesystem format matches the Sector Ordering attribute, then reading the correct sector from the disk image is easy, because the image was written in exactly the same way that the filesystem needs to be read.&nbsp; If they don't match, then some amount of "sector swapping" is required to read the right sector from the right place.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If a disk doesn't actually have a filesystem -- perhaps it's an Apple II game that has its own disk format -- you will not be able to open it with CiderPress and view it as a collection of files.&nbsp; You can, however, open it with the <A HREF="t13.htm">Disk Sector Viewer</A>.&nbsp; To provide the proper translation of sector numbers, you can use one of the "generic" filesystem formats.&nbsp; These don't define a file structure, but do let you describe the ordering of the disk.&nbsp; For example, if you use the "Generic DOS" entries, you will be able to read the disk exactly as you would with a "disk zap" utility.&nbsp; If you select the "Generic ProDOS" entry, you will get results equivalent to a ProDOS "block zap" utility.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "generic" entries are only available when opening disk images with the Disk Editor.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Some disks have embedded DOS "sub-volumes", e.g. DOS 3.3 embedded in a ProDOS disk.&nbsp; See the <A HREF="t21.htm">embedded DOS volume section</A> for more information.&nbsp; CFFA cards, partitioned hard drives, and CD-ROMs are handled similarly.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

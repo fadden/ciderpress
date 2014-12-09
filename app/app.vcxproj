@@ -46,11 +46,13 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>CiderPress</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>CiderPress</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -81,6 +83,7 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers />
+      <AdditionalDependencies>htmlhelp.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -91,8 +94,8 @@
       <HeaderFileName />
     </Midl>
     <PostBuildEvent>
-      <Message>
-      </Message>
+      <Message>Copy HtmlHelp file</Message>
+      <Command>copy $(ProjectDir)\Help\CiderPress.chm $(OutDir)</Command>
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -126,6 +129,7 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers />
+      <AdditionalDependencies>htmlhelp.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -140,6 +144,12 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)\Help\CiderPress.chm $(OutDir)</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy HtmlHelp file</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ResourceCompile Include="CiderPress.rc" />
@@ -220,9 +230,6 @@
     <Image Include="Graphics\toolbar1.bmp" />
     <Image Include="graphics\tree_pics.bmp" />
     <Image Include="graphics\vol_pics.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Help\CIDERPRESS.HLP" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\diskimg\diskimg.vcxproj">

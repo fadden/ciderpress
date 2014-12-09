@@ -1,0 +1,32 @@
+<HTML><HEAD>
+	
+	<TITLE>Tool - 2MG Properties Editor</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="2img">
+		<PARAM NAME="Keyword" VALUE="2mg">
+		<PARAM NAME="Keyword" VALUE="properties">
+		<PARAM NAME="Keyword" VALUE="volume number">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">2MG Properties Editor</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This tool allows you to see and update some of the attributes embedded in a 2MG disk image file.&nbsp; Select the disk image you want to open (it will usually have a ".2mg" or ".2img" suffix), and click "Open".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Some fields from the file header are shown at the top.&nbsp; "Creator" is a 4-letter code for the software that created the file (CiderPress uses 'CdrP').&nbsp; "Version" is the 2MG file version number, usually 0 or 1.&nbsp; "Image format" tells you whether the image uses DOS-ordered sectors, ProDOS-ordered sectors, or raw nibbles.&nbsp; "Blocks" is the number of 512-byte blocks in the file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">"Locked" is a software flag used to indicate whether or not the virtual disk has been write-protected.&nbsp; Some emulators obey the flag, some don't.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">"Specify disk volume number" indicates whether or not a volume number has been explicitly defined.&nbsp; This is potentially of use for 140K 5.25" disk images.&nbsp; 5.25." floppies have a volume number embedded in the address field of every sector on the disk, but this value is lost when disks are converted to sector images (you have to use nibble images to retain it).&nbsp; Some emulators will use the volume number from the 2MG header to determine the sector-address-field volume number.&nbsp; This is only useful for a handful of mildly copy-protected disks that actually care about the volume number.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Volume number" field is enabled if the previous checkbox is set.&nbsp; You may enter a number from 1 to 254.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "Comment" box holds the comment for this file.&nbsp; It can be any length you want.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If CiderPress is unable to open the file for writing, perhaps because it's marked read-only in Windows (a common occurrence for files copied off of a CD-ROM), the file will be opened read-only.&nbsp; You will be able to see the contents of the fields but not edit them.
+</FONT>
+</P>
+</BODY></HTML>

@@ -1,0 +1,31 @@
+<HTML><HEAD>
+	
+	<TITLE>List - Pathname</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="pathname">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">List - Pathname</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The full pathname of the file.&nbsp; In disk archives that don't support folders (DOS 3.2/3.3, Pascal, CP/M, RDOS), this is just the filename.&nbsp; For ProDOS disks and ShrinkIt archives, the pathname includes all folders out to the "root" of the collection.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The names are usually presented exactly as they appear in the original, but there are a few exceptions:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">ProDOS names are converted to lower case based on the case flags.&nbsp; These were added in ProDOS 8 v1.8 to allow the GS/OS FST to put lower case and spaces in names.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">AppleWorks filenames stored on a ProDOS disk are converted to lower case based on the aux type.&nbsp; This value overrides the ProDOS flags.&nbsp; (AppleWorks files stored in ShrinkIt archives are simply presented as they were stored.)</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">The names of files on DOS 3.3 volumes are "sanitized", so that inverse and flashing characters are converted to normal text.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">If the appropriate <A HREF="t19.htm">preference</A> is enabled, filenames stored on DOS 3.3 volumes are converted to mixed case based on common rules for English titles.&nbsp; Filenames with lower case in them already -- uncommon but not unheard-of -- are left alone.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">If the appropriate preference is enabled, all filenames have spaces converted to underscores.&nbsp; This could be useful for files destined to be served directly from a web site.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The ProDOS volume name is not shown as part of the pathname, except in the entry for the volume directory itself (identifiable as a pathname starting with ':').</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">There may be one of four icons to the left of the filename.&nbsp; A document icon that is "empty" (has a white interior) indicates a ShrinkIt archive entry with an empty comment.&nbsp; Most archives created by GS/ShrinkIt have an empty comment added to the first entry, so this is fairly common.&nbsp; If the document icon is solid yellow, that means there is a comment with information in it.&nbsp; This can be viewed with the <A HREF="t54.htm">file viewer</A> or by using the "<A HREF="t43.htm">edit comment</A>" feature.&nbsp; A red 'X' icon indicates a damaged entry, usually on a disk image.&nbsp; CiderPress was unable to fully process the file, so it has been marked as unavailable.&nbsp; A blue '?' icon indicates a suspicious entry; it's not unreadable, but it doesn't look healthy.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Files in a sub-volume, such as a DOS 3.3 disk embedded in a ProDOS disk, are shown as being in a folder (something like "_DOS001").&nbsp; This is done so that the files will be extracted into a separate folder from the outer-volume content, and also to keep the files grouped together when the file list is sorted by name.
+</FONT>
+</P>
+</BODY></HTML>

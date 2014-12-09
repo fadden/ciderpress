@@ -11,6 +11,7 @@
 
 #include "resource.h"
 #include "../diskimg/DiskImg.h"
+#include "HelpTopics.h"
 
 /*
  * The set of conversions available depends on the format of the source image.
@@ -75,10 +76,17 @@ private:
     afx_msg void OnChangeRadio(UINT nID);
 
     // User pressed the "Help" button.
-    afx_msg void OnHelp(void);
+    afx_msg void OnHelp(void) {
+        if (fBulkFileCount < 0)
+            MyApp::HandleHelp(this, HELP_TOPIC_DISK_CONV);
+        else
+            MyApp::HandleHelp(this, HELP_TOPIC_BULK_DISK_CONV);
+    }
 
     // Context help request (question mark button).
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo);
+    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
+        return MyApp::HandleHelpInfo(lpHelpInfo);
+    }
 
     CString fDiskDescription;
     bool    fAllowUnadornedDOS;

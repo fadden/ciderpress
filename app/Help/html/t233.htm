@@ -1,0 +1,29 @@
+<HTML><HEAD>
+	
+	<TITLE>Tool - Bulk Disk Image Converter</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="bulk">
+		<PARAM NAME="Keyword" VALUE="convert">
+		<PARAM NAME="Keyword" VALUE="disk image">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Bulk Disk Image Converter</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The bulk converter works much like the <A HREF="t187.htm">single-image converter</A>, but it can process a large number of disk images with a few clicks.&nbsp; It's probably best to become familiar with the single-image converter before using this feature.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">After you select this feature from the "Tools" menu, you will be asked to select the disk images to convert.&nbsp; All images must reside in the same folder.&nbsp; Select multiple files with the mouse, using shift-clicks to select a range of files or ctrl-clicks to add or remove individual files.&nbsp; You can select all files in the current folder by clicking on one and then hitting Ctrl-A.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Next, you will be asked to choose the output format.&nbsp; All images will be converted to the same format.&nbsp; Not all images can convert to all formats -- for example, you can't create 800K nibble images or 140K DiskCopy images -- so make sure you choose an appropriate format.&nbsp; CiderPress will not prompt you to specify sector ordering, so it's important for the images to have descriptive filename extensions (e.g. ".po" instead of the generic ".dsk").</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Finally, select a folder for the output.&nbsp; Creating a new, empty folder is recommended.&nbsp; The converted files will have the old names but with the extension replaced, but in some cases the old extension might match the new.&nbsp; For example, converting a DOS-ordered 2MG file to a ProDOS-ordered 2MG file does not change the ".2MG" extension.&nbsp; CiderPress will not overwrite an existing file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If CiderPress encounters a file it cannot convert, you will be shown an error message with the name of the file and given the opportunity to skip the file and continue or halt processing.&nbsp; Some messages, such as warnings about unreadable blocks on nibble images, are suppressed during bulk conversions.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you are converting to ShrinkIt .SDK archives, the files will be compressed with the current <A HREF="t29.htm">default compression method</A>.&nbsp; This provides an easy way to convert a large set of disk images to "deflate" format for reduced storage requirements, or back to LZW/2 for Apple II compatibility.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

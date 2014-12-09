@@ -1,0 +1,41 @@
+<HTML><HEAD>
+	
+	<TITLE>Tool - Disk Image Converter</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="convert">
+		<PARAM NAME="Keyword" VALUE="disk image">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Disk Image Converter</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This handy tool converts disk images from one format to another.&nbsp; In this case the word "format" refers to the image file format (2MG, SDK, etc.) rather than the disk filesystem format (DOS, ProDOS).&nbsp; With this utility you can add and remove 2MG headers, change DOS-order disks to ProDOS-order, convert 5.25" floppies to nibblized formats, and so on.&nbsp; Read more about disk images <A HREF="t18.htm">here</A>.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Start by selecting the image to open.&nbsp; If the sector ordering cannot be determined, or if you have "Confirm disk image format" enabled in <A HREF="t259.htm">Disk Image preferences</A>, you will be prompted to specify it.&nbsp; (You will also be able to set the filesystem format, but that actually has no effect on the conversion process.&nbsp; If it couldn't be determined, the dialog will show "Generic ProDOS blocks".)</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">After the image has been opened and examined, you will be asked to select the format of the new image.&nbsp; One or more of the choices may be unavailable depending on the source image format.&nbsp; For example, only 5.25" floppy images can be converted to nibble format, and only 3.5" 800K floppies can be converted to DiskCopy 4.2.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can also choose to compress the file with gzip.&nbsp; This makes the file smaller and adds a ".gz" extension to the filename.&nbsp; ShrinkIt archives are already compressed, so the gzip flag is ignored.&nbsp; A few emulators and utilities can handle DOS-order images with gzip (.do.gz), but generally speaking you should only add gzip compression if you're planning to store the images rather than use them.&nbsp; The "gzip" checkbox is disabled for images larger than 32MB, because CiderPress doesn't open compressed images larger than that.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Once you have selected the format, click "OK".&nbsp; You will be prompted for the name of the new archive.&nbsp; If you don't specify an extension, the correct one will be added for you.&nbsp; Click "Save" to write the image.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Most disk images are copied as a series of blocks, either ProDOS blocks or pairs of sectors on a 16-sector floppy.&nbsp; If you are copying from a nibble format to a sector format, any unreadable blocks will be skipped.&nbsp; A warning dialog will let you know how many had to be skipped over.&nbsp; If you copy from a nibble format to a new image with the same nibble format (e.g. you're just adding or removing a 2MG header), the data is copied as nibble tracks, and any errors or copy protection are left undisturbed.&nbsp; If the format changes, e.g. you're copying from ".nib" to ".nb2" or ".app", it may not be possible to copy the data directly because the formats are incompatible.&nbsp; In such cases the image will be copied as formatted blocks, converting in and out of nibbles as appropriate.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You will be offered the opportunity to open the image in CiderPress to test it.&nbsp; As with all disk images, this only works if the image has a recognizable filesystem.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The recommended image formats are:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;text-indent:-17pt;margin-left:35pt;"><FONT FACE="MS Sans Serif" SIZE="2"><U>5.25" disks</U>: DOS-order .DO, or (if necessary) .NIB</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;text-indent:-17pt;margin-left:35pt;"><FONT FACE="MS Sans Serif" SIZE="2"><U>3.5" disks</U>: ProDOS-order .PO or .2MG</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;text-indent:-17pt;margin-left:35pt;"><FONT FACE="MS Sans Serif" SIZE="2"><U>anything else</U>: ProDOS-order .PO or .2MG</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">These will work with the broadest set of emulators and utilities.&nbsp; Disk images that are 2GB or larger must be stored in .PO format.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Nibble and 2MG formats can store a volume number that DOS uses.&nbsp; CiderPress takes care to preserve this value when converting between formats.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Comments in 2MG files are currently lost when images are converted.&nbsp; This may be fixed in a future version of CiderPress.
+</FONT>
+</P>
+</BODY></HTML>

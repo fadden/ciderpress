@@ -1,0 +1,33 @@
+<HTML><HEAD>
+	
+	<TITLE>Preferences - Disk Image</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="disk">
+		<PARAM NAME="Keyword" VALUE="image">
+		<PARAM NAME="Keyword" VALUE="preferences">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Disk Image Preferences</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You can access the Disk Image Preferences by selecting "Preferences..." from the "Edit" menu, and then clicking on the "Disk Images" tab.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>General</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If "confirm disk image format" is enabled, you will be shown the <A HREF="t20.htm">Disk Image Characteristics</A> dialog whenever a disk image is opened.&nbsp; This gives you an opportunity to see what format CiderPress believes the disk is in, and to override it.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "default to read-only when opening volumes" setting determines whether the "read-only" box is checked in the Open Volume dialog.&nbsp; This should normally be set as a safety feature, but if you find yourself writing to physical disks frequently, you can save yourself a click by disabling this option.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">"Allow write access to physical disk 0" disabled a safety feature.&nbsp; On most systems, physical disk 0 is your boot disk (i.e. C:\).&nbsp; If you have multiple drives, this may not be the case.&nbsp; By default, CiderPress prevents you from opening physical disk 0 for writing; if you set this checkbox, write access will be allowed.&nbsp; It's best to leave this disabled unless you get a message that says, "Unable to open '80:\': for safety, write access to this volume is forbidden" while trying to open a disk that you are sure contains Apple II data.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="3"><B>ProDOS</B></FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">When Apple released GS/OS, they added the ability to have lower-case letters and spaces in file and volume names.&nbsp; This made file listings nicer to look at, but broke compatibility with versions of ProDOS 8 older than v1.8.&nbsp; If "allow lower-case letters and spaces in filenames" is enabled, files added to ProDOS disks will use mixed-case filenames.&nbsp; If disabled, all filenames are stored in upper case.&nbsp; Uncheck this item for best compatibility.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "use 'sparse' allocation for empty blocks" option enables a handy space-saving feature.&nbsp; Disk blocks filled entirely with zeroes aren't actually written to disk.&nbsp; Every version of ProDOS supports this feature, so there's no real reason to disable it, but it's there if you want to experiment.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

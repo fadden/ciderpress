@@ -1,0 +1,35 @@
+<HTML><HEAD>
+	
+	<TITLE>Convert File Archive to Disk Image</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="convert">
+		<PARAM NAME="Keyword" VALUE="disk image">
+		<PARAM NAME="Keyword" VALUE="file archive">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Convert File Archive to Disk Image</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">With this feature, you can copy part or all of a ShrinkIt file archive to a new ProDOS volume in a single step.&nbsp; When combined with the "convert disk image to file archive" feature, it's possible to resize ProDOS disks, converting 140K floppies to 800K floppies or even 32MB hard drive images.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The images created are always unadorned ProDOS-order (.PO) files.&nbsp; If you need to have it in a different format, you can use the <A HREF="t187.htm">Disk Image Converter</A> to change it.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Open a file archive and highlight the files you want to convert.&nbsp; Items will be converted in the order that they appear, so if you want to leave the order undisturbed make sure you have them sorted in the original order (<A HREF="t50.htm">more information on this</A>).&nbsp; Select "Convert to disk archive..." from the Actions menu.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Choose the size of the disk to create from the set shown.&nbsp; Standard removable media and hard drive sizes are available.&nbsp; If you're not sure how much space the files require, click the "Compute" button.&nbsp; The size requirements will be determined by creating a temporary 32MB volume with the selected files and adjusting for system overhead.&nbsp; Any size options that won't work will be dimmed.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Filenames on ProDOS disks must start with a letter, be composed entirely of letters, numbers, and dots ('.'), and can be at most 15 characters long.&nbsp; Any invalid characters will be stripped, and long filenames will be truncated.&nbsp; CiderPress will try to preserve filename extensions (e.g. ".jpg"), and will make filenames that reduce to the same thing unique.&nbsp; For example, "my&amp;&amp;file" and "my__file" both convert to "myfile", so the first is stored as "myfile" and the second as "myfile1".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">ProDOS stores filenames using upper case letters only.&nbsp; A modification added for the benefit of the GS/OS ProDOS FST allows mixed-case names with spaces in them, but the method used to store the case information can confuse older versions of ProDOS 8.&nbsp; The "Allow lower-case ProDOS names" option in <A HREF="t259.htm">Disk Image Preferences</A> lets you tell CiderPress whether to create lower-case names on ProDOS disks.&nbsp; If you're planning to use the disk with a pre-v1.8 version of ProDOS 8, you should not enable the feature, or your files may be inaccessible.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The volume directory on a ProDOS disk holds at most 51 files.&nbsp; If you need to put more than 51 files onto a ProDOS disk, make sure some or all of them are in folders, which do not have a limit.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you are converting a ShrinkIt archive that contains a disk image, the disk image will be converted as a ProDOS-order (.PO) file.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">For performance reasons this feature holds most of the files in memory during the operation, making this somewhat memory-intensive.&nbsp; If you are working with 32MB hard drive partitions, performance on systems with insufficient RAM may suffer.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

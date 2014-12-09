@@ -1,0 +1,41 @@
+<HTML><HEAD>
+	
+	<TITLE>Appendix - Administrator Privileges</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="administrator">
+		<PARAM NAME="Keyword" VALUE="win2k">
+		<PARAM NAME="Keyword" VALUE="winxp">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Administrator Privileges</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Windows 2000, Windows XP, and presumably any subsequent version of Windows requires "administrator" privileges to access logical and physical devices directly.&nbsp; This is required because the direct block access bypasses normal file access control mechanisms.&nbsp; You either need to log in as an administrator to use the device-access features of CiderPress, or upgrade the privilege level of your non-administrator account.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Most Win2K/XP users are set up with administrator access, but some may not be.&nbsp; CiderPress will tell you if devices are failing to open because of access permissions.&nbsp; To gain administrator access, you have to start by having administrator access to the machine.&nbsp; Yes, this is a bit of a chicken and egg problem, but there's no way around it.&nbsp; If you don't know how to log in as administrator, ask the person who set up your computer.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Windows 2000:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">From the "Start" menu, select "Settings" and then "Control Panels".</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Open the "Users and Passwords" control panel.&nbsp; If you're not allowed to do this, you're not an administrator, and cannot proceed further.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">You should see a list of users on the machine.&nbsp; Find the username you log in as, and make sure that "Administrator" shows up in the list of groups.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">If you're not in the "administrator" group, click on the "Advanced" tab, and click the "Advanced" button to bring up the "Local Users and Groups" dialog.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Click on the "Users" folder on the left side, then click on your user name on the right side.&nbsp; From the "Action" menu select "Properties".</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Click the "Member Of" tab.&nbsp; Click the "Add" button to open the "Select Groups" dialog.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Click on "Administrators".&nbsp; Click "Add".&nbsp; Click "OK" in this dialog and the previous one.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Close the dialog boxes.&nbsp; You should be all set.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Windows XP:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:17pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">From the "Start" menu, select "Control Panel".</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Click on "User Accounts".&nbsp; If you only see the current account, and it says "limited user", you're not an administator and cannot proceed further.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Click on the account you want to change.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Click on "Change my account type".</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Click the "Computer Administrator" radio button.&nbsp; Click "change account type".</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Close the dialog boxes.&nbsp; You should be all set.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Win9x/ME does not have the concept of user privilege levels, so none of the above is necessary.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

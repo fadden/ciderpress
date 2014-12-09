@@ -1,0 +1,26 @@
+<HTML><HEAD>
+	
+	<TITLE>Re-Compress Entries</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="compress">
+		<PARAM NAME="Keyword" VALUE="re-compress">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Re-Compress Entries</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">This feature is only enabled for ShrinkIt archives, because disk images don't have compressed entries and Binary II archives are always opened read-only in CiderPress.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Use this function to change the way files and archived disk images are compressed.&nbsp; ShrinkIt archives created with ProDOS 8 ShrinkIt or the original NuLib are compressed with "dynamic LZW/1", while archives created with GS/ShrinkIt or NuLib2 are compressed with the slightly enhanced "dynamic LZW/2".&nbsp; You may want to use the gzip "deflate" algorithm to reduce the size of the files even further.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Be aware that not all compression formats can be unpacked with all software.&nbsp; The best overall choice is "dynamic LZW/2".&nbsp; If the files will only ever be opened with CiderPress or NuLib2, you may want to use "deflate".&nbsp; See the <A HREF="t69.htm">Compression Algorithms page</A> for more information about the algorithms and application compatibility.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Each fork of each file is expanded and re-compressed individually.&nbsp; The files are read in batches, compressed, and written back out.&nbsp; If you cancel the process, entries that have previously been written out will remain in their re-compressed state.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">At the end of the process a dialog appears showing the size before and after of the files in the archive.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;">
+</P>
+</BODY></HTML>

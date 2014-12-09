@@ -243,9 +243,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Help\CIDERPRESS.HLP" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="AboutDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

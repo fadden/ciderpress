@@ -1,0 +1,65 @@
+<HTML><HEAD>
+	
+	<TITLE>Opening a Volume</TITLE>
+	<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+		<PARAM NAME="Keyword" VALUE="cf">
+		<PARAM NAME="Keyword" VALUE="cffa">
+		<PARAM NAME="Keyword" VALUE="open">
+		<PARAM NAME="Keyword" VALUE="raw">
+		<PARAM NAME="Keyword" VALUE="volume">
+	</OBJECT>
+	<META NAME="AUTHOR" CONTENT="Copyright (C) 2014 by CiderPress authors">
+	<META NAME="GENERATOR" CONTENT="HelpScribble 7.8.8">
+	<STYLE> span { display: inline-block; }</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">Opening a Volume</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">In some circumstances it is useful to open a raw disk volume.&nbsp; Two common examples are ProDOS-formatted <A HREF="t244.htm">1.4MB floppy disks and CFFA flash cards</A>.&nbsp; CiderPress allows you to access ProDOS and HFS filesystems directly.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="4">WARNING:</FONT><FONT FACE="MS Sans Serif" SIZE="2"> it's possible to destroy all data on your hard drive.&nbsp; <B>Make sure</B> you're opening the right volume!&nbsp; When in doubt, open the disk in "read only" mode by checking the "read only" checkbox.</FONT><FONT FACE="MS Sans Serif" SIZE="2">&nbsp; As a safety measure, "read only" is set by default, and CiderPress will not allow you to open "C:\" or physical drive 0 if read-only mode is disabled.&nbsp; Always close the volume (with File-&gt;Close) before ejecting removable media.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Not all devices will work under all operating systems.&nbsp; Please check the hardware compatibility list on the <A HREF="http://a2ciderpress.com/hardware.htm">faddenSoft web site</A>.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Disks can be opened as "logical" or "physical" volumes in Windows.&nbsp; Understanding the distinction is important.&nbsp; The basic difference is that a "logical" volume has a drive letter associated with it (e.g. "A:\" for your first floppy drive), while a "physical" volume is numbered (e.g. physical device 0 is your primary hard drive).&nbsp; From the operating system's perspective, a "physical" disk has a partition table in block 0 that describes one or more "logical" volumes.&nbsp; Floppy disks are an exception; for them, "logical" and "physical" are equivalent.&nbsp; A CF card reader may present itself to the system as a physical disk, in which case Windows will try to find a partition table in block 0.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">ProDOS and HFS volumes don't have a partition table in block 0, which can cause some confusion.&nbsp; In some cases you will see a "physical" volume for the CF card but no "logical" volume.&nbsp; In others the "logical" volume will appear and will be as large as the "physical" disk.&nbsp; If Windows thinks it has a valid partition table, the "logical" volume may be a small subset of the "physical" disk.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The bottom line is that it's best to use "physical" disks whenever possible.&nbsp; However, it's not always possible.&nbsp; You can't treat a floppy drive as a "physical" disk in Windows 2000, and access to "physical" hard drives in Win9x/ME is tricky.&nbsp; You have to access floppies as "logical" volumes under Win2K, but if you do that under Win98 you will have terrible performance in some circumstances.&nbsp; It would be nice if CiderPress could automatically do the right thing in all cases, but every CF card reader is different, so CiderPress tries not to limit your options.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CD-ROM drives have their own access method.&nbsp; No version of Windows makes it easy to read blocks from a CD-ROM with an unrecognized filesystem format.&nbsp; Under Win2K/XP, CiderPress relies on a technology called SPTI (SCSI Pass-Through Interface) to access the disc.&nbsp; Select the drive you want from the "logical" list, by letter (e.g. "D:\").&nbsp; Under Win98/ME, it's necessary to use an ASPI driver (Advanced SCSI Programming Interface), just like CD recording applications do.&nbsp; CiderPress will look for "wnaspi32.dll", and use it if found (Win98 includes it -- look in the About box to see if it was loaded successfully).&nbsp; CD-ROM drives show up in the "physical" list, described by manufacturer and model number.&nbsp; Some external CD-ROM drives may not show up in the list.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Generally speaking, SPTI and ASPI have equivalent performance.&nbsp; The only notable difference is that SPTI requires exclusive access to a device, so you can't have a CD-ROM open in the file list and then open it in the volume copier.&nbsp; Some ASPI layers will pick up devices other than CD-ROM drives, such as SCSI hard drives, Zip drives, and even CF card readers.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Hard drives partitioned for an Apple II or Macintosh can be accessed if attached to an IDE or SCSI connector.&nbsp; Under Win9x/ME you can only access drives that the ASPI layer can find, which usually means you can only get to SCSI hard drives.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Here's what you should do:</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">In Windows 2000/XP:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">Use "A:\" to access your floppy drive.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Use "D:\" (or something similar) to access your CD-ROM drive.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Use "physical disk N" to access hard drives.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Use "physical disk N" to access your CF card if that's an option.&nbsp; If not, use the logical drive (e.g. "M:\"), but be aware that the card may appear to have a different size when formatted for CFFA vs. Windows.&nbsp; With some card readers, the size shown for the card may be wildly inaccurate, especially on Win2K or earlier.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">In Windows 9x/ME:</FONT></P>
+<UL STYLE="margin-top:0;margin-bottom:0;margin-left:10pt;"><LI><FONT FACE="MS Sans Serif" SIZE="2">Use "floppy drive N" to access floppies.&nbsp; CiderPress will actually hide "A:\" if the disk doesn't have a Windows filesystem, because "logical" access to such disks is very slow.&nbsp; (It will otherwise show it, so you can identify your Windows disks.)&nbsp; After overwriting a disk, Windows will continue to show the old volume label until you eject the disk.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Select your CD-ROM drive by vendor name and model number.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Select SCSI hard drives by vendor name and model number.</FONT>
+<LI><FONT FACE="MS Sans Serif" SIZE="2">Use the logical drive (e.g. "M:\") to access CF cards.&nbsp; If the logical drive shows up in the list when you insert a Windows-formatted card but not with a ProDOS-formatted card, you have a brain-damaged CF card reader driver, and it's not going to work.</FONT></UL>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">Access to physical devices other than floppy disks in Win2K/XP requires <A HREF="t262.htm">"administrator" privileges</A>.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">If you un-check the "read only" box, Win2K/XP will not allow you to open the volume a second time, e.g. you can't have a disk open in read-write mode and then open it again in the volume copier.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">The "filename" for physical disks will show up as two digits, e.g. "81:\" for the second physical disk.&nbsp; This is an artifact of the way the PC BIOS works.&nbsp; CD-ROMs and hard drives under Win9x/ME will look like "ASPI:0:1:0\".</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">You cannot create or access files larger than 2GB under Win9x/ME.&nbsp; This is an operating system limit, and cannot be circumvented.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress has a self-imposed 8GB volume limit (as a "reasonableness" test to keep it from running amok).&nbsp; This should be large enough to handle CF cards and hard drives partitioned for use on an Apple II.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">CiderPress does not detect media ejections or swapping.&nbsp; Do not eject disks or CF cards while CiderPress has them open.</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">&nbsp;</FONT></P>
+<P STYLE="margin-top:0;margin-bottom:0;"><FONT FACE="MS Sans Serif" SIZE="2">In some cases you may need to be patient!&nbsp; Scanning the contents of a CD-ROM with 10,000 files spread across several 32MB ProDOS volumes can take a few minutes.
+</FONT>
+</P>
+</BODY></HTML>

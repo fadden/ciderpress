@@ -1,0 +1,161 @@
+; CiderPress Help
+; Copyright (C) 2014 by CiderPress authors
+
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=CiderPress.chm
+Contents file=CiderPress.hhc
+Default Window=main
+Default topic=html\t10.htm
+Display compile progress=No
+Full-text search=Yes
+Index file=CiderPress.hhk
+Language=0x409 English (United States)
+Title=CiderPress Help
+
+[WINDOWS]
+main="CiderPress Help","CiderPress.hhc","CiderPress.hhk","html\t10.htm",,,,,,0x40520,,0x200e,[150,50,750,550],,,,,,,0
+
+
+[FILES]
+html\t10.htm
+html\t13.htm
+html\t18.htm
+html\t19.htm
+html\t20.htm
+html\t21.htm
+html\t22.htm
+html\t23.htm
+html\t24.htm
+html\t25.htm
+html\t28.htm
+html\t29.htm
+html\t38.htm
+html\t39.htm
+html\t41.htm
+html\t42.htm
+html\t43.htm
+html\t44.htm
+html\t45.htm
+html\t46.htm
+html\t47.htm
+html\t48.htm
+html\t49.htm
+html\t50.htm
+html\t51.htm
+html\t52.htm
+html\t53.htm
+html\t54.htm
+html\t55.htm
+html\t56.htm
+html\t57.htm
+html\t58.htm
+html\t59.htm
+html\t60.htm
+html\t61.htm
+html\t62.htm
+html\t63.htm
+html\t64.htm
+html\t65.htm
+html\t66.htm
+html\t67.htm
+html\t68.htm
+html\t69.htm
+html\t109.htm
+html\t111.htm
+html\t112.htm
+html\t187.htm
+html\t201.htm
+html\t203.htm
+html\t215.htm
+html\t216.htm
+html\t233.htm
+html\t241.htm
+html\t244.htm
+html\t245.htm
+html\t247.htm
+html\t257.htm
+html\t258.htm
+html\t259.htm
+html\t262.htm
+html\t263.htm
+html\t268.htm
+html\t272.htm
+html\t273.htm
+html\t277.htm
+html\t284.htm
+
+[MAP]
+#define html\t10 10
+#define html\t109 109
+#define html\t111 111
+#define html\t112 112
+#define html\t13 13
+#define html\t18 18
+#define html\t187 187
+#define html\t19 19
+#define html\t20 20
+#define html\t201 201
+#define html\t203 203
+#define html\t21 21
+#define html\t215 215
+#define html\t216 216
+#define html\t22 22
+#define html\t23 23
+#define html\t233 233
+#define html\t24 24
+#define html\t241 241
+#define html\t244 244
+#define html\t245 245
+#define html\t247 247
+#define html\t25 25
+#define html\t257 257
+#define html\t258 258
+#define html\t259 259
+#define html\t262 262
+#define html\t263 263
+#define html\t268 268
+#define html\t272 272
+#define html\t273 273
+#define html\t277 277
+#define html\t28 28
+#define html\t284 284
+#define html\t29 29
+#define html\t38 38
+#define html\t39 39
+#define html\t41 41
+#define html\t42 42
+#define html\t43 43
+#define html\t44 44
+#define html\t45 45
+#define html\t46 46
+#define html\t47 47
+#define html\t48 48
+#define html\t49 49
+#define html\t50 50
+#define html\t51 51
+#define html\t52 52
+#define html\t53 53
+#define html\t54 54
+#define html\t55 55
+#define html\t56 56
+#define html\t57 57
+#define html\t58 58
+#define html\t59 59
+#define html\t60 60
+#define html\t61 61
+#define html\t62 62
+#define html\t63 63
+#define html\t64 64
+#define html\t65 65
+#define html\t66 66
+#define html\t67 67
+#define html\t68 68
+#define html\t69 69
+
+[TEXT POPUPS]
+PopUp.txt
+PopUpIds.h
+
+[INFOTYPES]
+
