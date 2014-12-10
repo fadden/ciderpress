@@ -5,7 +5,7 @@ http://www.faddensoft.com/
 CiderPress
 http://a2ciderpress.com/
 4.0.0d1
-41982
+41983
 C:\DATA\faddenSoft\fs.ico
 Copyright © 2014 CiderPress project authors.  All rights reserved.
 C:\Src\CiderPress\DIST\ReadMe.txt
@@ -165,6 +165,20 @@ FALSE
 1
 FALSE
 +
+C:\Src\ciderpress\DIST\mfc120u.dll
+3
+0
+TRUE
+TRUE
+FALSE
+FALSE
+C:\Src\ciderpress\DIST\msvcr120.dll
+3
+0
+TRUE
+TRUE
+FALSE
+FALSE
 C:\Src\ciderpress\Release\diskimg5.dll
 3
 0
