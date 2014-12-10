@@ -8,4 +8,4 @@ CP/M, and RDOS filesystems.
 This program used to be shareware, but is now free.
 
 If you have any questions, please visit the CiderPress
-web site at http://ciderpress.sourceforge.net/.
+web site at http://a2ciderpress.com/.

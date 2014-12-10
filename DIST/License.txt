@@ -1,5 +1,5 @@
 End-User License Agreement for CiderPress
-Copyright (c) 2009, CiderPress project authors
+Copyright (c) 2014, CiderPress project authors
 All rights reserved.
 
 AGREEMENT.  After reading this agreement carefully, if you ("Customer") do
