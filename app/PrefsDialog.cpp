@@ -6,7 +6,9 @@
 #include "stdafx.h"
 #include "PrefsDialog.h"
 #include "ChooseDirDialog.h"
+#ifdef CAN_UPDATE_FILE_ASSOC
 #include "EditAssocDialog.h"
+#endif
 #include "Main.h"
 #include "NufxArchive.h"
 #include "resource.h"
@@ -29,7 +31,9 @@ BEGIN_MESSAGE_MAP(PrefsGeneralPage, CPropertyPage)
     ON_BN_CLICKED(IDC_PREF_PASTE_JUNKPATHS, OnChange)
     ON_BN_CLICKED(IDC_PREF_SUCCESS_BEEP, OnChange)
     ON_BN_CLICKED(IDC_COL_DEFAULTS, OnDefaults)
+#ifdef CAN_UPDATE_FILE_ASSOC
     ON_BN_CLICKED(IDC_PREF_ASSOCIATIONS, OnAssociations)
+#endif
     ON_MESSAGE(WM_HELP, OnHelpInfo)
     ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
@@ -75,6 +79,7 @@ void PrefsGeneralPage::OnDefaults(void)
     SetModified(TRUE);
 }
 
+#ifdef CAN_UPDATE_FILE_ASSOC
 void PrefsGeneralPage::OnAssociations(void)
 {
     EditAssocDialog assocDlg;
@@ -94,6 +99,7 @@ void PrefsGeneralPage::OnAssociations(void)
         SetModified(TRUE);
     }
 }
+#endif
 
 void PrefsGeneralPage::DoDataExchange(CDataExchange* pDX)
 {

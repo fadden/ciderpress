@@ -561,6 +561,7 @@ LONG MainWindow::OnLateInit(UINT, LONG)
      */
     fPreferences.LoadFromRegistry();
 
+#ifdef CAN_UPDATE_FILE_ASSOC
     /*
      * Check to see if we're registered; if we're not, and we've expired, it's
      * time to bail out.
@@ -596,6 +597,7 @@ LONG MainWindow::OnLateInit(UINT, LONG)
         result = confused;
         goto fail;
     }
+#endif /*CAN_UPDATE_FILE_ASSOC*/
 
     /*
      * Process command-line options, possibly loading an archive.
@@ -865,11 +867,13 @@ void MainWindow::ApplyNow(PrefsSheet* pPS)
     if (pPS->fGeneralPage.fOurAssociations != NULL) {
         LOGI("NEW ASSOCIATIONS!");
 
+#ifdef CAN_UPDATE_FILE_ASSOC
         for (int assoc = 0; assoc < gMyApp.fRegistry.GetNumFileAssocs(); assoc++)
         {
             gMyApp.fRegistry.SetFileAssoc(assoc,
                 pPS->fGeneralPage.fOurAssociations[assoc]);
         }
+#endif
 
         /* delete them so, if they hit "apply" again, we only update once */
         delete[] pPS->fGeneralPage.fOurAssociations;

@@ -57,7 +57,9 @@ protected:
     afx_msg void OnChange(void);
     afx_msg void OnChangeRange(UINT);
     afx_msg void OnDefaults(void);
+#ifdef CAN_UPDATE_FILE_ASSOC
     afx_msg void OnAssociations(void);
+#endif
     afx_msg LONG OnHelpInfo(UINT wParam, LONG lParam) {
         return MyApp::HandleHelpInfo((HELPINFO*) lParam);
     }

@@ -9,6 +9,7 @@
 #ifndef APP_REGISTRY_H
 #define APP_REGISTRY_H
 
+#ifdef CAN_UPDATE_FILE_ASSOC
 
 /*
  * All access to the registry (except for GetProfileInt/GetProfileString)
@@ -159,5 +160,7 @@ private:
     void ComputeKey(const char* chBuf, int salt, long* pKeyLo, long* pKeyHi);
     int VerifyKey(const char* user, const char* company, const char* key);
 };
+
+#endif
 
 #endif /*APP_REGISTRY_H*/

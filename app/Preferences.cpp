@@ -520,7 +520,7 @@ int Preferences::LoadFromRegistry(void)
                 GetString(fPrefMaps[i].registrySection, fPrefMaps[i].registryKey, sval));
             break;
         default:
-            LOGI("Invalid type %d on num=%d", fPrefMaps[i].type, i);
+            LOGW("Invalid type %d on num=%d", fPrefMaps[i].type, i);
             ASSERT(false);
             break;
         }
@@ -554,7 +554,7 @@ int Preferences::SaveToRegistry(void)
                 GetPrefString(fPrefMaps[i].num));
             break;
         default:
-            LOGI("Invalid type %d on num=%d", fPrefMaps[i].type, i);
+            LOGW("Invalid type %d on num=%d", fPrefMaps[i].type, i);
             ASSERT(false);
             break;
         }

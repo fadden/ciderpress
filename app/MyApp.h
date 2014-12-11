@@ -26,7 +26,9 @@ public:
     MyApp(LPCTSTR lpszAppName = NULL);
     virtual ~MyApp(void);
 
+#ifdef CAN_UPDATE_FILE_ASSOC
     MyRegistry  fRegistry;
+#endif
 
     const WCHAR* GetExeFileName(void) const { return fExeFileName; }
     const WCHAR* GetExeBaseName(void) const { return fExeBaseName; }

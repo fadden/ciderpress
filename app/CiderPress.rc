@@ -234,10 +234,10 @@ BEGIN
     LTEXT           "Using ASPI DLL v%ls",IDC_ASPI_VERS_TEXT,16,114,173,8
 END
 
-IDD_PREF_GENERAL DIALOG 0, 0, 263, 180
+IDD_PREF_GENERAL DIALOGEX 0, 0, 263, 180
 STYLE DS_SETFONT | DS_CONTEXTHELP | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "General"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Columns",IDC_STATIC,4,7,80,144
     CONTROL         "Pathname",IDC_COL_PATHNAME,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,12,19,65,10
@@ -261,13 +261,11 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,72,144,8
     CONTROL         "Show spaces as &underscores",IDC_PREF_SPACES_TO_UNDER,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,84,145,10
-    GROUPBOX        "System",IDC_STATIC,96,101,162,33
-    PUSHBUTTON      "File type &associations...",IDC_PREF_ASSOCIATIONS,104,113,92,14
-    GROUPBOX        "Miscellaneous",IDC_STATIC,96,136,162,38
+    GROUPBOX        "Miscellaneous",IDC_STATIC,96,102,162,38
     CONTROL         "Strip pathnames when pasting files",IDC_PREF_PASTE_JUNKPATHS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,147,144,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,117,144,10
     CONTROL         "Beep when actions complete successfully",IDC_PREF_SUCCESS_BEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,159,145,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,129,145,10
 END
 
 IDD_PREF_COMPRESSION DIALOGEX 0, 0, 212, 212

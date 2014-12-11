@@ -106,7 +106,9 @@ BOOL MyApp::InitInstance(void)
         LOGI("WriteProfileString failed");
 #endif
 
-    SetRegistryKey(fRegistry.GetAppRegistryKey());
+    // This causes functions like SetProfileInt to use the registry rather
+    // than a .INI file.  The registry key is "usually the name of a company".
+    SetRegistryKey(L"faddenSoft");
 
     //LOGI("Registry key is '%ls'", m_pszRegistryKey);
     //LOGI("Profile name is '%ls'", m_pszProfileName);
@@ -119,6 +121,7 @@ BOOL MyApp::InitInstance(void)
     //if (!WriteProfileString("SectionOne", "MyEntry", "test"))
     //  LOGI("WriteProfileString failed");
 
+#ifdef CAN_UPDATE_FILE_ASSOC
     /*
      * If we're installing or uninstalling, do what we need to and then
      * bail immediately.  This will hemorrhage memory, but I'm sure the
@@ -135,6 +138,7 @@ BOOL MyApp::InitInstance(void)
     }
 
     fRegistry.FixBasicSettings();
+#endif
 
     return TRUE;
 }

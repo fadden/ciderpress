@@ -7,6 +7,7 @@
  * Windows Registry operations.
  */
 #include "stdafx.h"
+#ifdef CAN_UPDATE_FILE_ASSOC
 #include "Registry.h"
 #include "Main.h"
 #include "MyApp.h"
@@ -212,15 +213,16 @@ void MyRegistry::FixBasicSettings(void) const
 void MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
     const WCHAR* exeName, int iconIdx) const
 {
-    LOGI(" Configuring '%ls' for '%ls'", appID, exeName);
+    LOGI(" ConfigureAppID '%ls' for '%ls'", appID, exeName);
 
     HKEY hAppKey = NULL;
     HKEY hIconKey = NULL;
 
     DWORD dw;
-    if (RegCreateKeyEx(HKEY_CLASSES_ROOT, appID, 0, REG_NONE,
+    LONG result;
+    if ((result = RegCreateKeyEx(HKEY_CLASSES_ROOT, appID, 0, REG_NONE,
         REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ, NULL,
-        &hAppKey, &dw) == ERROR_SUCCESS)
+        &hAppKey, &dw)) == ERROR_SUCCESS)
     {
         ConfigureAppIDSubFields(hAppKey, descr, exeName);
 
@@ -247,15 +249,15 @@ void MyRegistry::ConfigureAppID(const WCHAR* appID, const WCHAR* descr,
                     LOGI("  Set icon for '%ls' to '%ls'", appID,
                         (LPCWSTR) iconStr);
                 } else {
-                    LOGI("  WARNING: unable to set DefaultIcon  for '%ls' to '%ls'",
+                    LOGW("  WARNING: unable to set DefaultIcon  for '%ls' to '%ls'",
                         appID, (LPCWSTR) iconStr);
                 }
             }
         } else {
-            LOGI("WARNING: couldn't set up DefaultIcon for '%ls'", appID);
+            LOGW("WARNING: couldn't set up DefaultIcon for '%ls'", appID);
         }
     } else {
-        LOGI("WARNING: couldn't create AppID='%ls'", appID);
+        LOGW("WARNING: couldn't create AppID='%ls' (err=%ld)", appID, result);
     }
 
     RegCloseKey(hIconKey);
@@ -619,3 +621,4 @@ DWORD MyRegistry::RegDeleteKeyNT(HKEY hStartKey, LPCTSTR pKeyName) const
     
     return dwRtn;
 }
+#endif

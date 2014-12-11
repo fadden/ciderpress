@@ -8,7 +8,7 @@
  */
 #ifndef APP_EDITASSOCDIALOG_H
 #define APP_EDITASSOCDIALOG_H
-
+#ifdef CAN_UPDATE_FILE_ASSOC
 #include "resource.h"
 
 /*
@@ -53,4 +53,5 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
+#endif
 #endif /*APP_EDITASSOCDIALOG_H*/

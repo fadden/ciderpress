@@ -4,6 +4,7 @@
  * See the file LICENSE for distribution terms.
  */
 #include "stdafx.h"
+#ifdef CAN_UPDATE_FILE_ASSOC
 #include "EditAssocDialog.h"
 #include "MyApp.h"
 #include "Registry.h"
@@ -118,3 +119,5 @@ void EditAssocDialog::DoDataExchange(CDataExchange* pDX)
         }
     }
 }
+
+#endif
