@@ -17,7 +17,8 @@
  * "Open" and "Save As" dialogs do, because those want to choose normal files
  * only, while this wants to select a folder.
  *
- * TODO: Vista-style dialogs support folder selection.
+ * TODO: Vista-style dialogs support folder selection.  Consider switching
+ *  based on OS version.
  */
 class ChooseDirDialog : public CDialog {
 public:

@@ -520,6 +520,10 @@ public:
      *
      * It's based on the NuFileDetails class from NufxLib (which used to be
      * used everywhere).
+     *
+     * TODO: fix this
+     * TODO: may want to hold a raw 8-bit pathname for copy & paste, which
+     *  doesn't need to convert in and out of MacRoman
      */
     class FileDetails {
     public:

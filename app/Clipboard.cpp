@@ -12,9 +12,9 @@
 #include "PasteSpecialDialog.h"
 
 
-static const WCHAR kClipboardFmtName[] = L"faddenSoft:CiderPress:v1";
-const int kClipVersion = 1;     // should match "vN" in fmt name
-const unsigned short kEntrySignature = 0x4350;
+static const WCHAR kClipboardFmtName[] = L"faddenSoft:CiderPress:v2";
+const int kClipVersion = 2;     // should match "vN" in fmt name
+const uint16_t kEntrySignature = 0x4350;
 
 /*
  * Win98 is quietly dying on large (20MB-ish) copies.  Everything
@@ -48,10 +48,10 @@ const int kClipTextMult = 4;    // CF_OEMTEXT, CF_LOCALE, CF_UNICODETEXT*2
  * File collection header.
  */
 typedef struct FileCollection {
-    unsigned short  version;        // currently 1
-    unsigned short  dataOffset;     // offset to start of data
-    unsigned long   length;         // total length;
-    unsigned long   count;          // #of entries
+    uint16_t    version;        // currently 1
+    uint16_t    dataOffset;     // offset to start of data
+    uint32_t    length;         // total length;
+    uint32_t    count;          // #of entries
 } FileCollection;
 
 /* what kind of entry is this */
@@ -68,24 +68,27 @@ typedef enum EntryKind {
  * One of these per entry in the collection.
  *
  * The next file starts at (start + dataOffset + dataLen + rsrcLen + cmmtLen).
+ *
+ * TODO: filename should be 8-bit from original, not 16-bit conversion
  */
 typedef struct FileCollectionEntry {
-    unsigned short  signature;      // let's be paranoid
-    unsigned short  dataOffset;     // offset to start of data
-    unsigned short  fileNameLen;    // len of (8-bit) filename, in bytes
-    unsigned long   dataLen;        // len of data fork
-    unsigned long   rsrcLen;        // len of rsrc fork
-    unsigned long   cmmtLen;        // len of comments
-    unsigned long   fileType;
-    unsigned long   auxType;
-    time_t          createWhen;
-    time_t          modWhen;
-    unsigned char   access;         // ProDOS access flags
-    unsigned char   entryKind;      // GenericArchive::FileDetails::FileKind
-    unsigned char   sourceFS;       // DiskImgLib::DiskImg::FSFormat
-    unsigned char   fssep;          // filesystem separator char, e.g. ':'
+    uint16_t    signature;      // let's be paranoid
+    uint16_t    dataOffset;     // offset to start of data
+    uint16_t    fileNameLen;    // len of filename, in bytes
+    uint32_t    dataLen;        // len of data fork
+    uint32_t    rsrcLen;        // len of rsrc fork
+    uint32_t    cmmtLen;        // len of comments
+    uint32_t    fileType;
+    uint32_t    auxType;
+    int64_t     createWhen;     // time_t
+    int64_t     modWhen;        // time_t
+    uint8_t     access;         // ProDOS access flags
+    uint8_t     entryKind;      // GenericArchive::FileDetails::FileKind
+    uint8_t     sourceFS;       // DiskImgLib::DiskImg::FSFormat
+    uint8_t     fssep;          // filesystem separator char, e.g. ':'
 
-    /* data comes next: filename, then data, then resource, then comment */
+    /* data comes next: null-terminated WCHAR filename, then data fork, then
+       resource fork, then comment */
 } FileCollectionEntry;
 
 
@@ -103,7 +106,7 @@ void MainWindow::OnEditCopy(void)
     bool isOpen = false;
     HGLOBAL hGlobal;
     LPVOID pGlobal;
-    unsigned char* buf = NULL;
+    uint8_t* buf = NULL;
     long bufLen = -1;
 
     /* associate a number with the format name */
@@ -289,7 +292,7 @@ HGLOBAL MainWindow::CreateFileCollection(SelectionSet* pSelSet)
 
         if (pEntry->GetRecordKind() != GenericEntry::kRecordKindVolumeDir) {
             totalLength += sizeof(FileCollectionEntry);
-            totalLength += wcslen(pEntry->GetPathName()) +1;
+            totalLength += (wcslen(pEntry->GetPathName()) +1) * sizeof(WCHAR);
             numFiles++;
             if (pEntry->GetRecordKind() != GenericEntry::kRecordKindDirectory) {
                 totalLength += (long) pEntry->GetDataForkLen();
@@ -361,7 +364,7 @@ HGLOBAL MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     void* buf;
 
     remainingLen = totalLength - sizeof(FileCollection);
-    buf = (unsigned char*) pGlobal + sizeof(FileCollection);
+    buf = (uint8_t*) pGlobal + sizeof(FileCollection);
     pSelSet->IterReset();
     pSelEntry = pSelSet->IterNext();
     while (pSelEntry != NULL) {
@@ -384,7 +387,7 @@ HGLOBAL MainWindow::CreateFileCollection(SelectionSet* pSelSet)
     }
 
     ASSERT(remainingLen == 0);
-    ASSERT(buf == (unsigned char*) pGlobal + totalLength);
+    ASSERT(buf == (uint8_t*) pGlobal + totalLength);
 
     /*
      * Write the header.
@@ -421,8 +424,8 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
     long* pBufLen)
 {
     FileCollectionEntry collEnt;
-    CString errStr, dummyStr;
-    unsigned char* buf = (unsigned char*) *pBuf;
+    CString errStr;
+    uint8_t* buf = (uint8_t*) *pBuf;
     long remLen = *pBufLen;
 
     errStr.LoadString(IDS_CLIPBOARD_WRITEFAILURE);
@@ -457,25 +460,25 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
     memset(&collEnt, 0x99, sizeof(collEnt));
     collEnt.signature = kEntrySignature;
     collEnt.dataOffset = sizeof(collEnt);
-    collEnt.fileNameLen = wcslen(pEntry->GetPathName()) +1;
+    collEnt.fileNameLen = (wcslen(pEntry->GetPathName()) +1) * sizeof(WCHAR);
     if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory) {
         collEnt.dataLen = collEnt.rsrcLen = collEnt.cmmtLen = 0;
     } else {
-        collEnt.dataLen = (unsigned long) pEntry->GetDataForkLen();
-        collEnt.rsrcLen = (unsigned long) pEntry->GetRsrcForkLen();
+        collEnt.dataLen = (uint32_t) pEntry->GetDataForkLen();
+        collEnt.rsrcLen = (uint32_t) pEntry->GetRsrcForkLen();
         collEnt.cmmtLen = 0;        // CMMT FIX -- length unknown??
     }
     collEnt.fileType = pEntry->GetFileType();
     collEnt.auxType = pEntry->GetAuxType();
     collEnt.createWhen = pEntry->GetCreateWhen();
     collEnt.modWhen = pEntry->GetModWhen();
-    collEnt.access = (unsigned char) pEntry->GetAccess();
-    collEnt.entryKind = (unsigned char) entryKind;
+    collEnt.access = (uint8_t) pEntry->GetAccess();
+    collEnt.entryKind = (uint8_t) entryKind;
     collEnt.sourceFS = pEntry->GetSourceFS();
     collEnt.fssep = pEntry->GetFssep();
 
     /* verify there's enough space to hold everything */
-    if ((unsigned long) remLen < collEnt.fileNameLen +
+    if ((uint32_t) remLen < collEnt.fileNameLen +
         collEnt.dataLen + collEnt.rsrcLen + collEnt.cmmtLen)
     {
         ASSERT(false);
@@ -511,13 +514,15 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
         else
             which = GenericEntry::kDataThread;
 
+        CString extractErrStr;
         result = pEntry->ExtractThreadToBuffer(which, &bufCopy, &lenCopy,
-                    &dummyStr);
+                    &extractErrStr);
         if (result == IDCANCEL) {
             errStr.LoadString(IDS_CANCELLED);
             return errStr;
         } else if (result != IDOK) {
-            LOGI("ExtractThreadToBuffer (data) failed");
+            LOGW("ExtractThreadToBuffer (data) failed: %ls",
+                (LPCWSTR) extractErrStr);
             return errStr;
         }
 
@@ -533,13 +538,15 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
         lenCopy = remLen;
         which = GenericEntry::kRsrcThread;
 
+        CString extractErrStr;
         result = pEntry->ExtractThreadToBuffer(which, &bufCopy, &lenCopy,
-                    &dummyStr);
+                    &extractErrStr);
         if (result == IDCANCEL) {
             errStr.LoadString(IDS_CANCELLED);
             return errStr;
         } else if (result != IDOK) {
-            LOGI("ExtractThreadToBuffer (rsrc) failed");
+            LOGI("ExtractThreadToBuffer (rsrc) failed: %ls",
+                (LPCWSTR) extractErrStr);
             return errStr;
         }
 
@@ -717,7 +724,7 @@ CString MainWindow::ProcessClipboard(const void* vbuf, long bufLen,
 {
     FileCollection fileColl;
     CString errMsg, storagePrefix;
-    const unsigned char* buf = (const unsigned char*) vbuf;
+    const uint8_t* buf = (const uint8_t*) vbuf;
     DiskImgLib::A2File* pTargetSubdir = NULL;
     XferFileOptions xferOpts;
     bool xferPrepped = false;
@@ -729,7 +736,7 @@ CString MainWindow::ProcessClipboard(const void* vbuf, long bufLen,
      * Pull the header out.
      */
     if (bufLen < sizeof(fileColl)) {
-        LOGI("Clipboard contents too small!");
+        LOGW("Clipboard contents too small!");
         goto bail;
     }
     memcpy(&fileColl, buf, sizeof(fileColl));
@@ -739,7 +746,7 @@ CString MainWindow::ProcessClipboard(const void* vbuf, long bufLen,
      * boundaries, which screws up our "bufLen > 0" while condition below.
      */
     if ((long) fileColl.length > bufLen) {
-        LOGI("GLITCH: stored len=%ld, clip len=%ld",
+        LOGW("GLITCH: stored len=%ld, clip len=%ld",
             fileColl.length, bufLen);
         goto bail;
     }
@@ -778,7 +785,7 @@ CString MainWindow::ProcessClipboard(const void* vbuf, long bufLen,
 
     if (pTargetSubdir != NULL) {
         storagePrefix = pTargetSubdir->GetPathName();
-        LOGI("--- using storagePrefix '%ls'", (LPCWSTR) storagePrefix);
+        LOGD("--- using storagePrefix '%ls'", (LPCWSTR) storagePrefix);
     }
 
     /*
@@ -795,11 +802,12 @@ CString MainWindow::ProcessClipboard(const void* vbuf, long bufLen,
     LOGI("+++ Starting paste, bufLen=%ld", bufLen);
     while (bufLen > 0) {
         FileCollectionEntry collEnt;
-        CString fileName, processErrStr;
+        CString fileName;
+        CString processErrStr;
 
         /* read the entry info */
         if (bufLen < sizeof(collEnt)) {
-            LOGI("GLITCH: bufLen=%ld, sizeof(collEnt)=%d",
+            LOGW("GLITCH: bufLen=%ld, sizeof(collEnt)=%d",
                 bufLen, sizeof(collEnt));
             ASSERT(false);
             goto bail;
@@ -823,14 +831,15 @@ CString MainWindow::ProcessClipboard(const void* vbuf, long bufLen,
             ASSERT(false);
             goto bail;
         }
-        fileName = buf;
+        // TODO: consider moving filename as raw 8-bit data
+        fileName = (const WCHAR*) buf;
         buf += collEnt.fileNameLen;
         bufLen -= collEnt.fileNameLen;
 
-        //LOGI("+++  pasting '%s'", fileName);
+        LOGD("+++  pasting '%ls'", (LPCWSTR) fileName);
 
         /* strip the path (if requested) and prepend the storage prefix */
-        ASSERT(fileName.GetLength() == collEnt.fileNameLen -1);
+        ASSERT((fileName.GetLength() +1 ) * sizeof(WCHAR) == collEnt.fileNameLen);
         if (pasteJunkPaths && collEnt.fssep != '\0') {
             int idx;
             idx = fileName.ReverseFind(collEnt.fssep);
@@ -905,8 +914,8 @@ CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
 {
     GenericArchive::FileDetails::FileKind entryKind;
     GenericArchive::FileDetails details;
-    unsigned char* dataBuf = NULL;
-    unsigned char* rsrcBuf = NULL;
+    uint8_t* dataBuf = NULL;
+    uint8_t* rsrcBuf = NULL;
     long dataLen, rsrcLen, cmmtLen;
     CString errMsg;
 
@@ -915,7 +924,7 @@ CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
 
     details.entryKind = entryKind;
     details.origName = L"Clipboard";
-    details.storageName = pathName;
+    details.storageName = pathName;     // TODO MacRoman convert
     details.fileSysFmt = (DiskImg::FSFormat) pCollEnt->sourceFS;
     details.fileSysInfo = pCollEnt->fssep;
     details.access = pCollEnt->access;
@@ -970,11 +979,11 @@ CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
 
     if (hasData) {
         if (pCollEnt->dataLen == 0) {
-            dataBuf = new unsigned char[1];
+            dataBuf = new uint8_t[1];
             dataLen = 0;
         } else {
             dataLen = pCollEnt->dataLen;
-            dataBuf = new unsigned char[dataLen];
+            dataBuf = new uint8_t[dataLen];
             if (dataBuf == NULL)
                 return "memory allocation failed.";
             memcpy(dataBuf, buf, dataLen);
@@ -988,11 +997,11 @@ CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
 
     if (hasRsrc) {
         if (pCollEnt->rsrcLen == 0) {
-            rsrcBuf = new unsigned char[1];
+            rsrcBuf = new uint8_t[1];
             rsrcLen = 0;
         } else {
             rsrcLen = pCollEnt->rsrcLen;
-            rsrcBuf = new unsigned char[rsrcLen];
+            rsrcBuf = new uint8_t[rsrcLen];
             if (rsrcBuf == NULL)
                 return "Memory allocation failed.";
             memcpy(rsrcBuf, buf, rsrcLen);
