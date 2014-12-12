@@ -146,35 +146,8 @@ This library can be built under Linux or Windows. One of my key motivations
 for making it work under Linux was the availability of "valgrind". Similar
 tools for Windows usually very expensive or inferior (or both).
 
-The basic classes, defined in DiskImg.h, are:
-
-- DiskImg.  This represents a single disk image, which may have sub-images.
-Operations on a DiskImg are roughly equivalent to a device driver:
-you can read and write blocks, detect image formats, and create new
-images.
-- DiskFS.  Paired with a DiskImg, this is roughly equivalent to
-a GS/OS FST (FileSystem Translator).  You can perform file operations
-like rename and delete, format disks, see how much space is available,
-and search for sub-volumes.
-- A2File.  Represents a file on a DiskFS.  This holds the file's name,
-attributes, track/sector or block lists, and provides a call to open
-a file.
-- A2FileDescr.  Represents an open file.  You can read or write data.
-Sub-classes are defined in DiskImgDetail.h.  Most applications won't need
-to access this header file.  Each Apple II filesystem defines sub-classes
-of DiskFS, A2File, and A2FileDescr.
-
-In an ideal world, the code would mimic the GS/OS file operations.
-In practice, CiderPress didn't need the full range of capabilities,
-so the functions have some basic limitations:
-
-- On ProDOS and HFS, you can only open one fork at a time. This allowed me to use simpler data structures.
-- Files are expected to be written in one large chunk. This reduced the complexity of the task enormously, because there's so much less that can go wrong.
-
-Some things that could be improved:
-
-- The overall structure of the filesystem handlers evolved over time. There is some amount of redundancy that could be factored out.
-- The API, especially in DiskImg, could probably be simplified.
+An overview of the library can be found in the
+[DiskImg README](diskimg/README.md).
 
 The library depends on NufxLib and zlib for access to compressed images.
 
