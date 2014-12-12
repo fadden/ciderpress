@@ -1,0 +1,15 @@
+# config-generated sources
+Makefile
+config.h
+config.log
+config.status
+
+# generated binaries
+libnufx.a
+samples/exerciser
+samples/imgconv
+samples/launder
+samples/test-basic
+samples/test-extract
+samples/test-simple
+samples/test-twirl

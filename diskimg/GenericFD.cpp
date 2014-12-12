@@ -142,7 +142,7 @@ DIError GFDFile::Read(void* buf, size_t length, size_t* pActual)
     if (pActual == NULL) {
         if (actual != length) {
             dierr = ErrnoOrGeneric();
-            LOGI("  GDFile Read failed on %d bytes (actual=%d, err=%d)",
+            LOGI("  GDFile Read failed on %zd bytes (actual=%zd, err=%d)",
                 length, actual, dierr);
             return dierr;
         }
@@ -163,7 +163,7 @@ DIError GFDFile::Write(const void* buf, size_t length, size_t* pActual)
     assert(pActual == NULL);     // not handling this yet
     if (::fwrite(buf, length, 1, fFp) != 1) {
         dierr = ErrnoOrGeneric();
-        LOGI("  GDFile Write failed on %d bytes (err=%d)", length, dierr);
+        LOGI("  GDFile Write failed on %zd bytes (err=%d)", length, dierr);
         return dierr;
     }
     return dierr;
@@ -440,7 +440,7 @@ DIError GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
 
     if (fCurrentOffset + (long)length > fLength) {
         if (pActual == NULL) {
-            LOGI("  GFDBuffer underrrun off=%ld len=%d flen=%ld",
+            LOGI("  GFDBuffer underrrun off=%ld len=%zd flen=%ld",
                 (long) fCurrentOffset, length, (long) fLength);
             return kDIErrDataUnderrun;
         } else {
@@ -469,7 +469,7 @@ DIError GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
     assert(pActual == NULL);     // not handling this yet
     if (fCurrentOffset + (long)length > fLength) {
         if (!fDoExpand) {
-            LOGI("  GFDBuffer overrun off=%ld len=%d flen=%ld",
+            LOGI("  GFDBuffer overrun off=%ld len=%zd flen=%ld",
                 (long) fCurrentOffset, length, (long) fLength);
             return kDIErrDataOverrun;
         }

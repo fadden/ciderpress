@@ -29,6 +29,9 @@
 #define HAVE_FSEEKO
 #define HAVE_FTRUNCATE
 
+// gcc wants special compile options; just ignore this for now
+#define override
+
 #else /*_WIN32*/
 
 #if !defined(AFX_STDAFX_H__1CB7B33E_42BF_4A98_B814_4198EA8ACC58__INCLUDED_)

@@ -394,7 +394,7 @@ void DiskFSProDOS::SetVolumeID(void)
 void DiskFSProDOS::DumpVolHeader(void)
 {
     LOGI(" ProDOS volume header for '%s'", fVolumeName);
-    LOGI("  CreateWhen=0x%08lx access=0x%02x bitmap=%d totalbl=%d",
+    LOGI("  CreateWhen=0x%08x access=0x%02x bitmap=%d totalbl=%d",
         fCreateWhen, fAccess, fBitMapPointer, fTotalBlocks);
 
     time_t when;
@@ -3652,7 +3652,7 @@ DIError DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType,
         goto bail;
     }
     if ((size_t) (*ptr & 0x0f) != strlen(pFile->fDirEntry.fileName)) {
-        LOGI("ProDOS GLITCH: wrong file?  (len=%d vs %d)",
+        LOGI("ProDOS GLITCH: wrong file?  (len=%d vs %zd)",
             *ptr & 0x0f, strlen(pFile->fDirEntry.fileName));
         assert(false);
         dierr = kDIErrBadDirectory;
@@ -4362,17 +4362,17 @@ void A2FileProDOS::Dump(void) const
         fDirEntry.fileName, fPathName);
     LOGI("   fileType=0x%02x auxType=0x%04x storage=%d",
         fDirEntry.fileType, fDirEntry.auxType, fDirEntry.storageType);
-    LOGI("   keyPointer=%d blocksUsed=%d eof=%ld",
+    LOGI("   keyPointer=%d blocksUsed=%d eof=%d",
         fDirEntry.keyPointer, fDirEntry.blocksUsed, fDirEntry.eof);
-    LOGI("   access=0x%02x create=0x%08lx mod=0x%08lx",
+    LOGI("   access=0x%02x create=0x%08x mod=0x%08x",
         fDirEntry.access, fDirEntry.createWhen, fDirEntry.modWhen);
     LOGI("   version=%d minVersion=%d headerPtr=%d",
         fDirEntry.version, fDirEntry.minVersion, fDirEntry.headerPointer);
     if (fDirEntry.storageType == kStorageExtended) {
-        LOGI("   DATA storage=%d keyBlk=%d blkUsed=%d eof=%ld",
+        LOGI("   DATA storage=%d keyBlk=%d blkUsed=%d eof=%d",
             fExtData.storageType, fExtData.keyBlock, fExtData.blocksUsed,
             fExtData.eof);
-        LOGI("   RSRC storage=%d keyBlk=%d blkUsed=%d eof=%ld",
+        LOGI("   RSRC storage=%d keyBlk=%d blkUsed=%d eof=%d",
             fExtRsrc.storageType, fExtRsrc.keyBlock, fExtRsrc.blocksUsed,
             fExtRsrc.eof);
     }
@@ -4392,7 +4392,7 @@ void A2FileProDOS::Dump(void) const
  */
 DIError A2FDProDOS::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" ProDOS reading %d bytes from '%s' (offset=%ld)",
+    LOGI(" ProDOS reading %zd bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
     //if (fBlockList == NULL)
     //  return kDIErrNotReady;
@@ -4667,13 +4667,13 @@ DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
         fBlockList[0] = keyBlock;
     } else if (fBlockCount <= 256) {
         /* sapling file, write an index block into the key block */
-        bool allzero = true;
+        //bool allzero = true;  <-- should this be getting used?
         assert(fBlockCount > 1);
         memset(blkBuf, 0, sizeof(blkBuf));
         int i;
         for (i = 0; i < fBlockCount; i++) {
-            if (fBlockList[i] != 0)
-                allzero = false;
+            //if (fBlockList[i] != 0)
+            //    allzero = false;
             blkBuf[i] = fBlockList[i] & 0xff;
             blkBuf[256 + i] = (fBlockList[i] >> 8) & 0xff;
         }
@@ -4772,7 +4772,7 @@ DIError A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
 
-    LOGI("ProDOS  writing %d bytes to directory '%s'",
+    LOGI("ProDOS  writing %zd bytes to directory '%s'",
         len, fpFile->GetPathName());
 
     assert(len >= (size_t)kBlkSize);

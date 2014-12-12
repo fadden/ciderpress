@@ -106,7 +106,7 @@ typedef struct DiskFSMacPart::PartitionMap {
              */
             LOGI(" MacPart NOTE: found partially-zeroed-out DDR, continuing");
         } else {
-            LOGI(" MacPart found 'ER' signature but blkSize=%d blkCount=%ld",
+            LOGI(" MacPart found 'ER' signature but blkSize=%d blkCount=%d",
                 ddr.sbBlkSize, ddr.sbBlkCount);
             dierr = kDIErrFilesystemNotFound;
             goto bail;
@@ -174,11 +174,11 @@ bail:
 /*static*/ void DiskFSMacPart::DumpDDR(const DriverDescriptorRecord* pDDR)
 {
     LOGI(" MacPart driver descriptor record");
-    LOGI("    sbSig=0x%04x sbBlkSize=%d sbBlkCount=%ld",
+    LOGI("    sbSig=0x%04x sbBlkSize=%d sbBlkCount=%d",
         pDDR->sbSig, pDDR->sbBlkSize, pDDR->sbBlkCount);
-    LOGI("    sbDevType=%d sbDevId=%d sbData=%ld sbDrvrCount=%d",
+    LOGI("    sbDevType=%d sbDevId=%d sbData=%d sbDrvrCount=%d",
         pDDR->sbDevType, pDDR->sbDevId, pDDR->sbData, pDDR->sbDrvrCount);
-    LOGI("    (pad=%d) ddBlock=%ld ddSize=%d ddType=%d",
+    LOGI("    (pad=%d) ddBlock=%d ddSize=%d ddType=%d",
         pDDR->hiddenPad, pDDR->ddBlock, pDDR->ddSize, pDDR->ddType);
 }
 
@@ -223,22 +223,22 @@ bail:
 /*static*/ void DiskFSMacPart::DumpPartitionMap(long block, const PartitionMap* pMap)
 {
     LOGI(" MacPart partition map: block=%ld", block);
-    LOGI("    pmSig=0x%04x (pad=0x%04x)  pmMapBlkCnt=%ld",
+    LOGI("    pmSig=0x%04x (pad=0x%04x)  pmMapBlkCnt=%d",
         pMap->pmSig, pMap->pmSigPad, pMap->pmMapBlkCnt);
     LOGI("    pmPartName='%s' pmParType='%s'",
         pMap->pmPartName, pMap->pmParType);
-    LOGI("    pmPyPartStart=%ld pmPartBlkCnt=%ld",
+    LOGI("    pmPyPartStart=%d pmPartBlkCnt=%d",
         pMap->pmPyPartStart, pMap->pmPartBlkCnt);
-    LOGI("    pmLgDataStart=%ld pmDataCnt=%ld",
+    LOGI("    pmLgDataStart=%d pmDataCnt=%d",
         pMap->pmLgDataStart, pMap->pmDataCnt);
-    LOGI("    pmPartStatus=%ld",
+    LOGI("    pmPartStatus=%d",
         pMap->pmPartStatus);
-    LOGI("    pmLgBootStart=%ld pmBootSize=%ld",
+    LOGI("    pmLgBootStart=%d pmBootSize=%d",
         pMap->pmLgBootStart, pMap->pmBootSize);
-    LOGI("    pmBootAddr=%ld pmBootAddr2=%ld pmBootEntry=%ld pmBootEntry2=%ld",
+    LOGI("    pmBootAddr=%d pmBootAddr2=%d pmBootEntry=%d pmBootEntry2=%d",
         pMap->pmBootAddr, pMap->pmBootAddr2,
         pMap->pmBootEntry, pMap->pmBootEntry2);
-    LOGI("    pmBootCksum=%ld pmProcessor='%s'",
+    LOGI("    pmBootCksum=%d pmProcessor='%s'",
         pMap->pmBootCksum, pMap->pmProcessor);
 }
 
@@ -294,6 +294,7 @@ DIError DiskFSMacPart::OpenSubVolume(const PartitionMap* pMap)
      * Apple "develop" CD-ROM, which had a bad Apple_Extra partition on the
      * end.
      */
+    (void) tweaked;
 
     dierr = pNewImg->OpenImage(fpImg, startBlock, numBlocks);
     if (dierr != kDIErrNone) {

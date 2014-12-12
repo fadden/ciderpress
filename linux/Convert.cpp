@@ -12,7 +12,7 @@
 #include <memory.h>
 #include <assert.h>
 #include "../diskimg/DiskImg.h"
-#include "../prebuilt/NufxLib.h"
+#include "../nufxlib/NufxLib.h"
 
 using namespace DiskImgLib;
 

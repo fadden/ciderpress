@@ -514,12 +514,12 @@ static const uint8_t kFavoriteBitDec[kNumFavorites] = {
     dierr = pGFD->Read(&sctBuf, sizeof(sctBuf), &actual);
     if (dierr == kDIErrNone) {
         if (actual > /*kMaxExcessByteCount*/ 256) {
-            LOGI(" DDD looks like too much data in input file (%d extra)",
+            LOGI(" DDD looks like too much data in input file (%zd extra)",
                 actual);
             dierr = kDIErrBadCompressedData;
             goto bail;
         } else {
-            LOGI(" DDD excess bytes (%d) within normal parameters", actual);
+            LOGI(" DDD excess bytes (%zd) within normal parameters", actual);
         }
     }
 

@@ -27,17 +27,17 @@ namespace DiskImgLib {
  * support that in the callback interface, so it's not used.
  */
 #define DLOG_BASE(file, line, format, ...) \
-        Global::PrintDebugMsg((file), (line), (format), __VA_ARGS__)
+        Global::PrintDebugMsg((file), (line), (format), ##__VA_ARGS__)
 
-#ifdef SHOW_LOGV
-# define LOGV(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
-#else
-# define LOGV(format, ...) ((void) 0)
-#endif
-#define LOGD(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
-#define LOGI(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
-#define LOGW(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
-#define LOGE(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), __VA_ARGS__)
+//#ifdef SHOW_LOGV
+# define LOGV(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), ##__VA_ARGS__)
+//#else
+//# define LOGV(format, ...) ((void) 0)
+//#endif
+#define LOGD(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define LOGI(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define LOGW(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define LOGE(format, ...) DLOG_BASE(__FILE__, __LINE__, (format), ##__VA_ARGS__)
 
 /* put this in to break on interesting events when built debug */
 #if defined(_DEBUG)

@@ -2820,8 +2820,8 @@ DIError DiskImg::ValidateCreateFormat(void) const
             return kDIErrInvalidCreateReq;
         }
         if ((GetHasBlocks() && GetNumBlocks() != 1600) ||
-            GetHasSectors() &&
-                (GetNumTracks() != 200 || GetNumSectPerTrack() != 16))
+            (GetHasSectors() &&
+                (GetNumTracks() != 200 || GetNumSectPerTrack() != 16)))
         {
             LOGI("CreateImage: DC42 only for 800K disks");
             return kDIErrInvalidCreateReq;

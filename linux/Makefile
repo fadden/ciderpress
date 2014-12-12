@@ -35,7 +35,7 @@ PRODUCT5 = makedisk
 PRODUCT6 = getfile
 
 DISKIMGLIB	= ../diskimg/libdiskimg.a ../diskimg/libhfs/libhfs.a
-NUFXLIB		= ../prebuilt/libnufx.a
+NUFXLIB		= ../nufxlib/libnufx.a
 
 all: $(PRODUCT1) $(PRODUCT2) $(PRODUCT3) $(PRODUCT4) $(PRODUCT5) $(PRODUCT6)
 	@true

@@ -144,7 +144,7 @@ DISKIMG_API const char* DIStrError(DIError dierr);
 #endif
 
 /* common definition of "whence" for seeks */
-typedef enum DIWhence {
+enum DIWhence {
     kSeekSet = SEEK_SET,
     kSeekCur = SEEK_CUR,
     kSeekEnd = SEEK_END
@@ -358,7 +358,7 @@ public:
      * Should we define an enum to describe whether address and data
      * headers are standard or some wacky variant?
      */
-    typedef enum {
+    enum {
         kNibbleAddrPrologLen = 3,       // d5 aa 96
         kNibbleAddrEpilogLen = 3,       // de aa eb
         kNibbleDataPrologLen = 3,       // d5 aa ad
@@ -613,7 +613,7 @@ public:
     }
 
     /* this must match DiskImg::kStdNibbleDescrs table */
-    typedef enum StdNibbleDescr {
+    enum StdNibbleDescr {
         kNibbleDescrDOS33Std = 0,
         kNibbleDescrDOS33Patched,
         kNibbleDescrDOS33IgnoreChecksum,

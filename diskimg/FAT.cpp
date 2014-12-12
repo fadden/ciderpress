@@ -149,8 +149,8 @@ enum MediaType {
             return false;   // must be 0x00 or 0x80
     }
     // CFFA cards don't seem to set the "active" flag
-    //if (!foundActive)
-    //  return false;
+    if (false && !foundActive)
+        return false;
     return true;
 }
 
@@ -222,7 +222,7 @@ enum MediaType {
     if (hasMBR) {
         LOGI(" FAT partition table found:");
         for (int i = 0; i < 4; i++) {
-            LOGI("   %d: type=0x%02x start LBA=%-9lu size=%lu",
+            LOGI("   %d: type=0x%02x start LBA=%-9u size=%u",
                 i, mbr.parTab[i].type,
                 mbr.parTab[i].startLBA, mbr.parTab[i].size);
         }
@@ -394,7 +394,7 @@ DIError A2FileFAT::Open(A2FileDescr** ppOpenFile, bool readOnly,
  */
 DIError A2FDFAT::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGD(" FAT reading %d bytes from '%s' (offset=%ld)",
+    LOGD(" FAT reading %zd bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileFAT* pFile = (A2FileFAT*) fpFile;

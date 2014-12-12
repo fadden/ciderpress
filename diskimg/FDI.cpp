@@ -711,7 +711,7 @@ bool WrapperFDI::ExpandHuffman(const uint8_t* inputBuf, long inputLen,
     }
 
     if (inputBuf - origInputBuf != inputLen) {
-        LOGI("  FDI: warning: Huffman input %d vs. %ld",
+        LOGI("  FDI: warning: Huffman input %ld vs. %ld",
             inputBuf - origInputBuf, inputLen);
         return false;
     }
@@ -947,7 +947,7 @@ bool WrapperFDI::ConvertPulseStreamsToNibbles(PulseIndexHeader* pHdr, int bitRat
         idxStream[i] = sum;
     }
 
-    LOGI("     FDI: maxIndex=%lu indexOffset=%d totalAvg=%lu weakBits=%d",
+    LOGI("     FDI: maxIndex=%u indexOffset=%d totalAvg=%d weakBits=%d",
         maxIndex, indexOffset, totalAvg, weakBits);
 
     /*
@@ -1133,7 +1133,7 @@ bool WrapperFDI::ConvertPulsesToBits(const uint32_t* avgStream,
     /*
      * Set up some variables.
      */
-    int nextI, endOfData, adjust, bitOffset, step;
+    int nextI, endOfData, adjust, /*bitOffset,*/ step;
     uint32_t refPulse;
     long jitter;
 
@@ -1142,7 +1142,7 @@ bool WrapperFDI::ConvertPulsesToBits(const uint32_t* avgStream,
     endOfData = i;
     i--;
     adjust = 0;
-    bitOffset = 0;
+    //bitOffset = 0;
     refPulse = 0;
     jitter = 0;
     step = -1;
@@ -1247,12 +1247,12 @@ bool WrapperFDI::ConvertPulsesToBits(const uint32_t* avgStream,
 
                 if (avgPulse < minPulse || avgPulse > maxPulse) {
                     /* this is bad -- we're out of bounds */
-                    LOGI("  FDI: avgPulse out of bounds: avg=%lu min=%lu max=%lu",
+                    LOGI("  FDI: avgPulse out of bounds: avg=%u min=%u max=%u",
                         avgPulse, minPulse, maxPulse);
                 }
                 if (avgPulse < refPulse) {
                     /* I guess this is also bad */
-                    LOGI("  FDI: avgPulse < refPulse (%lu %lu)",
+                    LOGI("  FDI: avgPulse < refPulse (%u %u)",
                         avgPulse, refPulse);
                 }
                 pulse += avgPulse - refPulse;

@@ -30,13 +30,13 @@ int TwoImgHeader::InitHeader(int imageFormat, uint32_t imageSize,
 {
     if (imageSize == 0)
         return -1;
-    if (imageFormat < kImageFormatDOS || imageFormat > kImageFormatNibble)
+    if (imageFormat < kImageFormatDOS || imageFormat > (int) kImageFormatNibble)
         return -1;
 
     if (imageFormat != kImageFormatNibble &&
         imageSize != imageBlockCount * 512)
     {
-        LOGW("2MG InitHeader: bad sizes %d %ld %ld", imageFormat,
+        LOGW("2MG InitHeader: bad sizes %d %u %u", imageFormat,
             imageSize, imageBlockCount);
         return -1;
     }
@@ -383,7 +383,7 @@ int TwoImgHeader::UnpackHeader(const uint8_t* buf, uint32_t totalLength)
         fImageFormat != kImageFormatNibble)
     {
         fDataLen = fNumBlocks * kBlockSize;
-        LOGI("NOTE: fixing zero dataLen in 'WOOF' image (set to %ld)",
+        LOGI("NOTE: fixing zero dataLen in 'WOOF' image (set to %u)",
             fDataLen);
     }
 
@@ -393,22 +393,22 @@ int TwoImgHeader::UnpackHeader(const uint8_t* buf, uint32_t totalLength)
     if (fImageFormat != kImageFormatNibble &&
         fNumBlocks * kBlockSize != fDataLen)
     {
-        LOGW("numBlocks/dataLen mismatch (%ld vs %ld)",
+        LOGW("numBlocks/dataLen mismatch (%u vs %u)",
             fNumBlocks * kBlockSize, fDataLen);
         return -1;
     }
     if (fDataLen + fDataOffset > totalLength) {
-        LOGW("Invalid dataLen/offset/fileLength (dl=%ld, off=%ld, tlen=%ld)",
+        LOGW("Invalid dataLen/offset/fileLength (dl=%u, off=%u, tlen=%u)",
             fDataLen, fDataOffset, totalLength);
         return -1;
     }
     if (fImageFormat < kImageFormatDOS || fImageFormat > kImageFormatNibble) {
-        LOGW("Invalid image format %ld", fImageFormat);
+        LOGW("Invalid image format %u", fImageFormat);
         return -1;
     }
 
     if (fCmtOffset > 0 && fCmtOffset < fDataOffset + fDataLen) {
-        LOGW("2MG comment is inside the data section (off=%ld, data end=%ld)",
+        LOGW("2MG comment is inside the data section (off=%u, data end=%u)",
             fCmtOffset, fDataOffset+fDataLen);
         DebugBreak();
         // ignore the comment
@@ -419,7 +419,7 @@ int TwoImgHeader::UnpackHeader(const uint8_t* buf, uint32_t totalLength)
         uint32_t prevEnd = fDataOffset + fDataLen + fCmtLen;
 
         if (fCreatorOffset < prevEnd) {
-            LOGW("2MG creator chunk is inside prev data (off=%ld, data end=%ld)",
+            LOGW("2MG creator chunk is inside prev data (off=%u, data end=%u)",
                 fCreatorOffset, prevEnd);
             DebugBreak();
             // ignore the creator chunk
@@ -545,23 +545,23 @@ void
 TwoImgHeader::DumpHeader(void) const
 {
     LOGI("--- header contents:");
-    LOGI("\tmagic         = '%s' (0x%08lx)", fMagicStr, fMagic);
-    LOGI("\tcreator       = '%s' (0x%08lx)", fCreatorStr, fCreator);
-    LOGI("\theaderLen     = %d", fHeaderLen);
-    LOGI("\tversion       = %d", fVersion);
-    LOGI("\timageFormat   = %ld", fImageFormat);
-    LOGI("\tflags         = 0x%08lx", fFlags);
+    LOGI("\tmagic         = '%s' (0x%08x)", fMagicStr, fMagic);
+    LOGI("\tcreator       = '%s' (0x%08x)", fCreatorStr, fCreator);
+    LOGI("\theaderLen     = %u", fHeaderLen);
+    LOGI("\tversion       = %u", fVersion);
+    LOGI("\timageFormat   = %u", fImageFormat);
+    LOGI("\tflags         = 0x%08x", fFlags);
     LOGI("\t  locked      = %s",
         (fFlags & kFlagLocked) ? "true" : "false");
-    LOGI("\t  DOS volume  = %s (%ld)",
+    LOGI("\t  DOS volume  = %s (%d)",
         (fFlags & kDOSVolumeSet) ? "true" : "false",
         fFlags & kDOSVolumeMask);
-    LOGI("\tnumBlocks     = %ld", fNumBlocks);
-    LOGI("\tdataOffset    = %ld", fDataOffset);
-    LOGI("\tdataLen       = %ld", fDataLen);
-    LOGI("\tcmtOffset     = %ld", fCmtOffset);
-    LOGI("\tcmtLen        = %ld", fCmtLen);
-    LOGI("\tcreatorOffset = %ld", fCreatorOffset);
-    LOGI("\tcreatorLen    = %ld", fCreatorLen);
-    LOGI("");
+    LOGI("\tnumBlocks     = %u", fNumBlocks);
+    LOGI("\tdataOffset    = %u", fDataOffset);
+    LOGI("\tdataLen       = %u", fDataLen);
+    LOGI("\tcmtOffset     = %u", fCmtOffset);
+    LOGI("\tcmtLen        = %u", fCmtLen);
+    LOGI("\tcreatorOffset = %u", fCreatorOffset);
+    LOGI("\tcreatorLen    = %u", fCreatorLen);
+    LOGI("---");
 }

@@ -386,8 +386,7 @@ DIError DiskFSDOS33::ScanVolBitmap(void)
 
     LOGI("  map 0123456789abcdef");
 
-    int i;
-    for (i = 0; i < kMaxTracks; i++) {
+    for (int i = 0; i < kMaxTracks; i++) {
         uint32_t val, origVal;
         int bit;
 
@@ -409,7 +408,7 @@ DIError DiskFSDOS33::ScanVolBitmap(void)
             }
             val <<= 1;
         }
-        LOGI("  %2d: %s (0x%08lx)", i, freemap, origVal);
+        LOGI("  %2d: %s (0x%08x)", i, freemap, origVal);
     }
 
     /* we know the VTOC is used, so mark it now */
@@ -2885,7 +2884,7 @@ bail:
  */
 DIError A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" DOS reading %d bytes from '%s' (offset=%ld)",
+    LOGI(" DOS reading %zd bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileDOS* pFile = (A2FileDOS*) fpFile;
@@ -2977,7 +2976,7 @@ DIError A2FDDOS::Write(const void* buf, size_t len, size_t* pActual)
     DiskFSDOS33* pDiskFS = (DiskFSDOS33*) fpFile->GetDiskFS();
     uint8_t sctBuf[kSctSize];
 
-    LOGI("   DOS Write len=%u %s", len, pFile->GetPathName());
+    LOGI("   DOS Write len=%zd %s", len, pFile->GetPathName());
 
     if (len >= 0x01000000) {    // 16MB
         assert(false);

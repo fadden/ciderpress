@@ -11,6 +11,14 @@ CP.opensdf
 CP.v12.suo
 *.aps
 
+# linux binaries
+*.o
+diskimg/libdiskimg.a
+diskimg/libhfs/libhfs.a
+
+# ctags
+tags
+
 # generic
 *~
 *.swp

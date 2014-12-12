@@ -328,7 +328,7 @@ DIError OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
 
         written = gzwrite(gzfp, buf, actual);
         if (written == 0) {
-            LOGI("Failed writing %d bytes to gzio", actual);
+            LOGI("Failed writing %zd bytes to gzio", actual);
             dierr = kDIErrGeneric;
             goto bail;
         }
@@ -389,7 +389,7 @@ bail:
     if (cde.fUncompressedSize < 512 ||
         cde.fUncompressedSize > kMaxUncompressedSize)
     {
-        LOGI(" ZIP uncompressed size %lu is outside range",
+        LOGI(" ZIP uncompressed size %u is outside range",
             cde.fUncompressedSize);
         dierr = kDIErrGeneric;
         goto bail;
@@ -784,7 +784,7 @@ DIError OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
     buf = new uint8_t[pCDE->fUncompressedSize];
     if (buf == NULL) {
         /* a very real possibility */
-        LOGI(" ZIP unable to allocate buffer of %lu bytes",
+        LOGI(" ZIP unable to allocate buffer of %u bytes",
             pCDE->fUncompressedSize);
         dierr = kDIErrMalloc;
         goto bail;
@@ -814,7 +814,7 @@ DIError OuterZip::ExtractZipEntry(GenericFD* pOuterGFD, CentralDirEntry* pCDE,
     if (crc == pCDE->fCRC32) {
         LOGI("+++ ZIP CRCs match");
     } else {
-        LOGI("ZIP CRC mismatch: inflated crc32=0x%08lx, stored=0x%08lx",
+        LOGI("ZIP CRC mismatch: inflated crc32=0x%08x, stored=0x%08x",
             crc, pCDE->fCRC32);
         dierr = kDIErrBadChecksum;
         goto bail;
@@ -1043,7 +1043,7 @@ DIError OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc,
 
         /* only read if the input is empty */
         if (zstream.avail_in == 0 && srcLen) {
-            getSize = (srcLen > kBufSize) ? kBufSize : (long) srcLen;
+            getSize = (srcLen > (long) kBufSize) ? kBufSize : (long) srcLen;
             LOGI("+++ reading %ld bytes", getSize);
 
             dierr = pSrc->Read(inBuf, getSize);
@@ -1076,7 +1076,7 @@ DIError OuterZip::DeflateGFDToGFD(GenericFD* pDst, GenericFD* pSrc,
         if (zstream.avail_out == 0 ||
             (zerr == Z_STREAM_END && zstream.avail_out != kBufSize))
         {
-            LOGI("+++ writing %d bytes", zstream.next_out - outBuf);
+            LOGI("+++ writing %ld bytes", zstream.next_out - outBuf);
             dierr = pDst->Write(outBuf, zstream.next_out - outBuf);
             if (dierr != kDIErrNone) {
                 LOGI("write failed in deflate");
@@ -1242,9 +1242,9 @@ void OuterZip::LocalFileHeader::Dump(void) const
     LOGI(" LocalFileHeader contents:");
     LOGI("  versToExt=%u gpBits=0x%04x compression=%u",
         fVersionToExtract, fGPBitFlag, fCompressionMethod);
-    LOGI("  modTime=0x%04x modDate=0x%04x crc32=0x%08lx",
+    LOGI("  modTime=0x%04x modDate=0x%04x crc32=0x%08x",
         fLastModFileTime, fLastModFileDate, fCRC32);
-    LOGI("  compressedSize=%lu uncompressedSize=%lu",
+    LOGI("  compressedSize=%u uncompressedSize=%u",
         fCompressedSize, fUncompressedSize);
     LOGI("  filenameLen=%u extraLen=%u",
         fFileNameLength, fExtraFieldLength);
@@ -1410,13 +1410,13 @@ void OuterZip::CentralDirEntry::Dump(void) const
     LOGI(" CentralDirEntry contents:");
     LOGI("  versMadeBy=%u versToExt=%u gpBits=0x%04x compression=%u",
         fVersionMadeBy, fVersionToExtract, fGPBitFlag, fCompressionMethod);
-    LOGI("  modTime=0x%04x modDate=0x%04x crc32=0x%08lx",
+    LOGI("  modTime=0x%04x modDate=0x%04x crc32=0x%08x",
         fLastModFileTime, fLastModFileDate, fCRC32);
-    LOGI("  compressedSize=%lu uncompressedSize=%lu",
+    LOGI("  compressedSize=%u uncompressedSize=%u",
         fCompressedSize, fUncompressedSize);
     LOGI("  filenameLen=%u extraLen=%u commentLen=%u",
         fFileNameLength, fExtraFieldLength, fFileCommentLength);
-    LOGI("  diskNumStart=%u intAttr=0x%04x extAttr=0x%08lx relOffset=%lu",
+    LOGI("  diskNumStart=%u intAttr=0x%04x extAttr=0x%08x relOffset=%u",
         fDiskNumberStart, fInternalAttrs, fExternalAttrs,
         fLocalHeaderRelOffset);
 
@@ -1499,6 +1499,6 @@ OuterZip::EndOfCentralDir::Dump(void) const
     LOGI(" EndOfCentralDir contents:");
     LOGI("  diskNum=%u diskWCD=%u numEnt=%u totalNumEnt=%u",
         fDiskNumber, fDiskWithCentralDir, fNumEntries, fTotalNumEntries);
-    LOGI("  centDirSize=%lu centDirOff=%lu commentLen=%u",
+    LOGI("  centDirSize=%u centDirOff=%u commentLen=%u",
         fCentralDirSize, fCentralDirOffset, fCommentLen);
 }

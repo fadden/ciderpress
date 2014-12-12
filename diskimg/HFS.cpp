@@ -147,7 +147,7 @@ typedef struct DiskFSHFS::MasterDirBlock {
     }
     if ((mdb.drAlBlkSiz & 0x1ff) != 0) {
         // allocation block size must be a multiple of 512
-        LOGI(" HFS: found allocation block size = %lu, rejecting",
+        LOGI(" HFS: found allocation block size = %u, rejecting",
             mdb.drAlBlkSiz);
         dierr = kDIErrFilesystemNotFound;
         goto bail;
@@ -345,16 +345,16 @@ void DiskFSHFS::DumpVolHeader(void)
 {
     LOGI("HFS volume header read:");
     LOGI("  volume name = '%s'", fVolumeName);
-    LOGI("  total blocks = %ld (allocSize=%ld [x%lu], numAllocs=%lu)",
+    LOGI("  total blocks = %d (allocSize=%d [x%u], numAllocs=%u)",
         fTotalBlocks, fAllocationBlockSize, fAllocationBlockSize / kBlkSize,
         fNumAllocationBlocks);
-    LOGI("  num directories=%ld, num files=%ld",
+    LOGI("  num directories=%d, num files=%d",
         fNumDirectories, fNumFiles);
     time_t when;
     when = (time_t) (fCreatedDateTime - kDateTimeOffset - fLocalTimeOffset);
-    LOGI("  cre date=0x%08lx %.24s", fCreatedDateTime, ctime(&when));
+    LOGI("  cre date=0x%08x %.24s", fCreatedDateTime, ctime(&when));
     when = (time_t) (fModifiedDateTime - kDateTimeOffset - fLocalTimeOffset);
-    LOGI("  mod date=0x%08lx %.24s", fModifiedDateTime, ctime(&when));
+    LOGI("  mod date=0x%08x %.24s", fModifiedDateTime, ctime(&when));
 }
 
 
@@ -1331,7 +1331,7 @@ DIError DiskFSHFS::DeleteFile(A2File* pGenericFile)
 bail:
     hfs_flush(fHfsVol);
     delete[] pathName;
-    return kDIErrNone;
+    return dierr;
 }
 
 /*
@@ -1434,7 +1434,7 @@ bail:
     delete[] colonOldName;
     delete[] colonNewName;
     hfs_flush(fHfsVol);
-    return kDIErrNone;
+    return dierr;
 }
 
 /*
@@ -1855,7 +1855,7 @@ DIError A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
 {
     long result;
 
-    LOGI(" HFS reading %d bytes from '%s' (offset=%ld)",
+    LOGI(" HFS reading %zd bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), hfs_seek(fHfsFile, 0, HFS_SEEK_CUR));
 
     //A2FileHFS* pFile = (A2FileHFS*) fpFile;
@@ -1896,7 +1896,7 @@ DIError A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
 {
     long result;
 
-    LOGI(" HFS writing %d bytes to '%s' (offset=%ld)",
+    LOGI(" HFS writing %zd bytes to '%s' (offset=%ld)",
         len, fpFile->GetPathName(), hfs_seek(fHfsFile, 0, HFS_SEEK_CUR));
 
     fModified = true;       // assume something gets changed

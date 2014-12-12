@@ -1507,7 +1507,7 @@ long A2FilePascal::GetFileType(void) const
     if (year >= 100)
         year -= 100;
     if (year < 0 || year >= 100) {
-        LOGW("WHOOPS: got year %lu from %d", year, ptm->tm_year);
+        LOGW("WHOOPS: got year %u from %d", year, ptm->tm_year);
         year = 70;
     }
     date = year << 9 | (ptm->tm_mon+1) | ptm->tm_mday << 4;
@@ -1579,7 +1579,7 @@ DIError A2FilePascal::Open(A2FileDescr** ppOpenFile, bool readOnly,
  */
 DIError A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" Pascal reading %d bytes from '%s' (offset=%ld)",
+    LOGI(" Pascal reading %zd bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FilePascal* pFile = (A2FilePascal*) fpFile;
@@ -1644,7 +1644,7 @@ DIError A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
     uint8_t blkBuf[kBlkSize];
     size_t origLen = len;
 
-    LOGI("   DOS Write len=%u %s", len, pFile->GetPathName());
+    LOGI("   DOS Write len=%zd %s", len, pFile->GetPathName());
 
     if (len >= 0x01000000) {    // 16MB
         assert(false);
@@ -1669,7 +1669,7 @@ DIError A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
         blocksAvail = pNextFile->fStartBlock - pFile->fStartBlock;
 
     blocksNeeded = (len + kBlkSize -1) / kBlkSize;
-    LOGI("Pascal write '%s' %d bytes: avail=%ld needed=%ld",
+    LOGI("Pascal write '%s' %zd bytes: avail=%ld needed=%ld",
         pFile->GetPathName(), len, blocksAvail, blocksNeeded);
     if (blocksAvail < blocksNeeded)
         return kDIErrDiskFull;

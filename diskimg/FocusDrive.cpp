@@ -125,7 +125,7 @@ bail:
 
     LOGI(" FocusDrive partition map (%d partitions):", pMap->partCount);
     for (i = 0; i < pMap->partCount; i++) {
-        LOGI("  %2d: %8ld %8ld '%s'", i, pMap->entry[i].startBlock,
+        LOGI("  %2d: %8d %8d '%s'", i, pMap->entry[i].startBlock,
             pMap->entry[i].blockCount, pMap->entry[i].name);
     }
 }

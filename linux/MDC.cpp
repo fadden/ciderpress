@@ -17,7 +17,7 @@
 #include <errno.h>
 #include "zlib.h"
 #include "../diskimg/DiskImg.h"
-#include "../prebuilt/NufxLib.h"
+#include "../nufxlib/NufxLib.h"
 #include "StringArray.h"
 
 using namespace DiskImgLib;

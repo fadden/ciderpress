@@ -161,13 +161,13 @@ bail:
     parts = pMap->numPart1;
     assert(parts <= kMaxNumParts);
     for (i = 0; i < parts; i++) {
-        LOGI("    %2d: startLBA=%8ld length=%ld",
+        LOGI("    %2d: startLBA=%8d length=%d",
             i, pMap->partitionStart1[i], pMap->partitionLength1[i]);
     }
     parts = pMap->numPart2;
     assert(parts <= kMaxNumParts);
     for (i = 0; i < parts; i++) {
-        LOGI("    %2d: startLBA=%8ld length=%ld",
+        LOGI("    %2d: startLBA=%8d length=%d",
             i+8, pMap->partitionStart2[i], pMap->partitionLength2[i]);
     }
 }

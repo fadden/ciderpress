@@ -1044,8 +1044,8 @@ const int kDC42FakeTagLen = 19200;      // add a "fake" tag to match Mac
 
 typedef struct DiskImgLib::DC42Header {
     char        diskName[kDC42NameLen+1];   // from pascal string
-    long        dataSize;           // in bytes
-    long        tagSize;
+    uint32_t    dataSize;           // in bytes
+    uint32_t    tagSize;
     uint32_t    dataChecksum;
     uint32_t    tagChecksum;
     uint8_t     diskFormat;         // should be 1 for 800K
@@ -1062,11 +1062,11 @@ typedef struct DiskImgLib::DC42Header {
 {
     LOGI("--- header contents:");
     LOGI("\tdiskName      = '%s'", pHeader->diskName);
-    LOGI("\tdataSize      = %ld (%ldK)", pHeader->dataSize,
+    LOGI("\tdataSize      = %d (%dK)", pHeader->dataSize,
         pHeader->dataSize / 1024);
-    LOGI("\ttagSize       = %ld", pHeader->tagSize);
-    LOGI("\tdataChecksum  = 0x%08lx", pHeader->dataChecksum);
-    LOGI("\ttagChecksum   = 0x%08lx", pHeader->tagChecksum);
+    LOGI("\ttagSize       = %d", pHeader->tagSize);
+    LOGI("\tdataChecksum  = 0x%08x", pHeader->dataChecksum);
+    LOGI("\ttagChecksum   = 0x%08x", pHeader->tagChecksum);
     LOGI("\tdiskFormat    = %d", pHeader->diskFormat);
     LOGI("\tformatByte    = 0x%02x", pHeader->formatByte);
     LOGI("\tprivateWord   = 0x%04x", pHeader->privateWord);
@@ -1254,12 +1254,12 @@ DIError WrapperDiskCopy42::Prep(GenericFD* pGFD, di_off_t wrappedLength,
         return dierr;
 
     if (checksum != header.dataChecksum) {
-        LOGI(" DC42 checksum mismatch (got 0x%08lx, expected 0x%08lx)",
+        LOGW(" DC42 checksum mismatch (got 0x%08x, expected 0x%08x)",
             checksum, header.dataChecksum);
         fBadChecksum = true;
         //return kDIErrBadChecksum;
     } else {
-        LOGI(" DC42 checksum matches!");
+        LOGD(" DC42 checksum matches!");
     }
 
 
@@ -2424,7 +2424,7 @@ DIError WrapperUnadornedNibble::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGF
  */
 /*static*/ DIError WrapperUnadornedSector::Test(GenericFD* pGFD, di_off_t wrappedLength)
 {
-    LOGI("Testing for unadorned sector (wrappedLength=%ld/%lu)",
+    LOGI("Testing for unadorned sector (wrappedLength=%ld/%u)",
         (long) (wrappedLength >> 32), (uint32_t) wrappedLength);
     if (wrappedLength >= 1536 && (wrappedLength % 512) == 0)
         return kDIErrNone;

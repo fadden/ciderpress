@@ -85,7 +85,7 @@ CopyFiles(DiskFS* pDiskFS, int argc, char** argv)
     DiskFS::CreateParms parms;
     A2File* pNewFile;
 
-	typedef struct CreateParms {
+	struct CreateParms {
 		const char*		pathName;		// full pathname
 		char			fssep;
 		int				storageType;	// determines normal, subdir, or forked
@@ -94,7 +94,7 @@ CopyFiles(DiskFS* pDiskFS, int argc, char** argv)
 		int				access;
 		time_t			createWhen;
 		time_t			modWhen;
-	} CreateParms;
+	};
 
 
     while (argc--) {

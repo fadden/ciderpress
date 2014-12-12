@@ -169,7 +169,7 @@ DIError DiskFSGutenberg::Initialize(InitMode initMode)
     if (dierr != kDIErrNone)
         goto bail;
 
-    sprintf(fDiskVolumeID, "Gutenberg: %s\0", fDiskVolumeName);
+    sprintf(fDiskVolumeID, "Gutenberg: %s", fDiskVolumeName);
 
     fDiskIsGood = CheckDiskIsGood();
 
@@ -523,7 +523,7 @@ void A2FileGutenberg::Dump(void) const
  */
 DIError A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" Gutenberg reading %d bytes from '%s' (offset=%ld)",
+    LOGI(" Gutenberg reading %zd bytes from '%s' (offset=%ld)",
         len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileGutenberg* pFile = (A2FileGutenberg*) fpFile;
@@ -531,7 +531,7 @@ DIError A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
     DIError dierr = kDIErrNone;
     uint8_t sctBuf[kSctSize];
     short currentTrack, currentSector;
-    di_off_t actualOffset = fOffset + pFile->fDataOffset;   // adjust for embedded len
+    //di_off_t actualOffset = fOffset + pFile->fDataOffset;   // adjust for embedded len
     int bufOffset = 6;
     size_t thisCount;
 
