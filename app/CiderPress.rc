@@ -1275,8 +1275,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,4,6,0
- PRODUCTVERSION 2,4,6,0
+ FILEVERSION 4,0,0,0
+ PRODUCTVERSION 4,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1291,15 +1291,15 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "The end is nigh."
+            VALUE "Comments", "Rising like the phoenix."
             VALUE "CompanyName", "CiderPress Project"
             VALUE "FileDescription", "CiderPress"
-            VALUE "FileVersion", "4, 0, 0, 0"
+            VALUE "FileVersion", "4.0.0.0"
             VALUE "InternalName", "CiderPress"
             VALUE "LegalCopyright", "Copyright © 2014 CiderPress project authors"
             VALUE "OriginalFilename", "CiderPress.exe"
             VALUE "ProductName", "CiderPress"
-            VALUE "ProductVersion", "4, 0, 0, 0"
+            VALUE "ProductVersion", "4.0.0.0"
         END
     END
     BLOCK "VarFileInfo"
