@@ -523,8 +523,8 @@ void A2FileGutenberg::Dump(void) const
  */
 DIError A2FDGutenberg::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" Gutenberg reading %zd bytes from '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), (long) fOffset);
+    LOGD(" Gutenberg reading %lu bytes from '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileGutenberg* pFile = (A2FileGutenberg*) fpFile;
 

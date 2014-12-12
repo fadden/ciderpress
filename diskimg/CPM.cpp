@@ -571,8 +571,8 @@ void A2FileCPM::Dump(void) const
  */
 DIError A2FDCPM::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" CP/M reading %zd bytes from '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), (long) fOffset);
+    LOGI(" CP/M reading %lu bytes from '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileCPM* pFile = (A2FileCPM*) fpFile;
 

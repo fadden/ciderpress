@@ -142,8 +142,8 @@ DIError GFDFile::Read(void* buf, size_t length, size_t* pActual)
     if (pActual == NULL) {
         if (actual != length) {
             dierr = ErrnoOrGeneric();
-            LOGI("  GDFile Read failed on %zd bytes (actual=%zd, err=%d)",
-                length, actual, dierr);
+            LOGW("  GDFile Read failed on %lu bytes (actual=%lu, err=%d)",
+                (unsigned long) length, (unsigned long) actual, dierr);
             return dierr;
         }
     } else {
@@ -163,7 +163,8 @@ DIError GFDFile::Write(const void* buf, size_t length, size_t* pActual)
     assert(pActual == NULL);     // not handling this yet
     if (::fwrite(buf, length, 1, fFp) != 1) {
         dierr = ErrnoOrGeneric();
-        LOGI("  GDFile Write failed on %zd bytes (err=%d)", length, dierr);
+        LOGW("  GDFile Write failed on %lu bytes (err=%d)",
+            (unsigned long) length, dierr);
         return dierr;
     }
     return dierr;
@@ -440,8 +441,8 @@ DIError GFDBuffer::Read(void* buf, size_t length, size_t* pActual)
 
     if (fCurrentOffset + (long)length > fLength) {
         if (pActual == NULL) {
-            LOGI("  GFDBuffer underrrun off=%ld len=%zd flen=%ld",
-                (long) fCurrentOffset, length, (long) fLength);
+            LOGW("  GFDBuffer underrrun off=%ld len=%lu flen=%ld",
+                (long) fCurrentOffset, (unsigned long) length, (long) fLength);
             return kDIErrDataUnderrun;
         } else {
             /* set *pActual and adjust "length" */
@@ -469,8 +470,8 @@ DIError GFDBuffer::Write(const void* buf, size_t length, size_t* pActual)
     assert(pActual == NULL);     // not handling this yet
     if (fCurrentOffset + (long)length > fLength) {
         if (!fDoExpand) {
-            LOGI("  GFDBuffer overrun off=%ld len=%zd flen=%ld",
-                (long) fCurrentOffset, length, (long) fLength);
+            LOGI("  GFDBuffer overrun off=%ld len=%lu flen=%ld",
+                (long) fCurrentOffset, (unsigned long) length, (long) fLength);
             return kDIErrDataOverrun;
         }
 

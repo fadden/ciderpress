@@ -1579,8 +1579,8 @@ DIError A2FilePascal::Open(A2FileDescr** ppOpenFile, bool readOnly,
  */
 DIError A2FDPascal::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" Pascal reading %zd bytes from '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), (long) fOffset);
+    LOGD(" Pascal reading %lu bytes from '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(), (long) fOffset);
 
     A2FilePascal* pFile = (A2FilePascal*) fpFile;
 
@@ -1644,7 +1644,7 @@ DIError A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
     uint8_t blkBuf[kBlkSize];
     size_t origLen = len;
 
-    LOGI("   DOS Write len=%zd %s", len, pFile->GetPathName());
+    LOGD("   DOS Write len=%lu %s", (unsigned long) len, pFile->GetPathName());
 
     if (len >= 0x01000000) {    // 16MB
         assert(false);
@@ -1669,8 +1669,8 @@ DIError A2FDPascal::Write(const void* buf, size_t len, size_t* pActual)
         blocksAvail = pNextFile->fStartBlock - pFile->fStartBlock;
 
     blocksNeeded = (len + kBlkSize -1) / kBlkSize;
-    LOGI("Pascal write '%s' %zd bytes: avail=%ld needed=%ld",
-        pFile->GetPathName(), len, blocksAvail, blocksNeeded);
+    LOGD("Pascal write '%s' %lu bytes: avail=%ld needed=%ld",
+        pFile->GetPathName(), (unsigned long) len, blocksAvail, blocksNeeded);
     if (blocksAvail < blocksNeeded)
         return kDIErrDiskFull;
 

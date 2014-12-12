@@ -328,7 +328,7 @@ DIError OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
 
         written = gzwrite(gzfp, buf, actual);
         if (written == 0) {
-            LOGI("Failed writing %zd bytes to gzio", actual);
+            LOGE("Failed writing %lu bytes to gzio", (unsigned long) actual);
             dierr = kDIErrGeneric;
             goto bail;
         }
@@ -338,7 +338,7 @@ DIError OuterGzip::Save(GenericFD* pOuterGFD, GenericFD* pWrapperGFD,
     }
     assert(wrapperLength == 0);     // not expecting any slop
 
-    LOGI(" GZ wrote %ld bytes", totalWritten);
+    LOGD(" GZ wrote %ld bytes", totalWritten);
 
     /*
      * Success!

@@ -1855,8 +1855,9 @@ DIError A2FDHFS::Read(void* buf, size_t len, size_t* pActual)
 {
     long result;
 
-    LOGI(" HFS reading %zd bytes from '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), hfs_seek(fHfsFile, 0, HFS_SEEK_CUR));
+    LOGD(" HFS reading %lu bytes from '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(),
+        hfs_seek(fHfsFile, 0, HFS_SEEK_CUR));
 
     //A2FileHFS* pFile = (A2FileHFS*) fpFile;
 
@@ -1896,8 +1897,9 @@ DIError A2FDHFS::Write(const void* buf, size_t len, size_t* pActual)
 {
     long result;
 
-    LOGI(" HFS writing %zd bytes to '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), hfs_seek(fHfsFile, 0, HFS_SEEK_CUR));
+    LOGD(" HFS writing %lu bytes to '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(),
+        hfs_seek(fHfsFile, 0, HFS_SEEK_CUR));
 
     fModified = true;       // assume something gets changed
 

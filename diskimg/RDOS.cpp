@@ -533,8 +533,8 @@ DIError A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
  */
 DIError A2FDRDOS::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" RDOS reading %zd bytes from '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), (long) fOffset);
+    LOGD(" RDOS reading %lu bytes from '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(), (long) fOffset);
     //if (!fOpen)
     //  return kDIErrNotReady;
 

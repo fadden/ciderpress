@@ -3652,8 +3652,8 @@ DIError DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType,
         goto bail;
     }
     if ((size_t) (*ptr & 0x0f) != strlen(pFile->fDirEntry.fileName)) {
-        LOGI("ProDOS GLITCH: wrong file?  (len=%d vs %zd)",
-            *ptr & 0x0f, strlen(pFile->fDirEntry.fileName));
+        LOGW("ProDOS GLITCH: wrong file?  (len=%d vs %u)",
+            *ptr & 0x0f, (unsigned int) strlen(pFile->fDirEntry.fileName));
         assert(false);
         dierr = kDIErrBadDirectory;
         goto bail;
@@ -4392,8 +4392,8 @@ void A2FileProDOS::Dump(void) const
  */
 DIError A2FDProDOS::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" ProDOS reading %zd bytes from '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), (long) fOffset);
+    LOGD(" ProDOS reading %lu bytes from '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(), (long) fOffset);
     //if (fBlockList == NULL)
     //  return kDIErrNotReady;
 
@@ -4772,8 +4772,8 @@ DIError A2FDProDOS::WriteDirectory(const void* buf, size_t len, size_t* pActual)
 {
     DIError dierr = kDIErrNone;
 
-    LOGI("ProDOS  writing %zd bytes to directory '%s'",
-        len, fpFile->GetPathName());
+    LOGD("ProDOS  writing %lu bytes to directory '%s'",
+        (unsigned long) len, fpFile->GetPathName());
 
     assert(len >= (size_t)kBlkSize);
     assert((len % kBlkSize) == 0);

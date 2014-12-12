@@ -394,8 +394,8 @@ DIError A2FileFAT::Open(A2FileDescr** ppOpenFile, bool readOnly,
  */
 DIError A2FDFAT::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGD(" FAT reading %zd bytes from '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), (long) fOffset);
+    LOGD(" FAT reading %lu bytes from '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileFAT* pFile = (A2FileFAT*) fpFile;
 

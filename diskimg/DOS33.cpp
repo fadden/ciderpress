@@ -2884,8 +2884,8 @@ bail:
  */
 DIError A2FDDOS::Read(void* buf, size_t len, size_t* pActual)
 {
-    LOGI(" DOS reading %zd bytes from '%s' (offset=%ld)",
-        len, fpFile->GetPathName(), (long) fOffset);
+    LOGD(" DOS reading %lu bytes from '%s' (offset=%ld)",
+        (unsigned long) len, fpFile->GetPathName(), (long) fOffset);
 
     A2FileDOS* pFile = (A2FileDOS*) fpFile;
 
@@ -2976,7 +2976,7 @@ DIError A2FDDOS::Write(const void* buf, size_t len, size_t* pActual)
     DiskFSDOS33* pDiskFS = (DiskFSDOS33*) fpFile->GetDiskFS();
     uint8_t sctBuf[kSctSize];
 
-    LOGI("   DOS Write len=%zd %s", len, pFile->GetPathName());
+    LOGD("   DOS Write len=%lu %s", (unsigned long) len, pFile->GetPathName());
 
     if (len >= 0x01000000) {    // 16MB
         assert(false);
