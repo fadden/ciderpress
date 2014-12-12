@@ -106,7 +106,7 @@ Building for Linux
 ------------------
 
 The NuFX archive and disk image manipulation libraries can be used from
-Linux.  See the [Linux README](ReadMe-linux.md).
+Linux.  See the [Linux README](README-linux.md).
 
 
 Source Notes
@@ -114,7 +114,7 @@ Source Notes
 
 Some notes on what you'll find in the various directories.
 
-### Main Application ###
+#### Main Application ####
 
 This is highly Windows-centric.  My goal was to learn how to write a
 Windows application, so I made no pretense at portability.  For better
@@ -130,14 +130,14 @@ to entry is probably the heavy reliance on the Rich Edit control. Despite
 its bug-ridden history, the Rich Edit control allowed me to let Windows
 deal with a lot of text formatting and image display stuff.
 
-### MDC Application ###
+#### MDC Application ####
 
 MDC (Multi-Disk Catalog) was written as a simple demonstration of the
 value of having the DiskImg code in a DLL instead of meshed with the main
 application.  There's not much to it, and it hasn't changed substantially
 since it was first written.
 
-### DiskImg Library ###
+#### DiskImg Library ####
 
 This library provides access to disk images.  It automatically handles
 a wide variety of formats.
@@ -178,7 +178,7 @@ Some things that could be improved:
 
 The library depends on NufxLib and zlib for access to compressed images.
 
-### Reformat Library ###
+#### Reformat Library ####
 
 This is probably the most "fun" component of CiderPress. It converts
 Apple II files to more easily accessible Windows equivalents.
@@ -202,7 +202,20 @@ reformatter is employed by the extraction code.
 Most of the code should be portable, though some of it uses the MFC
 CString class.  This could probably be altered to use STL strings or plain.
 
-### Util Library ###
+#### Util Library ####
 
 Miscellaneous utility functions.
 
+#### NufxLib and zlib ####
+
+These are source snapshots from [NufxLib](http://github.com/fadden/nulib2)
+and [zlib](http://www.zlib.org).
+
+#### DIST ####
+
+Files used when making a distribution, notably:
+
+- the DeployMaster configuration file
+- the license and README files that are included in the installer
+- redistributable Windows runtime libraries (only needed on WinXP?)
+- NiftyList data file
