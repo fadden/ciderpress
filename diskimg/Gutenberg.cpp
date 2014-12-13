@@ -70,6 +70,27 @@ static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
             dierr = kDIErrNone;
             break;      /* allow it if earlier stuff was okay */
         }
+#ifdef TRY_THIS
+        // This allowed Gutenberg_Jr_f1.dsk to be read, but it doesn't look
+        // quite right... leaving it alone for the moment.
+        if (catTrack == sctBuf[2] & 0x7f && catSect == sctBuf[3] & 0x7f) {
+            foundGood++;
+            if (sctBuf[0x0f] == 0x8d && sctBuf[0x1f] == 0x8d &&
+                sctBuf[0x2f] == 0x8d && sctBuf[0x3f] == 0x8d &&
+                sctBuf[0x4f] == 0x8d && sctBuf[0x5f] == 0x8d &&
+                sctBuf[0x6f] == 0x8d && sctBuf[0x7f] == 0x8d &&
+                sctBuf[0x8f] == 0x8d && sctBuf[0x9f] == 0x8d)
+            {
+                foundGood++;
+            }
+        }
+        catTrack = sctBuf[0x04];
+        catSect = sctBuf[0x05];
+        if ((catTrack & 0x80) != 0) {
+            // full circle
+            break;
+        }
+#else
         if (catTrack == sctBuf[0] && catSect == sctBuf[1]) {
             foundGood++;
             if (sctBuf[0x0f] == 0x8d && sctBuf[0x1f] == 0x8d &&
@@ -86,6 +107,7 @@ static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
         }
         catTrack = sctBuf[0x04];
         catSect = sctBuf[0x05];
+#endif
         iterations++;       // watch for infinite loops
     }
     if (iterations >= DiskFSGutenberg::kMaxCatalogSectors) {
