@@ -102,7 +102,7 @@ void MainWindow::OnToolsDiskEdit(void)
     /* flush current archive in case that's what we're planning to edit */
     OnFileSave();
 
-    failed.LoadString(IDS_FAILED);
+    CheckedLoadString(&failed, IDS_FAILED);
 
     diskEditOpen.fArchiveOpen = false;
     if (fpOpenArchive != NULL &&
@@ -499,8 +499,8 @@ void MainWindow::OnToolsDiskConv(void)
     {
         /* converting from TrackStar to anything else */
         CString msg, appName;
-        msg.LoadString(IDS_TRACKSTAR_TO_OTHER_WARNING);
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&msg, IDS_TRACKSTAR_TO_OTHER_WARNING);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
         if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK) {
             LOGI(" User bailed after trackstar-to-other warning");
             goto bail;
@@ -511,8 +511,8 @@ void MainWindow::OnToolsDiskConv(void)
     {
         /* converting from 5.25" FDI to anything but TrackStar */
         CString msg, appName;
-        msg.LoadString(IDS_FDI_TO_OTHER_WARNING);
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&msg, IDS_FDI_TO_OTHER_WARNING);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
         if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK) {
             LOGI(" User bailed after fdi-to-other warning");
             goto bail;
@@ -521,8 +521,8 @@ void MainWindow::OnToolsDiskConv(void)
     {
         /* converting from nibble to non-nibble format */
         CString msg, appName;
-        msg.LoadString(IDS_NIBBLE_TO_SECTOR_WARNING);
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&msg, IDS_NIBBLE_TO_SECTOR_WARNING);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
         if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK) {
             LOGI(" User bailed after nibble-to-sector warning");
             goto bail;
@@ -533,8 +533,8 @@ void MainWindow::OnToolsDiskConv(void)
     {
         /* converting between differing nibble formats */
         CString msg, appName;
-        msg.LoadString(IDS_DIFFERENT_NIBBLE_WARNING);
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&msg, IDS_DIFFERENT_NIBBLE_WARNING);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
         if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK) {
             LOGI(" User bailed after differing-nibbles warning");
             goto bail;
@@ -935,7 +935,7 @@ DIError MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
 
         if (!bulk && numBadSectors != 0) {
             CString appName;
-            appName.LoadString(IDS_MB_APP_NAME);
+            CheckedLoadString(&appName, IDS_MB_APP_NAME);
             errMsg.Format(L"Skipped %ld unreadable sector%ls.", numBadSectors,
                 numBadSectors == 1 ? L"" : L"s");
             MessageBox(errMsg, appName, MB_OK | MB_ICONWARNING);
@@ -1017,7 +1017,7 @@ DIError MainWindow::CopyDiskImage(DiskImg* pDstImg, DiskImg* pSrcImg, bool bulk,
 
         if (!bulk && numBadBlocks != 0) {
             CString appName;
-            appName.LoadString(IDS_MB_APP_NAME);
+            CheckedLoadString(&appName, IDS_MB_APP_NAME);
             errMsg.Format(L"Skipped %ld unreadable block%ls.", numBadBlocks,
                 numBadBlocks == 1 ? L"" : L"s");
             MessageBox(errMsg, appName, MB_OK | MB_ICONWARNING);
@@ -1168,7 +1168,7 @@ void MainWindow::OnToolsBulkDiskConv(void)
             CString failed;
             int res;
 
-            failed.LoadString(IDS_FAILED);
+            CheckedLoadString(&failed, IDS_FAILED);
             errMsg += "\n\nSource file: ";
             errMsg += pathName;
             errMsg += "\n\nClick OK to skip this and continue, or Cancel to "
@@ -1521,7 +1521,7 @@ void MainWindow::OnToolsSSTMerge(void)
         OFN_OVERWRITEPROMPT|OFN_NOREADONLYRETURN|OFN_HIDEREADONLY,
         L"All Files (*.*)|*.*||", this);
 
-    appName.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
     trackBuf = new uint8_t[kSSTNumTracks * kSSTTrackLen];
     if (trackBuf == NULL)
@@ -1537,7 +1537,7 @@ void MainWindow::OnToolsSSTMerge(void)
         goto bail;
     LOGI("FOUND %ld bad bytes in part 0", badCount);
     if (badCount > kBadCountThreshold) {
-        errMsg.LoadString(IDS_BAD_SST_IMAGE);
+        CheckedLoadString(&errMsg, IDS_BAD_SST_IMAGE);
         if (MessageBox(errMsg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK)
             goto bail;
     }
@@ -1549,7 +1549,7 @@ void MainWindow::OnToolsSSTMerge(void)
         goto bail;
     LOGI("FOUND %ld bad bytes in part 1", badCount);
     if (badCount > kBadCountThreshold) {
-        errMsg.LoadString(IDS_BAD_SST_IMAGE);
+        CheckedLoadString(&errMsg, IDS_BAD_SST_IMAGE);
         if (MessageBox(errMsg, appName, MB_OKCANCEL | MB_ICONWARNING) != IDOK)
             goto bail;
     }
@@ -1892,7 +1892,7 @@ void MainWindow::VolumeCopier(bool openFile)
     /* flush current archive in case that's what we're planning to edit */
     OnFileSave();
 
-    failed.LoadString(IDS_FAILED);
+    CheckedLoadString(&failed, IDS_FAILED);
 
     if (!openFile) {
         /*

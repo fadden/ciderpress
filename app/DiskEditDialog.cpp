@@ -322,9 +322,9 @@ int DiskEditDialog::ReadSpinner(int id, long* pVal)
     long val = pSpin->GetPos();
     if (val & 0xff000000) {
         /* error */
-        CString msg;
-        CString err;
-        err.LoadString(IDS_ERROR);
+        CString msg, err;
+
+        CheckedLoadString(&err, IDS_ERROR);
         int lower, upper;
         pSpin->GetRange32(lower, upper);
         msg.Format(L"Please enter a value between %d and %d (0x%x and 0x%x).",
@@ -514,7 +514,7 @@ DIError DiskEditDialog::OpenFile(const WCHAR* fileName, bool openRsrc,
         CString msg, failed;
 
         msg.Format(IDS_DEFILE_FIND_FAILED, fileName);
-        failed.LoadString(IDS_FAILED);
+        CheckedLoadString(&failed, IDS_FAILED);
         MessageBox(msg, failed, MB_OK | MB_ICONSTOP);
         return kDIErrFileNotFound;
     }
@@ -526,7 +526,7 @@ DIError DiskEditDialog::OpenFile(const WCHAR* fileName, bool openRsrc,
 
         msg.Format(IDS_DEFILE_OPEN_FAILED, fileName,
             DiskImgLib::DIStrError(dierr));
-        failed.LoadString(IDS_FAILED);
+        CheckedLoadString(&failed, IDS_FAILED);
         MessageBox(msg, failed, MB_OK | MB_ICONSTOP);
         return dierr;
     }
@@ -656,7 +656,7 @@ int SectorEditDialog::LoadData(void)
         //err.LoadString(IDS_ERROR);
         //msg.Format(IDS_DISKEDIT_NOREADTS, fTrack, fSector);
         //MessageBox(msg, err, MB_OK|MB_ICONSTOP);
-        fAlertMsg.LoadString(IDS_DISKEDITMSG_BADSECTOR);
+        CheckedLoadString(&fAlertMsg, IDS_DISKEDITMSG_BADSECTOR);
         //return -1;
     }
 
@@ -778,7 +778,7 @@ BOOL SectorFileEditDialog::OnInitDialog(void)
     /* set the window title */
     CString title;
     CString rsrcIndic;
-    rsrcIndic.LoadString(IDS_INDIC_RSRC);
+    CheckedLoadString(&rsrcIndic, IDS_INDIC_RSRC);
     title.Format(L"Disk Viewer - %hs%ls (%I64d bytes)",
         (LPCSTR) fpFile->GetPathName(),  // use fpFile version to get case
         fOpenRsrcFork ? (LPCWSTR)rsrcIndic : L"", (LONGLONG) fLength);
@@ -833,13 +833,13 @@ int SectorFileEditDialog::LoadData(void)
     if (dierr == kDIErrInvalidIndex && fSectorIdx == 0) {
         // no first sector; should only happen on CP/M
         //FillWithPattern(fSectorData, sizeof(fSectorData), _T("EMPTY "));
-        fAlertMsg.LoadString(IDS_DISKEDITMSG_EMPTY);
+        CheckedLoadString(&fAlertMsg, IDS_DISKEDITMSG_EMPTY);
     } else if (dierr != kDIErrNone) {
         CString msg, failed;
-        failed.LoadString(IDS_FAILED);
+        CheckedLoadString(&failed, IDS_FAILED);
         msg.Format(IDS_DISKEDIT_FIRDFAILED, DiskImgLib::DIStrError(dierr));
         MessageBox(msg, failed, MB_OK);
-        fAlertMsg.LoadString(IDS_FAILED);
+        CheckedLoadString(&fAlertMsg, IDS_FAILED);
         // TO DO: mark contents as invalid, so editing fails
         return -1;
     } else {
@@ -858,7 +858,7 @@ int SectorFileEditDialog::LoadData(void)
                 //err.LoadString(IDS_ERROR);
                 //msg.Format(IDS_DISKEDIT_NOREADTS, fTrack, fSector);
                 //MessageBox(msg, err, MB_OK|MB_ICONSTOP);
-                fAlertMsg.LoadString(IDS_DISKEDITMSG_BADSECTOR);
+                CheckedLoadString(&fAlertMsg, IDS_DISKEDITMSG_BADSECTOR);
                 //return -1;
             }
         }
@@ -1033,7 +1033,7 @@ int BlockEditDialog::LoadData(void)
         //err.LoadString(IDS_ERROR);
         //msg.Format(IDS_DISKEDIT_NOREADBLOCK, fBlock);
         //MessageBox(msg, err, MB_OK|MB_ICONSTOP);
-        fAlertMsg.LoadString(IDS_DISKEDITMSG_BADBLOCK);
+        CheckedLoadString(&fAlertMsg, IDS_DISKEDITMSG_BADBLOCK);
         //return -1;
     }
 
@@ -1132,7 +1132,7 @@ BOOL BlockFileEditDialog::OnInitDialog(void)
     /* set the window title */
     CString title;
     CString rsrcIndic;
-    rsrcIndic.LoadString(IDS_INDIC_RSRC);
+    CheckedLoadString(&rsrcIndic, IDS_INDIC_RSRC);
     title.Format(L"Disk Viewer - %hs%ls (%I64d bytes)",
         (LPCSTR) fpFile->GetPathName(),  // use fpFile version to get case
         fOpenRsrcFork ? (LPCWSTR)rsrcIndic : L"", (LONGLONG) fLength);
@@ -1186,13 +1186,13 @@ int BlockFileEditDialog::LoadData(void)
     if (dierr == kDIErrInvalidIndex && fBlockIdx == 0) {
         // no first sector; should only happen on CP/M
         //FillWithPattern(fBlockData, sizeof(fBlockData), _T("EMPTY "));
-        fAlertMsg.LoadString(IDS_DISKEDITMSG_EMPTY);
+        CheckedLoadString(&fAlertMsg, IDS_DISKEDITMSG_EMPTY);
     } else if (dierr != kDIErrNone) {
         CString msg, failed;
-        failed.LoadString(IDS_FAILED);
+        CheckedLoadString(&failed, IDS_FAILED);
         msg.Format(IDS_DISKEDIT_FIRDFAILED, DiskImgLib::DIStrError(dierr));
         MessageBox(msg, failed, MB_OK);
-        fAlertMsg.LoadString(IDS_FAILED);
+        CheckedLoadString(&fAlertMsg, IDS_FAILED);
         // TO DO: mark contents as invalid, so editing fails
         return -1;
     } else {
@@ -1210,7 +1210,7 @@ int BlockFileEditDialog::LoadData(void)
                 //err.LoadString(IDS_ERROR);
                 //msg.Format(IDS_DISKEDIT_NOREADBLOCK, fBlock);
                 //MessageBox(msg, err, MB_OK|MB_ICONSTOP);
-                fAlertMsg.LoadString(IDS_DISKEDITMSG_BADBLOCK);
+                CheckedLoadString(&fAlertMsg, IDS_DISKEDITMSG_BADBLOCK);
                 //return -1;
             }
         }
@@ -1374,7 +1374,7 @@ int NibbleEditDialog::LoadData(void)
                 &fNibbleDataLen);
     if (dierr != kDIErrNone) {
         LOGI("NED track read failed: %hs", DiskImgLib::DIStrError(dierr));
-        fAlertMsg.LoadString(IDS_DISKEDITMSG_BADTRACK);
+        CheckedLoadString(&fAlertMsg, IDS_DISKEDITMSG_BADTRACK);
     }
 
     DisplayData();

@@ -100,8 +100,8 @@ void TwoImgPropsDialog::DoDataExchange(CDataExchange* pDX)
 
             CString appStr, errMsg;
             if (dosVolNum < 1 || dosVolNum > 254) {
-                appStr.LoadString(IDS_MB_APP_NAME);
-                errMsg.LoadString(IDS_VALID_VOLNAME_DOS);
+                CheckedLoadString(&appStr, IDS_MB_APP_NAME);
+                CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_DOS);
                 MessageBox(errMsg, appStr, MB_OK);
                 pDX->Fail();
             } else {

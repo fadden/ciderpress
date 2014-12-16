@@ -520,7 +520,7 @@ LONG MainWindow::OnLateInit(UINT, LONG)
     CString appName;
     CString niftyListFile;
 
-    appName.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
     LOGI("----- late init begins -----");
 
@@ -1114,7 +1114,7 @@ void MainWindow::OnFileNewArchive(void)
     errStr = pOpenArchive->New(filename, NULL);
     if (!errStr.IsEmpty()) {
         CString failed;
-        failed.LoadString(IDS_FAILED);
+        CheckedLoadString(&failed, IDS_FAILED);
         MessageBox(errStr, failed, MB_ICONERROR);
 
         delete pOpenArchive;
@@ -1317,7 +1317,7 @@ void MainWindow::PrintListing(const ContentList* pContentList)
         return;
     if (dc.Attach(dlg.GetPrinterDC()) != TRUE) {
         CString msg;
-        msg.LoadString(IDS_PRINTER_NOT_USABLE);
+        CheckedLoadString(&msg, IDS_PRINTER_NOT_USABLE);
         ShowFailureMsg(this, msg, IDS_FAILED);
         return;
     }
@@ -1829,7 +1829,7 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
     int origFilterIndex = filterIndex;
     CString errStr, appName;
 
-    appName.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
     LOGI("LoadArchive: '%ls' ro=%d idx=%d", fileName, readOnly, filterIndex);
 
@@ -2159,7 +2159,7 @@ void MainWindow::SetCPTitle(const WCHAR* pathname, GenericArchive* pOpenArchive)
     CString appName;
     CString archiveDescription;
 
-    appName.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
     pOpenArchive->GetDescription(&archiveDescription);
     title.Format(L"%ls - %ls (%ls)", (LPCWSTR) appName, pathname,
@@ -2167,7 +2167,7 @@ void MainWindow::SetCPTitle(const WCHAR* pathname, GenericArchive* pOpenArchive)
 
     if (fpOpenArchive->IsReadOnly()) {
         CString readOnly;
-        readOnly.LoadString(IDS_READONLY);
+        CheckedLoadString(&readOnly, IDS_READONLY);
         title += L" ";
         title += readOnly;
     }
@@ -2195,7 +2195,7 @@ void MainWindow::SetCPTitle(void)
     }
 #endif
 
-    appName.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&appName, IDS_MB_APP_NAME);
     title = appName + regName;
     SetWindowText(title);
 }
@@ -2211,7 +2211,7 @@ CString MainWindow::GetPrintTitle(void)
         return title;
     }
 
-    appName.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
     fpOpenArchive->GetDescription(&archiveDescription);
     title.Format(L"%ls - %ls (%ls)", (LPCWSTR) appName,

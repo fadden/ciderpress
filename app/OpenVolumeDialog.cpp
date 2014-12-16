@@ -594,8 +594,8 @@ void OpenVolumeDialog::OnOK(void)
 
     if (pListView->GetSelectedCount() != 1) {
         CString msg, failed;
-        failed.LoadString(IDS_FAILED);
-        msg.LoadString(IDS_VOLUME_SELECT_ONE);
+        CheckedLoadString(&failed, IDS_FAILED);
+        CheckedLoadString(&msg, IDS_VOLUME_SELECT_ONE);
         MessageBox(msg, failed, MB_OK);
         return;
     }
@@ -653,8 +653,8 @@ void OpenVolumeDialog::OnOK(void)
     if (formatID != 0) {
         CString msg, notAllowed;
 
-        notAllowed.LoadString(IDS_NOT_ALLOWED);
-        msg.LoadString(formatID);
+        CheckedLoadString(&notAllowed, IDS_NOT_ALLOWED);
+        CheckedLoadString(&msg, formatID);
         MessageBox(msg, notAllowed, MB_OK);
     } else {
         Preferences* pPreferences = GET_PREFERENCES_WR();

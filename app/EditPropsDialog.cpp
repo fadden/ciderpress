@@ -199,7 +199,7 @@ void EditPropsDialog::DoDataExchange(CDataExchange* pDX)
         CButton *pButton;
         bool typeChanged = false;
 
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
         pButton = (CButton*) GetDlgItem(IDC_PROPS_HFS_MODE);
         if (pButton->GetCheck() == BST_CHECKED) {
@@ -264,7 +264,7 @@ void EditPropsDialog::DoDataExchange(CDataExchange* pDX)
             CString msg;
             int result;
 
-            msg.LoadString(IDS_PROPS_DOS_TYPE_CHANGE);
+            CheckedLoadString(&msg, IDS_PROPS_DOS_TYPE_CHANGE);
             result = MessageBox(msg, appName, MB_ICONQUESTION|MB_OKCANCEL);
             if (result != IDOK) {
                 pDX->Fail();

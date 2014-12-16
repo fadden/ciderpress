@@ -34,8 +34,7 @@ void CreateSubdirDialog::DoDataExchange(CDataExchange* pDX)
 {
     CString msg, failed;
 
-    msg = "";
-    failed.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&failed, IDS_MB_APP_NAME);
 
     /* put fNewName last so it gets the focus after failure */
     DDX_Text(pDX, IDC_CREATESUBDIR_BASE, fBasePath);
@@ -44,7 +43,7 @@ void CreateSubdirDialog::DoDataExchange(CDataExchange* pDX)
     /* validate the path field */
     if (pDX->m_bSaveAndValidate) {
         if (fNewName.IsEmpty()) {
-            msg = "You must specify a new name.";
+            msg = L"You must specify a new name.";
             goto fail;
         }
 

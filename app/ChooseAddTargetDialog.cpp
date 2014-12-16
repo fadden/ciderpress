@@ -55,7 +55,7 @@ void ChooseAddTargetDialog::DoDataExchange(CDataExchange* pDX)
     if (pDX->m_bSaveAndValidate) {
         CTreeCtrl* pTree = (CTreeCtrl*) GetDlgItem(IDC_ADD_TARGET_TREE);
         CString errMsg, appName;
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
         /* shortcut for simple disk images */
         if (pTree->GetCount() == 1 && fpChosenDiskFS != NULL)

@@ -41,12 +41,12 @@ BOOL ActionProgressDialog::OnInitDialog(void)
         CString tmpStr;
         pWnd = GetDlgItem(IDC_PROG_VERB);
         ASSERT(pWnd != NULL);
-        tmpStr.LoadString(IDS_NOW_EXPANDING);
+        CheckedLoadString(&tmpStr, IDS_NOW_EXPANDING);
         pWnd->SetWindowText(tmpStr);
 
         pWnd = GetDlgItem(IDC_PROG_TOFROM);
         ASSERT(pWnd != NULL);
-        tmpStr.LoadString(IDS_NOW_COMPRESSING);
+        CheckedLoadString(&tmpStr, IDS_NOW_COMPRESSING);
         pWnd->SetWindowText(tmpStr);
     } else if (fAction == kActionAdd || fAction == kActionAddDisk ||
             fAction == kActionConvFile || fAction == kActionConvDisk)
@@ -54,18 +54,18 @@ BOOL ActionProgressDialog::OnInitDialog(void)
         CString tmpStr;
         pWnd = GetDlgItem(IDC_PROG_VERB);
         ASSERT(pWnd != NULL);
-        tmpStr.LoadString(IDS_NOW_ADDING);
+        CheckedLoadString(&tmpStr, IDS_NOW_ADDING);
         pWnd->SetWindowText(tmpStr);
 
         pWnd = GetDlgItem(IDC_PROG_TOFROM);
         ASSERT(pWnd != NULL);
-        tmpStr.LoadString(IDS_ADDING_AS);
+        CheckedLoadString(&tmpStr, IDS_ADDING_AS);
         pWnd->SetWindowText(tmpStr);
     } else if (fAction == kActionDelete) {
         CString tmpStr;
         pWnd = GetDlgItem(IDC_PROG_VERB);
         ASSERT(pWnd != NULL);
-        tmpStr.LoadString(IDS_NOW_DELETING);
+        CheckedLoadString(&tmpStr, IDS_NOW_DELETING);
         pWnd->SetWindowText(tmpStr);
 
         pWnd = GetDlgItem(IDC_PROG_TOFROM);
@@ -77,7 +77,7 @@ BOOL ActionProgressDialog::OnInitDialog(void)
         CString tmpStr;
         pWnd = GetDlgItem(IDC_PROG_VERB);
         ASSERT(pWnd != NULL);
-        tmpStr.LoadString(IDS_NOW_TESTING);
+        CheckedLoadString(&tmpStr, IDS_NOW_TESTING);
         pWnd->SetWindowText(tmpStr);
 
         pWnd = GetDlgItem(IDC_PROG_TOFROM);

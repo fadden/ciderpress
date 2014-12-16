@@ -1122,7 +1122,7 @@ void ViewFilesDialog::OnFviewPrint(void)
      */
     if (dc.Attach(dlg.GetPrinterDC()) != TRUE) {
         CString msg;
-        msg.LoadString(IDS_PRINTER_NOT_USABLE);
+        CheckedLoadString(&msg, IDS_PRINTER_NOT_USABLE);
         ShowFailureMsg(this, msg, IDS_FAILED);
         return;
     }

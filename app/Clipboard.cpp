@@ -112,7 +112,7 @@ void MainWindow::OnEditCopy(void)
     /* associate a number with the format name */
     myFormat = RegisterClipboardFormat(kClipboardFmtName);
     if (myFormat == 0) {
-        errStr.LoadString(IDS_CLIPBOARD_REGFAILED);
+        CheckedLoadString(&errStr, IDS_CLIPBOARD_REGFAILED);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
@@ -120,7 +120,7 @@ void MainWindow::OnEditCopy(void)
 
     /* open & empty the clipboard, even if we fail later */
     if (OpenClipboard() == false) {
-        errStr.LoadString(IDS_CLIPBOARD_OPENFAILED);
+        CheckedLoadString(&errStr, IDS_CLIPBOARD_OPENFAILED);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
@@ -137,7 +137,7 @@ void MainWindow::OnEditCopy(void)
     selSet.CreateFromSelection(fpContentList,
         GenericEntry::kAnyThread | GenericEntry::kAllowDirectory);
     if (selSet.GetNumEntries() == 0) {
-        errStr.LoadString(IDS_CLIPBOARD_NOITEMS);
+        CheckedLoadString(&errStr, IDS_CLIPBOARD_NOITEMS);
         MessageBox(errStr, L"No match", MB_OK | MB_ICONEXCLAMATION);
         goto bail;
     }
@@ -155,7 +155,7 @@ void MainWindow::OnEditCopy(void)
     hGlobal = ::GlobalAlloc(GHND | GMEM_SHARE, neededLen);
     if (hGlobal == NULL) {
         LOGI("Failed allocating %d bytes", neededLen);
-        errStr.LoadString(IDS_CLIPBOARD_ALLOCFAILED);
+        CheckedLoadString(&errStr, IDS_CLIPBOARD_ALLOCFAILED);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
@@ -428,7 +428,7 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
     uint8_t* buf = (uint8_t*) *pBuf;
     long remLen = *pBufLen;
 
-    errStr.LoadString(IDS_CLIPBOARD_WRITEFAILURE);
+    CheckedLoadString(&errStr, IDS_CLIPBOARD_WRITEFAILURE);
 
     if (pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir) {
         LOGI("Not copying volume dir to collection");
@@ -518,7 +518,7 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
         result = pEntry->ExtractThreadToBuffer(which, &bufCopy, &lenCopy,
                     &extractErrStr);
         if (result == IDCANCEL) {
-            errStr.LoadString(IDS_CANCELLED);
+            CheckedLoadString(&errStr, IDS_CANCELLED);
             return errStr;
         } else if (result != IDOK) {
             LOGW("ExtractThreadToBuffer (data) failed: %ls",
@@ -542,7 +542,7 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
         result = pEntry->ExtractThreadToBuffer(which, &bufCopy, &lenCopy,
                     &extractErrStr);
         if (result == IDCANCEL) {
-            errStr.LoadString(IDS_CANCELLED);
+            CheckedLoadString(&errStr, IDS_CANCELLED);
             return errStr;
         } else if (result != IDOK) {
             LOGI("ExtractThreadToBuffer (rsrc) failed: %ls",
@@ -655,14 +655,14 @@ void MainWindow::DoPaste(bool pasteJunkPaths)
 
     myFormat = RegisterClipboardFormat(kClipboardFmtName);
     if (myFormat == 0) {
-        errStr.LoadString(IDS_CLIPBOARD_REGFAILED);
+        CheckedLoadString(&errStr, IDS_CLIPBOARD_REGFAILED);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
     LOGI("myFormat = %u", myFormat);
 
     if (OpenClipboard() == false) {
-        errStr.LoadString(IDS_CLIPBOARD_OPENFAILED);
+        CheckedLoadString(&errStr, IDS_CLIPBOARD_OPENFAILED);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;;
     }
@@ -686,7 +686,7 @@ void MainWindow::DoPaste(bool pasteJunkPaths)
 
     /* impossible unless OnUpdateEditPaste was bypassed */
     if (!IsClipboardFormatAvailable(myFormat)) {
-        errStr.LoadString(IDS_CLIPBOARD_NOTFOUND);
+        CheckedLoadString(&errStr, IDS_CLIPBOARD_NOTFOUND);
         ShowFailureMsg(this, errStr, IDS_FAILED);
         goto bail;
     }
@@ -730,7 +730,7 @@ CString MainWindow::ProcessClipboard(const void* vbuf, long bufLen,
     bool xferPrepped = false;
 
     /* set a standard error message */
-    errMsg.LoadString(IDS_CLIPBOARD_READFAILURE);
+    CheckedLoadString(&errMsg, IDS_CLIPBOARD_READFAILURE);
 
     /*
      * Pull the header out.

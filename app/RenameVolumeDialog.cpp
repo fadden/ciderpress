@@ -48,7 +48,7 @@ void RenameVolumeDialog::DoDataExchange(CDataExchange* pDX)
     CString msg, failed;
     //DiskImgLib::DiskFS*   pDiskFS = fpArchive->GetDiskFS();
 
-    failed.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&failed, IDS_MB_APP_NAME);
 
     /* put fNewName last so it gets the focus after failure */
     DDX_Text(pDX, IDC_RENAMEVOL_NEW, fNewName);
@@ -60,7 +60,7 @@ void RenameVolumeDialog::DoDataExchange(CDataExchange* pDX)
          */
         CTreeCtrl* pTree = (CTreeCtrl*) GetDlgItem(IDC_RENAMEVOL_TREE);
         CString errMsg, appName;
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
         HTREEITEM selected;
         selected = pTree->GetSelectedItem();

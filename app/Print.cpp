@@ -209,7 +209,7 @@ int PrintContentList::StartPrint(void)
 
     // set up the print job
     CString printTitle;
-    printTitle.LoadString(IDS_PRINT_CL_JOB_TITLE);
+    CheckedLoadString(&printTitle, IDS_PRINT_CL_JOB_TITLE);
     DOCINFO di;
     ::ZeroMemory(&di, sizeof(DOCINFO));
     di.cbSize = sizeof(DOCINFO);

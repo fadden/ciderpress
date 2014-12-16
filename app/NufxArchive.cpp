@@ -933,7 +933,7 @@ bool NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
         if (nerr != kNuErrNone) {
             if (errMsg.IsEmpty())
                 errMsg.Format(L"Failed while adding file '%ls': %hs.",
-                    name, NuStrError(nerr));
+                    (LPCWSTR) name, NuStrError(nerr));
             if (nerr != kNuErrAborted) {
                 ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
             }
@@ -1086,7 +1086,7 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     }
     if (numBadBlocks > 0) {
         CString appName, msg;
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
         msg.Format(L"Skipped %ld unreadable block%ls.", numBadBlocks,
             numBadBlocks == 1 ? L"" : L"s");
         fpMsgWnd->MessageBox(msg, appName, MB_OK | MB_ICONWARNING);
@@ -1388,7 +1388,7 @@ bool NufxArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         if (nerr != kNuErrNone) {
             if (nerr == kNuErrAborted) {
                 CString title;
-                title.LoadString(IDS_MB_APP_NAME);
+                CheckedLoadString(&title, IDS_MB_APP_NAME);
                 errMsg = "Cancelled.";
                 pMsgWnd->MessageBox(errMsg, title, MB_OK);
             } else {

@@ -305,7 +305,7 @@ void MainWindow::OnActionsAddDisks(void)
 
     LOGI("Add disks!");
 
-    failed.LoadString(IDS_FAILED);
+    CheckedLoadString(&failed, IDS_FAILED);
 
     openFilters = kOpenDiskImage;
     openFilters += kOpenAll;
@@ -763,7 +763,7 @@ bool MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
     ReformatHolder holder;
     CString outputPath;
     CString failed, errMsg;
-    failed.LoadString(IDS_FAILED);
+    CheckedLoadString(&failed, IDS_FAILED);
     bool writeFailed = false;
     bool extractAs2MG = false;
     char* reformatText = NULL;
@@ -1154,7 +1154,7 @@ bool MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
         if (result != IDOK) {
             if (result == IDCANCEL) {
                 CString msg;
-                msg.LoadString(IDS_OPERATION_CANCELLED);
+                CheckedLoadString(&msg, IDS_OPERATION_CANCELLED);
                 fpActionProgress->MessageBox(msg, 
                     L"CiderPress", MB_OK | MB_ICONEXCLAMATION);
             } else {
@@ -1198,7 +1198,7 @@ int MainWindow::OpenOutputFile(CString* pOutputPath, const PathProposal& pathPro
     CString msg;
     int err = 0;
 
-    failed.LoadString(IDS_FAILED);
+    CheckedLoadString(&failed, IDS_FAILED);
 
     *pFp = NULL;
 
@@ -1441,7 +1441,7 @@ void MainWindow::OnActionsDelete(void)
 
     CString appName, msg;
 
-    appName.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&appName, IDS_MB_APP_NAME);
     msg.Format(L"Delete %d file%ls?", selSet.GetNumEntries(),
         selSet.GetNumEntries() == 1 ? L"" : L"s");
     if (MessageBox(msg, appName, MB_OKCANCEL | MB_ICONQUESTION) != IDOK)
@@ -1541,8 +1541,8 @@ void MainWindow::OnActionsEditComment(void)
         CString question, title;
         int result;
 
-        question.LoadString(IDS_NO_COMMENT_ADD);
-        title.LoadString(IDS_EDIT_COMMENT);
+        CheckedLoadString(&question, IDS_NO_COMMENT_ADD);
+        CheckedLoadString(&title, IDS_EDIT_COMMENT);
         result = MessageBox(question, title, MB_OKCANCEL | MB_ICONQUESTION);
         if (result == IDCANCEL)
             return;
@@ -1753,7 +1753,7 @@ void MainWindow::OnActionsRecompress(void)
         CalcTotalSize(&afterUncomp, &afterComp);
         ASSERT(beforeUncomp == afterUncomp);
 
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
         msg.Format(L"Total uncompressed size of all files:\t%.1fK\r\n"
                    L"Total size before recompress:\t\t%.1fK\r\n"
                    L"Total size after recompress:\t\t%.1fK\r\n"

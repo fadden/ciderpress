@@ -187,6 +187,11 @@ void ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID);
  */
 bool IsWin9x(void);
 
+/*
+ * Wrapper for CString::LoadString that checks the return value and logs a
+ * complaint if the load fails.
+ */
+void CheckedLoadString(CString* pString, UINT nID);
 
 /*
  * ====================================

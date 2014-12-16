@@ -56,7 +56,7 @@ void NewFolderDialog::DoDataExchange(CDataExchange* pDX)
                 GetWin32ErrorString(dwerr, &errStr);
                 msg.Format(L"Unable to create folder '%ls': %ls",
                     (LPCWSTR) fNewFolder, (LPCWSTR) errStr);
-                failed.LoadString(IDS_FAILED);
+                CheckedLoadString(&failed, IDS_FAILED);
                 MessageBox(msg, failed, MB_OK | MB_ICONERROR);
                 pDX->Fail();
             } else {

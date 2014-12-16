@@ -26,10 +26,10 @@ BOOL UseSelectionDialog::OnInitDialog(void)
 
     /* set the string using a string table entry */
     if (fSelectedCount == 1) {
-        str.LoadString(fSelCountID);
+        CheckedLoadString(&str, fSelCountID);
         pWnd->SetWindowText(str);
     } else {
-        str.LoadString(fSelCountsID);
+        CheckedLoadString(&str, fSelCountsID);
         selStr.Format((LPCWSTR) str, fSelectedCount);
         pWnd->SetWindowText(selStr);
 
@@ -38,17 +38,17 @@ BOOL UseSelectionDialog::OnInitDialog(void)
     }
 
     /* set the other strings */
-    str.LoadString(fTitleID);
+    CheckedLoadString(&str, fTitleID);
     SetWindowText(str);
 
     pWnd = GetDlgItem(IDC_USE_ALL);
     ASSERT(pWnd != NULL);
-    str.LoadString(fAllID);
+    CheckedLoadString(&str, fAllID);
     pWnd->SetWindowText(str);
 
     pWnd = GetDlgItem(IDOK);
     ASSERT(pWnd != NULL);
-    str.LoadString(fOkLabelID);
+    CheckedLoadString(&str, fOkLabelID);
     pWnd->SetWindowText(str);
 
     return TRUE;

@@ -109,7 +109,7 @@ void ChooseDirDialog::OnExpandTree(void)
         fShellTree.TunnelTree(str, &msg);
         if (!msg.IsEmpty()) {
             CString failed;
-            failed.LoadString(IDS_FAILED);
+            CheckedLoadString(&failed, IDS_FAILED);
             MessageBox(msg, failed, MB_OK | MB_ICONERROR);
         }
     }

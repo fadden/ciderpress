@@ -95,7 +95,7 @@ void MainWindow::OnFileScan(void)
 {
     if (0) {
         CString msg;
-        msg.LoadString(IDS_MUST_REGISTER);
+        CheckedLoadString(&msg, IDS_MUST_REGISTER);
         ShowFailureMsg(this, msg, IDS_APP_TITLE);
     } else {
         ScanFiles();
@@ -274,7 +274,7 @@ void MainWindow::ScanFiles(void)
         CString doneMsg = L"Processing completed.";
         CString appName;
 
-        appName.LoadString(IDS_APP_TITLE);
+        CheckedLoadString(&appName, IDS_APP_TITLE);
         scanOpts.pProgress->MessageBox(doneMsg, appName, MB_OK|MB_ICONINFORMATION);
     }
 

@@ -845,7 +845,7 @@ CString DiskArchive::Close(void)
 
         msg.Format(L"Failed while closing disk image: %hs.",
             DiskImgLib::DIStrError(dierr));
-        failed.LoadString(IDS_FAILED);
+        CheckedLoadString(&failed, IDS_FAILED);
         LOGE("During close: %ls", (LPCWSTR) msg);
 
         pMainWin->MessageBox(msg, failed, MB_OK);
@@ -1215,7 +1215,7 @@ bool DiskArchive::BulkAdd(ActionProgressDialog* pActionProgress,
 
     if (fpAddDataHead == NULL) {
         CString title;
-        title.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&title, IDS_MB_APP_NAME);
         errMsg = L"No files added.\n";
         pActionProgress->MessageBox(errMsg, title, MB_OK | MB_ICONWARNING);
     } else {
@@ -2399,20 +2399,20 @@ CString DiskArchive::TestPathName(const GenericEntry* pGenericEntry,
     switch (format) {
     case DiskImg::kFormatProDOS:
         if (!DiskFSProDOS::IsValidFileName(newNameA))
-            errMsg.LoadString(IDS_VALID_FILENAME_PRODOS);
+            CheckedLoadString(&errMsg, IDS_VALID_FILENAME_PRODOS);
         break;
     case DiskImg::kFormatDOS33:
     case DiskImg::kFormatDOS32:
         if (!DiskFSDOS33::IsValidFileName(newNameA))
-            errMsg.LoadString(IDS_VALID_FILENAME_DOS);
+            CheckedLoadString(&errMsg, IDS_VALID_FILENAME_DOS);
         break;
     case DiskImg::kFormatPascal:
         if (!DiskFSPascal::IsValidFileName(newNameA))
-            errMsg.LoadString(IDS_VALID_FILENAME_PASCAL);
+            CheckedLoadString(&errMsg, IDS_VALID_FILENAME_PASCAL);
         break;
     case DiskImg::kFormatMacHFS:
         if (!DiskFSHFS::IsValidFileName(newNameA))
-            errMsg.LoadString(IDS_VALID_FILENAME_HFS);
+            CheckedLoadString(&errMsg, IDS_VALID_FILENAME_HFS);
         break;
     default:
         errMsg = L"Not supported by TestPathName!";
@@ -2468,23 +2468,24 @@ CString DiskArchive::TestVolumeName(const DiskFS* pDiskFS,
     switch (format) {
     case DiskImg::kFormatProDOS:
         if (!DiskFSProDOS::IsValidVolumeName(newNameA))
-            errMsg.LoadString(IDS_VALID_VOLNAME_PRODOS);
+            CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_PRODOS);
         break;
     case DiskImg::kFormatDOS33:
     case DiskImg::kFormatDOS32:
         if (!DiskFSDOS33::IsValidVolumeName(newNameA))
-            errMsg.LoadString(IDS_VALID_VOLNAME_DOS);
+            CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_DOS);
         break;
     case DiskImg::kFormatPascal:
         if (!DiskFSPascal::IsValidVolumeName(newNameA))
-            errMsg.LoadString(IDS_VALID_VOLNAME_PASCAL);
+            CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_PASCAL);
         break;
     case DiskImg::kFormatMacHFS:
         if (!DiskFSHFS::IsValidVolumeName(newNameA))
-            errMsg.LoadString(IDS_VALID_VOLNAME_HFS);
+            CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_HFS);
         break;
     default:
         errMsg = L"Not supported by TestVolumeName!";
+        break;
     }
 
     return errMsg;

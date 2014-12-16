@@ -390,7 +390,7 @@ void ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID)
 {
     CString failed;
 
-    failed.LoadString(titleStrID);
+    CheckedLoadString(&failed, titleStrID);
     pWnd->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
 }
 
@@ -407,6 +407,14 @@ bool IsWin9x(void)
         return true;
     else
         return false;
+}
+
+void CheckedLoadString(CString* pString, UINT nID)
+{
+    if (!pString->LoadString(nID)) {
+        LOGW("WARNING: failed to load string %u", nID);
+        *pString = L"!Internal failure!";
+    }
 }
 
 

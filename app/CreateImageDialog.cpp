@@ -82,13 +82,15 @@ void CreateImageDialog::DoDataExchange(CDataExchange* pDX)
         if (fDiskFormatIdx == kFmtDOS32) {
             CString tmpStr;
             tmpStr.Format(L"%d", fDOSVolumeNum);
-            if (!IsValidVolumeName_DOS(tmpStr))
-                errMsg.LoadString(IDS_VALID_VOLNAME_DOS);
+            if (!IsValidVolumeName_DOS(tmpStr)) {
+                CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_DOS);
+            }
         } else if (fDiskFormatIdx == kFmtDOS33) {
             CString tmpStr;
             tmpStr.Format(L"%d", fDOSVolumeNum);
-            if (!IsValidVolumeName_DOS(tmpStr))
-                errMsg.LoadString(IDS_VALID_VOLNAME_DOS);
+            if (!IsValidVolumeName_DOS(tmpStr)) {
+                CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_DOS);
+            }
 
             // only needed in "extended" mode -- this stuff is too painful to
             //  inflict on the average user
@@ -115,8 +117,9 @@ void CreateImageDialog::DoDataExchange(CDataExchange* pDX)
             {
                 errMsg = L"You must specify a volume name 1-15 characters long.";
             } else {
-                if (!IsValidVolumeName_ProDOS(fVolName_ProDOS))
-                    errMsg.LoadString(IDS_VALID_VOLNAME_PRODOS);
+                if (!IsValidVolumeName_ProDOS(fVolName_ProDOS)) {
+                    CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_PRODOS);
+                }
             }
         } else if (fDiskFormatIdx == kFmtPascal) {
             if (fVolName_Pascal.IsEmpty() ||
@@ -124,8 +127,9 @@ void CreateImageDialog::DoDataExchange(CDataExchange* pDX)
             {
                 errMsg = L"You must specify a volume name 1-7 characters long.";
             } else {
-                if (!IsValidVolumeName_Pascal(fVolName_Pascal))
-                    errMsg.LoadString(IDS_VALID_VOLNAME_PASCAL);
+                if (!IsValidVolumeName_Pascal(fVolName_Pascal)) {
+                    CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_PASCAL);
+                }
             }
         } else if (fDiskFormatIdx == kFmtHFS) {
             if (fNumBlocks < 1600 || fNumBlocks > 4194303) {
@@ -136,8 +140,9 @@ void CreateImageDialog::DoDataExchange(CDataExchange* pDX)
             {
                 errMsg = L"You must specify a volume name 1-27 characters long.";
             } else {
-                if (!IsValidVolumeName_HFS(fVolName_HFS))
-                    errMsg.LoadString(IDS_VALID_VOLNAME_HFS);
+                if (!IsValidVolumeName_HFS(fVolName_HFS)) {
+                    CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_HFS);
+                }
             }
         } else if (fDiskFormatIdx == kFmtBlank) {
             if (fNumBlocks < 1 || fNumBlocks > kMaxBlankBlocks)
@@ -152,7 +157,7 @@ void CreateImageDialog::DoDataExchange(CDataExchange* pDX)
 
     if (!errMsg.IsEmpty()) {
         CString appName;
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
         MessageBox(errMsg, appName, MB_OK);
         pDX->Fail();
     }

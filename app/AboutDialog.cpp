@@ -87,7 +87,7 @@ BOOL AboutDialog::OnInitDialog(void)
         pStatic->GetWindowText(tmpStr);
         newVersion.Format(tmpStr, versionStr);
     } else {
-        newVersion.LoadString(IDS_ASPI_NOT_LOADED);
+        CheckedLoadString(&newVersion, IDS_ASPI_NOT_LOADED);
     }
     pStatic->SetWindowText(newVersion);
 

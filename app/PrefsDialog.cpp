@@ -385,7 +385,7 @@ void PrefsFilesPage::DoDataExchange(CDataExchange* pDX)
     if (pDX->m_bSaveAndValidate) {
         if (fTempPath.IsEmpty()) {
             CString appName;
-            appName.LoadString(IDS_MB_APP_NAME);
+            CheckedLoadString(&appName, IDS_MB_APP_NAME);
             MessageBox(L"You must specify a path for temp files",
                 appName, MB_OK);
             pDX->Fail();

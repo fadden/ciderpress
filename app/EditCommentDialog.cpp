@@ -39,8 +39,8 @@ void EditCommentDialog::OnDelete(void)
     CString question, title;
     int result;
 
-    title.LoadString(IDS_EDIT_COMMENT);
-    question.LoadString(IDS_DEL_COMMENT_OK);
+    CheckedLoadString(&title, IDS_EDIT_COMMENT);
+    CheckedLoadString(&question, IDS_DEL_COMMENT_OK);
     result = MessageBox(question, title, MB_OKCANCEL | MB_ICONQUESTION);
     if (result == IDCANCEL)
         return;

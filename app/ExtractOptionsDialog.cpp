@@ -38,10 +38,10 @@ BOOL ExtractOptionsDialog::OnInitDialog(void)
 
     /* set the count string using a string table entry */
     if (fSelectedCount == 1) {
-        countFmt.LoadString(IDS_EXT_SELECTED_COUNT);
+        CheckedLoadString(&countFmt, IDS_EXT_SELECTED_COUNT);
         pWnd->SetWindowText(countFmt);
     } else {
-        countFmt.LoadString(IDS_EXT_SELECTED_COUNTS_FMT);
+        CheckedLoadString(&countFmt, IDS_EXT_SELECTED_COUNTS_FMT);
         selStr.Format((LPCWSTR) countFmt, fSelectedCount);
         pWnd->SetWindowText(selStr);
 

@@ -58,7 +58,7 @@ void RenameEntryDialog::DoDataExchange(CDataExchange* pDX)
 {
     CString msg, failed;
 
-    failed.LoadString(IDS_MB_APP_NAME);
+    CheckedLoadString(&failed, IDS_MB_APP_NAME);
 
     /* fNewName must come last, or the focus will be set on the wrong field
        when we return after failure */

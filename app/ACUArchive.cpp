@@ -763,7 +763,7 @@ bool AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         if (nerr != kNuErrNone) {
             if (nerr == kNuErrAborted) {
                 CString title;
-                title.LoadString(IDS_MB_APP_NAME);
+                CheckedLoadString(&title, IDS_MB_APP_NAME);
                 errMsg = "Cancelled.";
                 pMsgWnd->MessageBox(errMsg, title, MB_OK);
             } else {

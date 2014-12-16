@@ -265,7 +265,7 @@ void VolumeCopyDialog::ScanDiskInfo(bool scanTop)
         dierr = fpDiskFS->Initialize(fpDiskImg, DiskFS::kInitFull);
         if (dierr != kDIErrNone) {
             CString appName, msg;
-            appName.LoadString(IDS_MB_APP_NAME);
+            CheckedLoadString(&appName, IDS_MB_APP_NAME);
             msg.Format(L"Warning: error during disk scan: %hs.",
                 DiskImgLib::DIStrError(dierr));
             fpWaitDlg->MessageBox(msg, appName, MB_OK | MB_ICONEXCLAMATION);
@@ -501,7 +501,7 @@ void VolumeCopyDialog::OnCopyToFile(void)
     dierr = pMain->CopyDiskImage(&dstImg, pSrcImg, false, false, pProgressDialog);
     if (dierr != kDIErrNone) {
         if (dierr == kDIErrCancelled) {
-            errMsg.LoadString(IDS_OPERATION_CANCELLED);
+            CheckedLoadString(&errMsg, IDS_OPERATION_CANCELLED);
             ShowFailureMsg(pProgressDialog, errMsg, IDS_CANCELLED);
             // remove the partially-written file
             dstImg.CloseImage();
@@ -573,7 +573,7 @@ void VolumeCopyDialog::OnCopyFromFile(void)
     bool needReload = false;
     bool isPartial = false;
 
-    warning.LoadString(IDS_WARNING);
+    CheckedLoadString(&warning, IDS_WARNING);
 
     /*
      * Get the DiskImg and DiskFS pointers for the selected partition out of
@@ -683,7 +683,7 @@ void VolumeCopyDialog::OnCopyFromFile(void)
     }
 
     if (srcImg.GetNumBlocks() != pDstImg->GetNumBlocks()) {
-        errMsg.LoadString(IDS_WARNING);
+        //errMsg.LoadString(IDS_WARNING);
         errMsg.Format(L"The disk image file has %ld blocks, but the target"
                       L" volume holds %ld blocks.  The leftover space may be"
                       L" wasted, and non-ProDOS volumes may not be identified"
@@ -697,7 +697,7 @@ void VolumeCopyDialog::OnCopyFromFile(void)
         isPartial = true;
     }
 
-    errMsg.LoadString(IDS_WARNING);     // TODO: what does this accomplish?
+    //errMsg.LoadString(IDS_WARNING);
     errMsg.Format(L"You are about to overwrite volume %ls with the"
                   L" contents of '%ls'.  This will destroy all data on"
                   L" %ls.  Are you sure you wish to continue?",
@@ -755,7 +755,7 @@ void VolumeCopyDialog::OnCopyFromFile(void)
                 pProgressDialog);
     if (dierr != kDIErrNone) {
         if (dierr == kDIErrCancelled) {
-            errMsg.LoadString(IDS_OPERATION_CANCELLED);
+            CheckedLoadString(&errMsg, IDS_OPERATION_CANCELLED);
             ShowFailureMsg(pProgressDialog, errMsg, IDS_CANCELLED);
         } else {
             errMsg.Format(L"Copy failed: %hs.", DiskImgLib::DIStrError(dierr));

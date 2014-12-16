@@ -607,7 +607,7 @@ void ImportBASDialog::OnOK(void)
     pEdit->GetWindowText(fileName);
     if (fileName.IsEmpty()) {
         CString appName;
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
         MessageBox(L"You must specify a filename.",
             appName, MB_OK);

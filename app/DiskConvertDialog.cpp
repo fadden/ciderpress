@@ -48,7 +48,7 @@ void DiskConvertDialog::Init(const DiskImg* pDiskImg)
         fConvertIdx = kConvProDOSRaw;
     } else if (diskSizeInSectors == 35*16) {
         /* 140K disk image */
-        fDiskDescription.LoadString(IDS_CDESC_140K);
+        CheckedLoadString(&fDiskDescription, IDS_CDESC_140K);
         fAllowUnadornedDOS = true;
         fAllowUnadornedProDOS = true;
         fAllowProDOS2MG = true;
@@ -66,7 +66,7 @@ void DiskConvertDialog::Init(const DiskImg* pDiskImg)
         pDiskImg->GetFileFormat() == DiskImg::kFileFormatFDI))
     {
         /* 40-track TrackStar or FDI image; allow conversion to 35-track formats */
-        fDiskDescription.LoadString(IDS_CDESC_40TRACK);
+        CheckedLoadString(&fDiskDescription, IDS_CDESC_40TRACK);
         ASSERT(pDiskImg->GetHasBlocks());
         fAllowUnadornedDOS = true;
         fAllowUnadornedProDOS = true;
@@ -79,13 +79,13 @@ void DiskConvertDialog::Init(const DiskImg* pDiskImg)
         fConvertIdx = kConvDOSRaw;
     } else if (diskSizeInSectors == 35*13) {
         /* 13-sector 5.25" floppy */
-        fDiskDescription.LoadString(IDS_CDEC_140K_13);
+        CheckedLoadString(&fDiskDescription, IDS_CDEC_140K_13);
         fAllowUnadornedNibble = true;
         fAllowD13 = true;
         fConvertIdx = kConvNibbleRaw;
     } else if (diskSizeInSectors == kMagicNibbles) {
         /* blob of nibbles with no recognizable format; allow self-convert */
-        fDiskDescription.LoadString(IDS_CDEC_RAWNIB);
+        CheckedLoadString(&fDiskDescription, IDS_CDEC_RAWNIB);
         if (pDiskImg->GetPhysicalFormat() == DiskImg::kPhysicalFormatNib525_6656)
         {
             fAllowUnadornedNibble = true;
@@ -105,7 +105,7 @@ void DiskConvertDialog::Init(const DiskImg* pDiskImg)
         }
     } else if (diskSizeInSectors == 3200) {
         /* 800K disk image */
-        fDiskDescription.LoadString(IDS_CDESC_800K);
+        CheckedLoadString(&fDiskDescription, IDS_CDESC_800K);
         fAllowUnadornedDOS = true;
         fAllowUnadornedProDOS = true;
         fAllowProDOS2MG = true;

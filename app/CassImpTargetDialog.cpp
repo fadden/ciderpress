@@ -48,7 +48,7 @@ void CassImpTargetDialog::DoDataExchange(CDataExchange* pDX)
 
     if (pDX->m_bSaveAndValidate) {
         CString appName;
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
         if (fFileTypeIndex == kTypeBIN) {
             if (GetStartAddr() < 0) {

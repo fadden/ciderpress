@@ -72,14 +72,15 @@ void ConvDiskOptionsDialog::DoDataExchange(CDataExchange* pDX)
         if (fVolName.IsEmpty() || fVolName.GetLength() > kProDOSVolNameMax) {
             errMsg = "You must specify a volume name 1-15 characters long.";
         } else {
-            if (!IsValidVolumeName_ProDOS(fVolName))
-                errMsg.LoadString(IDS_VALID_VOLNAME_PRODOS);
+            if (!IsValidVolumeName_ProDOS(fVolName)) {
+                CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_PRODOS);
+            }
         }
     }
 
     if (!errMsg.IsEmpty()) {
         CString appName;
-        appName.LoadString(IDS_MB_APP_NAME);
+        CheckedLoadString(&appName, IDS_MB_APP_NAME);
         MessageBox(errMsg, appName, MB_OK);
         pDX->Fail();
     }
