@@ -29,13 +29,32 @@
     track/sector, block, or nibble track.&nbsp; The DiskFS class imitates a File
     System Translator (FST), abstracting
     filesystem differences away to provide ProDOS-like file access on all
-    supported filesystems.&nbsp; This library also runs under Linux.</li>
+    supported filesystems.&nbsp; This library can be built for Linux.</li>
 </ol>
 <p>In addition, CiderPress uses the NufxLib library to access NuFX (ShrinkIt)
 archives, and zlib to compress and expand &quot;.gz&quot; and &quot;.zip&quot; files.</p>
+<h2>v4.0.0d1 - 16-Dec-2014</h2>
+<ul>
+  <li>[all] Moved from CVS on sourceforge.net to git on github.com.
+    Registered a2ciderpress.com.</li>
+  <li>[all] Updated build system and source code to work with Visual
+    Studio 2013.  Added snapshots of NufxLib and zlib to source tree.</li>
+  <li>[all] Switched from MBCS to UNICODE APIs.</li>
+  <li>[app] Converted help from WinHelp to HtmlHelp.</li>
+  <li>[app] File type association code now uses HKCU rather than HKCR.</li>
+  <li>[util] Fixed file+folder selection dialog.</li>
+  <li>[diskimg] Fixed Linux build.</li>
+</ul>
+<h2>v3.0.2d1 - 19-Jan-2014</h2>
+<ul>
+  <li>[reformat] Fixed 640 mode palette offsets in SHR converter
+    (Bill Buckels).</li>
+</ul>
 <h2>v3.0.1 - 4-Jan-2009</h2>
 <ul>
-  <li>[reformat] Added Apple /// Business Basic support (David Schmidt)</li>
+  <li>[reformat] Added Apple /// Business Basic support (David Schmidt).</li>
+  <li>[reformat] Added Gutenberg doc support (David Schmidt).</li>
+  <li>[diskimg] Added read-only support for Gutenberg disks (David Schmidt).</li>
   <li>[diskimg] Fixed CP/M 3.x disk recognition, and added support for
   disks that store data in the first 3 tracks.</li>
 </ul>
