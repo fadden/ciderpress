@@ -5,7 +5,7 @@ http://www.faddensoft.com/
 CiderPress
 http://a2ciderpress.com/
 4.0.0d1
-41983
+41989
 C:\DATA\faddenSoft\fs.ico
 Copyright © 2014 CiderPress project authors.  All rights reserved.
 C:\Src\CiderPress\DIST\ReadMe.txt
@@ -23,7 +23,7 @@ FALSE
 FALSE
 FALSE
 FALSE
-TRUE
+FALSE
 TRUE
 TRUE
 TRUE
@@ -334,7 +334,7 @@ http://www.deploymaster.com/dotnetfx.html
 0
 TRUE
 FALSE
-TRUE
+FALSE
 TRUE
 C:\Src\ciderpress\Release\CiderPress.exe
 
