@@ -151,8 +151,9 @@ an IDE hard drive.
 - Parsons Engineering FocusDrive partitioning.  Developed for use with
 the FocusDrive.  Allows up to 30 partitions.
 
-It's also possible to create a mixed DOS / ProDOS disk, because the
-essential file catalog areas don't overlap.
+It's also possible to create a "hybrid" DOS / ProDOS disk, because the
+essential file catalog areas don't overlap.  (See HYBRID.CREATE on the
+Beagle Bros "Extra K" disk.)
 
 All of these are fully supported by the DiskImg library.
 
