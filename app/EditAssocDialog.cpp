@@ -79,6 +79,9 @@ void EditAssocDialog::Setup(bool loadAssoc)
         bool ours;
 
         gMyApp.fRegistry.GetFileAssoc(idx, &ext, &handler, &ours);
+        if (handler.IsEmpty()) {
+            handler = L"(no association)";
+        }
 
         pListView->InsertItem(idx, ext);
         pListView->SetItemText(idx, 1, handler);

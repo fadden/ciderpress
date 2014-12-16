@@ -261,11 +261,13 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,72,144,8
     CONTROL         "Show spaces as &underscores",IDC_PREF_SPACES_TO_UNDER,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,84,145,10
-    GROUPBOX        "Miscellaneous",IDC_STATIC,96,102,162,38
+    GROUPBOX        "System",IDC_STATIC,96,101,162,33
+    PUSHBUTTON      "File type &associations...",IDC_PREF_ASSOCIATIONS,104,113,92,14
+    GROUPBOX        "Miscellaneous",IDC_STATIC,96,136,162,38
     CONTROL         "Strip pathnames when pasting files",IDC_PREF_PASTE_JUNKPATHS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,117,144,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,147,144,10
     CONTROL         "Beep when actions complete successfully",IDC_PREF_SUCCESS_BEEP,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,129,145,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,159,145,10
 END
 
 IDD_PREF_COMPRESSION DIALOGEX 0, 0, 212, 212

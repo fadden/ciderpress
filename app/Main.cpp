@@ -561,7 +561,7 @@ LONG MainWindow::OnLateInit(UINT, LONG)
      */
     fPreferences.LoadFromRegistry();
 
-#ifdef CAN_UPDATE_FILE_ASSOC
+#if 0
     /*
      * Check to see if we're registered; if we're not, and we've expired, it's
      * time to bail out.
@@ -579,12 +579,10 @@ LONG MainWindow::OnLateInit(UINT, LONG)
     case MyRegistry::kRegInvalid:
         MessageBox(result, appName, MB_OK|MB_ICONINFORMATION);
         LOGI("FORCING REG");
-#if 0
         if (EnterRegDialog::GetRegInfo(this) != 0) {
             result = "";
             goto fail;
         }
-#endif
         SetCPTitle();       // update title bar with new reg info
         break;
     case MyRegistry::kRegFailed:
@@ -597,7 +595,7 @@ LONG MainWindow::OnLateInit(UINT, LONG)
         result = confused;
         goto fail;
     }
-#endif /*CAN_UPDATE_FILE_ASSOC*/
+#endif
 
     /*
      * Process command-line options, possibly loading an archive.
@@ -878,6 +876,9 @@ void MainWindow::ApplyNow(PrefsSheet* pPS)
         /* delete them so, if they hit "apply" again, we only update once */
         delete[] pPS->fGeneralPage.fOurAssociations;
         pPS->fGeneralPage.fOurAssociations = NULL;
+
+        LOGV("Sending association-change notification to Windows shell");
+        ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
     }
 
     fPreferences.SetPrefBool(kPrQueryImageFormat, pPS->fDiskImagePage.fQueryImageFormat != 0);

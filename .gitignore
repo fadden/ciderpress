@@ -1,4 +1,4 @@
-# build product output directories
+# build product output directories (top-level and component)
 Debug
 Release
 
@@ -11,6 +11,9 @@ CP.opensdf
 CP.v12.suo
 *.aps
 
+# installer binary
+DIST/Setup*.exe
+
 # linux binaries
 *.o
 diskimg/libdiskimg.a
@@ -19,6 +22,6 @@ diskimg/libhfs/libhfs.a
 # ctags
 tags
 
-# generic
+# VIM
 *~
 *.swp

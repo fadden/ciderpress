@@ -87,28 +87,13 @@ BOOL MyApp::InitInstance(void)
     LogModuleLocation(L"riched20.dll");
     LogModuleLocation(L"riched32.dll");
 
-#if 0
-    /* find our .INI file by tweaking the EXE path */
-    char* cp = strrchr(buf, '\\');
-    if (cp == NULL)
-        cp = buf;
-    else
-        cp++;
-    if (cp + ::lstrlen(_T("CiderPress.INI")) >= buf+sizeof(buf))
-        return FALSE;
-    ::lstrcpy(cp, _T("CiderPress.INI"));
-
-    free((void*)m_pszProfileName);
-    m_pszProfileName = strdup(buf);
-    LOGI("Profile name is '%ls'", m_pszProfileName);
-
-    if (!WriteProfileString("SectionOne", "MyEntry", "test"))
-        LOGI("WriteProfileString failed");
-#endif
-
     // This causes functions like SetProfileInt to use the registry rather
     // than a .INI file.  The registry key is "usually the name of a company".
+#ifdef CAN_UPDATE_FILE_ASSOC
+    SetRegistryKey(fRegistry.GetAppRegistryKey());
+#else
     SetRegistryKey(L"faddenSoft");
+#endif
 
     //LOGI("Registry key is '%ls'", m_pszRegistryKey);
     //LOGI("Profile name is '%ls'", m_pszProfileName);
@@ -130,10 +115,12 @@ BOOL MyApp::InitInstance(void)
     if (wcscmp(m_lpCmdLine, L"-install") == 0) {
         LOGI("Invoked with INSTALL flag");
         fRegistry.OneTimeInstall();
+        ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
         exit(0);
     } else if (wcscmp(m_lpCmdLine, L"-uninstall") == 0) {
         LOGI("Invoked with UNINSTALL flag");
         fRegistry.OneTimeUninstall();
+        ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
         exit(1);    // tell DeployMaster to continue with uninstall
     }
 
