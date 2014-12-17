@@ -4,7 +4,7 @@ faddenSoft
 http://www.faddensoft.com/
 CiderPress
 http://a2ciderpress.com/
-4.0.0d1
+4.0.0d2
 41989
 C:\DATA\faddenSoft\fs.ico
 Copyright © 2014 CiderPress project authors.  All rights reserved.
@@ -343,7 +343,7 @@ C:\Src\ciderpress\Release\CiderPress.exe
 
 -uninstall
 TRUE
-
+faddenSoft.CiderPress.4
 
 TRUE
 FALSE
@@ -355,7 +355,7 @@ FALSE
 4095
 
 
-Setup400d1.exe
+Setup400d2.exe
 
 FALSE
 

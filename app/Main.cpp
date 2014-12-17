@@ -27,6 +27,10 @@
 
 static const WCHAR kWebSiteURL[] = L"http://www.faddensoft.com/";
 
+/* custom class name for main frame */
+static const WCHAR kMainWindowClassName[] = L"faddenSoft.CiderPress.4";
+
+
 /*
  * Filters for the "open file" command.  In some cases a file may be opened
  * in more than one format, so it's necessary to keep track of what the
@@ -187,7 +191,6 @@ BEGIN_MESSAGE_MAP(MainWindow, CFrameWnd)
     ON_COMMAND(ID_DEFAULT_HELP, CFrameWnd::OnHelpFinder)
 END_MESSAGE_MAP()
 
-
 /*
  * MainWindow constructor.  Creates the main window and sets
  * its properties.
@@ -268,6 +271,21 @@ BOOL MainWindow::PreCreateWindow(CREATESTRUCT& cs)
     BOOL res = CFrameWnd::PreCreateWindow(cs);
 
     cs.dwExStyle &= ~(WS_EX_CLIENTEDGE);
+
+    // This changes the window class name to a value that the installer can
+    // detect.  This allows us to prevent installation while CiderPress is
+    // running.  (If we don't do that, the installation will offer to reboot
+    // the computer to complete installation.)
+    WNDCLASS wndCls;
+    if (!GetClassInfo(AfxGetInstanceHandle(), cs.lpszClass, &wndCls)) {
+        LOGW("GetClassInfo failed");
+    } else {
+        cs.lpszClass = kMainWindowClassName;
+        wndCls.lpszClassName = kMainWindowClassName;
+        if (!AfxRegisterClass(&wndCls)) {
+            LOGW("AfxRegisterClass failed");
+        }
+    }
 
     return res;
 }
@@ -1068,7 +1086,7 @@ void MainWindow::OnHelpAbout(void)
     AboutDialog dlg(this);
 
     result = dlg.DoModal();
-    LOGI("HelpAbout returned %d", result);
+    LOGV("HelpAbout returned %d", result);
 
     /*
      * User could've changed registration.  If we're showing the registered
