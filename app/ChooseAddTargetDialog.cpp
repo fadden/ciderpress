@@ -64,7 +64,7 @@ void ChooseAddTargetDialog::DoDataExchange(CDataExchange* pDX)
         HTREEITEM selected;
         selected = pTree->GetSelectedItem();
         if (selected == NULL) {
-            errMsg = "Please select a disk or subdirectory to add files to.";
+            errMsg = L"Please select a disk or subdirectory to add files to.";
             MessageBox(errMsg, appName, MB_OK);
             pDX->Fail();
             return;
@@ -73,7 +73,7 @@ void ChooseAddTargetDialog::DoDataExchange(CDataExchange* pDX)
         DiskFSTree::TargetData* pTargetData;
         pTargetData = (DiskFSTree::TargetData*) pTree->GetItemData(selected);
         if (!pTargetData->selectable) {
-            errMsg = "You can't add files there.";
+            errMsg = L"You can't add files there.";
             MessageBox(errMsg, appName, MB_OK);
             pDX->Fail();
             return;

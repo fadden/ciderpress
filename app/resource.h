@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by CiderPress.rc
 //
 #define IDR_MAINFRAME                   102
@@ -498,6 +498,7 @@
 #define IDS_VALID_VOLNAME_HFS           2152
 #define IDS_VALID_FILENAME_HFS          2153
 #define IDS_PASTE_SPECIAL_COUNT         2154
+#define IDS_NO_FORKS_SPECIFIED          2155
 #define IDM_FILE_NEW_ARCHIVE            40001
 #define IDM_FILE_OPEN                   40002
 #define IDM_FILE_CLOSE                  40003

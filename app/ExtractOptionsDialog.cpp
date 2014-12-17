@@ -45,6 +45,7 @@ BOOL ExtractOptionsDialog::OnInitDialog(void)
         selStr.Format((LPCWSTR) countFmt, fSelectedCount);
         pWnd->SetWindowText(selStr);
 
+        // disable "extract selection" when nothing is selected
         if (fSelectedCount == 0)
             pWnd->EnableWindow(FALSE);
     }
@@ -65,10 +66,8 @@ BOOL ExtractOptionsDialog::OnInitDialog(void)
 
 void ExtractOptionsDialog::DoDataExchange(CDataExchange* pDX)
 {
-    /*
-     * Should probably verify that fFilesToExtract is not set to kExtractSelection
-     * when fSelectedCount is zero.
-     */
+    CDialog::DoDataExchange(pDX);
+
     DDX_Text(pDX, IDC_EXT_PATH, fExtractPath);
 
     DDX_Radio(pDX, IDC_EXT_SELECTED, fFilesToExtract);
@@ -88,6 +87,19 @@ void ExtractOptionsDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_EXT_CONVHIGHASCII, fConvHighASCII);
 
     DDX_Check(pDX, IDC_EXT_OVERWRITE_EXIST, fOverwriteExisting);
+
+    if (pDX->m_bSaveAndValidate) {
+        if (!fIncludeDataForks && !fIncludeRsrcForks && !fIncludeDiskImages) {
+            CString appName, errMsg;
+
+            CheckedLoadString(&appName, IDS_MB_APP_NAME);
+
+            CheckedLoadString(&errMsg, IDS_NO_FORKS_SPECIFIED);
+            MessageBox(errMsg, appName, MB_OK);
+            pDX->Fail();
+            return;
+        }
+    }
 }
 
 void ExtractOptionsDialog::OnConfigPreserve(void)

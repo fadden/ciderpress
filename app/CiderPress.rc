@@ -2110,6 +2110,7 @@ BEGIN
     IDS_VALID_VOLNAME_HFS   "Valid HFS volume names are 1-27 characters long, and may not contain a colon (:)."
     IDS_VALID_FILENAME_HFS  "Valid HFS filenames are 1-31 characters long, and do not contain colons (':')."
     IDS_PASTE_SPECIAL_COUNT "%d files in clipboard"
+    IDS_NO_FORKS_SPECIFIED  "You must select at least one item in ""Parts to extract""."
 END
 
 STRINGTABLE
