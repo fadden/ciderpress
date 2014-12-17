@@ -95,7 +95,7 @@
     </Midl>
     <PostBuildEvent>
       <Message>Copy HtmlHelp file</Message>
-      <Command>copy $(ProjectDir)\Help\CiderPress.chm $(OutDir)</Command>
+      <Command>postbuild.bat "$(ProjectDir)" "$(OutDir)"</Command>
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -145,7 +145,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)\Help\CiderPress.chm $(OutDir)</Command>
+      <Command>postbuild.bat "$(ProjectDir)" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy HtmlHelp file</Message>
