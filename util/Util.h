@@ -182,6 +182,12 @@ void GetWin32ErrorString(DWORD err, CString* pStr);
 void ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID);
 
 /*
+ * Post a failure message in a message box.
+ */
+void ShowFailureMsg(CWnd* pWnd, int msgId, int titleStrID);
+
+
+/*
  * Returns "true" if we're running on Win9x (Win95, Win98, WinME), "false"
  * if not (could be WinNT/2K/XP or even Win31 with Win32s).
  */

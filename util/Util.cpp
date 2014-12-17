@@ -388,11 +388,21 @@ void GetWin32ErrorString(DWORD err, CString* pStr)
 
 void ShowFailureMsg(CWnd* pWnd, const CString& msg, int titleStrID)
 {
-    CString failed;
+    CString title;
 
-    CheckedLoadString(&failed, titleStrID);
-    pWnd->MessageBox(msg, failed, MB_OK | MB_ICONERROR);
+    CheckedLoadString(&title, titleStrID);
+    pWnd->MessageBox(msg, title, MB_OK | MB_ICONERROR);
 }
+
+void ShowFailureMsg(CWnd* pWnd, int msgId, int titleStrID)
+{
+    CString msg, title;
+
+    CheckedLoadString(&title, titleStrID);
+    CheckedLoadString(&msg, msgId);
+    pWnd->MessageBox(msg, title, MB_OK | MB_ICONERROR);
+}
+
 
 bool IsWin9x(void)
 {

@@ -90,12 +90,7 @@ void ExtractOptionsDialog::DoDataExchange(CDataExchange* pDX)
 
     if (pDX->m_bSaveAndValidate) {
         if (!fIncludeDataForks && !fIncludeRsrcForks && !fIncludeDiskImages) {
-            CString appName, errMsg;
-
-            CheckedLoadString(&appName, IDS_MB_APP_NAME);
-
-            CheckedLoadString(&errMsg, IDS_NO_FORKS_SPECIFIED);
-            MessageBox(errMsg, appName, MB_OK);
+            ShowFailureMsg(this, IDS_NO_FORKS_SPECIFIED, IDS_MB_APP_NAME);
             pDX->Fail();
             return;
         }
