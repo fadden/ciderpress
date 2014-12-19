@@ -250,7 +250,7 @@ void ContentList::RestoreSelection(const long* savedSel, long selCount)
             {
                 /* match! */
                 if (SetItemState(i, LVIS_SELECTED, LVIS_SELECTED) == FALSE) {
-                    LOGI("WHOA: unable to set selected on item=%d", i);
+                    LOGW("WHOA: unable to set selected on item=%d", i);
                 }
                 break;
             }

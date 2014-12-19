@@ -86,6 +86,7 @@ BOOL MyApp::InitInstance(void)
     LogModuleLocation(L"riched.dll");
     LogModuleLocation(L"riched20.dll");
     LogModuleLocation(L"riched32.dll");
+    LogModuleLocation(L"msftedit.dll");
 
     // This causes functions like SetProfileInt to use the registry rather
     // than a .INI file.  The registry key is "usually the name of a company".

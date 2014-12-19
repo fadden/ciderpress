@@ -67,7 +67,7 @@ int ReformatGWP::Process(const ReformatHolder* pHolder,
             BufPrintf("\r\n");
         } else {
             // RTF is always off, so just use BufPrintf
-            BufPrintf("%c", ConvertGSChar(ch));
+            BufPrintf("%c", ConvertMacRomanTo1252(ch));
         }
     }
 
@@ -206,7 +206,7 @@ int ReformatTeach::Process(const ReformatHolder* pHolder,
             } else if (uch == '\t') {
                 RTFTab();
             } else {
-                RTFPrintExtChar(ConvertGSChar(uch));
+                RTFPrintExtChar(ConvertMacRomanToUTF16(uch));
             }
             dataBuf++;
             dataLen--;

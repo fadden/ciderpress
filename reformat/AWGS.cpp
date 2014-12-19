@@ -388,7 +388,7 @@ int ReformatAWGS_WP::PrintParagraph(const uint8_t* ptr, long maxLen)
             RTFTab();
             break;
         default:
-            RTFPrintExtChar(ConvertGSChar(uch));
+            RTFPrintExtChar(ConvertMacRomanToUTF16(uch));
             break;
         }
     }

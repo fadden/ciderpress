@@ -185,8 +185,7 @@ public:
     // ever need to be reloaded.  Value must be nonzero to be used.
     virtual long GetSelectionSerial(void) const = 0;
 
-    /* are we allowed to change the file/aux type of this entry? */
-    /* (may need to generalize this to "changeable attrs" bitmask) */
+    /* what operations are possible with this entry? */
     virtual bool GetFeatureFlag(Feature feature) const = 0;
 
     long GetIndex(void) const { return fIndex; }

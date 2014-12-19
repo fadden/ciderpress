@@ -346,15 +346,19 @@ protected:
     }
     // output an RTF-escaped char, allowing high ASCII
     // (only use this if we're in RTF mode)
-    inline void RTFPrintExtChar(uint8_t ch) {
+    inline void RTFPrintExtChar(uint16_t ch) {
         if (ch == '\\')
             fExpBuf.Printf("\\\\");
         else if (ch == '{')
             fExpBuf.Printf("\\{");
         else if (ch == '}')
             fExpBuf.Printf("\\}");
-        else
+        else if (ch < 256) {
+            // TODO: should be \'xx for 0x80-ff?
             fExpBuf.Printf("%c", ch);
+        } else {
+            fExpBuf.Printf("\\u%d?", ch);
+        }
     }
     // output a char, doubling up double quotes (for .CSV)
     inline void BufPrintQChar(uint8_t ch) {
@@ -364,13 +368,21 @@ protected:
             fExpBuf.Printf("%c", ch);
     }
 
-    // convert IIgs documents
-    uint8_t ConvertGSChar(uint8_t ch) {
+    // Convert a Mac OS Roman character value (from a IIgs document) to
+    // an 8-bit Windows CP1252 equivalent.
+    uint8_t ConvertMacRomanTo1252(uint8_t ch) {
         if (ch < 128)
             return ch;
         else
-            return kGSCharConv[ch-128];
+            return kCP1252Conv[ch-128];
     }
+
+    // Convert a Mac OS Roman character value (from a IIgs document) to
+    // its UTF-16 Unicode equivalent.
+    uint16_t ConvertMacRomanToUTF16(uint8_t ch) {
+        return kUTF16Conv[ch];
+    }
+
     void CheckGSCharConv(void);
 
 private:
@@ -378,7 +390,8 @@ private:
     int CreateWorkBuf(void);
     enum { kRTFUnitsPerInch = 1440 };   // TWIPS
 
-    static const uint8_t kGSCharConv[];
+    static const uint8_t kCP1252Conv[];
+    static const uint16_t kUTF16Conv[];
 
     int     fLeftMargin, fRightMargin;  // for documents, in 1/10th inch
     int     fPointSize;

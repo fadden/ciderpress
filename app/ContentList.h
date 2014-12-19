@@ -129,7 +129,7 @@ public:
      * Get the aux type display string.
      *
      * "buf" must be able to hold at least 5 characters plus the NUL (i.e. 6).
-     * Use kFileTypeBufLen.
+     * Use kAuxTypeBufLen.
      */
     static void MakeAuxTypeDisplayString(const GenericEntry* pEntry,
         WCHAR* buf);
@@ -180,12 +180,12 @@ private:
     // implementation relies on the top left pixel color.)
     void LoadHeaderImages(void) {
         if (!fHdrImageList.Create(IDB_HDRBAR, 16, 1, CLR_DEFAULT))
-            LOGI("GLITCH: header list create failed");
+            LOGW("GLITCH: header list create failed");
         fHdrImageList.SetBkColor(::GetSysColor(COLOR_BTNFACE));
     }
     void LoadListImages(void) {
         if (!fListImageList.Create(IDB_LIST_PICS, 16, 1, CLR_DEFAULT))
-            LOGI("GLITCH: list image create failed");
+            LOGW("GLITCH: list image create failed");
         fListImageList.SetBkColor(::GetSysColor(COLOR_WINDOW));
     }
     enum {  // defs for IDB_LIST_PICS
