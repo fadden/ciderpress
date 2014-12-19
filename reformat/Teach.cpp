@@ -206,7 +206,7 @@ int ReformatTeach::Process(const ReformatHolder* pHolder,
             } else if (uch == '\t') {
                 RTFTab();
             } else {
-                RTFPrintExtChar(ConvertMacRomanToUTF16(uch));
+                RTFPrintUTF16Char(ConvertMacRomanToUTF16(uch));
             }
             dataBuf++;
             dataLen--;

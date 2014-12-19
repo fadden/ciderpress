@@ -342,22 +342,25 @@ protected:
     // (only use this if we're in RTF mode)
     inline void RTFPrintChar(uint8_t ch) {
         char pch = PrintableChar(ch);
-        RTFPrintExtChar(pch);
+        RTFPrintUTF16Char(pch);
     }
-    // output an RTF-escaped char, allowing high ASCII
+    // output an RTF-escaped char, allowing UTF-16 Unicode values
     // (only use this if we're in RTF mode)
-    inline void RTFPrintExtChar(uint16_t ch) {
-        if (ch == '\\')
+    inline void RTFPrintUTF16Char(uint16_t ch) {
+        if (ch == '\\') {
             fExpBuf.Printf("\\\\");
-        else if (ch == '{')
+        } else if (ch == '{') {
             fExpBuf.Printf("\\{");
-        else if (ch == '}')
+        } else if (ch == '}') {
             fExpBuf.Printf("\\}");
-        else if (ch < 256) {
-            // TODO: should be \'xx for 0x80-ff?
+        } else if (ch >= 0x20 && ch < 0x80) {
+            // don't use Unicode escapes for these, or the output will be
+            // unreadable by mere humans
             fExpBuf.Printf("%c", ch);
         } else {
-            fExpBuf.Printf("\\u%d?", ch);
+            // must print as a *signed* 16-bit decimal value, though it
+            // looks like most parsers work either way
+            fExpBuf.Printf("\\u%d?", (int16_t)ch);
         }
     }
     // output a char, doubling up double quotes (for .CSV)
@@ -378,7 +381,8 @@ protected:
     }
 
     // Convert a Mac OS Roman character value (from a IIgs document) to
-    // its UTF-16 Unicode equivalent.
+    // its UTF-16 Unicode equivalent.  This also includes a conversion
+    // for the control characters.
     uint16_t ConvertMacRomanToUTF16(uint8_t ch) {
         return kUTF16Conv[ch];
     }
