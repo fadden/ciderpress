@@ -996,7 +996,7 @@ GenericArchive::FileDetails::operator const NuFileDetails() const
     fOrigNameA = origName;
     details.origName = fOrigNameA;
     fStorageNameA = storageName;
-    details.storageName = fStorageNameA;
+    details.storageNameMOR = fStorageNameA;
     //details.fileSysID = fileSysID;
     details.fileSysInfo = fileSysInfo;
     details.access = access;

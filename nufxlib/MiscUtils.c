@@ -6,13 +6,12 @@
  *
  * Miscellaneous NufxLib utility functions.
  */
-#define __MiscUtils_c__
 #include "NufxLibPriv.h"
 
 /*
  * Big fat hairy global.  Unfortunately this is unavoidable.
  */
-NuCallback gNuGlobalErrorMessageHandler = nil;
+NuCallback gNuGlobalErrorMessageHandler = NULL;
 
 
 static const char* kNufxLibName = "nufxlib";
@@ -21,8 +20,7 @@ static const char* kNufxLibName = "nufxlib";
 /*
  * strerror() equivalent for NufxLib errors.
  */
-const char*
-Nu_StrError(NuError err)
+const char* Nu_StrError(NuError err)
 {
     /*
      * BUG: this should be set up as per-thread storage in an MT environment.
@@ -32,7 +30,7 @@ Nu_StrError(NuError err)
      * to return this.
      *
      * An easier solution, should this present a problem for someone, would
-     * be to have the function return nil or "unknown error" when the
+     * be to have the function return NULL or "unknown error" when the
      * error value isn't recognized.  I'd recommend leaving it as-is for
      * debug builds, though, as it's helpful to know *which* error is not
      * recognized.
@@ -200,15 +198,15 @@ Nu_StrError(NuError err)
  * Similar to perror(), but takes the error as an argument, and knows
  * about NufxLib errors as well as system errors.
  *
- * Depending on the compiler, "file", "line", and "function" may be nil/zero.
+ * Depending on the compiler, "file", "line", and "function" may be NULL/zero.
  *
- * Calling here with "pArchive"==nil is allowed, but should only be done
+ * Calling here with "pArchive"==NULL is allowed, but should only be done
  * if the archive is inaccessible (perhaps because it failed to open).  We
- * can't invoke the error message callback if the pointer is nil.
+ * can't invoke the error message callback if the pointer is NULL.
  */
-void
-Nu_ReportError(NuArchive* pArchive, const char* file, int line,
-    const char* function, Boolean isDebug, NuError err, const char* format, ...)
+void Nu_ReportError(NuArchive* pArchive, const char* file, int line,
+    const char* function, Boolean isDebug, NuError err,
+    const UNICHAR* format, ...)
 {
     NuErrorMessage errorMessage;
     const char* msg;
@@ -219,7 +217,7 @@ Nu_ReportError(NuArchive* pArchive, const char* file, int line,
     int cc;
     #endif
 
-    Assert(format != nil);
+    Assert(format != NULL);
 
 
     va_start(args, format);
@@ -247,28 +245,28 @@ Nu_ReportError(NuArchive* pArchive, const char* file, int line,
         strcpy(buf+count, ": ");
         count += 2;
 
-        msg = nil;
+        msg = NULL;
         if (err >= 0)
             msg = strerror(err);
-        if (msg == nil)
+        if (msg == NULL)
             msg = Nu_StrError(err);
 
         #if defined(HAVE_SNPRINTF) && defined(SNPRINTF_DECLARED)
-        if (msg == nil)
+        if (msg == NULL)
             snprintf(buf+count, sizeof(buf) - count,
                         "(unknown err=%d)", err);
         else
             snprintf(buf+count, sizeof(buf) - count, "%s", msg);
         #else
           #ifdef SPRINTF_RETURNS_INT
-            if (msg == nil)
+            if (msg == NULL)
                 cc = sprintf(buf+count, "(unknown err=%d)", err);
             else
                 cc = sprintf(buf+count, "%s", msg);
             Assert(cc > 0);
             count += cc;
           #else
-            if (msg == nil)
+            if (msg == NULL)
                 sprintf(buf+count, "(unknown err=%d)", err);
             else
                 sprintf(buf+count, "%s", msg);
@@ -284,8 +282,8 @@ Nu_ReportError(NuArchive* pArchive, const char* file, int line,
     Assert(count <= kNuHeftyBufSize);
     #endif
 
-    if ((pArchive != nil && pArchive->messageHandlerFunc == nil) ||
-        (pArchive == nil && gNuGlobalErrorMessageHandler == nil))
+    if ((pArchive != NULL && pArchive->messageHandlerFunc == NULL) ||
+        (pArchive == NULL && gNuGlobalErrorMessageHandler == NULL))
     {
         if (isDebug) {
             fprintf(stderr, "%s: [%s:%d %s] %s\n", kNufxLibName,
@@ -301,7 +299,7 @@ Nu_ReportError(NuArchive* pArchive, const char* file, int line,
         errorMessage.line = line;
         errorMessage.function = function;
         
-        if (pArchive == nil)
+        if (pArchive == NULL)
             (void) (*gNuGlobalErrorMessageHandler)(pArchive, &errorMessage);
         else
             (void) (*pArchive->messageHandlerFunc)(pArchive, &errorMessage);
@@ -322,48 +320,46 @@ bail:
  */
 
 #ifndef USE_DMALLOC
-void*
-Nu_Malloc(NuArchive* pArchive, size_t size)
+void* Nu_Malloc(NuArchive* pArchive, size_t size)
 {
     void* _result;
 
     Assert(size > 0);
     _result = malloc(size);
-    if (_result == nil) {
-        Nu_ReportError(NU_BLOB, kNuErrMalloc, "malloc(%u) failed", (uint) size);
+    if (_result == NULL) {
+        Nu_ReportError(NU_BLOB, kNuErrMalloc,
+            "malloc(%u) failed", (unsigned int) size);
         DebugAbort();   /* leave a core dump if we're built for it */
     }
     DebugFill(_result, size);
     return _result;
 }
 
-void*
-Nu_Calloc(NuArchive* pArchive, size_t size)
+void* Nu_Calloc(NuArchive* pArchive, size_t size)
 {
     void* _cresult = Nu_Malloc(pArchive, size);
     memset(_cresult, 0, size);
     return _cresult;
 }
 
-void*
-Nu_Realloc(NuArchive* pArchive, void* ptr, size_t size)
+void* Nu_Realloc(NuArchive* pArchive, void* ptr, size_t size)
 {
     void* _result;
 
-    Assert(ptr != nil);     /* disallow this usage */
+    Assert(ptr != NULL);     /* disallow this usage */
     Assert(size > 0);       /* disallow this usage */
     _result = realloc(ptr, size);
-    if (_result == nil) {
-        Nu_ReportError(NU_BLOB, kNuErrMalloc, "realloc(%u) failed",(uint) size);
+    if (_result == NULL) {
+        Nu_ReportError(NU_BLOB, kNuErrMalloc,
+            "realloc(%u) failed", (unsigned int) size);
         DebugAbort();   /* leave a core dump if we're built for it */
     }
     return _result;
 }
 
-void
-Nu_Free(NuArchive* pArchive, void* ptr)
+void Nu_Free(NuArchive* pArchive, void* ptr)
 {
-    if (ptr != nil)
+    if (ptr != NULL)
         free(ptr);
 }
 #endif
@@ -372,11 +368,10 @@ Nu_Free(NuArchive* pArchive, void* ptr)
  * If somebody internal wants to set doClose on a buffer DataSource
  * (looks like "Rename" does), we need to supply a "free" callback.
  */
-NuResult
-Nu_InternalFreeCallback(NuArchive* pArchive, void* args)
+NuResult Nu_InternalFreeCallback(NuArchive* pArchive, void* args)
 {
     DBUG(("+++ internal free callback 0x%08lx\n", (long) args));
-    Nu_Free(nil, args);
+    Nu_Free(NULL, args);
     return kNuOK;
 }
 

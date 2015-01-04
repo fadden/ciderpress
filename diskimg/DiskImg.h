@@ -198,7 +198,7 @@ public:
     static DIError AppCleanup(void);
 
     // return the DiskImg version number
-    static void GetVersion(long* pMajor, long* pMinor, long* pBug);
+    static void GetVersion(int32_t* pMajor, int32_t* pMinor, int32_t* pBug);
 
     static bool GetAppInitCalled(void) { return fAppInitCalled; }
     static bool GetHasSPTI(void);

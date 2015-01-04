@@ -359,7 +359,7 @@ bool DiskEntry::GetFeatureFlag(Feature feature) const
 {
     CString result("");
     DIError dierr;
-    long major, minor, bug;
+    int32_t major, minor, bug;
 
     LOGI("Initializing DiskImg library");
 

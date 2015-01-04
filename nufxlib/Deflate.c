@@ -25,13 +25,11 @@
 /*
  * Alloc and free functions provided to zlib.
  */
-static voidpf
-Nu_zalloc(voidpf opaque, uInt items, uInt size)
+static voidpf Nu_zalloc(voidpf opaque, uInt items, uInt size)
 {
     return Nu_Malloc(opaque, items * size);
 }
-static void
-Nu_zfree(voidpf opaque, voidpf address)
+static void Nu_zfree(voidpf opaque, voidpf address)
 {
     Nu_Free(opaque, address);
 }
@@ -46,21 +44,20 @@ Nu_zfree(voidpf opaque, voidpf address)
 /*
  * Compress "srcLen" bytes from "pStraw" to "fp".
  */
-NuError
-Nu_CompressDeflate(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc)
+NuError Nu_CompressDeflate(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc)
 {
     NuError err = kNuErrNone;
     z_stream zstream;
     int zerr;
-    Bytef* outbuf = nil;
+    Bytef* outbuf = NULL;
 
-    Assert(pArchive != nil);
-    Assert(pStraw != nil);
-    Assert(fp != nil);
+    Assert(pArchive != NULL);
+    Assert(pStraw != NULL);
+    Assert(fp != NULL);
     Assert(srcLen > 0);
-    Assert(pDstLen != nil);
-    Assert(pCrc != nil);
+    Assert(pDstLen != NULL);
+    Assert(pCrc != NULL);
 
     err = Nu_AllocCompressionBufferIFN(pArchive);
     if (err != kNuErrNone)
@@ -76,7 +73,7 @@ Nu_CompressDeflate(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
     zstream.zalloc = Nu_zalloc;
     zstream.zfree = Nu_zfree;
     zstream.opaque = pArchive;
-    zstream.next_in = nil;
+    zstream.next_in = NULL;
     zstream.avail_in = 0;
     zstream.next_out = outbuf;
     zstream.avail_out = kNuGenCompBufSize;
@@ -100,7 +97,7 @@ Nu_CompressDeflate(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
      * Loop while we have data.
      */
     do {
-        ulong getSize;
+        uint32_t getSize;
         int flush;
 
         /* should be able to read a full buffer every time */
@@ -159,7 +156,7 @@ z_bail:
     deflateEnd(&zstream);        /* free up any allocated structures */
 
 bail:
-    if (outbuf != nil)
+    if (outbuf != NULL)
         free(outbuf);
     return err;
 }
@@ -174,20 +171,19 @@ bail:
 /*
  * Expand from "infp" to "pFunnel".
  */
-NuError
-Nu_ExpandDeflate(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc)
+NuError Nu_ExpandDeflate(NuArchive* pArchive, const NuRecord* pRecord,
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, uint16_t* pCrc)
 {
     NuError err = kNuErrNone;
     z_stream zstream;
     int zerr;
-    ulong compRemaining;
+    uint32_t compRemaining;
     Bytef* outbuf;
 
-    Assert(pArchive != nil);
-    Assert(pThread != nil);
-    Assert(infp != nil);
-    Assert(pFunnel != nil);
+    Assert(pArchive != NULL);
+    Assert(pThread != NULL);
+    Assert(infp != NULL);
+    Assert(pFunnel != NULL);
 
     err = Nu_AllocCompressionBufferIFN(pArchive);
     if (err != kNuErrNone)
@@ -205,7 +201,7 @@ Nu_ExpandDeflate(NuArchive* pArchive, const NuRecord* pRecord,
     zstream.zalloc = Nu_zalloc;
     zstream.zfree = Nu_zfree;
     zstream.opaque = pArchive;
-    zstream.next_in = nil;
+    zstream.next_in = NULL;
     zstream.avail_in = 0;
     zstream.next_out = outbuf;
     zstream.avail_out = kNuGenCompBufSize;
@@ -229,7 +225,7 @@ Nu_ExpandDeflate(NuArchive* pArchive, const NuRecord* pRecord,
      * Loop while we have data.
      */
     do {
-        ulong getSize;
+        uint32_t getSize;
 
         /* read as much as we can */
         if (zstream.avail_in == 0) {
@@ -269,7 +265,7 @@ Nu_ExpandDeflate(NuArchive* pArchive, const NuRecord* pRecord,
                 goto z_bail;
             }
 
-            if (pCrc != nil)
+            if (pCrc != NULL)
                 *pCrc = Nu_CalcCRC16(*pCrc, outbuf, zstream.next_out - outbuf);
 
             zstream.next_out = outbuf;
@@ -282,7 +278,7 @@ Nu_ExpandDeflate(NuArchive* pArchive, const NuRecord* pRecord,
     if (zstream.total_out != pThread->actualThreadEOF) {
         err = kNuErrBadData;
         Nu_ReportError(NU_BLOB, err,
-            "size mismatch on inflated file (%ld vs %ld)",
+            "size mismatch on inflated file (%ld vs %u)",
             zstream.total_out, pThread->actualThreadEOF);
         goto z_bail;
     }
@@ -291,7 +287,7 @@ z_bail:
     inflateEnd(&zstream);        /* free up any allocated structures */
 
 bail:
-    if (outbuf != nil)
+    if (outbuf != NULL)
         free(outbuf);
     return err;
 }

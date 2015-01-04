@@ -51,35 +51,33 @@ strcasecmp(const char *str1, const char *str2)
 typedef struct ImgHeader {
     char            magic[4];
     char            creator[4];
-    short           headerLen;
-    short           version;
-    long            imageFormat;
-    unsigned long   flags;
-    long            numBlocks;
-    long            dataOffset;
-    long            dataLen;
-    long            cmntOffset;
-    long            cmntLen;
-    long            creatorOffset;
-    long            creatorLen;
-    long            spare[4];
+    uint16_t        headerLen;
+    uint16_t        version;
+    uint32_t        imageFormat;
+    uint32_t        flags;
+    uint32_t        numBlocks;
+    uint32_t        dataOffset;
+    uint32_t        dataLen;
+    uint32_t        cmntOffset;
+    uint32_t        cmntLen;
+    uint32_t        creatorOffset;
+    uint32_t        creatorLen;
+    uint32_t        spare[4];
 } ImgHeader;
 
 /*
  * Read a two-byte little-endian value.
  */
-void
-ReadShortLE(FILE* fp, short* pBuf)
+void ReadShortLE(FILE* fp, uint16_t* pBuf)
 {
     *pBuf = getc(fp);
-    *pBuf += (short) getc(fp) << 8;
+    *pBuf += (uint16_t) getc(fp) << 8;
 }
 
 /*
  * Write a two-byte little-endian value.
  */
-void
-WriteShortLE(FILE* fp, unsigned short val)
+void WriteShortLE(FILE* fp, uint16_t val)
 {
     putc(val, fp);
     putc(val >> 8, fp);
@@ -88,20 +86,18 @@ WriteShortLE(FILE* fp, unsigned short val)
 /*
  * Read a four-byte little-endian value.
  */
-void
-ReadLongLE(FILE* fp, long* pBuf)
+void ReadLongLE(FILE* fp, uint32_t* pBuf)
 {
     *pBuf = getc(fp);
-    *pBuf += (long) getc(fp) << 8;
-    *pBuf += (long) getc(fp) << 16;
-    *pBuf += (long) getc(fp) << 24;
+    *pBuf += (uint32_t) getc(fp) << 8;
+    *pBuf += (uint32_t) getc(fp) << 16;
+    *pBuf += (uint32_t) getc(fp) << 24;
 }
 
 /*
  * Write a four-byte little-endian value.
  */
-void
-WriteLongLE(FILE* fp, unsigned long val)
+void WriteLongLE(FILE* fp, uint32_t val)
 {
     putc(val, fp);
     putc(val >> 8, fp);
@@ -112,8 +108,7 @@ WriteLongLE(FILE* fp, unsigned long val)
 /*
  * Read the header from a 2IMG file.
  */
-int
-ReadImgHeader(FILE* fp, ImgHeader* pHeader)
+int ReadImgHeader(FILE* fp, ImgHeader* pHeader)
 {
     size_t ignored;
     ignored = fread(pHeader->magic, 4, 1, fp);
@@ -121,7 +116,7 @@ ReadImgHeader(FILE* fp, ImgHeader* pHeader)
     ReadShortLE(fp, &pHeader->headerLen);
     ReadShortLE(fp, &pHeader->version);
     ReadLongLE(fp, &pHeader->imageFormat);
-    ReadLongLE(fp, (long*)&pHeader->flags);
+    ReadLongLE(fp, &pHeader->flags);
     ReadLongLE(fp, &pHeader->numBlocks);
     ReadLongLE(fp, &pHeader->dataOffset);
     ReadLongLE(fp, &pHeader->dataLen);
@@ -154,8 +149,7 @@ ReadImgHeader(FILE* fp, ImgHeader* pHeader)
 /*
  * Write the header to a 2IMG file.
  */
-int
-WriteImgHeader(FILE* fp, ImgHeader* pHeader)
+int WriteImgHeader(FILE* fp, ImgHeader* pHeader)
 {
     fwrite(pHeader->magic, 4, 1, fp);
     fwrite(pHeader->creator, 4, 1, fp);
@@ -185,23 +179,22 @@ WriteImgHeader(FILE* fp, ImgHeader* pHeader)
 /*
  * Dump the contents of an ImgHeader.
  */
-void
-DumpImgHeader(ImgHeader* pHeader)
+void DumpImgHeader(ImgHeader* pHeader)
 {
     printf("--- header contents:\n");
     printf("\tmagic         = '%.4s'\n", pHeader->magic);
     printf("\tcreator       = '%.4s'\n", pHeader->creator);
     printf("\theaderLen     = %d\n", pHeader->headerLen);
     printf("\tversion       = %d\n", pHeader->version);
-    printf("\timageFormat   = %ld\n", pHeader->imageFormat);
-    printf("\tflags         = 0x%08lx\n", pHeader->flags);
-    printf("\tnumBlocks     = %ld\n", pHeader->numBlocks);
-    printf("\tdataOffset    = %ld\n", pHeader->dataOffset);
-    printf("\tdataLen       = %ld\n", pHeader->dataLen);
-    printf("\tcmntOffset    = %ld\n", pHeader->cmntOffset);
-    printf("\tcmntLen       = %ld\n", pHeader->cmntLen);
-    printf("\tcreatorOffset = %ld\n", pHeader->creatorOffset);
-    printf("\tcreatorLen    = %ld\n", pHeader->creatorLen);
+    printf("\timageFormat   = %u\n", pHeader->imageFormat);
+    printf("\tflags         = 0x%08x\n", pHeader->flags);
+    printf("\tnumBlocks     = %u\n", pHeader->numBlocks);
+    printf("\tdataOffset    = %u\n", pHeader->dataOffset);
+    printf("\tdataLen       = %u\n", pHeader->dataLen);
+    printf("\tcmntOffset    = %u\n", pHeader->cmntOffset);
+    printf("\tcmntLen       = %u\n", pHeader->cmntLen);
+    printf("\tcreatorOffset = %u\n", pHeader->creatorOffset);
+    printf("\tcreatorLen    = %u\n", pHeader->creatorLen);
     printf("\n");
 }
 
@@ -217,8 +210,7 @@ typedef enum ArchiveKind { kKindUnknown, kKindShk, kKindImg } ArchiveKind;
 /*
  * This gets called when a buffer DataSource is no longer needed.
  */
-NuResult
-FreeCallback(NuArchive* pArchive, void* args)
+NuResult FreeCallback(NuArchive* pArchive, void* args)
 {
     free(args);
     return kNuOK;
@@ -227,8 +219,7 @@ FreeCallback(NuArchive* pArchive, void* args)
 /*
  * This gets called when an "FP" DataSource is no longer needed.
  */
-NuResult
-FcloseCallback(NuArchive* pArchive, void* args)
+NuResult FcloseCallback(NuArchive* pArchive, void* args)
 {
     fclose((FILE*) args);
     return kNuOK;
@@ -242,8 +233,7 @@ FcloseCallback(NuArchive* pArchive, void* args)
  * of NufxLib.  We could just as easily not set it and call fclose()
  * ourselves, because the structure of this program is pretty simple.
  */
-NuError
-CreateProdosSource(const ImgHeader* pHeader, FILE* fp,
+NuError CreateProdosSource(const ImgHeader* pHeader, FILE* fp,
     NuDataSource** ppDataSource)
 {
     return NuCreateDataSourceForFP(kNuThreadFormatUncompressed, 0, fp,
@@ -254,17 +244,16 @@ CreateProdosSource(const ImgHeader* pHeader, FILE* fp,
  * Create a data source for a DOS-ordered image.  This is a little harder,
  * since we have to reorder the blocks into ProDOS ordering for ShrinkIt.
  */
-NuError
-CreateDosSource(const ImgHeader* pHeader, FILE* fp,
+NuError CreateDosSource(const ImgHeader* pHeader, FILE* fp,
     NuDataSource** ppDataSource)
 {
     NuError err;
-    char* diskBuffer = nil;
+    char* diskBuffer = NULL;
     long offset;
 
     if (pHeader->dataLen % 4096) {
         fprintf(stderr,
-            "ERROR: image size must be multiple of 4096 (%ld isn't)\n",
+            "ERROR: image size must be multiple of 4096 (%u isn't)\n",
             pHeader->dataLen);
         err = kNuErrGeneric;
         goto bail;
@@ -277,8 +266,8 @@ CreateDosSource(const ImgHeader* pHeader, FILE* fp,
     }
 
     diskBuffer = malloc(pHeader->dataLen);
-    if (diskBuffer == nil) {
-        fprintf(stderr, "ERROR: malloc(%ld) failed\n", pHeader->dataLen);
+    if (diskBuffer == NULL) {
+        fprintf(stderr, "ERROR: malloc(%u) failed\n", pHeader->dataLen);
         err = kNuErrMalloc;
         goto bail;
     }
@@ -319,13 +308,13 @@ CreateDosSource(const ImgHeader* pHeader, FILE* fp,
      * "true", so NufxLib will free the buffer for us.
      */
     err = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed, 0,
-            (const unsigned char*) diskBuffer, 0, pHeader->dataLen,
+            (const uint8_t*) diskBuffer, 0, pHeader->dataLen,
             FreeCallback, ppDataSource);
     if (err == kNuErrNone)
-        diskBuffer = nil;
+        diskBuffer = NULL;
 
 bail:
-    if (diskBuffer != nil)
+    if (diskBuffer != NULL)
         free(diskBuffer);
     return err;
 }
@@ -338,18 +327,17 @@ bail:
  * This requires opening up the 2IMG file, verifying that it's okay, and
  * then creating a new disk image record and thread.
  */
-int
-ConvertFromImgToShk(const char* srcName, const char* dstName)
+int ConvertFromImgToShk(const char* srcName, const char* dstName)
 {
     NuError err;
-    NuArchive* pArchive = nil;
-    NuDataSource* pDataSource = nil;
+    NuArchive* pArchive = NULL;
+    NuDataSource* pDataSource = NULL;
     NuRecordIdx recordIdx;
     NuFileDetails fileDetails;
     ImgHeader header;
-    FILE* fp = nil;
-    long flushStatus;
-    char* storageName = nil;
+    FILE* fp = NULL;
+    uint32_t flushStatus;
+    char* storageName = NULL;
     char* cp;
 
     printf("Converting 2IMG file '%s' to ShrinkIt archive '%s'\n\n",
@@ -394,10 +382,10 @@ ConvertFromImgToShk(const char* srcName, const char* dstName)
     /* create the name that will be stored in the archive */
     storageName = strdup(dstName);
     cp = strrchr(storageName, '.');
-    if (cp != nil)
+    if (cp != NULL)
         *cp = '\0';
     cp = strrchr(storageName, kLocalFssep);
-    if (cp != nil && *(cp+1) != '\0')
+    if (cp != NULL && *(cp+1) != '\0')
         cp++;
     else
         cp = storageName;
@@ -410,7 +398,7 @@ ConvertFromImgToShk(const char* srcName, const char* dstName)
 
     /* set up the contents of the NuFX Record */
     memset(&fileDetails, 0, sizeof(fileDetails));
-    fileDetails.storageName = cp;
+    fileDetails.storageNameMOR = cp;
     fileDetails.fileSysID = kNuFileSysUnknown;  /* DOS? ProDOS? */
     fileDetails.fileSysInfo = kLocalFssep;
     fileDetails.access = kNuAccessUnlocked;
@@ -433,11 +421,11 @@ ConvertFromImgToShk(const char* srcName, const char* dstName)
     switch (header.imageFormat) {
     case kImageFormatDOS:
         err = CreateDosSource(&header, fp, &pDataSource);
-        fp = nil;
+        fp = NULL;
         break;
     case kImageFormatProDOS:
         err = CreateProdosSource(&header, fp, &pDataSource);
-        fp = nil;
+        fp = NULL;
         break;
     default:
         fprintf(stderr, "How the heck did I get here?");
@@ -451,17 +439,17 @@ ConvertFromImgToShk(const char* srcName, const char* dstName)
 
     /* add a disk image thread */
     err = NuAddThread(pArchive, recordIdx, kNuThreadIDDiskImage, pDataSource,
-            nil);
+            NULL);
     if (err != kNuErrNone) {
         fprintf(stderr, "ERROR: unable to create thread (err=%d)\n", err);
         goto bail;
     }
-    pDataSource = nil;  /* library owns it now */
+    pDataSource = NULL;  /* library owns it now */
 
     /* nothing happens until we Flush */
     err = NuFlush(pArchive, &flushStatus);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: flush failed (err=%d, status=0x%04lx)\n",
+        fprintf(stderr, "ERROR: flush failed (err=%d, status=0x%04x)\n",
             err, flushStatus);
         goto bail;
     }
@@ -470,17 +458,17 @@ ConvertFromImgToShk(const char* srcName, const char* dstName)
         fprintf(stderr, "ERROR: close failed (err=%d)\n", err);
         goto bail;
     }
-    pArchive = nil;
+    pArchive = NULL;
 
 bail:
-    if (pArchive != nil) {
+    if (pArchive != NULL) {
         (void)NuAbort(pArchive);
         (void)NuClose(pArchive);
     }
     NuFreeDataSource(pDataSource);
-    if (storageName != nil)
+    if (storageName != NULL)
         free(storageName);
-    if (fp != nil)
+    if (fp != NULL)
         fclose(fp);
     return (err == kNuErrNone) ? 0 : -1;
 }
@@ -492,17 +480,16 @@ bail:
  * This takes a simple-minded approach and assumes that the first record
  * in the archive has the disk image in it.  If it doesn't, we give up.
  */
-int
-ConvertFromShkToImg(const char* srcName, const char* dstName)
+int ConvertFromShkToImg(const char* srcName, const char* dstName)
 {
     NuError err;
-    NuArchive* pArchive = nil;
-    NuDataSink* pDataSink = nil;
+    NuArchive* pArchive = NULL;
+    NuDataSink* pDataSink = NULL;
     NuRecordIdx recordIdx;
     const NuRecord* pRecord;
-    const NuThread* pThread = nil;
+    const NuThread* pThread = NULL;
     ImgHeader header;
-    FILE* fp = nil;
+    FILE* fp = NULL;
     int idx;
 
     printf("Converting ShrinkIt archive '%s' to 2IMG file '%s'\n\n",
@@ -592,10 +579,10 @@ ConvertFromShkToImg(const char* srcName, const char* dstName)
     }
 
 bail:
-    if (pArchive != nil)
+    if (pArchive != NULL)
         NuClose(pArchive);
     NuFreeDataSink(pDataSink);
-    if (fp != nil)
+    if (fp != NULL)
         fclose(fp);
     return (err == kNuErrNone) ? 0 : -1;
 }
@@ -604,13 +591,12 @@ bail:
 /*
  * Figure out what kind of archive this is by looking at the filename.
  */
-ArchiveKind
-DetermineKind(const char* filename)
+ArchiveKind DetermineKind(const char* filename)
 {
     const char* dot;
 
     dot = strrchr(filename, '.');
-    if (dot == nil)
+    if (dot == NULL)
         return kKindUnknown;
 
     if (strcasecmp(dot, ".shk") == 0 || strcasecmp(dot, ".sdk") == 0)
@@ -626,8 +612,7 @@ DetermineKind(const char* filename)
 /*
  * Figure out what we want to do.
  */
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
     ArchiveKind kind;
     int cc;

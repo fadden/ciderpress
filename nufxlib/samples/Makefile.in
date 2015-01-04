@@ -28,49 +28,35 @@ ALL_SRCS	= Exerciser.c ImgConv.c Launder.c TestBasic.c \
 
 NUFXLIB		= -L.. -lnufx
 
-PRODUCTS	= exerciser imgconv launder test-basic test-extract test-simple \
-				test-twirl
-
-#ifdef PURIFY_BUILD
-#  PURIFY	= purify
-#  CFLAGS	+= -DPURIFY
-#endif
-#ifdef QUANTIFY_BUILD
-#  QUANTIFY	= quantify
-#  CFLAGS	+= -DQUANTIFY
-#endif
+PRODUCTS	= exerciser imgconv launder test-basic test-extract test-names \
+				test-simple test-twirl
 
 all: $(PRODUCTS)
 	@true
 
-#quantify:
-#	-rm -f $(PRODUCT)
-#	@$(MAKE) QUANTIFY_BUILD=1
-#
-#purify:
-#	-rm -f $(PRODUCT)
-#	@$(MAKE) PURIFY_BUILD=1
-
 exerciser: Exerciser.o $(LIB_PRODUCT)
-	$(PURIFY) $(QUANTIFY) $(CC) -o $@ Exerciser.o $(NUFXLIB) @LIBS@
+	$(CC) -o $@ Exerciser.o $(NUFXLIB) @LIBS@
 
 imgconv: ImgConv.o $(LIB_PRODUCT)
-	$(PURIFY) $(QUANTIFY) $(CC) -o $@ ImgConv.o $(NUFXLIB) @LIBS@
+	$(CC) -o $@ ImgConv.o $(NUFXLIB) @LIBS@
 
 launder: Launder.o $(LIB_PRODUCT)
-	$(PURIFY) $(QUANTIFY) $(CC) -o $@ Launder.o $(NUFXLIB) @LIBS@
+	$(CC) -o $@ Launder.o $(NUFXLIB) @LIBS@
 
 test-basic: TestBasic.o $(LIB_PRODUCT)
-	$(PURIFY) $(QUANTIFY) $(CC) -o $@ TestBasic.o $(NUFXLIB) @LIBS@
-
-test-simple: TestSimple.o $(LIB_PRODUCT)
-	$(PURIFY) $(QUANTIFY) $(CC) -o $@ TestSimple.o $(NUFXLIB) @LIBS@
+	$(CC) -o $@ TestBasic.o $(NUFXLIB) @LIBS@
 
 test-extract: TestExtract.o $(LIB_PRODUCT)
-	$(PURIFY) $(QUANTIFY) $(CC) -o $@ TestExtract.o $(NUFXLIB) @LIBS@
+	$(CC) -o $@ TestExtract.o $(NUFXLIB) @LIBS@
+
+test-names: TestNames.o $(LIB_PRODUCT)
+	$(CC) -o $@ TestNames.o $(NUFXLIB) @LIBS@
+
+test-simple: TestSimple.o $(LIB_PRODUCT)
+	$(CC) -o $@ TestSimple.o $(NUFXLIB) @LIBS@
 
 test-twirl: TestTwirl.o $(LIB_PRODUCT)
-	$(PURIFY) $(QUANTIFY) $(CC) -o $@ TestTwirl.o $(NUFXLIB) @LIBS@
+	$(CC) -o $@ TestTwirl.o $(NUFXLIB) @LIBS@
 
 tags::
 	ctags --totals -R ../*
@@ -84,8 +70,12 @@ distclean: clean
 	-rm -f tags
 	-rm -f Makefile Makefile.bak
 
-depend:
-	makedepend -- $(CFLAGS) -I/usr/local/include -- $(ALL_SRCS)
-
-# DO NOT DELETE THIS LINE -- make depend depends on it.
-
+COMMON_HDRS = ../NufxLibPriv.h ../NufxLib.h ../MiscStuff.h ../SysDefs.h
+Exerciser.o: Exerciser.c $(COMMON_HDRS)
+ImgConv.o: ImgConv.c $(COMMON_HDRS)
+Launder.o: Launder.c $(COMMON_HDRS)
+TestBasic.o: TestBasic.c $(COMMON_HDRS)
+TestExtract.o: TestExtract.c $(COMMON_HDRS)
+TestNames.o: TestNames.c $(COMMON_HDRS)
+TestSimple.o: TestSimple.c $(COMMON_HDRS)
+TestTwirl.o: TestTwirl.c $(COMMON_HDRS)

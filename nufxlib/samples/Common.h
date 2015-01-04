@@ -6,8 +6,8 @@
  *
  * Common functions for NuLib tests.
  */
-#ifndef __Common__
-#define __Common__
+#ifndef NUFXLIB_SAMPLES_COMMON_H
+#define NUFXLIB_SAMPLES_COMMON_H
 
 #include "SysDefs.h"        /* might as well draft off the autoconf */
 #include "NufxLib.h"
@@ -15,8 +15,6 @@
 #ifdef USE_DMALLOC
 # include "dmalloc.h"
 #endif
-
-#define nil NULL    /* this is seriously habit-forming */
 
 #define NELEM(x) (sizeof(x) / sizeof((x)[0]))
 
@@ -65,4 +63,4 @@
 # define PATH_SEP   '/'
 #endif
 
-#endif /*__Common__*/
+#endif /*NUFXLIB_SAMPLES_COMMON_H*/

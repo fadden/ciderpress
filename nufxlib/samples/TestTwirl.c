@@ -29,16 +29,15 @@ const int kMaxHeldLen = 1024 * 1024;
  * A list of CRCs.
  */
 typedef struct CRCList {
-    int             numEntries;
-    unsigned short* entries;
+    int         numEntries;
+    uint16_t*   entries;
 } CRCList;
 
 
 /*
  * Returns true if the compression type is supported, false otherwise.
  */
-int
-CompressionSupported(NuValue compression)
+int CompressionSupported(NuValue compression)
 {
     int result;
 
@@ -76,8 +75,7 @@ CompressionSupported(NuValue compression)
 /* 
  * This gets called when a buffer DataSource is no longer needed.
  */
-NuResult
-FreeCallback(NuArchive* pArchive, void* args)
+NuResult FreeCallback(NuArchive* pArchive, void* args)
 {
     free(args);
     return kNuOK; 
@@ -87,8 +85,7 @@ FreeCallback(NuArchive* pArchive, void* args)
 /*
  * Dump a CRC list.
  */
-void
-DumpCRCs(const CRCList* pCRCList)
+void DumpCRCs(const CRCList* pCRCList)
 {
     int i;
 
@@ -101,10 +98,9 @@ DumpCRCs(const CRCList* pCRCList)
 /*
  * Free a CRC list.
  */
-void
-FreeCRCs(CRCList* pCRCList)
+void FreeCRCs(CRCList* pCRCList)
 {
-    if (pCRCList == nil)
+    if (pCRCList == NULL)
         return;
 
     free(pCRCList->entries);
@@ -117,21 +113,20 @@ FreeCRCs(CRCList* pCRCList)
  * We assume there are at most two data threads (e.g. data fork and rsrc
  * fork) in a record.
  *
- * Returns the list on success, nil on failure.
+ * Returns the list on success, NULL on failure.
  */
-CRCList*
-GatherCRCs(NuArchive* pArchive)
+CRCList* GatherCRCs(NuArchive* pArchive)
 {
     NuError err = kNuErrNone;
     const NuMasterHeader* pMasterHeader;
-    CRCList* pCRCList = nil;
-    unsigned short* pEntries = nil;
+    CRCList* pCRCList = NULL;
+    uint16_t* pEntries = NULL;
     long recCount, maxCRCs;
     long recIdx, crcIdx;
     int i;
 
     pCRCList = malloc(sizeof(*pCRCList));
-    if (pCRCList == nil) {
+    if (pCRCList == NULL) {
         fprintf(stderr, "ERROR: couldn't alloc CRC list\n");
         err = kNuErrGeneric;
         goto bail;
@@ -148,7 +143,7 @@ GatherCRCs(NuArchive* pArchive)
     maxCRCs = recCount * 2;
 
     pEntries = malloc(sizeof(*pEntries) * maxCRCs);
-    if (pEntries == nil) {
+    if (pEntries == NULL) {
         fprintf(stderr, "ERROR: unable to alloc CRC list (%ld entries)\n",
             maxCRCs);
         err = kNuErrGeneric;
@@ -178,12 +173,12 @@ GatherCRCs(NuArchive* pArchive)
 
         err = NuGetRecord(pArchive, recordIdx, &pRecord);
         if (err != kNuErrNone) {
-            fprintf(stderr, "ERROR: unable to get recordIdx %ld\n", recordIdx);
+            fprintf(stderr, "ERROR: unable to get recordIdx %u\n", recordIdx);
             goto bail;
         }
 
         if (NuRecordGetNumThreads(pRecord) == 0) {
-            fprintf(stderr, "ERROR: not expecting empty record (%ld)!\n",
+            fprintf(stderr, "ERROR: not expecting empty record (%u)!\n",
                 recordIdx);
             err = kNuErrGeneric;
             goto bail;
@@ -211,7 +206,7 @@ GatherCRCs(NuArchive* pArchive)
 bail:
     if (err != kNuErrNone) {
         FreeCRCs(pCRCList);
-        pCRCList = nil;
+        pCRCList = NULL;
     }
     return pCRCList;
 }
@@ -228,16 +223,15 @@ bail:
  *
  * Returns 0 on success, nonzero on failure.
  */
-int
-CompareCRCs(NuArchive* pArchive, const CRCList* pOldCRCList)
+int CompareCRCs(NuArchive* pArchive, const CRCList* pOldCRCList)
 {
-    CRCList* pNewCRCList = nil;
+    CRCList* pNewCRCList = NULL;
     int result = -1;
     int badCrc = 0;
     int i;
 
     pNewCRCList = GatherCRCs(pArchive);
-    if (pNewCRCList == nil) {
+    if (pNewCRCList == NULL) {
         fprintf(stderr, "ERROR: unable to gather new list\n");
         goto bail;
     }
@@ -274,18 +268,17 @@ bail:
  *
  * All of this good stuff gets queued up until the next NuFlush call.
  */
-NuError
-RecompressThread(NuArchive* pArchive, const NuRecord* pRecord,
+NuError RecompressThread(NuArchive* pArchive, const NuRecord* pRecord,
     const NuThread* pThread)
 {
     NuError err = kNuErrNone;
-    NuDataSource* pDataSource = nil;
-    NuDataSink* pDataSink = nil;
-    unsigned char* buf = nil;
+    NuDataSource* pDataSource = NULL;
+    NuDataSink* pDataSink = NULL;
+    uint8_t* buf = NULL;
 
     if (pThread->actualThreadEOF == 0) {
         buf = malloc(1);
-        if (buf == nil) {
+        if (buf == NULL) {
             fprintf(stderr, "ERROR: failed allocating trivial buffer\n");
             err = kNuErrGeneric;
             goto bail;
@@ -295,8 +288,8 @@ RecompressThread(NuArchive* pArchive, const NuRecord* pRecord,
          * Create a buffer and data sink to hold the data.
          */
         buf = malloc(pThread->actualThreadEOF);
-        if (buf == nil) {
-            fprintf(stderr, "ERROR: failed allocating %ld bytes\n",
+        if (buf == NULL) {
+            fprintf(stderr, "ERROR: failed allocating %u bytes\n",
                 pThread->actualThreadEOF);
             err = kNuErrGeneric;
             goto bail;
@@ -314,8 +307,8 @@ RecompressThread(NuArchive* pArchive, const NuRecord* pRecord,
          */
         err = NuExtractThread(pArchive, pThread->threadIdx, pDataSink);
         if (err != kNuErrNone) {
-            fprintf(stderr, "ERROR: failed extracting thread %ld in '%s': %s\n",
-                pThread->threadIdx, pRecord->filename, NuStrError(err));
+            fprintf(stderr, "ERROR: failed extracting thread %u in '%s': %s\n",
+                pThread->threadIdx, pRecord->filenameMOR, NuStrError(err));
             goto bail;
         }
     }
@@ -325,7 +318,7 @@ RecompressThread(NuArchive* pArchive, const NuRecord* pRecord,
      */
     err = NuDeleteThread(pArchive, pThread->threadIdx);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: unable to delete thread %ld\n",
+        fprintf(stderr, "ERROR: unable to delete thread %u\n",
             pThread->threadIdx);
         goto bail;
     }
@@ -340,19 +333,19 @@ RecompressThread(NuArchive* pArchive, const NuRecord* pRecord,
         fprintf(stderr, "ERROR: unable to create data source (err=%d)\n", err);
         goto bail;
     }
-    buf = nil;
+    buf = NULL;
 
     /*
      * Create replacement thread.
      */
     err = NuAddThread(pArchive, pRecord->recordIdx, NuGetThreadID(pThread),
-            pDataSource, nil);
+            pDataSource, NULL);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: unable to add new thread ID=0x%08lx (err=%d)\n",
+        fprintf(stderr, "ERROR: unable to add new thread ID=0x%08x (err=%d)\n",
             NuGetThreadID(pThread), err);
         goto bail;
     }
-    pDataSource = nil;      /* now owned by NufxLib */
+    pDataSource = NULL;      /* now owned by NufxLib */
 
 bail:
     NuFreeDataSink(pDataSink);
@@ -367,21 +360,20 @@ bail:
  * The amount of data we're holding in memory as a result of the
  * recompression is placed in "*pLen".
  */
-NuError
-RecompressRecord(NuArchive* pArchive, NuRecordIdx recordIdx, long* pLen)
+NuError RecompressRecord(NuArchive* pArchive, NuRecordIdx recordIdx, long* pLen)
 {
     NuError err = kNuErrNone;
     const NuRecord* pRecord;
     const NuThread* pThread;
     int i;
 
-    printf("  Recompressing %ld\n", recordIdx);
+    printf("  Recompressing %u\n", recordIdx);
 
     *pLen = 0;
 
     err = NuGetRecord(pArchive, recordIdx, &pRecord);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: unable to get record %ld (err=%d)\n",
+        fprintf(stderr, "ERROR: unable to get record %u (err=%d)\n",
             recordIdx, err);
         goto bail;
     }
@@ -393,8 +385,8 @@ RecompressRecord(NuArchive* pArchive, NuRecordIdx recordIdx, long* pLen)
                 NuGetThreadID(pThread));*/
             err = RecompressThread(pArchive, pRecord, pThread);
             if (err != kNuErrNone) {
-                fprintf(stderr, "ERROR: failed recompressing thread %ld "
-                                " in record %ld (err=%d)\n",
+                fprintf(stderr, "ERROR: failed recompressing thread %u "
+                                " in record %u (err=%d)\n",
                     pThread->threadIdx, pRecord->recordIdx, err);
                 goto bail;
             }
@@ -412,23 +404,22 @@ bail:
 /*
  * Recompress every data thread in the archive.
  */
-NuError
-RecompressArchive(NuArchive* pArchive, NuValue compression)
+NuError RecompressArchive(NuArchive* pArchive, NuValue compression)
 {
     NuError err = kNuErrNone;
-    NuRecordIdx* pIndices = nil;
+    NuRecordIdx* pIndices = NULL;
     NuAttr countAttr;
     long heldLen;
     long idx;
 
     err = NuSetValue(pArchive, kNuValueDataCompression, compression);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: unable to set compression to %ld (err=%d)\n",
+        fprintf(stderr, "ERROR: unable to set compression to %u (err=%d)\n",
             compression, err);
         goto bail;
     }
 
-    printf("Recompressing threads with compression type %ld\n", compression);
+    printf("Recompressing threads with compression type %u\n", compression);
 
     err = NuGetAttr(pArchive, kNuAttrNumRecords, &countAttr);
     if (err != kNuErrNone) {
@@ -446,8 +437,8 @@ RecompressArchive(NuArchive* pArchive, NuValue compression)
      * record to "disappear" during processing, we will know about it.
      */
     pIndices = malloc(countAttr * sizeof(*pIndices));
-    if (pIndices == nil) {
-        fprintf(stderr, "ERROR: malloc on %ld indices failed\n", countAttr);
+    if (pIndices == NULL) {
+        fprintf(stderr, "ERROR: malloc on %u indices failed\n", countAttr);
         err = kNuErrGeneric;
         goto bail;
     }
@@ -470,7 +461,7 @@ RecompressArchive(NuArchive* pArchive, NuValue compression)
 
         err = RecompressRecord(pArchive, pIndices[idx], &recHeldLen);
         if (err != kNuErrNone) {
-            fprintf(stderr, "ERROR: failed recompressing record %ld (err=%d)\n",
+            fprintf(stderr, "ERROR: failed recompressing record %u (err=%d)\n",
                 pIndices[idx], err);
             goto bail;
         }
@@ -478,7 +469,7 @@ RecompressArchive(NuArchive* pArchive, NuValue compression)
         heldLen += recHeldLen;
 
         if (heldLen > kMaxHeldLen) {
-            long statusFlags;
+            uint32_t statusFlags;
 
             printf("    (flush)\n");
             err = NuFlush(pArchive, &statusFlags);
@@ -500,12 +491,11 @@ bail:
 /*
  * Initiate the twirling.
  */
-int
-TwirlArchive(const char* filename)
+int TwirlArchive(const char* filename)
 {
     NuError err = kNuErrNone;
-    NuArchive* pArchive = nil;
-    CRCList* pCRCList = nil;
+    NuArchive* pArchive = NULL;
+    CRCList* pCRCList = NULL;
     int compression;
     int cc;
 
@@ -534,7 +524,7 @@ TwirlArchive(const char* filename)
     }
 
     pCRCList = GatherCRCs(pArchive);
-    if (pCRCList == nil) {
+    if (pCRCList == NULL) {
         fprintf(stderr, "ERROR: unable to get CRC list\n");
         goto bail;
     }
@@ -545,7 +535,7 @@ TwirlArchive(const char* filename)
     for (compression = kNuCompressNone; compression <= kNuCompressBzip2;
         compression++)
     {
-        long statusFlags;
+        uint32_t statusFlags;
 
         if (!CompressionSupported(compression))
             continue;
@@ -571,7 +561,7 @@ TwirlArchive(const char* filename)
     for (compression = kNuCompressBzip2; compression >= kNuCompressNone;
         compression--)
     {
-        long statusFlags;
+        uint32_t statusFlags;
 
         if (!CompressionSupported(compression))
             continue;
@@ -599,7 +589,7 @@ TwirlArchive(const char* filename)
 
 bail:
     FreeCRCs(pCRCList);
-    if (pArchive != nil) {
+    if (pArchive != NULL) {
         NuAbort(pArchive);
         NuClose(pArchive);
     }
@@ -611,22 +601,21 @@ bail:
 /*
  * Copy from the current offset in "srcfp" to a new file called
  * "outFileName".  Returns a writable file descriptor for the new file
- * on success, or nil on error.
+ * on success, or NULL on error.
  *
  * (Note "CopyFile()" exists under Win32.)
  */
-FILE*
-MyCopyFile(const char* outFileName, FILE* srcfp)
+FILE* MyCopyFile(const char* outFileName, FILE* srcfp)
 {
     char buf[24576];
     FILE* outfp;
     size_t count;
 
     outfp = fopen(outFileName, kNuFileOpenWriteTrunc);
-    if (outfp == nil) {
+    if (outfp == NULL) {
         fprintf(stderr, "ERROR: unable to open '%s' (err=%d)\n", outFileName,
             errno);
-        return nil;
+        return NULL;
     }
 
     while (!feof(srcfp)) {
@@ -636,14 +625,14 @@ MyCopyFile(const char* outFileName, FILE* srcfp)
         if (fwrite(buf, 1, count, outfp) != count) {
             fprintf(stderr, "ERROR: failed writing outfp (err=%d)\n", errno);
             fclose(outfp);
-            return nil;
+            return NULL;
         }
     }
 
     if (ferror(srcfp)) {
         fprintf(stderr, "ERROR: failed reading srcfp (err=%d)\n", errno);
         fclose(outfp);
-        return nil;
+        return NULL;
     }
 
     return outfp;
@@ -652,26 +641,25 @@ MyCopyFile(const char* outFileName, FILE* srcfp)
 /*
  * Let's get started.
  */
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
-    long major, minor, bug;
+    int32_t major, minor, bug;
     const char* pBuildDate;
-    FILE* srcfp = nil;
-    FILE* infp = nil;
+    FILE* srcfp = NULL;
+    FILE* infp = NULL;
     int cc;
 
     /* don't buffer output */
-    setvbuf(stdout, nil, _IONBF, 0);
-    setvbuf(stderr, nil, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
 
-    (void) NuGetVersion(&major, &minor, &bug, &pBuildDate, nil);
-    printf("Using NuFX lib %ld.%ld.%ld built on or after %s\n\n",
+    (void) NuGetVersion(&major, &minor, &bug, &pBuildDate, NULL);
+    printf("Using NuFX lib %d.%d.%d built on or after %s\n\n",
         major, minor, bug, pBuildDate);
 
     if (argc == 2) {
         srcfp = fopen(argv[1], kNuFileOpenReadOnly);
-        if (srcfp == nil) {
+        if (srcfp == NULL) {
             perror("fopen failed");
             exit(1);
         }
@@ -683,7 +671,7 @@ main(int argc, char** argv)
     printf("Copying '%s' to '%s'\n", argv[1], kWorkFileName);
 
     infp = MyCopyFile(kWorkFileName, srcfp);
-    if (infp == nil) {
+    if (infp == NULL) {
         fprintf(stderr, "Copy failed, bailing.\n");
         exit(1);
     }

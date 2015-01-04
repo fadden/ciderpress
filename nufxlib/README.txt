@@ -1,4 +1,4 @@
-NufxLib README, updated 2004/03/18
+NufxLib README, updated 2014/12/23
 http://www.nulib.com/
 
 See "COPYING-LIB" for distribution restrictions.
@@ -42,11 +42,8 @@ for @CFLAGS@ is "-g -O2".
   (Implicitly sets DEBUG_MSGS.)  Spray lots of debugging output.
 
 If you want to do benchmarks, use "-O2 -DNDEBUG".  The recommended
-configuration during testing is "-g -O2 -DDEBUG_MSGS", so that verbose
-debug output is available when errors occur.
-
-The flags are stuffed into Version.c, so the application program can
-examine and display the flags that were used to build the library.
+configuration is "-g -O2 -DDEBUG_MSGS", so that verbose debug output is
+available when errors occur.
 
 
 BeOS
@@ -67,14 +64,10 @@ If you're using BeOS/PPC, it will also do:
 Mac OS X
 ========
 
-This works just like the UNIX version, with the exception that when you link
-against nufxlib, your project must also link against the Carbon framework.
-This can be done in ProjectBuilder by using the Add Framework option in the
-Project menu, or by adding "-framework Carbon" to the gcc command line.
+This works just like the UNIX version, but includes support for resource
+forks and Finder file/aux types.
 
-You'll see some warnings due to some namespace collisions between nufxlib and
-Carbon, but everything will work fine.  Carbon is used to provide support for
-file types and resource forks.
+Tested with Xcode v5.1.1 and Mac OS 10.8.5.
 
 
 Win32
@@ -83,28 +76,23 @@ Win32
 If you're using an environment that supports "configure" scripts, such as
 DJGPP, follow the UNIX instructions.
 
-NufxLib has been tested with Microsoft Visual C++ 6.0.  To build NufxLib,
-start up a DOS shell and run vcvars32.bat to set your environment.  Run:
+NufxLib has been tested with Microsoft Visual C++ 12 (Visual Studio 2013).
+To build NufxLib, run the "Visual Studio 2013 x86 Native Tools Command
+Prompt" shortcut to get a shell.  Change to the nufxlib directory, then:
+
     nmake -f makefile.msc
-to build with debugging info, or
-    nmake -f makefile.msc nodebug=1
-to build optimized.
 
-See the makefile for comments about including zlib or libbz2.  These
-need to be enabled at compile time and linked into the sample apps.
+When the build finishes, run "test-basic.exe" to confirm things are working.
 
-Once the library has been built, "cd samples" and run the same command there.
-When it finishes, run "test-basic.exe".
+If you want to have zlib support enabled, you will need to have zlib.h,
+zconf.h, and zlib.lib copied into the directory.  See "makefile.msc" for
+more details.
 
-If you want to build NufxLib as a DLL, use "makefile.dll" instead.
-If you're using zlib or libbz2, these will need to be linked into the DLL.
-The makefile currently assumes that you will want to use zlib.dll.
+The makefile builds NufxLib as a static library and as a DLL.
 
 
 Other Notes
 ===========
-
-All of the source code is now formatted with spaces instead of tabs.
 
 If you want to use the library in a multithreaded application, you should
 define "USE_REENTRANT_CALLS" to tell it to use reentrant versions of
@@ -113,12 +101,19 @@ add the appropriate goodies.  (Seems to me you'd always want this on, but
 for some reason Solaris makes you take an extra step, so I'm not going to
 define it by default.)
 
+Originally, NufxLib / NuLib2 were intended to be usable natively on the
+Apple IIgs, so some of the design decisions were influenced by the need
+to minimize memory usage (e.g. being able to get a directory listing
+without holding the entire directory in memory) and interact with GS/OS
+(forked files have a single filename, files have type/auxtype).  The IIgs
+port was never started.
+
 
 Legalese
 ========
 
 NufxLib, a NuFX archive manipulation library.
-Copyright (C) 2000-2007 by Andy McFadden, All Rights Reserved.
+Copyright (C) 2000-2014 by Andy McFadden, All Rights Reserved.
 
 See COPYING for license.
 

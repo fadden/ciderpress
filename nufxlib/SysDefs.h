@@ -6,8 +6,8 @@
  *
  * External type definitions and function prototypes.
  */
-#ifndef __SysDefs__
-#define __SysDefs__
+#ifndef NUFXLIB_SYSDEFS_H
+#define NUFXLIB_SYSDEFS_H
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -18,7 +18,6 @@
 #endif
 
 /* these should exist everywhere */
-#include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <memory.h>
@@ -55,10 +54,6 @@
 #  define SNPRINTF_DECLARED
 #  define VSNPRINTF_DECLARED
 #  define SPRINTF_RETURNS_INT
-#  define uchar unsigned char
-#  define ushort unsigned short
-#  define uint unsigned int
-#  define ulong unsigned long
 #  define inline /*Visual C++6.0 can't inline ".c" files*/
 #  define mode_t int
 #  define ENABLE_SQ
@@ -74,6 +69,7 @@
 # define HAVE_CHSIZE
 # define snprintf _snprintf
 # define vsnprintf _vsnprintf
+
 #endif
 
 #ifdef HAVE_MALLOC_H
@@ -123,26 +119,18 @@
 # endif
 #endif
 
-/* resource forks on UFS filesystem under Mac OS X are a kluge */
-/*#ifdef MAC*/
-/*# define HAS_RESOURCE_FORKS*/
-/*#endif*/
-
-#if defined(__ORCAC__) || defined(MAC_LIKE)
-# define HAS_RESOURCE_FORKS
-#endif
+/* not currently using filesystem resource forks */
+//#if defined(__ORCAC__) || defined(MAC_LIKE)
+//# define HAS_RESOURCE_FORKS
+//#endif
 
 /* __FUNCTION__ was missing from BeOS __MWERKS__, and might be gcc-only */
 #ifdef __GNUC__
 # define HAS__FUNCTION__
 #endif
 
-#if defined(__sun__) && !defined(__SVR4)
-# include "SunOS4.h"
-#endif
-
 #if defined(__linux__)
 # define HAS_MALLOC_CHECK_
 #endif
 
-#endif /*__SysDefs__*/
+#endif /*NUFXLIB_SYSDEFS_H*/

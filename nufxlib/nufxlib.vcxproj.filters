@@ -95,5 +95,8 @@
     <ClCompile Include="Version.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Charset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

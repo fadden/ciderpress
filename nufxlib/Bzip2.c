@@ -25,13 +25,11 @@
 /*
  * Alloc and free functions provided to libbz2.
  */
-static void*
-Nu_bzalloc(void* opaque, int items, int size)
+static void* Nu_bzalloc(void* opaque, int items, int size)
 {
     return Nu_Malloc(opaque, items * size);
 }
-static void
-Nu_bzfree(void* opaque, void* address)
+static void Nu_bzfree(void* opaque, void* address)
 {
     Nu_Free(opaque, address);
 }
@@ -46,21 +44,20 @@ Nu_bzfree(void* opaque, void* address)
 /*
  * Compress "srcLen" bytes from "pStraw" to "fp".
  */
-NuError
-Nu_CompressBzip2(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc)
+NuError Nu_CompressBzip2(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc)
 {
     NuError err = kNuErrNone;
     bz_stream bzstream;
     int bzerr;
-    uchar* outbuf = nil;
+    uint8_t* outbuf = NULL;
 
-    Assert(pArchive != nil);
-    Assert(pStraw != nil);
-    Assert(fp != nil);
+    Assert(pArchive != NULL);
+    Assert(pStraw != NULL);
+    Assert(fp != NULL);
     Assert(srcLen > 0);
-    Assert(pDstLen != nil);
-    Assert(pCrc != nil);
+    Assert(pDstLen != NULL);
+    Assert(pCrc != NULL);
 
     err = Nu_AllocCompressionBufferIFN(pArchive);
     if (err != kNuErrNone)
@@ -76,7 +73,7 @@ Nu_CompressBzip2(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
     bzstream.bzalloc = Nu_bzalloc;
     bzstream.bzfree = Nu_bzfree;
     bzstream.opaque = pArchive;
-    bzstream.next_in = nil;
+    bzstream.next_in = NULL;
     bzstream.avail_in = 0;
     bzstream.next_out = outbuf;
     bzstream.avail_out = kNuGenCompBufSize;
@@ -98,7 +95,7 @@ Nu_CompressBzip2(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
      * Loop while we have data.
      */
     do {
-        ulong getSize;
+        uint32_t getSize;
         int action;
 
         /* should be able to read a full buffer every time */
@@ -139,8 +136,8 @@ Nu_CompressBzip2(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
             (bzerr == BZ_STREAM_END && bzstream.avail_out != kNuGenCompBufSize))
         {
             DBUG(("+++ writing %d bytes\n",
-                (uchar*)bzstream.next_out - outbuf));
-            err = Nu_FWrite(fp, outbuf, (uchar*)bzstream.next_out - outbuf);
+                (uint8_t*)bzstream.next_out - outbuf));
+            err = Nu_FWrite(fp, outbuf, (uint8_t*)bzstream.next_out - outbuf);
             if (err != kNuErrNone) {
                 Nu_ReportError(NU_BLOB, err, "fwrite failed in bzip2");
                 goto bz_bail;
@@ -158,8 +155,8 @@ bz_bail:
     BZ2_bzCompressEnd(&bzstream);       /* free up any allocated structures */
 
 bail:
-    if (outbuf != nil)
-        free(outbuf);
+    if (outbuf != NULL)
+        Nu_Free(NULL, outbuf);
     return err;
 }
 
@@ -173,20 +170,19 @@ bail:
 /*
  * Expand from "infp" to "pFunnel".
  */
-NuError
-Nu_ExpandBzip2(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc)
+NuError Nu_ExpandBzip2(NuArchive* pArchive, const NuRecord* pRecord,
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, uint16_t* pCrc)
 {
     NuError err = kNuErrNone;
     bz_stream bzstream;
     int bzerr;
-    ulong compRemaining;
-    uchar* outbuf;
+    uint32_t compRemaining;
+    uint8_t* outbuf;
 
-    Assert(pArchive != nil);
-    Assert(pThread != nil);
-    Assert(infp != nil);
-    Assert(pFunnel != nil);
+    Assert(pArchive != NULL);
+    Assert(pThread != NULL);
+    Assert(infp != NULL);
+    Assert(pFunnel != NULL);
 
     err = Nu_AllocCompressionBufferIFN(pArchive);
     if (err != kNuErrNone)
@@ -204,7 +200,7 @@ Nu_ExpandBzip2(NuArchive* pArchive, const NuRecord* pRecord,
     bzstream.bzalloc = Nu_bzalloc;
     bzstream.bzfree = Nu_bzfree;
     bzstream.opaque = pArchive;
-    bzstream.next_in = nil;
+    bzstream.next_in = NULL;
     bzstream.avail_in = 0;
     bzstream.next_out = outbuf;
     bzstream.avail_out = kNuGenCompBufSize;
@@ -226,7 +222,7 @@ Nu_ExpandBzip2(NuArchive* pArchive, const NuRecord* pRecord,
      * Loop while we have data.
      */
     do {
-        ulong getSize;
+        uint32_t getSize;
 
         /* read as much as we can */
         if (bzstream.avail_in == 0) {
@@ -258,17 +254,18 @@ Nu_ExpandBzip2(NuArchive* pArchive, const NuRecord* pRecord,
 
         /* write every time there's anything (buffer will usually be full) */
         if (bzstream.avail_out != kNuGenCompBufSize) {
-            DBUG(("+++ writing %d bytes\n",(uchar*)bzstream.next_out - outbuf));
+            DBUG(("+++ writing %d bytes\n",
+                (uint8_t*) bzstream.next_out - outbuf));
             err = Nu_FunnelWrite(pArchive, pFunnel, outbuf,
-                    (uchar*)bzstream.next_out - outbuf);
+                    (uint8_t*)bzstream.next_out - outbuf);
             if (err != kNuErrNone) {
                 Nu_ReportError(NU_BLOB, err, "write failed in bzip2");
                 goto bz_bail;
             }
 
-            if (pCrc != nil)
+            if (pCrc != NULL)
                 *pCrc = Nu_CalcCRC16(*pCrc, outbuf,
-                                    (uchar*) bzstream.next_out - outbuf);
+                                    (uint8_t*) bzstream.next_out - outbuf);
 
             bzstream.next_out = outbuf;
             bzstream.avail_out = kNuGenCompBufSize;
@@ -291,8 +288,8 @@ bz_bail:
     BZ2_bzDecompressEnd(&bzstream);     /* free up any allocated structures */
 
 bail:
-    if (outbuf != nil)
-        free(outbuf);
+    if (outbuf != NULL)
+        Nu_Free(NULL, outbuf);
     return err;
 }
 

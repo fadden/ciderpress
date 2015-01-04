@@ -1,3 +1,14 @@
+2015/01/03  fadden
+    - Mac OS X: replace Carbon FinderInfo calls with BSD xattr.
+    - Mac OS X: fix resource fork naming.
+    - Mac OS X: disable use of native resource forks.
+
+2015/01/02  fadden
+    - Distinguish Unicode and Mac OS Roman strings.
+
+2014/12/22  fadden
+    - Source code cleanup.
+
 2014/10/30  ***** v2.2.2 shipped *****
 
 2014/10/28  fadden

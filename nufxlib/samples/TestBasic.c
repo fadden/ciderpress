@@ -15,6 +15,8 @@
 #define kTestTempFile   "nlbt.tmp"
 
 #define kNumEntries     3   /* how many records are we going to add? */
+
+/* stick to ASCII characters for these -- not doing conversions just yet */
 #define kTestEntryBytes     "bytes"
 #define kTestEntryBytesUPPER "BYTES"
 #define kTestEntryEnglish   "English"
@@ -39,12 +41,11 @@ char gSuppressError = false;
 /*
  * Get a single character of input from the user.
  */
-static char
-TGetReplyChar(char defaultReply)
+static char TGetReplyChar(char defaultReply)
 {
     char tmpBuf[32];
 
-    if (fgets(tmpBuf, sizeof(tmpBuf), stdin) == nil)
+    if (fgets(tmpBuf, sizeof(tmpBuf), stdin) == NULL)
         return defaultReply;
     if (tmpBuf[0] == '\n' || tmpBuf[0] == '\r')
         return defaultReply;
@@ -52,14 +53,13 @@ TGetReplyChar(char defaultReply)
     return tmpBuf[0];
 }
 
-NuError
-AddSimpleRecord(NuArchive* pArchive, const char* filename,
+NuError AddSimpleRecord(NuArchive* pArchive, const char* filenameMOR,
     NuRecordIdx* pRecordIdx)
 {
     NuFileDetails fileDetails;
 
     memset(&fileDetails, 0, sizeof(fileDetails));
-    fileDetails.storageName = filename;
+    fileDetails.storageNameMOR = filenameMOR;
     fileDetails.fileSysInfo = kLocalFssep;
     fileDetails.access = kNuAccessUnlocked;
 
@@ -70,8 +70,7 @@ AddSimpleRecord(NuArchive* pArchive, const char* filename,
 /*
  * Display error messages... or not.
  */
-NuResult
-ErrorMessageHandler(NuArchive* pArchive, void* vErrorMessage)
+NuResult ErrorMessageHandler(NuArchive* pArchive, void* vErrorMessage)
 {
     const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
@@ -80,12 +79,12 @@ ErrorMessageHandler(NuArchive* pArchive, void* vErrorMessage)
 
     if (pErrorMessage->isDebug) {
         fprintf(stderr, "%sNufxLib says: [%s:%d %s] %s\n",
-            pArchive == nil ? "GLOBAL>" : "",
+            pArchive == NULL ? "GLOBAL>" : "",
             pErrorMessage->file, pErrorMessage->line, pErrorMessage->function,
             pErrorMessage->message);
     } else {
         fprintf(stderr, "%sNufxLib says: %s\n",
-            pArchive == nil ? "GLOBAL>" : "",
+            pArchive == NULL ? "GLOBAL>" : "",
             pErrorMessage->message);
     }
 
@@ -95,11 +94,35 @@ ErrorMessageHandler(NuArchive* pArchive, void* vErrorMessage)
 /*
  * This gets called when a buffer DataSource is no longer needed.
  */
-NuResult
-FreeCallback(NuArchive* pArchive, void* args)
+NuResult FreeCallback(NuArchive* pArchive, void* args)
 {
     free(args);
     return kNuOK;
+}
+
+/*
+ * If the test file currently exists, ask the user if it's okay to remove
+ * it.
+ *
+ * Returns 0 if the file was successfully removed, -1 if the file could not
+ * be removed (because the unlink failed, or the user refused).
+ */
+int RemoveTestFile(const char* title, const char* fileName)
+{
+    char answer;
+
+    if (access(fileName, F_OK) == 0) {
+        printf("%s '%s' exists, remove (y/n)? ", title, fileName);
+        fflush(stdout);
+        answer = TGetReplyChar('n');
+        if (tolower(answer) != 'y')
+            return -1;
+        if (unlink(fileName) < 0) {
+            perror("unlink");
+            return -1;
+        }
+    }
+    return 0;
 }
 
 
@@ -113,21 +136,20 @@ FreeCallback(NuArchive* pArchive, void* args)
  * Make sure the flags that control how we open the file work right,
  * and verify that we handle existing zero-byte archive files correctly.
  */
-int
-Test_OpenFlags(void)
+int Test_OpenFlags(void)
 {
     NuError err;
-    FILE* fp = nil;
-    NuArchive* pArchive = nil;
+    FILE* fp = NULL;
+    NuArchive* pArchive = NULL;
 
     printf("... open zero-byte existing\n");
     fp = fopen(kTestArchive, kNuFileOpenWriteTrunc);
-    if (fp == nil) {
+    if (fp == NULL) {
         perror("fopen kTestArchive");
         goto failed;
     }
     fclose(fp);
-    fp = nil;
+    fp = NULL;
 
     FAIL_OK;
     err = NuOpenRW(kTestArchive, kTestTempFile, kNuOpenCreat|kNuOpenExcl,
@@ -149,7 +171,7 @@ Test_OpenFlags(void)
         fprintf(stderr, "ERROR: close failed\n");
         goto failed;
     }
-    pArchive = nil;
+    pArchive = NULL;
 
     if (access(kTestArchive, F_OK) == 0) {
         fprintf(stderr, "ERROR: archive should have been removed but wasn't\n");
@@ -159,7 +181,7 @@ Test_OpenFlags(void)
     return 0;
 
 failed:
-    if (pArchive != nil) {
+    if (pArchive != NULL) {
         NuAbort(pArchive);
         NuClose(pArchive);
     }
@@ -170,14 +192,13 @@ failed:
 /*
  * Add some files to the archive.  These will be used by later tests.
  */
-int
-Test_AddStuff(NuArchive* pArchive)
+int Test_AddStuff(NuArchive* pArchive)
 {
     NuError err;
-    uchar* buf = nil;
-    NuDataSource* pDataSource = nil;
+    uint8_t* buf = NULL;
+    NuDataSource* pDataSource = NULL;
     NuRecordIdx recordIdx;
-    long status;
+    uint32_t status;
     int i;
     static const char* testMsg =
         "This is a nice test message that has linefeeds in it so we can\n"
@@ -185,20 +206,20 @@ Test_AddStuff(NuArchive* pArchive)
         "all.  It's certainly nice to know that everything works the way\n"
         "it's supposed to, which I suppose is why we have this nifty test\n"
         "program available.  It sure would be nice if everybody tested\n"
-        "there code, but where would Microsoft be without endless upgrades\n"
+        "their code, but where would Microsoft be without endless upgrades\n"
         "and service packs?  Bugs are what America was built on, and\n"
         "anybody who says otherwise is a pinko commie lowlife.  Verily.\n";
 
     printf("... add 'bytes' record\n");
     buf = malloc(131072);
-    if (buf == nil)
+    if (buf == NULL)
         goto failed;
     for (i = 0; i < 131072; i++)
         *(buf+i) = i & 0xff;
 
     FAIL_OK;
     err = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed,
-            0, nil, 0, 131072, FreeCallback, &pDataSource);
+            0, NULL, 0, 131072, FreeCallback, &pDataSource);
     FAIL_BAD;
     if (err == kNuErrNone) {
         fprintf(stderr, "ERROR: that should've failed!\n");
@@ -215,7 +236,7 @@ Test_AddStuff(NuArchive* pArchive)
             "ERROR: 'bytes' data source create failed (err=%d)\n", err);
         goto failed;
     }
-    buf = nil;  /* now owned by library */
+    buf = NULL;  /* now owned by library */
 
     err = AddSimpleRecord(pArchive, kTestEntryBytes, &recordIdx);
     if (err != kNuErrNone) {
@@ -224,12 +245,12 @@ Test_AddStuff(NuArchive* pArchive)
     }
 
     err = NuAddThread(pArchive, recordIdx, kNuThreadIDDataFork, pDataSource,
-            nil);
+            NULL);
     if (err != kNuErrNone) {
         fprintf(stderr, "ERROR: 'bytes' thread add failed (err=%d)\n", err);
         goto failed;
     }
-    pDataSource = nil;  /* now owned by library */
+    pDataSource = NULL;  /* now owned by library */
 
 
     /*
@@ -237,7 +258,7 @@ Test_AddStuff(NuArchive* pArchive)
      */
     printf("... add 'English' record\n");
     err = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed,
-            0, (const uchar*)testMsg, 0, strlen(testMsg), nil, &pDataSource);
+            0, (const uint8_t*)testMsg, 0, strlen(testMsg), NULL, &pDataSource);
     if (err != kNuErrNone) {
         fprintf(stderr,
             "ERROR: 'English' source create failed (err=%d)\n", err);
@@ -246,7 +267,7 @@ Test_AddStuff(NuArchive* pArchive)
 
     FAIL_OK;
     err = NuAddThread(pArchive, recordIdx, kNuThreadIDDataFork, pDataSource,
-            nil);
+            NULL);
     FAIL_BAD;
     if (err == kNuErrNone) {
         fprintf(stderr, "ERROR: 'English' add should've conflicted!\n");
@@ -268,12 +289,12 @@ Test_AddStuff(NuArchive* pArchive)
     }
 
     err = NuAddThread(pArchive, recordIdx, kNuThreadIDDataFork, pDataSource,
-            nil);
+            NULL);
     if (err != kNuErrNone) {
         fprintf(stderr, "ERROR: 'English' thread add failed (err=%d)\n", err);
         goto failed;
     }
-    pDataSource = nil;  /* now owned by library */
+    pDataSource = NULL;  /* now owned by library */
 
 
     /*
@@ -281,7 +302,7 @@ Test_AddStuff(NuArchive* pArchive)
      */
     printf("... add 'long' record\n");
     err = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed,
-            0, nil, 0, 0, nil, &pDataSource);
+            0, NULL, 0, 0, NULL, &pDataSource);
     if (err != kNuErrNone) {
         fprintf(stderr,
             "ERROR: 'English' source create failed (err=%d)\n", err);
@@ -295,12 +316,12 @@ Test_AddStuff(NuArchive* pArchive)
     }
 
     err = NuAddThread(pArchive, recordIdx, kNuThreadIDRsrcFork, pDataSource,
-            nil);
+            NULL);
     if (err != kNuErrNone) {
         fprintf(stderr, "ERROR: 'long' thread add failed (err=%d)\n", err);
         goto failed;
     }
-    pDataSource = nil;  /* now owned by library */
+    pDataSource = NULL;  /* now owned by library */
 
 
     /*
@@ -308,7 +329,7 @@ Test_AddStuff(NuArchive* pArchive)
      */
     err = NuFlush(pArchive, &status);
     if (err != kNuErrNone) {
-        fprintf(stderr,"ERROR: couldn't flush after add (err=%d, status=%ld)\n",
+        fprintf(stderr, "ERROR: couldn't flush after add (err=%d, status=%u)\n",
             err, status);
         goto failed;
     }
@@ -318,16 +339,16 @@ Test_AddStuff(NuArchive* pArchive)
      */
     err = NuFlush(pArchive, &status);
     if (err != kNuErrNone) {
-        fprintf(stderr,"ERROR: second add flush failed (err=%d, status=%ld)\n",
+        fprintf(stderr, "ERROR: second add flush failed (err=%d, status=%u)\n",
             err, status);
         goto failed;
     }
 
     return 0;
 failed:
-    if (pDataSource != nil)
+    if (pDataSource != NULL)
         NuFreeDataSource(pDataSource);
-    if (buf != nil)
+    if (buf != NULL)
         free(buf);
     return -1;
 }
@@ -336,19 +357,18 @@ failed:
 /*
  * Make sure that what we're seeing makes sense.
  */
-NuResult
-TestContentsCallback(NuArchive* pArchive, void* vpRecord)
+NuResult TestContentsCallback(NuArchive* pArchive, void* vpRecord)
 {
     const NuRecord* pRecord = (NuRecord*) vpRecord;
 
-    if (strcmp(pRecord->filename, kTestEntryBytes) == 0 ||
-        strcmp(pRecord->filename, kTestEntryEnglish) == 0 ||
-        strcmp(pRecord->filename, kTestEntryLong) == 0)
+    if (strcmp(pRecord->filenameMOR, kTestEntryBytes) == 0 ||
+        strcmp(pRecord->filenameMOR, kTestEntryEnglish) == 0 ||
+        strcmp(pRecord->filenameMOR, kTestEntryLong) == 0)
     {
         return kNuOK;
     }
 
-    fprintf(stderr, "ERROR: found mystery entry '%s'\n", pRecord->filename);
+    fprintf(stderr, "ERROR: found mystery entry '%s'\n", pRecord->filenameMOR);
     return kNuAbort;
 }
 
@@ -356,8 +376,7 @@ TestContentsCallback(NuArchive* pArchive, void* vpRecord)
 /*
  * Verify that the contents look about right.
  */
-int
-Test_Contents(NuArchive* pArchive)
+int Test_Contents(NuArchive* pArchive)
 {
     NuError err;
     long posn;
@@ -386,21 +405,21 @@ Test_Contents(NuArchive* pArchive)
 
         err = NuGetRecord(pArchive, recordIdx, &pRecord);
         if (err != kNuErrNone) {
-            fprintf(stderr, "ERROR: couldn't get record index %ld (err=%d)\n",
+            fprintf(stderr, "ERROR: couldn't get record index %u (err=%d)\n",
                 recordIdx, err);
             goto failed;
         }
-        assert(pRecord != nil);
+        assert(pRecord != NULL);
 
         switch (posn) {
         case 0:
-            cc = strcmp(pRecord->filename, kTestEntryBytes);
+            cc = strcmp(pRecord->filenameMOR, kTestEntryBytes);
             break;
         case 1:
-            cc = strcmp(pRecord->filename, kTestEntryEnglish);
+            cc = strcmp(pRecord->filenameMOR, kTestEntryEnglish);
             break;
         case 2:
-            cc = strcmp(pRecord->filename, kTestEntryLong);
+            cc = strcmp(pRecord->filenameMOR, kTestEntryLong);
             if (!cc)
                 cc = !(pRecord->recStorageType == kNuStorageExtended);
             break;
@@ -411,8 +430,8 @@ Test_Contents(NuArchive* pArchive)
         }
 
         if (cc) {
-            fprintf(stderr, "ERROR: got '%s' for %ld (%ld), not expected\n",
-                pRecord->filename, posn, recordIdx);
+            fprintf(stderr, "ERROR: got '%s' for %ld (%u), not expected\n",
+                pRecord->filenameMOR, posn, recordIdx);
             goto failed;
         }
     }
@@ -437,17 +456,16 @@ failed:
 /*
  * Selection callback filter for "test".  This gets called once per record.
  */
-NuResult
-VerifySelectionCallback(NuArchive* pArchive, void* vpProposal)
+NuResult VerifySelectionCallback(NuArchive* pArchive, void* vpProposal)
 {
     NuError err;
     const NuSelectionProposal* pProposal = vpProposal;
     long count;
 
-    if (pProposal->pRecord == nil || pProposal->pThread == nil ||
-        pProposal->pRecord->filename == nil)
+    if (pProposal->pRecord == NULL || pProposal->pThread == NULL ||
+        pProposal->pRecord->filenameMOR == NULL)
     {
-        fprintf(stderr, "ERROR: unexpected nil in proposal\n");
+        fprintf(stderr, "ERROR: unexpected NULL in proposal\n");
         goto failed;
     }
 
@@ -473,8 +491,7 @@ failed:
 /*
  * Verify the archive contents.
  */
-int
-Test_Verify(NuArchive* pArchive)
+int Test_Verify(NuArchive* pArchive)
 {
     NuError err;
     long count;
@@ -520,15 +537,14 @@ failed:
 /*
  * Extract stuff.
  */
-int
-Test_Extract(NuArchive* pArchive)
+int Test_Extract(NuArchive* pArchive)
 {
     NuError err;
     NuRecordIdx recordIdx;
     const NuRecord* pRecord;
     const NuThread* pThread;
-    NuDataSink* pDataSink = nil;
-    uchar* buf = nil;
+    NuDataSink* pDataSink = NULL;
+    uint8_t* buf = NULL;
 
     printf("... extracting files\n");
 
@@ -549,24 +565,24 @@ Test_Extract(NuArchive* pArchive)
     }
     err = NuGetRecord(pArchive, recordIdx, &pRecord);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: couldn't get record index %ld (err=%d)\n",
+        fprintf(stderr, "ERROR: couldn't get record index %u (err=%d)\n",
             recordIdx, err);
         goto failed;
     }
-    assert(pRecord != nil);
+    assert(pRecord != NULL);
 
     /* we're not using ShrinkIt compat mode, so there should not be a comment */
     pThread = NuGetThread(pRecord, 1);
-    assert(pThread != nil);
+    assert(pThread != NULL);
     if (NuGetThreadID(pThread) != kNuThreadIDDataFork) {
-        fprintf(stderr, "ERROR: 'bytes' had unexpected threadID 0x%08lx\n",
+        fprintf(stderr, "ERROR: 'bytes' had unexpected threadID 0x%08x\n",
             NuGetThreadID(pThread));
         goto failed;
     }
 
     buf = malloc(pThread->actualThreadEOF);
-    if (buf == nil) {
-        fprintf(stderr, "ERROR: malloc(%ld) failed\n",pThread->actualThreadEOF);
+    if (buf == NULL) {
+        fprintf(stderr, "ERROR: malloc(%u) failed\n",pThread->actualThreadEOF);
         goto failed;
     }
 
@@ -587,7 +603,7 @@ Test_Extract(NuArchive* pArchive)
         goto failed;
     }
     NuFreeDataSink(pDataSink);
-    pDataSink = nil;
+    pDataSink = NULL;
 
     /*
      * Try to extract with "on" conversion, which should fail because the
@@ -608,7 +624,7 @@ Test_Extract(NuArchive* pArchive)
         goto failed;
     }
     NuFreeDataSink(pDataSink);
-    pDataSink = nil;
+    pDataSink = NULL;
 
     /*
      * Try to extract with "auto" conversion, which should conclude that
@@ -628,12 +644,12 @@ Test_Extract(NuArchive* pArchive)
         goto failed;
     }
     NuFreeDataSink(pDataSink);
-    pDataSink = nil;
+    pDataSink = NULL;
 
 
 
     free(buf);
-    buf = nil;
+    buf = NULL;
 
 
 
@@ -648,24 +664,24 @@ Test_Extract(NuArchive* pArchive)
     }
     err = NuGetRecord(pArchive, recordIdx, &pRecord);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: couldn't get record index %ld (err=%d)\n",
+        fprintf(stderr, "ERROR: couldn't get record index %u (err=%d)\n",
             recordIdx, err);
         goto failed;
     }
-    assert(pRecord != nil);
+    assert(pRecord != NULL);
 
     /* we're not using ShrinkIt compat mode, so there should not be a comment */
     pThread = NuGetThread(pRecord, 1);
-    assert(pThread != nil);
+    assert(pThread != NULL);
     if (NuGetThreadID(pThread) != kNuThreadIDDataFork) {
-        fprintf(stderr, "ERROR: 'English' had unexpected threadID 0x%08lx\n",
+        fprintf(stderr, "ERROR: 'English' had unexpected threadID 0x%08x\n",
             NuGetThreadID(pThread));
         goto failed;
     }
 
     buf = malloc(pThread->actualThreadEOF);
-    if (buf == nil) {
-        fprintf(stderr, "ERROR: malloc(%ld) failed\n",pThread->actualThreadEOF);
+    if (buf == NULL) {
+        fprintf(stderr, "ERROR: malloc(%u) failed\n", pThread->actualThreadEOF);
         goto failed;
     }
 
@@ -686,7 +702,7 @@ Test_Extract(NuArchive* pArchive)
         goto failed;
     }
     NuFreeDataSink(pDataSink);
-    pDataSink = nil;
+    pDataSink = NULL;
 
     /*
      * Try to extract with "auto" conversion, which should fail because the
@@ -707,12 +723,12 @@ Test_Extract(NuArchive* pArchive)
         goto failed;
     }
     NuFreeDataSink(pDataSink);
-    pDataSink = nil;
+    pDataSink = NULL;
 
 
 
     /*Free(buf);*/
-    /*buf = nil;*/
+    /*buf = NULL;*/
 
 
 
@@ -727,17 +743,17 @@ Test_Extract(NuArchive* pArchive)
     }
     err = NuGetRecord(pArchive, recordIdx, &pRecord);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: couldn't get record index %ld (err=%d)\n",
+        fprintf(stderr, "ERROR: couldn't get record index %u (err=%d)\n",
             recordIdx, err);
         goto failed;
     }
-    assert(pRecord != nil);
+    assert(pRecord != NULL);
 
     /* we're not using ShrinkIt compat mode, so there should not be a comment */
     pThread = NuGetThread(pRecord, 1);
-    assert(pThread != nil);
+    assert(pThread != NULL);
     if (NuGetThreadID(pThread) != kNuThreadIDRsrcFork) {
-        fprintf(stderr, "ERROR: 'Long' had unexpected threadID 0x%08lx\n",
+        fprintf(stderr, "ERROR: 'Long' had unexpected threadID 0x%08x\n",
             NuGetThreadID(pThread));
         goto failed;
     }
@@ -759,20 +775,20 @@ Test_Extract(NuArchive* pArchive)
         goto failed;
     }
     NuFreeDataSink(pDataSink);
-    pDataSink = nil;
+    pDataSink = NULL;
 
 
 
     free(buf);
-    buf = nil;
+    buf = NULL;
 
 
 
     return 0;
 failed:
-    if (buf != nil)
+    if (buf != NULL)
         free(buf);
-    if (pDataSink != nil)
+    if (pDataSink != NULL)
         (void) NuFreeDataSink(pDataSink);
     return -1;
 }
@@ -780,13 +796,12 @@ failed:
 /*
  * Delete the first and last records.  Does *not* flush the archive.
  */
-int
-Test_Delete(NuArchive* pArchive)
+int Test_Delete(NuArchive* pArchive)
 {
     NuError err;
     NuRecordIdx recordIdx;
     const NuRecord* pRecord;
-    const NuThread* pThread = nil;
+    const NuThread* pThread = NULL;
     long count;
     int idx;
 
@@ -802,33 +817,33 @@ Test_Delete(NuArchive* pArchive)
     }
     err = NuGetRecord(pArchive, recordIdx, &pRecord);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: couldn't get record index %ld (err=%d)\n",
+        fprintf(stderr, "ERROR: couldn't get record index %u (err=%d)\n",
             recordIdx, err);
         goto failed;
     }
-    assert(pRecord != nil);
+    assert(pRecord != NULL);
     assert(pRecord->recTotalThreads > 0);
 
     for (idx = 0; idx < (int)pRecord->recTotalThreads; idx++) {
         pThread = NuGetThread(pRecord, idx);
-        assert(pThread != nil);
+        assert(pThread != NULL);
 
         err = NuDeleteThread(pArchive, pThread->threadIdx);
         if (err != kNuErrNone) {
             fprintf(stderr,
-                "ERROR: couldn't delete thread #%d (%ld) (err=%d)\n",
+                "ERROR: couldn't delete thread #%d (%u) (err=%d)\n",
                 idx, recordIdx, err);
             goto failed;
         }
     }
 
     /* try to re-delete the same thread */
-    assert(pThread != nil);
+    assert(pThread != NULL);
     FAIL_OK;
     err = NuDeleteThread(pArchive, pThread->threadIdx);
     FAIL_BAD;
     if (err == kNuErrNone) {
-        fprintf(stderr, "ERROR: allowed to re-delete thread (%ld) (err=%d)\n",
+        fprintf(stderr, "ERROR: allowed to re-delete thread (%u) (err=%d)\n",
             recordIdx, err);
         goto failed;
     }
@@ -839,7 +854,7 @@ Test_Delete(NuArchive* pArchive)
     FAIL_BAD;
     if (err == kNuErrNone) {
         fprintf(stderr,
-            "ERROR: able to delete modified record (%ld) (err=%d)\n",
+            "ERROR: able to delete modified record (%u) (err=%d)\n",
             recordIdx, err);
         goto failed;
     }
@@ -847,7 +862,8 @@ Test_Delete(NuArchive* pArchive)
     /*
      * Make sure the attr hasn't been updated yet.
      */
-    err = NuGetAttr(pArchive, kNuAttrNumRecords, (unsigned long*) &count);
+    count = 0;
+    err = NuGetAttr(pArchive, kNuAttrNumRecords, (uint32_t*) &count);
     if (count != kNumEntries) {
         fprintf(stderr, "ERROR: kNuAttrNumRecords %ld vs %d\n",
             count, kNumEntries);
@@ -864,19 +880,19 @@ Test_Delete(NuArchive* pArchive)
     }
     err = NuGetRecord(pArchive, recordIdx, &pRecord);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: couldn't get record index %ld (err=%d)\n",
+        fprintf(stderr, "ERROR: couldn't get record index %u (err=%d)\n",
             recordIdx, err);
         goto failed;
     }
-    assert(pRecord != nil);
+    assert(pRecord != NULL);
 
     /* grab the first thread before we whack the record */
     pThread = NuGetThread(pRecord, 0);
-    assert(pThread != nil);
+    assert(pThread != NULL);
 
     err = NuDeleteRecord(pArchive, recordIdx);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: unable to delete record #%d (%ld) (err=%d)\n",
+        fprintf(stderr, "ERROR: unable to delete record #%d (%u) (err=%d)\n",
             kNumEntries-1, recordIdx, err);
         goto failed;
     }
@@ -887,7 +903,7 @@ Test_Delete(NuArchive* pArchive)
     FAIL_BAD;
     if (err == kNuErrNone) {
         fprintf(stderr,
-            "ERROR: allowed to delete from deleted (%ld) (err=%d)\n",
+            "ERROR: allowed to delete from deleted (%u) (err=%d)\n",
             pThread->threadIdx, err);
         goto failed;
     }
@@ -901,8 +917,7 @@ failed:
 /*
  * Verify that the count in the master header has been updated.
  */
-int
-Test_MasterCount(NuArchive* pArchive, long expected)
+int Test_MasterCount(NuArchive* pArchive, long expected)
 {
     NuError err;
     const NuMasterHeader* pMasterHeader;
@@ -915,8 +930,8 @@ Test_MasterCount(NuArchive* pArchive, long expected)
         goto failed;
     }
 
-    if (pMasterHeader->mhTotalRecords != (ulong)expected) {
-        fprintf(stderr, "ERROR: unexpected MH count (%ld vs %ld)\n",
+    if (pMasterHeader->mhTotalRecords != (uint32_t)expected) {
+        fprintf(stderr, "ERROR: unexpected MH count (%u vs %ld)\n",
             pMasterHeader->mhTotalRecords, expected);
         goto failed;
     }
@@ -932,41 +947,21 @@ failed:
  *
  * Returns 0 on success, -1 on error.
  */
-int
-DoTests(void)
+int DoTests(void)
 {
     NuError err;
-    NuArchive* pArchive = nil;
-    long status;
+    NuArchive* pArchive = NULL;
+    uint32_t status;
     int cc, result = 0;
-    char answer;
 
     /*
      * Make sure we're starting with a clean slate.
      */
-    if (access(kTestArchive, F_OK) == 0) {
-        printf("Test archive '%s' exists, remove (y/n)? ", kTestArchive);
-        fflush(stdout);
-        answer = TGetReplyChar('n');
-        if (tolower(answer) != 'y')
-            goto failed;
-        cc = unlink(kTestArchive);
-        if (cc < 0) {
-            perror("unlink kTestArchive");
-            goto failed;
-        }
+    if (RemoveTestFile("Test archive", kTestArchive) < 0) {
+        goto failed;
     }
-    if (access(kTestTempFile, F_OK) == 0) {
-        printf("Test temp file '%s' exists, remove (y/n)? ", kTestTempFile);
-        fflush(stdout);
-        answer = TGetReplyChar('n');
-        if (tolower(answer) != 'y')
-            goto failed;
-        cc = unlink(kTestTempFile);
-        if (cc < 0) {
-            perror("unlink kTestTempFile");
-            goto failed;
-        }
+    if (RemoveTestFile("Test temp file", kTestTempFile) < 0) {
+        goto failed;
     }
 
     /*
@@ -1013,7 +1008,7 @@ DoTests(void)
         fprintf(stderr, "ERROR: mid NuClose failed (err=%d)\n", err);
         goto failed;
     }
-    pArchive = nil;
+    pArchive = NULL;
 
     err = NuOpenRO(kTestArchive, &pArchive);
     if (err != kNuErrNone) {
@@ -1028,14 +1023,14 @@ DoTests(void)
     }
 
     /*
-     * Make sure the contents are still what we expect.
+     * Make sure the TOC (i.e. list of files) is still what we expect.
      */
     printf("... checking contents\n");
     if (Test_Contents(pArchive) != 0)
         goto failed;
 
     /*
-     * Verify the archive contents.
+     * Verify the archive data.
      */
     if (Test_Verify(pArchive) != 0)
         goto failed;
@@ -1055,7 +1050,7 @@ DoTests(void)
         fprintf(stderr, "ERROR: late NuClose failed (err=%d)\n", err);
         goto failed;
     }
-    pArchive = nil;
+    pArchive = NULL;
 
     err = NuOpenRW(kTestArchive, kTestTempFile, 0, &pArchive);
     if (err != kNuErrNone) {
@@ -1107,7 +1102,7 @@ DoTests(void)
      */
     err = NuFlush(pArchive, &status);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: flush failed (err=%d, status=%ld)\n",
+        fprintf(stderr, "ERROR: flush failed (err=%d, status=%d)\n",
             err, status);
         goto failed;
     }
@@ -1122,7 +1117,7 @@ DoTests(void)
      * That's all, folks...
      */
     NuClose(pArchive);
-    pArchive = nil;
+    pArchive = NULL;
 
     printf("... removing '%s'\n", kTestArchive);
     cc = unlink(kTestArchive);
@@ -1133,7 +1128,7 @@ DoTests(void)
 
 
 leave:
-    if (pArchive != nil) {
+    if (pArchive != NULL) {
         NuAbort(pArchive);
         NuClose(pArchive);
     }
@@ -1148,16 +1143,15 @@ failed:
 /*
  * Crank away.
  */
-int
-main(void)
+int main(void)
 {
-    long major, minor, bug;
+    int32_t major, minor, bug;
     const char* pBuildDate;
     const char* pBuildFlags;
     int cc;
 
     (void) NuGetVersion(&major, &minor, &bug, &pBuildDate, &pBuildFlags);
-    printf("Using NuFX library v%ld.%ld.%ld, built on or after\n"
+    printf("Using NuFX library v%d.%d.%d, built on or after\n"
            "  %s with [%s]\n\n",
         major, minor, bug, pBuildDate, pBuildFlags);
 

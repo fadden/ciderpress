@@ -16,6 +16,8 @@ EXPORTS
     NuAddThread
     NuClose
     NuContents
+    NuConvertMORToUNI
+    NuConvertUNIToMOR
     NuCreateDataSinkForBuffer
     NuCreateDataSinkForFP
     NuCreateDataSinkForFile

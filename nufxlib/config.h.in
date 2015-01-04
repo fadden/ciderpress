@@ -27,18 +27,6 @@
 /* Define if your <sys/time.h> declares struct tm.  */
 #undef TM_IN_SYS_TIME
 
-/* Define to `unsigned char' if <sys/types.h> doesn't define.  */
-#undef uchar
-
-/* Define to `unsigned short' if <sys/types.h> doesn't define.  */
-#undef ushort
-
-/* Define to `unsigned int' if <sys/types.h> doesn't define.  */
-#undef uint
-
-/* Define to `unsigned long' if <sys/types.h> doesn't define.  */
-#undef ulong
-
 /* Define to `int' if <sys/types.h> doesn't define.  */
 #undef mode_t
 

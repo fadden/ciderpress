@@ -6,8 +6,8 @@
  * Misc stuff (shared between nufxlib and nulib2).  This is a collection
  * of miscellaneous types and macros that I find generally useful.
  */
-#ifndef __MiscStuff__
-#define __MiscStuff__
+#ifndef NUFXLIB_MISCSTUFF_H
+#define NUFXLIB_MISCSTUFF_H
 
 #define VALGRIND        /* assume we're using it */
 
@@ -42,11 +42,7 @@ int Nu_strncasecmp(const char *s1, const char *s2, size_t n);
  * Misc types.
  */
 
-#include <sys/types.h>
-
-#define nil     NULL        /* I can't seem to stop typing 'nil' now */
-
-typedef uchar   Boolean;
+typedef unsigned char Boolean;
 #define false   (0)
 #define true    (!false)
 
@@ -63,7 +59,7 @@ typedef uchar   Boolean;
             (x) <= '9' ? (x) - '0' : toupper(x) +10 - 'A' )
 
 /* convert number from 0-15 to hex digit */
-#define HexConv(x)  ( ((uint)(x)) <= 15 ? \
+#define HexConv(x)  ( ((unsigned int)(x)) <= 15 ? \
             ( (x) <= 9 ? (x) + '0' : (x) -10 + 'A') : -1 )
 
 
@@ -106,4 +102,4 @@ typedef uchar   Boolean;
 
 #define kInvalidPtr     ((void*)0xa3a3a3a3)
 
-#endif /*__MiscStuff__*/
+#endif /*NUFXLIB_MISCSTUFF_H*/

@@ -23,19 +23,18 @@ static const char gNuBuildFlags[] = "-";
 /*
  * Return the version number, date built, and build flags.
  */
-NuError
-Nu_GetVersion(long* pMajorVersion, long* pMinorVersion, long* pBugVersion,
-    const char** ppBuildDate, const char** ppBuildFlags)
+NuError Nu_GetVersion(int32_t* pMajorVersion, int32_t* pMinorVersion,
+    int32_t* pBugVersion, const char** ppBuildDate, const char** ppBuildFlags)
 {
-    if (pMajorVersion != nil)
+    if (pMajorVersion != NULL)
         *pMajorVersion = kNuVersionMajor;
-    if (pMinorVersion != nil)
+    if (pMinorVersion != NULL)
         *pMinorVersion = kNuVersionMinor;
-    if (pBugVersion != nil)
+    if (pBugVersion != NULL)
         *pBugVersion = kNuVersionBug;
-    if (ppBuildDate != nil)
+    if (ppBuildDate != NULL)
         *ppBuildDate = gNuBuildDate;
-    if (ppBuildFlags != nil)
+    if (ppBuildFlags != NULL)
         *ppBuildFlags = gNuBuildFlags;
     return kNuErrNone;
 }

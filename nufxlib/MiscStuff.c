@@ -16,8 +16,7 @@
  * Return a pointer to the appropriate string in the system table, or NULL
  * if the value is out of bounds.
  */
-const char*
-Nu_strerror(int errnum)
+const char* Nu_strerror(int errnum)
 {
     extern int sys_nerr;
     extern char *sys_errlist[];
@@ -38,8 +37,7 @@ Nu_strerror(int errnum)
  * from BSD, is available in the PGP 2.6.2 distribution, but this should
  * suffice for those few systems that don't have memmove.
  */
-void*
-Nu_memmove(void* dst, const void* src, size_t n)
+void* Nu_memmove(void* dst, const void* src, size_t n)
 {
     void* retval = dst;
     char* srcp = (char*)src;
@@ -80,8 +78,7 @@ Nu_memmove(void* dst, const void* src, size_t n)
  * For our purposes here, strtol does all we need it to.  Someday
  * we should replace this with a "real" version.
  */
-unsigned long
-Nu_strtoul(const char *nptr, char **endptr, int base)
+unsigned long Nu_strtoul(const char *nptr, char **endptr, int base)
 {
     return strtol(nptr, endptr, base);
 }
@@ -91,8 +88,7 @@ Nu_strtoul(const char *nptr, char **endptr, int base)
 /*
  * Compare two strings, case-insensitive.
  */
-int
-Nu_strcasecmp(const char *str1, const char *str2)
+int Nu_strcasecmp(const char *str1, const char *str2)
 {
     while (*str1 && *str2 && toupper(*str1) == toupper(*str2))
         str1++, str2++;
@@ -105,8 +101,7 @@ Nu_strcasecmp(const char *str1, const char *str2)
 /*
  * Compare two strings, case-insensitive, stopping after "n" chars.
  */
-int
-Nu_strncasecmp(const char *str1, const char *str2, size_t n)
+int Nu_strncasecmp(const char *str1, const char *str2, size_t n)
 {
     while (n && *str1 && *str2 && toupper(*str1) == toupper(*str2))
         str1++, str2++, n--;

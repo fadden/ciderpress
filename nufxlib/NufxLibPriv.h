@@ -6,8 +6,8 @@
  *
  * Global internal declarations and definitions.
  */
-#ifndef __NufxLibPriv__
-#define __NufxLibPriv__
+#ifndef NUFXLIB_NUFXLIBPRIV_H
+#define NUFXLIB_NUFXLIBPRIV_H
 
 /* include files that everybody needs */
 #include "SysDefs.h"
@@ -86,7 +86,7 @@ typedef enum NuOpenMode {
  */
 typedef struct NuRecordSet {
     Boolean         loaded;
-    ulong           numRecords;
+    uint32_t        numRecords;
     NuRecord*       nuRecordHead;
     NuRecord*       nuRecordTail;
 } NuRecordSet;
@@ -95,12 +95,12 @@ typedef struct NuRecordSet {
  * Archive state.
  */
 struct NuArchive {
-    ulong           structMagic;
+    uint32_t        structMagic;
     Boolean         busy;
 
     NuOpenMode      openMode;
     Boolean         newlyCreated;
-    char*           archivePathname;        /* pathname or "(stream)" */
+    UNICHAR*        archivePathnameUNI;     /* pathname or "(stream)" */
     FILE*           archiveFp;
     NuArchiveType   archiveType;
 
@@ -108,7 +108,7 @@ struct NuArchive {
     long            junkOffset;             /* skip past leading junk */
     long            headerOffset;           /* adjustment for BXY/SEA/BSE */
 
-    char*           tmpPathname;            /* temp file, for writes */
+    UNICHAR*        tmpPathnameUNI;         /* temp file, for writes */
     FILE*           tmpFp;
 
     /* used during initial processing; helps avoid ftell() calls */
@@ -118,9 +118,9 @@ struct NuArchive {
     Boolean         testMode;
 
     /* clumsy way of remembering name used for other fork in forked file */
-    const char*     lastFileCreated;
+    const UNICHAR*  lastFileCreatedUNI;
     /* clumsy way to avoid trying to create the same subdir several times */
-    const char*     lastDirCreated;
+    const UNICHAR*  lastDirCreatedUNI;
 
     /* master header from the archive */
     NuMasterHeader  masterHeader;           /* original */
@@ -135,7 +135,7 @@ struct NuArchive {
     NuRecordSet     newRecordSet;           /* newly-added records */
 
     /* state for compression functions */
-    uchar*          compBuf;                /* large general-purpose buffer */
+    uint8_t*        compBuf;                /* large general-purpose buffer */
     void*           lzwCompressState;       /* state for LZW/1 and LZW/2 */
     void*           lzwExpandState;         /* state for LZW/1 and LZW/2 */
 
@@ -169,7 +169,7 @@ struct NuArchive {
 
 #define kNuArchiveStructMagic   0xc0edbabe
 
-#define kNuDefaultRecordName    "UNKNOWN"
+#define kNuDefaultRecordName    "UNKNOWN"   /* use ASCII charset */
 
 
 /*
@@ -256,7 +256,7 @@ struct NuThreadMod {
  */
 typedef struct NuFunnel {
     /* data storage */
-    uchar*          buffer;         /* kNuFunnelBufSize worth of storage */
+    uint8_t*        buffer;         /* kNuFunnelBufSize worth of storage */
     long            bufCount;       /* #of bytes in buffer */
 
     /* text conversion; if "auto", on first flush we convert to "on" or "off" */
@@ -270,10 +270,10 @@ typedef struct NuFunnel {
     Boolean         isFirstWrite;   /* cleared on first write */
 
 #if 0
-    ulong           inCount;        /* total #of bytes in the top */
-    ulong           outCount;       /* total #of bytes out the bottom */
+    uint32_t        inCount;        /* total #of bytes in the top */
+    uint32_t        outCount;       /* total #of bytes out the bottom */
 
-    ulong           outMax;         /* flag an err when outCount exceeds this */
+    uint32_t        outMax;         /* flag an err when outCount exceeds this */
     Boolean         outMaxExceeded; /* in fact, it's this flag */
 #endif
 
@@ -302,11 +302,11 @@ typedef struct NuStraw {
     NuDataSource*   pDataSource;
 
     /* progress update fields */
-    ulong           lastProgress;
-    ulong           lastDisplayed;
+    uint32_t        lastProgress;
+    uint32_t        lastDisplayed;
 } NuStraw;
 
-/*NuError Nu_CopyStreamToStream(FILE* outfp, FILE* infp, ulong count);*/
+/*NuError Nu_CopyStreamToStream(FILE* outfp, FILE* infp, uint32_t count);*/
 
 
 /*
@@ -329,10 +329,10 @@ typedef enum NuDataSourceType {
 typedef struct NuDataSourceCommon {
     NuDataSourceType    sourceType;
     NuThreadFormat      threadFormat;       /* is it already compressed? */
-    ushort              rawCrc;             /* crc for already-compressed data*/
+    uint16_t            rawCrc;             /* crc for already-compressed data*/
     /*Boolean             doClose;            \* close on completion? */
-    ulong               dataLen;            /* length of data (var for buf) */
-    ulong               otherLen;           /* uncomp len or preset buf size */
+    uint32_t            dataLen;            /* length of data (var for buf) */
+    uint32_t            otherLen;           /* uncomp len or preset buf size */
     int                 refCount;           /* so we can copy structs */
 } NuDataSourceCommon;
 
@@ -343,7 +343,7 @@ union NuDataSource {
 
     struct {
         NuDataSourceCommon  common;
-        char*               pathname;
+        UNICHAR*            pathnameUNI;
         Boolean             fromRsrcFork;
 
         /* temp storage; only valid when processing in library */
@@ -360,7 +360,7 @@ union NuDataSource {
 
     struct {
         NuDataSourceCommon  common;
-        const uchar*        buffer;         /* non-const if doClose=true */
+        const uint8_t*      buffer;         /* non-const if doClose=true */
         long                offset;         /* starting offset */
 
         long                curOffset;      /* current offset */
@@ -387,7 +387,7 @@ typedef struct NuDataSinkCommon {
     NuDataSinkType      sinkType;
     Boolean             doExpand;       /* expand file? */
     NuValue             convertEOL;     /* convert EOL?  (req "expand") */
-    ulong               outCount;
+    uint32_t            outCount;
 } NuDataSinkCommon;
 
 union NuDataSink {
@@ -397,10 +397,10 @@ union NuDataSink {
 
     struct {
         NuDataSinkCommon    common;
-        char*               pathname;       /* file to open */
-        char                fssep;
+        UNICHAR*            pathnameUNI;   /* file to open */
+        UNICHAR             fssep;
 
-        /* temp storage; must be nil except when processing in library */
+        /* temp storage; must be NULL except when processing in library */
         FILE*               fp;
     } toFile;
 
@@ -411,8 +411,8 @@ union NuDataSink {
 
     struct {
         NuDataSinkCommon    common;
-        uchar*              buffer;
-        ulong               bufLen;     /* max amount of data "buffer" holds */
+        uint8_t*            buffer;
+        uint32_t            bufLen;     /* max amount of data "buffer" holds */
         NuError             stickyErr;
     } toBuffer;
 };
@@ -469,13 +469,13 @@ union NuDataSink {
                 goto bail;                                          \
         }
 #define BailNil(val)    {                                           \
-            if ((val) == nil) {                                     \
+            if ((val) == NULL) {                                    \
                 err = kNuErrUnexpectedNil;                          \
                 BailError(err);                                     \
             }                                                       \
         }
 #define BailAlloc(val)  {                                           \
-            if ((val) == nil) {                                     \
+            if ((val) == NULL) {                                    \
                 err = kNuErrMalloc;                                 \
                 BailError(err);                                     \
             }                                                       \
@@ -498,9 +498,9 @@ NuError Nu_UpdateWrapper(NuArchive* pArchive, FILE* fp);
 NuError Nu_AdjustWrapperPadding(NuArchive* pArchive, FILE* fp);
 NuError Nu_AllocCompressionBufferIFN(NuArchive* pArchive);
 NuError Nu_StreamOpenRO(FILE* infp, NuArchive** ppArchive);
-NuError Nu_OpenRO(const char* filename, NuArchive** ppArchive);
-NuError Nu_OpenRW(const char* archivePathname, const char* tempPathname,
-    ulong flags, NuArchive** ppArchive);
+NuError Nu_OpenRO(const UNICHAR* archivePathnameUNI, NuArchive** ppArchive);
+NuError Nu_OpenRW(const UNICHAR* archivePathnameUNI,
+    const UNICHAR* tempPathnameUNI, uint32_t flags, NuArchive** ppArchive);
 NuError Nu_WriteMasterHeader(NuArchive* pArchive, FILE* fp,
     NuMasterHeader* pMasterHeader);
 NuError Nu_Close(NuArchive* pArchive);
@@ -509,28 +509,28 @@ NuError Nu_RenameTempToArchive(NuArchive* pArchive);
 NuError Nu_DeleteArchiveFile(NuArchive* pArchive);
 
 /* ArchiveIO.c */
-uchar Nu_ReadOneC(NuArchive* pArchive, FILE* fp, ushort* pCrc);
-uchar Nu_ReadOne(NuArchive* pArchive, FILE* fp);
-void Nu_WriteOneC(NuArchive* pArchive, FILE* fp, uchar val, ushort* pCrc);
-void Nu_WriteOne(NuArchive* pArchive, FILE* fp, uchar val);
-ushort Nu_ReadTwoC(NuArchive* pArchive, FILE* fp, ushort* pCrc);
-ushort Nu_ReadTwo(NuArchive* pArchive, FILE* fp);
-void Nu_WriteTwoC(NuArchive* pArchive, FILE* fp, ushort val, ushort* pCrc);
-void Nu_WriteTwo(NuArchive* pArchive, FILE* fp, ushort val);
-ulong Nu_ReadFourC(NuArchive* pArchive, FILE* fp, ushort* pCrc);
-ulong Nu_ReadFour(NuArchive* pArchive, FILE* fp);
-void Nu_WriteFourC(NuArchive* pArchive, FILE* fp, ulong val, ushort* pCrc);
-void Nu_WriteFour(NuArchive* pArchive, FILE* fp, ulong val);
-NuDateTime Nu_ReadDateTimeC(NuArchive* pArchive, FILE* fp, ushort* pCrc);
-NuDateTime Nu_ReadDateTime(NuArchive* pArchive, FILE* fp, ushort* pCrc);
+uint8_t Nu_ReadOneC(NuArchive* pArchive, FILE* fp, uint16_t* pCrc);
+uint8_t Nu_ReadOne(NuArchive* pArchive, FILE* fp);
+void Nu_WriteOneC(NuArchive* pArchive, FILE* fp, uint8_t val, uint16_t* pCrc);
+void Nu_WriteOne(NuArchive* pArchive, FILE* fp, uint8_t val);
+uint16_t Nu_ReadTwoC(NuArchive* pArchive, FILE* fp, uint16_t* pCrc);
+uint16_t Nu_ReadTwo(NuArchive* pArchive, FILE* fp);
+void Nu_WriteTwoC(NuArchive* pArchive, FILE* fp, uint16_t val, uint16_t* pCrc);
+void Nu_WriteTwo(NuArchive* pArchive, FILE* fp, uint16_t val);
+uint32_t Nu_ReadFourC(NuArchive* pArchive, FILE* fp, uint16_t* pCrc);
+uint32_t Nu_ReadFour(NuArchive* pArchive, FILE* fp);
+void Nu_WriteFourC(NuArchive* pArchive, FILE* fp, uint32_t val, uint16_t* pCrc);
+void Nu_WriteFour(NuArchive* pArchive, FILE* fp, uint32_t val);
+NuDateTime Nu_ReadDateTimeC(NuArchive* pArchive, FILE* fp, uint16_t* pCrc);
+NuDateTime Nu_ReadDateTime(NuArchive* pArchive, FILE* fp, uint16_t* pCrc);
 void Nu_WriteDateTimeC(NuArchive* pArchive, FILE* fp, NuDateTime dateTime,
-    ushort* pCrc);
+    uint16_t* pCrc);
 void Nu_WriteDateTime(NuArchive* pArchive, FILE* fp, NuDateTime dateTime);
 void Nu_ReadBytesC(NuArchive* pArchive, FILE* fp, void* vbuffer, long count,
-    ushort* pCrc);
+    uint16_t* pCrc);
 void Nu_ReadBytes(NuArchive* pArchive, FILE* fp, void* vbuffer, long count);
 void Nu_WriteBytesC(NuArchive* pArchive, FILE* fp, const void* vbuffer,
-    long count, ushort* pCrc);
+    long count, uint16_t* pCrc);
 void Nu_WriteBytes(NuArchive* pArchive, FILE* fp, const void* vbuffer,
     long count);
 NuError Nu_HeaderIOFailed(NuArchive* pArchive, FILE* fp);
@@ -540,9 +540,16 @@ NuError Nu_RewindArchive(NuArchive* pArchive);
 
 /* Bzip2.c */
 NuError Nu_CompressBzip2(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc);
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc);
 NuError Nu_ExpandBzip2(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc);
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, uint16_t* pCrc);
+
+/* Charset.c */
+size_t Nu_ConvertMORToUNI(const char* stringMOR, UNICHAR* bufUNI,
+    size_t bufSize);
+UNICHAR* Nu_CopyMORToUNI(const char* stringMOR);
+size_t Nu_ConvertUNIToMOR(const UNICHAR* stringUNI, char* bufMOR,
+    size_t bufSize);
 
 /* Compress.c */
 NuError Nu_CompressToArchive(NuArchive* pArchive, NuDataSource* pDataSource,
@@ -554,22 +561,17 @@ NuError Nu_CopyPresizedToArchive(NuArchive* pArchive,
     NuThread* pThread, char** ppSavedCopy);
 
 /* Crc16.c */
-extern const ushort gNuCrc16Table[256];
-ushort Nu_CalcCRC16(ushort seed, const uchar* ptr, int count);
-#ifdef __Crc16_c__      /* just doing "static inline" warns def-but-not-used */
- #define CRC_INLINE /**/
-#else
- #define CRC_INLINE extern inline
-#endif
-#if defined(inline) && !defined(__Crc16_c__)    /* somebody ovrd inline def? */
-ushort Nu_UpdateCRC16(uchar val, ushort crc);
-#else
-CRC_INLINE ushort
-Nu_UpdateCRC16(uchar val, ushort crc)
-{
-    return (gNuCrc16Table[((crc >> 8) & 0xFF) ^ val] ^ (crc << 8)) & 0xFFFF;
-}
-#endif
+extern const uint16_t gNuCrc16Table[256];
+uint16_t Nu_CalcCRC16(uint16_t seed, const uint8_t* ptr, int count);
+/*
+ * Update the CRC-16.
+ *
+ * _val (uint8_t) is the byte to add to the CRC.  It's evaluated once.
+ * _crc (uint16_t) is the previous CRC.  It's evaluated twice.
+ * Returns the updated CRC as a uint16_t.
+ */
+#define Nu_UpdateCRC16(_val, _crc) \
+    (gNuCrc16Table[(((_crc) >> 8) & 0xff) ^ (_val)] ^ ((_crc) << 8))
 
 /* Debug.c */
 #if defined(DEBUG_MSGS) || !defined(NDEBUG)
@@ -591,13 +593,13 @@ NuError Nu_ThreadModAdd_FindByThreadID(const NuRecord* pRecord,
 void Nu_FreeThreadMods(NuArchive* pArchive, NuRecord* pRecord);
 NuThreadMod* Nu_ThreadMod_FindByThreadIdx(const NuRecord* pRecord,
     NuThreadIdx threadIdx);
-NuError Nu_Flush(NuArchive* pArchive, long* pStatusFlags);
+NuError Nu_Flush(NuArchive* pArchive, uint32_t* pStatusFlags);
 
 /* Deflate.c */
 NuError Nu_CompressDeflate(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc);
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc);
 NuError Nu_ExpandDeflate(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc);
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, uint16_t* pCrc);
 
 /* Expand.c */
 NuError Nu_ExpandStream(NuArchive* pArchive, const NuRecord* pRecord,
@@ -607,14 +609,14 @@ NuError Nu_ExpandStream(NuArchive* pArchive, const NuRecord* pRecord,
 void Nu_SetCurrentDateTime(NuDateTime* pDateTime);
 Boolean Nu_IsOlder(const NuDateTime* pWhen1, const NuDateTime* pWhen2);
 NuError Nu_OpenOutputFile(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, const char* newPathname, char newFssep,
+    const NuThread* pThread, const UNICHAR* newPathnameUNI, UNICHAR newFssep,
     FILE** pFp);
 NuError Nu_CloseOutputFile(NuArchive* pArchive, const NuRecord* pRecord,
-    FILE* fp, const char* pathname);
-NuError Nu_OpenInputFile(NuArchive* pArchive, const char* pathname,
+    FILE* fp, const UNICHAR* pathnameUNI);
+NuError Nu_OpenInputFile(NuArchive* pArchive, const UNICHAR* pathnameUNI,
     Boolean openRsrc, FILE** pFp);
-NuError Nu_DeleteFile(const char* pathname);
-NuError Nu_RenameFile(const char* fromPath, const char* toPath);
+NuError Nu_DeleteFile(const UNICHAR* pathnameUNI);
+NuError Nu_RenameFile(const UNICHAR* fromPathUNI, const UNICHAR* toPathUNI);
 NuError Nu_FTell(FILE* fp, long* pOffset);
 NuError Nu_FSeek(FILE* fp, long offset, int ptrname);
 NuError Nu_FRead(FILE* fp, void* buf, size_t nbyte);
@@ -627,22 +629,23 @@ NuError Nu_TruncateOpenFile(FILE* fp, long length);
 /* Funnel.c */
 NuError Nu_ProgressDataInit_Compress(NuArchive* pArchive,
     NuProgressData* pProgressData, const NuRecord* pRecord,
-    const char* origPathname);
+    const UNICHAR* origPathnameUNI, const UNICHAR* pathnameUNI);
 NuError Nu_ProgressDataInit_Expand(NuArchive* pArchive,
     NuProgressData* pProgressData, const NuRecord* pRecord,
-    const char* newPathname, char newFssep, NuValue convertEOL);
+    const UNICHAR* newPathnameUNI, UNICHAR newFssep,
+    const UNICHAR* origPathnameUNI, NuValue convertEOL);
 NuError Nu_SendInitialProgress(NuArchive* pArchive, NuProgressData* pProgress);
 
 NuError Nu_FunnelNew(NuArchive* pArchive, NuDataSink* pDataSink,
     NuValue convertEOL, NuValue convertEOLTo, NuProgressData* pProgress,
     NuFunnel** ppFunnel);
 NuError Nu_FunnelFree(NuArchive* pArchive, NuFunnel* pFunnel);
-/*void Nu_FunnelSetMaxOutput(NuFunnel* pFunnel, ulong maxBytes);*/
+/*void Nu_FunnelSetMaxOutput(NuFunnel* pFunnel, uint32_t maxBytes);*/
 NuError Nu_FunnelWrite(NuArchive* pArchive, NuFunnel* pFunnel,
-    const uchar* buffer, ulong count);
+    const uint8_t* buffer, uint32_t count);
 NuError Nu_FunnelFlush(NuArchive* pArchive, NuFunnel* pFunnel);
 NuError Nu_ProgressDataCompressPrep(NuArchive* pArchive, NuStraw* pStraw,
-    NuThreadFormat threadFormat, ulong sourceLen);
+    NuThreadFormat threadFormat, uint32_t sourceLen);
 NuError Nu_ProgressDataExpandPrep(NuArchive* pArchive, NuFunnel* pFunnel,
     const NuThread* pThread);
 NuError Nu_FunnelSetProgressState(NuFunnel* pFunnel, NuProgressState state);
@@ -654,32 +657,34 @@ NuError Nu_StrawNew(NuArchive* pArchive, NuDataSource* pDataSource,
 NuError Nu_StrawFree(NuArchive* pArchive, NuStraw* pStraw);
 NuError Nu_StrawSetProgressState(NuStraw* pStraw, NuProgressState state);
 NuError Nu_StrawSendProgressUpdate(NuArchive* pArchive, NuStraw* pStraw);
-NuError Nu_StrawRead(NuArchive* pArchive, NuStraw* pStraw, uchar* buffer,
+NuError Nu_StrawRead(NuArchive* pArchive, NuStraw* pStraw, uint8_t* buffer,
     long len);
 NuError Nu_StrawRewind(NuArchive* pArchive, NuStraw* pStraw);
 
 /* Lzc.c */
 NuError Nu_CompressLZC12(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc);
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc);
 NuError Nu_CompressLZC16(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc);
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc);
 NuError Nu_ExpandLZC(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc);
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, uint16_t* pCrc);
 
 /* Lzw.c */
 NuError Nu_CompressLZW1(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc);
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc);
 NuError Nu_CompressLZW2(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc);
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc);
 NuError Nu_ExpandLZW(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pThreadCrc);
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel,
+    uint16_t* pThreadCrc);
 
 /* MiscUtils.c */
 /*extern const char* kNufxLibName;*/
 extern NuCallback gNuGlobalErrorMessageHandler;
 const char* Nu_StrError(NuError err);
 void Nu_ReportError(NuArchive* pArchive, const char* file, int line,
-    const char* function, Boolean isDebug, NuError err, const char* format, ...)
+    const char* function, Boolean isDebug, NuError err,
+    const UNICHAR* format, ...)
     #if defined(__GNUC__)
         __attribute__ ((format(printf, 7, 8)))
     #endif
@@ -688,7 +693,7 @@ void Nu_ReportError(NuArchive* pArchive, const char* file, int line,
 # define Nu_Malloc(archive, size) malloc(size)
 # define Nu_Calloc(archive, size) calloc(1, size)
 # define Nu_Realloc(archive, ptr, size) realloc(ptr, size)
-# define Nu_Free(archive, ptr) (ptr != nil ? free(ptr) : (void)0)
+# define Nu_Free(archive, ptr) (ptr != NULL ? free(ptr) : (void)0)
 #else
 void* Nu_Malloc(NuArchive* pArchive, size_t size);
 void* Nu_Calloc(NuArchive* pArchive, size_t size);
@@ -701,8 +706,8 @@ NuResult Nu_InternalFreeCallback(NuArchive* pArchive, void* args);
 void Nu_RecordAddThreadMod(NuRecord* pRecord, NuThreadMod* pThreadMod);
 Boolean Nu_RecordIsEmpty(NuArchive* pArchive, const NuRecord* pRecord);
 Boolean Nu_RecordSet_GetLoaded(const NuRecordSet* pRecordSet);
-ulong Nu_RecordSet_GetNumRecords(const NuRecordSet* pRecordSet);
-void Nu_RecordSet_SetNumRecords(NuRecordSet* pRecordSet, ulong val);
+uint32_t Nu_RecordSet_GetNumRecords(const NuRecordSet* pRecordSet);
+void Nu_RecordSet_SetNumRecords(NuRecordSet* pRecordSet, uint32_t val);
 void Nu_RecordSet_IncNumRecords(NuRecordSet* pRecordSet);
 NuRecord* Nu_RecordSet_GetListHead(const NuRecordSet* pRecordSet);
 NuRecord** Nu_RecordSet_GetListHeadPtr(NuRecordSet* pRecordSet);
@@ -738,19 +743,19 @@ NuError Nu_Test(NuArchive* pArchive);
 NuError Nu_TestRecord(NuArchive* pArchive, NuRecordIdx recIdx);
 NuError Nu_GetRecord(NuArchive* pArchive, NuRecordIdx recordIdx,
     const NuRecord** ppRecord);
-NuError Nu_GetRecordIdxByName(NuArchive* pArchive, const char* name,
+NuError Nu_GetRecordIdxByName(NuArchive* pArchive, const char* nameMOR,
     NuRecordIdx* pRecordIdx);
-NuError Nu_GetRecordIdxByPosition(NuArchive* pArchive, ulong position,
+NuError Nu_GetRecordIdxByPosition(NuArchive* pArchive, uint32_t position,
     NuRecordIdx* pRecordIdx);
 NuError Nu_FindRecordForWriteByIdx(NuArchive* pArchive, NuRecordIdx recIdx,
     NuRecord** ppFoundRecord);
-NuError Nu_AddFile(NuArchive* pArchive, const char* pathname,
+NuError Nu_AddFile(NuArchive* pArchive, const UNICHAR* pathnameUNI,
     const NuFileDetails* pFileDetails, Boolean fromRsrcFork,
     NuRecordIdx* pRecordIdx);
 NuError Nu_AddRecord(NuArchive* pArchive, const NuFileDetails* pFileDetails,
     NuRecordIdx* pRecordIdx, NuRecord** ppRecord);
 NuError Nu_Rename(NuArchive* pArchive, NuRecordIdx recIdx,
-    const char* pathname, char fssep);
+    const char* pathnameMOR, char fssepMOR);
 NuError Nu_SetRecordAttr(NuArchive* pArchive, NuRecordIdx recordIdx,
     const NuRecordAttr* pRecordAttr);
 NuError Nu_Delete(NuArchive* pArchive);
@@ -758,88 +763,74 @@ NuError Nu_DeleteRecord(NuArchive* pArchive, NuRecordIdx rec);
 
 /* SourceSink.c */
 NuError Nu_DataSourceFile_New(NuThreadFormat threadFormat,
-    ulong otherLen, const char* pathname, Boolean isFromRsrcFork,
+    uint32_t otherLen, const UNICHAR* pathnameUNI, Boolean isFromRsrcFork,
     NuDataSource** ppDataSource);
 NuError Nu_DataSourceFP_New(NuThreadFormat threadFormat,
-    ulong otherLen, FILE* fp, long offset, long length,
+    uint32_t otherLen, FILE* fp, long offset, long length,
     NuCallback fcloseFunc, NuDataSource** ppDataSource);
 NuError Nu_DataSourceBuffer_New(NuThreadFormat threadFormat,
-    ulong otherLen, const uchar* buffer, long offset, long length,
+    uint32_t otherLen, const uint8_t* buffer, long offset, long length,
     NuCallback freeFunc, NuDataSource** ppDataSource);
 NuDataSource* Nu_DataSourceCopy(NuDataSource* pDataSource);
 NuError Nu_DataSourceFree(NuDataSource* pDataSource);
 NuDataSourceType Nu_DataSourceGetType(const NuDataSource* pDataSource);
 NuThreadFormat Nu_DataSourceGetThreadFormat(const NuDataSource* pDataSource);
-ulong Nu_DataSourceGetDataLen(const NuDataSource* pDataSource);
-ulong Nu_DataSourceGetOtherLen(const NuDataSource* pDataSource);
+uint32_t Nu_DataSourceGetDataLen(const NuDataSource* pDataSource);
+uint32_t Nu_DataSourceGetOtherLen(const NuDataSource* pDataSource);
 void Nu_DataSourceSetOtherLen(NuDataSource* pDataSource, long otherLen);
-ushort Nu_DataSourceGetRawCrc(const NuDataSource* pDataSource);
-void Nu_DataSourceSetRawCrc(NuDataSource* pDataSource, ushort crc);
+uint16_t Nu_DataSourceGetRawCrc(const NuDataSource* pDataSource);
+void Nu_DataSourceSetRawCrc(NuDataSource* pDataSource, uint16_t crc);
 NuError Nu_DataSourcePrepareInput(NuArchive* pArchive,
     NuDataSource* pDataSource);
 void Nu_DataSourceUnPrepareInput(NuArchive* pArchive,
     NuDataSource* pDataSource);
 const char* Nu_DataSourceFile_GetPathname(NuDataSource* pDataSource);
-NuError Nu_DataSourceGetBlock(NuDataSource* pDataSource, uchar* buf, ulong len);
+NuError Nu_DataSourceGetBlock(NuDataSource* pDataSource, uint8_t* buf,
+    uint32_t len);
 NuError Nu_DataSourceRewind(NuDataSource* pDataSource);
 NuError Nu_DataSinkFile_New(Boolean doExpand, NuValue convertEOL,
-    const char* pathname, char fssep, NuDataSink** ppDataSink);
+    const UNICHAR* pathnameUNI, UNICHAR fssep, NuDataSink** ppDataSink);
 NuError Nu_DataSinkFP_New(Boolean doExpand, NuValue convertEOL, FILE* fp,
     NuDataSink** ppDataSink);
 NuError Nu_DataSinkBuffer_New(Boolean doExpand, NuValue convertEOL,
-    uchar* buffer, ulong bufLen, NuDataSink** ppDataSink);
+    uint8_t* buffer, uint32_t bufLen, NuDataSink** ppDataSink);
 NuError Nu_DataSinkVoid_New(Boolean doExpand, NuValue convertEOL,
     NuDataSink** ppDataSink);
 NuError Nu_DataSinkFree(NuDataSink* pDataSink);
 NuDataSinkType Nu_DataSinkGetType(const NuDataSink* pDataSink);
 Boolean Nu_DataSinkGetDoExpand(const NuDataSink* pDataSink);
 NuValue Nu_DataSinkGetConvertEOL(const NuDataSink* pDataSink);
-ulong Nu_DataSinkGetOutCount(const NuDataSink* pDataSink);
+uint32_t Nu_DataSinkGetOutCount(const NuDataSink* pDataSink);
 const char* Nu_DataSinkFile_GetPathname(const NuDataSink* pDataSink);
-char Nu_DataSinkFile_GetFssep(const NuDataSink* pDataSink);
+UNICHAR Nu_DataSinkFile_GetFssep(const NuDataSink* pDataSink);
 FILE* Nu_DataSinkFile_GetFP(const NuDataSink* pDataSink);
 void Nu_DataSinkFile_SetFP(NuDataSink* pDataSink, FILE* fp);
 void Nu_DataSinkFile_Close(NuDataSink* pDataSink);
-NuError Nu_DataSinkPutBlock(NuDataSink* pDataSink, const uchar* buf, ulong len);
+NuError Nu_DataSinkPutBlock(NuDataSink* pDataSink, const uint8_t* buf,
+    uint32_t len);
 NuError Nu_DataSinkGetError(NuDataSink* pDataSink);
 
 /* Squeeze.c */
 NuError Nu_CompressHuffmanSQ(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc);
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc);
 NuError Nu_ExpandHuffmanSQ(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc);
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, uint16_t* pCrc);
 
 /* Thread.c */
-#ifdef __Thread_c__
- #define THREAD_INLINE  /**/
-#else
- #define THREAD_INLINE extern inline
-#endif
-#if defined(inline) && !defined(__Thread_c__)   /* somebody ovrd inline def? */
 NuThread* Nu_GetThread(const NuRecord* pRecord, int idx);
-#else
-THREAD_INLINE NuThread*
-Nu_GetThread(const NuRecord* pRecord, int idx)
-{
-    if (idx >= (int)pRecord->recTotalThreads)
-        return nil;
-    else
-        return &pRecord->pThreads[idx];
-}
-#endif
 void Nu_StripHiIfAllSet(char* str);
 Boolean Nu_IsPresizedThreadID(NuThreadID threadID);
 Boolean Nu_IsCompressibleThreadID(NuThreadID threadID);
-Boolean Nu_ThreadHasCRC(long recordVersion, NuThreadID threadID);
+Boolean Nu_ThreadHasCRC(uint16_t recordVersion, NuThreadID threadID);
 NuError Nu_FindThreadByIdx(const NuRecord* pRecord, NuThreadIdx thread,
     NuThread** ppThread);
 NuError Nu_FindThreadByID(const NuRecord* pRecord, NuThreadID threadID,
     NuThread** ppThread);
 void Nu_CopyThreadContents(NuThread* pDstThread, const NuThread* pSrcThread);
 NuError Nu_ReadThreadHeaders(NuArchive* pArchive, NuRecord* pRecord,
-    ushort* pCrc);
+    uint16_t* pCrc);
 NuError Nu_WriteThreadHeaders(NuArchive* pArchive, NuRecord* pRecord, FILE* fp,
-    ushort* pCrc);
+    uint16_t* pCrc);
 NuError Nu_ComputeThreadData(NuArchive* pArchive, NuRecord* pRecord);
 NuError Nu_ScanThreads(NuArchive* pArchive, NuRecord* pRecord,long numThreads);
 NuError Nu_ExtractThreadBulk(NuArchive* pArchive, const NuRecord* pRecord,
@@ -853,7 +844,7 @@ NuError Nu_OkayToAddThread(NuArchive* pArchive, const NuRecord* pRecord,
 NuError Nu_AddThread(NuArchive* pArchive, NuRecordIdx rec, NuThreadID threadID,
     NuDataSource* pDataSource, NuThreadIdx* pThreadIdx);
 NuError Nu_UpdatePresizedThread(NuArchive* pArchive, NuThreadIdx threadIdx,
-    NuDataSource* pDataSource, long* pMaxLen);
+    NuDataSource* pDataSource, int32_t* pMaxLen);
 NuError Nu_DeleteThread(NuArchive* pArchive, NuThreadIdx threadIdx);
 
 /* Value.c */
@@ -864,7 +855,7 @@ NuThreadFormat Nu_ConvertCompressValToFormat(NuArchive* pArchive,
     NuValue compValue);
 
 /* Version.c */
-NuError Nu_GetVersion(long* pMajorVersion, long* pMinorVersion,
-    long* pBugVersion, const char** ppBuildDate, const char** ppBuildFlags);
+NuError Nu_GetVersion(int32_t* pMajorVersion, int32_t* pMinorVersion,
+    int32_t* pBugVersion, const char** ppBuildDate, const char** ppBuildFlags);
 
-#endif /*__NufxLibPriv__*/
+#endif /*NUFXLIB_NUFXLIBPRIV_H*/

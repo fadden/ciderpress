@@ -11,5 +11,6 @@ samples/imgconv
 samples/launder
 samples/test-basic
 samples/test-extract
+samples/test-names
 samples/test-simple
 samples/test-twirl

@@ -32,7 +32,7 @@ static const WCHAR kVersionExtra[] =
 BOOL AboutDialog::OnInitDialog(void)
 {
     NuError nerr;
-    long major, minor, bug;
+    int32_t major, minor, bug;
     CString newVersion, tmpStr;
     CStatic* pStatic;
     //CString versionFmt;

@@ -24,7 +24,7 @@ const char* DiskImgLib::kASPIDev = "ASPI:";
 /*static*/ DIError Global::AppInit(void)
 {
     NuError nerr;
-    long major, minor, bug;
+    int32_t major, minor, bug;
 
     if (fAppInitCalled) {
         LOGW("DiskImg AppInit already called");
@@ -123,7 +123,8 @@ const char* DiskImgLib::kASPIDev = "ASPI:";
 /*
  * Return current library versions.
  */
-/*static*/ void Global::GetVersion(long* pMajor, long* pMinor, long* pBug)
+/*static*/ void Global::GetVersion(int32_t* pMajor, int32_t* pMinor,
+    int32_t* pBug)
 {
     if (pMajor != NULL)
         *pMajor = kDiskImgVersionMajor;

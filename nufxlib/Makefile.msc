@@ -65,16 +65,16 @@ LDFLAGS = $(LDFLAGS) zlib.lib
 
 
 # object files
-OBJS =  Archive.obj ArchiveIO.obj Bzip2.obj Compress.obj Crc16.obj Debug.obj \
-	Deferred.obj Deflate.obj Entry.obj Expand.obj FileIO.obj Funnel.obj \
-	Lzc.obj Lzw.obj MiscStuff.obj MiscUtils.obj Record.obj SourceSink.obj \
-	Squeeze.obj Thread.obj Value.obj Version.obj
+OBJS =  Archive.obj ArchiveIO.obj Bzip2.obj Charset.obj Compress.obj \
+	Crc16.obj Debug.obj Deferred.obj Deflate.obj Entry.obj Expand.obj \
+	FileIO.obj Funnel.obj Lzc.obj Lzw.obj MiscStuff.obj MiscUtils.obj \
+	Record.obj SourceSink.obj Squeeze.obj Thread.obj Value.obj Version.obj
 
 
 # build targets -- static library, dynamic library, and test programs
 all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB) \
-	exerciser.exe imgconv.exe launder.exe test-basic.exe \
-	test-basic-d.exe test-extract.exe test-simple.exe test-twirl.exe
+	exerciser.exe imgconv.exe launder.exe test-basic.exe test-basic-d.exe \
+	test-extract.exe test-names.exe test-simple.exe test-twirl.exe
 
 clean:
 	-del *.obj *.pdb *.exp
@@ -107,6 +107,9 @@ test-basic-d.exe: TestBasic.obj $(IMPLIB)
 test-extract.exe: TestExtract.obj $(STATICLIB)
 	$(LD) $(LDFLAGS) -out:$@ TestExtract.obj $(STATICLIB)
 
+test-names.exe: TestNames.obj $(STATICLIB)
+	$(LD) $(LDFLAGS) -out:$@ TestNames.obj $(STATICLIB)
+
 test-simple.exe: TestSimple.obj $(STATICLIB)
 	$(LD) $(LDFLAGS) -out:$@ TestSimple.obj $(STATICLIB)
 
@@ -125,6 +128,7 @@ COMMON_HDRS = NufxLibPriv.h NufxLib.h MiscStuff.h SysDefs.h
 Archive.obj: Archive.c $(COMMON_HDRS)
 ArchiveIO.obj: ArchiveIO.c $(COMMON_HDRS)
 Bzip2.obj: Bzip2.c $(COMMON_HDRS)
+Charset.obj: Charset.c $(COMMON_HDRS)
 Compress.obj: Compress.c $(COMMON_HDRS)
 Crc16.obj: Crc16.c $(COMMON_HDRS)
 Debug.obj: Debug.c $(COMMON_HDRS)
@@ -150,6 +154,7 @@ ImgConv.obj: samples/ImgConv.c $(COMMON_HDRS)
 Launder.obj: samples/Launder.c $(COMMON_HDRS)
 TestBasic.obj: samples/TestBasic.c $(COMMON_HDRS)
 TestExtract.obj: samples/TestExtract.c $(COMMON_HDRS)
+TestNames.obj: samples/TestNames.c $(COMMON_HDRS)
 TestSimple.obj: samples/TestSimple.c $(COMMON_HDRS)
 TestTwirl.obj: samples/TestTwirl.c $(COMMON_HDRS)
 

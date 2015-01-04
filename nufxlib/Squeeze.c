@@ -77,13 +77,13 @@ typedef struct EncTreeNode {
 typedef struct SQState {
     NuArchive*      pArchive;
     int             doCalcCRC;  /* boolean; if set, compute CRC on input */
-    ushort          crc;
+    uint16_t        crc;
 
     NuStraw*        pStraw;
     long            uncompRemaining;
 
     #ifdef FULL_SQ_HEADER
-    ushort  checksum;
+    uint16_t        checksum;
     #endif
 
     /*
@@ -98,12 +98,12 @@ typedef struct SQState {
      */
     EncTreeNode node[kNuSQNumNodes];
 
-    int     treeHead;               /* index to head node of final tree */
+    int         treeHead;           /* index to head node of final tree */
 
     /* encoding table */
     int     codeLen[kNuSQNumVals];  /* number of bits in code for symbol N */
-    ushort  code[kNuSQNumVals];     /* bits for symbol N (first bit in lsb) */
-    ushort  tmpCode;                /* temporary code value */
+    uint16_t    code[kNuSQNumVals]; /* bits for symbol N (first bit in lsb) */
+    uint16_t    tmpCode;            /* temporary code value */
 } SQState;
 
 
@@ -117,11 +117,10 @@ typedef struct SQState {
  *
  * Returns kNuSQEOFToken as the value when we're out of data.
  */
-static NuError
-Nu_SQGetcCRC(SQState* pSqState, int* pSym)
+static NuError Nu_SQGetcCRC(SQState* pSqState, int* pSym)
 {
     NuError err;
-    uchar c;
+    uint8_t c;
 
     if (!pSqState->uncompRemaining) {
         *pSym = kNuSQEOFToken;
@@ -148,8 +147,7 @@ Nu_SQGetcCRC(SQState* pSqState, int* pSym)
  *
  * Returns kNuSQEOFToken in "*pSum" when we reach the end of the input.
  */
-static NuError
-Nu_SQGetcRLE(SQState* pSqState, int* pSym)
+static NuError Nu_SQGetcRLE(SQState* pSqState, int* pSym)
 {
     NuError err = kNuErrNone;
     int likeCount, newSym;
@@ -275,8 +273,7 @@ bail:
 /*
  * Return the greater of two integers.
  */
-static int
-Nu_SQMax(int a, int b)
+static int Nu_SQMax(int a, int b)
 {
     if (a > b)
         return a;
@@ -289,8 +286,7 @@ Nu_SQMax(int a, int b)
  * Priority is given to weight, then depth.  "a" and "b" are heaps,
  * so we only need to look at the root element.
  */
-static int
-Nu_SQCmpTrees(SQState* pSqState, int a, int b)
+static int Nu_SQCmpTrees(SQState* pSqState, int a, int b)
 {
     if (pSqState->node[a].weight > pSqState->node[b].weight)
         return true;
@@ -312,8 +308,7 @@ Nu_SQCmpTrees(SQState* pSqState, int a, int b)
 /*
  * Recursively make a heap from a heap with a new top.
  */
-static void
-Nu_SQHeapAdjust(SQState* pSqState, int list[], int top, int bottom)
+static void Nu_SQHeapAdjust(SQState* pSqState, int list[], int top, int bottom)
 {
     int k, temp;
 
@@ -337,8 +332,7 @@ Nu_SQHeapAdjust(SQState* pSqState, int list[], int top, int bottom)
 /*
  * Create a heap.
  */
-static void
-Nu_SQHeap(SQState* pSqState, int list[], int length)
+static void Nu_SQHeap(SQState* pSqState, int list[], int length)
 {
     int i;
 
@@ -365,8 +359,7 @@ Nu_SQHeap(SQState* pSqState, int list[], int length)
  *  moving the last element over the top element and
  *  reheaping the shorter list.
  */
-static void
-Nu_SQBuildTree(SQState* pSqState, int list[], int len)
+static void Nu_SQBuildTree(SQState* pSqState, int list[], int len)
 {
     int freenode;           /* next free node in tree */
     EncTreeNode* frnp;      /* free node pointer */
@@ -422,8 +415,7 @@ Nu_SQBuildTree(SQState* pSqState, int list[], int len)
  *
  * Returns zero on success, nonzero if codes are too long.
  */
-static int
-Nu_SQBuildEncTable(SQState* pSqState, int level, int root)
+static int Nu_SQBuildEncTable(SQState* pSqState, int level, int root)
 {
     int l, r;
 
@@ -437,7 +429,7 @@ Nu_SQBuildEncTable(SQState* pSqState, int level, int root)
          */
         pSqState->codeLen[root] = level;
         pSqState->code[root] =
-            pSqState->tmpCode & (((ushort)~0) >> (16 - level));
+            pSqState->tmpCode & (((uint16_t)~0) >> (16 - level));
         return (level > 16) ? -1 : 0;
     } else {
         if (l != kNuSQNoChild) {
@@ -470,12 +462,11 @@ Nu_SQBuildEncTable(SQState* pSqState, int level, int root)
  *  the codes will fit in an unsigned integer. Rescaling is
  *  used if necessary to limit the code length.
  */
-static void
-Nu_SQScale(SQState* pSqState, int ceiling)
+static void Nu_SQScale(SQState* pSqState, int ceiling)
 {
     int i;
     int wt, ovflw, divisor;
-    ushort sum;
+    uint16_t sum;
     int increased;     /* flag */
 
     do {
@@ -510,8 +501,7 @@ Nu_SQScale(SQState* pSqState, int ceiling)
  * Build a frequency table from the post-RLE input stream, then generate
  * an encoding tree from the results.
  */
-static NuError
-Nu_SQComputeHuffTree(SQState* pSqState)
+static NuError Nu_SQComputeHuffTree(SQState* pSqState)
 {
     NuError err = kNuErrNone;
     int btreeList[kNuSQNumVals];        /* list of intermediate binary trees */
@@ -610,12 +600,12 @@ bail:
  * Compress data from input to output, using the values in the "code"
  * and "codeLen" arrays.
  */
-static NuError
-Nu_SQCompressInput(SQState* pSqState, FILE* fp, long* pCompressedLen)
+static NuError Nu_SQCompressInput(SQState* pSqState, FILE* fp,
+    long* pCompressedLen)
 {
     NuError err = kNuErrNone;
     int sym = kNuSQEOFToken-1;
-    unsigned long bits, code;       /* must hold at least 23 bits */
+    uint32_t bits, code;       /* must hold at least 23 bits */
     int codeLen, gotbits;
     long compressedLen;
     
@@ -661,11 +651,10 @@ bail:
 /*
  * Write a 16-bit value in little-endian order.
  */
-static NuError
-Nu_SQWriteShort(FILE* outfp, short val)
+static NuError Nu_SQWriteShort(FILE* outfp, short val)
 {
     NuError err;
-    uchar tmpc;
+    uint8_t tmpc;
 
     tmpc = val & 0xff;
     err = Nu_FWrite(outfp, &tmpc, 1);
@@ -689,9 +678,8 @@ bail:
  * it an empty file.  "xsq" works fine, creating an empty tree that
  * "xusq" unpacks.
  */
-NuError
-Nu_CompressHuffmanSQ(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc)
+NuError Nu_CompressHuffmanSQ(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc)
 {
     NuError err = kNuErrNone;
     SQState sqState;
@@ -704,7 +692,7 @@ Nu_CompressHuffmanSQ(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
 
     sqState.pArchive = pArchive;
     sqState.crc = 0;
-    if (pCrc == nil) {
+    if (pCrc == NULL) {
         sqState.doCalcCRC = false;
     } else {
         sqState.doCalcCRC = true;
@@ -727,7 +715,7 @@ Nu_CompressHuffmanSQ(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
     err = Nu_SQComputeHuffTree(&sqState);
     BailError(err);
 
-    if (pCrc != nil)
+    if (pCrc != NULL)
         *pCrc = sqState.crc;
 
     /*
@@ -822,8 +810,8 @@ bail:
  * State during uncompression.
  */
 typedef struct USQState {
-    ulong           dataInBuffer;
-    uchar*          dataPtr;
+    uint32_t        dataInBuffer;
+    uint8_t*        dataPtr;
     int             bitPosn;
     int             bits;
 
@@ -842,8 +830,7 @@ typedef struct USQState {
 /*
  * Decode the next symbol from the Huffman stream.
  */
-static NuError
-Nu_USQDecodeHuffSymbol(USQState* pUsqState, int* pVal)
+static NuError Nu_USQDecodeHuffSymbol(USQState* pUsqState, int* pVal)
 {
     short val = 0;
     int bits, bitPosn;
@@ -879,8 +866,7 @@ Nu_USQDecodeHuffSymbol(USQState* pUsqState, int* pVal)
 /*
  * Read two bytes of signed data out of the buffer.
  */
-static inline NuError
-Nu_USQReadShort(USQState* pUsqState, short* pShort)
+static inline NuError Nu_USQReadShort(USQState* pUsqState, short* pShort)
 {
     if (pUsqState->dataInBuffer < 2)
         return kNuErrBufferUnderrun;
@@ -898,24 +884,23 @@ Nu_USQReadShort(USQState* pUsqState, short* pShort)
  * Because we have a stop symbol, knowing the uncompressed length of
  * the file is not essential.
  */
-NuError
-Nu_ExpandHuffmanSQ(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc)
+NuError Nu_ExpandHuffmanSQ(NuArchive* pArchive, const NuRecord* pRecord,
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, uint16_t* pCrc)
 {
     NuError err = kNuErrNone;
     USQState usqState;
-    ulong compRemaining, getSize;
+    uint32_t compRemaining, getSize;
 #ifdef FULL_SQ_HEADER
-    ushort magic, fileChecksum, checksum;
+    uint16_t magic, fileChecksum, checksum;
 #endif
     short nodeCount;
     int i, inrep;
-    uchar lastc = 0;
+    uint8_t lastc = 0;
 
     err = Nu_AllocCompressionBufferIFN(pArchive);
     if (err != kNuErrNone)
         return err;
-    Assert(pArchive->compBuf != nil);
+    Assert(pArchive->compBuf != NULL);
 
     usqState.dataInBuffer = 0;
     usqState.dataPtr = pArchive->compBuf;
@@ -945,7 +930,7 @@ Nu_ExpandHuffmanSQ(NuArchive* pArchive, const NuRecord* pRecord,
     err = Nu_FRead(infp, usqState.dataPtr, getSize);
     if (err != kNuErrNone) {
         Nu_ReportError(NU_BLOB, err,
-            "failed reading compressed data (%ld bytes)", getSize);
+            "failed reading compressed data (%u bytes)", getSize);
         goto bail;
     }
     usqState.dataInBuffer += getSize;
@@ -1046,7 +1031,7 @@ Nu_ExpandHuffmanSQ(NuArchive* pArchive, const NuRecord* pRecord,
                     getSize);
             if (err != kNuErrNone) {
                 Nu_ReportError(NU_BLOB, err,
-                    "failed reading compressed data (%ld bytes)", getSize);
+                    "failed reading compressed data (%u bytes)", getSize);
                 goto bail;
             }
             usqState.dataInBuffer += getSize;
@@ -1080,7 +1065,7 @@ Nu_ExpandHuffmanSQ(NuArchive* pArchive, const NuRecord* pRecord,
                 val = 2;
             }
             while (--val) {
-                if (pCrc != nil)
+                if (pCrc != NULL)
                     *pCrc = Nu_CalcCRC16(*pCrc, &lastc, 1);
                 err = Nu_FunnelWrite(pArchive, pFunnel, &lastc, 1);
                 #ifdef FULL_SQ_HEADER
@@ -1095,7 +1080,7 @@ Nu_ExpandHuffmanSQ(NuArchive* pArchive, const NuRecord* pRecord,
                 inrep = true;
             } else {
                 lastc = val;
-                if (pCrc != nil)
+                if (pCrc != NULL)
                     *pCrc = Nu_CalcCRC16(*pCrc, &lastc, 1);
                 err = Nu_FunnelWrite(pArchive, pFunnel, &lastc, 1);
                 #ifdef FULL_SQ_HEADER
@@ -1135,7 +1120,7 @@ Nu_ExpandHuffmanSQ(NuArchive* pArchive, const NuRecord* pRecord,
     if (usqState.dataInBuffer > 1) {
         DBUG(("--- Found %ld bytes following compressed data (compRem=%ld)\n",
             usqState.dataInBuffer, compRemaining));
-        Nu_ReportError(NU_BLOB, kNuErrNone, "(Warning) unexpected fluff (%ld)",
+        Nu_ReportError(NU_BLOB, kNuErrNone, "(Warning) unexpected fluff (%u)",
             usqState.dataInBuffer);
     }
 

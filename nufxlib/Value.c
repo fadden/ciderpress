@@ -14,12 +14,11 @@
 /*
  * Get a configurable parameter.
  */
-NuError
-Nu_GetValue(NuArchive* pArchive, NuValueID ident, NuValue* pValue)
+NuError Nu_GetValue(NuArchive* pArchive, NuValueID ident, NuValue* pValue)
 {
     NuError err = kNuErrNone;
 
-    if (pValue == nil)
+    if (pValue == NULL)
         return kNuErrInvalidArg;
 
     switch (ident) {
@@ -82,8 +81,7 @@ bail:
 /*
  * Set a configurable parameter.
  */
-NuError
-Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
+NuError Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
 {
     NuError err = kNuErrInvalidArg;
 
@@ -91,7 +89,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueAllowDuplicates:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueAllowDuplicates value %ld", value);
+                "Invalid kNuValueAllowDuplicates value %u", value);
             goto bail;
         }
         pArchive->valAllowDuplicates = value;
@@ -99,7 +97,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueConvertExtractedEOL:
         if (value < kNuConvertOff || value > kNuConvertAuto) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueConvertExtractedEOL value %ld", value);
+                "Invalid kNuValueConvertExtractedEOL value %u", value);
             goto bail;
         }
         pArchive->valConvertExtractedEOL = value;
@@ -107,7 +105,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueDataCompression:
         if (value < kNuCompressNone || value > kNuCompressBzip2) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueDataCompression value %ld", value);
+                "Invalid kNuValueDataCompression value %u", value);
             goto bail;
         }
         pArchive->valDataCompression = value;
@@ -115,7 +113,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueDiscardWrapper:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueDiscardWrapper value %ld", value);
+                "Invalid kNuValueDiscardWrapper value %u", value);
             goto bail;
         }
         pArchive->valDiscardWrapper = value;
@@ -123,7 +121,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueEOL:
         if (value < kNuEOLUnknown || value > kNuEOLCRLF) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueEOL value %ld", value);
+                "Invalid kNuValueEOL value %u", value);
             goto bail;
         }
         pArchive->valEOL = value;
@@ -131,7 +129,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueHandleExisting:
         if (value < kNuMaybeOverwrite || value > kNuMustOverwrite) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueHandleExisting value %ld", value);
+                "Invalid kNuValueHandleExisting value %u", value);
             goto bail;
         }
         pArchive->valHandleExisting = value;
@@ -139,7 +137,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueIgnoreCRC:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueIgnoreCRC value %ld", value);
+                "Invalid kNuValueIgnoreCRC value %u", value);
             goto bail;
         }
         pArchive->valIgnoreCRC = value;
@@ -147,7 +145,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueMaskDataless:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueMaskDataless value %ld", value);
+                "Invalid kNuValueMaskDataless value %u", value);
             goto bail;
         }
         pArchive->valMaskDataless = value;
@@ -155,7 +153,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueMimicSHK:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueMimicSHK value %ld", value);
+                "Invalid kNuValueMimicSHK value %u", value);
             goto bail;
         }
         pArchive->valMimicSHK = value;
@@ -163,7 +161,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueModifyOrig:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueModifyOrig value %ld", value);
+                "Invalid kNuValueModifyOrig value %u", value);
             goto bail;
         }
         pArchive->valModifyOrig = value;
@@ -171,7 +169,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueOnlyUpdateOlder:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueOnlyUpdateOlder value %ld", value);
+                "Invalid kNuValueOnlyUpdateOlder value %u", value);
             goto bail;
         }
         pArchive->valOnlyUpdateOlder = value;
@@ -179,7 +177,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueStripHighASCII:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueStripHighASCII value %ld", value);
+                "Invalid kNuValueStripHighASCII value %u", value);
             goto bail;
         }
         pArchive->valStripHighASCII = value;
@@ -187,7 +185,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueJunkSkipMax:
         if (value > kMaxJunkSkipMax) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueJunkSkipMax value %ld", value);
+                "Invalid kNuValueJunkSkipMax value %u", value);
             goto bail;
         }
         pArchive->valJunkSkipMax = value;
@@ -195,7 +193,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueIgnoreLZW2Len:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueIgnoreLZW2Len value %ld", value);
+                "Invalid kNuValueIgnoreLZW2Len value %u", value);
             goto bail;
         }
         pArchive->valIgnoreLZW2Len = value;
@@ -203,7 +201,7 @@ Nu_SetValue(NuArchive* pArchive, NuValueID ident, NuValue value)
     case kNuValueHandleBadMac:
         if (value != true && value != false) {
             Nu_ReportError(NU_BLOB, err,
-                "Invalid kNuValueHandleBadMac value %ld", value);
+                "Invalid kNuValueHandleBadMac value %u", value);
             goto bail;
         }
         pArchive->valHandleBadMac = value;
@@ -225,11 +223,10 @@ bail:
  * pry into pArchive to get at (like the archive type) or get the master
  * header (like the number of records).
  */
-NuError
-Nu_GetAttr(NuArchive* pArchive, NuAttrID ident, NuAttr* pAttr)
+NuError Nu_GetAttr(NuArchive* pArchive, NuAttrID ident, NuAttr* pAttr)
 {
     NuError err = kNuErrNone;
-    if (pAttr == nil)
+    if (pAttr == NULL)
         return kNuErrInvalidArg;
 
     switch (ident) {
@@ -260,8 +257,8 @@ bail:
  *
  * Unsupported compression types cause a warning to be flagged.
  */
-NuThreadFormat
-Nu_ConvertCompressValToFormat(NuArchive* pArchive, NuValue compValue)
+NuThreadFormat Nu_ConvertCompressValToFormat(NuArchive* pArchive,
+    NuValue compValue)
 {
     NuThreadFormat threadFormat;
     Boolean unsup = false;
@@ -312,14 +309,14 @@ Nu_ConvertCompressValToFormat(NuArchive* pArchive, NuValue compValue)
 
     default:
         Nu_ReportError(NU_BLOB, kNuErrInvalidArg,
-            "Unknown compress value %ld", compValue);
+            "Unknown compress value %u", compValue);
         Assert(false);
         return kNuThreadFormatUncompressed;
     }
 
     if (unsup) {
         Nu_ReportError(NU_BLOB, kNuErrNone,
-            "Unsupported compression 0x%04x requested (%ld), storing",
+            "Unsupported compression 0x%04x requested (%u), storing",
             threadFormat, compValue);
         return kNuThreadFormatUncompressed;
     }

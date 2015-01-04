@@ -12,18 +12,18 @@
 /*
  * "Expand" an uncompressed thread.
  */
-static NuError
-Nu_ExpandUncompressed(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc)
+static NuError Nu_ExpandUncompressed(NuArchive* pArchive,
+    const NuRecord* pRecord, const NuThread* pThread, FILE* infp,
+    NuFunnel* pFunnel, uint16_t* pCrc)
 {
     NuError err;
-    /*uchar* buffer = nil;*/
-    ulong count, getsize;
+    /*uint8_t* buffer = NULL;*/
+    uint32_t count, getsize;
 
-    Assert(pArchive != nil);
-    Assert(pThread != nil);
-    Assert(infp != nil);
-    Assert(pFunnel != nil);
+    Assert(pArchive != NULL);
+    Assert(pThread != NULL);
+    Assert(infp != NULL);
+    Assert(pFunnel != NULL);
 
     /* doesn't have to be same size as funnel, but it's not a bad idea */
     /*buffer = Nu_Malloc(pArchive, kNuFunnelBufSize);*/
@@ -43,7 +43,7 @@ Nu_ExpandUncompressed(NuArchive* pArchive, const NuRecord* pRecord,
 
         err = Nu_FRead(infp, pArchive->compBuf, getsize);
         BailError(err);
-        if (pCrc != nil)
+        if (pCrc != NULL)
             *pCrc = Nu_CalcCRC16(*pCrc, pArchive->compBuf, getsize);
         err = Nu_FunnelWrite(pArchive, pFunnel, pArchive->compBuf, getsize);
         BailError(err);
@@ -63,18 +63,17 @@ bail:
  * Copy the "raw" data out of the thread.  Unlike the preceeding function,
  * this reads up to "thCompThreadEOF", and doesn't even try to compute a CRC.
  */
-static NuError
-Nu_ExpandRaw(NuArchive* pArchive, const NuThread* pThread, FILE* infp,
-    NuFunnel* pFunnel)
+static NuError Nu_ExpandRaw(NuArchive* pArchive, const NuThread* pThread,
+    FILE* infp, NuFunnel* pFunnel)
 {
     NuError err;
-    /*uchar* buffer = nil;*/
-    ulong count, getsize;
+    /*uint8_t* buffer = NULL;*/
+    uint32_t count, getsize;
 
-    Assert(pArchive != nil);
-    Assert(pThread != nil);
-    Assert(infp != nil);
-    Assert(pFunnel != nil);
+    Assert(pArchive != NULL);
+    Assert(pThread != NULL);
+    Assert(infp != NULL);
+    Assert(pFunnel != NULL);
 
     /* doesn't have to be same size as funnel, but it's not a bad idea */
     /*buffer = Nu_Malloc(pArchive, kNuFunnelBufSize);*/
@@ -108,13 +107,12 @@ bail:
  * Expand a thread from "infp" to "pFunnel", using the compression
  * and stream length specified by "pThread".
  */
-NuError
-Nu_ExpandStream(NuArchive* pArchive, const NuRecord* pRecord,
+NuError Nu_ExpandStream(NuArchive* pArchive, const NuRecord* pRecord,
     const NuThread* pThread, FILE* infp, NuFunnel* pFunnel)
 {
     NuError err = kNuErrNone;
-    ushort calcCrc;
-    ushort* pCalcCrc;
+    uint16_t calcCrc;
+    uint16_t* pCalcCrc;
 
     if (!pThread->thThreadEOF && !pThread->thCompThreadEOF) {
         /* somebody stored an empty file! */
@@ -134,7 +132,7 @@ Nu_ExpandStream(NuArchive* pArchive, const NuRecord* pRecord,
      * unfortunately, unprotected before v3.
      */
     calcCrc = kNuInitialThreadCRC;
-    pCalcCrc = nil;
+    pCalcCrc = NULL;
     if (Nu_ThreadHasCRC(pRecord->recVersionNumber, NuGetThreadID(pThread)) &&
         !pArchive->valIgnoreCRC)
     {
@@ -205,7 +203,7 @@ Nu_ExpandStream(NuArchive* pArchive, const NuRecord* pRecord,
     /*
      * If we have a CRC to check, check it.
      */
-    if (pCalcCrc != nil) {
+    if (pCalcCrc != NULL) {
         if (calcCrc != pThread->thThreadCRC) {
             if (!Nu_ShouldIgnoreBadCRC(pArchive, pRecord, kNuErrBadThreadCRC)) {
                 err = kNuErrBadDataCRC;

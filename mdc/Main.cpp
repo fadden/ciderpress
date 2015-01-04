@@ -195,7 +195,7 @@ void MainWindow::ScanFiles(void)
         goto bail;
     }
 
-    long major, minor, bug;
+    int32_t major, minor, bug;
     DiskImgLib::Global::GetVersion(&major, &minor, &bug);
     fprintf(scanOpts.outfp, "MDC for Windows v%d.%d.%d (DiskImg library v%ld.%ld.%ld)\n",
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,

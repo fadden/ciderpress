@@ -404,7 +404,7 @@ void NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
 {
     NuError nerr;
     CString result("");
-    long major, minor, bug;
+    int32_t major, minor, bug;
 
     nerr = NuGetVersion(&major, &minor, &bug, NULL, NULL);
     if (nerr != kNuErrNone) {
@@ -501,15 +501,15 @@ NuResult NufxArchive::NufxErrorMsgHandler(NuArchive*, void* vErrorMessage)
 
     oldName = newName = NULL;
     if (pProgress->operation == kNuOpAdd) {
-        oldName = pProgress->origPathname;
-        newName = pProgress->pathname;
+        oldName = pProgress->origPathnameUNI;
+        newName = pProgress->pathnameUNI;
         if (pThis->fProgressAsRecompress)
             oldName = "-";
     } else if (pProgress->operation == kNuOpTest) {
-        oldName = pProgress->pathname;
+        oldName = pProgress->pathnameUNI;
     } else if (pProgress->operation == kNuOpExtract) {
         if (pThis->fProgressAsRecompress) {
-            oldName = pProgress->origPathname;
+            oldName = pProgress->origPathnameUNI;
             newName = "-";
         }
     }
@@ -796,7 +796,7 @@ NuResult NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
 
     pNewEntry = new NufxEntry(pArchive);
 
-    CStringW filenameW(pRecord->filename);
+    CStringW filenameW(pRecord->filenameMOR);
     pNewEntry->SetPathName(filenameW);
     pNewEntry->SetFssep(NuGetSepFromSysInfo(pRecord->recFileSysInfo));
     pNewEntry->SetFileType(pRecord->recFileType);
@@ -942,7 +942,7 @@ bool NufxArchive::BulkAdd(ActionProgressDialog* pActionProgress,
     }
 
     /* actually do the work */
-    long statusFlags;
+    uint32_t statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
         if (nerr != kNuErrAborted) {
@@ -1055,7 +1055,7 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     origNameA = fileName;   // narrowing conversion
     storageNameA = pathProp.fStoredPathName;
     details.origName = origNameA;
-    details.storageName = storageNameA;
+    details.storageNameMOR = storageNameA;
     details.fileSysID = kNuFileSysUnknown;
     details.fileSysInfo = PathProposal::kDefaultStoredFssep;
 
@@ -1125,7 +1125,7 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     pSource = NULL;      /* NufxLib owns it now */
 
     /* actually do the work */
-    long statusFlags;
+    uint32_t statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
         if (nerr != kNuErrAborted) {
@@ -1298,7 +1298,7 @@ NuResult NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
     NuResult result = kNuOK;
 
     ASSERT(pErrorStatus != NULL);
-    ASSERT(pErrorStatus->pathname != NULL);
+    ASSERT(pErrorStatus->pathnameUNI != NULL);
 
     ASSERT(pErrorStatus->canOverwrite);
     ASSERT(pErrorStatus->canSkip);
@@ -1307,13 +1307,14 @@ NuResult NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
 
     /* no firm policy, ask the user */
     ConfirmOverwriteDialog confOvwr;
-    PathName path(pErrorStatus->pathname);
+    PathName path(pErrorStatus->pathnameUNI);
     
-    confOvwr.fExistingFile = pErrorStatus->pRecord->filename;
+    confOvwr.fExistingFile = pErrorStatus->pRecord->filenameMOR;
     confOvwr.fExistingFileModWhen =
         DateTimeToSeconds(&pErrorStatus->pRecord->recModWhen);
     if (pErrorStatus->origPathname != NULL) {
-        confOvwr.fNewFileSource = pErrorStatus->origPathname;
+        // TODO: use wchar_t instead for origPathname
+        confOvwr.fNewFileSource = (char*) pErrorStatus->origPathname;
         PathName checkPath(confOvwr.fNewFileSource);
         confOvwr.fNewFileModWhen = checkPath.GetModWhen();
     } else {
@@ -1354,7 +1355,7 @@ NuResult NufxArchive::HandleAddNotFound(const NuErrorStatus* pErrorStatus)
     CString errMsg;
 
     errMsg.Format(L"Failed while adding '%hs': file no longer exists.",
-        pErrorStatus->pathname);
+        pErrorStatus->pathnameUNI);
     ShowFailureMsg(fpMsgWnd, errMsg, IDS_FAILED);
 
     return kNuAbort;
@@ -1450,7 +1451,7 @@ bool NufxArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     }
 
     /* actually do the delete */
-    long statusFlags;
+    uint32_t statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
         errMsg.Format(L"Unable to delete all files: %hs.", NuStrError(nerr));
@@ -1546,7 +1547,7 @@ bool NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     {
         CWaitCursor waitc;
 
-        long statusFlags;
+        uint32_t statusFlags;
         nerr = NuFlush(fpArchive, &statusFlags);
         if (nerr != kNuErrNone) {
             errMsg.Format(L"Unable to rename all files: %hs.",
@@ -1693,7 +1694,7 @@ bool NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         /* if we're sitting on too much, push it out */
         if (sizeInMemory > kMaxSizeInMemory) {
             /* flush anything pending */
-            long statusFlags;
+            uint32_t statusFlags;
             nerr = NuFlush(fpArchive, &statusFlags);
             if (nerr != kNuErrNone) {
                 if (nerr != kNuErrAborted) {
@@ -1727,7 +1728,7 @@ bool NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
 
 
     /* flush anything pending */
-    long statusFlags;
+    uint32_t statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
         if (nerr != kNuErrAborted) {
@@ -2185,7 +2186,7 @@ void NufxArchive::XferFinish(CWnd* pMsgWnd)
     LOGI("  NufxArchive::XferFinish");
 
     /* actually do the work */
-    long statusFlags;
+    uint32_t statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
         if (nerr != kNuErrAborted) {
@@ -2345,7 +2346,7 @@ bool NufxArchive::SetComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
     pSource = NULL;  // nufxlib owns it now
 
     /* flush changes */
-    long statusFlags;
+    uint32_t statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
         errMsg.Format(L"Unable to flush comment changes: %hs.",
@@ -2387,7 +2388,7 @@ bool NufxArchive::DeleteComment(CWnd* pMsgWnd, GenericEntry* pGenericEntry)
     }
 
     /* flush changes */
-    long statusFlags;
+    uint32_t statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
         errMsg.Format(L"Unable to flush comment deletion: %hs.",
@@ -2447,7 +2448,7 @@ bool NufxArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pEntry,
         return false;
     }
 
-    long statusFlags;
+    uint32_t statusFlags;
     nerr = NuFlush(fpArchive, &statusFlags);
     if (nerr != kNuErrNone) {
         LOGI("ERROR: NuFlush failed: %hs", NuStrError(nerr));

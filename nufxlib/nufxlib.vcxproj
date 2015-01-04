@@ -85,6 +85,7 @@
     <ClCompile Include="Archive.c" />
     <ClCompile Include="ArchiveIO.c" />
     <ClCompile Include="Bzip2.c" />
+    <ClCompile Include="Charset.c" />
     <ClCompile Include="Compress.c" />
     <ClCompile Include="Crc16.c" />
     <ClCompile Include="Debug.c" />

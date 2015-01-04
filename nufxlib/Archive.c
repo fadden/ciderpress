@@ -16,13 +16,13 @@
 #endif
 
 /* master header identification */
-static const uchar kNuMasterID[kNufileIDLen] =
+static const uint8_t kNuMasterID[kNufileIDLen] =
     { 0x4e, 0xf5, 0x46, 0xe9, 0x6c, 0xe5 };
 
 /* other identification; can be no longer than kNufileIDLen */
-static const uchar kNuBinary2ID[] =
+static const uint8_t kNuBinary2ID[] =
     { 0x0a, 0x47, 0x4c };
-static const uchar kNuSHKSEAID[] =
+static const uint8_t kNuSHKSEAID[] =
     { 0xa2, 0x2e, 0x00 };
 
 /*
@@ -53,19 +53,16 @@ static void Nu_CloseAndFree(NuArchive* pArchive);
 /*
  * Allocate and initialize a new NuArchive structure.
  */
-static NuError
-Nu_NuArchiveNew(NuArchive** ppArchive)
+static NuError Nu_NuArchiveNew(NuArchive** ppArchive)
 {
-    Assert(ppArchive != nil);
+    Assert(ppArchive != NULL);
 
     /* validate some assumptions we make throughout the code */
     Assert(sizeof(int) >= 2);
-    Assert(sizeof(ushort) >= 2);
-    Assert(sizeof(ulong) >= 4);
     Assert(sizeof(void*) >= sizeof(NuArchive*));
 
-    *ppArchive = Nu_Calloc(nil, sizeof(**ppArchive));
-    if (*ppArchive == nil)
+    *ppArchive = Nu_Calloc(NULL, sizeof(**ppArchive));
+    if (*ppArchive == NULL)
         return kNuErrMalloc;
 
     (*ppArchive)->structMagic = kNuArchiveStructMagic;
@@ -107,10 +104,9 @@ Nu_NuArchiveNew(NuArchive** ppArchive)
 /*
  * Free up a NuArchive structure and its contents.
  */
-static NuError
-Nu_NuArchiveFree(NuArchive* pArchive)
+static NuError Nu_NuArchiveFree(NuArchive* pArchive)
 {
-    Assert(pArchive != nil);
+    Assert(pArchive != NULL);
     Assert(pArchive->structMagic == kNuArchiveStructMagic);
 
     (void) Nu_RecordSet_FreeAllRecords(pArchive, &pArchive->origRecordSet);
@@ -118,15 +114,15 @@ Nu_NuArchiveFree(NuArchive* pArchive)
     (void) Nu_RecordSet_FreeAllRecords(pArchive, &pArchive->copyRecordSet);
     (void) Nu_RecordSet_FreeAllRecords(pArchive, &pArchive->newRecordSet);
 
-    Nu_Free(nil, pArchive->archivePathname);
-    Nu_Free(nil, pArchive->tmpPathname);
-    Nu_Free(nil, pArchive->compBuf);
-    Nu_Free(nil, pArchive->lzwCompressState);
-    Nu_Free(nil, pArchive->lzwExpandState);
+    Nu_Free(NULL, pArchive->archivePathnameUNI);
+    Nu_Free(NULL, pArchive->tmpPathnameUNI);
+    Nu_Free(NULL, pArchive->compBuf);
+    Nu_Free(NULL, pArchive->lzwCompressState);
+    Nu_Free(NULL, pArchive->lzwExpandState);
 
     /* mark it as deceased to prevent further use, then free it */
     pArchive->structMagic = kNuArchiveStructMagic ^ 0xffffffff;
-    Nu_Free(nil, pArchive);
+    Nu_Free(NULL, pArchive);
 
     return kNuErrNone;
 }
@@ -135,13 +131,12 @@ Nu_NuArchiveFree(NuArchive* pArchive)
 /*
  * Copy a NuMasterHeader struct.
  */
-void
-Nu_MasterHeaderCopy(NuArchive* pArchive, NuMasterHeader* pDstHeader,
+void Nu_MasterHeaderCopy(NuArchive* pArchive, NuMasterHeader* pDstHeader,
     const NuMasterHeader* pSrcHeader)
 {
-    Assert(pArchive != nil);
-    Assert(pDstHeader != nil);
-    Assert(pSrcHeader != nil);
+    Assert(pArchive != NULL);
+    Assert(pDstHeader != NULL);
+    Assert(pSrcHeader != NULL);
 
     *pDstHeader = *pSrcHeader;
 }
@@ -149,10 +144,10 @@ Nu_MasterHeaderCopy(NuArchive* pArchive, NuMasterHeader* pDstHeader,
 /*
  * Get a pointer to the archive master header (this is an API call).
  */
-NuError
-Nu_GetMasterHeader(NuArchive* pArchive, const NuMasterHeader** ppMasterHeader)
+NuError Nu_GetMasterHeader(NuArchive* pArchive,
+    const NuMasterHeader** ppMasterHeader)
 {
-    if (ppMasterHeader == nil)
+    if (ppMasterHeader == NULL)
         return kNuErrInvalidArg;
 
     *ppMasterHeader = &pArchive->masterHeader;
@@ -164,16 +159,15 @@ Nu_GetMasterHeader(NuArchive* pArchive, const NuMasterHeader** ppMasterHeader)
 /*
  * Allocate the general-purpose compression buffer, if needed.
  */
-NuError
-Nu_AllocCompressionBufferIFN(NuArchive* pArchive)
+NuError Nu_AllocCompressionBufferIFN(NuArchive* pArchive)
 {
-    Assert(pArchive != nil);
+    Assert(pArchive != NULL);
 
-    if (pArchive->compBuf != nil)
+    if (pArchive->compBuf != NULL)
         return kNuErrNone;
 
     pArchive->compBuf = Nu_Malloc(pArchive, kNuGenCompBufSize);
-    if (pArchive->compBuf == nil)
+    if (pArchive->compBuf == NULL)
         return kNuErrMalloc;
 
     return kNuErrNone;
@@ -183,8 +177,7 @@ Nu_AllocCompressionBufferIFN(NuArchive* pArchive)
 /*
  * Return a unique value.
  */
-NuRecordIdx
-Nu_GetNextRecordIdx(NuArchive* pArchive)
+NuRecordIdx Nu_GetNextRecordIdx(NuArchive* pArchive)
 {
     return pArchive->nextRecordIdx++;
 }
@@ -192,8 +185,7 @@ Nu_GetNextRecordIdx(NuArchive* pArchive)
 /*
  * Return a unique value.
  */
-NuThreadIdx
-Nu_GetNextThreadIdx(NuArchive* pArchive)
+NuThreadIdx Nu_GetNextThreadIdx(NuArchive* pArchive)
 {
     return pArchive->nextRecordIdx++;       /* just use the record counter */
 }
@@ -208,8 +200,7 @@ Nu_GetNextThreadIdx(NuArchive* pArchive)
 /*
  * Copy the wrapper from the archive file to the temp file.
  */
-NuError
-Nu_CopyWrapperToTemp(NuArchive* pArchive)
+NuError Nu_CopyWrapperToTemp(NuArchive* pArchive)
 {
     NuError err;
 
@@ -247,13 +238,12 @@ bail:
  * guess some of the SEA weirdness stems from some far-sighted support
  * for multiple archives within a single SEA wrapper.
  */
-NuError
-Nu_UpdateWrapper(NuArchive* pArchive, FILE* fp)
+NuError Nu_UpdateWrapper(NuArchive* pArchive, FILE* fp)
 {
     NuError err = kNuErrNone;
     Boolean hasBinary2, hasSea;
-    uchar identBuf[kNufileIDLen];
-    ulong archiveLen, archiveLen512;
+    uint8_t identBuf[kNufileIDLen];
+    uint32_t archiveLen, archiveLen512;
 
     Assert(pArchive->newMasterHeader.isValid);  /* need new crc and len */
 
@@ -306,20 +296,20 @@ Nu_UpdateWrapper(NuArchive* pArchive, FILE* fp)
 
         err = Nu_FSeek(fp, kNuBNYFileSizeLo - kNufileIDLen, SEEK_CUR);
         BailError(err);
-        Nu_WriteTwo(pArchive, fp, (ushort)(archiveLen512 & 0xffff));
+        Nu_WriteTwo(pArchive, fp, (uint16_t)(archiveLen512 & 0xffff));
 
         err = Nu_FSeek(fp, kNuBNYFileSizeHi - (kNuBNYFileSizeLo+2), SEEK_CUR);
         BailError(err);
-        Nu_WriteTwo(pArchive, fp, (ushort)(archiveLen512 >> 16));
+        Nu_WriteTwo(pArchive, fp, (uint16_t)(archiveLen512 >> 16));
 
         err = Nu_FSeek(fp, kNuBNYEOFLo - (kNuBNYFileSizeHi+2), SEEK_CUR);
         BailError(err);
-        Nu_WriteTwo(pArchive, fp, (ushort)(archiveLen & 0xffff));
-        Nu_WriteOne(pArchive, fp, (uchar)((archiveLen >> 16) & 0xff));
+        Nu_WriteTwo(pArchive, fp, (uint16_t)(archiveLen & 0xffff));
+        Nu_WriteOne(pArchive, fp, (uint8_t)((archiveLen >> 16) & 0xff));
 
         err = Nu_FSeek(fp, kNuBNYEOFHi - (kNuBNYEOFLo+3), SEEK_CUR);
         BailError(err);
-        Nu_WriteOne(pArchive, fp, (uchar)(archiveLen >> 24));
+        Nu_WriteOne(pArchive, fp, (uint8_t)(archiveLen >> 24));
 
         err = Nu_FSeek(fp, kNuBNYDiskSpace - (kNuBNYEOFHi+1), SEEK_CUR);
         BailError(err);
@@ -358,11 +348,11 @@ Nu_UpdateWrapper(NuArchive* pArchive, FILE* fp)
 
         err = Nu_FSeek(fp, kNuSEALength1 - (kNuSEAFunkySize+4), SEEK_CUR);
         BailError(err);
-        Nu_WriteTwo(pArchive, fp, (ushort)archiveLen);
+        Nu_WriteTwo(pArchive, fp, (uint16_t)archiveLen);
 
         err = Nu_FSeek(fp, kNuSEALength2 - (kNuSEALength1+2), SEEK_CUR);
         BailError(err);
-        Nu_WriteTwo(pArchive, fp, (ushort)archiveLen);
+        Nu_WriteTwo(pArchive, fp, (uint16_t)archiveLen);
 
         /* seek past end of SEA wrapper */
         err = Nu_FSeek(fp, kNuSEAOffset - (kNuSEALength2+2), SEEK_CUR);
@@ -399,8 +389,7 @@ bail:
  * require additional disk space to be used, assuming a filesystem block
  * size of at least 128 bytes.
  */
-NuError
-Nu_AdjustWrapperPadding(NuArchive* pArchive, FILE* fp)
+NuError Nu_AdjustWrapperPadding(NuArchive* pArchive, FILE* fp)
 {
     NuError err = kNuErrNone;
     Boolean hasBinary2, hasSea;
@@ -495,17 +484,16 @@ bail:
  *
  * On exit, the stream will be positioned just past the master header.
  */
-static NuError
-Nu_ReadMasterHeader(NuArchive* pArchive)
+static NuError Nu_ReadMasterHeader(NuArchive* pArchive)
 {
     NuError err;
-    ushort crc;
+    uint16_t crc;
     FILE* fp;
     NuMasterHeader* pHeader;
     Boolean isBinary2 = false;
     Boolean isSea = false;
 
-    Assert(pArchive != nil);
+    Assert(pArchive != NULL);
 
     fp = pArchive->archiveFp;       /* saves typing */
     pHeader = &pArchive->masterHeader;
@@ -640,7 +628,7 @@ retry:
 
     /* compare the CRC */
     if (!pArchive->valIgnoreCRC && crc != pHeader->mhMasterCRC) {
-        if (!Nu_ShouldIgnoreBadCRC(pArchive, nil, kNuErrBadMHCRC)) {
+        if (!Nu_ShouldIgnoreBadCRC(pArchive, NULL, kNuErrBadMHCRC)) {
             err = kNuErrBadMHCRC;
             Nu_ReportError(NU_BLOB, err, "Stored MH CRC=0x%04x, calc=0x%04x",
                 pHeader->mhMasterCRC, crc);
@@ -669,7 +657,7 @@ retry:
     if (pHeader->mhMasterEOF == kNuMasterHeaderSize) {
         err = kNuErrNoRecords;
         Nu_ReportError(NU_BLOB, err,
-            "Master EOF is %ld, archive is probably truncated",
+            "Master EOF is %u, archive is probably truncated",
             pHeader->mhMasterEOF);
         goto bail;
     }
@@ -712,12 +700,11 @@ bail:
  * Prepare the NuArchive and NuMasterHeader structures for use with a
  * newly-created archive.
  */
-static void
-Nu_InitNewArchive(NuArchive* pArchive)
+static void Nu_InitNewArchive(NuArchive* pArchive)
 {
     NuMasterHeader* pHeader;
     
-    Assert(pArchive != nil);
+    Assert(pArchive != NULL);
 
     pHeader = &pArchive->masterHeader;
 
@@ -741,14 +728,13 @@ Nu_InitNewArchive(NuArchive* pArchive)
 /*
  * Open an archive in streaming read-only mode.
  */
-NuError
-Nu_StreamOpenRO(FILE* infp, NuArchive** ppArchive)
+NuError Nu_StreamOpenRO(FILE* infp, NuArchive** ppArchive)
 {
     NuError err;
-    NuArchive* pArchive = nil;
+    NuArchive* pArchive = NULL;
 
-    Assert(infp != nil);
-    Assert(ppArchive != nil);
+    Assert(infp != NULL);
+    Assert(ppArchive != NULL);
 
     err = Nu_NuArchiveNew(ppArchive);
     if (err != kNuErrNone)
@@ -757,16 +743,16 @@ Nu_StreamOpenRO(FILE* infp, NuArchive** ppArchive)
 
     pArchive->openMode = kNuOpenStreamingRO;
     pArchive->archiveFp = infp;
-    pArchive->archivePathname = strdup("(stream)");
+    pArchive->archivePathnameUNI = strdup("(stream)");
 
     err = Nu_ReadMasterHeader(pArchive);
     BailError(err);
 
 bail:
     if (err != kNuErrNone) {
-        if (pArchive != nil)
+        if (pArchive != NULL)
             (void) Nu_NuArchiveFree(pArchive);
-        *ppArchive = nil;
+        *ppArchive = NULL;
     }
     return err;
 }
@@ -775,21 +761,24 @@ bail:
 /*
  * Open an archive in non-streaming read-only mode.
  */
-NuError
-Nu_OpenRO(const char* archivePathname, NuArchive** ppArchive)
+NuError Nu_OpenRO(const UNICHAR* archivePathnameUNI, NuArchive** ppArchive)
 {
     NuError err;
-    NuArchive* pArchive = nil;
-    FILE* fp = nil;
+    NuArchive* pArchive = NULL;
+    FILE* fp = NULL;
 
-    if (archivePathname == nil || !strlen(archivePathname) || ppArchive == nil)
+    if (archivePathnameUNI == NULL || !strlen(archivePathnameUNI) ||
+            ppArchive == NULL)
+    {
         return kNuErrInvalidArg;
+    }
 
-    *ppArchive = nil;
+    *ppArchive = NULL;
 
-    fp = fopen(archivePathname, kNuFileOpenReadOnly);
-    if (fp == nil) {
-        Nu_ReportError(NU_BLOB, errno, "Unable to open '%s'", archivePathname);
+    fp = fopen(archivePathnameUNI, kNuFileOpenReadOnly);
+    if (fp == NULL) {
+        Nu_ReportError(NU_BLOB, errno, "Unable to open '%s'",
+            archivePathnameUNI);
         err = kNuErrFileOpen;
         goto bail;
     }
@@ -801,19 +790,19 @@ Nu_OpenRO(const char* archivePathname, NuArchive** ppArchive)
 
     pArchive->openMode = kNuOpenRO;
     pArchive->archiveFp = fp;
-    fp = nil;
-    pArchive->archivePathname = strdup(archivePathname);
+    fp = NULL;
+    pArchive->archivePathnameUNI = strdup(archivePathnameUNI);
 
     err = Nu_ReadMasterHeader(pArchive);
     BailError(err);
 
 bail:
     if (err != kNuErrNone) {
-        if (pArchive != nil) {
+        if (pArchive != NULL) {
             (void) Nu_CloseAndFree(pArchive);
-            *ppArchive = nil;
+            *ppArchive = NULL;
         }
-        if (fp != nil)
+        if (fp != NULL)
             fclose(fp);
     }
     return err;
@@ -822,15 +811,15 @@ bail:
 
 /*
  * Open a temp file.  If "fileName" contains six Xs ("XXXXXX"), it will
- * be treated as a mktemp-style template, and modified before use.
+ * be treated as a mktemp-style template, and modified before use (so
+ * pass a copy of the string in).
  *
  * Thought for the day: consider using Win32 SetFileAttributes() to make
  * temp files hidden.  We will need to un-hide it before rolling it over.
  */
-static NuError
-Nu_OpenTempFile(char* fileName, FILE** pFp)
+static NuError Nu_OpenTempFile(UNICHAR* fileNameUNI, FILE** pFp)
 {
-    NuArchive* pArchive = nil;  /* dummy for NU_BLOB */
+    NuArchive* pArchive = NULL;  /* dummy for NU_BLOB */
     NuError err = kNuErrNone;
     int len;
 
@@ -843,25 +832,25 @@ Nu_OpenTempFile(char* fileName, FILE** pFp)
      * to complain about mktemp, since it's generally a bad way to do
      * things.
      */
-    len = strlen(fileName);
-    if (len > 6 && strcmp(fileName + len - 6, "XXXXXX") == 0) {
+    len = strlen(fileNameUNI);
+    if (len > 6 && strcmp(fileNameUNI + len - 6, "XXXXXX") == 0) {
 #if defined(HAVE_MKSTEMP) && defined(HAVE_FDOPEN)
         int fd;
 
         DBUG(("+++ Using mkstemp\n"));
 
         /* this modifies the template *and* opens the file */
-        fd = mkstemp(fileName);
+        fd = mkstemp(fileNameUNI);
         if (fd < 0) {
             err = errno ? errno : kNuErrFileOpen;
             Nu_ReportError(NU_BLOB, kNuErrNone, "mkstemp failed on '%s'",
-                fileName);
+                fileNameUNI);
             goto bail;
         }
 
-        DBUG(("--- Fd-opening temp file '%s'\n", fileName));
+        DBUG(("--- Fd-opening temp file '%s'\n", fileNameUNI));
         *pFp = fdopen(fd, kNuFileOpenReadWriteCreat);
-        if (*pFp == nil) {
+        if (*pFp == NULL) {
             close(fd);
             err = errno ? errno : kNuErrFileOpen;
             goto bail;
@@ -874,10 +863,10 @@ Nu_OpenTempFile(char* fileName, FILE** pFp)
         char* result;
 
         DBUG(("+++ Using mktemp\n"));
-        result = mktemp(fileName);
-        if (result == nil) {
+        result = mktemp(fileNameUNI);
+        if (result == NULL) {
             Nu_ReportError(NU_BLOB, kNuErrNone, "mktemp failed on '%s'",
-                fileName);
+                fileNameUNI);
             err = kNuErrInternal;
             goto bail;
         }
@@ -886,34 +875,33 @@ Nu_OpenTempFile(char* fileName, FILE** pFp)
 #endif
     }
 
-    DBUG(("--- Opening temp file '%s'\n", fileName));
+    DBUG(("--- Opening temp file '%s'\n", fileNameUNI));
 
 #if defined(HAVE_FDOPEN)
     {
         int fd;
 
-        fd = open(fileName, O_RDWR|O_CREAT|O_EXCL|O_BINARY, 0600);
+        fd = open(fileNameUNI, O_RDWR|O_CREAT|O_EXCL|O_BINARY, 0600);
         if (fd < 0) {
             err = errno ? errno : kNuErrFileOpen;
             goto bail;
         }
 
         *pFp = fdopen(fd, kNuFileOpenReadWriteCreat);
-        if (*pFp == nil) {
+        if (*pFp == NULL) {
             close(fd);
             err = errno ? errno : kNuErrFileOpen;
             goto bail;
         }
     }
 #else
-    /* (not sure how portable "access" is... I think it's POSIX) */
-    if (access(fileName, F_OK) == 0) {
+    if (access(fileNameUNI, F_OK) == 0) {
         err = kNuErrFileExists;
         goto bail;
     }
 
-    *pFp = fopen(fileName, kNuFileOpenReadWriteCreat);
-    if (*pFp == nil) {
+    *pFp = fopen(fileNameUNI, kNuFileOpenReadWriteCreat);
+    if (*pFp == NULL) {
         err = errno ? errno : kNuErrFileOpen;
         goto bail;
     }
@@ -928,26 +916,25 @@ bail:
  * Open an archive in read-write mode, optionally creating it if it doesn't
  * exist.
  */
-NuError
-Nu_OpenRW(const char* archivePathname, const char* tmpPathname, ulong flags,
-    NuArchive** ppArchive)
+NuError Nu_OpenRW(const UNICHAR* archivePathnameUNI,
+    const UNICHAR* tmpPathnameUNI, uint32_t flags, NuArchive** ppArchive)
 {
     NuError err;
-    FILE* fp = nil;
-    FILE* tmpFp = nil;
-    NuArchive* pArchive = nil;
-    char* tmpPathDup = nil;
+    FILE* fp = NULL;
+    FILE* tmpFp = NULL;
+    NuArchive* pArchive = NULL;
+    char* tmpPathDup = NULL;
     Boolean archiveExists;
     Boolean newlyCreated;
 
-    if (archivePathname == nil || !strlen(archivePathname) ||
-        tmpPathname == nil || !strlen(tmpPathname) || ppArchive == nil ||
-        (flags & ~(kNuOpenCreat|kNuOpenExcl)) != 0)
+    if (archivePathnameUNI == NULL || !strlen(archivePathnameUNI) ||
+        tmpPathnameUNI == NULL || !strlen(tmpPathnameUNI) ||
+        ppArchive == NULL || (flags & ~(kNuOpenCreat|kNuOpenExcl)) != 0)
     {
         return kNuErrInvalidArg;
     }
 
-    archiveExists = (access(archivePathname, F_OK) == 0);
+    archiveExists = (access(archivePathnameUNI, F_OK) == 0);
 
     /*
      * Open or create archive file.
@@ -955,27 +942,30 @@ Nu_OpenRW(const char* archivePathname, const char* tmpPathname, ulong flags,
     if (archiveExists) {
         if ((flags & kNuOpenCreat) && (flags & kNuOpenExcl)) {
             err = kNuErrFileExists;
-            Nu_ReportError(NU_BLOB, err, "File '%s' exists", archivePathname);
+            Nu_ReportError(NU_BLOB, err, "File '%s' exists",
+                archivePathnameUNI);
             goto bail;
         }
-        fp = fopen(archivePathname, kNuFileOpenReadWrite);
+        fp = fopen(archivePathnameUNI, kNuFileOpenReadWrite);
         newlyCreated = false;
     } else {
         if (!(flags & kNuOpenCreat)) {
             err = kNuErrFileNotFound;
-            Nu_ReportError(NU_BLOB, err, "File '%s' not found",archivePathname);
+            Nu_ReportError(NU_BLOB, err, "File '%s' not found",
+                archivePathnameUNI);
             goto bail;
         }
-        fp = fopen(archivePathname, kNuFileOpenReadWriteCreat);
+        fp = fopen(archivePathnameUNI, kNuFileOpenReadWriteCreat);
         newlyCreated = true;
     }
 
-    if (fp == nil) {
+    if (fp == NULL) {
         if (errno == EACCES)
             err = kNuErrFileAccessDenied;
         else
             err = kNuErrFileOpen;
-        Nu_ReportError(NU_BLOB, errno, "Unable to open '%s'", archivePathname);
+        Nu_ReportError(NU_BLOB, errno, "Unable to open '%s'",
+            archivePathnameUNI);
         goto bail;
     }
 
@@ -985,7 +975,7 @@ Nu_OpenRW(const char* archivePathname, const char* tmpPathname, ulong flags,
     if (archiveExists && !newlyCreated) {
         long length;
 
-        err = Nu_GetFileLength(nil, fp, &length);
+        err = Nu_GetFileLength(NULL, fp, &length);
         BailError(err);
 
         if (!length) {
@@ -1003,12 +993,12 @@ Nu_OpenRW(const char* archivePathname, const char* tmpPathname, ulong flags,
      * So, create a temp file whether we think we need one or not.  Won't
      * do any harm, and might save us some troubles later.
      */
-    tmpPathDup = strdup(tmpPathname);
+    tmpPathDup = strdup(tmpPathnameUNI);
     BailNil(tmpPathDup);
     err = Nu_OpenTempFile(tmpPathDup, &tmpFp);
     if (err != kNuErrNone) {
         Nu_ReportError(NU_BLOB, err, "Failed opening temp file '%s'",
-            tmpPathname);
+            tmpPathnameUNI);
         goto bail;
     }
 
@@ -1019,13 +1009,13 @@ Nu_OpenRW(const char* archivePathname, const char* tmpPathname, ulong flags,
 
     pArchive->openMode = kNuOpenRW;
     pArchive->newlyCreated = newlyCreated;
-    pArchive->archivePathname = strdup(archivePathname);
+    pArchive->archivePathnameUNI = strdup(archivePathnameUNI);
     pArchive->archiveFp = fp;
-    fp = nil;
+    fp = NULL;
     pArchive->tmpFp = tmpFp;
-    tmpFp = nil;
-    pArchive->tmpPathname = tmpPathDup;
-    tmpPathDup = nil;
+    tmpFp = NULL;
+    pArchive->tmpPathnameUNI = tmpPathDup;
+    tmpPathDup = NULL;
 
     if (archiveExists && !newlyCreated) {
         err = Nu_ReadMasterHeader(pArchive);
@@ -1036,15 +1026,15 @@ Nu_OpenRW(const char* archivePathname, const char* tmpPathname, ulong flags,
 
 bail:
     if (err != kNuErrNone) {
-        if (pArchive != nil) {
+        if (pArchive != NULL) {
             (void) Nu_CloseAndFree(pArchive);
-            *ppArchive = nil;
+            *ppArchive = NULL;
         }
-        if (fp != nil)
+        if (fp != NULL)
             fclose(fp);
-        if (tmpFp != nil)
+        if (tmpFp != NULL)
             fclose(tmpFp);
-        if (tmpPathDup != nil)
+        if (tmpPathDup != NULL)
             Nu_Free(pArchive, tmpPathDup);
     }
     return err;
@@ -1060,17 +1050,16 @@ bail:
 /*
  * Write the NuFX master header at the current offset.
  */
-NuError
-Nu_WriteMasterHeader(NuArchive* pArchive, FILE* fp,
+NuError Nu_WriteMasterHeader(NuArchive* pArchive, FILE* fp,
     NuMasterHeader* pHeader)
 {
     NuError err;
     long crcOffset;
-    ushort crc;
+    uint16_t crc;
 
-    Assert(pArchive != nil);
-    Assert(fp != nil);
-    Assert(pHeader != nil);
+    Assert(pArchive != NULL);
+    Assert(fp != NULL);
+    Assert(pHeader != NULL);
     Assert(pHeader->isValid);
     Assert(pHeader->mhMasterVersion == kNuOurMHVersion);
 
@@ -1122,23 +1111,22 @@ bail:
  * If it's a brand-new archive, and we didn't add anything to it, then we
  * want to remove the stub archive file.
  */
-static void
-Nu_CloseAndFree(NuArchive* pArchive)
+static void Nu_CloseAndFree(NuArchive* pArchive)
 {
-    if (pArchive->archiveFp != nil) {
+    if (pArchive->archiveFp != NULL) {
         DBUG(("--- Closing archive\n"));
         fclose(pArchive->archiveFp);
-        pArchive->archiveFp = nil;
+        pArchive->archiveFp = NULL;
     }
 
-    if (pArchive->tmpFp != nil) {
+    if (pArchive->tmpFp != NULL) {
         DBUG(("--- Closing and removing temp file\n"));
         fclose(pArchive->tmpFp);
-        pArchive->tmpFp = nil;
-        Assert(pArchive->tmpPathname != nil);
-        if (remove(pArchive->tmpPathname) != 0) {
+        pArchive->tmpFp = NULL;
+        Assert(pArchive->tmpPathnameUNI != NULL);
+        if (remove(pArchive->tmpPathnameUNI) != 0) {
             Nu_ReportError(NU_BLOB, errno, "Unable to remove temp file '%s'",
-                pArchive->tmpPathname);
+                pArchive->tmpPathnameUNI);
             /* keep going */
         }
     }
@@ -1146,9 +1134,9 @@ Nu_CloseAndFree(NuArchive* pArchive)
     if (pArchive->newlyCreated && Nu_RecordSet_IsEmpty(&pArchive->origRecordSet))
     {
         DBUG(("--- Newly-created archive unmodified; removing it\n"));
-        if (remove(pArchive->archivePathname) != 0) {
+        if (remove(pArchive->archivePathnameUNI) != 0) {
             Nu_ReportError(NU_BLOB, errno, "Unable to remove archive file '%s'",
-                pArchive->archivePathname);
+                pArchive->archivePathnameUNI);
         }
     }
     
@@ -1158,13 +1146,12 @@ Nu_CloseAndFree(NuArchive* pArchive)
 /*
  * Flush pending changes to the archive, then close it.
  */
-NuError
-Nu_Close(NuArchive* pArchive)
+NuError Nu_Close(NuArchive* pArchive)
 {
     NuError err = kNuErrNone;
-    long flushStatus;
+    uint32_t flushStatus;
 
-    Assert(pArchive != nil);
+    Assert(pArchive != NULL);
 
     if (!Nu_IsReadOnly(pArchive))
         err = Nu_Flush(pArchive, &flushStatus);
@@ -1190,29 +1177,28 @@ Nu_Close(NuArchive* pArchive)
 /*
  * Delete the archive file, which should already have been closed.
  */
-NuError
-Nu_DeleteArchiveFile(NuArchive* pArchive)
+NuError Nu_DeleteArchiveFile(NuArchive* pArchive)
 {
-    Assert(pArchive != nil);
-    Assert(pArchive->archiveFp == nil);
-    Assert(pArchive->archivePathname != nil);
+    Assert(pArchive != NULL);
+    Assert(pArchive->archiveFp == NULL);
+    Assert(pArchive->archivePathnameUNI != NULL);
 
-    return Nu_DeleteFile(pArchive->archivePathname);
+    return Nu_DeleteFile(pArchive->archivePathnameUNI);
 }
 
 /*
  * Rename the temp file on top of the original archive.  The temp file
  * should be closed, and the archive file should be deleted.
  */
-NuError
-Nu_RenameTempToArchive(NuArchive* pArchive)
+NuError Nu_RenameTempToArchive(NuArchive* pArchive)
 {
-    Assert(pArchive != nil);
-    Assert(pArchive->archiveFp == nil);
-    Assert(pArchive->tmpFp == nil);
-    Assert(pArchive->archivePathname != nil);
-    Assert(pArchive->tmpPathname != nil);
+    Assert(pArchive != NULL);
+    Assert(pArchive->archiveFp == NULL);
+    Assert(pArchive->tmpFp == NULL);
+    Assert(pArchive->archivePathnameUNI != NULL);
+    Assert(pArchive->tmpPathnameUNI != NULL);
 
-    return Nu_RenameFile(pArchive->tmpPathname, pArchive->archivePathname);
+    return Nu_RenameFile(pArchive->tmpPathnameUNI,
+        pArchive->archivePathnameUNI);
 }
 

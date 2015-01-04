@@ -19,13 +19,12 @@
 /*
  * Allocate a new DataSource structure.
  */
-static NuError
-Nu_DataSourceNew(NuDataSource** ppDataSource)
+static NuError Nu_DataSourceNew(NuDataSource** ppDataSource)
 {
-    Assert(ppDataSource != nil);
+    Assert(ppDataSource != NULL);
 
-    *ppDataSource = Nu_Malloc(nil, sizeof(**ppDataSource));
-    if (*ppDataSource == nil)
+    *ppDataSource = Nu_Malloc(NULL, sizeof(**ppDataSource));
+    if (*ppDataSource == NULL)
         return kNuErrMalloc;
 
     (*ppDataSource)->sourceType = kNuDataSourceUnknown;
@@ -47,10 +46,9 @@ Nu_DataSourceNew(NuDataSource** ppDataSource)
  * needed in the first place.)  Buffer sources are a little scary since
  * they include a "curOffset" value.
  *
- * Returns nil on error.
+ * Returns NULL on error.
  */
-NuDataSource*
-Nu_DataSourceCopy(NuDataSource* pDataSource)
+NuDataSource* Nu_DataSourceCopy(NuDataSource* pDataSource)
 {
     Assert(pDataSource->common.refCount >= 1);
     pDataSource->common.refCount++;
@@ -59,18 +57,18 @@ Nu_DataSourceCopy(NuDataSource* pDataSource)
 #if 0   /* we used to copy them -- very bad idea */
     NuDataSource* pNewDataSource;
 
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
 
     if (Nu_DataSourceNew(&pNewDataSource) != kNuErrNone)
-        return nil;
-    Assert(pNewDataSource != nil);
+        return NULL;
+    Assert(pNewDataSource != NULL);
 
     /* this gets most of it */
     memcpy(pNewDataSource, pDataSource, sizeof(*pNewDataSource));
 
     /* copy anything we're sure to free up */
     if (pDataSource->sourceType == kNuDataSourceFromFile) {
-        Assert(pDataSource->fromFile.fp == nil);        /* does this matter? */
+        Assert(pDataSource->fromFile.fp == NULL);        /* does this matter? */
         pNewDataSource->fromFile.pathname =
                                     strdup(pDataSource->fromFile.pathname);
     }
@@ -89,10 +87,9 @@ Nu_DataSourceCopy(NuDataSource* pDataSource)
 /*
  * Free a data source structure, and any type-specific elements.
  */
-NuError
-Nu_DataSourceFree(NuDataSource* pDataSource)
+NuError Nu_DataSourceFree(NuDataSource* pDataSource)
 {
-    if (pDataSource == nil)
+    if (pDataSource == NULL)
         return kNuErrNone;
 
     Assert(pDataSource->common.refCount > 0);
@@ -103,25 +100,25 @@ Nu_DataSourceFree(NuDataSource* pDataSource)
 
     switch (pDataSource->sourceType) {
     case kNuDataSourceFromFile:
-        Nu_Free(nil, pDataSource->fromFile.pathname);
-        if (pDataSource->fromFile.fp != nil) {
+        Nu_Free(NULL, pDataSource->fromFile.pathnameUNI);
+        if (pDataSource->fromFile.fp != NULL) {
             fclose(pDataSource->fromFile.fp);
-            pDataSource->fromFile.fp = nil;
+            pDataSource->fromFile.fp = NULL;
         }
         break;
     case kNuDataSourceFromFP:
-        if (pDataSource->fromFP.fcloseFunc != nil &&
-            pDataSource->fromFP.fp != nil)
+        if (pDataSource->fromFP.fcloseFunc != NULL &&
+            pDataSource->fromFP.fp != NULL)
         {
-            (*pDataSource->fromFP.fcloseFunc)(nil, pDataSource->fromFP.fp);
-            pDataSource->fromFP.fp = nil;
+            (*pDataSource->fromFP.fcloseFunc)(NULL, pDataSource->fromFP.fp);
+            pDataSource->fromFP.fp = NULL;
         }
         break;
     case kNuDataSourceFromBuffer:
-        if (pDataSource->fromBuffer.freeFunc != nil) {
-            (*pDataSource->fromBuffer.freeFunc)(nil,
+        if (pDataSource->fromBuffer.freeFunc != NULL) {
+            (*pDataSource->fromBuffer.freeFunc)(NULL,
                                         (void*)pDataSource->fromBuffer.buffer);
-            pDataSource->fromBuffer.buffer = nil;
+            pDataSource->fromBuffer.buffer = NULL;
         }
         break;
     case kNuDataSourceUnknown:
@@ -131,7 +128,7 @@ Nu_DataSourceFree(NuDataSource* pDataSource)
         return kNuErrInternal;
     }
 
-    Nu_Free(nil, pDataSource);
+    Nu_Free(NULL, pDataSource);
     return kNuErrNone;
 }
 
@@ -139,15 +136,15 @@ Nu_DataSourceFree(NuDataSource* pDataSource)
 /*
  * Create a data source for an unopened file.
  */
-NuError
-Nu_DataSourceFile_New(NuThreadFormat threadFormat, ulong otherLen,
-    const char* pathname, Boolean isFromRsrcFork, NuDataSource** ppDataSource)
+NuError Nu_DataSourceFile_New(NuThreadFormat threadFormat, uint32_t otherLen,
+    const UNICHAR* pathnameUNI, Boolean isFromRsrcFork,
+    NuDataSource** ppDataSource)
 {
     NuError err;
 
-    if (pathname == nil ||
+    if (pathnameUNI == NULL ||
         !(isFromRsrcFork == true || isFromRsrcFork == false) ||
-        ppDataSource == nil)
+        ppDataSource == NULL)
     {
         return kNuErrInvalidArg;
     }
@@ -162,9 +159,9 @@ Nu_DataSourceFile_New(NuThreadFormat threadFormat, ulong otherLen,
     (*ppDataSource)->common.otherLen = otherLen;
     (*ppDataSource)->common.refCount = 1;
 
-    (*ppDataSource)->fromFile.pathname = strdup(pathname);
+    (*ppDataSource)->fromFile.pathnameUNI = strdup(pathnameUNI);
     (*ppDataSource)->fromFile.fromRsrcFork = isFromRsrcFork;
-    (*ppDataSource)->fromFile.fp = nil;     /* to be filled in later */
+    (*ppDataSource)->fromFile.fp = NULL;     /* to be filled in later */
 
 bail:
     return err;
@@ -175,20 +172,19 @@ bail:
  * Create a data source for an open file at a specific offset.  The FILE*
  * must be seekable.
  */
-NuError
-Nu_DataSourceFP_New(NuThreadFormat threadFormat, ulong otherLen,
+NuError Nu_DataSourceFP_New(NuThreadFormat threadFormat, uint32_t otherLen,
     FILE* fp, long offset, long length, NuCallback fcloseFunc,
     NuDataSource** ppDataSource)
 {
     NuError err;
 
-    if (fp == nil || offset < 0 || length < 0 ||
-        ppDataSource == nil)
+    if (fp == NULL || offset < 0 || length < 0 ||
+        ppDataSource == NULL)
     {
         return kNuErrInvalidArg;
     }
 
-    if (otherLen && otherLen < (ulong)length) {
+    if (otherLen && otherLen < (uint32_t)length) {
         DBUG(("--- rejecting FP len=%ld other=%ld\n", length, otherLen));
         err = kNuErrPreSizeOverflow;
         goto bail;
@@ -216,28 +212,27 @@ bail:
 /*
  * Create a data source for a buffer.
  *
- * We allow "buffer" to be nil so long as "offset" and "length" are also
- * nil.  This is useful for creating empty pre-sized buffers, such as
+ * We allow "buffer" to be NULL so long as "offset" and "length" are also
+ * NULL.  This is useful for creating empty pre-sized buffers, such as
  * blank comment fields.
  */
-NuError
-Nu_DataSourceBuffer_New(NuThreadFormat threadFormat, ulong otherLen,
-    const uchar* buffer, long offset, long length, NuCallback freeFunc,
+NuError Nu_DataSourceBuffer_New(NuThreadFormat threadFormat, uint32_t otherLen,
+    const uint8_t* buffer, long offset, long length, NuCallback freeFunc,
     NuDataSource** ppDataSource)
 {
     NuError err;
 
-    if (offset < 0 || length < 0 || ppDataSource == nil)
+    if (offset < 0 || length < 0 || ppDataSource == NULL)
         return kNuErrInvalidArg;
-    if (buffer == nil && (offset != 0 || length != 0))
+    if (buffer == NULL && (offset != 0 || length != 0))
         return kNuErrInvalidArg;
 
-    if (buffer == nil) {
+    if (buffer == NULL) {
         DBUG(("+++ zeroing freeFunc for empty-buffer DataSource\n"));
-        freeFunc = nil;
+        freeFunc = NULL;
     }
 
-    if (otherLen && otherLen < (ulong)length) {
+    if (otherLen && otherLen < (uint32_t)length) {
         DBUG(("--- rejecting buffer len=%ld other=%ld\n", length, otherLen));
         err = kNuErrPreSizeOverflow;
         goto bail;
@@ -267,34 +262,31 @@ bail:
 /*
  * Get the type of a NuDataSource.
  */
-NuDataSourceType
-Nu_DataSourceGetType(const NuDataSource* pDataSource)
+NuDataSourceType Nu_DataSourceGetType(const NuDataSource* pDataSource)
 {
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
     return pDataSource->sourceType;
 }
 
 /*
  * Get the threadFormat for a data source.
  */
-NuThreadFormat
-Nu_DataSourceGetThreadFormat(const NuDataSource* pDataSource)
+NuThreadFormat Nu_DataSourceGetThreadFormat(const NuDataSource* pDataSource)
 {
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
     return pDataSource->common.threadFormat;
 }
 
 /*
  * Get "dataLen" from a dataSource.
  */
-ulong
-Nu_DataSourceGetDataLen(const NuDataSource* pDataSource)
+uint32_t Nu_DataSourceGetDataLen(const NuDataSource* pDataSource)
 {
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
 
     if (pDataSource->sourceType == kNuDataSourceFromFile) {
         /* dataLen can only be valid if file has been opened */
-        Assert(pDataSource->fromFile.fp != nil);
+        Assert(pDataSource->fromFile.fp != NULL);
     }
 
     return pDataSource->common.dataLen;
@@ -303,20 +295,18 @@ Nu_DataSourceGetDataLen(const NuDataSource* pDataSource)
 /*
  * Get "otherLen" from a dataSource.
  */
-ulong
-Nu_DataSourceGetOtherLen(const NuDataSource* pDataSource)
+uint32_t Nu_DataSourceGetOtherLen(const NuDataSource* pDataSource)
 {
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
     return pDataSource->common.otherLen;
 }
 
 /*
  * Change the "otherLen" value.
  */
-void
-Nu_DataSourceSetOtherLen(NuDataSource* pDataSource, long otherLen)
+void Nu_DataSourceSetOtherLen(NuDataSource* pDataSource, long otherLen)
 {
-    Assert(pDataSource != nil && otherLen > 0);
+    Assert(pDataSource != NULL && otherLen > 0);
     pDataSource->common.otherLen = otherLen;
 }
 
@@ -324,10 +314,9 @@ Nu_DataSourceSetOtherLen(NuDataSource* pDataSource, long otherLen)
 /*
  * Get the "raw CRC" value.
  */
-ushort
-Nu_DataSourceGetRawCrc(const NuDataSource* pDataSource)
+uint16_t Nu_DataSourceGetRawCrc(const NuDataSource* pDataSource)
 {
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
     return pDataSource->common.rawCrc;
 }
 
@@ -335,10 +324,9 @@ Nu_DataSourceGetRawCrc(const NuDataSource* pDataSource)
  * Set the "raw CRC" value.  You would want to do this if the input was
  * already-compressed data, and you wanted to propagate the thread CRC.
  */
-void
-Nu_DataSourceSetRawCrc(NuDataSource* pDataSource, ushort crc)
+void Nu_DataSourceSetRawCrc(NuDataSource* pDataSource, uint16_t crc)
 {
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
     pDataSource->common.rawCrc = crc;
 }
 
@@ -346,11 +334,11 @@ Nu_DataSourceSetRawCrc(NuDataSource* pDataSource, ushort crc)
 /*
  * Prepare a data source for action.
  */
-NuError
-Nu_DataSourcePrepareInput(NuArchive* pArchive, NuDataSource* pDataSource)
+NuError Nu_DataSourcePrepareInput(NuArchive* pArchive,
+    NuDataSource* pDataSource)
 {
     NuError err = kNuErrNone;
-    FILE* fileFp = nil;
+    FILE* fileFp = NULL;
 
     /*
      * Doesn't apply to buffer sources.
@@ -372,11 +360,11 @@ Nu_DataSourcePrepareInput(NuArchive* pArchive, NuDataSource* pDataSource)
      * We're adding from a file on disk.  Open it.
      */
     err = Nu_OpenInputFile(pArchive,
-            pDataSource->fromFile.pathname, pDataSource->fromFile.fromRsrcFork,
-            &fileFp);
+            pDataSource->fromFile.pathnameUNI,
+            pDataSource->fromFile.fromRsrcFork, &fileFp);
     BailError(err);
 
-    Assert(fileFp != nil);
+    Assert(fileFp != NULL);
     pDataSource->fromFile.fp = fileFp;
     err = Nu_GetFileLength(pArchive, fileFp,
             (long*)&pDataSource->common.dataLen);
@@ -403,49 +391,47 @@ bail:
  * call will take care of this eventually -- but for normal operation on
  * a large number of files, it's vital.
  */
-void
-Nu_DataSourceUnPrepareInput(NuArchive* pArchive, NuDataSource* pDataSource)
+void Nu_DataSourceUnPrepareInput(NuArchive* pArchive, NuDataSource* pDataSource)
 {
     if (Nu_DataSourceGetType(pDataSource) != kNuDataSourceFromFile)
         return;
 
-    if (pDataSource->fromFile.fp != nil) {
+    if (pDataSource->fromFile.fp != NULL) {
         fclose(pDataSource->fromFile.fp);
-        pDataSource->fromFile.fp = nil;
+        pDataSource->fromFile.fp = NULL;
         pDataSource->common.dataLen = 0;
     }
 }
 
 
 /*
- * Get the pathname from a "from-file" dataSource.
+ * Get the pathname from a "from-file" dataSource.  Returned string is UTF-8.
  */
-const char*
-Nu_DataSourceFile_GetPathname(NuDataSource* pDataSource)
+const char* Nu_DataSourceFile_GetPathname(NuDataSource* pDataSource)
 {
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
     Assert(pDataSource->sourceType == kNuDataSourceFromFile);
-    Assert(pDataSource->fromFile.pathname != nil);
+    Assert(pDataSource->fromFile.pathnameUNI != NULL);
 
-    return pDataSource->fromFile.pathname;
+    return pDataSource->fromFile.pathnameUNI;
 }
 
 
 /*
  * Read a block of data from a dataSource.
  */
-NuError
-Nu_DataSourceGetBlock(NuDataSource* pDataSource, uchar* buf, ulong len)
+NuError Nu_DataSourceGetBlock(NuDataSource* pDataSource, uint8_t* buf,
+    uint32_t len)
 {
     NuError err;
 
-    Assert(pDataSource != nil);
-    Assert(buf != nil);
+    Assert(pDataSource != NULL);
+    Assert(buf != NULL);
     Assert(len > 0);
 
     switch (pDataSource->sourceType) {
     case kNuDataSourceFromFile:
-        Assert(pDataSource->fromFile.fp != nil);
+        Assert(pDataSource->fromFile.fp != NULL);
         err = Nu_FRead(pDataSource->fromFile.fp, buf, len);
         if (feof(pDataSource->fromFile.fp))
             Nu_ReportError(NU_NILBLOB, err, "EOF hit unexpectedly");
@@ -479,16 +465,15 @@ Nu_DataSourceGetBlock(NuDataSource* pDataSource, uchar* buf, ulong len)
 /*
  * Rewind a data source to the start of its input.
  */
-NuError
-Nu_DataSourceRewind(NuDataSource* pDataSource)
+NuError Nu_DataSourceRewind(NuDataSource* pDataSource)
 {
     NuError err;
 
-    Assert(pDataSource != nil);
+    Assert(pDataSource != NULL);
 
     switch (pDataSource->sourceType) {
     case kNuDataSourceFromFile:
-        Assert(pDataSource->fromFile.fp != nil);
+        Assert(pDataSource->fromFile.fp != NULL);
         err = Nu_FSeek(pDataSource->fromFile.fp, 0, SEEK_SET);
         break; /* fall through with error */
     case kNuDataSourceFromFP:
@@ -518,13 +503,12 @@ Nu_DataSourceRewind(NuDataSource* pDataSource)
 /*
  * Allocate a new DataSink structure.
  */
-static NuError
-Nu_DataSinkNew(NuDataSink** ppDataSink)
+static NuError Nu_DataSinkNew(NuDataSink** ppDataSink)
 {
-    Assert(ppDataSink != nil);
+    Assert(ppDataSink != NULL);
 
-    *ppDataSink = Nu_Malloc(nil, sizeof(**ppDataSink));
-    if (*ppDataSink == nil)
+    *ppDataSink = Nu_Malloc(NULL, sizeof(**ppDataSink));
+    if (*ppDataSink == NULL)
         return kNuErrMalloc;
 
     (*ppDataSink)->sinkType = kNuDataSinkUnknown;
@@ -536,16 +520,15 @@ Nu_DataSinkNew(NuDataSink** ppDataSink)
 /*
  * Free a data sink structure, and any type-specific elements.
  */
-NuError
-Nu_DataSinkFree(NuDataSink* pDataSink)
+NuError Nu_DataSinkFree(NuDataSink* pDataSink)
 {
-    if (pDataSink == nil)
+    if (pDataSink == NULL)
         return kNuErrNone;
 
     switch (pDataSink->sinkType) {
     case kNuDataSinkToFile:
         Nu_DataSinkFile_Close(pDataSink);
-        Nu_Free(nil, pDataSink->toFile.pathname);
+        Nu_Free(NULL, pDataSink->toFile.pathnameUNI);
         break;
     case kNuDataSinkToFP:
         break;
@@ -560,7 +543,7 @@ Nu_DataSinkFree(NuDataSink* pDataSink)
         return kNuErrInternal;
     }
 
-    Nu_Free(nil, pDataSink);
+    Nu_Free(NULL, pDataSink);
     return kNuErrNone;
 }
 
@@ -568,18 +551,17 @@ Nu_DataSinkFree(NuDataSink* pDataSink)
 /*
  * Create a data sink for an unopened file.
  */
-NuError
-Nu_DataSinkFile_New(Boolean doExpand, NuValue convertEOL, const char* pathname,
-    char fssep, NuDataSink** ppDataSink)
+NuError Nu_DataSinkFile_New(Boolean doExpand, NuValue convertEOL,
+    const UNICHAR* pathnameUNI, UNICHAR fssep, NuDataSink** ppDataSink)
 {
     NuError err;
 
     if ((doExpand != true && doExpand != false) ||
         (convertEOL != kNuConvertOff && convertEOL != kNuConvertOn &&
          convertEOL != kNuConvertAuto) ||
-        pathname == nil ||
+        pathnameUNI == NULL ||
         fssep == 0 ||
-        ppDataSink == nil)
+        ppDataSink == NULL)
     {
         return kNuErrInvalidArg;
     }
@@ -594,10 +576,10 @@ Nu_DataSinkFile_New(Boolean doExpand, NuValue convertEOL, const char* pathname,
     else
         (*ppDataSink)->common.convertEOL = kNuConvertOff;
     (*ppDataSink)->common.outCount = 0;
-    (*ppDataSink)->toFile.pathname = strdup(pathname);
+    (*ppDataSink)->toFile.pathnameUNI = strdup(pathnameUNI);
     (*ppDataSink)->toFile.fssep = fssep;
 
-    (*ppDataSink)->toFile.fp = nil;
+    (*ppDataSink)->toFile.fp = NULL;
 
 bail:
     return err;
@@ -607,8 +589,7 @@ bail:
 /*
  * Create a data sink based on a file pointer.
  */
-NuError
-Nu_DataSinkFP_New(Boolean doExpand, NuValue convertEOL, FILE* fp,
+NuError Nu_DataSinkFP_New(Boolean doExpand, NuValue convertEOL, FILE* fp,
     NuDataSink** ppDataSink)
 {
     NuError err;
@@ -616,8 +597,8 @@ Nu_DataSinkFP_New(Boolean doExpand, NuValue convertEOL, FILE* fp,
     if ((doExpand != true && doExpand != false) ||
         (convertEOL != kNuConvertOff && convertEOL != kNuConvertOn &&
          convertEOL != kNuConvertAuto) ||
-        fp == nil ||
-        ppDataSink == nil)
+        fp == NULL ||
+        ppDataSink == NULL)
     {
         return kNuErrInvalidArg;
     }
@@ -642,18 +623,17 @@ bail:
 /*
  * Create a data sink for a buffer in memory.
  */
-NuError
-Nu_DataSinkBuffer_New(Boolean doExpand, NuValue convertEOL, uchar* buffer,
-    ulong bufLen, NuDataSink** ppDataSink)
+NuError Nu_DataSinkBuffer_New(Boolean doExpand, NuValue convertEOL,
+    uint8_t* buffer, uint32_t bufLen, NuDataSink** ppDataSink)
 {
     NuError err;
 
     if ((doExpand != true && doExpand != false) ||
         (convertEOL != kNuConvertOff && convertEOL != kNuConvertOn &&
          convertEOL != kNuConvertAuto) ||
-        buffer == nil ||
+        buffer == NULL ||
         bufLen == 0 ||
-        ppDataSink == nil)
+        ppDataSink == NULL)
     {
         return kNuErrInvalidArg;
     }
@@ -681,14 +661,13 @@ bail:
 /*
  * Create a data sink that goes nowhere.
  */
-NuError
-Nu_DataSinkVoid_New(Boolean doExpand, NuValue convertEOL,
+NuError Nu_DataSinkVoid_New(Boolean doExpand, NuValue convertEOL,
     NuDataSink** ppDataSink)
 {
     NuError err;
 
     Assert(doExpand == true || doExpand == false);
-    Assert(ppDataSink != nil);
+    Assert(ppDataSink != NULL);
 
     err = Nu_DataSinkNew(ppDataSink);
     BailErrorQuiet(err);
@@ -706,10 +685,9 @@ bail:
 /*
  * Get the type of a NuDataSink.
  */
-NuDataSinkType
-Nu_DataSinkGetType(const NuDataSink* pDataSink)
+NuDataSinkType Nu_DataSinkGetType(const NuDataSink* pDataSink)
 {
-    Assert(pDataSink != nil);
+    Assert(pDataSink != NULL);
     return pDataSink->sinkType;
 }
 
@@ -717,8 +695,7 @@ Nu_DataSinkGetType(const NuDataSink* pDataSink)
 /*
  * Return the "doExpand" parameter from any kind of sink.
  */
-Boolean
-Nu_DataSinkGetDoExpand(const NuDataSink* pDataSink)
+Boolean Nu_DataSinkGetDoExpand(const NuDataSink* pDataSink)
 {
     return pDataSink->common.doExpand;
 }
@@ -726,8 +703,7 @@ Nu_DataSinkGetDoExpand(const NuDataSink* pDataSink)
 /*
  * Return the "convertEOL" parameter from any kind of sink.
  */
-NuValue
-Nu_DataSinkGetConvertEOL(const NuDataSink* pDataSink)
+NuValue Nu_DataSinkGetConvertEOL(const NuDataSink* pDataSink)
 {
     return pDataSink->common.convertEOL;
 }
@@ -735,32 +711,29 @@ Nu_DataSinkGetConvertEOL(const NuDataSink* pDataSink)
 /*
  * Return the #of bytes written to the sink.
  */
-ulong
-Nu_DataSinkGetOutCount(const NuDataSink* pDataSink)
+uint32_t Nu_DataSinkGetOutCount(const NuDataSink* pDataSink)
 {
     return pDataSink->common.outCount;
 }
 
 
 /*
- * Get "pathname" from a to-file sink.
+ * Get "pathname" from a to-file sink.  Returned string is UTF-8.
  */
-const char*
-Nu_DataSinkFile_GetPathname(const NuDataSink* pDataSink)
+const char* Nu_DataSinkFile_GetPathname(const NuDataSink* pDataSink)
 {
-    Assert(pDataSink != nil);
+    Assert(pDataSink != NULL);
     Assert(pDataSink->sinkType == kNuDataSinkToFile);
 
-    return pDataSink->toFile.pathname;
+    return pDataSink->toFile.pathnameUNI;
 }
 
 /*
  * Get "fssep" from a to-file sink.
  */
-char
-Nu_DataSinkFile_GetFssep(const NuDataSink* pDataSink)
+UNICHAR Nu_DataSinkFile_GetFssep(const NuDataSink* pDataSink)
 {
-    Assert(pDataSink != nil);
+    Assert(pDataSink != NULL);
     Assert(pDataSink->sinkType == kNuDataSinkToFile);
 
     return pDataSink->toFile.fssep;
@@ -769,10 +742,9 @@ Nu_DataSinkFile_GetFssep(const NuDataSink* pDataSink)
 /*
  * Get the "fp" for a file sink.
  */
-FILE*
-Nu_DataSinkFile_GetFP(const NuDataSink* pDataSink)
+FILE* Nu_DataSinkFile_GetFP(const NuDataSink* pDataSink)
 {
-    Assert(pDataSink != nil);
+    Assert(pDataSink != NULL);
     Assert(pDataSink->sinkType == kNuDataSinkToFile);
 
     return pDataSink->toFile.fp;
@@ -781,10 +753,9 @@ Nu_DataSinkFile_GetFP(const NuDataSink* pDataSink)
 /*
  * Set the "fp" for a file sink.
  */
-void
-Nu_DataSinkFile_SetFP(NuDataSink* pDataSink, FILE* fp)
+void Nu_DataSinkFile_SetFP(NuDataSink* pDataSink, FILE* fp)
 {
-    Assert(pDataSink != nil);
+    Assert(pDataSink != NULL);
     Assert(pDataSink->sinkType == kNuDataSinkToFile);
 
     pDataSink->toFile.fp = fp;
@@ -793,14 +764,13 @@ Nu_DataSinkFile_SetFP(NuDataSink* pDataSink, FILE* fp)
 /*
  * Close a to-file sink.
  */
-void
-Nu_DataSinkFile_Close(NuDataSink* pDataSink)
+void Nu_DataSinkFile_Close(NuDataSink* pDataSink)
 {
-    Assert(pDataSink != nil);
+    Assert(pDataSink != NULL);
 
-    if (pDataSink->toFile.fp != nil) {
+    if (pDataSink->toFile.fp != NULL) {
         fclose(pDataSink->toFile.fp);
-        pDataSink->toFile.fp = nil;
+        pDataSink->toFile.fp = NULL;
     }
 }
 
@@ -808,24 +778,24 @@ Nu_DataSinkFile_Close(NuDataSink* pDataSink)
 /*
  * Write a block of data to a DataSink.
  */
-NuError
-Nu_DataSinkPutBlock(NuDataSink* pDataSink, const uchar* buf, ulong len)
+NuError Nu_DataSinkPutBlock(NuDataSink* pDataSink, const uint8_t* buf,
+    uint32_t len)
 {
     NuError err;
 
-    Assert(pDataSink != nil);
-    Assert(buf != nil);
+    Assert(pDataSink != NULL);
+    Assert(buf != NULL);
     Assert(len > 0);
 
     switch (pDataSink->sinkType) {
     case kNuDataSinkToFile:
-        Assert(pDataSink->toFile.fp != nil);
+        Assert(pDataSink->toFile.fp != NULL);
         err = Nu_FWrite(pDataSink->toFile.fp, buf, len);
         if (err != kNuErrNone)
             return err;
         break;
     case kNuDataSinkToFP:
-        Assert(pDataSink->toFP.fp != nil);
+        Assert(pDataSink->toFP.fp != NULL);
         err = Nu_FWrite(pDataSink->toFP.fp, buf, len);
         if (err != kNuErrNone)
             return err;
@@ -856,12 +826,11 @@ Nu_DataSinkPutBlock(NuDataSink* pDataSink, const uchar* buf, ulong len)
 /*
  * Figure out if one of our earlier writes has failed.
  */
-NuError
-Nu_DataSinkGetError(NuDataSink* pDataSink)
+NuError Nu_DataSinkGetError(NuDataSink* pDataSink)
 {
     NuError err = kNuErrNone;
 
-    Assert(pDataSink != nil);
+    Assert(pDataSink != NULL);
 
     switch (pDataSink->sinkType) {
     case kNuDataSinkToFile:

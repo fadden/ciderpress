@@ -25,10 +25,10 @@
 /*
  * Selected definitions from compress.h.
  */
-typedef unsigned short CODE;
-typedef unsigned char UCHAR;
-typedef unsigned int INTCODE;
-typedef unsigned int HASH;
+typedef uint16_t CODE;
+typedef uint8_t UCHAR;
+typedef uint32_t INTCODE;
+typedef uint32_t HASH;
 typedef int FLAG;
 
 #ifndef FALSE            /* let's get some sense to this */
@@ -80,7 +80,7 @@ static UCHAR gNu_magic_header[] = { 0x1F,0x9D };
  * Normally in COMPUSI.UNI.
  */
 static inline ALLOCTYPE FAR *
-Nu_LZC_emalloc(NuArchive* pArchive, unsigned int x, int y)
+Nu_LZC_emalloc(NuArchive* pArchive, uint32_t x, int y)
 {
     return Nu_Malloc(pArchive, x*y);
 }
@@ -153,7 +153,7 @@ Nu_LZC_efree(NuArchive* pArchive, ALLOCTYPE FAR * ptr)
 typedef struct LZCState {
     NuArchive* pArchive;
     int doCalcCRC;
-    ushort crc;
+    uint16_t crc;
 
     /* compression */
     NuStraw* pStraw;
@@ -163,7 +163,7 @@ typedef struct LZCState {
     /* expansion */
     FILE* infp;
     NuFunnel* pFunnel;
-    ushort* pCrc;
+    uint16_t* pCrc;
     long compRemaining;
 
 
@@ -251,18 +251,18 @@ static CONST INTCODE gNu_mc[] = {
 #ifdef __STDC__
 #ifdef DEBUG_LZC
 #define allocx(type, ptr, size) \
-    (((ptr) = (type FAR *) Nu_LZC_emalloc(pArchive, (unsigned int)(size),sizeof(type))) == NULLPTR(type) \
+    (((ptr) = (type FAR *) Nu_LZC_emalloc(pArchive, (uint32_t)(size),sizeof(type))) == NULLPTR(type) \
     ?   (DBUG(("%s: "#ptr" -- ", "LZC")), NOMEM) : OK \
     )
 #else
 #define allocx(type,ptr,size) \
-    (((ptr) = (type FAR *) Nu_LZC_emalloc(pArchive, (unsigned int)(size),sizeof(type))) == NULLPTR(type) \
+    (((ptr) = (type FAR *) Nu_LZC_emalloc(pArchive, (uint32_t)(size),sizeof(type))) == NULLPTR(type) \
     ? NOMEM : OK \
     )
 #endif
 #else
 #define allocx(type,ptr,size) \
-    (((ptr) = (type FAR *) Nu_LZC_emalloc(pArchive, (unsigned int)(size),sizeof(type))) == NULLPTR(type) \
+    (((ptr) = (type FAR *) Nu_LZC_emalloc(pArchive, (uint32_t)(size),sizeof(type))) == NULLPTR(type) \
     ? NOMEM : OK \
     )
 #endif
@@ -300,8 +300,8 @@ static CONST INTCODE gNu_mc[] = {
 #endif
 
 
-static int
-Nu_LZC_alloc_tables(LZCState* pLzcState, INTCODE newmaxcode, HASH newhashsize)
+static int Nu_LZC_alloc_tables(LZCState* pLzcState, INTCODE newmaxcode,
+    HASH newhashsize)
 {
     NuArchive* pArchive = pLzcState->pArchive;
     /*static INTCODE oldmaxcode = 0;*/
@@ -421,8 +421,7 @@ Nu_LZC_alloc_tables(LZCState* pLzcState, INTCODE newmaxcode, HASH newhashsize)
  * ===========================================================================
  */
 
-static void
-Nu_prratio(long int num, long int den)
+static void Nu_prratio(long int num, long int den)
 {
     register int q;         /* Doesn't need to be long */
 
@@ -443,8 +442,7 @@ Nu_prratio(long int num, long int den)
 /* table clear for block compress */
 /* this is for adaptive reset present in version 4.0 joe release */
 /* DjG, sets it up and returns TRUE to compress and FALSE to not compress */
-static int
-Nu_LZC_cl_block(LZCState* pLzcState)     
+static int Nu_LZC_cl_block(LZCState* pLzcState)
 {
     register long int rat;
 
@@ -486,8 +484,7 @@ Nu_LZC_cl_block(LZCState* pLzcState)
 
 static CONST UCHAR gNu_rmask[9] = {0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff};
 
-static void
-Nu_LZC_putcode(LZCState* pLzcState, INTCODE code, register int bits)
+static void Nu_LZC_putcode(LZCState* pLzcState, INTCODE code, register int bits)
 {
     /*static int oldbits = 0;*/
     /*static UCHAR outbuf[MAXBITS];*/
@@ -554,11 +551,10 @@ Nu_LZC_putcode(LZCState* pLzcState, INTCODE code, register int bits)
  *
  * Returns kNuLZCEOF as the value when we're out of data.
  */
-static NuError
-Nu_LZCGetcCRC(LZCState* pLzcState, int* pSym)
+static NuError Nu_LZCGetcCRC(LZCState* pLzcState, int* pSym)
 {
     NuError err;
-    uchar c;
+    uint8_t c;
 
     if (!pLzcState->uncompRemaining) {
         *pSym = kNuLZCEOF;
@@ -579,15 +575,14 @@ Nu_LZCGetcCRC(LZCState* pLzcState, int* pSym)
 /*
  * compress stdin to stdout
  */
-static void
-Nu_LZC_compress(LZCState* pLzcState, ulong* pDstLen)
+static void Nu_LZC_compress(LZCState* pLzcState, uint32_t* pDstLen)
 {
     int c,adjbits;
     register HASH hash;
     register INTCODE code;
     HASH hashf[256];
 
-    Assert(pLzcState->outfp != nil);
+    Assert(pLzcState->outfp != NULL);
 
     pLzcState->maxcode = Maxcode(pLzcState->maxbits);
     pLzcState->hashsize = Hashsize(pLzcState->maxbits);
@@ -758,9 +753,8 @@ Nu_LZC_compress(LZCState* pLzcState, ulong* pDstLen)
 /*
  * NufxLib interface to LZC compression.
  */
-static NuError
-Nu_CompressLZC(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc, int maxbits)
+static NuError Nu_CompressLZC(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc, int maxbits)
 {
     NuError err = kNuErrNone;
     LZCState lzcState;
@@ -771,7 +765,7 @@ Nu_CompressLZC(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
     lzcState.outfp = fp;
     lzcState.uncompRemaining = srcLen;
 
-    if (pCrc == nil) {
+    if (pCrc == NULL) {
         lzcState.doCalcCRC = false;
     } else {
         lzcState.doCalcCRC = true;
@@ -800,22 +794,20 @@ Nu_CompressLZC(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
 #endif
     free_array(char,lzcState.sfx, 256);
 
-    if (pCrc != nil)
+    if (pCrc != NULL)
         *pCrc = lzcState.crc;
 
     return err;
 }
 
-NuError
-Nu_CompressLZC12(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc)
+NuError Nu_CompressLZC12(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc)
 {
     return Nu_CompressLZC(pArchive, pStraw, fp, srcLen, pDstLen, pCrc, 12);
 }
 
-NuError
-Nu_CompressLZC16(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
-    ulong srcLen, ulong* pDstLen, ushort* pCrc)
+NuError Nu_CompressLZC16(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
+    uint32_t srcLen, uint32_t* pDstLen, uint16_t* pCrc)
 {
     return Nu_CompressLZC(pArchive, pStraw, fp, srcLen, pDstLen, pCrc, 16);
 }
@@ -833,22 +825,20 @@ Nu_CompressLZC16(NuArchive* pArchive, NuStraw* pStraw, FILE* fp,
  *
  * Returns kNuLZCEOF as the value when we're out of data.
  */
-static NuError
-Nu_LZCPutcCRC(LZCState* pLzcState, char c)
+static NuError Nu_LZCPutcCRC(LZCState* pLzcState, char c)
 {
     NuError err;
 
     err = Nu_FunnelWrite(pLzcState->pArchive, pLzcState->pFunnel,
-            (uchar*) &c, 1);
+            (uint8_t*) &c, 1);
     if (pLzcState->doCalcCRC)
-        pLzcState->crc = Nu_CalcCRC16(pLzcState->crc, (uchar*) &c, 1);
+        pLzcState->crc = Nu_CalcCRC16(pLzcState->crc, (uint8_t*) &c, 1);
 
     return err;
 }
 
 
-static int
-Nu_LZC_nextcode(LZCState* pLzcState, INTCODE* codeptr)
+static int Nu_LZC_nextcode(LZCState* pLzcState, INTCODE* codeptr)
 /* Get the next code from input and put it in *codeptr.
  * Return (TRUE) on success, or return (FALSE) on end-of-file.
  * Adapted from COMPRESS V4.0.
@@ -898,8 +888,7 @@ Nu_LZC_nextcode(LZCState* pLzcState, INTCODE* codeptr)
     return (TRUE);
 }
 
-static void
-Nu_LZC_decompress(LZCState* pLzcState, ulong compressedLen)
+static void Nu_LZC_decompress(LZCState* pLzcState, uint32_t compressedLen)
 {
     NuArchive* pArchive = pLzcState->pArchive;
     register int i;
@@ -911,7 +900,7 @@ Nu_LZC_decompress(LZCState* pLzcState, ulong compressedLen)
     /*static*/ int maxtoklen = MAXTOKLEN;
     int flags;
 
-    Assert(pLzcState->infp != nil);
+    Assert(pLzcState->infp != NULL);
 
     pLzcState->exit_stat = OK;
 
@@ -1060,9 +1049,8 @@ Nu_LZC_decompress(LZCState* pLzcState, ulong compressedLen)
 /*
  * NufxLib interface to LZC expansion.
  */
-NuError
-Nu_ExpandLZC(NuArchive* pArchive, const NuRecord* pRecord,
-    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, ushort* pCrc)
+NuError Nu_ExpandLZC(NuArchive* pArchive, const NuRecord* pRecord,
+    const NuThread* pThread, FILE* infp, NuFunnel* pFunnel, uint16_t* pCrc)
 {
     NuError err = kNuErrNone;
     LZCState lzcState;
@@ -1072,7 +1060,7 @@ Nu_ExpandLZC(NuArchive* pArchive, const NuRecord* pRecord,
     lzcState.infp = infp;
     lzcState.pFunnel = pFunnel;
 
-    if (pCrc == nil) {
+    if (pCrc == NULL) {
         lzcState.doCalcCRC = false;
     } else {
         lzcState.doCalcCRC = true;
@@ -1098,7 +1086,7 @@ Nu_ExpandLZC(NuArchive* pArchive, const NuRecord* pRecord,
 #endif
     free_array(char,lzcState.sfx, 256);
 
-    if (pCrc != nil)
+    if (pCrc != NULL)
         *pCrc = lzcState.crc;
     return err;
 }

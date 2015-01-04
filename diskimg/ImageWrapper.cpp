@@ -683,9 +683,9 @@ DIError WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     memset(&fileDetails, 0, sizeof(fileDetails));
     fileDetails.threadID = kNuThreadIDDiskImage;
     if (fStorageName != NULL)
-        fileDetails.storageName = fStorageName;
+        fileDetails.storageNameMOR = fStorageName;  // TODO
     else
-        fileDetails.storageName = "NEW.DISK";
+        fileDetails.storageNameMOR = "NEW.DISK";
     fileDetails.fileSysID = kNuFileSysUnknown;
     fileDetails.fileSysInfo = kDefaultStorageFssep;
     fileDetails.storageType = 512;
@@ -738,7 +738,7 @@ DIError WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     /*
      * Flush changes (does the actual compression).
      */
-    long status;
+    uint32_t status;
     nerr = NuFlush(fpArchive, &status);
     if (nerr != kNuErrNone) {
         LOGI(" NuFX flush failed (nerr=%d, status=%ld)", nerr, status);

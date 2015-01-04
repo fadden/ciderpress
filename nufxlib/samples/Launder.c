@@ -47,8 +47,7 @@ char gSentRecordWarning = false;
 /*
  * This gets called when a buffer DataSource is no longer needed.
  */
-NuResult
-FreeCallback(NuArchive* pArchive, void* args)
+NuResult FreeCallback(NuArchive* pArchive, void* args)
 {
     free(args);
     return kNuOK;
@@ -60,14 +59,13 @@ FreeCallback(NuArchive* pArchive, void* args)
  * This assumes the library is configured for compression (it defaults
  * to LZW/2, so this is a reasonable assumption).
  */
-NuError
-CopyThreadRecompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
+NuError CopyThreadRecompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
     long flags, const NuThread* pThread, long newRecordIdx)
 {
     NuError err = kNuErrNone;
-    NuDataSource* pDataSource = nil;
-    NuDataSink* pDataSink = nil;
-    uchar* buffer = nil;
+    NuDataSource* pDataSource = NULL;
+    NuDataSink* pDataSink = NULL;
+    uint8_t* buffer = NULL;
 
     /*
      * Allocate a buffer large enough to hold all the uncompressed data, and
@@ -77,7 +75,7 @@ CopyThreadRecompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
      */
     if (pThread->actualThreadEOF) {
         buffer = malloc(pThread->actualThreadEOF);
-        if (buffer == nil) {
+        if (buffer == NULL) {
             err = kNuErrMalloc;
             goto bail;
         }
@@ -95,7 +93,7 @@ CopyThreadRecompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
          */
         err = NuExtractThread(pInArchive, pThread->threadIdx, pDataSink);
         if (err != kNuErrNone) {
-            fprintf(stderr, "ERROR: unable to extract thread %ld (err=%d)\n",
+            fprintf(stderr, "ERROR: unable to extract thread %u (err=%d)\n",
                 pThread->threadIdx, err);
             goto bail;
         }
@@ -111,7 +109,7 @@ CopyThreadRecompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
      * We always use "actualThreadEOF" because "thThreadEOF" is broken
      * for disk archives created by certain versions of ShrinkIt.
      *
-     * It's okay to pass in a nil value for "buffer", so long as the
+     * It's okay to pass in a NULL value for "buffer", so long as the
      * amount of data in the buffer is also zero.  The library will do
      * the right thing.
      */
@@ -134,25 +132,25 @@ CopyThreadRecompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
             goto bail;
         }
     }
-    buffer = nil;   /* doClose was set, so it's owned by the data source */
+    buffer = NULL;   /* doClose was set, so it's owned by the data source */
 
     /*
      * Schedule the data for addition to the record.
      */
     err = NuAddThread(pOutArchive, newRecordIdx, NuGetThreadID(pThread),
-            pDataSource, nil);
+            pDataSource, NULL);
     if (err != kNuErrNone) {
         fprintf(stderr, "ERROR: unable to add thread (err=%d)\n", err);
         goto bail;
     }
-    pDataSource = nil;  /* library owns it now */
+    pDataSource = NULL;  /* library owns it now */
 
 bail:
-    if (pDataSource != nil)
+    if (pDataSource != NULL)
         NuFreeDataSource(pDataSource);
-    if (pDataSink != nil)
+    if (pDataSink != NULL)
         NuFreeDataSink(pDataSink);
-    if (buffer != nil)
+    if (buffer != NULL)
         free(buffer);
     return err;
 }
@@ -174,14 +172,13 @@ bail:
  * reliable but extracts a little more than we need on pre-sized
  * threads (filenames, comments).
  */
-NuError
-CopyThreadUncompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
+NuError CopyThreadUncompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
     long flags, const NuThread* pThread, long newRecordIdx)
 {
     NuError err = kNuErrNone;
-    NuDataSource* pDataSource = nil;
-    NuDataSink* pDataSink = nil;
-    uchar* buffer = nil;
+    NuDataSource* pDataSource = NULL;
+    NuDataSink* pDataSink = NULL;
+    uint8_t* buffer = NULL;
 
     /*
      * If we have some data files that were left uncompressed, perhaps
@@ -207,7 +204,7 @@ CopyThreadUncompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
      * wrap a data sink around it.
      */
     buffer = malloc(pThread->thCompThreadEOF);
-    if (buffer == nil) {
+    if (buffer == NULL) {
         err = kNuErrMalloc;
         goto bail;
     }
@@ -225,7 +222,7 @@ CopyThreadUncompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
      */
     err = NuExtractThread(pInArchive, pThread->threadIdx, pDataSink);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: unable to extract thread %ld (err=%d)\n",
+        fprintf(stderr, "ERROR: unable to extract thread %u (err=%d)\n",
             pThread->threadIdx, err);
         goto bail;
     }
@@ -265,7 +262,7 @@ CopyThreadUncompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
             goto bail;
         }
     }
-    buffer = nil;   /* doClose was set, so it's owned by the data source */
+    buffer = NULL;   /* doClose was set, so it's owned by the data source */
 
     /* yes, this is a kluge... sigh */
     err = NuDataSourceSetRawCrc(pDataSource, pThread->thThreadCRC);
@@ -281,19 +278,19 @@ CopyThreadUncompressed(NuArchive* pInArchive, NuArchive* pOutArchive,
      * "doClose" on our copy, so we are free to dispose of pDataSource.
      */
     err = NuAddThread(pOutArchive, newRecordIdx, NuGetThreadID(pThread),
-            pDataSource, nil);
+            pDataSource, NULL);
     if (err != kNuErrNone) {
         fprintf(stderr, "ERROR: unable to add thread (err=%d)\n", err);
         goto bail;
     }
-    pDataSource = nil;  /* library owns it now */
+    pDataSource = NULL;  /* library owns it now */
 
 bail:
-    if (pDataSource != nil)
+    if (pDataSource != NULL)
         NuFreeDataSource(pDataSource);
-    if (pDataSink != nil)
+    if (pDataSink != NULL)
         NuFreeDataSink(pDataSink);
-    if (buffer != nil)
+    if (buffer != NULL)
         free(buffer);
     return err;
 }
@@ -305,8 +302,7 @@ bail:
  * Depending on "flags", this will either copy it raw or uncompress and
  * recompress.
  */
-NuError
-CopyThread(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
+NuError CopyThread(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
     const NuThread* pThread, long newRecordIdx)
 {
     if (flags & kFlagCopyOnly) {
@@ -327,8 +323,7 @@ CopyThread(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
  * of which will not usually have any effect since NufxLib imposes a
  * specific thread ordering on most common types) depending on "flags".
  */
-NuError
-CopyRecord(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
+NuError CopyRecord(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
     NuRecordIdx recordIdx)
 {
     NuError err = kNuErrNone;
@@ -344,7 +339,7 @@ CopyRecord(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
      */
     err = NuGetRecord(pInArchive, recordIdx, &pRecord);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: unable to get recordIdx %ld\n", recordIdx);
+        fprintf(stderr, "ERROR: unable to get recordIdx %u\n", recordIdx);
         goto bail;
     }
 
@@ -362,7 +357,7 @@ CopyRecord(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
 
     numThreads = NuRecordGetNumThreads(pRecord);
     if (!numThreads) {
-        fprintf(stderr, "WARNING: recordIdx=%ld was empty\n", recordIdx);
+        fprintf(stderr, "WARNING: recordIdx=%u was empty\n", recordIdx);
         goto bail;
     }
 
@@ -370,7 +365,7 @@ CopyRecord(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
      * Create a new record that looks just like the original.
      */
     memset(&fileDetails, 0, sizeof(fileDetails));
-    fileDetails.storageName = pRecord->filename;
+    fileDetails.storageNameMOR = pRecord->filenameMOR;
     fileDetails.fileSysID = pRecord->recFileSysID;
     fileDetails.fileSysInfo = pRecord->recFileSysInfo;
     fileDetails.access = pRecord->recAccess;
@@ -393,7 +388,7 @@ CopyRecord(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
     if (flags & kFlagReverseThreads) {
         for (idx = numThreads-1; idx >= 0; idx--) {
             pThread = NuGetThread(pRecord, idx);
-            assert(pThread != nil);
+            assert(pThread != NULL);
 
             err = CopyThread(pInArchive, pOutArchive, flags, pThread,
                     newRecordIdx);
@@ -403,7 +398,7 @@ CopyRecord(NuArchive* pInArchive, NuArchive* pOutArchive, long flags,
     } else {
         for (idx = 0; idx < numThreads; idx++) {
             pThread = NuGetThread(pRecord, idx);
-            assert(pThread != nil);
+            assert(pThread != NULL);
 
             err = CopyThread(pInArchive, pOutArchive, flags, pThread,
                     newRecordIdx);
@@ -422,16 +417,15 @@ bail:
  *
  * Returns 0 on success, nonzero on failure.
  */
-int
-LaunderArchive(const char* inFile, const char* outFile, NuValue compressMethod,
-    long flags)
+int LaunderArchive(const char* inFile, const char* outFile,
+    NuValue compressMethod, long flags)
 {
     NuError err = kNuErrNone;
-    NuArchive* pInArchive = nil;
-    NuArchive* pOutArchive = nil;
+    NuArchive* pInArchive = NULL;
+    NuArchive* pOutArchive = NULL;
     const NuMasterHeader* pMasterHeader;
     NuRecordIdx recordIdx;
-    long idx, flushStatus;
+    uint32_t idx, flushStatus;
 
     err = NuOpenRO(inFile, &pInArchive);
     if (err != kNuErrNone) {
@@ -487,10 +481,10 @@ LaunderArchive(const char* inFile, const char* outFile, NuValue compressMethod,
     /*
      * Iterate through the set of records.
      */
-    for (idx = 0; idx < (int)pMasterHeader->mhTotalRecords; idx++) {
+    for (idx = 0; idx < pMasterHeader->mhTotalRecords; idx++) {
         err = NuGetRecordIdxByPosition(pInArchive, idx, &recordIdx);
         if (err != kNuErrNone) {
-            fprintf(stderr, "ERROR: couldn't get record #%ld (err=%d)\n",
+            fprintf(stderr, "ERROR: couldn't get record #%u (err=%d)\n",
                 idx, err);
             goto bail;
         }
@@ -525,7 +519,7 @@ LaunderArchive(const char* inFile, const char* outFile, NuValue compressMethod,
             err = NuFlush(pOutArchive, &flushStatus);
             if (err != kNuErrNone) {
                 fprintf(stderr,
-                    "ERROR: flush failed (err=%d, status=0x%04lx)\n",
+                    "ERROR: flush failed (err=%d, status=0x%04x)\n",
                     err, flushStatus);
                 goto bail;
             }
@@ -535,15 +529,15 @@ LaunderArchive(const char* inFile, const char* outFile, NuValue compressMethod,
     /* first and only flush if frequent-flushing wasn't enabled */
     err = NuFlush(pOutArchive, &flushStatus);
     if (err != kNuErrNone) {
-        fprintf(stderr, "ERROR: flush failed (err=%d, status=0x%04lx)\n",
+        fprintf(stderr, "ERROR: flush failed (err=%d, status=0x%04x)\n",
             err, flushStatus);
         goto bail;
     }
 
 bail:
-    if (pInArchive != nil)
+    if (pInArchive != NULL)
         NuClose(pInArchive);
-    if (pOutArchive != nil) {
+    if (pOutArchive != NULL) {
         if (err != kNuErrNone)
             NuAbort(pOutArchive);
         NuClose(pOutArchive);   /* flush pending changes and close */
@@ -559,12 +553,11 @@ bail:
  * does everything we need here.
  */
 int myoptind = 0;
-char* myoptarg = nil;
-const char* curchar = nil;
+char* myoptarg = NULL;
+const char* curchar = NULL;
 int skipnext = false;
 
-int
-mygetopt(int argc, char** argv, const char* optstr)
+int mygetopt(int argc, char** argv, const char* optstr)
 {
     if (!myoptind) {
         myoptind = 1;
@@ -609,8 +602,7 @@ mygetopt(int argc, char** argv, const char* optstr)
 /*
  * Print usage info.
  */
-void
-Usage(const char* argv0)
+void Usage(const char* argv0)
 {
     fprintf(stderr, "Usage: %s [-crfat] [-m method] infile.shk outfile.shk\n",
         argv0);
@@ -627,19 +619,18 @@ Usage(const char* argv0)
 /*
  * Grab the name of an archive to read.
  */
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
     NuValue compressMethod = kNuCompressLZW2;
-    long major, minor, bug;
+    int32_t major, minor, bug;
     const char* pBuildDate;
     long flags = 0;
     int errorFlag;
     int ic;
     int cc;
 
-    (void) NuGetVersion(&major, &minor, &bug, &pBuildDate, nil);
-    printf("Using NuFX lib %ld.%ld.%ld built on or after %s\n",
+    (void) NuGetVersion(&major, &minor, &bug, &pBuildDate, NULL);
+    printf("Using NuFX lib %d.%d.%d built on or after %s\n",
         major, minor, bug, pBuildDate);
 
     errorFlag = false;

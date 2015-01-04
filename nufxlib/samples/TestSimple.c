@@ -21,12 +21,20 @@
  * header, a filename thread, or a default value ("UNKNOWN", stuffed in
  * when a record has no filename at all).
  */
-NuResult
-ShowContents(NuArchive* pArchive, void* vpRecord)
+NuResult ShowContents(NuArchive* pArchive, void* vpRecord)
 {
     const NuRecord* pRecord = (NuRecord*) vpRecord;
 
-    printf("*** Filename = '%s'\n", pRecord->filename);
+    size_t bufLen = NuConvertMORToUNI(pRecord->filenameMOR, NULL, 0);
+    if (bufLen == (size_t) -1) {
+        fprintf(stderr, "GLITCH: unable to convert '%s'\n",
+            pRecord->filenameMOR);
+    } else {
+        UNICHAR* buf = (UNICHAR*) malloc(bufLen);
+        NuConvertMORToUNI(pRecord->filenameMOR, buf, bufLen);
+        printf("*** Filename = '%s'\n", buf);
+        free(buf);
+    }
 
     return kNuOK;
 }
@@ -38,11 +46,10 @@ ShowContents(NuArchive* pArchive, void* vpRecord)
  * If we're not interested in handling an archive on stdin, we could just
  * pass the filename in here and use NuOpenRO instead.
  */
-int
-DoStreamStuff(FILE* fp)
+int DoStreamStuff(FILE* fp)
 {
     NuError err;
-    NuArchive* pArchive = nil;
+    NuArchive* pArchive = NULL;
 
     err = NuStreamOpenRO(fp, &pArchive);
     if (err != kNuErrNone) {
@@ -59,7 +66,7 @@ DoStreamStuff(FILE* fp)
     }
 
 bail:
-    if (pArchive != nil) {
+    if (pArchive != NULL) {
         NuError err2 = NuClose(pArchive);
         if (err == kNuErrNone)
             err = err2;
@@ -72,16 +79,15 @@ bail:
 /*
  * Grab the name of an archive to read.  If "-" was given, use stdin.
  */
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
-    long major, minor, bug;
+    int32_t major, minor, bug;
     const char* pBuildDate;
-    FILE* infp = nil;
+    FILE* infp = NULL;
     int cc;
 
-    (void) NuGetVersion(&major, &minor, &bug, &pBuildDate, nil);
-    printf("Using NuFX lib %ld.%ld.%ld built on or after %s\n",
+    (void) NuGetVersion(&major, &minor, &bug, &pBuildDate, NULL);
+    printf("Using NuFX lib %d.%d.%d built on or after %s\n",
         major, minor, bug, pBuildDate);
 
     if (argc != 2) {
@@ -93,7 +99,7 @@ main(int argc, char** argv)
         infp = stdin;
     else {
         infp = fopen(argv[1], kNuFileOpenReadOnly);
-        if (infp == nil) {
+        if (infp == NULL) {
             fprintf(stderr, "ERROR: unable to open '%s'\n", argv[1]);
             exit(1);
         }

@@ -12,6 +12,9 @@
 #
 # The shared library support currently leaves much to be desired.
 #
+# If you build with -DDEBUG_MSGS, nulib2 will be able to use the hidden
+# 'g' command, which generates a verbose archive dump for debugging.
+#
 
 # NufxLib install location.
 prefix		= @prefix@
@@ -33,12 +36,12 @@ OPT			= @CFLAGS@
 GCC_FLAGS	= -Wall -Wwrite-strings -Wstrict-prototypes -Wpointer-arith -Wshadow
 CFLAGS		= @BUILD_FLAGS@ -I. @DEFS@ -DOPTFLAGSTR="\"$(OPT)\""
 
-SRCS		= Archive.c ArchiveIO.c Bzip2.c Compress.c Crc16.c Debug.c \
-			  Deferred.c Deflate.c Entry.c Expand.c FileIO.c Funnel.c \
+SRCS		= Archive.c ArchiveIO.c Bzip2.c Charset.c Compress.c Crc16.c \
+			  Debug.c Deferred.c Deflate.c Entry.c Expand.c FileIO.c Funnel.c \
 			  Lzc.c Lzw.c MiscStuff.c MiscUtils.c Record.c SourceSink.c \
 			  Squeeze.c Thread.c Value.c Version.c
-OBJS		= Archive.o ArchiveIO.o Bzip2.o Compress.o Crc16.o Debug.o \
-			  Deferred.o Deflate.o Entry.o Expand.o FileIO.o Funnel.o \
+OBJS		= Archive.o ArchiveIO.o Bzip2.o Charset.o Compress.o Crc16.o \
+			  Debug.o Deferred.o Deflate.o Entry.o Expand.o FileIO.o Funnel.o \
 			  Lzc.o Lzw.o MiscStuff.o MiscUtils.o Record.o SourceSink.o \
 			  Squeeze.o Thread.o Value.o Version.o
 
@@ -79,7 +82,7 @@ $(STATIC_PRODUCT): $(OBJS)
 	$(AR) $@ $(OBJS)
 	@RANLIB@ $@
 
-# BUG: we probably want -fPIC -D_REENTRANT on the compile lines for this.
+# BUG: we need -fPIC, maybe -D_REENTRANT when compiling for this.
 # BUG: for Linux we may want -Wl,-soname,libnufx.so.1 on the link line.
 $(SHARED_PRODUCT): $(OBJS)
 	-rm -f $(STATIC_PRODUCT) $(SHARED_PRODUCT)
@@ -97,7 +100,6 @@ tags::
 
 distclean: clean
 	(cd samples; make distclean)
-	-rm -f Version.c
 	-rm -f Makefile Makefile.bak
 	-rm -f config.log config.cache config.status config.h
 	-rm -f tags
@@ -111,12 +113,29 @@ baktar:
 	@gzip -9 nufxlib.tar
 	@mv -i nufxlib.tar.gz /home/fadden/BAK/
 
-depend:
-	makedepend -- $(CFLAGS) -I/usr/local/include -- $(SRCS)
-	@(cd samples; unset CFLAGS OBJS; @SET_MAKE@ $(MAKE) depend)
-
-# catch OPTFLAGSTR updates
-Version.o: Makefile
-
-# DO NOT DELETE THIS LINE -- make depend depends on it.
+# dependency info
+COMMON_HDRS = NufxLibPriv.h NufxLib.h MiscStuff.h SysDefs.h
+Archive.o: Archive.c $(COMMON_HDRS)
+ArchiveIO.o: ArchiveIO.c $(COMMON_HDRS)
+Bzip2.o: Bzip2.c $(COMMON_HDRS)
+Charset.o: Charset.c $(COMMON_HDRS)
+Compress.o: Compress.c $(COMMON_HDRS)
+Crc16.o: Crc16.c $(COMMON_HDRS)
+Debug.o: Debug.c $(COMMON_HDRS)
+Deferred.o: Deferred.c $(COMMON_HDRS)
+Deflate.o: Deflate.c $(COMMON_HDRS)
+Entry.o: Entry.c $(COMMON_HDRS)
+Expand.o: Expand.c $(COMMON_HDRS)
+FileIO.o: FileIO.c $(COMMON_HDRS)
+Funnel.o: Funnel.c $(COMMON_HDRS)
+Lzc.o: Lzc.c $(COMMON_HDRS)
+Lzw.o: Lzw.c $(COMMON_HDRS)
+MiscStuff.o: MiscStuff.c $(COMMON_HDRS)
+MiscUtils.o: MiscUtils.c $(COMMON_HDRS)
+Record.o: Record.c $(COMMON_HDRS)
+SourceSink.o: SourceSink.c $(COMMON_HDRS)
+Squeeze.o: Squeeze.c $(COMMON_HDRS)
+Thread.o: Thread.c $(COMMON_HDRS)
+Value.o: Value.c $(COMMON_HDRS)
+Version.o: Version.c $(COMMON_HDRS) Makefile
 
