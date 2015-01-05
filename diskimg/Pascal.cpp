@@ -1275,8 +1275,8 @@ bail:
  * but we don't allow the full range of ProDOS types.  Attempting to change
  * to an unsupported type results in "PDA" being used.
  */
-DIError DiskFSPascal::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
-    long accessFlags)
+DIError DiskFSPascal::SetFileInfo(A2File* pGenericFile, uint32_t fileType,
+    uint32_t auxType, uint32_t accessFlags)
 {
     DIError dierr = kDIErrNone;
     A2FilePascal* pFile = (A2FilePascal*) pGenericFile;
@@ -1393,7 +1393,7 @@ uint8_t* DiskFSPascal::FindDirEntry(A2FilePascal* pFile)
 /*
  * Convert Pascal file type to ProDOS file type.
  */
-long A2FilePascal::GetFileType(void) const
+uint32_t A2FilePascal::GetFileType(void) const
 {
     switch (fFileType) {
     case kTypeUntyped:      return 0x00;        // NON

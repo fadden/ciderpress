@@ -427,7 +427,7 @@ A2FileGutenberg::~A2FileGutenberg(void)
  * Convert the filetype enum to a ProDOS type.
  *
  */
-long A2FileGutenberg::GetFileType(void) const
+uint32_t A2FileGutenberg::GetFileType(void) const
 {
     return 0x04;    // TXT;
 }

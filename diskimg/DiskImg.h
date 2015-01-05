@@ -1208,8 +1208,8 @@ public:
     /*
      * Alter file attributes.
      */
-    virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags)
+    virtual DIError SetFileInfo(A2File* pFile, uint32_t fileType,
+            uint32_t auxType, uint32_t accessFlags)
         { return kDIErrNotSupported; }
 
     /*
@@ -1472,9 +1472,9 @@ public:
     virtual const char* GetFileName(void) const = 0;    // name of this file
     virtual const char* GetPathName(void) const = 0;    // full path
     virtual char GetFssep(void) const = 0;              // '\0' if none
-    virtual long GetFileType(void) const = 0;
-    virtual long GetAuxType(void) const = 0;
-    virtual long GetAccess(void) const = 0;             // ProDOS-style perms
+    virtual uint32_t GetFileType(void) const = 0;
+    virtual uint32_t GetAuxType(void) const = 0;
+    virtual uint32_t GetAccess(void) const = 0;             // ProDOS-style perms
     virtual time_t GetCreateWhen(void) const = 0;
     virtual time_t GetModWhen(void) const = 0;
     virtual di_off_t GetDataLength(void) const = 0;     // len of data fork

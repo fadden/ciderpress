@@ -202,12 +202,12 @@ public:
 
     char GetFssep(void) const { return fFssep; }
     void SetFssep(char fssep) { fFssep = fssep; }
-    long GetFileType(void) const { return fFileType; }
-    void SetFileType(long type) { fFileType = type; }
-    long GetAuxType(void) const { return fAuxType; }
-    void SetAuxType(long type) { fAuxType = type; }
-    long GetAccess(void) const { return fAccess; }
-    void SetAccess(long access) { fAccess = access; }
+    uint32_t GetFileType(void) const { return fFileType; }
+    void SetFileType(uint32_t type) { fFileType = type; }
+    uint32_t GetAuxType(void) const { return fAuxType; }
+    void SetAuxType(uint32_t type) { fAuxType = type; }
+    uint32_t GetAccess(void) const { return fAccess; }
+    void SetAccess(uint32_t access) { fAccess = access; }
     time_t GetCreateWhen(void) const { return fCreateWhen; }
     void SetCreateWhen(time_t when) { fCreateWhen = when; }
     time_t GetModWhen(void) const { return fModWhen; }
@@ -300,11 +300,11 @@ private:
     const WCHAR* fFileName;         // points within fPathName
     const WCHAR* fFileNameExtension; // points within fPathName
     char        fFssep;
-    WCHAR*       fSubVolName;       // sub-volume prefix, or NULL if none
+    WCHAR*      fSubVolName;        // sub-volume prefix, or NULL if none
     WCHAR*      fDisplayName;       // combination of sub-vol and path
-    long        fFileType;
-    long        fAuxType;
-    long        fAccess;
+    uint32_t    fFileType;
+    uint32_t    fAuxType;
+    uint32_t    fAccess;
     time_t      fCreateWhen;
     time_t      fModWhen;
     RecordKind  fRecordKind;        // forked file, disk image, ??

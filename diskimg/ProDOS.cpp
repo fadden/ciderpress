@@ -3607,8 +3607,8 @@ DIError DiskFSProDOS::RegeneratePathName(A2FileProDOS* pFile)
  * This does, of course, mean that there's no meaning in attempts to change
  * the file access permissions of the volume directory.
  */
-DIError DiskFSProDOS::SetFileInfo(A2File* pGenericFile, long fileType,
-    long auxType, long accessFlags)
+DIError DiskFSProDOS::SetFileInfo(A2File* pGenericFile, uint32_t fileType,
+    uint32_t auxType, uint32_t accessFlags)
 {
     DIError dierr = kDIErrNone;
     A2FileProDOS* pFile = (A2FileProDOS*) pGenericFile;

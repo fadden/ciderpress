@@ -1244,8 +1244,8 @@ public:
     virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile) override;
     virtual DIError DeleteFile(A2File* pFile) override;
     virtual DIError RenameFile(A2File* pFile, const char* newName) override;
-    virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags) override;
+    virtual DIError SetFileInfo(A2File* pFile, uint32_t fileType,
+        uint32_t auxType, uint32_t accessFlags) override;
     virtual DIError RenameVolume(const char* newName) override;
 
     /*
@@ -1449,9 +1449,9 @@ public:
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fFileName; }
     virtual char GetFssep(void) const override { return '\0'; }
-    virtual long GetFileType(void) const override;
-    virtual long GetAuxType(void) const override { return fAuxType; }
-    virtual long GetAccess(void) const override;
+    virtual uint32_t GetFileType(void) const override;
+    virtual uint32_t GetAuxType(void) const override { return fAuxType; }
+    virtual uint32_t GetAccess(void) const override;
     virtual time_t GetCreateWhen(void) const override { return 0; }
     virtual time_t GetModWhen(void) const override { return 0; }
     virtual di_off_t GetDataLength(void) const override { return fLength; }
@@ -1560,8 +1560,8 @@ public:
         A2File** ppNewFile) override;
     virtual DIError DeleteFile(A2File* pFile) override;
     virtual DIError RenameFile(A2File* pFile, const char* newName) override;
-    virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags) override;
+    virtual DIError SetFileInfo(A2File* pFile, uint32_t fileType,
+        uint32_t auxType, uint32_t accessFlags) override;
     virtual DIError RenameVolume(const char* newName) override;
 
     // assorted constants
@@ -1819,9 +1819,9 @@ public:
     virtual const char* GetFileName(void) const override { return fDirEntry.fileName; }
     virtual const char* GetPathName(void) const override { return fPathName; }
     virtual char GetFssep(void) const override { return kFssep; }
-    virtual long GetFileType(void) const override { return fDirEntry.fileType; }
-    virtual long GetAuxType(void) const override { return fDirEntry.auxType; }
-    virtual long GetAccess(void) const override { return fDirEntry.access; }
+    virtual uint32_t GetFileType(void) const override { return fDirEntry.fileType; }
+    virtual uint32_t GetAuxType(void) const override { return fDirEntry.auxType; }
+    virtual uint32_t GetAccess(void) const override { return fDirEntry.access; }
     virtual time_t GetCreateWhen(void) const override;
     virtual time_t GetModWhen(void) const override;
     virtual di_off_t GetDataLength(void) const override {
@@ -1986,8 +1986,8 @@ public:
     virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile) override;
     virtual DIError DeleteFile(A2File* pFile) override;
     virtual DIError RenameFile(A2File* pFile, const char* newName) override;
-    virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags) override;
+    virtual DIError SetFileInfo(A2File* pFile, uint32_t fileType,
+        uint32_t auxType, uint32_t accessFlags) override;
     virtual DIError RenameVolume(const char* newName) override;
 
     static bool IsValidVolumeName(const char* name);
@@ -2119,9 +2119,9 @@ public:
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fFileName; }
     virtual char GetFssep(void) const override { return '\0'; }
-    virtual long GetFileType(void) const override;
-    virtual long GetAuxType(void) const override { return 0; }
-    virtual long GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
+    virtual uint32_t GetFileType(void) const override;
+    virtual uint32_t GetAuxType(void) const override { return 0; }
+    virtual uint32_t GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
     virtual time_t GetCreateWhen(void) const override { return 0; }
     virtual time_t GetModWhen(void) const override;
     virtual di_off_t GetDataLength(void) const override { return fLength; }
@@ -2329,9 +2329,9 @@ public:
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fFileName; }
     virtual char GetFssep(void) const override { return '\0'; }
-    virtual long GetFileType(void) const override { return 0; }
-    virtual long GetAuxType(void) const override { return 0; }
-    virtual long GetAccess(void) const override {
+    virtual uint32_t GetFileType(void) const override { return 0; }
+    virtual uint32_t GetAuxType(void) const override { return 0; }
+    virtual uint32_t GetAccess(void) const override {
         if (fReadOnly)
             return DiskFS::kFileAccessLocked;
         else
@@ -2494,9 +2494,9 @@ public:
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fFileName; }
     virtual char GetFssep(void) const override { return '\0'; }
-    virtual long GetFileType(void) const override;
-    virtual long GetAuxType(void) const override { return fLoadAddr; }
-    virtual long GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
+    virtual uint32_t GetFileType(void) const override;
+    virtual uint32_t GetAuxType(void) const override { return fLoadAddr; }
+    virtual uint32_t GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
     virtual time_t GetCreateWhen(void) const override { return 0; }
     virtual time_t GetModWhen(void) const override { return 0; };
     virtual di_off_t GetDataLength(void) const override { return fLength; }
@@ -2573,8 +2573,8 @@ public:
     virtual DIError CreateFile(const CreateParms* pParms, A2File** ppNewFile) override;
     virtual DIError DeleteFile(A2File* pFile) override;
     virtual DIError RenameFile(A2File* pFile, const char* newName) override;
-    virtual DIError SetFileInfo(A2File* pFile, long fileType, long auxType,
-        long accessFlags) override;
+    virtual DIError SetFileInfo(A2File* pFile, uint32_t fileType,
+        uint32_t auxType, uint32_t accessFlags) override;
     virtual DIError RenameVolume(const char* newName);
 #endif
 
@@ -2743,9 +2743,9 @@ public:
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fPathName; }
     virtual char GetFssep(void) const override { return kFssep; }
-    virtual long GetFileType(void) const override;
-    virtual long GetAuxType(void) const override;
-    virtual long GetAccess(void) const override { return fAccess; }
+    virtual uint32_t GetFileType(void) const override;
+    virtual uint32_t GetAuxType(void) const override;
+    virtual uint32_t GetAccess(void) const override { return fAccess; }
     virtual time_t GetCreateWhen(void) const override { return fCreateWhen; }
     virtual time_t GetModWhen(void) const override { return fModWhen; }
     virtual di_off_t GetDataLength(void) const override { return fDataLength; }
@@ -2789,21 +2789,21 @@ public:
     virtual void SetParent(A2File* pParent) override { fpParent = pParent; }
     virtual A2File* GetParent(void) const override { return fpParent; }
     char* GetLibHFSPathName(void) const;
-    static void ConvertTypeToHFS(long fileType, long auxType,
+    static void ConvertTypeToHFS(uint32_t fileType, uint32_t auxType,
         char* pType, char* pCreator);
 #endif
 
     bool            fIsDir;
     bool            fIsVolumeDir;
-    long            fType;
-    long            fCreator;
+    uint32_t        fType;
+    uint32_t        fCreator;
     char            fFileName[kMaxFileName+1];
     char*           fPathName;
     di_off_t        fDataLength;
     di_off_t        fRsrcLength;
     time_t          fCreateWhen;
     time_t          fModWhen;
-    long            fAccess;
+    uint32_t        fAccess;
 
 private:
 #ifdef EXCISE_GPL_CODE
@@ -3009,9 +3009,9 @@ public:
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fFileName; }
     virtual char GetFssep(void) const override { return '\0'; }
-    virtual long GetFileType(void) const override;
-    virtual long GetAuxType(void) const override { return fAuxType; }
-    virtual long GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
+    virtual uint32_t GetFileType(void) const override;
+    virtual uint32_t GetAuxType(void) const override { return fAuxType; }
+    virtual uint32_t GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
     virtual time_t GetCreateWhen(void) const override { return 0; }
     virtual time_t GetModWhen(void) const override { return 0; }
     virtual di_off_t GetDataLength(void) const override { return fLength; }
@@ -3185,9 +3185,9 @@ public:
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fFileName; }
     virtual char GetFssep(void) const override { return '\0'; }
-    virtual long GetFileType(void) const override { return 0; };
-    virtual long GetAuxType(void) const override { return 0; }
-    virtual long GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
+    virtual uint32_t GetFileType(void) const override { return 0; };
+    virtual uint32_t GetAuxType(void) const override { return 0; }
+    virtual uint32_t GetAccess(void) const override { return DiskFS::kFileAccessUnlocked; }
     virtual time_t GetCreateWhen(void) const override { return 0; }
     virtual time_t GetModWhen(void) const override { return 0; }
     virtual di_off_t GetDataLength(void) const override { return fLength; }

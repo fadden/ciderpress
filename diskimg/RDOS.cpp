@@ -438,9 +438,9 @@ void DiskFSRDOS::SetSectorUsage(long track, long sector,
 /*
  * Convert RDOS file type to ProDOS file type.
  */
-long A2FileRDOS::GetFileType(void) const
+uint32_t A2FileRDOS::GetFileType(void) const
 {
-    long retval;
+    uint32_t retval;
 
     switch (fFileType) {
     case kTypeText:         retval = 0x04;  break;  // TXT

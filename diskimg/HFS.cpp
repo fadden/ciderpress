@@ -1551,8 +1551,8 @@ bail:
 /*
  * Set file attributes.
  */
-DIError DiskFSHFS::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
-    long accessFlags)
+DIError DiskFSHFS::SetFileInfo(A2File* pGenericFile, uint32_t fileType,
+    uint32_t auxType, uint32_t accessFlags)
 {
     DIError dierr = kDIErrNone;
     A2FileHFS* pFile = (A2FileHFS*) pGenericFile;
@@ -1653,7 +1653,7 @@ inline int FromHex(char hexVal)
  * equivalent, and CiderPress really doesn't need the "raw" file type.  If
  * it becomes annoying, we can add a DiskFSParameter to control it.
  */
-long A2FileHFS::GetFileType(void) const
+uint32_t A2FileHFS::GetFileType(void) const
 {
     if (fCreator != kPdosType)
         return fType;
@@ -1693,7 +1693,7 @@ long A2FileHFS::GetFileType(void) const
 /*
  * If this has a ProDOS aux type, convert it.
  */
-long A2FileHFS::GetAuxType(void) const
+uint32_t A2FileHFS::GetAuxType(void) const
 {
     if (fCreator != kPdosType)
         return fCreator;
@@ -1762,7 +1762,7 @@ char* A2FileHFS::GetLibHFSPathName(void) const
  * conversions discard the file's aux type and therefore are unsuitable,
  * and the conversion of SRC throws away its identity.
  */
-/*static*/ void A2FileHFS::ConvertTypeToHFS(long fileType, long auxType,
+/*static*/ void A2FileHFS::ConvertTypeToHFS(uint32_t fileType, uint32_t auxType,
         char* pType, char* pCreator)
 {
     if (fileType == 0x00 && auxType == 0x0000) {

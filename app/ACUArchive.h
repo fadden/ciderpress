@@ -186,10 +186,10 @@ private:
      * The header at the front of an ACU archive.
      */
     typedef struct AcuMasterHeader {
-        unsigned short  fileCount;
-        unsigned short  unknown1;       // 0x01 00 -- might be "version 1?"
-        unsigned char   fZink[6];       // "fZink", low ASCII
-        unsigned char   unknown2[11];   // 0x01 36 00 00 00 00 00 00 00 00 dd
+        uint16_t    fileCount;
+        uint16_t    unknown1;       // 0x01 00 -- might be "version 1?"
+        uint8_t     fZink[6];       // "fZink", low ASCII
+        uint8_t     unknown2[11];   // 0x01 36 00 00 00 00 00 00 00 00 dd
     } AcuMasterHeader;
 
     /*
@@ -203,24 +203,24 @@ private:
     struct AcuFileEntry;
     friend struct AcuFileEntry;
     typedef struct AcuFileEntry {
-        unsigned char   compressionType;
-        unsigned short  dataChecksum;       // ??
-        unsigned short  blockCount;         // total blocks req'd to hold file
-        unsigned long   dataStorageLen;     // length of data within archive
-        unsigned short  access;
-        unsigned short  fileType;
-        unsigned long   auxType;
-        unsigned char   storageType;
-        unsigned long   dataEof;
-        unsigned short  prodosModDate;
-        unsigned short  prodosModTime;
-        NuDateTime      modWhen;            // computed from previous two fields
-        unsigned short  prodosCreateDate;
-        unsigned short  prodosCreateTime;
-        NuDateTime      createWhen;         // computed from previous two fields
-        unsigned short  fileNameLen;
-        unsigned short  headerChecksum;     // ??
-        char            fileName[kAcuMaxFileName+1];
+        uint8_t     compressionType;
+        uint16_t    dataChecksum;       // ??
+        uint16_t    blockCount;         // total blocks req'd to hold file
+        uint32_t    dataStorageLen;     // length of data within archive
+        uint16_t    access;
+        uint16_t    fileType;
+        uint32_t    auxType;
+        uint8_t     storageType;
+        uint32_t    dataEof;
+        uint16_t    prodosModDate;
+        uint16_t    prodosModTime;
+        NuDateTime  modWhen;            // computed from previous two fields
+        uint16_t    prodosCreateDate;
+        uint16_t    prodosCreateTime;
+        NuDateTime  createWhen;         // computed from previous two fields
+        uint16_t    fileNameLen;
+        uint16_t    headerChecksum;     // ??
+        char        fileName[kAcuMaxFileName+1];    // ASCII
 
         // possibilities for mystery fields:
         // - OS type (note ProDOS is $00)

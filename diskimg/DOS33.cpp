@@ -2164,8 +2164,8 @@ bail:
  *
  * Changing the aux type is only allowed for BIN files.
  */
-DIError DiskFSDOS33::SetFileInfo(A2File* pGenericFile, long fileType, long auxType,
-    long accessFlags)
+DIError DiskFSDOS33::SetFileInfo(A2File* pGenericFile, uint32_t fileType,
+    uint32_t auxType, uint32_t accessFlags)
 {
     DIError dierr = kDIErrNone;
     A2FileDOS* pFile = (A2FileDOS*) pGenericFile;
@@ -2410,7 +2410,7 @@ A2FileDOS::~A2FileDOS(void)
  * because I can't find any information on the REL format.  However, Copy ][+
  * does convert to REL, and the Binary ][ standard says I should as well.
  */
-long A2FileDOS::GetFileType(void) const
+uint32_t A2FileDOS::GetFileType(void) const
 {
     long retval;
 
@@ -2501,7 +2501,7 @@ long A2FileDOS::GetFileType(void) const
 /*
  * Match the ProDOS equivalents of "locked" and "unlocked".
  */
-long A2FileDOS::GetAccess(void) const
+uint32_t A2FileDOS::GetAccess(void) const
 {
     if (fLocked)
         return DiskFS::kFileAccessLocked;   // 0x01 read
