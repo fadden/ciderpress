@@ -375,7 +375,7 @@ bail:
 
 /*static*/ CString AcuArchive::AppInit(void)
 {
-    return "";
+    return L"";
 }
 
 GenericArchive::OpenResult AcuArchive::Open(const WCHAR* filename,
@@ -526,11 +526,11 @@ int AcuArchive::ReadMasterHeader(int* pNumEntries)
         header.unknown1 != 1 ||
         strcmp((char*) header.fZink, "fZink") != 0)
     {
-        LOGI("Not an ACU archive");
+        LOGW("Not an ACU archive");
         return -1;
     }
 
-    LOGI("Looks like an ACU archive with %d entries", header.fileCount);
+    LOGD("Looks like an ACU archive with %d entries", header.fileCount);
 
     *pNumEntries = header.fileCount;
     return 0;

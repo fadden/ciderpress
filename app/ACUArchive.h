@@ -162,7 +162,7 @@ private:
     }
     virtual void XferPrepare(const XferFileOptions* pXferOpts) override
         { ASSERT(false); }
-    virtual CString XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+    virtual CString XferFile(LocalFileDetails* pDetails, uint8_t** pDataBuf,
         long dataLen, uint8_t** pRsrcBuf, long rsrcLen) override
         { ASSERT(false); return "!"; }
     virtual void XferAbort(CWnd* pMsgWnd) override
@@ -172,7 +172,7 @@ private:
 
     virtual ArchiveKind GetArchiveKind(void) override { return kArchiveACU; }
     virtual NuError DoAddFile(const AddFilesDialog* pAddOpts,
-        FileDetails* pDetails) override
+        LocalFileDetails* pDetails) override
         { ASSERT(false); return kNuErrGeneric; }
 
     enum {

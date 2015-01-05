@@ -254,11 +254,16 @@ DIError GFDFile::Open(const char* filename, bool readOnly)
 
     fFd = open(filename, readOnly ? O_RDONLY|O_BINARY : O_RDWR|O_BINARY, 0);
     if (fFd < 0) {
-        if (errno == EACCES)
+        if (errno == EACCES) {
             dierr = kDIErrAccessDenied;
-        else
+        } else if (errno == EINVAL) {
+            // Happens on Win32 if a Unicode filename conversion failed,
+            // because non-converting chars turn into '?', which is illegal.
+            dierr = kDIErrInvalidArg;
+        } else {
             dierr = ErrnoOrGeneric();
-        LOGI("  GDFile Open failed opening '%s', ro=%d (err=%d)",
+        }
+        LOGW("  GDFile Open failed opening '%s', ro=%d (err=%d)",
             filename, readOnly, dierr);
         return dierr;
     }
@@ -278,7 +283,7 @@ DIError GFDFile::Read(void* buf, size_t length, size_t* pActual)
         return kDIErrEOF;
     if (actual < 0) {
         dierr = ErrnoOrGeneric();
-        LOGI("  GDFile Read failed on %d bytes (actual=%d, err=%d)",
+        LOGW("  GDFile Read failed on %d bytes (actual=%d, err=%d)",
             length, actual, dierr);
         return dierr;
     }

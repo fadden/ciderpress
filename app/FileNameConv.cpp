@@ -1287,9 +1287,11 @@ void PathProposal::DenormalizePath(WCHAR* pathBuf)
                 ch = HexDigit(*srcp) << 4;
                 srcp++;
                 if (isxdigit((int)*srcp)) {
-                    /* valid, output char */
+                    /* valid, output char (unless it's a %00 place-holder) */
                     ch += HexDigit(*srcp);
-                    *dstp++ = ch;
+                    if (ch != '\0') {
+                        *dstp++ = ch;
+                    }
                     srcp++;
                 } else {
                     /* bogus '%' with trailing hex digit found! */

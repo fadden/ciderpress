@@ -1097,14 +1097,15 @@ NuError Nu_CloseOutputFile(NuArchive* pArchive, const NuRecord* pRecord,
     err = Nu_SetFileDates(pArchive, pRecord, pathnameUNI);
     BailError(err);
 
-    err = Nu_SetFileAccess(pArchive, pRecord, pathnameUNI);
-    BailError(err);
-
 #if defined(MAC_LIKE)
     /* could also do this earlier and pass the fd for fsetxattr */
+    /* NOTE: must do this before Nu_SetFileAccess */
     err = Nu_SetFinderInfo(pArchive, pRecord, pathnameUNI);
     BailError(err);
 #endif
+
+    err = Nu_SetFileAccess(pArchive, pRecord, pathnameUNI);
+    BailError(err);
 
 bail:
     return kNuErrNone;

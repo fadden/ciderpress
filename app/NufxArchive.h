@@ -171,7 +171,7 @@ private:
         CString* pErrMsg);
 
     virtual void XferPrepare(const XferFileOptions* pXferOpts) override;
-    virtual CString XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+    virtual CString XferFile(LocalFileDetails* pDetails, uint8_t** pDataBuf,
         long dataLen, uint8_t** pRsrcBuf, long rsrcLen) override;
     virtual void XferAbort(CWnd* pMsgWnd) override;
     virtual void XferFinish(CWnd* pMsgWnd) override;
@@ -188,7 +188,7 @@ private:
     void AddFinish(void);
 
     virtual NuError DoAddFile(const AddFilesDialog* pAddOpts,
-        FileDetails* pDetails) override;
+        LocalFileDetails* pDetails) override;
 
     /*
      * Error handler callback for "bulk" adds.

@@ -127,6 +127,30 @@ public:
      */
     static const WCHAR* FilenameOnly(const WCHAR* pathname, WCHAR fssep);
 
+    /*
+     * Test to see if a wide-to-narrow filename conversion failed.
+     *
+     * Returns true if all is well, false with *pErrMsg set if something
+     * went wrong.
+     */
+    static bool TestNarrowConversion(const CString& original,
+            const CStringA& converted, CString* pErrMsg) {
+        int index = converted.ReverseFind('?');
+        if (index < 0) {
+            // no '?' is good
+        } else if (index == 2 && converted.Left(4) == "\\\\?\\") {
+            // Win32 file namespace path strings start with "\\?\".  If that's
+            // the first occurrence of '?', we're still good.
+        } else {
+            // This is most likely the result of a failed wide-to-narrow
+            // string conversion.
+            pErrMsg->Format(L"Unable to open '%ls' -- Unicode filename "
+                            L"conversion is invalid ('%hs')",
+                    (LPCWSTR) original, (LPCSTR) converted);
+            return false;
+        }
+        return true;
+    }
 private:
     DECLARE_COPY_AND_OPEQ(PathName)
 

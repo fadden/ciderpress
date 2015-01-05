@@ -231,7 +231,7 @@ private:
     virtual CString Close(void);
 
     virtual void XferPrepare(const XferFileOptions* pXferOpts) override;
-    virtual CString XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+    virtual CString XferFile(LocalFileDetails* pDetails, uint8_t** pDataBuf,
         long dataLen, uint8_t** pRsrcBuf, long rsrcLen) override;
     virtual void XferAbort(CWnd* pMsgWnd) override;
     virtual void XferFinish(CWnd* pMsgWnd) override;
@@ -253,10 +253,10 @@ private:
      */
     class FileAddData {
     public:
-        FileAddData(const FileDetails* pDetails, char* fsNormalPath) {
+        FileAddData(const LocalFileDetails* pDetails, char* fsNormalPathMOR) {
             fDetails = *pDetails;
 
-            fFSNormalPath = fsNormalPath;
+            fFSNormalPathMOR = fsNormalPathMOR;
             fpOtherFork = NULL;
             fpNext = NULL;
         }
@@ -267,25 +267,21 @@ private:
         FileAddData* GetOtherFork(void) const { return fpOtherFork; }
         void SetOtherFork(FileAddData* pData) { fpOtherFork = pData; }
 
-        const FileDetails* GetDetails(void) const { return &fDetails; }
+        const LocalFileDetails* GetDetails(void) const { return &fDetails; }
 
         /*
          * Get the "FS-normal" path, i.e. exactly what we want to appear
          * on the disk image.  This has the result of any conversions, so
-         * we need to store it as a narrow string.
+         * we need to store it as a narrow Mac OS Roman string.
          */
-        const char* GetFSNormalPath(void) const { return fFSNormalPath; }
+        const char* GetFSNormalPath(void) const { return fFSNormalPathMOR; }
 
     private:
-        // Three filenames stored inside FileDetails:
-        //  fDetails.origName -- the name of the Windows file
-        //  fDetails.storageName -- origName with type-preservation goodies
-        //    stripped out
-        //  fFSNormalPath -- the FS-normalized version of "storageName", i.e.
-        //    the name as it will appear on the Apple II disk image
+        LocalFileDetails fDetails;
 
-        FileDetails     fDetails;
-        CStringA        fFSNormalPath;
+        // The DiskFS-normalized version of the storage name.  This is the
+        // name as it will appear on the Apple II disk image.
+        CStringA        fFSNormalPathMOR;
 
         FileAddData*    fpOtherFork;
         FileAddData*    fpNext;
@@ -293,7 +289,7 @@ private:
 
     virtual ArchiveKind GetArchiveKind(void) override { return kArchiveDiskImage; }
     virtual NuError DoAddFile(const AddFilesDialog* pAddOpts,
-        FileDetails* pDetails) override;
+        LocalFileDetails* pDetails) override;
 
     /*
      * Reload the contents of the archive, showing an error message if the
@@ -344,7 +340,7 @@ private:
      *  Replaces pDetails->storageName if the user elects to rename
      */
     NuResult HandleReplaceExisting(const A2File* pExisting,
-        FileDetails* pDetails);
+        LocalFileDetails* pDetails);
 
     /*
      * Process the list of pending file adds.
@@ -393,15 +389,6 @@ private:
      * Free all entries in the FileAddData list.
      */
     void FreeAddDataList(void);
-
-    /*
-     * Fill out a CreateParms structure from a FileDetails structure.
-     *
-     * The NuStorageType values correspond exactly to ProDOS storage types, so
-     * there's no need to convert them.
-     */
-    void ConvertFDToCP(const FileDetails* pDetails,
-        DiskFS::CreateParms* pCreateParms);
 
     /*
      * Set up a RenameEntryDialog for the entry in "*pEntry".

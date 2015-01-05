@@ -2468,7 +2468,7 @@ DIError DiskImg::CreateImageCommon(const char* pathName, const char* storageName
      */
     dierr = ValidateCreateFormat();
     if (dierr != kDIErrNone) {
-        LOGI("ERROR: CIC arg validation failed, bailing");
+        LOGE("ERROR: CIC arg validation failed, bailing");
         goto bail;
     }
 
@@ -2486,7 +2486,7 @@ DIError DiskImg::CreateImageCommon(const char* pathName, const char* storageName
     fd = open(pathName, O_CREAT | O_EXCL, 0644);
     if (fd < 0) {
         dierr = (DIError) errno;
-        LOGI("ERROR: unable to create file '%s' (errno=%d)",
+        LOGE("ERROR: unable to create file '%s' (errno=%d)",
             pathName, dierr);
         goto bail;
     }
@@ -2627,7 +2627,7 @@ DIError DiskImg::CreateImageCommon(const char* pathName, const char* storageName
     }
 
     if (fpImageWrapper == NULL) {
-        LOGI(" DI couldn't figure out the file format");
+        LOGW(" DI couldn't figure out the file format");
         dierr = kDIErrUnrecognizedFileFmt;
         goto bail;
     }
@@ -2637,7 +2637,7 @@ DIError DiskImg::CreateImageCommon(const char* pathName, const char* storageName
     dierr = fpImageWrapper->Create(fLength, fPhysical, fOrder,
                 fDOSVolumeNum, fpWrapperGFD, &fWrappedLength, &fpDataGFD);
     if (dierr != kDIErrNone) {
-        LOGI("ImageWrapper Create failed, err=%d", dierr);
+        LOGE("ImageWrapper Create failed, err=%d", dierr);
         goto bail;
     }
     assert(fpDataGFD != NULL);
@@ -2658,7 +2658,7 @@ DIError DiskImg::CreateImageCommon(const char* pathName, const char* storageName
         assert(!skipFormat);        // don't skip low-level nibble formatting!
         if (fDOSVolumeNum == kVolumeNumNotSet) {
             fDOSVolumeNum = kDefaultNibbleVolumeNum;
-            LOGI("    Using default nibble volume num");
+            LOGD("    Using default nibble volume num");
         }
 
         dierr = FormatNibbles(fpDataGFD);   // write basic nibble stuff
@@ -2697,7 +2697,7 @@ DIError DiskImg::ValidateCreateFormat(void) const
      */
     if (fHasBlocks && fNumBlocks >= 4194304) {  // 2GB or larger?
         if (fFileFormat != kFileFormatUnadorned) {
-            LOGI("CreateImage: images >= 2GB can only be unadorned");
+            LOGW("CreateImage: images >= 2GB can only be unadorned");
             return kDIErrInvalidCreateReq;
         }
     }
@@ -2707,14 +2707,14 @@ DIError DiskImg::ValidateCreateFormat(void) const
         fOrder == kSectorOrderUnknown ||
         fFormat == kFormatUnknown)
     {
-        LOGI("CreateImage: ambiguous format");
+        LOGW("CreateImage: ambiguous format");
         return kDIErrInvalidCreateReq;
     }
     if (fOuterFormat != kOuterFormatNone &&
         fOuterFormat != kOuterFormatGzip &&
         fOuterFormat != kOuterFormatZip)
     {
-        LOGI("CreateImage: unsupported outer format %d", fOuterFormat);
+        LOGW("CreateImage: unsupported outer format %d", fOuterFormat);
         return kDIErrInvalidCreateReq;
     }
     if (fFileFormat != kFileFormatUnadorned &&
@@ -2726,7 +2726,7 @@ DIError DiskImg::ValidateCreateFormat(void) const
         fFileFormat != kFileFormatNuFX &&
         fFileFormat != kFileFormatDDD)
     {
-        LOGI("CreateImage: unsupported file format %d", fFileFormat);
+        LOGW("CreateImage: unsupported file format %d", fFileFormat);
         return kDIErrInvalidCreateReq;
     }
     if (fFormat != kFormatGenericPhysicalOrd &&
@@ -2734,7 +2734,7 @@ DIError DiskImg::ValidateCreateFormat(void) const
         fFormat != kFormatGenericDOSOrd &&
         fFormat != kFormatGenericCPMOrd)
     {
-        LOGI("CreateImage: may only use 'generic' formats");
+        LOGW("CreateImage: may only use 'generic' formats");
         return kDIErrInvalidCreateReq;
     }
 
@@ -2743,25 +2743,25 @@ DIError DiskImg::ValidateCreateFormat(void) const
      */
     if (fPhysical != kPhysicalFormatSectors) {
         if (fOrder != kSectorOrderPhysical) {
-            LOGI("CreateImage: nibble images are always 'physical' order");
+            LOGW("CreateImage: nibble images are always 'physical' order");
             return kDIErrInvalidCreateReq;
         }
 
         if (GetHasSectors() == false && GetHasNibbles() == false) {
-            LOGI("CreateImage: must set hasSectors(%d) or hasNibbles(%d)",
+            LOGW("CreateImage: must set hasSectors(%d) or hasNibbles(%d)",
                 GetHasSectors(), GetHasNibbles());
             return kDIErrInvalidCreateReq;
         }
 
         if (fpNibbleDescr == NULL && GetNumSectPerTrack() > 0) {
-            LOGI("CreateImage: must provide NibbleDescr for non-sector");
+            LOGW("CreateImage: must provide NibbleDescr for non-sector");
             return kDIErrInvalidCreateReq;
         }
 
         if (fpNibbleDescr != NULL &&
             fpNibbleDescr->numSectors != GetNumSectPerTrack())
         {
-            LOGI("CreateImage: ?? nd->numSectors=%d, GetNumSectPerTrack=%d",
+            LOGW("CreateImage: ?? nd->numSectors=%d, GetNumSectPerTrack=%d",
                 fpNibbleDescr->numSectors, GetNumSectPerTrack());
             return kDIErrInvalidCreateReq;
         }
@@ -2773,14 +2773,14 @@ DIError DiskImg::ValidateCreateFormat(void) const
              fpNibbleDescr->encoding != kNibbleEnc62))
             )
         {
-            LOGI("CreateImage: sector count/encoding mismatch");
+            LOGW("CreateImage: sector count/encoding mismatch");
             return kDIErrInvalidCreateReq;
         }
 
         if (GetNumTracks() != kTrackCount525 &&
             !(GetNumTracks() == 40 && fFileFormat == kFileFormatTrackStar))
         {
-            LOGI("CreateImage: unexpected track count %ld", GetNumTracks());
+            LOGW("CreateImage: unexpected track count %ld", GetNumTracks());
             return kDIErrInvalidCreateReq;
         }
     }
@@ -2788,7 +2788,7 @@ DIError DiskImg::ValidateCreateFormat(void) const
         if (fPhysical != kPhysicalFormatSectors &&
             fPhysical != kPhysicalFormatNib525_6656)
         {
-            LOGI("CreateImage: 2MG can't handle physical %d", fPhysical);
+            LOGW("CreateImage: 2MG can't handle physical %d", fPhysical);
             return kDIErrInvalidCreateReq;
         }
 
@@ -2796,78 +2796,78 @@ DIError DiskImg::ValidateCreateFormat(void) const
                 (fOrder != kSectorOrderProDOS &&
                 fOrder != kSectorOrderDOS))
         {
-            LOGI("CreateImage: 2MG requires DOS or ProDOS ordering");
+            LOGW("CreateImage: 2MG requires DOS or ProDOS ordering");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatNuFX) {
         if (fOuterFormat != kOuterFormatNone) {
-            LOGI("CreateImage: can't mix NuFX and outer wrapper");
+            LOGW("CreateImage: can't mix NuFX and outer wrapper");
             return kDIErrInvalidCreateReq;
         }
         if (fPhysical != kPhysicalFormatSectors) {
-            LOGI("CreateImage: NuFX physical must be sectors");
+            LOGW("CreateImage: NuFX physical must be sectors");
             return kDIErrInvalidCreateReq;
         }
         if (fOrder != kSectorOrderProDOS) {
-            LOGI("CreateImage: NuFX is always ProDOS-order");
+            LOGW("CreateImage: NuFX is always ProDOS-order");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatDiskCopy42) {
         if (fPhysical != kPhysicalFormatSectors) {
-            LOGI("CreateImage: DC42 physical must be sectors");
+            LOGW("CreateImage: DC42 physical must be sectors");
             return kDIErrInvalidCreateReq;
         }
         if ((GetHasBlocks() && GetNumBlocks() != 1600) ||
             (GetHasSectors() &&
                 (GetNumTracks() != 200 || GetNumSectPerTrack() != 16)))
         {
-            LOGI("CreateImage: DC42 only for 800K disks");
+            LOGW("CreateImage: DC42 only for 800K disks");
             return kDIErrInvalidCreateReq;
         }
         if (fOrder != kSectorOrderProDOS &&
             fOrder != kSectorOrderDOS)      // used for UNIDOS disks??
         {
-            LOGI("CreateImage: DC42 is always ProDOS or DOS");
+            LOGW("CreateImage: DC42 is always ProDOS or DOS");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatSim2eHDV) {
         if (fPhysical != kPhysicalFormatSectors) {
-            LOGI("CreateImage: Sim2eHDV physical must be sectors");
+            LOGW("CreateImage: Sim2eHDV physical must be sectors");
             return kDIErrInvalidCreateReq;
         }
         if (fOrder != kSectorOrderProDOS) {
-            LOGI("CreateImage: Sim2eHDV is always ProDOS-order");
+            LOGW("CreateImage: Sim2eHDV is always ProDOS-order");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatTrackStar) {
         if (fPhysical != kPhysicalFormatNib525_Var) {
-            LOGI("CreateImage: TrackStar physical must be var-nibbles");
+            LOGW("CreateImage: TrackStar physical must be var-nibbles");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatFDI) {
         if (fPhysical != kPhysicalFormatNib525_Var) {
-            LOGI("CreateImage: FDI physical must be var-nibbles");
+            LOGW("CreateImage: FDI physical must be var-nibbles");
             return kDIErrInvalidCreateReq;
         }
     }
     if (fFileFormat == kFileFormatDDD) {
         if (fPhysical != kPhysicalFormatSectors) {
-            LOGI("CreateImage: DDD physical must be sectors");
+            LOGW("CreateImage: DDD physical must be sectors");
             return kDIErrInvalidCreateReq;
         }
         if (fOrder != kSectorOrderDOS) {
-            LOGI("CreateImage: DDD is always DOS-order");
+            LOGW("CreateImage: DDD is always DOS-order");
             return kDIErrInvalidCreateReq;
         }
         if (!GetHasSectors() || GetNumTracks() != 35 ||
             GetNumSectPerTrack() != 16)
         {
-            LOGI("CreateImage: DDD is only for 16-sector 35-track disks");
+            LOGW("CreateImage: DDD is only for 16-sector 35-track disks");
             return kDIErrInvalidCreateReq;
         }
     }

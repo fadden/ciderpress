@@ -616,25 +616,27 @@ void ImportBASDialog::OnOK(void)
     /*
      * Write the file to the currently-open archive.
      */
-    GenericArchive::FileDetails details;
+    GenericArchive::LocalFileDetails details;
 
-    details.entryKind = GenericArchive::FileDetails::kFileKindDataFork;
-    details.origName = L"Imported BASIC";
-    details.storageName = fileName;
-    details.access = 0xe3;  // unlocked, backup bit set
-    details.fileType = kFileTypeBAS;
-    details.extraType = 0x0801;
-    details.storageType = DiskFS::kStorageSeedling;
+    details.SetEntryKind(GenericArchive::LocalFileDetails::kFileKindDataFork);
+    details.SetLocalPathName(L"Imported BASIC");
+    details.SetStrippedLocalPathName(fileName);
+    details.SetAccess(0xe3);    // unlocked, backup bit set
+    details.SetFileType(kFileTypeBAS);
+    details.SetExtraType(0x0801);
+    details.SetStorageType(DiskFS::kStorageSeedling);
     time_t now = time(NULL);
-    GenericArchive::UNIXTimeToDateTime(&now, &details.createWhen);
-    GenericArchive::UNIXTimeToDateTime(&now, &details.archiveWhen);
-    GenericArchive::UNIXTimeToDateTime(&now, &details.modWhen);
+    NuDateTime ndt;
+    GenericArchive::UNIXTimeToDateTime(&now, &ndt);
+    details.SetCreateWhen(ndt);
+    details.SetArchiveWhen(ndt);
+    details.SetModWhen(ndt);
 
     CString errMsg;
 
     fDirty = true;
     if (!MainWindow::SaveToArchive(&details, (const unsigned char*) fOutput,
-        fOutputLen, NULL, -1, /*ref*/errMsg, this))
+        fOutputLen, NULL, -1, &errMsg, this))
     {
         goto bail;
     }

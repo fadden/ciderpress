@@ -466,21 +466,26 @@ GenericArchive::OpenResult DiskArchive::Open(const WCHAR* filename,
     {
         CWaitCursor waitc;
 
+        // TODO(Unicode): modify DiskImg lib to accept wide paths
         CStringA fileNameA(filename);
+        if (!PathName::TestNarrowConversion(filename, fileNameA, &errMsg)) {
+            result = kResultFailure;
+            goto bail;
+        }
         dierr = fDiskImg.OpenImage(fileNameA, PathProposal::kLocalFssep,
             readOnly);
         if (dierr == kDIErrAccessDenied && !readOnly && !isVolume) {
             // retry file open with read-only set
             // don't do that for volumes -- assume they know what they want
-            LOGI("  Retrying open with read-only set");
+            LOGD("  Retrying open with read-only set");
             fIsReadOnly = readOnly = true;
             dierr = fDiskImg.OpenImage(fileNameA, PathProposal::kLocalFssep,
                 readOnly);
         }
         if (dierr != kDIErrNone) {
-            if (dierr == kDIErrFileArchive)
+            if (dierr == kDIErrFileArchive) {
                 result = kResultFileArchive;
-            else {
+            } else {
                 result = kResultFailure;
                 errMsg.Format(L"Unable to open '%ls': %hs.", filename,
                     DiskImgLib::DIStrError(dierr));
@@ -507,7 +512,7 @@ GenericArchive::OpenResult DiskArchive::Open(const WCHAR* filename,
         imf.SetAllowGenericFormats(false);
 
         if (imf.DoModal() != IDOK) {
-            LOGI("User bailed on IMF dialog");
+            LOGD("User bailed on IMF dialog");
             result = kResultCancel;
             goto bail;
         }
@@ -1246,7 +1251,7 @@ bail:
 }
 
 NuError DiskArchive::DoAddFile(const AddFilesDialog* pAddOpts,
-    FileDetails* pDetails)
+    LocalFileDetails* pDetails)
 {
     /*
      * Add a file to a disk image  Unfortunately we can't just add the files
@@ -1286,8 +1291,9 @@ NuError DiskArchive::DoAddFile(const AddFilesDialog* pAddOpts,
     int neededLen = 64;     // reasonable guess
     char* fsNormalBuf = NULL;    // name as it will appear on disk image
 
-    LOGI("  +++ ADD file: orig='%ls' stor='%ls'",
-        (LPCWSTR) pDetails->origName, (LPCWSTR) pDetails->storageName);
+    LOGI("  +++ ADD file: orig='%ls' strip='%ls'",
+        (LPCWSTR) pDetails->GetLocalPathName(),
+        (LPCWSTR) pDetails->GetStrippedLocalPathName());
 
 retry:
     /*
@@ -1295,14 +1301,13 @@ retry:
      */
     delete[] fsNormalBuf;
     fsNormalBuf = new char[neededLen];
-    CStringA storageNameA(pDetails->storageName);
-    dierr = pDiskFS->NormalizePath(storageNameA,
+    dierr = pDiskFS->NormalizePath(pDetails->GetStoragePathNameMOR(),
                 PathProposal::kDefaultStoredFssep, fsNormalBuf, &neededLen);
     if (dierr == kDIErrDataOverrun) {
         /* not long enough, try again *once* */
         delete[] fsNormalBuf;
         fsNormalBuf = new char[neededLen];
-        dierr = pDiskFS->NormalizePath(storageNameA,
+        dierr = pDiskFS->NormalizePath(pDetails->GetStoragePathNameMOR(),
                     PathProposal::kDefaultStoredFssep, fsNormalBuf, &neededLen);
     }
     if (dierr != kDIErrNone) {
@@ -1337,16 +1342,16 @@ retry:
             goto retry;
         } else if (result == kNuOverwrite) {
             /* delete the existing file immediately */
-            LOGI(" Deleting existing file '%hs'", fsNormalBuf);
+            LOGD(" Deleting existing file '%hs'", fsNormalBuf);
             dierr = pDiskFS->DeleteFile(pExisting);
             if (dierr != kDIErrNone) {
                 // Would be nice to show a dialog and explain *why*, but
                 // I'm not sure we have a window here.
-                LOGI("  Deletion failed (err=%d)", dierr);
+                LOGE("  Deletion failed (err=%d)", dierr);
                 goto bail;
             }
         } else {
-            LOGI("GLITCH: bad return %d from HandleReplaceExisting",result);
+            LOGE("GLITCH: bad return %d from HandleReplaceExisting",result);
             assert(false);
             nuerr = kNuErrInternal;
             goto bail;
@@ -1364,7 +1369,7 @@ retry:
         goto bail;
     }
 
-    LOGI("FSNormalized is '%hs'", pAddData->GetFSNormalPath());
+    LOGD("FSNormalized is '%hs'", pAddData->GetFSNormalPath());
 
     AddToAddDataList(pAddData);
 
@@ -1374,7 +1379,7 @@ bail:
 }
 
 NuResult DiskArchive::HandleReplaceExisting(const A2File* pExisting,
-    FileDetails* pDetails)
+    LocalFileDetails* pDetails)
 {
     NuResult result;
 
@@ -1390,8 +1395,8 @@ NuResult DiskArchive::HandleReplaceExisting(const A2File* pExisting,
     confOvwr.fExistingFile = pExisting->GetPathName();
     confOvwr.fExistingFileModWhen = pExisting->GetModWhen();
 
-    PathName srcPath(pDetails->origName);
-    confOvwr.fNewFileSource = pDetails->origName;   // or storageName?
+    PathName srcPath(pDetails->GetLocalPathName());
+    confOvwr.fNewFileSource = pDetails->GetLocalPathName();
     confOvwr.fNewFileModWhen = srcPath.GetModWhen();
 
     if (confOvwr.DoModal() == IDCANCEL) {
@@ -1399,6 +1404,9 @@ NuResult DiskArchive::HandleReplaceExisting(const A2File* pExisting,
         return kNuAbort;
     }
 
+    // TODO: if they rename one fork, we need to track that fact and
+    // carry it over to the other fork -- otherwise they can rename
+    // the data and resource forks into separate files.
     if (confOvwr.fResultRename) {
         /*
          * Replace the name in FileDetails.  They were asked to modify
@@ -1413,8 +1421,9 @@ NuResult DiskArchive::HandleReplaceExisting(const A2File* pExisting,
          * full path and reject "OK" if it's not valid.  Instead, we just
          * allow the FS normalizer to force the filename to be valid.
          */
-        pDetails->storageName = confOvwr.fExistingFile;
-        LOGI("Trying rename to '%ls'", (LPCWSTR) pDetails->storageName);
+        pDetails->SetStrippedLocalPathName(confOvwr.fExistingFile);
+        LOGI("Trying rename to '%ls'",
+            (LPCWSTR) pDetails->GetStrippedLocalPathName());
         return kNuRename;
     }
 
@@ -1470,26 +1479,26 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
 
     pData = fpAddDataHead;
     while (pData != NULL) {
-        const FileDetails* pDataDetails = NULL;
-        const FileDetails* pRsrcDetails = NULL;
-        const FileDetails* pDetails = pData->GetDetails();
+        const LocalFileDetails* pDataDetails = NULL;
+        const LocalFileDetails* pRsrcDetails = NULL;
+        const LocalFileDetails* pDetails = pData->GetDetails();
         const char* typeStr = "????";   // for debug msg only
 
-        switch (pDetails->entryKind) {
-        case FileDetails::kFileKindDataFork:
+        switch (pDetails->GetEntryKind()) {
+        case LocalFileDetails::kFileKindDataFork:
             pDataDetails = pDetails;
             typeStr = "data";
             break;
-        case FileDetails::kFileKindRsrcFork:
+        case LocalFileDetails::kFileKindRsrcFork:
             pRsrcDetails = pDetails;
             typeStr = "rsrc";
             break;
-        case FileDetails::kFileKindDiskImage:
+        case LocalFileDetails::kFileKindDiskImage:
             pDataDetails = pDetails;
             typeStr = "disk";
             break;
-        case FileDetails::kFileKindBothForks:
-        case FileDetails::kFileKindDirectory:
+        case LocalFileDetails::kFileKindBothForks:
+        case LocalFileDetails::kFileKindDirectory:
         default:
             assert(false);
             return L"internal error";
@@ -1499,20 +1508,20 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
             pDetails = pData->GetOtherFork()->GetDetails();
             typeStr = "both";
 
-            switch (pDetails->entryKind) {
-            case FileDetails::kFileKindDataFork:
+            switch (pDetails->GetEntryKind()) {
+            case LocalFileDetails::kFileKindDataFork:
                 assert(pDataDetails == NULL);
                 pDataDetails = pDetails;
                 break;
-            case FileDetails::kFileKindRsrcFork:
+            case LocalFileDetails::kFileKindRsrcFork:
                 assert(pRsrcDetails == NULL);
                 pRsrcDetails = pDetails;
                 break;
-            case FileDetails::kFileKindDiskImage:
+            case LocalFileDetails::kFileKindDiskImage:
                 assert(false);
                 return L"(internal) add other disk error";
-            case FileDetails::kFileKindBothForks:
-            case FileDetails::kFileKindDirectory:
+            case LocalFileDetails::kFileKindBothForks:
+            case LocalFileDetails::kFileKindDirectory:
             default:
                 assert(false);
                 return L"internal error";
@@ -1520,7 +1529,7 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
         }
 
         LOGI("Adding file '%ls' (%hs)",
-            (LPCWSTR) pDetails->storageName, typeStr);
+            (LPCWSTR) pDetails->GetStrippedLocalPathName(), typeStr);
         ASSERT(pDataDetails != NULL || pRsrcDetails != NULL);
 
         /*
@@ -1530,14 +1539,20 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
          * but it could be awkward for HFS (not to mention HFS Plus!).
          */
         DiskFS::CreateParms parms;
-        ConvertFDToCP(pData->GetDetails(), &parms);
+        /* use the FS-normalized path here */
+        /* (do we have to? do we want to?) */
+        parms.pathName = pData->GetFSNormalPath();
         if (pRsrcDetails != NULL)
             parms.storageType = kNuStorageExtended;
         else
             parms.storageType = kNuStorageSeedling;
-        /* use the FS-normalized path here */
-        /* (do we have to? do we want to?) */
-        parms.pathName = pData->GetFSNormalPath();
+        /* copy the rest out of the LocalFileDetails */
+        parms.fssep = pDetails->GetFssep();
+        parms.fileType = pDetails->GetFileType();
+        parms.auxType = pDetails->GetExtraType();
+        parms.access = pDetails->GetAccess();
+        parms.createWhen = NufxArchive::DateTimeToSeconds(&pDetails->GetCreateWhen());
+        parms.modWhen = NufxArchive::DateTimeToSeconds(&pDetails->GetModWhen());
 
         dataLen = rsrcLen = -1;
         if (pDataDetails != NULL) {
@@ -1545,8 +1560,8 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
             /* (HA conversion only happens if text conversion happens)  */
             GenericEntry::ConvertHighASCII convHA;
             if (addOptsConvEOL == AddFilesDialog::kConvEOLType) {
-                if (pDataDetails->fileType == kFileTypeTXT ||
-                    pDataDetails->fileType == kFileTypeSRC)
+                if (pDataDetails->GetFileType() == kFileTypeTXT ||
+                    pDataDetails->GetFileType() == kFileTypeSRC)
                 {
                     LOGI("Enabling text conversion by type");
                     convEOL = GenericEntry::kConvertEOLOn;
@@ -1559,14 +1574,14 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
             else
                 convHA = GenericEntry::kConvertHAOff;
 
-            errMsg = LoadFile(pDataDetails->origName, &dataBuf, &dataLen,
+            errMsg = LoadFile(pDataDetails->GetLocalPathName(), &dataBuf, &dataLen,
                 convEOL, convHA);
             if (!errMsg.IsEmpty())
                 goto bail;
         }
         if (pRsrcDetails != NULL) {
             /* no text conversion on resource forks */
-            errMsg = LoadFile(pRsrcDetails->origName, &rsrcBuf, &rsrcLen,
+            errMsg = LoadFile(pRsrcDetails->GetLocalPathName(), &rsrcBuf, &rsrcLen,
                 GenericEntry::kConvertEOLOff, GenericEntry::kConvertHAOff);
             if (!errMsg.IsEmpty())
                 goto bail;
@@ -1575,7 +1590,7 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
         /* really ought to do this separately for each thread */
         SET_PROGRESS_BEGIN();
         CString pathNameW(parms.pathName);
-        SET_PROGRESS_UPDATE2(0, pDetails->origName, pathNameW);
+        SET_PROGRESS_UPDATE2(0, pDetails->GetLocalPathName(), pathNameW);
 
         DIError dierr;
         dierr = AddForksToDisk(pDiskFS, &parms, dataBuf, dataLen,
@@ -1954,25 +1969,6 @@ bail:
     return dierr;
 }
 
-// TODO: make this a member of FileDetails, and return a struct owned by
-//  FileDetails.  This is necessary because we put const strings into
-//  pCreateParms that are owned by FileDetails, and need to coordinate the
-//  object lifetime.
-void DiskArchive::ConvertFDToCP(const FileDetails* pDetails,
-    DiskFS::CreateParms* pCreateParms)
-{
-    // ugly hack to get storage for narrow string
-    pDetails->fStorageNameA = pDetails->storageName;
-    pCreateParms->pathName = pDetails->fStorageNameA;
-    pCreateParms->fssep = (char) pDetails->fileSysInfo;
-    pCreateParms->storageType = pDetails->storageType;
-    pCreateParms->fileType = pDetails->fileType;
-    pCreateParms->auxType = pDetails->extraType;
-    pCreateParms->access = pDetails->access;
-    pCreateParms->createWhen = NufxArchive::DateTimeToSeconds(&pDetails->createWhen);
-    pCreateParms->modWhen = NufxArchive::DateTimeToSeconds(&pDetails->modWhen);
-}
-
 void DiskArchive::AddToAddDataList(FileAddData* pData)
 {
     ASSERT(pData != NULL);
@@ -1983,31 +1979,31 @@ void DiskArchive::AddToAddDataList(FileAddData* pData)
      * O(n^2) behavior, but I'm expecting N to be relatively small (under
      * 1000 in almost all cases).
      */
-    //if (strcasecmp(pData->GetDetails()->storageName, "system\\finder") == 0)
-    //  LOGI("whee");
     FileAddData* pSearch = fpAddDataHead;
-    FileDetails::FileKind dataKind, listKind;
+    LocalFileDetails::FileKind dataKind, listKind;
 
-    dataKind = pData->GetDetails()->entryKind;
+    dataKind = pData->GetDetails()->GetEntryKind();
     while (pSearch != NULL) {
         if (pSearch->GetOtherFork() == NULL &&
-            wcscmp(pSearch->GetDetails()->storageName,
-                   pData->GetDetails()->storageName) == 0)
+            wcscmp(pSearch->GetDetails()->GetStrippedLocalPathName(),
+                   pData->GetDetails()->GetStrippedLocalPathName()) == 0)
         {
             //NuThreadID dataID = pData->GetDetails()->threadID;
             //NuThreadID listID = pSearch->GetDetails()->threadID;
 
-            listKind = pSearch->GetDetails()->entryKind;
+            listKind = pSearch->GetDetails()->GetEntryKind();
 
             /* got a name match */
             if (dataKind != listKind &&
-                (dataKind == FileDetails::kFileKindDataFork || dataKind == FileDetails::kFileKindRsrcFork) &&
-                (listKind == FileDetails::kFileKindDataFork || listKind == FileDetails::kFileKindRsrcFork))
+                (dataKind == LocalFileDetails::kFileKindDataFork ||
+                 dataKind == LocalFileDetails::kFileKindRsrcFork) &&
+                (listKind == LocalFileDetails::kFileKindDataFork ||
+                 listKind == LocalFileDetails::kFileKindRsrcFork))
             {
                 /* looks good, hook it in here instead of the list */
                 LOGD("--- connecting forks of '%ls' and '%ls'",
-                    (LPCWSTR) pData->GetDetails()->origName,
-                    (LPCWSTR) pSearch->GetDetails()->origName);
+                    (LPCWSTR) pData->GetDetails()->GetLocalPathName(),
+                    (LPCWSTR) pSearch->GetDetails()->GetLocalPathName());
                 pSearch->SetOtherFork(pData);
                 return;
             }
@@ -2299,7 +2295,7 @@ bool DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 goto bail;
             }
-            LOGI("Rename of '%ls' to '%ls' succeeded",
+            LOGD("Rename of '%ls' to '%ls' succeeded",
                 pEntry->GetDisplayName(), (LPCWSTR) renameDlg.fNewName);
         } else if (result == IDCANCEL) {
             LOGI("Canceling out of remaining renames");
@@ -2528,7 +2524,7 @@ bool DiskArchive::SetProps(CWnd* pMsgWnd, GenericEntry* pGenericEntry,
     DiskImg::FSFormat fsFormat;
     fsFormat = pFile->GetDiskFS()->GetDiskImg()->GetFSFormat();
     if (fsFormat == DiskImg::kFormatDOS32 || fsFormat == DiskImg::kFormatDOS33) {
-        LOGI(" (reloading additional fields after DOS SFI)");
+        LOGD(" (reloading additional fields after DOS SFI)");
         pEntry->SetDataForkLen(pFile->GetDataLength());
         pEntry->SetCompressedLen(pFile->GetDataSparseLength());
         pEntry->SetSuspicious(pFile->GetQuality() == A2File::kQualitySuspicious);
@@ -2559,9 +2555,9 @@ GenericArchive::XferStatus DiskArchive::XferSelection(CWnd* pMsgWnd,
      * forked or not.
      */
     LOGI("DiskArchive XferSelection!");
-    unsigned char* dataBuf = NULL;
-    unsigned char* rsrcBuf = NULL;
-    FileDetails fileDetails;
+    uint8_t* dataBuf = NULL;
+    uint8_t* rsrcBuf = NULL;
+    LocalFileDetails fileDetails;
     CString errMsg, extractErrMsg, cmpStr;
     CString fixedPathName;
     XferStatus retval = kXferFailed;
@@ -2590,7 +2586,7 @@ GenericArchive::XferStatus DiskArchive::XferSelection(CWnd* pMsgWnd,
          */
         fixedPathName = pEntry->GetPathName();
         if (fixedPathName.IsEmpty())
-            fixedPathName = _T("(no filename)");
+            fixedPathName = L"(no filename)";
         if (pEntry->GetFSFormat() != DiskImg::kFormatProDOS)
             fixedPathName.Replace(PathProposal::kDefaultStoredFssep, '.');
         if (pEntry->GetSubVolName() != NULL) {
@@ -2603,7 +2599,7 @@ GenericArchive::XferStatus DiskArchive::XferSelection(CWnd* pMsgWnd,
 
         if (pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir) {
             /* this is the volume dir */
-            LOGI("  XFER not transferring volume dir '%ls'",
+            LOGD("  XFER not transferring volume dir '%ls'",
                 (LPCWSTR) fixedPathName);
             continue;
         } else if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory) {
@@ -2613,22 +2609,22 @@ GenericArchive::XferStatus DiskArchive::XferSelection(CWnd* pMsgWnd,
                 cmpStr += (char)PathProposal::kDefaultStoredFssep;
 
                 if (pSelSet->CountMatchingPrefix(cmpStr) == 0) {
-                    LOGI("FOUND empty dir '%ls'", (LPCWSTR) fixedPathName);
+                    LOGD("FOUND empty dir '%ls'", (LPCWSTR) fixedPathName);
                     cmpStr += kEmptyFolderMarker;
                     dataBuf = new unsigned char[1];
                     dataLen = 0;
-                    fileDetails.entryKind = FileDetails::kFileKindDataFork;
-                    fileDetails.storageName = cmpStr;
-                    fileDetails.fileType = 0;       // NON
-                    fileDetails.access =
-                        pEntry->GetAccess() | GenericEntry::kAccessInvisible;
+                    fileDetails.SetEntryKind(LocalFileDetails::kFileKindDataFork);
+                    fileDetails.SetStrippedLocalPathName(cmpStr);
+                    fileDetails.SetFileType(0);         // NON
+                    fileDetails.SetAccess(
+                        pEntry->GetAccess() | GenericEntry::kAccessInvisible);
                     goto have_stuff2;
                 } else {
-                    LOGI("NOT empty dir '%ls'", (LPCWSTR) fixedPathName);
+                    LOGD("NOT empty dir '%ls'", (LPCWSTR) fixedPathName);
                 }
             }
 
-            LOGI("  XFER not transferring directory '%ls'",
+            LOGD("  XFER not transferring directory '%ls'",
                 (LPCWSTR) fixedPathName);
             continue;
         }
@@ -2695,38 +2691,42 @@ GenericArchive::XferStatus DiskArchive::XferSelection(CWnd* pMsgWnd,
             ASSERT(rsrcBuf == NULL);
         }
 
-        if (pEntry->GetHasDataFork() && pEntry->GetHasRsrcFork())
-            fileDetails.entryKind = FileDetails::kFileKindBothForks;
-        else if (pEntry->GetHasDataFork())
-            fileDetails.entryKind = FileDetails::kFileKindDataFork;
-        else if (pEntry->GetHasRsrcFork())
-            fileDetails.entryKind = FileDetails::kFileKindRsrcFork;
-        else {
+        if (pEntry->GetHasDataFork() && pEntry->GetHasRsrcFork()) {
+            fileDetails.SetEntryKind(LocalFileDetails::kFileKindBothForks);
+        } else if (pEntry->GetHasDataFork()) {
+            fileDetails.SetEntryKind(LocalFileDetails::kFileKindDataFork);
+        } else if (pEntry->GetHasRsrcFork()) {
+            fileDetails.SetEntryKind(LocalFileDetails::kFileKindRsrcFork);
+        }  else {
             ASSERT(false);
-            fileDetails.entryKind = FileDetails::kFileKindUnknown;
+            fileDetails.SetEntryKind(LocalFileDetails::kFileKindUnknown);
         }
 
         /*
-         * Set up the FileDetails.
+         * Set up the rest of the LocalFileDetails fields.
          */
-        fileDetails.storageName = fixedPathName;
-        fileDetails.fileType = pEntry->GetFileType();
-        fileDetails.access = pEntry->GetAccess();
+        fileDetails.SetStrippedLocalPathName(fixedPathName);
+        fileDetails.SetFileType(pEntry->GetFileType());
+        fileDetails.SetAccess(pEntry->GetAccess());
 have_stuff2:
-        fileDetails.fileSysFmt = pEntry->GetSourceFS();
-        fileDetails.fileSysInfo = PathProposal::kDefaultStoredFssep;
-        fileDetails.extraType = pEntry->GetAuxType();
-        fileDetails.storageType = kNuStorageUnknown;    /* let NufxLib deal */
+        fileDetails.SetFileSysFmt(pEntry->GetSourceFS());
+        fileDetails.SetFssep(PathProposal::kDefaultStoredFssep);
+        fileDetails.SetExtraType(pEntry->GetAuxType());
+        fileDetails.SetStorageType(kNuStorageUnknown);  // let NufxLib deal
 
+        NuDateTime ndt;
         time_t when;
         when = time(NULL);
-        UNIXTimeToDateTime(&when, &fileDetails.archiveWhen);
+        UNIXTimeToDateTime(&when, &ndt);
+        fileDetails.SetArchiveWhen(ndt);
         when = pEntry->GetModWhen();
-        UNIXTimeToDateTime(&when, &fileDetails.modWhen);
+        UNIXTimeToDateTime(&when, &ndt);
+        fileDetails.SetModWhen(ndt);
         when = pEntry->GetCreateWhen();
-        UNIXTimeToDateTime(&when, &fileDetails.createWhen);
+        UNIXTimeToDateTime(&when, &ndt);
+        fileDetails.SetCreateWhen(ndt);
 
-        pActionProgress->SetArcName(fileDetails.storageName);
+        pActionProgress->SetArcName(fileDetails.GetStrippedLocalPathName());
         if (pActionProgress->SetProgress(0) == IDCANCEL) {
             retval = kXferCancelled;
             goto bail;
@@ -2780,23 +2780,20 @@ void DiskArchive::XferPrepare(const XferFileOptions* pXferOpts)
     fpXferTargetFS = pXferOpts->fpTargetFS;
 }
 
-CString DiskArchive::XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+CString DiskArchive::XferFile(LocalFileDetails* pDetails, uint8_t** pDataBuf,
     long dataLen, uint8_t** pRsrcBuf, long rsrcLen)
 {
-    //const int kFileTypeTXT = 0x04;
-    DiskFS::CreateParms createParms;
     DiskFS* pDiskFS;
     CString errMsg;
     DIError dierr = kDIErrNone;
 
     LOGI(" XFER: transfer '%ls' (dataLen=%ld rsrcLen=%ld)",
-        (LPCWSTR) pDetails->storageName, dataLen, rsrcLen);
+        (LPCWSTR) pDetails->GetStrippedLocalPathName(), dataLen, rsrcLen);
 
     ASSERT(pDataBuf != NULL);
     ASSERT(pRsrcBuf != NULL);
 
-    /* fill out CreateParms from FileDetails */
-    ConvertFDToCP(pDetails, &createParms);
+    const DiskFS::CreateParms& createParms = pDetails->GetCreateParms();
 
     if (fpXferTargetFS == NULL)
         pDiskFS = fpPrimaryDiskFS;
@@ -2813,22 +2810,24 @@ CString DiskArchive::XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
      * not worth adding a new interface just for that.
      */
     bool srcIsDOS, dstIsDOS;
-    srcIsDOS = DiskImg::UsesDOSFileStructure(pDetails->fileSysFmt);
+    srcIsDOS = DiskImg::UsesDOSFileStructure(pDetails->GetFileSysFmt());
     dstIsDOS = DiskImg::UsesDOSFileStructure(pDiskFS->GetDiskImg()->GetFSFormat());
     if (dataLen > 0 &&
-        (pDetails->fileType == kFileTypeTXT || pDetails->fileType == kFileTypeSRC))
+        (pDetails->GetFileType() == kFileTypeTXT ||
+         pDetails->GetFileType() == kFileTypeSRC))
     {
         unsigned char* ucp = *pDataBuf;
         long len = dataLen;
 
         if (srcIsDOS && !dstIsDOS) {
             LOGD(" Stripping high ASCII from '%ls'",
-                (LPCWSTR) pDetails->storageName);
+                (LPCWSTR) pDetails->GetStrippedLocalPathName());
 
             while (len--)
                 *ucp++ &= 0x7f;
         } else if (!srcIsDOS && dstIsDOS) {
-            LOGD(" Adding high ASCII to '%ls'", (LPCWSTR) pDetails->storageName);
+            LOGD(" Adding high ASCII to '%ls'",
+                (LPCWSTR) pDetails->GetStrippedLocalPathName());
 
             while (len--) {
                 if (*ucp != '\0')
@@ -2837,9 +2836,10 @@ CString DiskArchive::XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
             }
         } else if (srcIsDOS && dstIsDOS) {
             LOGD(" --- not altering DOS-to-DOS text '%ls'",
-                (LPCWSTR) pDetails->storageName);
+                (LPCWSTR) pDetails->GetStrippedLocalPathName());
         } else {
-            LOGD(" --- non-DOS transfer '%ls'", (LPCWSTR) pDetails->storageName);
+            LOGD(" --- non-DOS transfer '%ls'",
+                (LPCWSTR) pDetails->GetStrippedLocalPathName());
         }
     }
 

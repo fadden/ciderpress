@@ -221,7 +221,6 @@ public:
     LONGLONG GetUncompressedLen(void) const {
         return fDataForkLen + fRsrcForkLen;
     }
-    //void SetUncompressedLen(LONGLONG len) { fUncompressedLen = len; }
     LONGLONG GetDataForkLen(void) const { return fDataForkLen; }
     void SetDataForkLen(LONGLONG len) { fDataForkLen = len; }
     LONGLONG GetRsrcForkLen(void) const { return fRsrcForkLen; }
@@ -259,8 +258,7 @@ public:
     /*
      * Check to see if this is a high-ASCII file.
      */
-    static bool CheckHighASCII(const uint8_t* buffer,
-        unsigned long count);
+    static bool CheckHighASCII(const uint8_t* buffer, size_t count);
 
     /*
      * Decide, based on the contents of the buffer, whether we should do an
@@ -269,7 +267,7 @@ public:
      * Returns kConvEOLOff or kConvEOLOn.
      */
     static ConvertEOL DetermineConversion(const uint8_t* buffer,
-        long count, EOLType* pSourceType, ConvertHighASCII* pConvHA);
+        size_t count, EOLType* pSourceType, ConvertHighASCII* pConvHA);
 
     /*
      * Write data to a file, possibly converting EOL markers to Windows CRLF
@@ -309,7 +307,6 @@ private:
     time_t      fModWhen;
     RecordKind  fRecordKind;        // forked file, disk image, ??
     const WCHAR* fFormatStr;        // static str; compression or fs format
-    //LONGLONG  fUncompressedLen;
     LONGLONG    fDataForkLen;       // also for disk images
     LONGLONG    fRsrcForkLen;       // set to 0 when nonexistent
     LONGLONG    fCompressedLen;     // data/disk + rsrc
@@ -515,111 +512,202 @@ public:
     void AddEntry(GenericEntry* pEntry);
 
     /*
-     * This class holds details about a file that we're adding.
-     *
-     * It's based on the NuFileDetails class from NufxLib (which used to be
-     * used everywhere).
-     *
-     * TODO: fix this
-     * TODO: may want to hold a raw 8-bit pathname for copy & paste, which
-     *  doesn't need to convert in and out of MacRoman
+     * This class holds details about a file that we're adding from local disk.
      */
-    class FileDetails {
+    class LocalFileDetails {
     public:
-        FileDetails(void);
-        virtual ~FileDetails(void) {}
+        LocalFileDetails(void);
+        virtual ~LocalFileDetails(void) {}
 
         /*
-         * Automatic cast to NuFileDetails.  The NuFileDetails structure will
-         * have a pointer to at least one of our strings, so structures
-         * filled out this way need to be short-lived.  (Yes, this is
-         * annoying, but it's how NufxLib works.)
-         *
-         * TODO: make this a "GenNuFileDetails" method that returns a
-         *  NuFileDetails struct owned by this object.  It fills out the
-         *  fields and references internal strings.  Because we own the
-         *  object, we can control the lifespan of the NuFileDetails, and
-         *  ensure it doesn't live longer than our strings.
+         * Set the various fields, based on the pathname and characteristics
+         * of the file.
          */
-        operator const NuFileDetails() const;
-
-        /*
-         * Provide operator= and copy constructor.  This'd be easier without
-         * the strings.
-         */
-        FileDetails& operator=(const FileDetails& src) {
-            if (&src != this)
-                CopyFields(this, &src);
-            return *this;
-        }
-        FileDetails(const FileDetails& src) {
-            CopyFields(this, &src);
-        }
+        NuError SetFields(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
+            struct _stat* psb);
 
         /*
          * What kind of file this is.  Files being added to NuFX from Windows
-         * can't be "BothForks" because each the forks are stored in
+         * can't be "BothForks" because the forks are stored in
          * separate files.  However, files being transferred from a NuFX
          * archive, a disk image, or in from the clipboard can be both.
          *
          * (NOTE: this gets embedded into clipboard data.  If you change
-         * these values, update the version info in Clipboard.cpp.)
+         * these values, update the version number in Clipboard.cpp.)
          */
-        typedef enum FileKind {
+        enum FileKind {
             kFileKindUnknown = 0,
             kFileKindDataFork,
             kFileKindRsrcFork,
             kFileKindDiskImage,
             kFileKindBothForks,
             kFileKindDirectory,
-        } FileKind;
+        };
 
         /*
-         * Data fields.  While transitioning from general use of NuFileDetails
-         * (v1.2.x to v2.0) I'm just going to leave these public.
-         * TODO: make this not public
+         * Provide operator= and copy constructor.
          */
-
-        //NuThreadID          threadID;       /* data, rsrc, disk img? */
-        FileKind            entryKind;
+        LocalFileDetails& operator=(const LocalFileDetails& src) {
+            if (&src != this)
+                CopyFields(this, &src);
+            return *this;
+        }
+        LocalFileDetails(const LocalFileDetails& src) {
+            CopyFields(this, &src);
+        }
 
         /*
-         * Original full pathname as found on Windows.
-         */
-        CString             origName;
-
-        /*
-         * "Normalized" pathname.  This is the full path with any of our
-         * added bits removed (e.g. file type & fork identifiers).  It has
-         * not been sanitized for any specific target filesystem.
+         * Returns a reference to a NuFileDetails structure with the contents
+         * of the LocalFileDetails.
          *
-         * This is generated by PathProposal::LocalToArchive().
+         * The returned structure may not be used after the LocalFileDetails
+         * is modified or released.
          */
-        CString             storageName;
+        const NuFileDetails& GetNuFileDetails();
 
-        //NuFileSysID         fileSysID;
-        DiskImg::FSFormat   fileSysFmt;
-        uint16_t            fileSysInfo;    /* fssep lurks here */
-        uint32_t            access;
-        uint32_t            fileType;
-        uint32_t            extraType;
-        uint16_t            storageType;    /* "Unknown" or disk block size */
-        NuDateTime          createWhen;
-        NuDateTime          modWhen;
-        NuDateTime          archiveWhen;
+        /*
+         * Returns a reference to a NuFileDetails structure with the contents
+         * of the LocalFileDetails.
+         *
+         * The returned structure may not be used after the LocalFileDetails
+         * is modified or released.
+         */
+        const DiskFS::CreateParms& GetCreateParms();
 
+        /*
+         * Returns the "local" pathname, i.e. the name of a Windows file.
+         */
+        const CString& GetLocalPathName() const {
+            return fLocalPathName;
+        }
 
-        // temporary kluge to get things working
-        mutable CStringA    fOrigNameA;
-        mutable CStringA    fStorageNameA;
+        void SetLocalPathName(const CString& newName) {
+            fLocalPathName = newName;
+        }
+
+        /*
+         * This is the "local" pathname with any file type preservation
+         * strings removed.
+         */
+        const CString& GetStrippedLocalPathName() const {
+            return fStrippedLocalPathName;
+        }
+
+        /*
+         * Sets the "stripped" local path name, and updates the MOR version.
+         * Does not alter the full local path name.
+         */
+        void SetStrippedLocalPathName(const CString& newName) {
+            fStrippedLocalPathName = newName;
+            GenerateStoragePathName();
+        }
+
+        /*
+         * Returns a copy of the stripped local pathname that has been
+         * converted to Mac OS Roman.
+         *
+         * The returned string will be invalid if SetStrippedLocalPathName
+         * is subsequently called.
+         */
+        const CStringA& GetStoragePathNameMOR() const {
+            return fStoragePathNameMOR;
+        }
+
+        FileKind GetEntryKind() const { return fEntryKind; }
+        void SetEntryKind(FileKind kind) { fEntryKind = kind;  }
+
+        DiskImg::FSFormat GetFileSysFmt() const { return fFileSysFmt; }
+        void SetFileSysFmt(DiskImg::FSFormat fmt) { fFileSysFmt = fmt; }
+
+        char GetFssep() const { return fFssep; }
+        void SetFssep(char fssep) { fFssep = fssep;  }
+
+        uint32_t GetFileType() const { return fFileType; }
+        void SetFileType(uint32_t type) { fFileType = type; }
+
+        uint32_t GetExtraType() const { return fExtraType; }
+        void SetExtraType(uint32_t type) { fExtraType = type; }
+
+        uint32_t GetAccess() const { return fAccess; }
+        void SetAccess(uint32_t access) { fAccess = access; }
+
+        uint16_t GetStorageType() const { return fStorageType; }
+        void SetStorageType(uint16_t type) { fStorageType = type; }
+
+        const NuDateTime& GetArchiveWhen() const { return fArchiveWhen; }
+        void SetArchiveWhen(const NuDateTime& when) { fArchiveWhen = when; }
+
+        const NuDateTime& GetModWhen() const { return fModWhen;  }
+        void SetModWhen(const NuDateTime& when) { fModWhen = when; }
+
+        const NuDateTime& GetCreateWhen() const { return fCreateWhen; }
+        void SetCreateWhen(const NuDateTime& when) { fCreateWhen = when; }
 
     private:
         /*
-         * Copy the contents of our object to a new object.
+         * Copy the contents of our object to a new object, field by field,
+         * so the CStrings copy correctly.
          *
          * Useful for operator= and copy construction.
          */
-        static void CopyFields(FileDetails* pDst, const FileDetails* pSrc);
+        static void CopyFields(LocalFileDetails* pDst,
+            const LocalFileDetails* pSrc);
+
+        /*
+         * Generates fStoragePathNameMOR from fStrippedLocalPathName.
+         */
+        void GenerateStoragePathName();
+
+        /*
+         * These are the structs that the libraries want, so we provide calls
+         * that populate them and return a reference.  These are "hairy"
+         * structures, so we have to place limitations on their lifetime.
+         *
+         * Ideally these would either be proper objects with destructors,
+         * so we could create them and not worry about who will free up the
+         * hairy bits, or we would omit the hairy bits from the structure and
+         * pass them separately.
+         */
+        NuFileDetails       fNuFileDetails;
+        DiskFS::CreateParms fCreateParms;
+
+        /*
+         * What does this entry represent?
+         */
+        FileKind            fEntryKind;
+
+        /*
+         * Full pathname of the Windows file.
+         */
+        CString             fLocalPathName;         // was origName
+
+        /*
+         * "Stripped" pathname.  This is the full path with any of our
+         * added bits removed (e.g. file type & fork identifiers).
+         *
+         * This is generated by PathProposal::LocalToArchive().
+         */
+        CString             fStrippedLocalPathName; // was storageName
+
+        /*
+         * The storage name, generated by converting strippedLocalPathName
+         * from Unicode to Mac OS Roman.  This is what will be passed to
+         * DiskImg and NufxLib as the name of the file to create in the
+         * archive.  For DiskImg there's an additional "normalization" pass
+         * make the filename suitable for use on the filesystem; that name
+         * is stored in a FileAddData object, not here.
+         */
+        CStringA            fStoragePathNameMOR;
+
+        DiskImg::FSFormat   fFileSysFmt;    // only set for xfers?
+        uint8_t             fFssep;
+        uint32_t            fFileType;
+        uint32_t            fExtraType;
+        uint32_t            fAccess;
+        uint16_t            fStorageType;   // "Unknown" or disk block size
+        NuDateTime          fCreateWhen;
+        NuDateTime          fModWhen;
+        NuDateTime          fArchiveWhen;
     };
 
     // Prepare for file transfers.
@@ -634,7 +722,7 @@ public:
     // On success, *pDataBuf and *pRsrcBuf are freed and set to NULL.  (It's
     // necessary for the interface to work this way because the NufxArchive
     // version just tucks the pointers into NufxLib structures.)
-    virtual CString XferFile(FileDetails* pDetails, uint8_t** pDataBuf,
+    virtual CString XferFile(LocalFileDetails* pDetails, uint8_t** pDataBuf,
         long dataLen, uint8_t** pRsrcBuf, long rsrcLen) = 0;
 
     // Abort progress.  Not all subclasses are capable of "undo".
@@ -655,16 +743,6 @@ protected:
     virtual void DeleteEntries(void);
 
     void ReplaceFssep(WCHAR* str, char oldc, char newc, char newSubst);
-
-    /*
-     * Set the contents of a NuFileDetails structure, based on the pathname
-     * and characteristics of the file.
-     *
-     * For efficiency and simplicity, the pathname fields are set to CStrings in
-     * the GenericArchive object instead of newly-allocated storage.
-     */
-    NuError GetFileDetails(const AddFilesDialog* pAddOpts, const WCHAR* pathname,
-        struct _stat* psb, FileDetails* pDetails);
 
     /*
      * Prepare a directory for reading.
@@ -725,7 +803,7 @@ protected:
      * information in "*pDetails" may be modified.
      */
     virtual NuError DoAddFile(const AddFilesDialog* pAddOpts,
-        FileDetails* pDetails) = 0;
+        LocalFileDetails* pDetails) = 0;
 
     void SetPathName(const WCHAR* pathName) {
         free(fPathName);

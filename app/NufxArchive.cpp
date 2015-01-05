@@ -1156,51 +1156,57 @@ bail:
 }
 
 NuError NufxArchive::DoAddFile(const AddFilesDialog* pAddOpts,
-    FileDetails* pDetails)
+    LocalFileDetails* pDetails)
 {
     NuError err;
     NuRecordIdx recordIdx = 0;
-    NuFileDetails nuFileDetails;
-    
-retry:
-    nuFileDetails = *pDetails;  // stuff class contents into struct
-    CStringA origNameA(pDetails->origName);
-    err = NuAddFile(fpArchive, origNameA /*pathname*/,
-            &nuFileDetails, false, &recordIdx);
 
-    if (err == kNuErrNone) {
-        fNumAdded++;
-    } else if (err == kNuErrSkipped) {
-        /* "maybe overwrite" UI causes this if user declines */
-        // fall through with the error
-        LOGI("DoAddFile: skipped '%ls'", (LPCWSTR) pDetails->origName);
-    } else if (err == kNuErrRecordExists) {
-        AddClashDialog dlg;
+    do {
+        // Must re-get the NuFileDetails, because updating the filename for
+        // rename will invalidate the previous version.
+        const NuFileDetails& nuFileDetails = pDetails->GetNuFileDetails();
 
-        dlg.fWindowsName = pDetails->origName;
-        dlg.fStorageName = pDetails->storageName;
-        if (dlg.DoModal() != IDOK) {
-            err = kNuErrAborted;
+        // TODO(Unicode): NufxLib should accept wide pathname
+        CStringA origNameA(pDetails->GetLocalPathName());
+        CString dummyMsg;
+        if (!PathName::TestNarrowConversion(pDetails->GetLocalPathName(),
+               origNameA, &dummyMsg)) {
+            err = kNuErrInvalidFilename;
             goto bail_quiet;
         }
-        if (dlg.fDoRename) {
-            LOGD("add clash: rename to '%ls'", (LPCWSTR) dlg.fNewName);
-            pDetails->storageName = dlg.fNewName;
-            goto retry;
-        } else {
-            LOGD("add clash: skip");
-            err = kNuErrSkipped;
-            // fall through with error
-        }
-    }
-    //if (err != kNuErrNone)
-    //  goto bail;
+        err = NuAddFile(fpArchive, origNameA, &nuFileDetails, false, &recordIdx);
 
-//bail:
+        if (err == kNuErrNone) {
+            fNumAdded++;
+        } else if (err == kNuErrSkipped) {
+            /* "maybe overwrite" UI causes this if user declines */
+            // fall through with the error
+            LOGI("DoAddFile: skipped '%ls'", (LPCWSTR) pDetails->GetLocalPathName());
+        } else if (err == kNuErrRecordExists) {
+            AddClashDialog dlg;
+
+            dlg.fWindowsName = pDetails->GetLocalPathName();
+            dlg.fStorageName = pDetails->GetStrippedLocalPathName();
+            if (dlg.DoModal() != IDOK) {
+                err = kNuErrAborted;
+                goto bail_quiet;
+            }
+            if (dlg.fDoRename) {
+                LOGD("add clash: rename to '%ls'", (LPCWSTR) dlg.fNewName);
+                pDetails->SetStrippedLocalPathName(dlg.fNewName);
+                continue;
+            } else {
+                LOGD("add clash: skip");
+                err = kNuErrSkipped;
+                // fall through with error
+            }
+        }
+    } while (false);
+
     if (err != kNuErrNone && err != kNuErrAborted && err != kNuErrSkipped) {
         CString msg;
         msg.Format(L"Unable to add file '%ls': %hs.",
-            (LPCWSTR) pDetails->origName, NuStrError(err));
+            (LPCWSTR) pDetails->GetLocalPathName(), NuStrError(err));
         ShowFailureMsg(fpMsgWnd, msg, IDS_FAILED);
     }
 bail_quiet:
@@ -1303,7 +1309,7 @@ NuResult NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
     ASSERT(pErrorStatus->canOverwrite);
     ASSERT(pErrorStatus->canSkip);
     ASSERT(pErrorStatus->canAbort);
-    ASSERT(!pErrorStatus->canRename);
+    ASSERT(!pErrorStatus->canRename);   // TODO: remember why we can't rename
 
     /* no firm policy, ask the user */
     ConfirmOverwriteDialog confOvwr;
@@ -1313,8 +1319,7 @@ NuResult NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
     confOvwr.fExistingFileModWhen =
         DateTimeToSeconds(&pErrorStatus->pRecord->recModWhen);
     if (pErrorStatus->origPathname != NULL) {
-        // TODO: use wchar_t instead for origPathname
-        confOvwr.fNewFileSource = (char*) pErrorStatus->origPathname;
+        confOvwr.fNewFileSource = (WCHAR*) pErrorStatus->origPathname;
         PathName checkPath(confOvwr.fNewFileSource);
         confOvwr.fNewFileModWhen = checkPath.GetModWhen();
     } else {
@@ -1858,7 +1863,7 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
      * I think this now throws kXferCancelled whenever it's supposed to.  Not
      * 100% sure, but it looks good.
      */
-    LOGI("NufxArchive XferSelection!");
+    LOGD("NufxArchive XferSelection!");
     XferStatus retval = kXferFailed;
     unsigned char* dataBuf = NULL;
     unsigned char* rsrcBuf = NULL;
@@ -1870,7 +1875,7 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
     for ( ; pSelEntry != NULL; pSelEntry = pSelSet->IterNext()) {
         long dataLen=-1, rsrcLen=-1;
         NufxEntry* pEntry = (NufxEntry*) pSelEntry->GetEntry();
-        FileDetails fileDetails;
+        LocalFileDetails fileDetails;
         CString errMsg;
 
         ASSERT(dataBuf == NULL);
@@ -1883,25 +1888,29 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
             continue;
         }
 
-        LOGI(" XFER converting '%ls'", pEntry->GetDisplayName());
+        LOGD(" XFER converting '%ls'", pEntry->GetDisplayName());
 
-        fileDetails.storageName = pEntry->GetDisplayName();
-        fileDetails.fileType = pEntry->GetFileType();
-        fileDetails.fileSysFmt = DiskImg::kFormatUnknown;
-        fileDetails.fileSysInfo = PathProposal::kDefaultStoredFssep;
-        fileDetails.access = pEntry->GetAccess();
-        fileDetails.extraType = pEntry->GetAuxType();
-        fileDetails.storageType = kNuStorageSeedling;
+        fileDetails.SetStrippedLocalPathName(pEntry->GetDisplayName());
+        fileDetails.SetFssep(PathProposal::kDefaultStoredFssep);
+        fileDetails.SetFileSysFmt(DiskImg::kFormatUnknown);
+        fileDetails.SetFileType(pEntry->GetFileType());
+        fileDetails.SetExtraType(pEntry->GetAuxType());
+        fileDetails.SetAccess(pEntry->GetAccess());
+        fileDetails.SetStorageType(kNuStorageSeedling);
 
         time_t when;
+        NuDateTime nuwhen;
         when = time(NULL);
-        UNIXTimeToDateTime(&when, &fileDetails.archiveWhen);
+        UNIXTimeToDateTime(&when, &nuwhen);
+        fileDetails.SetArchiveWhen(nuwhen);
         when = pEntry->GetModWhen();
-        UNIXTimeToDateTime(&when, &fileDetails.modWhen);
+        UNIXTimeToDateTime(&when, &nuwhen);
+        fileDetails.SetModWhen(nuwhen);
         when = pEntry->GetCreateWhen();
-        UNIXTimeToDateTime(&when, &fileDetails.createWhen);
+        UNIXTimeToDateTime(&when, &nuwhen);
+        fileDetails.SetCreateWhen(nuwhen);
 
-        pActionProgress->SetArcName(fileDetails.storageName);
+        pActionProgress->SetArcName(fileDetails.GetStrippedLocalPathName());
         if (pActionProgress->SetProgress(0) == IDCANCEL) {
             retval = kXferCancelled;
             goto bail;
@@ -1975,7 +1984,7 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
                 goto bail;
             }
 
-            fileDetails.storageType = kNuStorageExtended;
+            fileDetails.SetStorageType(kNuStorageExtended);
         } else {
             ASSERT(rsrcBuf == NULL);
         }
@@ -2026,22 +2035,23 @@ void NufxArchive::XferPrepare(const XferFileOptions* pXferOpts)
     (void) NuSetValue(fpArchive, kNuValueAllowDuplicates, true);
 }
 
-CString NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
-    long dataLen, unsigned char** pRsrcBuf, long rsrcLen)
+CString NufxArchive::XferFile(LocalFileDetails* pDetails, uint8_t** pDataBuf,
+    long dataLen, uint8_t** pRsrcBuf, long rsrcLen)
 {
     NuError nerr;
     const int kFileTypeTXT = 0x04;
     NuDataSource* pSource = NULL;
     CString errMsg;
 
-    LOGI("  NufxArchive::XferFile '%ls'", (LPCWSTR) pDetails->storageName);
+    LOGI("  NufxArchive::XferFile '%ls'",
+        (LPCWSTR) pDetails->GetStrippedLocalPathName());
     LOGI("  dataBuf=0x%p dataLen=%ld rsrcBuf=0x%p rsrcLen=%ld",
         *pDataBuf, dataLen, *pRsrcBuf, rsrcLen);
     ASSERT(pDataBuf != NULL);
     ASSERT(pRsrcBuf != NULL);
 
     /* NuFX doesn't explicitly store directories */
-    if (pDetails->entryKind == FileDetails::kFileKindDirectory) {
+    if (pDetails->GetEntryKind() == LocalFileDetails::kFileKindDirectory) {
         delete[] *pDataBuf;
         delete[] *pRsrcBuf;
         *pDataBuf = *pRsrcBuf = NULL;
@@ -2050,11 +2060,6 @@ CString NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
 
     ASSERT(dataLen >= 0 || rsrcLen >= 0);
     ASSERT(*pDataBuf != NULL || *pRsrcBuf != NULL);
-
-    /* add the record; we have "allow duplicates" enabled for clashes */
-    NuRecordIdx recordIdx;
-    NuFileDetails nuFileDetails;
-    nuFileDetails = *pDetails;
 
     /*
      * Odd bit of trivia: NufxLib refuses to accept an fssep of '\0'.  It
@@ -2072,11 +2077,16 @@ CString NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
      * One issue: we don't currently allow changing the fssep when renaming
      * a file.  We need to fix this, or else there's no way to rename a
      * file into a subdirectory once it has been pasted in this way.
+     *
+     * TODO: fix this in NufxLib
      */
-    if (NuGetSepFromSysInfo(nuFileDetails.fileSysInfo) == 0) {
-        nuFileDetails.fileSysInfo =
-            NuSetSepInSysInfo(nuFileDetails.fileSysInfo, kNufxNoFssep);
+    if (pDetails->GetFssep() == '\0') {
+        pDetails->SetFssep(kNufxNoFssep);
     }
+
+    /* add the record; we have "allow duplicates" enabled for clashes */
+    NuRecordIdx recordIdx;
+    const NuFileDetails& nuFileDetails = pDetails->GetNuFileDetails();
 
     nerr = NuAddRecord(fpArchive, &nuFileDetails, &recordIdx);
     if (nerr != kNuErrNone) {
@@ -2092,13 +2102,13 @@ CString NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
         ASSERT(*pDataBuf != NULL);
 
         /* strip the high ASCII from DOS and RDOS text files */
-        if (pDetails->entryKind != FileDetails::kFileKindDiskImage &&
-            pDetails->fileType == kFileTypeTXT &&
-            DiskImg::UsesDOSFileStructure(pDetails->fileSysFmt))
+        if (pDetails->GetEntryKind() != LocalFileDetails::kFileKindDiskImage &&
+            pDetails->GetFileType() == kFileTypeTXT &&
+            DiskImg::UsesDOSFileStructure(pDetails->GetFileSysFmt()))
         {
             LOGI(" Stripping high ASCII from '%ls'",
-                (LPCWSTR) pDetails->storageName);
-            unsigned char* ucp = *pDataBuf;
+                (LPCWSTR) pDetails->GetStrippedLocalPathName());
+            uint8_t* ucp = *pDataBuf;
             long len = dataLen;
 
             while (len--)
@@ -2117,7 +2127,7 @@ CString NufxArchive::XferFile(FileDetails* pDetails, unsigned char** pDataBuf,
 
         /* add the data fork, as a disk image if appropriate */
         NuThreadID targetID;
-        if (pDetails->entryKind == FileDetails::kFileKindDiskImage)
+        if (pDetails->GetEntryKind() == LocalFileDetails::kFileKindDiskImage)
             targetID = kNuThreadIDDiskImage;
         else
             targetID = kNuThreadIDDataFork;

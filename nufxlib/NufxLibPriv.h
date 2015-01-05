@@ -429,25 +429,25 @@ union NuDataSink {
  * the first arguments to Nu_ReportError, so we don't have to type them
  * in every time we use the function.  It would've been much easier to
  * use a gcc-style varargs macro, but not everybody uses gcc.
+ *
+ * TODO: Visual C++ has vararg macros now; time to replace this.
  */
-#ifdef DEBUG_MSGS
- #ifdef HAS__FUNCTION__
-  #define _FUNCTION_    __FUNCTION__
- #else
-  #define _FUNCTION_    ""
- #endif
+#ifdef HAS__FUNCTION__
+# define _FUNCTION_    __FUNCTION__
+#else
+# define _FUNCTION_    ""
+#endif
 
- #define NU_BLOB        pArchive, __FILE__, __LINE__, _FUNCTION_, false
- #define NU_BLOB_DEBUG  pArchive, __FILE__, __LINE__, _FUNCTION_, true
- #define NU_NILBLOB     NULL, __FILE__, __LINE__, _FUNCTION_, false
- #define DebugShowError(err)                                        \
+#define NU_BLOB        pArchive, __FILE__, __LINE__, _FUNCTION_, false
+#define NU_BLOB_DEBUG  pArchive, __FILE__, __LINE__, _FUNCTION_, true
+#define NU_NILBLOB     NULL, __FILE__, __LINE__, _FUNCTION_, false
+
+#ifdef DEBUG_MSGS
+# define DebugShowError(err)                                        \
         Nu_ReportError(pArchive, __FILE__, __LINE__, _FUNCTION_,    \
             true, err, "(DEBUG)");
 #else
- #define NU_BLOB        pArchive, "", 0, "", false
- #define NU_BLOB_DEBUG  pArchive, "", 0, "", true
- #define NU_NILBLOB     NULL, "", 0, "", false
- #define DebugShowError(err)    ((void)0)
+# define DebugShowError(err)    ((void)0)
 #endif
 
 /*

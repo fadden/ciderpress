@@ -76,8 +76,24 @@ void DebugLog::Log(LogSeverity severity, const char* file, int line,
     va_list argptr;
     char textBuf[4096];
 
+    // TODO: _vsnprintf() doesn't deal with "%ls" well.  If it encounters a
+    // character it can't translate, it stops and returns -1.  This is
+    // very annoying if you're trying to print a wide-char filename that
+    // includes characters that aren't in CP-1252.
+    //
+    // We can probably fix this by converting "format" to a wide string,
+    // printing with _vsnwprintf(), and then converting the output back
+    // to narrow manually (selecting options that prevent it from stopping
+    // mid-string on failure).  As an optimization, we only need to do this
+    // if the format string includes a "%ls" specifier.
+    //
+    // The interpretation of plain "%s" will change if we use a wide printf
+    // function (it's a Microsoft extension, not ANSI behavior), so we'd also
+    // want to check for "%s" and complain if we see it.  All callers must
+    // use explicit "%hs" or "%ls".
+
     va_start(argptr, format);
-    _vsnprintf(textBuf, NELEM(textBuf) - 1, format, argptr);
+    (void) _vsnprintf(textBuf, NELEM(textBuf) - 1, format, argptr);
     va_end(argptr);
     textBuf[NELEM(textBuf) - 1] = '\0';
 

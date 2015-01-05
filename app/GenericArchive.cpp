@@ -10,6 +10,7 @@
  */
 #include "stdafx.h"
 #include "GenericArchive.h"
+#include "NufxArchive.h"
 #include "FileNameConv.h"
 #include "ContentList.h"
 #include "Main.h"
@@ -46,36 +47,34 @@
  */
 
 GenericEntry::GenericEntry(void)
+  : fPathName(NULL),
+    fFileName(NULL),
+    fFileNameExtension(NULL),
+    fFssep('\0'),
+    fSubVolName(NULL),
+    fDisplayName(NULL),
+    fFileType(0),
+    fAuxType(0),
+    fAccess(0),
+    fCreateWhen(kDateNone),
+    fModWhen(kDateNone),
+    fRecordKind(kRecordKindUnknown),
+    fFormatStr(L"Unknown"),
+    fDataForkLen(0),
+    fRsrcForkLen(0),
+    fCompressedLen(0),
+    fSourceFS(DiskImg::kFormatUnknown),
+    fHasDataFork(false),
+    fHasRsrcFork(false),
+    fHasDiskImage(false),
+    fHasComment(false),
+    fHasNonEmptyComment(false),
+    fDamaged(false),
+    fSuspicious(false),
+    fIndex(-1),
+    fpPrev(NULL),
+    fpNext(NULL)
 {
-    fPathName = NULL;
-    fFileName = NULL;
-    fFssep = '\0';
-    fSubVolName = NULL;
-    fDisplayName = NULL;
-    fFileType = 0;
-    fAuxType = 0;
-    fAccess = 0;
-    fModWhen = kDateNone;
-    fCreateWhen = kDateNone;
-    fRecordKind = kRecordKindUnknown;
-    fFormatStr = L"Unknown";
-    fCompressedLen = 0;
-    //fUncompressedLen = 0;
-    fDataForkLen = fRsrcForkLen = 0;
-
-    fSourceFS = DiskImg::kFormatUnknown;
-
-    fHasDataFork = false;
-    fHasRsrcFork = false;
-    fHasDiskImage = false;
-    fHasComment = false;
-    fHasNonEmptyComment = false;
-
-    fIndex = -1;
-    fpPrev = NULL;
-    fpNext = NULL;
-
-    fDamaged = fSuspicious = false;
 }
 
 GenericEntry::~GenericEntry(void)
@@ -177,7 +176,7 @@ const WCHAR* GenericEntry::GetFileTypeString(void) const
 }
 
 /*static*/ bool GenericEntry::CheckHighASCII(const uint8_t* buffer,
-    unsigned long count)
+    size_t count)
 {
     /*
      * (Pulled from NufxLib Funnel.c.)
@@ -254,7 +253,7 @@ static const char kCharLF = '\n';
 static const char kCharCR = '\r';
 
 /*static*/ GenericEntry::ConvertEOL GenericEntry::DetermineConversion(
-    const uint8_t* buffer, long count,
+    const uint8_t* buffer, size_t count,
     EOLType* pSourceType, ConvertHighASCII* pConvHA)
 {
     /*
@@ -277,7 +276,7 @@ static const char kCharCR = '\r';
      * it will be stripped *before* the EOL determination is made.
      */
     ConvertHighASCII wantConvHA = *pConvHA;
-    long bufCount, numBinary, numLF, numCR;
+    size_t bufCount, numBinary, numLF, numCR;
     bool isHighASCII;
     uint8_t val;
 
@@ -367,7 +366,7 @@ static inline void PutEOL(FILE* fp)
 {
     int err = 0;
 
-    LOGI("+++ WriteConvert conv=%d convHA=%d", *pConv, *pConvHA);
+    LOGD("+++ WriteConvert conv=%d convHA=%d", *pConv, *pConvHA);
 
     if (len == 0) {
         LOGI("WriteConvert asked to write 0 bytes; returning");
@@ -396,7 +395,7 @@ static inline void PutEOL(FILE* fp)
             *pConvHA = kConvertHAOff;
         }
     }
-    LOGI("+++  After auto, conv=%d convHA=%d", *pConv, *pConvHA);
+    LOGD("+++  After auto, conv=%d convHA=%d", *pConv, *pConvHA);
     ASSERT(*pConv == kConvertEOLOn || *pConv == kConvertEOLOff);
     ASSERT(*pConvHA == kConvertHAOn || *pConvHA == kConvertHAOff);
 
@@ -404,7 +403,7 @@ static inline void PutEOL(FILE* fp)
     if (*pConv == kConvertEOLOff) {
         if (fwrite(buf, len, 1, fp) != 1) {
             err = errno;
-            LOGI("WriteConvert failed, err=%d", errno);
+            LOGE("WriteConvert failed, err=%d", errno);
         }
     } else {
         ASSERT(*pConv == kConvertEOLOn);
@@ -546,7 +545,7 @@ GenericArchive::CreateIndex(void)
         mangle.Delete(idx+1, len-(idx+1));  /* delete out to the end */
         mangle += kTmpTemplate;
     }
-    LOGI("GenDerived: passed '%ls' returned '%ls'", filename, (LPCWSTR) mangle);
+    LOGD("GenDerived: passed '%ls' returned '%ls'", filename, (LPCWSTR) mangle);
 
     return mangle;
 }
@@ -594,12 +593,8 @@ GenericArchive::CreateIndex(void)
  */
 
 /*
- * This comes straight out of NuLib2, and uses NufxLib data structures.  While
- * it may seem strange to use these structures for non-NuFX archives, they are
- * convenient and hold at least as much information as any other format needs.
+ * Much of this was adapted from NuLib2.
  */
-
-typedef bool Boolean;
 
 /*static*/ void GenericArchive::UNIXTimeToDateTime(const time_t* pWhen,
     NuDateTime* pDateTime)
@@ -623,99 +618,6 @@ typedef bool Boolean;
     pDateTime->year = ptm->tm_year;
     pDateTime->extra = 0;
     pDateTime->weekDay = ptm->tm_wday +1;
-}
-
-NuError GenericArchive::GetFileDetails(const AddFilesDialog* pAddOpts,
-    const WCHAR* pathname, struct _stat* psb, FileDetails* pDetails)
-{
-    //char* livePathStr;
-    time_t now;
-
-    ASSERT(pAddOpts != NULL);
-    ASSERT(pathname != NULL);
-    ASSERT(pDetails != NULL);
-
-    /* init to defaults */
-    //pDetails->threadID = kNuThreadIDDataFork;
-    pDetails->entryKind = FileDetails::kFileKindDataFork;
-    //pDetails->fileSysID = kNuFileSysUnknown;
-    pDetails->fileSysFmt = DiskImg::kFormatUnknown;
-    pDetails->fileSysInfo = PathProposal::kDefaultStoredFssep;
-    pDetails->fileType = 0;
-    pDetails->extraType = 0;
-    pDetails->storageType = kNuStorageUnknown;  /* let NufxLib worry about it */
-    if (psb->st_mode & S_IWUSR)
-        pDetails->access = kNuAccessUnlocked;
-    else
-        pDetails->access = kNuAccessLocked;
-
-#if 0
-    /* if this is a disk image, fill in disk-specific fields */
-    if (NState_GetModAddAsDisk(pState)) {
-        if ((psb->st_size & 0x1ff) != 0) {
-            /* reject anything whose size isn't a multiple of 512 bytes */
-            printf("NOT storing odd-sized (%ld) file as disk image: %ls\n",
-                (long)psb->st_size, livePathStr);
-        } else {
-            /* set fields; note the "preserve" stuff can override this */
-            pDetails->threadID = kNuThreadIDDiskImage;
-            pDetails->storageType = 512;
-            pDetails->extraType = psb->st_size / 512;
-        }
-    }
-#endif
-
-    now = time(NULL);
-    UNIXTimeToDateTime(&now, &pDetails->archiveWhen);
-    UNIXTimeToDateTime(&psb->st_mtime, &pDetails->modWhen);
-    UNIXTimeToDateTime(&psb->st_ctime, &pDetails->createWhen);
-
-    /* get adjusted filename, along with any preserved type info */
-    PathProposal pathProp;
-    pathProp.Init(pathname);
-    pathProp.LocalToArchive(pAddOpts);
-
-    /* set up the local and archived pathnames */
-    pDetails->storageName = "";
-    if (!pAddOpts->fStoragePrefix.IsEmpty()) {
-        pDetails->storageName += pAddOpts->fStoragePrefix;
-        pDetails->storageName += pathProp.fStoredFssep;
-    }
-    pDetails->storageName += pathProp.fStoredPathName;
-
-    /*
-     * Fill in the NuFileDetails struct.
-     *
-     * We use GetBuffer to get the string to ensure that the CString object
-     * doesn't do anything while we're not looking.  The string won't be
-     * modified, and it won't be around for very long, so it's not strictly
-     * necessary to do this.  It is, however, the correct approach.
-     */
-    pDetails->origName = pathname;
-    pDetails->fileSysInfo = pathProp.fStoredFssep;
-    pDetails->fileType = pathProp.fFileType;
-    pDetails->extraType = pathProp.fAuxType;
-    switch (pathProp.fThreadKind) {
-    case GenericEntry::kDataThread:
-        //pDetails->threadID = kNuThreadIDDataFork;
-        pDetails->entryKind = FileDetails::kFileKindDataFork;
-        break;
-    case GenericEntry::kRsrcThread:
-        //pDetails->threadID = kNuThreadIDRsrcFork;
-        pDetails->entryKind = FileDetails::kFileKindRsrcFork;
-        break;
-    case GenericEntry::kDiskImageThread:
-        //pDetails->threadID = kNuThreadIDDiskImage;
-        pDetails->entryKind = FileDetails::kFileKindDiskImage;
-        break;
-    default:
-        ASSERT(false);
-        // was initialized to default earlier
-        break;
-    }
-
-/*bail:*/
-    return kNuErrNone;
 }
 
 /*
@@ -864,8 +766,8 @@ NuError GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
     const WCHAR* pathname, CString* pErrMsg)
 {
     NuError err = kNuErrNone;
-    Boolean exists, isDir, isReadable;
-    FileDetails details;
+    bool exists, isDir, isReadable;
+    LocalFileDetails details;
     struct _stat sb;
 
     ASSERT(pAddOpts != NULL);
@@ -901,18 +803,16 @@ NuError GenericArchive::Win32AddFile(const AddFilesDialog* pAddOpts,
      * filetype and auxtype it has, and whether or not it's actually the
      * resource fork of another file.
      */
-    LOGI("+++ ADD '%ls'", pathname);
+    LOGD("+++ ADD '%ls'", pathname);
 
     /*
-     * Fill out the "details" structure.  The class has an automatic
-     * conversion to NuFileDetails, but it relies on the CString storage
-     * in the FileDetails, so be careful how you use it.
+     * Fill out the "details" structure.
      */
-    err = GetFileDetails(pAddOpts, pathname, &sb, &details);
+    err = details.SetFields(pAddOpts, pathname, &sb);
     if (err != kNuErrNone)
         goto bail;
 
-    assert(wcscmp(pathname, details.origName) == 0);
+    assert(wcscmp(pathname, details.GetLocalPathName()) == 0);
     err = DoAddFile(pAddOpts, &details);
     if (err == kNuErrSkipped)   // ignore "skipped" result
         err = kNuErrNone;
@@ -934,80 +834,144 @@ NuError GenericArchive::AddFile(const AddFilesDialog* pAddOpts,
     return Win32AddFile(pAddOpts, pathname, pErrMsg);
 }
 
+
 /*
  * ===========================================================================
  *      GenericArchive::FileDetails
  * ===========================================================================
  */
 
-GenericArchive::FileDetails::FileDetails(void)
+GenericArchive::LocalFileDetails::LocalFileDetails(void)
+  : fEntryKind(kFileKindUnknown),
+    fFileSysFmt(DiskImg::kFormatUnknown),
+    fFssep('\0'),
+    fFileType(0),
+    fExtraType(0),
+    fAccess(0),
+    fStorageType(0)
 {
-    //threadID = 0;
-    entryKind = kFileKindUnknown;
-    fileSysFmt = DiskImg::kFormatUnknown;
-    fileSysInfo = storageType = 0;
-    access = fileType = extraType = 0;
-    memset(&createWhen, 0, sizeof(createWhen));
-    memset(&modWhen, 0, sizeof(modWhen));
-    memset(&archiveWhen, 0, sizeof(archiveWhen));
+    memset(&fCreateWhen, 0, sizeof(fCreateWhen));
+    memset(&fModWhen, 0, sizeof(fModWhen));
+    memset(&fArchiveWhen, 0, sizeof(fArchiveWhen));
+
+    // set these for debugging
+    memset(&fNuFileDetails, 0xcc, sizeof(fNuFileDetails));
+    memset(&fCreateParms, 0xcc, sizeof(&fCreateParms));
+    fStoragePathNameMOR = "!INIT!";
 }
 
-GenericArchive::FileDetails::operator const NuFileDetails() const
+NuError GenericArchive::LocalFileDetails::SetFields(const AddFilesDialog* pAddOpts,
+    const WCHAR* pathname, struct _stat* psb)
 {
-    NuFileDetails details;
+    time_t now;
 
-    //details.threadID = threadID;
-    switch (entryKind) {
-    case kFileKindDataFork:
-        details.threadID = kNuThreadIDDataFork;
+    ASSERT(pAddOpts != NULL);
+    ASSERT(pathname != NULL);
+
+    /* get adjusted filename, along with any preserved type info */
+    PathProposal pathProp;
+    pathProp.Init(pathname);
+    pathProp.LocalToArchive(pAddOpts);
+
+    /* set up the local and archived pathnames */
+    fLocalPathName = pathname;
+    fStrippedLocalPathName = L"";
+    if (!pAddOpts->fStoragePrefix.IsEmpty()) {
+        fStrippedLocalPathName += pAddOpts->fStoragePrefix;
+        fStrippedLocalPathName += pathProp.fStoredFssep;
+    }
+    fStrippedLocalPathName += pathProp.fStoredPathName;
+    GenerateStoragePathName();
+
+    fFileSysFmt = DiskImg::kFormatUnknown;
+    fStorageType = kNuStorageUnknown;  /* let NufxLib et.al. worry about it */
+    if (psb->st_mode & S_IWUSR)
+        fAccess = kNuAccessUnlocked;
+    else
+        fAccess = kNuAccessLocked;
+    fEntryKind = LocalFileDetails::kFileKindDataFork;
+    fFssep = pathProp.fStoredFssep;
+    fFileType = pathProp.fFileType;
+    fExtraType = pathProp.fAuxType;
+
+#if 0
+    /* if this is a disk image, fill in disk-specific fields */
+    if (NState_GetModAddAsDisk(pState)) {
+        if ((psb->st_size & 0x1ff) != 0) {
+            /* reject anything whose size isn't a multiple of 512 bytes */
+            printf("NOT storing odd-sized (%ld) file as disk image: %ls\n",
+                (long)psb->st_size, livePathStr);
+        } else {
+            /* set fields; note the "preserve" stuff can override this */
+            pDetails->threadID = kNuThreadIDDiskImage;
+            pDetails->storageType = 512;
+            pDetails->extraType = psb->st_size / 512;
+        }
+    }
+#endif
+
+    now = time(NULL);
+    UNIXTimeToDateTime(&now, &fArchiveWhen);
+    UNIXTimeToDateTime(&psb->st_mtime, &fModWhen);
+    UNIXTimeToDateTime(&psb->st_ctime, &fCreateWhen);
+
+    switch (pathProp.fThreadKind) {
+    case GenericEntry::kDataThread:
+        //pDetails->threadID = kNuThreadIDDataFork;
+        fEntryKind = LocalFileDetails::kFileKindDataFork;
         break;
-    case kFileKindBothForks:    // not exactly supported, doesn't really matter
-    case kFileKindRsrcFork:
-        details.threadID = kNuThreadIDRsrcFork;
+    case GenericEntry::kRsrcThread:
+        //pDetails->threadID = kNuThreadIDRsrcFork;
+        fEntryKind = LocalFileDetails::kFileKindRsrcFork;
         break;
-    case kFileKindDiskImage:
-        details.threadID = kNuThreadIDDiskImage;
+    case GenericEntry::kDiskImageThread:
+        //pDetails->threadID = kNuThreadIDDiskImage;
+        fEntryKind = LocalFileDetails::kFileKindDiskImage;
         break;
-    case kFileKindDirectory:
     default:
-        LOGW("Invalid entryKind (%d) for NuFileDetails conversion",
-            entryKind);
         ASSERT(false);
-        details.threadID = 0;       // that makes it an old-style comment?!
+        // was initialized to default earlier
         break;
     }
 
-    // The NuFileDetails origName field was added to NufxLib so that CiderPress
-    // could receive the original Windows pathname in the NuErrorStatus
-    // callback.  This is a fairly compelling argument for making origName
-    // an opaque field.
-    //
-    // Whatever the case, we need to pass narrow-string versions of the
-    // names into NufxLib via the NuFileDetails struct.  Since we're returning
-    // the NuFileDetails struct, the strings will out-live the scope of this
-    // function, so we have to store them somewhere else.  There's nowhere
-    // in NuFileDetails, so we have to keep them in FileDetails, which currently
-    // exposes all of its fields publicly.  I'm going to kluge it for now and
-    // just "snapshot" the wide strings into narrow-string fields.  This is
-    // all pretty rickety and needs to be redone.
+/*bail:*/
+    return kNuErrNone;
+}
 
-    // TODO: make origName an opaque (void*) field in NufxLib and pass the
-    //  wide char representation through
-    fOrigNameA = origName;
-    details.origName = fOrigNameA;
-    fStorageNameA = storageName;
-    details.storageNameMOR = fStorageNameA;
-    //details.fileSysID = fileSysID;
-    details.fileSysInfo = fileSysInfo;
-    details.access = access;
-    details.fileType = fileType;
-    details.extraType = extraType;
-    details.storageType = storageType;
-    details.createWhen = createWhen;
-    details.modWhen = modWhen;
-    details.archiveWhen = archiveWhen;
+const NuFileDetails& GenericArchive::LocalFileDetails::GetNuFileDetails()
+{
+    //details.threadID = threadID;
+    switch (fEntryKind) {
+    case kFileKindDataFork:
+        fNuFileDetails.threadID = kNuThreadIDDataFork;
+        break;
+    case kFileKindBothForks:    // not exactly supported, doesn't really matter
+    case kFileKindRsrcFork:
+        fNuFileDetails.threadID = kNuThreadIDRsrcFork;
+        break;
+    case kFileKindDiskImage:
+        fNuFileDetails.threadID = kNuThreadIDDiskImage;
+        break;
+    case kFileKindDirectory:
+    default:
+        LOGW("Invalid entryKind (%d) for NuFileDetails conversion", fEntryKind);
+        ASSERT(false);
+        fNuFileDetails.threadID = 0;    // that makes it an old-style comment?!
+        break;
+    }
 
-    switch (fileSysFmt) {
+    fNuFileDetails.origName = (LPCWSTR) fLocalPathName;
+    fNuFileDetails.storageNameMOR = (LPCSTR) fStoragePathNameMOR;
+    fNuFileDetails.fileSysInfo = fFssep;
+    fNuFileDetails.access = fAccess;
+    fNuFileDetails.fileType = fFileType;
+    fNuFileDetails.extraType = fExtraType;
+    fNuFileDetails.storageType = fStorageType;
+    fNuFileDetails.createWhen = fCreateWhen;
+    fNuFileDetails.modWhen = fModWhen;
+    fNuFileDetails.archiveWhen = fArchiveWhen;
+
+    switch (fFileSysFmt) {
     case DiskImg::kFormatProDOS:
     case DiskImg::kFormatDOS33:
     case DiskImg::kFormatDOS32:
@@ -1021,42 +985,65 @@ GenericArchive::FileDetails::operator const NuFileDetails() const
     //kFormatHighSierra
     case DiskImg::kFormatISO9660:
         /* these map directly */
-        details.fileSysID = (enum NuFileSysID) fileSysFmt;
+        fNuFileDetails.fileSysID = (enum NuFileSysID) fFileSysFmt;
         break;
 
     case DiskImg::kFormatRDOS33:
     case DiskImg::kFormatRDOS32:
     case DiskImg::kFormatRDOS3:
         /* these look like DOS33, e.g. text is high-ASCII */
-        details.fileSysID = kNuFileSysDOS33;
+        fNuFileDetails.fileSysID = kNuFileSysDOS33;
         break;
 
     default:
-        details.fileSysID = kNuFileSysUnknown;
+        fNuFileDetails.fileSysID = kNuFileSysUnknown;
         break;
     }
 
-    // Return stack copy, which copies into compiler temporary with our
-    // copy constructor.
-    return details;
+    return fNuFileDetails;
 }
 
-/*static*/ void GenericArchive::FileDetails::CopyFields(FileDetails* pDst,
-    const FileDetails* pSrc)
+const DiskFS::CreateParms& GenericArchive::LocalFileDetails::GetCreateParms()
 {
-    //pDst->threadID = pSrc->threadID;
-    pDst->entryKind = pSrc->entryKind;
-    pDst->origName = pSrc->origName;
-    pDst->storageName = pSrc->storageName;
-    pDst->fileSysFmt = pSrc->fileSysFmt;
-    pDst->fileSysInfo = pSrc->fileSysInfo;
-    pDst->access = pSrc->access;
-    pDst->fileType = pSrc->fileType;
-    pDst->extraType = pSrc->extraType;
-    pDst->storageType = pSrc->storageType;
-    pDst->createWhen = pSrc->createWhen;
-    pDst->modWhen = pSrc->modWhen;
-    pDst->archiveWhen = pSrc->archiveWhen;
+    fCreateParms.pathName = (LPCSTR) fStoragePathNameMOR;
+    fCreateParms.fssep = fFssep;
+    fCreateParms.storageType = fStorageType;
+    fCreateParms.fileType = fFileType;
+    fCreateParms.auxType = fExtraType;
+    fCreateParms.access = fAccess;
+    fCreateParms.createWhen = NufxArchive::DateTimeToSeconds(&fCreateWhen);
+    fCreateParms.modWhen = NufxArchive::DateTimeToSeconds(&fModWhen);
+    return fCreateParms;
+}
+
+void GenericArchive::LocalFileDetails::GenerateStoragePathName()
+{
+    // TODO(Unicode): generate MOR name from Unicode, instead of just
+    //  doing a generic CP-1252 conversion.  We need to do this on both
+    //  sides though, so until we can extract MOR->Unicode we don't
+    //  want to add Unicode->MOR.  And it all depends on NufxLib and
+    //  DiskImg being able to handle UTF-16 filenames.
+    fStoragePathNameMOR = fStrippedLocalPathName;
+}
+
+
+/*static*/ void GenericArchive::LocalFileDetails::CopyFields(LocalFileDetails* pDst,
+    const LocalFileDetails* pSrc)
+{
+    // don't copy fNuFileDetails, fCreateParms
+    pDst->fEntryKind = pSrc->fEntryKind;
+    pDst->fLocalPathName = pSrc->fLocalPathName;
+    pDst->fStrippedLocalPathName = pSrc->fStrippedLocalPathName;
+    pDst->fStoragePathNameMOR = pSrc->fStoragePathNameMOR;
+    pDst->fFileSysFmt = pSrc->fFileSysFmt;
+    pDst->fFssep = pSrc->fFssep;
+    pDst->fAccess = pSrc->fAccess;
+    pDst->fFileType = pSrc->fFileType;
+    pDst->fExtraType = pSrc->fExtraType;
+    pDst->fStorageType = pSrc->fStorageType;
+    pDst->fCreateWhen = pSrc->fCreateWhen;
+    pDst->fModWhen = pSrc->fModWhen;
+    pDst->fArchiveWhen = pSrc->fArchiveWhen;
 }
 
 
@@ -1073,7 +1060,7 @@ void SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask
      * (at least under Win2K), which is a good thing.  It appears that, if you
      * just grab indices 0..N, you will get them in order.
      */
-    LOGI("CreateFromSelection (threadMask=0x%02x)", threadMask);
+    LOGD("CreateFromSelection (threadMask=0x%02x)", threadMask);
 
     POSITION posn;
     posn = pContentList->GetFirstSelectedItemPosition();
@@ -1090,7 +1077,7 @@ void SelectionSet::CreateFromSelection(ContentList* pContentList, int threadMask
 
 void SelectionSet::CreateFromAll(ContentList* pContentList, int threadMask)
 {
-    LOGI("CreateFromAll (threadMask=0x%02x)", threadMask);
+    LOGD("CreateFromAll (threadMask=0x%02x)", threadMask);
 
     int count = pContentList->GetItemCount();
     for (int idx = 0; idx < count; idx++) {
@@ -1104,7 +1091,7 @@ void SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
 {
     SelectionEntry* pSelEntry;
 
-    //LOGI("  Sel '%ls'", pEntry->GetPathName());
+    LOGV("  Sel '%ls'", pEntry->GetPathName());
 
     if (!(threadMask & GenericEntry::kAllowVolumeDir) &&
          pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir)
@@ -1173,7 +1160,7 @@ void SelectionSet::DeleteEntries(void)
     SelectionEntry* pEntry;
     SelectionEntry* pNext;
 
-    LOGI("Deleting selection entries");
+    LOGD("Deleting selection entries");
 
     pEntry = GetEntries();
     while (pEntry != NULL) {

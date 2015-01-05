@@ -80,11 +80,11 @@ typedef struct FileCollectionEntry {
     uint32_t    cmmtLen;        // len of comments
     uint32_t    fileType;
     uint32_t    auxType;
-    int64_t     createWhen;     // time_t
-    int64_t     modWhen;        // time_t
+    int64_t     createWhen;     // holds time_t
+    int64_t     modWhen;        // holds time_t
     uint8_t     access;         // ProDOS access flags
     uint8_t     entryKind;      // GenericArchive::FileDetails::FileKind
-    uint8_t     sourceFS;       // DiskImgLib::DiskImg::FSFormat
+    uint8_t     sourceFS;       // holds DiskImgLib::DiskImg::FSFormat
     uint8_t     fssep;          // filesystem separator char, e.g. ':'
 
     /* data comes next: null-terminated WCHAR filename, then data fork, then
@@ -440,17 +440,17 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
         return errStr;
     }
 
-    GenericArchive::FileDetails::FileKind entryKind;
+    GenericArchive::LocalFileDetails::FileKind entryKind;
     if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory)
-        entryKind = GenericArchive::FileDetails::kFileKindDirectory;
+        entryKind = GenericArchive::LocalFileDetails::kFileKindDirectory;
     else if (pEntry->GetHasDataFork() && pEntry->GetHasRsrcFork())
-        entryKind = GenericArchive::FileDetails::kFileKindBothForks;
+        entryKind = GenericArchive::LocalFileDetails::kFileKindBothForks;
     else if (pEntry->GetHasDataFork())
-        entryKind = GenericArchive::FileDetails::kFileKindDataFork;
+        entryKind = GenericArchive::LocalFileDetails::kFileKindDataFork;
     else if (pEntry->GetHasRsrcFork())
-        entryKind = GenericArchive::FileDetails::kFileKindRsrcFork;
+        entryKind = GenericArchive::LocalFileDetails::kFileKindRsrcFork;
     else if (pEntry->GetHasDiskImage())
-        entryKind = GenericArchive::FileDetails::kFileKindDiskImage;
+        entryKind = GenericArchive::LocalFileDetails::kFileKindDiskImage;
     else {
         ASSERT(false);
         return errStr;
@@ -912,30 +912,32 @@ bail:
 CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
     const WCHAR* pathName, const uint8_t* buf, long remLen)
 {
-    GenericArchive::FileDetails::FileKind entryKind;
-    GenericArchive::FileDetails details;
+    GenericArchive::LocalFileDetails::FileKind entryKind;
+    GenericArchive::LocalFileDetails details;
     uint8_t* dataBuf = NULL;
     uint8_t* rsrcBuf = NULL;
     long dataLen, rsrcLen, cmmtLen;
     CString errMsg;
 
-    entryKind = (GenericArchive::FileDetails::FileKind) pCollEnt->entryKind;
-    LOGI(" Processing '%ls' (%d)", pathName, entryKind);
+    entryKind = (GenericArchive::LocalFileDetails::FileKind) pCollEnt->entryKind;
+    LOGD(" Processing '%ls' (%d)", pathName, entryKind);
 
-    details.entryKind = entryKind;
-    details.origName = L"Clipboard";
-    details.storageName = pathName;     // TODO MacRoman convert
-    details.fileSysFmt = (DiskImg::FSFormat) pCollEnt->sourceFS;
-    details.fileSysInfo = pCollEnt->fssep;
-    details.access = pCollEnt->access;
-    details.fileType = pCollEnt->fileType;
-    details.extraType = pCollEnt->auxType;
-    GenericArchive::UNIXTimeToDateTime(&pCollEnt->createWhen,
-        &details.createWhen);
-    GenericArchive::UNIXTimeToDateTime(&pCollEnt->modWhen,
-        &details.modWhen);
+    details.SetEntryKind(entryKind);
+    details.SetLocalPathName(L"Clipboard");
+    details.SetStrippedLocalPathName(pathName);
+    details.SetFileSysFmt((DiskImg::FSFormat) pCollEnt->sourceFS);
+    details.SetFssep(pCollEnt->fssep);
+    details.SetAccess(pCollEnt->access);
+    details.SetFileType(pCollEnt->fileType);
+    details.SetExtraType(pCollEnt->auxType);
+    NuDateTime ndt;
+    GenericArchive::UNIXTimeToDateTime(&pCollEnt->createWhen, &ndt);
+    details.SetCreateWhen(ndt);
+    GenericArchive::UNIXTimeToDateTime(&pCollEnt->modWhen, &ndt);
+    details.SetModWhen(ndt);
     time_t now = time(NULL);
-    GenericArchive::UNIXTimeToDateTime(&now, &details.archiveWhen);
+    GenericArchive::UNIXTimeToDateTime(&now, &ndt);
+    details.SetArchiveWhen(ndt);
 
     /*
      * Because of the way XferFile works, we need to make a copy of
@@ -958,23 +960,23 @@ CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
      */
     bool hasData = false;
     bool hasRsrc = false;
-    if (details.entryKind == GenericArchive::FileDetails::kFileKindDataFork) {
+    if (entryKind == GenericArchive::LocalFileDetails::kFileKindDataFork) {
         hasData = true;
-        details.storageType = kNuStorageSeedling;
-    } else if (details.entryKind == GenericArchive::FileDetails::kFileKindRsrcFork) {
+        details.SetStorageType(kNuStorageSeedling);
+    } else if (entryKind == GenericArchive::LocalFileDetails::kFileKindRsrcFork) {
         hasRsrc = true;
-        details.storageType = kNuStorageExtended;
-    } else if (details.entryKind == GenericArchive::FileDetails::kFileKindBothForks) {
+        details.SetStorageType(kNuStorageExtended);
+    } else if (entryKind == GenericArchive::LocalFileDetails::kFileKindBothForks) {
         hasData = hasRsrc = true;
-        details.storageType = kNuStorageExtended;
-    } else if (details.entryKind == GenericArchive::FileDetails::kFileKindDiskImage) {
+        details.SetStorageType(kNuStorageExtended);
+    } else if (entryKind == GenericArchive::LocalFileDetails::kFileKindDiskImage) {
         hasData = true;
-        details.storageType = kNuStorageSeedling;
-    } else if (details.entryKind == GenericArchive::FileDetails::kFileKindDirectory) {
-        details.storageType = kNuStorageDirectory;
+        details.SetStorageType(kNuStorageSeedling);
+    } else if (entryKind == GenericArchive::LocalFileDetails::kFileKindDirectory) {
+        details.SetStorageType(kNuStorageDirectory);
     } else {
         ASSERT(false);
-        return "Internal error.";
+        return L"Internal error.";
     }
 
     if (hasData) {
@@ -985,7 +987,7 @@ CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
             dataLen = pCollEnt->dataLen;
             dataBuf = new uint8_t[dataLen];
             if (dataBuf == NULL)
-                return "memory allocation failed.";
+                return L"memory allocation failed.";
             memcpy(dataBuf, buf, dataLen);
             buf += dataLen;
             remLen -= dataLen;
@@ -1003,7 +1005,7 @@ CString MainWindow::ProcessClipboardEntry(const FileCollectionEntry* pCollEnt,
             rsrcLen = pCollEnt->rsrcLen;
             rsrcBuf = new uint8_t[rsrcLen];
             if (rsrcBuf == NULL)
-                return "Memory allocation failed.";
+                return L"Memory allocation failed.";
             memcpy(rsrcBuf, buf, rsrcLen);
             buf += rsrcLen;
             remLen -= rsrcLen;

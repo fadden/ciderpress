@@ -1159,6 +1159,13 @@ public:
      * normalized string.  If the buffer is NULL or isn't big enough, no part
      * of the normalized path will be copied into the buffer, and a specific
      * error (kDIErrDataOverrun) will be returned.
+     *
+     * Generally speaking, the normalization process involves separating
+     * the pathname into its components, modifying each filename as needed
+     * to make it legal on the current filesystem, and then reassembling
+     * the components.
+     *
+     * The input and output strings are Mac OS Roman.
      */
     virtual DIError NormalizePath(const char* path, char fssep,
         char* normalizedBuf, int* pNormalizedBufLen)
@@ -1184,9 +1191,9 @@ public:
         const char*     pathName;       // full pathname for file on disk image
         char            fssep;
         int             storageType;    // determines normal, subdir, or forked
-        long            fileType;
-        long            auxType;
-        int             access;
+        uint32_t        fileType;
+        uint32_t        auxType;
+        uint32_t        access;
         time_t          createWhen;
         time_t          modWhen;
     } CreateParms;
@@ -1459,10 +1466,13 @@ public:
      * NOTE: there is no guarantee that GetPathName will return unique values
      * (duplicates are possible).  We don't guarantee that you won't get an
      * empty string back (it's valid to have an empty filename in the dir in
-     * DOS 3.3, and it's possible for other filesystems to be damaged).  The
-     * pathname may receive some minor sanitizing, e.g. removal or conversion
-     * of high ASCII and control characters, but some filesystems (like HFS)
-     * make use of them.
+     * DOS 3.3, and it's possible for other filesystems to be damaged).
+     *
+     * The filename returned is defined to be null-terminated Mac OS Roman.
+     * For most filesystems this is automatic, as filenames are restricted
+     * to ASCII, but for DOS 3.3 it requires stripping high bits.  It also
+     * means that embedded nulls in HFS filenames (which are discouraged but
+     * allowed) will be lost.
      *
      * We do guarantee that the contents of subdirectories are grouped
      * together.  This makes it much easier to construct a hierarchy out of
@@ -1474,7 +1484,7 @@ public:
     virtual char GetFssep(void) const = 0;              // '\0' if none
     virtual uint32_t GetFileType(void) const = 0;
     virtual uint32_t GetAuxType(void) const = 0;
-    virtual uint32_t GetAccess(void) const = 0;             // ProDOS-style perms
+    virtual uint32_t GetAccess(void) const = 0;         // ProDOS-style perms
     virtual time_t GetCreateWhen(void) const = 0;
     virtual time_t GetModWhen(void) const = 0;
     virtual di_off_t GetDataLength(void) const = 0;     // len of data fork

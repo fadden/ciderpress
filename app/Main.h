@@ -239,10 +239,10 @@ public:
      *
      * On failure, returns with an error message in errMsg.
      */
-    static bool SaveToArchive(GenericArchive::FileDetails* pDetails,
+    static bool SaveToArchive(GenericArchive::LocalFileDetails* pDetails,
         const uint8_t* dataBuf, long dataLen,
         const uint8_t* rsrcBuf, long rsrcLen,
-        CString& errMsg, CWnd* pDialog);
+        CString* pErrMsg, CWnd* pDialog);
 
     static const WCHAR kOpenNuFX[];
     static const WCHAR kOpenBinaryII[];

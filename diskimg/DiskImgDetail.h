@@ -1407,10 +1407,6 @@ private:
 /*
  * Holds DOS files.  Works for DOS33, DOS32, and "wide" DOS implementations.
  *
- * Catalog contents are public so anyone who wants gory details of DOS 3.3
- * stuff can poke at whatever they want.  Anybody else can use the virtual
- * interfaces to get standardized answers for things like file type.
- *
  * The embedded address and length fields found in Applesoft, Integer, and
  * Binary files are quietly skipped over with the fDataOffset field when
  * files are read.
@@ -1470,6 +1466,10 @@ public:
 
     void Dump(void) const;
 
+    friend class DiskFSDOS33;
+    friend class A2FDDOS;
+
+private:
     typedef DiskFSDOS33::TrackSector TrackSector;
 
     /*
@@ -1490,7 +1490,7 @@ public:
 
     // these are computed or determined from the file contents
     uint16_t    fAuxType;           // addr for bin, etc.
-    short       fDataOffset;        // for 'A'/'B'/'I' with embedded len
+    uint16_t    fDataOffset;        // 0/2/4, for 'A'/'B'/'I' with embedded len
     di_off_t    fLength;            // file length, in bytes
     di_off_t    fSparseLength;      // file length, factoring sparse out
 
@@ -1503,7 +1503,6 @@ public:
     static void MakeDOSName(char* buf, const char* name);
     static void TrimTrailingSpaces(char* filename);
 
-private:
     DIError ExtractTSPairs(const uint8_t* sctBuf, TrackSector* tsList,
         int* pLastNonZero);
 

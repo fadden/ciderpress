@@ -2138,21 +2138,21 @@ void MainWindow::OnUpdateActionsConvFromWav(CCmdUI* pCmdUI)
     pCmdUI->Enable(fpContentList != NULL && !fpOpenArchive->IsReadOnly());
 }
 
-/*static*/ bool MainWindow::SaveToArchive(GenericArchive::FileDetails* pDetails,
-    const unsigned char* dataBufIn, long dataLen,
-    const unsigned char* rsrcBufIn, long rsrcLen,
-    CString& errMsg, CWnd* pDialog)
+/*static*/ bool MainWindow::SaveToArchive(GenericArchive::LocalFileDetails* pDetails,
+    const uint8_t* dataBufIn, long dataLen,
+    const uint8_t* rsrcBufIn, long rsrcLen,
+    CString* pErrMsg, CWnd* pDialog)
 {
     MainWindow* pMain = GET_MAIN_WINDOW();
     GenericArchive* pArchive = pMain->GetOpenArchive();
     DiskImgLib::A2File* pTargetSubdir = NULL;
     XferFileOptions xferOpts;
     CString storagePrefix;
-    unsigned char* dataBuf = NULL;
-    unsigned char* rsrcBuf = NULL;
+    uint8_t* dataBuf = NULL;
+    uint8_t* rsrcBuf = NULL;
 
     ASSERT(pArchive != NULL);
-    ASSERT(errMsg.IsEmpty());
+    ASSERT(pErrMsg->IsEmpty());
 
     /*
      * Make a copy of the data for XferFile.
@@ -2163,7 +2163,7 @@ void MainWindow::OnUpdateActionsConvFromWav(CCmdUI* pCmdUI)
         else
             dataBuf = new unsigned char[dataLen];
         if (dataBuf == NULL) {
-            errMsg.Format(L"Unable to allocate %ld bytes", dataLen);
+            pErrMsg->Format(L"Unable to allocate %ld bytes", dataLen);
             goto bail;
         }
         memcpy(dataBuf, dataBufIn, dataLen);
@@ -2187,7 +2187,7 @@ void MainWindow::OnUpdateActionsConvFromWav(CCmdUI* pCmdUI)
         // Always use ':' separator for SHK; this is a matter of
         // convenience, so they can specify a full path.
         //details.storageName.Replace(':', '_');
-        pDetails->fileSysInfo = ':';
+        pDetails->SetFssep(':');
     }
     if (pTargetSubdir != NULL) {
         storagePrefix = pTargetSubdir->GetPathName();
@@ -2195,13 +2195,13 @@ void MainWindow::OnUpdateActionsConvFromWav(CCmdUI* pCmdUI)
     }
     if (!storagePrefix.IsEmpty()) {
         CString tmpStr, tmpFileName;
-        tmpFileName = pDetails->storageName;
+        tmpFileName = pDetails->GetStrippedLocalPathName();
         tmpFileName.Replace(':', '_');  // strip any ':'s in the name
-        pDetails->fileSysInfo = ':';
+        pDetails->SetFssep(':');
         tmpStr = storagePrefix;
         tmpStr += ':';
         tmpStr += tmpFileName;
-        pDetails->storageName = tmpStr;
+        pDetails->SetStrippedLocalPathName(tmpStr);
     }
 
     /*
@@ -2211,18 +2211,18 @@ void MainWindow::OnUpdateActionsConvFromWav(CCmdUI* pCmdUI)
      */
     pArchive->XferPrepare(&xferOpts);
 
-    errMsg = pArchive->XferFile(pDetails, &dataBuf, dataLen,
+    *pErrMsg = pArchive->XferFile(pDetails, &dataBuf, dataLen,
                 &rsrcBuf, rsrcLen);
     delete[] dataBuf;
     delete[] rsrcBuf;
 
-    if (errMsg.IsEmpty())
+    if (pErrMsg->IsEmpty())
         pArchive->XferFinish(pDialog);
     else
         pArchive->XferAbort(pDialog);
 
 bail:
-    return (errMsg.IsEmpty() != 0);
+    return (pErrMsg->IsEmpty() != 0);
 }
 
 

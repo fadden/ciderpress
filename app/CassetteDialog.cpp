@@ -418,29 +418,33 @@ void CassetteDialog::OnImport(void)
     /*
      * Write the file to the currently-open archive.
      */
-    GenericArchive::FileDetails details;
+    GenericArchive::LocalFileDetails details;
 
-    details.entryKind = GenericArchive::FileDetails::kFileKindDataFork;
-    details.origName = "Cassette WAV";
-    details.storageName = impDialog.fFileName;
-    details.access = 0xe3;  // unlocked, backup bit set
-    details.fileType = impDialog.GetFileType();
-    if (details.fileType == kFileTypeBIN)
-        details.extraType = impDialog.fStartAddr;
-    else if (details.fileType == kFileTypeBAS)
-        details.extraType = 0x0801;
-    else
-        details.extraType = 0x0000;
-    details.storageType = DiskFS::kStorageSeedling;
+    details.SetEntryKind(GenericArchive::LocalFileDetails::kFileKindDataFork);
+    details.SetLocalPathName(L"Cassette WAV");
+    details.SetStrippedLocalPathName(impDialog.fFileName);
+    details.SetAccess(0xe3);    // unlocked, backup bit set
+    details.SetFileType(impDialog.GetFileType());
+    if (details.GetFileType() == kFileTypeBIN) {
+        details.SetExtraType(impDialog.fStartAddr);
+    } else if (details.GetFileType() == kFileTypeBAS) {
+        details.SetExtraType(0x0801);
+    } else {
+        details.SetExtraType(0x0000);
+    }
+    details.SetStorageType(DiskFS::kStorageSeedling);
     time_t now = time(NULL);
-    GenericArchive::UNIXTimeToDateTime(&now, &details.createWhen);
-    GenericArchive::UNIXTimeToDateTime(&now, &details.archiveWhen);
+    NuDateTime ndt;
+    GenericArchive::UNIXTimeToDateTime(&now, &ndt);
+    details.SetCreateWhen(ndt);
+    details.SetArchiveWhen(ndt);
+    details.SetModWhen(ndt);
 
     CString errMsg;
 
     fDirty = true;
     if (!MainWindow::SaveToArchive(&details, fDataArray[idx].GetDataBuf(),
-        fDataArray[idx].GetDataLen(), NULL, -1, /*ref*/errMsg, this))
+        fDataArray[idx].GetDataLen(), NULL, -1, &errMsg, this))
     {
         goto bail;
     }

@@ -1844,7 +1844,7 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
     GenericArchive::OpenResult openResult;
     int result = -1;
     GenericArchive* pOpenArchive = NULL;
-    int origFilterIndex = filterIndex;
+    const int origFilterIndex = filterIndex;
     CString errStr, appName;
 
     CheckedLoadString(&appName, IDS_MB_APP_NAME);
@@ -1883,7 +1883,7 @@ try_again:
     if (filterIndex == kFilterIndexBinaryII) {
         /* try Binary II and nothing else */
         ASSERT(!createFile);
-        LOGI("  Trying Binary II");
+        LOGD("  Trying Binary II");
         pOpenArchive = new BnyArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
         if (openResult != GenericArchive::kResultSuccess) {
@@ -1896,7 +1896,7 @@ try_again:
     if (filterIndex == kFilterIndexACU) {
         /* try ACU and nothing else */
         ASSERT(!createFile);
-        LOGI("  Trying ACU");
+        LOGD("  Trying ACU");
         pOpenArchive = new AcuArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
         if (openResult != GenericArchive::kResultSuccess) {
@@ -1909,7 +1909,7 @@ try_again:
     if (filterIndex == kFilterIndexDiskImage) {
         /* try various disk image formats */
         ASSERT(!createFile);
-        LOGI("  Trying disk images");
+        LOGD("  Trying disk images");
 
         pOpenArchive = new DiskArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
@@ -1933,13 +1933,13 @@ try_again:
             }
 
         } else if (openResult != GenericArchive::kResultSuccess) {
-            if (filterIndex != origFilterIndex) {
-                /*
-                 * Kluge: assume we guessed disk image and were wrong.
-                 */
-                errStr = L"File doesn't appear to be a valid archive"
-                         L" or disk image.";
-            }
+            //if (filterIndex != origFilterIndex) {
+            //    /*
+            //     * Kluge: assume we guessed disk image and were wrong.
+            //     */
+            //    errStr = L"File doesn't appear to be a valid archive"
+            //             L" or disk image.";
+            //}
             if (!errStr.IsEmpty())
                 ShowFailureMsg(this, errStr, IDS_FAILED);
             result = -1;
@@ -1948,7 +1948,7 @@ try_again:
     } else
     if (filterIndex == kFilterIndexNuFX) {
         /* try NuFX (including its embedded-in-BNY form) */
-        LOGI("  Trying NuFX");
+        LOGD("  Trying NuFX");
 
         pOpenArchive = new NufxArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
