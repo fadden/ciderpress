@@ -468,10 +468,10 @@ main(int argc, char** argv)
     }
 
     printf("Image Converter for Linux v1.0\n");
-    printf("Copyright (C) 2004 by faddenSoft, LLC.  All rights reserved.\n");
-    long major, minor, bug;
+    printf("Copyright (C) 2014 by faddenSoft.  All rights reserved.\n");
+    int32_t major, minor, bug;
     Global::GetVersion(&major, &minor, &bug);
-    printf("Linked against DiskImg library v%ld.%ld.%ld\n",
+    printf("Linked against DiskImg library v%d.%d.%d\n",
         major, minor, bug);
     printf("Log file is '%s'\n", kLogFile);
     printf("\n");

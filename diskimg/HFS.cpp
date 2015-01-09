@@ -1589,7 +1589,7 @@ DIError DiskFSHFS::SetFileInfo(A2File* pGenericFile, uint32_t fileType,
 
     LOGD(" HFS setting '%s' to fdflags=0x%04x flags=0x%04x",
         colonPath, dirEnt.fdflags, dirEnt.flags);
-    LOGD("  type=0x%08lx creator=0x%08lx", fileType, auxType);
+    LOGD("  type=0x%08x creator=0x%08x", fileType, auxType);
 
     if (hfs_setattr(fHfsVol, colonPath, &dirEnt) != 0) {
         LOGW(" HFS setattr '%s' failed: %s", colonPath, hfs_error);
@@ -1665,7 +1665,7 @@ uint32_t A2FileHFS::GetFileType(void) const
         digit1 = FromHex((char) (fType >> 24));
         digit2 = FromHex((char) (fType >> 16));
         if (digit1 < 0 || digit2 < 0) {
-            LOGI("  Unexpected: pdos + %08lx", fType);
+            LOGI("  Unexpected: pdos + %08x", fType);
             return 0x00;
         }
         return digit1 << 4 | digit2;

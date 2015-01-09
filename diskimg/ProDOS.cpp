@@ -3630,7 +3630,7 @@ DIError DiskFSProDOS::SetFileInfo(A2File* pGenericFile, uint32_t fileType,
         return kDIErrAccessDenied;      // not quite right
     }
 
-    LOGI("ProDOS changing values for '%s' to 0x%02lx 0x%04lx 0x%02lx",
+    LOGI("ProDOS changing values for '%s' to 0x%02x 0x%04x 0x%02x",
         pFile->GetPathName(), fileType, auxType, accessFlags);
 
     /* load the directory block for this file */

@@ -274,7 +274,7 @@ DIError Wrapper2MG::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
         goto bail;
     }
     if (attr != 1) {
-        LOGI(" NuFX archive has %ld entries, not disk-only", attr);
+        LOGI(" NuFX archive has %d entries, not disk-only", attr);
         nerr = kNuErrGeneric;
         if (attr > 1)
             goto file_archive;
@@ -480,7 +480,7 @@ DIError WrapperNuFX::Prep(GenericFD* pGFD, di_off_t wrappedLength, bool readOnly
     *pPhysical = DiskImg::kPhysicalFormatSectors;
     *pOrder = DiskImg::kSectorOrderProDOS;
 
-    LOGI(" NuFX is ready, threadIdx=%ld", threadIdx);
+    LOGI(" NuFX is ready, threadIdx=%d", threadIdx);
     fThreadIdx = threadIdx;
 
 bail:
@@ -732,7 +732,7 @@ DIError WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
         goto bail;
     }
     pDataSource = NULL;      // now owned by NufxLib
-    LOGI(" NuFX added thread %ld in record %ld, flushing changes",
+    LOGI(" NuFX added thread %d in record %d, flushing changes",
         threadIdx, recordIdx);
 
     /*
@@ -741,7 +741,7 @@ DIError WrapperNuFX::Flush(GenericFD* pWrapperGFD, GenericFD* pDataGFD,
     uint32_t status;
     nerr = NuFlush(fpArchive, &status);
     if (nerr != kNuErrNone) {
-        LOGI(" NuFX flush failed (nerr=%d, status=%ld)", nerr, status);
+        LOGI(" NuFX flush failed (nerr=%d, status=%u)", nerr, status);
         goto bail;
     }
 

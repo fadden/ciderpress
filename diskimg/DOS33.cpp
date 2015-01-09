@@ -2179,7 +2179,7 @@ DIError DiskFSDOS33::SetFileInfo(A2File* pGenericFile, uint32_t fileType,
     if (fpImg->GetReadOnly())
         return kDIErrAccessDenied;
 
-    LOGI("DOS SetFileInfo '%s' type=0x%02lx aux=0x%04lx access=0x%02lx",
+    LOGI("DOS SetFileInfo '%s' type=0x%02x aux=0x%04x access=0x%02x",
         pFile->GetPathName(), fileType, auxType, accessFlags);
 
     /*

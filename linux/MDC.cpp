@@ -370,7 +370,7 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
 		}
 		switch (recordKind) {
 		case kRecordKindUnknown:
-			fprintf(pScanOpts->outfp, "%s- $%04lX  ",
+			fprintf(pScanOpts->outfp, "%s- $%04X  ",
 				GetFileTypeString(pFile->GetFileType()),
 				pFile->GetAuxType());
 			break;
@@ -388,7 +388,7 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
                     pFile->GetAuxType() >= 0 && pFile->GetAuxType() <= 0xffff)
                 {
                     /* ProDOS type embedded in HFS */
-                    fprintf(pScanOpts->outfp, "%s%c $%04lX  ",
+                    fprintf(pScanOpts->outfp, "%s%c $%04X  ",
                         GetFileTypeString(pFile->GetFileType()),
                         recordKind == kRecordKindForkedFile ? '+' : ' ',
                         pFile->GetAuxType());
@@ -424,7 +424,7 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
                     }
                 }
             } else {
-                fprintf(pScanOpts->outfp, "%s%c $%04lX  ",
+                fprintf(pScanOpts->outfp, "%s%c $%04X  ",
                     GetFileTypeString(pFile->GetFileType()),
                     recordKind == kRecordKindForkedFile ? '+' : ' ',
                     pFile->GetAuxType());
@@ -836,15 +836,15 @@ main(int argc, char** argv)
     }
 #endif
 
-    long major, minor, bug;
+    int32_t major, minor, bug;
     Global::GetVersion(&major, &minor, &bug);
 
-    printf("MDC for Linux v2.2.0 (DiskImg library v%ld.%ld.%ld)\n",
+    printf("MDC for Linux v3.0.0 (DiskImg library v%d.%d.%d)\n",
         major, minor, bug);
     printf("Copyright (C) 2006 by faddenSoft, LLC.  All rights reserved.\n");
     printf("MDC is part of CiderPress, available from http://www.faddensoft.com/.\n");
     NuGetVersion(&major, &minor, &bug, nil, nil);
-    printf("Linked against NufxLib v%ld.%ld.%ld and zlib version %s.\n",
+    printf("Linked against NufxLib v%d.%d.%d and zlib version %s.\n",
         major, minor, bug, zlibVersion());
 
     if (argc == 1) {

@@ -1289,7 +1289,7 @@ DIError DiskFSPascal::SetFileInfo(A2File* pGenericFile, uint32_t fileType,
     if (!fDiskIsGood)
         return kDIErrBadDiskImage;
 
-    LOGI("Pascal SetFileInfo '%s' fileType=0x%04lx",
+    LOGI("Pascal SetFileInfo '%s' fileType=0x%04x",
         pFile->GetPathName(), fileType);
 
     dierr = LoadCatalog();

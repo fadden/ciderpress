@@ -59,7 +59,7 @@ const char* DiskImgLib::kASPIDev = "ASPI:";
     }
 
     if (major != kNuVersionMajor || minor < kNuVersionMinor) {
-        LOGE("Unexpected NufxLib version %ld.%ld.%ld",
+        LOGE("Unexpected NufxLib version %d.%d.%d",
                 major, minor, bug);
         return kDIErrNufxLibInitFailed;
     }
