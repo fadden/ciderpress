@@ -406,17 +406,7 @@ void ShowFailureMsg(CWnd* pWnd, int msgId, int titleStrID)
 
 bool IsWin9x(void)
 {
-    OSVERSIONINFO osvers;
-    BOOL result;
-
-    osvers.dwOSVersionInfoSize = sizeof(osvers);
-    result = ::GetVersionEx(&osvers);
-    assert(result != FALSE);
-
-    if (osvers.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-        return true;
-    else
-        return false;
+    return false;
 }
 
 void CheckedLoadString(CString* pString, UINT nID)

@@ -345,16 +345,6 @@ DIError DiskImgLib::LastErrorToDIError(void)
  */
 bool DiskImgLib::IsWin9x(void)
 {
-    OSVERSIONINFO osvers;
-    BOOL result;
-
-    osvers.dwOSVersionInfoSize = sizeof(osvers);
-    result = ::GetVersionEx(&osvers);
-    assert(result != FALSE);
-
-    if (osvers.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-        return true;
-    else
-        return false;
+    return false;
 }
 #endif
