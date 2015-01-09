@@ -23,7 +23,7 @@ END_MESSAGE_MAP()
 
 void EditPropsDialog::InitProps(GenericEntry* pEntry)
 {
-    fPathName = pEntry->GetPathName();
+    fPathName = pEntry->GetPathNameUNI();
     fProps.fileType = pEntry->GetFileType();
     fProps.auxType = pEntry->GetAuxType();
     fProps.access = pEntry->GetAccess();

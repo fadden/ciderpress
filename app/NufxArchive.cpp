@@ -796,8 +796,7 @@ NuResult NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
 
     pNewEntry = new NufxEntry(pArchive);
 
-    CStringW filenameW(pRecord->filenameMOR);
-    pNewEntry->SetPathName(filenameW);
+    pNewEntry->SetPathNameMOR(pRecord->filenameMOR);
     pNewEntry->SetFssep(NuGetSepFromSysInfo(pRecord->recFileSysInfo));
     pNewEntry->SetFileType(pRecord->recFileType);
     pNewEntry->SetAuxType(pRecord->recExtraType);
@@ -1389,7 +1388,7 @@ bool NufxArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         pEntry = (NufxEntry*) pSelEntry->GetEntry();
 
         LOGI("  Testing %ld '%ls'", pEntry->GetRecordIdx(),
-            pEntry->GetPathName());
+            (LPCWSTR) pEntry->GetPathNameUNI());
         nerr = NuTestRecord(fpArchive, pEntry->GetRecordIdx());
         if (nerr != kNuErrNone) {
             if (nerr == kNuErrAborted) {
@@ -1399,7 +1398,7 @@ bool NufxArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
                 pMsgWnd->MessageBox(errMsg, title, MB_OK);
             } else {
                 errMsg.Format(L"Failed while testing '%ls': %hs.",
-                    pEntry->GetPathName(), NuStrError(nerr));
+                    (LPCWSTR) pEntry->GetPathNameUNI(), NuStrError(nerr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             }
             goto bail;
@@ -1443,7 +1442,7 @@ bool NufxArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         pEntry = (NufxEntry*) pSelEntry->GetEntry();
 
         LOGI("  Deleting %ld '%ls'", pEntry->GetRecordIdx(),
-            pEntry->GetPathName());
+            (LPCWSTR) pEntry->GetPathNameUNI());
         nerr = NuDeleteRecord(fpArchive, pEntry->GetRecordIdx());
         if (nerr != kNuErrNone) {
             errMsg.Format(L"Unable to delete record %d: %hs.",
@@ -1512,12 +1511,12 @@ bool NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     SelectionEntry* pSelEntry = pSelSet->IterNext();
     while (pSelEntry != NULL) {
         NufxEntry* pEntry = (NufxEntry*) pSelEntry->GetEntry();
-        LOGI("  Renaming '%ls'", pEntry->GetPathName());
+        LOGD("  Renaming '%ls'", (LPCWSTR) pEntry->GetPathNameUNI());
 
         RenameEntryDialog renameDlg(pMsgWnd);
         renameDlg.SetCanRenameFullPath(renameFullPath);
         renameDlg.SetCanChangeFssep(true);
-        renameDlg.fOldName = pEntry->GetPathName();
+        renameDlg.fOldName = pEntry->GetPathNameUNI();
         renameDlg.fFssep = pEntry->GetFssep();
         renameDlg.fpArchive = this;
         renameDlg.fpEntry = pEntry;
@@ -1530,19 +1529,19 @@ bool NufxArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
             nerr = NuRename(fpArchive, pEntry->GetRecordIdx(),
                 newNameA, renameDlg.fFssep);
             if (nerr != kNuErrNone) {
-                errMsg.Format(L"Unable to rename '%ls': %hs.", pEntry->GetPathName(),
-                    NuStrError(nerr));
+                errMsg.Format(L"Unable to rename '%ls': %hs.",
+                    (LPCWSTR) pEntry->GetPathNameUNI(), NuStrError(nerr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 break;
             }
-            LOGI("Rename of '%ls' to '%ls' succeeded",
-                pEntry->GetDisplayName(), (LPCWSTR) renameDlg.fNewName);
+            LOGD("Rename of '%ls' to '%ls' succeeded",
+                (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) renameDlg.fNewName);
         } else if (result == IDCANCEL) {
             LOGI("Canceling out of remaining renames");
             break;
         } else {
             /* 3rd possibility is IDIGNORE, i.e. skip this entry */
-            LOGI("Skipping rename of '%ls'", pEntry->GetDisplayName());
+            LOGI("Skipping rename of '%ls'", (LPCWSTR) pEntry->GetDisplayName());
         }
 
         pSelEntry = pSelSet->IterNext();
@@ -1606,7 +1605,7 @@ CString NufxArchive::TestPathName(const GenericEntry* pGenericEntry,
     pEntry = GetEntries();
     while (pEntry != NULL) {
         if (pEntry != pGenericEntry &&
-            ComparePaths(pEntry->GetPathName(), pEntry->GetFssep(),
+            ComparePaths(pEntry->GetPathNameUNI(), pEntry->GetFssep(),
                          newName, newFssep) == 0)
         {
             errMsg = L"An entry with that name already exists.";
@@ -1726,7 +1725,7 @@ bool NufxArchive::RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         ASSERT(pEntry != NULL);
         CString dispStr;
         dispStr.Format(L"Failed while recompressing '%ls': %ls.",
-            pEntry->GetDisplayName(), (LPCWSTR) errMsg);
+            (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) errMsg);
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         goto bail;
     }
@@ -1774,14 +1773,14 @@ bool NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     char* buf = NULL;
     long len = 0;
 
-    LOGI("  Recompressing %ld '%ls'", pEntry->GetRecordIdx(),
-        pEntry->GetDisplayName());
+    LOGD("  Recompressing %ld '%ls'", pEntry->GetRecordIdx(),
+        (LPCWSTR) pEntry->GetDisplayName());
 
     /* get a copy of the thread header */
     pEntry->FindThreadInfo(threadKind, &thread, pErrMsg);
     if (!pErrMsg->IsEmpty()) {
         pErrMsg->Format(L"Unable to locate thread for %ls (type %d)",
-            pEntry->GetDisplayName(), threadKind);
+            (LPCWSTR) pEntry->GetDisplayName(), threadKind);
         goto bail;
     }
     threadID = NuGetThreadID(&thread);
@@ -1789,7 +1788,8 @@ bool NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
     /* if it's already in the target format, skip it */
     if (thread.thThreadFormat == pRecompOpts->fCompressionType) {
         LOGI("Skipping (fmt=%d) '%ls'",
-            pRecompOpts->fCompressionType, pEntry->GetDisplayName());
+            pRecompOpts->fCompressionType,
+            (LPCWSTR) pEntry->GetDisplayName());
         return true;
     }
 
@@ -1802,7 +1802,7 @@ bool NufxArchive::RecompressThread(NufxEntry* pEntry, int threadKind,
         goto bail;  /* abort anything that was pending */
     } else if (result != IDOK) {
         pErrMsg->Format(L"Failed while extracting '%ls': %ls",
-            pEntry->GetDisplayName(), (LPCWSTR) subErrMsg);
+            (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) subErrMsg);
         goto bail;
     }
     *pSizeInMemory += len;
@@ -1884,13 +1884,24 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
         /* in case we start handling CRC errors better */
         if (pEntry->GetDamaged()) {
             LOGI("  XFER skipping damaged entry '%ls'",
-                pEntry->GetDisplayName());
+                (LPCWSTR) pEntry->GetDisplayName());
             continue;
         }
 
-        LOGD(" XFER converting '%ls'", pEntry->GetDisplayName());
+        LOGD(" XFER converting '%ls'", (LPCWSTR) pEntry->GetDisplayName());
 
-        fileDetails.SetStrippedLocalPathName(pEntry->GetDisplayName());
+        // Generate a name that is the combination of the sub-volume name
+        // (if any) and the path name.  This is likely the same as the
+        // "display name", but that is officially for display only, and
+        // shouldn't be used for this.
+        CString xferName;
+        const CString& subVolName = pEntry->GetSubVolName();
+        if (!subVolName.IsEmpty()) {
+            xferName = subVolName + (WCHAR) DiskFS::kDIFssep;
+        }
+        xferName += pEntry->GetPathNameUNI();
+
+        fileDetails.SetStrippedLocalPathName(xferName);
         fileDetails.SetFssep(PathProposal::kDefaultStoredFssep);
         fileDetails.SetFileSysFmt(DiskImg::kFormatUnknown);
         fileDetails.SetFileType(pEntry->GetFileType());
@@ -1935,7 +1946,7 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
                 dispMsg.Format(L"Failed while extracting '%ls': %ls.",
-                    pEntry->GetDisplayName(), (LPCWSTR) errMsg);
+                    (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) errMsg);
                 ShowFailureMsg(pMsgWnd, dispMsg, IDS_FAILED);
                 goto bail;
             }
@@ -1956,7 +1967,7 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
                 dispMsg.Format(L"Failed while extracting '%ls': %ls.",
-                    pEntry->GetDisplayName(), (LPCWSTR) errMsg);
+                    (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) errMsg);
                 ShowFailureMsg(pMsgWnd, dispMsg, IDS_FAILED);
                 goto bail;
             }
@@ -1979,7 +1990,7 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
                 goto bail;  /* abort anything that was pending */
             } else if (result != IDOK) {
                 dispMsg.Format(L"Failed while extracting '%ls': %ls.",
-                    pEntry->GetDisplayName(), (LPCWSTR) errMsg);
+                    (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) errMsg);
                 ShowFailureMsg(pMsgWnd, dispMsg, IDS_FAILED);
                 goto bail;
             }
@@ -1991,7 +2002,7 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
 
         if (dataLen < 0 && rsrcLen < 0) {
             LOGI(" XFER: WARNING: nothing worth transferring in '%ls'",
-                pEntry->GetDisplayName());
+                (LPCWSTR) pEntry->GetDisplayName());
             continue;
         }
 
@@ -2000,7 +2011,7 @@ GenericArchive::XferStatus NufxArchive::XferSelection(CWnd* pMsgWnd,
         if (!errMsg.IsEmpty()) {
             LOGI("XferFile failed!");
             errMsg.Format(L"Failed while transferring '%ls': %ls.",
-                pEntry->GetDisplayName(), (LPCWSTR) errMsg);
+                (LPCWSTR) pEntry->GetDisplayName(), (LPCWSTR) errMsg);
             ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             goto bail;
         }

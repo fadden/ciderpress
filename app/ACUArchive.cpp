@@ -636,8 +636,7 @@ int AcuArchive::CreateEntry(const AcuFileEntry* pEntry)
      * Create the new entry.
      */
     pNewEntry = new AcuEntry(this);
-    CString fileName(pEntry->fileName);
-    pNewEntry->SetPathName(fileName);
+    pNewEntry->SetPathNameMOR(pEntry->fileName);
     pNewEntry->SetFssep(kAcuFssep);
     pNewEntry->SetFileType(pEntry->fileType);
     pNewEntry->SetAuxType(pEntry->auxType);
@@ -754,7 +753,7 @@ bool AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     while (pSelEntry != NULL) {
         pEntry = (AcuEntry*) pSelEntry->GetEntry();
 
-        LOGI("  Testing '%ls' (offset=%ld)", pEntry->GetDisplayName(),
+        LOGD("  Testing '%ls' (offset=%ld)", (LPCWSTR) pEntry->GetDisplayName(),
             pEntry->GetOffset());
 
         SET_PROGRESS_UPDATE2(0, pEntry->GetDisplayName(), NULL);
@@ -764,11 +763,11 @@ bool AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
             if (nerr == kNuErrAborted) {
                 CString title;
                 CheckedLoadString(&title, IDS_MB_APP_NAME);
-                errMsg = "Cancelled.";
+                errMsg = L"Cancelled.";
                 pMsgWnd->MessageBox(errMsg, title, MB_OK);
             } else {
                 errMsg.Format(L"Failed while testing '%ls': %hs.",
-                    pEntry->GetPathName(), NuStrError(nerr));
+                    (LPCWSTR) pEntry->GetPathNameUNI(), NuStrError(nerr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             }
             goto bail;

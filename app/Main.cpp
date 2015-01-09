@@ -1422,11 +1422,11 @@ void MainWindow::HandleDoubleClick(void)
     if (pEntry == NULL)
         return;
 
-    LOGI(" Double-click GOT '%ls'", pEntry->GetPathName());
+    LOGI(" Double-click got '%ls'", (LPCWSTR) pEntry->GetPathNameUNI());
     const WCHAR* ext;
     long fileType, auxType;
 
-    ext = PathName::FindExtension(pEntry->GetPathName(), pEntry->GetFssep());
+    ext = PathName::FindExtension(pEntry->GetPathNameUNI(), pEntry->GetFssep());
     fileType = pEntry->GetFileType();
     auxType = pEntry->GetAuxType();
 
@@ -1587,7 +1587,7 @@ int MainWindow::TmpExtractForExternal(GenericEntry* pEntry)
 {
     const WCHAR* ext;
 
-    ext = PathName::FindExtension(pEntry->GetPathName(), pEntry->GetFssep());
+    ext = PathName::FindExtension(pEntry->GetPathNameUNI(), pEntry->GetFssep());
 
     WCHAR nameBuf[MAX_PATH];
     UINT unique;

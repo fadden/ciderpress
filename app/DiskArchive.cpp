@@ -951,7 +951,7 @@ int DiskArchive::InternalReload(CWnd* pMsgWnd)
 
 int DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
 {
-    static const WCHAR* kBlankFileName = L"<blank filename>";
+    static const char* kBlankFileNameMOR = "<blank filename>";
     A2File* pFile;
     DiskEntry* pNewEntry;
     DiskFS::SubVolume* pSubVol;
@@ -971,15 +971,15 @@ int DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
         if (pNewEntry == NULL)
             return -1;
 
-        CString path(pFile->GetPathName());
+        CStringA path(pFile->GetPathName());
         if (path.IsEmpty())
-            path = kBlankFileName;
+            path = kBlankFileNameMOR;
         if (DiskImg::UsesDOSFileStructure(pFile->GetFSFormat()) &&
             wantCoerceDOSFilenames)
         {
             InjectLowercase(&path);
         }
-        pNewEntry->SetPathName(path);
+        pNewEntry->SetPathNameMOR(path);
         if (volName[0] != '\0')
             pNewEntry->SetSubVolName(volName);
         pNewEntry->SetFssep(pFile->GetFssep());
@@ -2072,7 +2072,7 @@ bool DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
     if (pFile->IsVolumeDirectory()) {
         pathName = newName;
     } else {
-        pathName = pParentEntry->GetPathName();
+        pathName = pParentEntry->GetPathNameMOR();
         pathName += pParentEntry->GetFssep();
         pathName += newName;
     }
@@ -2192,9 +2192,10 @@ bool DiskArchive::DeleteSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
             goto bail;
         }
 
-        LOGI("  Deleting '%ls' from '%hs'", (LPCWSTR) pEntry->GetPathName(),
+        LOGI("  Deleting '%ls' from '%hs'", (LPCWSTR) pEntry->GetPathNameUNI(),
             (LPCSTR) pFile->GetDiskFS()->GetVolumeName());
-        SET_PROGRESS_UPDATE2(0, pEntry->GetPathName(), NULL);
+        // TODO: should be using display name for progress updater?
+        SET_PROGRESS_UPDATE2(0, pEntry->GetPathNameUNI(), NULL);
 
         /*
          * Ask the DiskFS to delete the file.  As soon as this completes,
@@ -2270,7 +2271,7 @@ bool DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
         RenameEntryDialog renameDlg(pMsgWnd);
         DiskEntry* pEntry = (DiskEntry*) pSelEntry->GetEntry();
 
-        LOGI("  Renaming '%ls'", pEntry->GetPathName());
+        LOGI("  Renaming '%ls'", (LPCWSTR) pEntry->GetPathNameUNI());
         if (!SetRenameFields(pMsgWnd, pEntry, &renameDlg))
             break;
 
@@ -2290,19 +2291,21 @@ bool DiskArchive::RenameSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
             dierr = pDiskFS->RenameFile(pFile, newNameA);
             if (dierr != kDIErrNone) {
                 errMsg.Format(L"Unable to rename '%ls' to '%ls': %hs.",
-                    pEntry->GetPathName(), (LPCWSTR) renameDlg.fNewName,
+                    (LPCWSTR) pEntry->GetPathNameUNI(),
+                    (LPCWSTR) renameDlg.fNewName,
                     DiskImgLib::DIStrError(dierr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
                 goto bail;
             }
             LOGD("Rename of '%ls' to '%ls' succeeded",
-                pEntry->GetDisplayName(), (LPCWSTR) renameDlg.fNewName);
+                (LPCWSTR) pEntry->GetDisplayName(),
+                (LPCWSTR) renameDlg.fNewName);
         } else if (result == IDCANCEL) {
             LOGI("Canceling out of remaining renames");
             break;
         } else {
             /* 3rd possibility is IDIGNORE, i.e. skip this entry */
-            LOGI("Skipping rename of '%ls'", pEntry->GetDisplayName());
+            LOGI("Skipping rename of '%ls'", (LPCWSTR) pEntry->GetDisplayName());
         }
 
         pSelEntry = pSelSet->IterNext();
@@ -2341,20 +2344,20 @@ bool DiskArchive::SetRenameFields(CWnd* pMsgWnd, DiskEntry* pEntry,
     if (!pDiskFS->GetReadWriteSupported()) {
         CString errMsg;
         errMsg.Format(L"Unable to rename '%ls': operation not supported.",
-            pEntry->GetPathName());
+            (LPCWSTR) pEntry->GetPathNameUNI());
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         return false;
     }
     if (pDiskFS->GetFSDamaged()) {
         CString errMsg;
         errMsg.Format(L"Unable to rename '%ls': the disk it's on appears to be damaged.",
-            pEntry->GetPathName());
+            (LPCWSTR) pEntry->GetPathNameUNI());
         ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
         return false;
     }
 
     pDialog->SetCanRenameFullPath(renameFullPath);
-    pDialog->fOldName = pEntry->GetPathName();
+    pDialog->fOldName = pEntry->GetPathNameUNI();
     pDialog->fFssep = pEntry->GetFssep();
     pDialog->fpArchive = this;
     pDialog->fpEntry = pEntry;
@@ -2576,7 +2579,7 @@ GenericArchive::XferStatus DiskArchive::XferSelection(CWnd* pMsgWnd,
 
         if (pEntry->GetDamaged()) {
             LOGI("  XFER skipping damaged entry '%ls'",
-                pEntry->GetDisplayName());
+                (LPCWSTR) pEntry->GetDisplayName());
             continue;
         }
 
@@ -2584,15 +2587,14 @@ GenericArchive::XferStatus DiskArchive::XferSelection(CWnd* pMsgWnd,
          * Do a quick de-colonizing pass for non-ProDOS volumes, then prepend
          * the subvolume name (if any).
          */
-        fixedPathName = pEntry->GetPathName();
+        fixedPathName = pEntry->GetPathNameUNI();
         if (fixedPathName.IsEmpty())
             fixedPathName = L"(no filename)";
         if (pEntry->GetFSFormat() != DiskImg::kFormatProDOS)
             fixedPathName.Replace(PathProposal::kDefaultStoredFssep, '.');
-        if (pEntry->GetSubVolName() != NULL) {
-            CString tmpStr;
-            tmpStr = pEntry->GetSubVolName();
-            tmpStr += (char)PathProposal::kDefaultStoredFssep;
+        if (!pEntry->GetSubVolName().IsEmpty()) {
+            CString tmpStr = pEntry->GetSubVolName();
+            tmpStr += (char) PathProposal::kDefaultStoredFssep;
             tmpStr += fixedPathName;
             fixedPathName = tmpStr;
         }

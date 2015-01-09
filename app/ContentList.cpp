@@ -62,8 +62,8 @@ static inline int MaxVal(int a, int b)
 int ContentList::OnCreate(LPCREATESTRUCT lpcs)
 {
     CString colHdrs[kNumVisibleColumns] = {
-        "Pathname", "Type", "Aux", "Mod Date",
-        "Format", "Size", "Ratio", "Packed", "Access"
+        L"Pathname", L"Type", L"Aux", L"Mod Date",
+        L"Format", L"Size", L"Ratio", L"Packed", L"Access"
     };  // these should come from string table, not hard-coded
     static int colFmt[kNumVisibleColumns] = {
         LVCFMT_LEFT, LVCFMT_LEFT, LVCFMT_LEFT, LVCFMT_LEFT,
@@ -90,7 +90,7 @@ int ContentList::OnCreate(LPCREATESTRUCT lpcs)
     LoadHeaderImages();
     CHeaderCtrl* pHeader = GetHeaderCtrl();
     if (pHeader == NULL)
-        LOGI("GLITCH: couldn't get header ctrl");
+        LOGW("GLITCH: couldn't get header ctrl");
     ASSERT(pHeader != NULL);
     pHeader->SetImageList(&fHdrImageList);
 
@@ -114,7 +114,7 @@ int ContentList::OnCreate(LPCREATESTRUCT lpcs)
 
 void ContentList::OnDestroy(void)
 {
-    LOGI("ContentList OnDestroy");
+    LOGD("ContentList OnDestroy");
 
     ExportColumnWidths();
     CListCtrl::OnDestroy();
@@ -130,7 +130,7 @@ void ContentList::OnColumnClick(NMHDR* pnmh, LRESULT* pResult)
 {
     NM_LISTVIEW* pnmlv = (NM_LISTVIEW*) pnmh;
 
-    LOGI("OnColumnClick!!");
+    LOGD("ContentList OnColumnClick");
 
     if (fpLayout->GetSortColumn() == pnmlv->iSubItem)
         fpLayout->SetAscending(!fpLayout->GetAscending());
@@ -156,7 +156,7 @@ void ContentList::NewColumnWidths(void)
         int width = fpLayout->GetColumnWidth(i);
         if (width == ColumnLayout::kWidthDefaulted) {
             width = GetDefaultWidth(i);
-            LOGI("Defaulting width %d to %d", i, width);
+            LOGD("Defaulting width %d to %d", i, width);
             fpLayout->SetColumnWidth(i, width);
         }
         SetColumnWidth(i, width);
@@ -204,7 +204,7 @@ long* ContentList::GetSelectionSerials(long* pSelCount)
     long maxCount;
 
     maxCount = GetSelectedCount();
-    LOGI("GetSelectionSerials (maxCount=%d)", maxCount);
+    LOGD("GetSelectionSerials (maxCount=%d)", maxCount);
 
     if (maxCount > 0) {
         savedSel = new long[maxCount];
@@ -420,6 +420,7 @@ void ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
                 wcscpy(plvdi->item.pszText, pEntry->GetDisplayName());
             }
 
+#if 0   // no longer needed -- "display names" are converted to Unicode
             /*
              * Sanitize the string.  This is really only necessary for
              * HFS, which has 8-bit "Macintosh Roman" filenames.  The Win32
@@ -434,6 +435,7 @@ void ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
                     str++;
                 }
             }
+#endif
             break;
         case 1:     // type
             MakeFileTypeDisplayString(pEntry, plvdi->item.pszText);
@@ -494,7 +496,7 @@ void ContentList::OnGetDispInfo(NMHDR* pnmh, LRESULT* pResult)
 /*
  * Helper functions for sort routine.
  */
-static inline int CompareUnsignedLong(unsigned long u1, unsigned long u2)
+static inline int CompareUnsignedLong(uint32_t u1, uint32_t u2)
 {
     if (u1 < u2)
         return -1;

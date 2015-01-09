@@ -43,7 +43,8 @@ public:
 
     // init the "extract from archive" side from a GenericEntry struct
     void Init(GenericEntry* pEntry) {
-        fStoredPathName = pEntry->GetPathName();
+        // TODO(Unicode): use Unicode/MOR conversion rather than CP-1252
+        fStoredPathName = pEntry->GetPathNameMOR();
         fStoredFssep = pEntry->GetFssep();
         //if (fStoredFssep == '\0')         // e.g. embedded DOS 3.3 volume
         //  fStoredFssep = kDefaultStoredFssep;

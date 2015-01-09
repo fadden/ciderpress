@@ -627,29 +627,29 @@ void VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc)
  * Convert a sub-string to lower case according to rules for English book
  * titles.  Assumes the initial string is in all caps.
  */
-static void DowncaseSubstring(CString* pStr, int startPos, int endPos,
+static void DowncaseSubstring(CStringA* pStr, int startPos, int endPos,
     bool prevWasSpace)
 {
-    static const WCHAR* shortWords[] = {
-        L"of", L"the", L"a", L"an", L"and", L"to", L"in"
+    static const char* shortWords[] = {
+        "of", "the", "a", "an", "and", "to", "in"
     };
-    static const WCHAR* leaveAlone[] = {
-        L"BBS", L"3D"
+    static const char* leaveAlone[] = {
+        "BBS", "3D"
     };
-    static const WCHAR* justLikeThis[] = {
-        L"ProDOS", L"IIe", L"IIc", L"IIgs"
+    static const char* justLikeThis[] = {
+        "ProDOS", "IIe", "IIc", "IIgs"
     };
-    CString token;
+    CStringA token;
     bool firstCap = true;
     int i;
 
     token = pStr->Mid(startPos, endPos - startPos);
-    LOGV("  TOKEN: '%ls'", (LPCWSTR) token);
+    LOGV("  TOKEN: '%s'", (LPCSTR) token);
 
     /* these words are left alone */
     for (i = 0; i < NELEM(leaveAlone); i++) {
         if (token.CompareNoCase(leaveAlone[i]) == 0) {
-            LOGV("    Leaving alone '%ls'", (LPCWSTR) token);
+            LOGV("    Leaving alone '%s'", (LPCSTR) token);
             return;
         }
     }
@@ -657,7 +657,7 @@ static void DowncaseSubstring(CString* pStr, int startPos, int endPos,
     /* words with specific capitalization */
     for (i = 0; i < NELEM(justLikeThis); i++) {
         if (token.CompareNoCase(justLikeThis[i]) == 0) {
-            LOGI("    Setting '%ls' to '%ls'", (LPCWSTR) token, justLikeThis[i]);
+            LOGI("    Setting '%s' to '%s'", (LPCSTR) token, justLikeThis[i]);
             for (int j = startPos; j < endPos; j++)
                 pStr->SetAt(j, justLikeThis[i][j - startPos]);
             return;
@@ -668,7 +668,7 @@ static void DowncaseSubstring(CString* pStr, int startPos, int endPos,
     if (prevWasSpace) {
         for (i = 0; i < NELEM(shortWords); i++) {
             if (token.CompareNoCase(shortWords[i]) == 0) {
-                LOGV("    No leading cap for '%ls'", (LPCWSTR) token);
+                LOGV("    No leading cap for '%s'", (LPCSTR) token);
                 firstCap = false;
                 break;
             }
@@ -676,9 +676,9 @@ static void DowncaseSubstring(CString* pStr, int startPos, int endPos,
     }
 
     /* check for roman numerals; we leave those capitalized */
-    CString romanTest = token.SpanIncluding(L"IVX");
+    CString romanTest = token.SpanIncluding("IVX");
     if (romanTest.GetLength() == token.GetLength()) {
-        LOGV("    Looks like roman numerals '%ls'", (LPCWSTR) token);
+        LOGV("    Looks like roman numerals '%s'", (LPCSTR) token);
         return;
     }
 
@@ -690,10 +690,10 @@ static void DowncaseSubstring(CString* pStr, int startPos, int endPos,
     }
 }
 
-void InjectLowercase(CString* pStr)
+void InjectLowercase(CStringA* pStr)
 {
     int len = pStr->GetLength();
-    static const WCHAR* kGapChars = L" .:&-+/\\()<>@*";
+    static const char kGapChars[] = " .:&-+/\\()<>@*";
     int startPos, endPos;
 
     //*pStr = "AND PRODOS FOR THE IIGS";
@@ -701,7 +701,7 @@ void InjectLowercase(CString* pStr)
     //LOGI("InjectLowercase: '%ls'", (LPCWSTR) *pStr);
 
     for (int i = 0; i < len; i++) {
-        WCHAR ch = pStr->GetAt(i);
+        char ch = pStr->GetAt(i);
         if (ch >= 'a' && ch <= 'z') {
             LOGI("Found lowercase 0x%04x, skipping InjectLower", ch);
             return;
@@ -711,10 +711,10 @@ void InjectLowercase(CString* pStr)
     startPos = 0;
     while (startPos < len) {
         /* find start of token */
-        WCHAR ch;
+        char ch;
         do {
             ch = pStr->GetAt(startPos);
-            if (wcschr(kGapChars, ch) == NULL)
+            if (strchr(kGapChars, ch) == NULL)
                 break;
             startPos++;
         } while (startPos < len);
@@ -725,7 +725,7 @@ void InjectLowercase(CString* pStr)
         endPos = startPos + 1;
         while (endPos < len) {
             ch = pStr->GetAt(endPos);
-            if (wcschr(kGapChars, ch) != NULL)
+            if (strchr(kGapChars, ch) != NULL)
                 break;
             endPos++;
         }

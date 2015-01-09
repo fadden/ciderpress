@@ -284,6 +284,13 @@ public:
         kRTFFlagColorTable  = 1,        // include color table
     };
 
+    // Convert a Mac OS Roman character value (from a IIgs document) to
+    // its UTF-16 Unicode equivalent.  This also includes a conversion
+    // for the control characters.
+    static uint16_t ConvertMacRomanToUTF16(uint8_t ch) {
+        return kUTF16Conv[ch];
+    }
+
 protected:
     void RTFBegin(int flags = 0);
     void RTFEnd(void);
@@ -373,18 +380,11 @@ protected:
 
     // Convert a Mac OS Roman character value (from a IIgs document) to
     // an 8-bit Windows CP1252 equivalent.
-    uint8_t ConvertMacRomanTo1252(uint8_t ch) {
+    static uint8_t ConvertMacRomanTo1252(uint8_t ch) {
         if (ch < 128)
             return ch;
         else
             return kCP1252Conv[ch-128];
-    }
-
-    // Convert a Mac OS Roman character value (from a IIgs document) to
-    // its UTF-16 Unicode equivalent.  This also includes a conversion
-    // for the control characters.
-    uint16_t ConvertMacRomanToUTF16(uint8_t ch) {
-        return kUTF16Conv[ch];
     }
 
     void CheckGSCharConv(void);

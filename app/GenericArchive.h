@@ -191,14 +191,29 @@ public:
     long GetIndex(void) const { return fIndex; }
     void SetIndex(long idx) { fIndex = idx; }
 
-    const WCHAR* GetPathName(void) const { return fPathName; }
-    void SetPathName(const WCHAR* path);
-    const WCHAR* GetFileName(void);
-    const WCHAR* GetFileNameExtension(void); // returns e.g. ".SHK"
-    CStringA GetFileNameExtensionA(void);
+    /*
+     * Set the pathname.  This comes from a file archive or disk image,
+     * so it's always in Mac OS Roman format.
+     *
+     * Calling this will invalidate any strings previously returned by
+     * GetPathName*(), GetFileName*(), and GetDisplayName().
+     */
+    void SetPathNameMOR(const char* pathNameMOR);
+
+    const CStringA& GetPathNameMOR(void) const { return fPathNameMOR; }
+    const CString& GetPathNameUNI(void) const { return fPathNameUNI; }
+    const CString& GetFileName(void);
+    const CString& GetFileNameExtension(void); // returns e.g. ".SHK"
+    const CStringA& GetFileNameExtensionMOR(void);
+    /*
+     * Returns the "display" name.  This is a combination of the sub-volume
+     * name and the path name.  This string is intended for display only,
+     * and may include characters that aren't legal on the filesystem.
+     */
+    const CString& GetDisplayName(void) const;
+
     void SetSubVolName(const WCHAR* name);
-    const WCHAR* GetSubVolName(void) const { return fSubVolName; }
-    const WCHAR* GetDisplayName(void) const; // not really "const"
+    const CString& GetSubVolName(void) const { return fSubVolName; }
 
     char GetFssep(void) const { return fFssep; }
     void SetFssep(char fssep) { fFssep = fssep; }
@@ -287,19 +302,32 @@ public:
         size_t len, ConvertEOL* pConv, ConvertHighASCII* pConvHA,
         bool* pLastCR);
 
-protected:
+private:
     /*
      * Convert spaces to underscores, modifying the string.
      */
-    static void SpacesToUnderscores(WCHAR* buf);
+    static void SpacesToUnderscores(CStringA* pStr);
 
 private:
-    WCHAR*       fPathName;
-    const WCHAR* fFileName;         // points within fPathName
-    const WCHAR* fFileNameExtension; // points within fPathName
+    /*
+     * This represents a file from an archive or disk image, so the Mac OS
+     * Roman representation is the "true" version.  The Unicode version
+     * is how we will use it on Windows (e.g. for file extraction), so
+     * it will be a CP-1252 conversion until the various libraries
+     * support UTF-16 filenames.
+     *
+     * The "display name" is only used for display, and should do a proper
+     * MOR to Unicode conversion so the file name looks right.
+     */
+
+    CStringA    fPathNameMOR;       // original path name, Mac OS Roman chars
+    CString     fPathNameUNI;       // Unicode conversion
+    CString     fFileName;          // filename component of fPathNameUNI
+    CString     fFileNameExtension; // filename extension from fPathNameUNI
+    CStringA    fFileNameExtensionMOR;
     char        fFssep;
-    WCHAR*      fSubVolName;        // sub-volume prefix, or NULL if none
-    WCHAR*      fDisplayName;       // combination of sub-vol and path
+    CString     fSubVolName;        // sub-volume prefix, or NULL if none
+    mutable CString fDisplayName;   // combination of sub-vol and path
     uint32_t    fFileType;
     uint32_t    fAuxType;
     uint32_t    fAccess;

@@ -471,9 +471,9 @@ void MainWindow::OnActionsCreateSubdir(void)
         return;
     }
 
-    LOGI("Creating subdir in '%ls'", pEntry->GetPathName());
+    LOGI("Creating subdir in '%ls'", (LPCWSTR) pEntry->GetPathNameUNI());
 
-    csDialog.fBasePath = pEntry->GetPathName();
+    csDialog.fBasePath = pEntry->GetPathNameUNI();
     csDialog.fpArchive = fpOpenArchive;
     csDialog.fpParentEntry = pEntry;
     csDialog.fNewName = "New.Subdir";
@@ -638,7 +638,7 @@ void MainWindow::DoBulkExtract(SelectionSet* pSelSet,
 
         GenericEntry* pEntry = pSelEntry->GetEntry();
         if (pEntry->GetDamaged()) {
-            LOGI("Skipping '%ls' due to damage", pEntry->GetPathName());
+            LOGI("Skipping '%ls' due to damage", (LPCWSTR) pEntry->GetPathNameUNI());
             continue;
         }
 
@@ -686,7 +686,7 @@ void MainWindow::DoBulkExtract(SelectionSet* pSelSet,
                     pEntry->GetFileType(),
                     pEntry->GetAuxType(),
                     ReformatterSourceFormat(pEntry->GetSourceFS()),
-                    pEntry->GetFileNameExtensionA());
+                    pEntry->GetFileNameExtensionMOR());
                 pHolder->TestApplicability();
             }
         }
@@ -787,7 +787,8 @@ bool MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
                 extractAs2MG = true;
             } else {
                 LOGI("Not extracting funky image '%ls' as 2MG (len=%I64d)",
-                    pEntry->GetPathName(), pEntry->GetUncompressedLen());
+                    (LPCWSTR) pEntry->GetPathNameUNI(),
+                    pEntry->GetUncompressedLen());
             }
         }
     }
@@ -826,7 +827,7 @@ bool MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
      */
     ASSERT(pExtOpts->fExtractPath.Right(1) == "\\");
     CString adjustedExtractPath(pExtOpts->fExtractPath);
-    if (!pExtOpts->fStripFolderNames && pEntry->GetSubVolName() != NULL) {
+    if (!pExtOpts->fStripFolderNames && !pEntry->GetSubVolName().IsEmpty()) {
         adjustedExtractPath += pEntry->GetSubVolName();
         adjustedExtractPath += "\\";
     }

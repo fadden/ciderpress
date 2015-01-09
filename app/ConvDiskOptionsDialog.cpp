@@ -111,7 +111,7 @@ void ConvDiskOptionsDialog::ResetSizeControls(void)
     CString spaceReq;
 
     LOGI("Resetting size controls");
-    spaceReq.Format(IDS_CONVDISK_SPACEREQ, "(unknown)");
+    spaceReq.Format(IDS_CONVDISK_SPACEREQ, L"(unknown)");
     pWnd = GetDlgItem(IDC_CONVDISK_SPACEREQ);
     ASSERT(pWnd != NULL);
     pWnd->SetWindowText(spaceReq);
@@ -129,8 +129,8 @@ void ConvDiskOptionsDialog::ResetSizeControls(void)
 
 void ConvDiskOptionsDialog::LimitSizeControls(long totalBlocks, long blocksUsed)
 {
-    LOGI("LimitSizeControls %ld %ld", totalBlocks, blocksUsed);
-    LOGI("Full volume requires %ld bitmap blocks",
+    LOGD("LimitSizeControls %ld %ld", totalBlocks, blocksUsed);
+    LOGD("Full volume requires %ld bitmap blocks",
         NewDiskSize::GetNumBitmapBlocks_ProDOS(totalBlocks));
 
     CWnd* pWnd;

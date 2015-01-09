@@ -253,11 +253,11 @@ const WCHAR* Stristr(const WCHAR* string1, const WCHAR* string2);
 void VectorizeString(WCHAR* mangle, WCHAR** argv, int* pArgc);
 
 /*
- * Convert parts of the filename to lower case.
+ * Convert parts of the Mac OS Roman filename to lower case.
  *
  * If the name already has lowercase characters, do nothing.
  */
-void InjectLowercase(CString* pStr);
+void InjectLowercase(CStringA* pStr);
 
 /*
  * Test to see if a sub-string matches a value in a set of strings.  The set

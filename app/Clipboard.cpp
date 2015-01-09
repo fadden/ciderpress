@@ -202,7 +202,7 @@ CString MainWindow::CreateFileList(SelectionSet* pSelSet)
         pEntry = pSelEntry->GetEntry();
         ASSERT(pEntry != NULL);
 
-        fileName = DblDblQuote(pEntry->GetPathName());
+        fileName = DblDblQuote(pEntry->GetPathNameUNI());
         subVol = pEntry->GetSubVolName();
         ContentList::MakeFileTypeDisplayString(pEntry, fileTypeBuf);
         fileType = DblDblQuote(fileTypeBuf);  // Mac HFS types might have '"'?
@@ -292,7 +292,7 @@ HGLOBAL MainWindow::CreateFileCollection(SelectionSet* pSelSet)
 
         if (pEntry->GetRecordKind() != GenericEntry::kRecordKindVolumeDir) {
             totalLength += sizeof(FileCollectionEntry);
-            totalLength += (wcslen(pEntry->GetPathName()) +1) * sizeof(WCHAR);
+            totalLength += (wcslen(pEntry->GetPathNameUNI()) +1) * sizeof(WCHAR);
             numFiles++;
             if (pEntry->GetRecordKind() != GenericEntry::kRecordKindDirectory) {
                 totalLength += (long) pEntry->GetDataForkLen();
@@ -373,8 +373,7 @@ HGLOBAL MainWindow::CreateFileCollection(SelectionSet* pSelSet)
         pEntry = pSelEntry->GetEntry();
         ASSERT(pEntry != NULL);
 
-        CString displayName(pEntry->GetDisplayName());
-        fpActionProgress->SetArcName(displayName);
+        fpActionProgress->SetArcName(pEntry->GetDisplayName());
 
         errStr = CopyToCollection(pEntry, &buf, &remainingLen);
         if (!errStr.IsEmpty()) {
@@ -460,7 +459,7 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
     memset(&collEnt, 0x99, sizeof(collEnt));
     collEnt.signature = kEntrySignature;
     collEnt.dataOffset = sizeof(collEnt);
-    collEnt.fileNameLen = (wcslen(pEntry->GetPathName()) +1) * sizeof(WCHAR);
+    collEnt.fileNameLen = (wcslen(pEntry->GetPathNameUNI()) +1) * sizeof(WCHAR);
     if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory) {
         collEnt.dataLen = collEnt.rsrcLen = collEnt.cmmtLen = 0;
     } else {
@@ -490,7 +489,7 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
     remLen -= sizeof(collEnt);
 
     /* copy string with terminating null */
-    memcpy(buf, pEntry->GetPathName(), collEnt.fileNameLen);
+    memcpy(buf, pEntry->GetPathNameUNI(), collEnt.fileNameLen);
     buf += collEnt.fileNameLen;
     remLen -= collEnt.fileNameLen;
 

@@ -13,6 +13,7 @@
 #include "NufxArchive.h"
 #include "FileNameConv.h"
 #include "ContentList.h"
+#include "../reformat/ReformatBase.h"
 #include "Main.h"
 #include <sys/stat.h>
 #include <errno.h>
@@ -47,12 +48,7 @@
  */
 
 GenericEntry::GenericEntry(void)
-  : fPathName(NULL),
-    fFileName(NULL),
-    fFileNameExtension(NULL),
-    fFssep('\0'),
-    fSubVolName(NULL),
-    fDisplayName(NULL),
+  : fFssep('\0'),
     fFileType(0),
     fAuxType(0),
     fAccess(0),
@@ -77,24 +73,24 @@ GenericEntry::GenericEntry(void)
 {
 }
 
-GenericEntry::~GenericEntry(void)
-{
-    delete[] fPathName;
-    delete[] fSubVolName;
-    delete[] fDisplayName;
-}
+GenericEntry::~GenericEntry(void) {}
 
-void GenericEntry::SetPathName(const WCHAR* path)
+void GenericEntry::SetPathNameMOR(const char* path)
 {
-    ASSERT(path != NULL && wcslen(path) > 0);
-    if (fPathName != NULL)
-        delete fPathName;
-    fPathName = wcsdup(path);
+    ASSERT(path != NULL && strlen(path) > 0);
+    fPathNameMOR = path;
     // nuke the derived fields
-    fFileName = NULL;
-    fFileNameExtension = NULL;
-    delete[] fDisplayName;
-    fDisplayName = NULL;
+    fFileName = L"";
+    fFileNameExtension = L"";
+    fDisplayName = L"";
+
+    /*
+     * Generate the Unicode representation from the Mac OS Roman source.
+     * For now, we just treat the input as CP-1252.
+     *
+     * TODO(Unicode)
+     */
+    fPathNameUNI = fPathNameMOR;
 
     /*
      * Warning: to be 100% pedantically correct here, we should NOT do this
@@ -103,62 +99,73 @@ void GenericEntry::SetPathName(const WCHAR* path)
      * the underscorage until the first GetPathName call.
      */
     const Preferences* pPreferences = GET_PREFERENCES();
-    if (pPreferences->GetPrefBool(kPrSpacesToUnder))
-        SpacesToUnderscores(fPathName);
+    if (pPreferences->GetPrefBool(kPrSpacesToUnder)) {
+        SpacesToUnderscores(&fPathNameMOR);
+    }
 }
 
-const WCHAR* GenericEntry::GetFileName(void)
+const CString& GenericEntry::GetFileName(void)
 {
-    ASSERT(fPathName != NULL);
-    if (fFileName == NULL)
-        fFileName = PathName::FilenameOnly(fPathName, fFssep);
+    ASSERT(!fPathNameMOR.IsEmpty());
+    if (fFileName.IsEmpty()) {
+        fFileName = PathName::FilenameOnly(fPathNameUNI, fFssep);
+    }
     return fFileName;
 }
 
-const WCHAR* GenericEntry::GetFileNameExtension(void)
+const CString& GenericEntry::GetFileNameExtension(void)
 {
-    ASSERT(fPathName != NULL);
-    if (fFileNameExtension == NULL)
-        fFileNameExtension = PathName::FindExtension(fPathName, fFssep);
+    ASSERT(!fPathNameMOR.IsEmpty());
+    if (fFileNameExtension.IsEmpty()) {
+        fFileNameExtension = PathName::FindExtension(fPathNameUNI, fFssep);
+    }
     return fFileNameExtension;
 }
 
-CStringA GenericEntry::GetFileNameExtensionA(void)
+const CStringA& GenericEntry::GetFileNameExtensionMOR(void)
 {
-    return GetFileNameExtension();
+    ASSERT(!fPathNameMOR.IsEmpty());
+    if (fFileNameExtensionMOR.IsEmpty()) {
+        CString str = PathName::FindExtension(fPathNameUNI, fFssep);
+        // TODO(Unicode): either get the extension from the MOR filename,
+        //  or convert this properly from Unicode to MOR (not CP-1252).
+        fFileNameExtensionMOR = str;
+    }
+    return fFileNameExtensionMOR;
 }
 
 void GenericEntry::SetSubVolName(const WCHAR* name)
 {
-    delete[] fSubVolName;
-    fSubVolName = NULL;
-    if (name != NULL) {
-        fSubVolName = wcsdup(name);
-    }
+    fSubVolName = name;
 }
 
-const WCHAR* GenericEntry::GetDisplayName(void) const
+// Simple Mac OS Roman to Unicode conversion.
+static CString ConvertMORToUNI(const CStringA& strMOR)
 {
-    ASSERT(fPathName != NULL);
-    if (fDisplayName != NULL)
-        return fDisplayName;
-
-    // TODO: hmm...
-    GenericEntry* pThis = const_cast<GenericEntry*>(this);
-
-    int len = wcslen(fPathName) +1;
-    if (fSubVolName != NULL)
-        len += wcslen(fSubVolName) +1;
-    pThis->fDisplayName = new WCHAR[len];
-    if (fSubVolName != NULL) {
-        WCHAR xtra[2] = { DiskFS::kDIFssep, '\0' };
-        wcscpy(pThis->fDisplayName, fSubVolName);
-        wcscat(pThis->fDisplayName, xtra);
-    } else {
-        pThis->fDisplayName[0] = '\0';
+    // We know that all MOR characters are represented in Unicode with a
+    // single BMP code point, so we know that strlen(MOR) == wcslen(UNI).
+    const int len = strMOR.GetLength();
+    CString strUNI;
+    WCHAR* uniBuf = strUNI.GetBuffer(len);
+    for (int i = 0; i < len; i++) {
+        uniBuf[i] = ReformatText::ConvertMacRomanToUTF16(strMOR[i]);
     }
-    wcscat(pThis->fDisplayName, fPathName);
-    return pThis->fDisplayName;
+    strUNI.ReleaseBuffer(len);
+    return strUNI;
+}
+
+const CString& GenericEntry::GetDisplayName(void) const
+{
+    ASSERT(!fPathNameMOR.IsEmpty());
+    if (!fDisplayName.IsEmpty()) {
+        return fDisplayName;
+    }
+
+    if (!fSubVolName.IsEmpty()) {
+        fDisplayName = fSubVolName + (WCHAR) DiskFS::kDIFssep;
+    }
+    fDisplayName += ConvertMORToUNI(fPathNameMOR);
+    return fDisplayName;
 }
 
 const WCHAR* GenericEntry::GetFileTypeString(void) const
@@ -166,13 +173,9 @@ const WCHAR* GenericEntry::GetFileTypeString(void) const
     return PathProposal::FileTypeString(fFileType);
 }
 
-/*static*/ void GenericEntry::SpacesToUnderscores(WCHAR* buf)
+/*static*/ void GenericEntry::SpacesToUnderscores(CStringA* pStr)
 {
-    while (*buf != '\0') {
-        if (*buf == ' ')
-            *buf = '_';
-        buf++;
-    }
+    pStr->Replace(' ', '_');
 }
 
 /*static*/ bool GenericEntry::CheckHighASCII(const uint8_t* buffer,
@@ -1091,7 +1094,7 @@ void SelectionSet::AddToSet(GenericEntry* pEntry, int threadMask)
 {
     SelectionEntry* pSelEntry;
 
-    LOGV("  Sel '%ls'", pEntry->GetPathName());
+    LOGV("  Sel '%ls'", (LPCWSTR) pEntry->GetPathNameUNI());
 
     if (!(threadMask & GenericEntry::kAllowVolumeDir) &&
          pEntry->GetRecordKind() == GenericEntry::kRecordKindVolumeDir)
@@ -1197,7 +1200,7 @@ void SelectionSet::Dump(void)
 
     pEntry = fEntryHead;
     while (pEntry != NULL) {
-        LOGI("  : name='%ls'", pEntry->GetEntry()->GetPathName());
+        LOGI("  : name='%ls'", (LPCWSTR) pEntry->GetEntry()->GetPathNameUNI());
         pEntry = pEntry->GetNext();
     }
 }

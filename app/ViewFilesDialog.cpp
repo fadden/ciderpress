@@ -764,10 +764,10 @@ int ViewFilesDialog::ReformatPrep(GenericEntry* pEntry)
         pEntry->GetFileType(),
         pEntry->GetAuxType(),
         MainWindow::ReformatterSourceFormat(pEntry->GetSourceFS()),
-        pEntry->GetFileNameExtensionA());
+        pEntry->GetFileNameExtensionMOR());
 
     /* figure out which reformatters apply to this file */
-    LOGI("Testing reformatters");
+    LOGD("Testing reformatters");
     fpHolder->TestApplicability();
 
     return 0;

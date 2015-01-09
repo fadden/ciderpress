@@ -674,7 +674,9 @@ static const char gFileTypeNames[256][4] = {
  * Sanitize a string.  The Mac likes to stick control characters into
  * things, e.g. ^C and ^M, and uses high ASCII for special characters.
  *
- * TODO: use Mac Roman unicode translation instead
+ * TODO(Unicode): we could do a Mac OS Roman to Unicode conversion, but
+ * we'd probably want to output UTF-8 (which Windows accessories like
+ * Notepad *are* able to read).
  */
 static void MacSanitize(char* str)
 {       
@@ -687,7 +689,7 @@ static void MacSanitize(char* str)
 int MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
     ScanOpts* pScanOpts)
 {
-    static const char* kBlankFileName = "<blank filename>";
+    static const char* kBlankFileNameMOR = "<blank filename>";
     DiskFS::SubVolume* pSubVol = NULL;
     A2File* pFile;
 
@@ -714,11 +716,10 @@ int MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         const char* ccp = pFile->GetPathName();
         ASSERT(ccp != NULL);
         if (strlen(ccp) == 0)
-            ccp = kBlankFileName;
+            ccp = kBlankFileNameMOR;
 
-        CString path(ccp);
-        if (DiskImg::UsesDOSFileStructure(pFile->GetFSFormat()) && 0)
-        {
+        CStringA path(ccp);
+        if (DiskImg::UsesDOSFileStructure(pFile->GetFSFormat()) && 0) {
             InjectLowercase(&path);
         }
 

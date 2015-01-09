@@ -470,8 +470,7 @@ NuError BnyArchive::LoadContentsCallback(BnyFileEntry* pEntry)
      * Create the new entry.
      */
     pNewEntry = new BnyEntry(this);
-    CString fileNameW(fileName);
-    pNewEntry->SetPathName(fileNameW);
+    pNewEntry->SetPathNameMOR(fileName);
     pNewEntry->SetFssep(kBNYFssep);
     pNewEntry->SetFileType(pEntry->fileType);
     pNewEntry->SetAuxType(pEntry->auxType);
@@ -853,7 +852,7 @@ bool BnyArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
     while (pSelEntry != NULL) {
         pEntry = (BnyEntry*) pSelEntry->GetEntry();
 
-        LOGI("  Testing '%ls' (offset=%ld)", pEntry->GetDisplayName(),
+        LOGI("  Testing '%ls' (offset=%ld)", (LPCWSTR) pEntry->GetDisplayName(),
             pEntry->GetOffset());
 
         SET_PROGRESS_UPDATE2(0, pEntry->GetDisplayName(), NULL);
@@ -867,7 +866,7 @@ bool BnyArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
                 pMsgWnd->MessageBox(errMsg, title, MB_OK);
             } else {
                 errMsg.Format(L"Failed while testing '%ls': %hs.",
-                    pEntry->GetPathName(), NuStrError(nerr));
+                    (LPCWSTR) pEntry->GetPathNameUNI(), NuStrError(nerr));
                 ShowFailureMsg(pMsgWnd, errMsg, IDS_FAILED);
             }
             goto bail;
