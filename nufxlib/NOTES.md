@@ -1,16 +1,17 @@
 NufxLib NOTES
-Last revised: 2000/01/23
+=============
+Last revised: 2015/01/04
 
 
 The interface is documented in "nufxlibapi.html", available from the
-www.nulib.com web site.  This discusses some of the internal design that
-may be of interest.
+http://www.nulib.com/ web site.  This discusses some of the internal
+design that may be of interest.
 
 Some familiarity with the NuFX file format is assumed.
 
+- - -
 
-Read-Write Data Structures
-==========================
+### Read-Write Data Structures ###
 
 For both read-only and read-write files (but not streaming read-only files),
 the archive is represented internally as a linked list of Records, each
@@ -64,15 +65,15 @@ threads are annotated in the "copy" list.)
 
 One of the goals was to be able to execute a sequence of operations like:
 
-    - open original archive
-    - read original archive
-    - modify archive
-    - flush (success)
-    - modify archive
-    - flush (failure, rollback)
-    - modify archive
-    - flush (success)
-    - close archive
+    open original archive
+    read original archive
+    modify archive
+    flush (success)
+    modify archive
+    flush (failure, rollback)
+    modify archive
+    flush (success)
+    close archive
 
 The archive is opened at the start and held open across many operations.
 There is never a need to re-read the entire archive.  We could avoid the
@@ -92,11 +93,11 @@ extraction are minimal.
 
 In summary:
 
-  "orig" list has original set of records, and is not disturbed until
+  - "orig" list has original set of records, and is not disturbed until
     the changes are committed.
-  "copy" list is created on first add/update/delete operation, and
+  - "copy" list is created on first add/update/delete operation, and
     initially contains a complete copy of "orig".
-  "new" list contains all new additions to the archive, including
+  - "new" list contains all new additions to the archive, including
     new additions that replace existing entries (the existing entry
     is deleted from "copy" and then added to "new").
 
@@ -106,9 +107,9 @@ Any changes to the record header or additions to the thread mod list are
 made in the "copy" set; the "original" set remains untouched.  The thread
 mod list can have the following items in it:
 
-    - delete thread (NuThreadIdx)
-    - add thread (type, otherSize, format, +contents)
-    - update pre-sized thread (NuThreadIdx, +contents)
+  - delete thread (NuThreadIdx)
+  - add thread (type, otherSize, format, +contents)
+  - update pre-sized thread (NuThreadIdx, +contents)
 
 Contents are specified with a NuDataSource, which allows the application
 to indicate that the data is already compressed.  This is useful for
@@ -179,9 +180,9 @@ is possible that the archive could be unrecoverably damaged.  NufxLib
 tries to identify such situations, and will leave the archive open in
 read-only mode after rolling back any new file additions.
 
+- - -
 
-Updating Filenames
-==================
+### Updating Filenames ###
 
 Updating filenames is a small nightmare, because the filename can be
 either in the record header or in a filename thread.  It's possible,
@@ -191,16 +192,148 @@ header and two or more filenames in threads.
 NufxLib will not automatically "fix" broken records, but it will prevent
 applications from creating situations that should not exist.
 
-  When reading an archive, NufxLib will use the filename from the
+  - When reading an archive, NufxLib will use the filename from the
   first filename thread found.  If no filename threads are found, the
   filename from the record header will be used.
 
-  If you add a filename thread to a record that has a filename in the
+  - If you add a filename thread to a record that has a filename in the
   record header, the header name will be removed.
 
-  If you update a filename thread in a record that has a filename in
+  - If you update a filename thread in a record that has a filename in
   the record header, the header name will be left untouched.
 
-  Adding a filename thread is only allowed if no filename thread exists,
+  - Adding a filename thread is only allowed if no filename thread exists,
   or all existing filename threads have been deleted.
+
+
+- - -
+
+### Unicode Filenames ###
+
+Modern operating systems support filenames with a broader range of
+characters than the Apple II did.  This presents problems and opportunities.
+
+#### Background ####
+
+The Apple IIgs and old Macintoshes use the Mac OS Roman ("MOR") character
+set.  This defines a set of characters outside the ASCII range, i.e.
+byte values with the high bit set.  In addition to the usual collection
+of vowels with accents and umlauts, MOR has some less-common characters,
+including the Apple logo.
+
+On Windows, the high-ASCII values are generally interpreted according
+to Windows Code Page 1252 ("CP-1252"), which defines a similar set
+of vowels with accents and miscellaneous symbols.  MOR and CP-1252
+have some overlap, but you can't really translate one into the other.
+The standards-approved equivalent of CP-1252 is ISO-8859-1, though
+according to [wikipedia](http://en.wikipedia.org/wiki/Windows-1252)
+there was some confusion between the two.
+
+Modern operating systems support the Unicode Universal Character Set.
+This system allows for a very large number of characters (over a million),
+and includes definitions for all of the symbols in MOR and CP-1252.
+Each character is assigned a "code point", which is a numeric value between
+zero and 0x10FFFF.  Most of the characters used in modern languages can
+be found in the Basic Multilingual Plane (BMP), which uses code points
+between zero and 0xFFFF (requiring only 16 bits).
+
+There are different ways of encoding code points.  Consider, for example,
+Unicode LATIN SMALL LETTER A WITH ACUTE:
+
+    MOR: 0x87
+    CP-1252: 0xE1
+    Unicode: U+00E1
+    UTF-16: 0x00E1
+    UTF-8: 0xC3 0xA1
+
+Or the humble TRADE MARK SIGN:
+
+    MOR: 0xAA
+    CP-1252: 0x99
+    Unicode: U+2122
+    UTF-16: 0x2122
+    UTF-8: 0xE2 0x84 0xA2
+
+Modern Linux and Mac OS X use UTF-8 encoding in filenames.  Because it's a
+byte-oriented encoding, and 7-bit ASCII values are trivially represented
+as 7-bit ASCII values, all of the existing system and library calls work
+as they did before (i.e. if they took a `char*`, they still do).
+
+Windows uses UTF-16, which requires at least 16 bits per code point.
+Filenames are now "wide" strings, based on `wchar_t*`.  Windows includes
+an elaborate system of defines based around the `TCHAR` type, which can
+be either `char` or `wchar_t` depending on whether a program is compiled
+with `_MBCS` (Multi-Byte Character System) or `_UNICODE`.  A set of
+preprocessor definitions is provided that will map I/O function names,
+so you can call `_tfopen(TCHAR* ...)`, and the compiler will turn it into
+either `fopen(char* ...)` or `_wfopen(wchar_t* ...)`.  MBCS is deprecated
+in favor of Unicode, so any new code should be strictly UTF-16 based.
+
+This means that, for code to work on both Linux and Windows, it has to
+work with incompatible filename string types and different I/O functions.
+
+#### Opening Archive Files ####
+
+On Linux and Mac OS X, NuLib2 can open any file named on the command line.
+On Windows, it's a bit trickier.
+
+The problem is that NuLib2 provides a `main()` function that is passed a
+vector of "narrow" strings.  The filenames provided on the command line
+will be converted from wide to narrow, so unless the filename is entirely
+composed of ASCII or CP-1252 characters, some information will be lost
+and it will be impossible to open the file.
+
+NuLib2 must instead provide a `wmain()` function that takes wide strings.
+The strings must be stored and passed around as wide throughout the
+program, and passed into NufxLib this way (because NufxLib issues the
+actual _wopen call).  This means that NufxLib API must take narrow strings
+when built for Linux, and wide strings when built for Windows.
+
+#### Adding/Extracting Mac OS Roman Files ####
+
+GS/ShrinkIt was designed to handle GS/OS files from HFS volumes, so NuFX
+archive filenames use the MOR character set.  To preserve the encoding
+we could simply extract the values as-is and let them appear as whatever
+values happen to line up in CP-1252, which is what pre-3.0 NuLib2 did.
+It's much nicer to translate from MOR to Unicode when extracting, and
+convert back from Unicode to MOR when adding files to an archive.
+
+The key consideration is that the character set associated with a
+filename must be tracked.  The code can't simply extract a filename from
+the archive and pass it to a 'creat()` call.  Character set conversions
+must take place at appropriate times.
+
+With Windows it's a bit harder to confuse MOR and Unicode names, because
+one uses 8-bit characters and the other uses UTF-16, but the compiler
+doesn't catch everything.
+
+#### Current State ####
+
+NufxLib defines the UNICHAR type, which has a role very like TCHAR:
+it can be `char*` or `wchar_t*`, and can be accompanied by a set of
+preprocessor mappings that switch between I/O functions.  The UNICHAR
+type will be determined based on a define provided from the compiler
+command line (perhaps `-DUSE_UTF16_FILENAMES`).
+
+The current version of NufxLib (v3.0.0) takes the first step, defining
+all filename strings as either UNICHAR or MOR, and converting between them
+as necessary.  This, plus a few minor tweaks to NuLib2, was enough to
+get Unicode filename support working on Linux and Mac OS X.
+
+None of the work needed to make Windows work properly has been done.
+The string conversion functions are no-ops for Win32.  As a result,
+NuLib2 for Windows treats filenames the same way in 3.x as it did in 2.x.
+
+There are some situations where things can go awry even with UNICHAR,
+most notably printf-style arguments.  These are checked by gcc, but
+not by Visual Studio unless you run the static analyzer.  A simple
+`printf("filename=%s\n", filename)` would be correct for narrow strings
+but wrong for wide strings.  It will likely be necessary to define a
+filename format string (similar to `PRI64d` for 64-bit values) and switch
+between "%s" and "%ls".
+
+This is a fair bit of work and requires some amount of uglification to
+NuLib2 and NufxLib.  Since Windows users can use CiderPress, and the
+vast majority of NuFX archives use ASCII-only ProDOS file names, it's
+not clear that the effort would be worthwhile.
 

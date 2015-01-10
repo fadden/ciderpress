@@ -8,6 +8,9 @@ test-basic
 
 Basic tests.  Run this to verify that things are working.
 
+On Win32 there will be a second executable, test-basic-d, that links against
+the DLL rather than the static library.
+
 
 exerciser
 =========
@@ -80,6 +83,15 @@ By default, launder will try to keep the entire archive in memory and flush
 all of the operations at the end.  If you find that you're running out
 of memory on very large archives, you can reduce the memory requirements
 by specifying the "-f" flag.
+
+
+test-names
+==========
+
+Tests Unicode filename handling.  Run without arguments.
+
+(This currently fails on Win32 because the Unicode filename support is
+incomplete there.)
 
 
 test-simple

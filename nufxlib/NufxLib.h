@@ -596,12 +596,12 @@ typedef struct NuSelectionProposal {
  */
 typedef struct NuPathnameProposal {
     const UNICHAR*  pathnameUNI;
-    char            filenameSeparator;
+    UNICHAR         filenameSeparator;
     const NuRecord* pRecord;
     const NuThread* pThread;
 
     const UNICHAR*  newPathnameUNI;
-    uint8_t         newFilenameSeparator;
+    UNICHAR         newFilenameSeparator;
     /*NuThreadID      newStorage;*/
     NuDataSink*     newDataSink;
 } NuPathnameProposal;
@@ -792,7 +792,7 @@ NUFXLIB_API NuError NuAddFile(NuArchive* pArchive, const UNICHAR* pathnameUNI,
             const NuFileDetails* pFileDetails, short fromRsrcFork,
             NuRecordIdx* pRecordIdx);
 NUFXLIB_API NuError NuRename(NuArchive* pArchive, NuRecordIdx recordIdx,
-            const char* pathnameMOR, UNICHAR fssep);
+            const char* pathnameMOR, char fssep);
 NUFXLIB_API NuError NuSetRecordAttr(NuArchive* pArchive, NuRecordIdx recordIdx,
             const NuRecordAttr* pRecordAttr);
 NUFXLIB_API NuError NuUpdatePresizedThread(NuArchive* pArchive,

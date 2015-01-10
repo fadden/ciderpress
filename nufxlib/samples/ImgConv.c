@@ -277,7 +277,7 @@ NuError CreateDosSource(const ImgHeader* pHeader, FILE* fp,
      * reversible transformation, i.e. if you do this twice you're back
      * to ProDOS ordering.
      */
-    for (offset = 0; offset < pHeader->dataLen; offset += 4096) {
+    for (offset = 0; offset < (long) pHeader->dataLen; offset += 4096) {
         size_t ignored;
         ignored = fread(diskBuffer + offset + 0x0000, 256, 1, fp);
         ignored = fread(diskBuffer + offset + 0x0e00, 256, 1, fp);

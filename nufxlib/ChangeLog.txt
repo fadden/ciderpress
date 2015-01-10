@@ -1,3 +1,5 @@
+2005/01/09  ***** v3.0.0 shipped *****
+
 2015/01/03  fadden
     - Mac OS X: replace Carbon FinderInfo calls with BSD xattr.
     - Mac OS X: fix resource fork naming.
