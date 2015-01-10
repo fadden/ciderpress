@@ -348,9 +348,10 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         if (strlen(ccp) == 0)
             ccp = kBlankFileName;
 
-        if (subVolName[0] == '\0')
-            strcpy(dispName, ccp);
-        else {
+        if (subVolName[0] == '\0') {
+            strncpy(dispName, ccp, sizeof(dispName));
+            dispName[sizeof(dispName) - 1] = '\0';
+        } else {
             snprintf(dispName, sizeof(dispName), "%s:%s", subVolName, ccp);
             //dispName = subVolName;
             //dispName += ':';
@@ -469,6 +470,9 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         case DiskImg::kFormatRDOS32:
         case DiskImg::kFormatRDOS3:
             fmtStr = "RDOS  ";
+            break;
+        case DiskImg::kFormatGutenberg:
+            fmtStr = "Gutenb";
             break;
         default:
             fmtStr = "???   ";

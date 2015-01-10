@@ -856,6 +856,9 @@ int MainWindow::LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
         case DiskImg::kFormatMSDOS:
             fmtStr = "MS-DOS";
             break;
+        case DiskImg::kFormatGutenberg:
+            fmtStr = "Gutenb";
+            break;
         default:
             fmtStr = "???   ";
             break;
