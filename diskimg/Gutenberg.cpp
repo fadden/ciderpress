@@ -116,7 +116,7 @@ static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
             dierr = kDIErrNone;
             break;      /* allow it if earlier stuff was okay */
         }
-        if (catTrack == sctBuf[2] & 0x7f && catSect == sctBuf[3] & 0x7f) {
+        if (catTrack == (sctBuf[2] & 0x7f) && catSect == (sctBuf[3] & 0x7f)) {
             // current-sector values matched, check for the end-of-entry bits
             foundGood++;
             if (sctBuf[0x0f] == 0x8d && sctBuf[0x1f] == 0x8d &&
