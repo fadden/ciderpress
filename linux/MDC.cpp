@@ -341,7 +341,7 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
 
 		/* prepend volName for sub-volumes; must be valid Win32 dirname */
 		if (volName[0] != '\0')
-			sprintf(subVolName, "_%s", volName);
+			snprintf(subVolName, sizeof(subVolName), "_%s", volName);
 
 		const char* ccp = pFile->GetPathName();
 		ASSERT(ccp != nil);
@@ -351,7 +351,7 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
 		if (subVolName[0] == '\0')
 			strcpy(dispName, ccp);
 		else {
-            sprintf(dispName, "%s:%s", subVolName, ccp);
+            snprintf(dispName, sizeof(dispName), "%s:%s", subVolName, ccp);
 			//dispName = subVolName;
 			//dispName += ':';
 			//dispName += ccp;
@@ -375,7 +375,7 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
 				pFile->GetAuxType());
 			break;
 		case kRecordKindDisk:
-			sprintf(tmpbuf, "%ldk", totalLen / 1024);
+			snprintf(tmpbuf, sizeof(tmpbuf), "%ldk", totalLen / 1024);
 			fprintf(pScanOpts->outfp, "Disk %-6s ", tmpbuf);
 			break;
 		case kRecordKindFile:
@@ -542,22 +542,23 @@ ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
 
 	dierr = diskImg.OpenImage(pathName, '/', true);
 	if (dierr != kDIErrNone) {
-		sprintf(errMsg, "Unable to open '%s': %s", pathName,
-			DIStrError(dierr));
+		snprintf(errMsg, sizeof(errMsg), "Unable to open '%s': %s",
+            pathName, DIStrError(dierr));
 		goto bail;
 	}
 
 	dierr = diskImg.AnalyzeImage();
 	if (dierr != kDIErrNone) {
-		sprintf(errMsg, "Analysis of '%s' failed: %s", pathName,
-			DIStrError(dierr));
+		snprintf(errMsg, sizeof(errMsg), "Analysis of '%s' failed: %s",
+            pathName, DIStrError(dierr));
 		goto bail;
 	}
 
 	if (diskImg.GetFSFormat() == DiskImg::kFormatUnknown ||
 		diskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
 	{
-		sprintf(errMsg, "Unable to identify filesystem on '%s'", pathName);
+		snprintf(errMsg, sizeof(errMsg), "Unable to identify filesystem on '%s'",
+            pathName);
 		goto bail;
 	}
 
@@ -566,7 +567,8 @@ ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
 	if (pDiskFS == nil) {
 		/* unknown FS should've been caught above! */
 		ASSERT(false);
-		sprintf(errMsg, "Format of '%s' not recognized.", pathName);
+		snprintf(errMsg, sizeof(errMsg), "Format of '%s' not recognized.",
+            pathName);
 		goto bail;
 	}
 
@@ -575,8 +577,8 @@ ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
 	/* object created; prep it */
 	dierr = pDiskFS->Initialize(&diskImg, DiskFS::kInitFull);
 	if (dierr != kDIErrNone) {
-		sprintf(errMsg, "Error reading list of files from disk: %s",
-			DIStrError(dierr));
+		snprintf(errMsg, sizeof(errMsg),
+            "Error reading list of files from disk: %s", DIStrError(dierr));
 		goto bail;
 	}
 
@@ -600,7 +602,8 @@ ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
 		"------------------------------------------------------"
         "------------------------\n");
 	if (LoadDiskFSContents(pDiskFS, "", pScanOpts) != 0) {
-		sprintf(errMsg, "Failed while loading contents of '%s'.", pathName);
+		snprintf(errMsg, sizeof(errMsg),
+            "Failed while loading contents of '%s'.", pathName);
 		goto bail;
 	}
     fprintf(pScanOpts->outfp,
