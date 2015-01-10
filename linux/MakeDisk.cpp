@@ -85,16 +85,16 @@ CopyFiles(DiskFS* pDiskFS, int argc, char** argv)
     DiskFS::CreateParms parms;
     A2File* pNewFile;
 
-	struct CreateParms {
-		const char*		pathName;		// full pathname
-		char			fssep;
-		int				storageType;	// determines normal, subdir, or forked
-		long			fileType;
-		long			auxType;
-		int				access;
-		time_t			createWhen;
-		time_t			modWhen;
-	};
+    struct CreateParms {
+        const char*     pathName;       // full pathname
+        char            fssep;
+        int             storageType;    // determines normal, subdir, or forked
+        long            fileType;
+        long            auxType;
+        int             access;
+        time_t          createWhen;
+        time_t          modWhen;
+    };
 
 
     while (argc--) {
@@ -328,11 +328,11 @@ Process(const char* formatName, const char* sizeStr,
 /*static*/ void
 MsgHandler(const char* file, int line, const char* msg)
 {
-	assert(file != nil);
-	assert(msg != nil);
+    assert(file != nil);
+    assert(msg != nil);
 
 #ifdef _DEBUG
-	fprintf(gLog, "%05u %s", gPid, msg);
+    fprintf(gLog, "%05u %s", gPid, msg);
 #endif
 }
 

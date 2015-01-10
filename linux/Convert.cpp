@@ -30,10 +30,10 @@ pid_t gPid = getpid();
 /*static*/ void
 MsgHandler(const char* file, int line, const char* msg)
 {
-	ASSERT(file != nil);
-	ASSERT(msg != nil);
+    ASSERT(file != nil);
+    ASSERT(msg != nil);
 
-	fprintf(gLog, "%05u %s", gPid, msg);
+    fprintf(gLog, "%05u %s", gPid, msg);
 }
 /*
  * Handle a global error message from the NufxLib library by shoving it
@@ -42,7 +42,7 @@ MsgHandler(const char* file, int line, const char* msg)
 NuResult
 NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
 {
-	const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
+    const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
     if (pErrorMessage->isDebug) {
         Global::PrintDebugMsg(pErrorMessage->file, pErrorMessage->line,
@@ -52,7 +52,7 @@ NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
             "<nufxlib> %s\n", pErrorMessage->message);
     }
 
-	return kNuOK;
+    return kNuOK;
 }
 
 /*

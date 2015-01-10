@@ -71,55 +71,55 @@ int
 Process(const char* imageName, const char* wantedFileName)
 {
     DIError dierr;
-	DiskImg diskImg;
-	DiskFS* pDiskFS = nil;
+    DiskImg diskImg;
+    DiskFS* pDiskFS = nil;
     A2File* pFile = nil;
     A2FileDescr* pDescr = nil;
     int result = -1;
 
     /* open read-only */
-	dierr = diskImg.OpenImage(imageName, '/', true);
-	if (dierr != kDIErrNone) {
-		fprintf(stderr, "Unable to open '%s': %s\n", imageName,
-			DIStrError(dierr));
-		goto bail;
-	}
+    dierr = diskImg.OpenImage(imageName, '/', true);
+    if (dierr != kDIErrNone) {
+        fprintf(stderr, "Unable to open '%s': %s\n", imageName,
+            DIStrError(dierr));
+        goto bail;
+    }
 
     /* figure out the format */
-	dierr = diskImg.AnalyzeImage();
-	if (dierr != kDIErrNone) {
-		fprintf(stderr, "Analysis of '%s' failed: %s\n", imageName,
-			DIStrError(dierr));
-		goto bail;
-	}
+    dierr = diskImg.AnalyzeImage();
+    if (dierr != kDIErrNone) {
+        fprintf(stderr, "Analysis of '%s' failed: %s\n", imageName,
+            DIStrError(dierr));
+        goto bail;
+    }
 
     /* recognized? */
-	if (diskImg.GetFSFormat() == DiskImg::kFormatUnknown ||
-		diskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
-	{
-		fprintf(stderr, "Unable to identify filesystem on '%s'\n", imageName);
-		goto bail;
-	}
+    if (diskImg.GetFSFormat() == DiskImg::kFormatUnknown ||
+        diskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
+    {
+        fprintf(stderr, "Unable to identify filesystem on '%s'\n", imageName);
+        goto bail;
+    }
 
-	/* create an appropriate DiskFS object */
-	pDiskFS = diskImg.OpenAppropriateDiskFS();
-	if (pDiskFS == nil) {
-		/* unknown FS should've been caught above! */
-		assert(false);
-		fprintf(stderr, "Format of '%s' not recognized.\n", imageName);
-		goto bail;
-	}
+    /* create an appropriate DiskFS object */
+    pDiskFS = diskImg.OpenAppropriateDiskFS();
+    if (pDiskFS == nil) {
+        /* unknown FS should've been caught above! */
+        assert(false);
+        fprintf(stderr, "Format of '%s' not recognized.\n", imageName);
+        goto bail;
+    }
 
     /* go ahead and load up volumes mounted inside volumes */
-	pDiskFS->SetScanForSubVolumes(DiskFS::kScanSubEnabled);
+    pDiskFS->SetScanForSubVolumes(DiskFS::kScanSubEnabled);
 
-	/* do a full scan */
-	dierr = pDiskFS->Initialize(&diskImg, DiskFS::kInitFull);
-	if (dierr != kDIErrNone) {
-		fprintf(stderr, "Error reading list of files from disk: %s\n",
-			DIStrError(dierr));
-		goto bail;
-	}
+    /* do a full scan */
+    dierr = pDiskFS->Initialize(&diskImg, DiskFS::kInitFull);
+    if (dierr != kDIErrNone) {
+        fprintf(stderr, "Error reading list of files from disk: %s\n",
+            DIStrError(dierr));
+        goto bail;
+    }
 
     /*
      * Find the file.  This comes out of a list of entries, so don't
@@ -162,11 +162,11 @@ bail:
 /*static*/ void
 MsgHandler(const char* file, int line, const char* msg)
 {
-	assert(file != nil);
-	assert(msg != nil);
+    assert(file != nil);
+    assert(msg != nil);
 
 #ifdef _DEBUG
-	fprintf(gLog, "%05u %s", gPid, msg);
+    fprintf(gLog, "%05u %s", gPid, msg);
 #endif
 }
 

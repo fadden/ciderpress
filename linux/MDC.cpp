@@ -72,11 +72,11 @@ typedef enum RecordKind {
     kRecordKindFile,
     kRecordKindForkedFile,
     kRecordKindDirectory,
-	kRecordKindVolumeDirectory,
+    kRecordKindVolumeDirectory,
 } RecordKind;
 
 
-//#define kFilenameExtDelim	'.' 	/* separates extension from filename */
+//#define kFilenameExtDelim '.'     /* separates extension from filename */
 
 /* time_t values for bad dates */
 #define kDateNone       ((time_t) -2)
@@ -111,55 +111,55 @@ FormatDate(time_t when, char* buf)
 const char*
 FilenameOnly(const char* pathname, char fssep)
 {
-	const char* retstr;
-	const char* pSlash;
-	char* tmpStr = nil;
+    const char* retstr;
+    const char* pSlash;
+    char* tmpStr = nil;
 
-	ASSERT(pathname != nil);
-	if (fssep == '\0') {
-		retstr = pathname;
-		goto bail;
-	}
+    ASSERT(pathname != nil);
+    if (fssep == '\0') {
+        retstr = pathname;
+        goto bail;
+    }
 
-	pSlash = strrchr(pathname, fssep);
-	if (pSlash == nil) {
-		retstr = pathname;		/* whole thing is the filename */
-		goto bail;
-	}
+    pSlash = strrchr(pathname, fssep);
+    if (pSlash == nil) {
+        retstr = pathname;      /* whole thing is the filename */
+        goto bail;
+    }
 
-	pSlash++;
-	if (*pSlash == '\0') {
-		if (strlen(pathname) < 2) {
-			retstr = pathname;	/* the pathname is just "/"?  Whatever */
-			goto bail;
-		}
+    pSlash++;
+    if (*pSlash == '\0') {
+        if (strlen(pathname) < 2) {
+            retstr = pathname;  /* the pathname is just "/"?  Whatever */
+            goto bail;
+        }
 
-		/* some bonehead put an fssep on the very end; back up before it */
-		/* (not efficient, but this should be rare, and I'm feeling lazy) */
-		tmpStr = strdup(pathname);
-		tmpStr[strlen(pathname)-1] = '\0';
-		pSlash = strrchr(tmpStr, fssep);
+        /* some bonehead put an fssep on the very end; back up before it */
+        /* (not efficient, but this should be rare, and I'm feeling lazy) */
+        tmpStr = strdup(pathname);
+        tmpStr[strlen(pathname)-1] = '\0';
+        pSlash = strrchr(tmpStr, fssep);
 
-		if (pSlash == nil) {
-			retstr = pathname;	/* just a filename with a '/' after it */
-			goto bail;
-		}
+        if (pSlash == nil) {
+            retstr = pathname;  /* just a filename with a '/' after it */
+            goto bail;
+        }
 
-		pSlash++;
-		if (*pSlash == '\0') {
-			retstr = pathname;	/* I give up! */
-			goto bail;
-		}
+        pSlash++;
+        if (*pSlash == '\0') {
+            retstr = pathname;  /* I give up! */
+            goto bail;
+        }
 
-		retstr = pathname + (pSlash - tmpStr);
+        retstr = pathname + (pSlash - tmpStr);
 
-	} else {
-		retstr = pSlash;
-	}
+    } else {
+        retstr = pSlash;
+    }
 
 bail:
-	free(tmpStr);
-	return retstr;
+    free(tmpStr);
+    return retstr;
 }
 
 /*
@@ -176,22 +176,22 @@ bail:
 const char*
 FindExtension(const char* pathname, char fssep)
 {
-	const char* pFilename;
-	const char* pExt;
+    const char* pFilename;
+    const char* pExt;
 
-	/*
-	 * We have to isolate the filename so that we don't get excited
-	 * about "/foo.bar/file".
-	 */
-	pFilename = FilenameOnly(pathname, fssep);
-	ASSERT(pFilename != nil);
-	pExt = strrchr(pFilename, kFilenameExtDelim);
+    /*
+     * We have to isolate the filename so that we don't get excited
+     * about "/foo.bar/file".
+     */
+    pFilename = FilenameOnly(pathname, fssep);
+    ASSERT(pFilename != nil);
+    pExt = strrchr(pFilename, kFilenameExtDelim);
 
-	/* also check for "/blah/foo.", which doesn't count */
-	if (pExt != nil && *(pExt+1) != '\0')
-		return pExt;
+    /* also check for "/blah/foo.", which doesn't count */
+    if (pExt != nil && *(pExt+1) != '\0')
+        return pExt;
 
-	return nil;
+    return nil;
 }
 #endif
 
@@ -201,32 +201,32 @@ FindExtension(const char* pathname, char fssep)
  */
 void
 AnalyzeFile(const A2File* pFile, RecordKind* pRecordKind,
-	unsigned long* pTotalLen, unsigned long* pTotalCompLen)
+    unsigned long* pTotalLen, unsigned long* pTotalCompLen)
 {
-	if (pFile->IsVolumeDirectory()) {
-		/* volume directory entry */
-		ASSERT(pFile->GetRsrcLength() < 0);
-		*pRecordKind = kRecordKindVolumeDirectory;
-		*pTotalLen = pFile->GetDataLength();
-		*pTotalCompLen = pFile->GetDataLength();
-	} else if (pFile->IsDirectory()) {
-		/* directory entry */
-		ASSERT(pFile->GetRsrcLength() < 0);
-		*pRecordKind = kRecordKindDirectory;
-		*pTotalLen = pFile->GetDataLength();
-		*pTotalCompLen = pFile->GetDataLength();
-	} else if (pFile->GetRsrcLength() >= 0) {
-		/* has resource fork */
-		*pRecordKind = kRecordKindForkedFile;
-		*pTotalLen = pFile->GetDataLength() + pFile->GetRsrcLength();
-		*pTotalCompLen =
-			pFile->GetDataSparseLength() + pFile->GetRsrcSparseLength();
-	} else {
-		/* just data fork */
-		*pRecordKind = kRecordKindFile;
-		*pTotalLen = pFile->GetDataLength();
-		*pTotalCompLen = pFile->GetDataSparseLength();
-	}
+    if (pFile->IsVolumeDirectory()) {
+        /* volume directory entry */
+        ASSERT(pFile->GetRsrcLength() < 0);
+        *pRecordKind = kRecordKindVolumeDirectory;
+        *pTotalLen = pFile->GetDataLength();
+        *pTotalCompLen = pFile->GetDataLength();
+    } else if (pFile->IsDirectory()) {
+        /* directory entry */
+        ASSERT(pFile->GetRsrcLength() < 0);
+        *pRecordKind = kRecordKindDirectory;
+        *pTotalLen = pFile->GetDataLength();
+        *pTotalCompLen = pFile->GetDataLength();
+    } else if (pFile->GetRsrcLength() >= 0) {
+        /* has resource fork */
+        *pRecordKind = kRecordKindForkedFile;
+        *pTotalLen = pFile->GetDataLength() + pFile->GetRsrcLength();
+        *pTotalCompLen =
+            pFile->GetDataSparseLength() + pFile->GetRsrcSparseLength();
+    } else {
+        /* just data fork */
+        *pRecordKind = kRecordKindFile;
+        *pTotalLen = pFile->GetDataLength();
+        *pTotalCompLen = pFile->GetDataSparseLength();
+    }
 }
 
 /*
@@ -246,38 +246,38 @@ IsRecordReadOnly(int accessBits)
 
 /* ProDOS file type names; must be entirely in upper case */
 static const char gFileTypeNames[256][4] = {
-	"NON", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT",
-	"FOT", "BA3", "DA3", "WPF", "SOS", "$0D", "$0E", "DIR",
-	"RPD", "RPI", "AFD", "AFM", "AFR", "SCL", "PFS", "$17",
-	"$18", "ADB", "AWP", "ASP", "$1C", "$1D", "$1E", "$1F",
-	"TDM", "$21", "$22", "$23", "$24", "$25", "$26", "$27",
-	"$28", "$29", "8SC", "8OB", "8IC", "8LD", "P8C", "$2F",
-	"$30", "$31", "$32", "$33", "$34", "$35", "$36", "$37",
-	"$38", "$39", "$3A", "$3B", "$3C", "$3D", "$3E", "$3F",
-	"DIC", "OCR", "FTD", "$43", "$44", "$45", "$46", "$47",
-	"$48", "$49", "$4A", "$4B", "$4C", "$4D", "$4E", "$4F",
-	"GWP", "GSS", "GDB", "DRW", "GDP", "HMD", "EDU", "STN",
-	"HLP", "COM", "CFG", "ANM", "MUM", "ENT", "DVU", "FIN",
-	"$60", "$61", "$62", "$63", "$64", "$65", "$66", "$67",
-	"$68", "$69", "$6A", "BIO", "$6C", "TDR", "PRE", "HDV",
-	"$70", "$71", "$72", "$73", "$74", "$75", "$76", "$77",
-	"$78", "$79", "$7A", "$7B", "$7C", "$7D", "$7E", "$7F",
-	"$80", "$81", "$82", "$83", "$84", "$85", "$86", "$87",
-	"$88", "$89", "$8A", "$8B", "$8C", "$8D", "$8E", "$8F",
-	"$90", "$91", "$92", "$93", "$94", "$95", "$96", "$97",
-	"$98", "$99", "$9A", "$9B", "$9C", "$9D", "$9E", "$9F",
-	"WP ", "$A1", "$A2", "$A3", "$A4", "$A5", "$A6", "$A7",
-	"$A8", "$A9", "$AA", "GSB", "TDF", "BDF", "$AE", "$AF",
-	"SRC", "OBJ", "LIB", "S16", "RTL", "EXE", "PIF", "TIF",
-	"NDA", "CDA", "TOL", "DVR", "LDF", "FST", "$BE", "DOC",
-	"PNT", "PIC", "ANI", "PAL", "$C4", "OOG", "SCR", "CDV",
-	"FON", "FND", "ICN", "$CB", "$CC", "$CD", "$CE", "$CF",
-	"$D0", "$D1", "$D2", "$D3", "$D4", "MUS", "INS", "MDI",
-	"SND", "$D9", "$DA", "DBM", "$DC", "DDD", "$DE", "$DF",
-	"LBR", "$E1", "ATK", "$E3", "$E4", "$E5", "$E6", "$E7",
-	"$E8", "$E9", "$EA", "$EB", "$EC", "$ED", "R16", "PAS",
-	"CMD", "$F1", "$F2", "$F3", "$F4", "$F5", "$F6", "$F7",
-	"$F8", "OS ", "INT", "IVR", "BAS", "VAR", "REL", "SYS"
+    "NON", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT",
+    "FOT", "BA3", "DA3", "WPF", "SOS", "$0D", "$0E", "DIR",
+    "RPD", "RPI", "AFD", "AFM", "AFR", "SCL", "PFS", "$17",
+    "$18", "ADB", "AWP", "ASP", "$1C", "$1D", "$1E", "$1F",
+    "TDM", "$21", "$22", "$23", "$24", "$25", "$26", "$27",
+    "$28", "$29", "8SC", "8OB", "8IC", "8LD", "P8C", "$2F",
+    "$30", "$31", "$32", "$33", "$34", "$35", "$36", "$37",
+    "$38", "$39", "$3A", "$3B", "$3C", "$3D", "$3E", "$3F",
+    "DIC", "OCR", "FTD", "$43", "$44", "$45", "$46", "$47",
+    "$48", "$49", "$4A", "$4B", "$4C", "$4D", "$4E", "$4F",
+    "GWP", "GSS", "GDB", "DRW", "GDP", "HMD", "EDU", "STN",
+    "HLP", "COM", "CFG", "ANM", "MUM", "ENT", "DVU", "FIN",
+    "$60", "$61", "$62", "$63", "$64", "$65", "$66", "$67",
+    "$68", "$69", "$6A", "BIO", "$6C", "TDR", "PRE", "HDV",
+    "$70", "$71", "$72", "$73", "$74", "$75", "$76", "$77",
+    "$78", "$79", "$7A", "$7B", "$7C", "$7D", "$7E", "$7F",
+    "$80", "$81", "$82", "$83", "$84", "$85", "$86", "$87",
+    "$88", "$89", "$8A", "$8B", "$8C", "$8D", "$8E", "$8F",
+    "$90", "$91", "$92", "$93", "$94", "$95", "$96", "$97",
+    "$98", "$99", "$9A", "$9B", "$9C", "$9D", "$9E", "$9F",
+    "WP ", "$A1", "$A2", "$A3", "$A4", "$A5", "$A6", "$A7",
+    "$A8", "$A9", "$AA", "GSB", "TDF", "BDF", "$AE", "$AF",
+    "SRC", "OBJ", "LIB", "S16", "RTL", "EXE", "PIF", "TIF",
+    "NDA", "CDA", "TOL", "DVR", "LDF", "FST", "$BE", "DOC",
+    "PNT", "PIC", "ANI", "PAL", "$C4", "OOG", "SCR", "CDV",
+    "FON", "FND", "ICN", "$CB", "$CC", "$CD", "$CE", "$CF",
+    "$D0", "$D1", "$D2", "$D3", "$D4", "MUS", "INS", "MDI",
+    "SND", "$D9", "$DA", "DBM", "$DC", "DDD", "$DE", "$DF",
+    "LBR", "$E1", "ATK", "$E3", "$E4", "$E5", "$E6", "$E7",
+    "$E8", "$E9", "$EA", "$EB", "$EC", "$ED", "R16", "PAS",
+    "CMD", "$F1", "$F2", "$F3", "$F4", "$F5", "$F6", "$F7",
+    "$F8", "OS ", "INT", "IVR", "BAS", "VAR", "REL", "SYS"
 };
 
 /*
@@ -288,10 +288,10 @@ static const char gFileTypeNames[256][4] = {
 /*static*/ const char*
 GetFileTypeString(unsigned long fileType)
 {
-	if (fileType < NELEM(gFileTypeNames))
-		return gFileTypeNames[fileType];
-	else
-		return "???";
+    if (fileType < NELEM(gFileTypeNames))
+        return gFileTypeNames[fileType];
+    else
+        return "???";
 }
 
 /*  
@@ -316,71 +316,71 @@ MacSanitize(char* str)
  */
 int
 LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
-	ScanOpts* pScanOpts)
+    ScanOpts* pScanOpts)
 {
-	static const char* kBlankFileName = "<blank filename>";
-	DiskFS::SubVolume* pSubVol = nil;
-	A2File* pFile;
+    static const char* kBlankFileName = "<blank filename>";
+    DiskFS::SubVolume* pSubVol = nil;
+    A2File* pFile;
 
-	ASSERT(pDiskFS != nil);
-	pFile = pDiskFS->GetNextFile(nil);
-	while (pFile != nil) {
+    ASSERT(pDiskFS != nil);
+    pFile = pDiskFS->GetNextFile(nil);
+    while (pFile != nil) {
         char subVolName[128] = "";
         char dispName[128] = "";
-		//CString subVolName, dispName;
-		RecordKind recordKind;
-		unsigned long totalLen, totalCompLen;
-		char tmpbuf[16];
+        //CString subVolName, dispName;
+        RecordKind recordKind;
+        unsigned long totalLen, totalCompLen;
+        char tmpbuf[16];
 
-		AnalyzeFile(pFile, &recordKind, &totalLen, &totalCompLen);
+        AnalyzeFile(pFile, &recordKind, &totalLen, &totalCompLen);
         if (recordKind == kRecordKindVolumeDirectory) {
             /* skip these */
             pFile = pDiskFS->GetNextFile(pFile);
             continue;
         }
 
-		/* prepend volName for sub-volumes; must be valid Win32 dirname */
-		if (volName[0] != '\0')
-			snprintf(subVolName, sizeof(subVolName), "_%s", volName);
+        /* prepend volName for sub-volumes; must be valid Win32 dirname */
+        if (volName[0] != '\0')
+            snprintf(subVolName, sizeof(subVolName), "_%s", volName);
 
-		const char* ccp = pFile->GetPathName();
-		ASSERT(ccp != nil);
-		if (strlen(ccp) == 0)
-			ccp = kBlankFileName;
+        const char* ccp = pFile->GetPathName();
+        ASSERT(ccp != nil);
+        if (strlen(ccp) == 0)
+            ccp = kBlankFileName;
 
-		if (subVolName[0] == '\0')
-			strcpy(dispName, ccp);
-		else {
+        if (subVolName[0] == '\0')
+            strcpy(dispName, ccp);
+        else {
             snprintf(dispName, sizeof(dispName), "%s:%s", subVolName, ccp);
-			//dispName = subVolName;
-			//dispName += ':';
-			//dispName += ccp;
-		}
-		ccp = dispName;
+            //dispName = subVolName;
+            //dispName += ':';
+            //dispName += ccp;
+        }
+        ccp = dispName;
 
-		int len = strlen(ccp);
-		if (len <= 32) {
-			fprintf(pScanOpts->outfp, "%c%-32.32s ",
-				IsRecordReadOnly(pFile->GetAccess()) ? '*' : ' ',
-				ccp);
-		} else {
-			fprintf(pScanOpts->outfp, "%c..%-30.30s ",
-				IsRecordReadOnly(pFile->GetAccess()) ? '*' : ' ',
-				ccp + len - 30);
-		}
-		switch (recordKind) {
-		case kRecordKindUnknown:
-			fprintf(pScanOpts->outfp, "%s- $%04X  ",
-				GetFileTypeString(pFile->GetFileType()),
-				pFile->GetAuxType());
-			break;
-		case kRecordKindDisk:
-			snprintf(tmpbuf, sizeof(tmpbuf), "%ldk", totalLen / 1024);
-			fprintf(pScanOpts->outfp, "Disk %-6s ", tmpbuf);
-			break;
-		case kRecordKindFile:
-		case kRecordKindForkedFile:
-		case kRecordKindDirectory:
+        int len = strlen(ccp);
+        if (len <= 32) {
+            fprintf(pScanOpts->outfp, "%c%-32.32s ",
+                IsRecordReadOnly(pFile->GetAccess()) ? '*' : ' ',
+                ccp);
+        } else {
+            fprintf(pScanOpts->outfp, "%c..%-30.30s ",
+                IsRecordReadOnly(pFile->GetAccess()) ? '*' : ' ',
+                ccp + len - 30);
+        }
+        switch (recordKind) {
+        case kRecordKindUnknown:
+            fprintf(pScanOpts->outfp, "%s- $%04X  ",
+                GetFileTypeString(pFile->GetFileType()),
+                pFile->GetAuxType());
+            break;
+        case kRecordKindDisk:
+            snprintf(tmpbuf, sizeof(tmpbuf), "%ldk", totalLen / 1024);
+            fprintf(pScanOpts->outfp, "Disk %-6s ", tmpbuf);
+            break;
+        case kRecordKindFile:
+        case kRecordKindForkedFile:
+        case kRecordKindDirectory:
             if (pDiskFS->GetDiskImg()->GetFSFormat() == DiskImg::kFormatMacHFS)
             {
                 if (recordKind != kRecordKindDirectory &&
@@ -429,98 +429,98 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
                     recordKind == kRecordKindForkedFile ? '+' : ' ',
                     pFile->GetAuxType());
             }
-			break;
-		default:
-			ASSERT(0);
-			fprintf(pScanOpts->outfp, "ERROR  ");
-			break;
-		}
+            break;
+        default:
+            ASSERT(0);
+            fprintf(pScanOpts->outfp, "ERROR  ");
+            break;
+        }
 
-		char date[64];
-		if (pFile->GetModWhen() == 0)
-			FormatDate(kDateNone, date);
-		else
-			FormatDate(pFile->GetModWhen(), date);
-		fprintf(pScanOpts->outfp, "%-15s  ", (LPCTSTR) date);
+        char date[64];
+        if (pFile->GetModWhen() == 0)
+            FormatDate(kDateNone, date);
+        else
+            FormatDate(pFile->GetModWhen(), date);
+        fprintf(pScanOpts->outfp, "%-15s  ", (LPCTSTR) date);
 
-		const char* fmtStr;
-		switch (pFile->GetFSFormat()) {
-		case DiskImg::kFormatDOS33:
-		case DiskImg::kFormatDOS32:
-		case DiskImg::kFormatUNIDOS:
-			fmtStr = "DOS   ";
-			break;
-		case DiskImg::kFormatProDOS:
-			fmtStr = "ProDOS";
-			break;
-		case DiskImg::kFormatPascal:
-			fmtStr = "Pascal";
-			break;
-		case DiskImg::kFormatMacHFS:
-			fmtStr = "HFS   ";
-			break;
-		case DiskImg::kFormatCPM:
-			fmtStr = "CP/M  ";
-			break;
-		case DiskImg::kFormatMSDOS:
-			fmtStr = "MS-DOS";
-			break;
-		case DiskImg::kFormatRDOS33:
-		case DiskImg::kFormatRDOS32:
-		case DiskImg::kFormatRDOS3:
-			fmtStr = "RDOS  ";
-			break;
-		default:
-			fmtStr = "???   ";
-			break;
-		}
-		if (pFile->GetQuality() == A2File::kQualityDamaged)
-			fmtStr = "BROKEN";
+        const char* fmtStr;
+        switch (pFile->GetFSFormat()) {
+        case DiskImg::kFormatDOS33:
+        case DiskImg::kFormatDOS32:
+        case DiskImg::kFormatUNIDOS:
+            fmtStr = "DOS   ";
+            break;
+        case DiskImg::kFormatProDOS:
+            fmtStr = "ProDOS";
+            break;
+        case DiskImg::kFormatPascal:
+            fmtStr = "Pascal";
+            break;
+        case DiskImg::kFormatMacHFS:
+            fmtStr = "HFS   ";
+            break;
+        case DiskImg::kFormatCPM:
+            fmtStr = "CP/M  ";
+            break;
+        case DiskImg::kFormatMSDOS:
+            fmtStr = "MS-DOS";
+            break;
+        case DiskImg::kFormatRDOS33:
+        case DiskImg::kFormatRDOS32:
+        case DiskImg::kFormatRDOS3:
+            fmtStr = "RDOS  ";
+            break;
+        default:
+            fmtStr = "???   ";
+            break;
+        }
+        if (pFile->GetQuality() == A2File::kQualityDamaged)
+            fmtStr = "BROKEN";
 
-		fprintf(pScanOpts->outfp, "%s ", fmtStr);
+        fprintf(pScanOpts->outfp, "%s ", fmtStr);
 
 
 #if 0
-		/* compute the percent size */
-		if ((!totalLen && totalCompLen) || (totalLen && !totalCompLen))
-			fprintf(pScanOpts->outfp, "---   ");       /* weird */
-		else if (totalLen < totalCompLen)
-			fprintf(pScanOpts->outfp, ">100%% ");      /* compression failed? */
-		else {
-			sprintf(tmpbuf, "%02d%%", ComputePercent(totalCompLen, totalLen));
-			fprintf(pScanOpts->outfp, "%4s  ", tmpbuf);
-		}
+        /* compute the percent size */
+        if ((!totalLen && totalCompLen) || (totalLen && !totalCompLen))
+            fprintf(pScanOpts->outfp, "---   ");       /* weird */
+        else if (totalLen < totalCompLen)
+            fprintf(pScanOpts->outfp, ">100%% ");      /* compression failed? */
+        else {
+            sprintf(tmpbuf, "%02d%%", ComputePercent(totalCompLen, totalLen));
+            fprintf(pScanOpts->outfp, "%4s  ", tmpbuf);
+        }
 #endif
 
-		if (!totalLen && totalCompLen)
-			fprintf(pScanOpts->outfp, "   ????");      /* weird */
-		else
-			fprintf(pScanOpts->outfp, "%8ld", totalLen);
+        if (!totalLen && totalCompLen)
+            fprintf(pScanOpts->outfp, "   ????");      /* weird */
+        else
+            fprintf(pScanOpts->outfp, "%8ld", totalLen);
 
-		fprintf(pScanOpts->outfp, "\n");
+        fprintf(pScanOpts->outfp, "\n");
 
-		pFile = pDiskFS->GetNextFile(pFile);
-	}
+        pFile = pDiskFS->GetNextFile(pFile);
+    }
 
-	/*
-	 * Load all sub-volumes.
-	 */
-	pSubVol = pDiskFS->GetNextSubVolume(nil);
-	while (pSubVol != nil) {
-		const char* subVolName;
-		int ret;
+    /*
+     * Load all sub-volumes.
+     */
+    pSubVol = pDiskFS->GetNextSubVolume(nil);
+    while (pSubVol != nil) {
+        const char* subVolName;
+        int ret;
 
-		subVolName = pSubVol->GetDiskFS()->GetVolumeName();
-		if (subVolName == nil)
-			subVolName = "+++";		// could probably do better than this
+        subVolName = pSubVol->GetDiskFS()->GetVolumeName();
+        if (subVolName == nil)
+            subVolName = "+++";     // could probably do better than this
 
-		ret = LoadDiskFSContents(pSubVol->GetDiskFS(), subVolName, pScanOpts);
-		if (ret != 0)
-			return ret;
-		pSubVol = pDiskFS->GetNextSubVolume(pSubVol);
-	}
+        ret = LoadDiskFSContents(pSubVol->GetDiskFS(), subVolName, pScanOpts);
+        if (ret != 0)
+            return ret;
+        pSubVol = pDiskFS->GetNextSubVolume(pSubVol);
+    }
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -531,97 +531,97 @@ LoadDiskFSContents(DiskFS* pDiskFS, const char* volName,
 int
 ScanDiskImage(const char* pathName, ScanOpts* pScanOpts)
 {
-	ASSERT(pathName != nil);
-	ASSERT(pScanOpts != nil);
-	ASSERT(pScanOpts->outfp != nil);
+    ASSERT(pathName != nil);
+    ASSERT(pScanOpts != nil);
+    ASSERT(pScanOpts->outfp != nil);
 
-	DIError dierr;
-	char errMsg[256] = "";
-	DiskImg diskImg;
-	DiskFS* pDiskFS = nil;
+    DIError dierr;
+    char errMsg[256] = "";
+    DiskImg diskImg;
+    DiskFS* pDiskFS = nil;
 
-	dierr = diskImg.OpenImage(pathName, '/', true);
-	if (dierr != kDIErrNone) {
-		snprintf(errMsg, sizeof(errMsg), "Unable to open '%s': %s",
+    dierr = diskImg.OpenImage(pathName, '/', true);
+    if (dierr != kDIErrNone) {
+        snprintf(errMsg, sizeof(errMsg), "Unable to open '%s': %s",
             pathName, DIStrError(dierr));
-		goto bail;
-	}
+        goto bail;
+    }
 
-	dierr = diskImg.AnalyzeImage();
-	if (dierr != kDIErrNone) {
-		snprintf(errMsg, sizeof(errMsg), "Analysis of '%s' failed: %s",
+    dierr = diskImg.AnalyzeImage();
+    if (dierr != kDIErrNone) {
+        snprintf(errMsg, sizeof(errMsg), "Analysis of '%s' failed: %s",
             pathName, DIStrError(dierr));
-		goto bail;
-	}
+        goto bail;
+    }
 
-	if (diskImg.GetFSFormat() == DiskImg::kFormatUnknown ||
-		diskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
-	{
-		snprintf(errMsg, sizeof(errMsg), "Unable to identify filesystem on '%s'",
+    if (diskImg.GetFSFormat() == DiskImg::kFormatUnknown ||
+        diskImg.GetSectorOrder() == DiskImg::kSectorOrderUnknown)
+    {
+        snprintf(errMsg, sizeof(errMsg), "Unable to identify filesystem on '%s'",
             pathName);
-		goto bail;
-	}
+        goto bail;
+    }
 
-	/* create an appropriate DiskFS object */
-	pDiskFS = diskImg.OpenAppropriateDiskFS();
-	if (pDiskFS == nil) {
-		/* unknown FS should've been caught above! */
-		ASSERT(false);
-		snprintf(errMsg, sizeof(errMsg), "Format of '%s' not recognized.",
+    /* create an appropriate DiskFS object */
+    pDiskFS = diskImg.OpenAppropriateDiskFS();
+    if (pDiskFS == nil) {
+        /* unknown FS should've been caught above! */
+        ASSERT(false);
+        snprintf(errMsg, sizeof(errMsg), "Format of '%s' not recognized.",
             pathName);
-		goto bail;
-	}
+        goto bail;
+    }
 
-	pDiskFS->SetScanForSubVolumes(DiskFS::kScanSubEnabled);
+    pDiskFS->SetScanForSubVolumes(DiskFS::kScanSubEnabled);
 
-	/* object created; prep it */
-	dierr = pDiskFS->Initialize(&diskImg, DiskFS::kInitFull);
-	if (dierr != kDIErrNone) {
-		snprintf(errMsg, sizeof(errMsg),
+    /* object created; prep it */
+    dierr = pDiskFS->Initialize(&diskImg, DiskFS::kInitFull);
+    if (dierr != kDIErrNone) {
+        snprintf(errMsg, sizeof(errMsg),
             "Error reading list of files from disk: %s", DIStrError(dierr));
-		goto bail;
-	}
+        goto bail;
+    }
 
-	fprintf(pScanOpts->outfp, "File: %s\n", pathName);
+    fprintf(pScanOpts->outfp, "File: %s\n", pathName);
 
-	int kbytes;
-	if (pDiskFS->GetDiskImg()->GetHasBlocks())
-		kbytes = pDiskFS->GetDiskImg()->GetNumBlocks() / 2;
-	else if (pDiskFS->GetDiskImg()->GetHasSectors())
-		kbytes = (pDiskFS->GetDiskImg()->GetNumTracks() *
-				pDiskFS->GetDiskImg()->GetNumSectPerTrack()) / 4;
-	else
-		kbytes = 0;
-	fprintf(pScanOpts->outfp, "Disk: %s%s (%dKB)\n", pDiskFS->GetVolumeID(),
-		pDiskFS->GetFSDamaged() ? " [*]" : "", kbytes);
+    int kbytes;
+    if (pDiskFS->GetDiskImg()->GetHasBlocks())
+        kbytes = pDiskFS->GetDiskImg()->GetNumBlocks() / 2;
+    else if (pDiskFS->GetDiskImg()->GetHasSectors())
+        kbytes = (pDiskFS->GetDiskImg()->GetNumTracks() *
+                pDiskFS->GetDiskImg()->GetNumSectPerTrack()) / 4;
+    else
+        kbytes = 0;
+    fprintf(pScanOpts->outfp, "Disk: %s%s (%dKB)\n", pDiskFS->GetVolumeID(),
+        pDiskFS->GetFSDamaged() ? " [*]" : "", kbytes);
 
     fprintf(pScanOpts->outfp,
-		" Name                             Type Auxtyp Modified"
+        " Name                             Type Auxtyp Modified"
         "         Format   Length\n");
     fprintf(pScanOpts->outfp,
-		"------------------------------------------------------"
+        "------------------------------------------------------"
         "------------------------\n");
-	if (LoadDiskFSContents(pDiskFS, "", pScanOpts) != 0) {
-		snprintf(errMsg, sizeof(errMsg),
+    if (LoadDiskFSContents(pDiskFS, "", pScanOpts) != 0) {
+        snprintf(errMsg, sizeof(errMsg),
             "Failed while loading contents of '%s'.", pathName);
-		goto bail;
-	}
+        goto bail;
+    }
     fprintf(pScanOpts->outfp,
-		"------------------------------------------------------"
+        "------------------------------------------------------"
         "------------------------\n\n");
 
     gStats.goodDiskImages++;
 
 bail:
-	delete pDiskFS;
+    delete pDiskFS;
 
-	if (errMsg[0] != '\0') {
-		fprintf(pScanOpts->outfp, "Unable to process '%s'\n", pathName);
-		fprintf(pScanOpts->outfp, "  %s\n\n", (LPCTSTR) errMsg);
-		return -1;
-	} else {
-		return 0;
-	}
+    if (errMsg[0] != '\0') {
+        fprintf(pScanOpts->outfp, "Unable to process '%s'\n", pathName);
+        fprintf(pScanOpts->outfp, "  %s\n\n", (LPCTSTR) errMsg);
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 
@@ -794,11 +794,11 @@ bail:
 /*static*/ void
 MsgHandler(const char* file, int line, const char* msg)
 {
-	ASSERT(file != nil);
-	ASSERT(msg != nil);
+    ASSERT(file != nil);
+    ASSERT(msg != nil);
 
 #ifdef _DEBUG
-	fprintf(gLog, "%05u %s", gPid, msg);
+    fprintf(gLog, "%05u %s", gPid, msg);
 #endif
 }
 /*
@@ -808,7 +808,7 @@ MsgHandler(const char* file, int line, const char* msg)
 NuResult
 NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
 {
-	const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
+    const NuErrorMessage* pErrorMessage = (const NuErrorMessage*) vErrorMessage;
 
     if (pErrorMessage->isDebug) {
         Global::PrintDebugMsg(pErrorMessage->file, pErrorMessage->line,
@@ -818,7 +818,7 @@ NufxErrorMsgHandler(NuArchive* /*pArchive*/, void* vErrorMessage)
             "<nufxlib> %s\n", pErrorMessage->message);
     }
 
-	return kNuOK;
+    return kNuOK;
 }
 
 /*
