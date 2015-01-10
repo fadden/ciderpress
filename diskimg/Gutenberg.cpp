@@ -4,8 +4,8 @@
  * See the file LICENSE for distribution terms.
  */
 /*
- * Implementation of DiskFSGutenberg and A2FileGutenberg classes.
- *
+ * Implementation of Gutenberg disk format (used by the Gutenberg and
+ * Gutenberg Jr. word processors).
  */
 #include "StdAfx.h"
 #include "DiskImgPriv.h"
@@ -16,6 +16,53 @@
  *      DiskFSGutenberg
  * ===========================================================================
  */
+
+/*
+The Gutenberg disk format embeds the file structure meta-data into the disk
+sectors themselves, rather than having a separate track/sector list.  The
+first six bytes in every sector are:
+
++00 previous track in this file (+$80 indicates link not valid?)
++01 previous sector
++02 current track (+$80 indicates start of file)
++03 current sector
++04 next track (+$80 indicates end of file)
++05 next sector
+
+The files are circular -- the "next" and "previous" links will wrap around --
+so you have to test the high bit to see if you've reached an end.
+
+The disk catalog works the same way, and is present as the first file on
+the disk (called "DIR").  (It's not quite the same -- the "previous" pointer
+in the first sector just points to the first sector.)  The catalog begins
+at track 17 sector 7, and skips around the disk.
+
+The boot area is not represented by a file, and does not include the
+embedded T/S links.
+
+Each directory entry is 16 bytes, and lays out rather nicely in the sector
+editor:
+
+ 00: 11 07 11 87 15 0e c7 c2 af cd c1 d3 d4 c5 d2 8d  ......GB/MASTER.
+ 10: c4 c9 d2 a0 a0 a0 a0 a0 a0 a0 a0 a0 11 07 cc 8d  DIR         ..L.
+ 20: c3 cf d0 d9 a0 a0 a0 a0 a0 a0 a0 a0 10 40 d0 8d  COPY        .@P.
+ 30: c3 cf d0 d9 c1 cc cc a0 a0 a0 a0 a0 10 04 d0 8d  COPYALL     ..P.
+
+This shows the six T/S bytes, followed by a nine-character volume name.
+The fact that each entry ends in 0x8d is likely a deliberate attempt to
+make the file readable as high-ASCII text, with one entry per line.
+
+The regular directory entries start at 0x10.  The file name is 12 bytes,
+followed by the track and sector of the start of the file.  Note "DIR"
+starts at track 17 sector 7, as expected. The next entry, COPY, has 0x40 for
+its sector number, indicating that it has been deleted.  (Some entries on
+Gutenberg Jr. disks use 0x40 for the track number instead?)
+
+The next value is one of 'L', 'P', 'M', or ' ' (0xcc, 0xd0, 0xcd, 0xa0).
+Some files have text, some have fonts, some have executable code (a short
+header followed by 6502 instructions).  There's no apparent link between
+the value and the type of data in the file.
+*/
 
 const int kMaxSectors = 32;
 const int kMaxVolNameLen = 9;
@@ -51,7 +98,6 @@ static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
 {
     DIError dierr = kDIErrNone;
     uint8_t sctBuf[kSctSize];
-//  int numTracks, numSectors;
     int catTrack = kVTOCTrack;
     int catSect = kVTOCSector;
     int foundGood = 0;
@@ -70,10 +116,8 @@ static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
             dierr = kDIErrNone;
             break;      /* allow it if earlier stuff was okay */
         }
-#ifdef TRY_THIS
-        // This allowed Gutenberg_Jr_f1.dsk to be read, but it doesn't look
-        // quite right... leaving it alone for the moment.
         if (catTrack == sctBuf[2] & 0x7f && catSect == sctBuf[3] & 0x7f) {
+            // current-sector values matched, check for the end-of-entry bits
             foundGood++;
             if (sctBuf[0x0f] == 0x8d && sctBuf[0x1f] == 0x8d &&
                 sctBuf[0x2f] == 0x8d && sctBuf[0x3f] == 0x8d &&
@@ -90,24 +134,6 @@ static DIError TestImage(DiskImg* pImg, DiskImg::SectorOrder imageOrder,
             // full circle
             break;
         }
-#else
-        if (catTrack == sctBuf[0] && catSect == sctBuf[1]) {
-            foundGood++;
-            if (sctBuf[0x0f] == 0x8d && sctBuf[0x1f] == 0x8d &&
-                sctBuf[0x2f] == 0x8d && sctBuf[0x3f] == 0x8d &&
-                sctBuf[0x4f] == 0x8d && sctBuf[0x5f] == 0x8d &&
-                sctBuf[0x6f] == 0x8d && sctBuf[0x7f] == 0x8d &&
-                sctBuf[0x8f] == 0x8d && sctBuf[0x9f] == 0x8d)
-                foundGood++;
-        }
-        else if (catTrack >0x80) {
-            LOGI(" Gutenberg detected end-of-catalog on cat (%d,%d)",
-                catTrack, catSect);
-            break;
-        }
-        catTrack = sctBuf[0x04];
-        catSect = sctBuf[0x05];
-#endif
         iterations++;       // watch for infinite loops
     }
     if (iterations >= DiskFSGutenberg::kMaxCatalogSectors) {
@@ -223,15 +249,15 @@ DIError DiskFSGutenberg::ReadCatalog(void)
     int catTrack, catSect;
     int iterations;
 
-    catTrack = 17;
-    catSect = 7;
+    catTrack = kVTOCTrack;
+    catSect = kVTOCSector;
     iterations = 0;
 
     memset(fCatalogSectors, 0, sizeof(fCatalogSectors));
 
     while (catTrack < 35 && catSect < 16 && iterations < kMaxCatalogSectors)
     {
-        LOGI(" Gutenberg reading catalog sector T=%d S=%d", catTrack, catSect);
+        LOGD(" Gutenberg reading catalog sector T=%d S=%d", catTrack, catSect);
         dierr = fpImg->ReadTrackSector(catTrack, catSect, sctBuf);
         if (dierr != kDIErrNone)
             goto bail;
@@ -278,7 +304,9 @@ DIError DiskFSGutenberg::ProcessCatalogSector(int catTrack, int catSect,
     pEntry = &sctBuf[kCatalogEntryOffset];
 
     for (i = 0; i < kCatalogEntriesPerSect; i++) {
-        if (pEntry[0x0d] != kEntryDeleted && pEntry[0x00] != 0xa0 && pEntry[0x00] != 0x00) {
+        if (pEntry[0x0c] != kEntryDeleted && pEntry[0x0d] != kEntryDeleted &&
+            pEntry[0x00] != 0xa0 && pEntry[0x00] != 0x00)
+        {
             pFile = new A2FileGutenberg(this);
 
             pFile->SetQuality(A2File::kQualityGood);
@@ -289,7 +317,6 @@ DIError DiskFSGutenberg::ProcessCatalogSector(int catTrack, int catSect,
             memcpy(pFile->fFileName, &pEntry[0x00], A2FileGutenberg::kMaxFileName);
             pFile->fFileName[A2FileGutenberg::kMaxFileName] = '\0';
             pFile->FixFilename();
-
 
             //pFile->fCatTS.track = catTrack;
             //pFile->fCatTS.sector = catSect;
