@@ -1032,8 +1032,10 @@ int DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
         case DiskImg::kFormatDOS33:
         case DiskImg::kFormatDOS32:
         case DiskImg::kFormatUNIDOS:
-        case DiskImg::kFormatGutenberg:
             pNewEntry->SetFormatStr(L"DOS");
+            break;
+        case DiskImg::kFormatGutenberg:
+            pNewEntry->SetFormatStr(L"Gutenb");
             break;
         case DiskImg::kFormatProDOS:
             pNewEntry->SetFormatStr(L"ProDOS");
