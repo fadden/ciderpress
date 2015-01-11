@@ -306,7 +306,7 @@ void EditPropsDialog::DoDataExchange(CDataExchange* pDX)
             DDX_Text(pDX, IDC_PROPS_HFS_FILETYPE, tmpStr);
             tmpStr = creator;
             DDX_Text(pDX, IDC_PROPS_HFS_AUXTYPE, tmpStr);
-            tmpStr = "0000";
+            tmpStr = L"0000";
             DDX_Text(pDX, IDC_PROPS_AUXTYPE, tmpStr);
 
             CButton* pButton = (CButton*) GetDlgItem(IDC_PROPS_HFS_MODE);
@@ -381,12 +381,14 @@ void EditPropsDialog::UpdateHFSMode(void)
         LOGI("Switching to HFS mode");
         //fHFSMode = true;
 
-        pWnd = GetDlgItem(IDC_PROPS_HFS_FILETYPE);
-        pWnd->EnableWindow(TRUE);
-        pWnd = GetDlgItem(IDC_PROPS_HFS_AUXTYPE);
-        pWnd->EnableWindow(TRUE);
-        pWnd = GetDlgItem(IDC_PROPS_HFS_LABEL);
-        pWnd->EnableWindow(TRUE);
+        if (!fReadOnly) {
+            pWnd = GetDlgItem(IDC_PROPS_HFS_FILETYPE);
+            pWnd->EnableWindow(TRUE);
+            pWnd = GetDlgItem(IDC_PROPS_HFS_AUXTYPE);
+            pWnd->EnableWindow(TRUE);
+            pWnd = GetDlgItem(IDC_PROPS_HFS_LABEL);
+            pWnd->EnableWindow(TRUE);
+        }
 
         /* point the file type at something safe */
         pCombo = (CComboBox*) GetDlgItem(IDC_PROPS_FILETYPE);
@@ -403,10 +405,12 @@ void EditPropsDialog::UpdateHFSMode(void)
         /* switch to ProDOS mode */
         LOGI("Switching to ProDOS mode");
         //fHFSMode = false;
-        pCombo = (CComboBox*) GetDlgItem(IDC_PROPS_FILETYPE);
-        pCombo->EnableWindow(TRUE);
-        pWnd = GetDlgItem(IDC_PROPS_AUXTYPE);
-        pWnd->EnableWindow(TRUE);
+        if (!fReadOnly) {
+            pCombo = (CComboBox*) GetDlgItem(IDC_PROPS_FILETYPE);
+            pCombo->EnableWindow(TRUE);
+            pWnd = GetDlgItem(IDC_PROPS_AUXTYPE);
+            pWnd->EnableWindow(TRUE);
+        }
 
         pWnd = GetDlgItem(IDC_PROPS_HFS_FILETYPE);
         pWnd->EnableWindow(FALSE);
