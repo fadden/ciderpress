@@ -419,6 +419,7 @@ public:
         kArchiveNuFX,
         kArchiveBNY,
         kArchiveACU,
+        kArchiveAppleSingle,
         kArchiveDiskImage,
     };
 
@@ -767,6 +768,38 @@ public:
      * Convert from time in seconds to Apple IIgs DateTime format.
      */
     static void UNIXTimeToDateTime(const time_t* pWhen, NuDateTime *pDateTime);
+
+    /*
+     * Reads a 16-bit big-endian value from a buffer.  Does not guard
+     * against buffer overrun.
+     */
+    static uint16_t Get16BE(const uint8_t* ptr) {
+        return ptr[1] | (ptr[0] << 8);
+    }
+
+    /*
+     * Reads a 32-bit big-endian value from a buffer.  Does not guard
+     * against buffer overrun.
+     */
+    static uint32_t Get32BE(const uint8_t* ptr) {
+        return ptr[3] | (ptr[2] << 8) | (ptr[1] << 16) | (ptr[0] << 24);
+    }
+
+    /*
+     * Reads a 16-bit little-endian value from a buffer.  Does not guard
+     * against buffer overrun.
+     */
+    static uint16_t Get16LE(const uint8_t* ptr) {
+        return ptr[0] | (ptr[1] << 8);
+    }
+
+    /*
+     * Reads a 32-bit little-endian value from a buffer.  Does not guard
+     * against buffer overrun.
+     */
+    static uint32_t Get32LE(const uint8_t* ptr) {
+        return ptr[0] | (ptr[1] << 8) | (ptr[2] << 16) | (ptr[3] << 24);
+    }
 
 protected:
     /*

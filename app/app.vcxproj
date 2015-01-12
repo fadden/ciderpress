@@ -160,6 +160,7 @@
     <ClInclude Include="ACUArchive.h" />
     <ClInclude Include="AddClashDialog.h" />
     <ClInclude Include="AddFilesDialog.h" />
+    <ClInclude Include="AppleSingleArchive.h" />
     <ClInclude Include="ArchiveInfoDialog.h" />
     <ClInclude Include="BasicImport.h" />
     <ClInclude Include="BNYArchive.h" />
@@ -258,6 +259,7 @@
     <ClCompile Include="ACUArchive.cpp" />
     <ClCompile Include="AddClashDialog.cpp" />
     <ClCompile Include="AddFilesDialog.cpp" />
+    <ClCompile Include="AppleSingleArchive.cpp" />
     <ClCompile Include="ArchiveInfoDialog.cpp" />
     <ClCompile Include="BasicImport.cpp" />
     <ClCompile Include="BNYArchive.cpp" />

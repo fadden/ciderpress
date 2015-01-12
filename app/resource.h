@@ -68,6 +68,7 @@
 #define IDD_IMPORT_BAS                  189
 #define IDD_PASTE_SPECIAL               190
 #define IDD_PROGRESS_COUNTER            191
+#define IDD_ARCHIVEINFO_APPLESINGLE     192
 #define IDC_NUFXLIB_VERS_TEXT           1001
 #define IDC_CONTENT_LIST                1002
 #define IDC_COL_PATHNAME                1005
@@ -567,7 +568,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        192
+#define _APS_NEXT_RESOURCE_VALUE        193
 #define _APS_NEXT_COMMAND_VALUE         40102
 #define _APS_NEXT_CONTROL_VALUE         1454
 #define _APS_NEXT_SYMED_VALUE           102

@@ -14,6 +14,7 @@
 #include "DiskArchive.h"
 #include "BNYArchive.h"
 #include "ACUArchive.h"
+#include "AppleSingleArchive.h"
 #include "ArchiveInfoDialog.h"
 #include "PrefsDialog.h"
 #include "EnterRegDialog.h"
@@ -35,18 +36,43 @@ static const WCHAR kMainWindowClassName[] = L"faddenSoft.CiderPress.4";
  * Filters for the "open file" command.  In some cases a file may be opened
  * in more than one format, so it's necessary to keep track of what the
  * file filter was set to when the file was opened.
+ *
+ * With Vista-style dialogs, the second part of the string (the filespec)
+ * will sometimes be included in the pop-up.  Sometimes not.  It's
+ * deterministic but I haven't been able to figure out what the pattern is --
+ * it's not simply length of a given filter or of the entire string, or based
+ * on the presence of certain characters.  The filter works correctly, so it
+ * doesn't seem to be malformed.  It's just ugly to have the open dialog
+ * popup show an enormous, redundant filter string.
+ *
+ * I tried substituting '\0' for '|' and placing the string directly into
+ * the dialog; no change.
+ *
+ * CFileDialog::ApplyOFNToShellDialog in {VisualStudio}\VC\atlmfc\src\mfc\dlgfile.cpp
+ * appears to be doing the parsing.  Single-stepping through the code shows
+ * that it's working fine, so something later on is choosing to merge
+ * pszName and pszSpec when generating the pop-up menu.
+ *
+ * The good news is that if I exclude the list of extensions from the name
+ * section, the popup will (so far) always includes the spec.  The bad news
+ * is that this means we won't display the list of extensions on WinXP, which
+ * uses the older style of dialog.  We could switch from public constants to
+ * a function that generates the filter based on a bit mask and the current
+ * OS version, but that might be more trouble than it's worth.
  */
 const WCHAR MainWindow::kOpenNuFX[] =
-    L"ShrinkIt Archives (.shk .sdk .bxy .sea .bse)|*.shk;*.sdk;*.bxy;*.sea;*.bse|";
+    L"ShrinkIt Archives" /* (.shk .sdk .bxy .sea .bse)*/ L"|*.shk;*.sdk;*.bxy;*.sea;*.bse|";
 const WCHAR MainWindow::kOpenBinaryII[] =
-    L"Binary II Archives (.bny .bqy .bxy)|*.bny;*.bqy;*.bxy|";
+    L"Binary II Archives" /* (.bny .bqy .bxy)*/ L"|*.bny;*.bqy;*.bxy|";
 const WCHAR MainWindow::kOpenACU[] =
-    L"ACU Archives (.acu)|*.acu|";
+    L"ACU Archives" /* (.acu)*/ L"|*.acu|";
+const WCHAR MainWindow::kOpenAppleSingle[] =
+    L"AppleSingle files" /* (.as *.*)*/ L"|*.as;*.*|";
 const WCHAR MainWindow::kOpenDiskImage[] =
-    L"Disk Images (.shk .sdk .dsk .po .do .d13 .2mg .img .nib .nb2 .raw .hdv .dc .dc6 .ddd .app .fdi .iso .gz .zip)|"
-        L"*.shk;*.sdk;*.dsk;*.po;*.do;*.d13;*.2mg;*.img;*.nib;*.nb2;*.raw;*.hdv;*.dc;*.dc6;*.ddd;*.app;*.fdi;*.iso;*.gz;*.zip|";
+    L"Disk Images" /* (.shk .sdk .dsk .po .do .d13 .2mg .img .nib .nb2 .raw .hdv .dc .dc6 .ddd .app .fdi .iso .gz .zip)*/ L"|"
+    L"*.shk;*.sdk;*.dsk;*.po;*.do;*.d13;*.2mg;*.img;*.nib;*.nb2;*.raw;*.hdv;*.dc;*.dc6;*.ddd;*.app;*.fdi;*.iso;*.gz;*.zip|";
 const WCHAR MainWindow::kOpenAll[] =
-    L"All Files (*.*)|*.*|";
+    L"All Files" /* (*.*)*/ L"|*.*|";
 const WCHAR MainWindow::kOpenEnd[] =
     L"|";
 
@@ -61,6 +87,7 @@ static const struct {
     { L"bny",   kFilterIndexBinaryII },
     { L"bqy",   kFilterIndexBinaryII },
     { L"acu",   kFilterIndexACU },
+    { L"as",    kFilterIndexAppleSingle },
     { L"dsk",   kFilterIndexDiskImage },
     { L"po",    kFilterIndexDiskImage },
     { L"do",    kFilterIndexDiskImage },
@@ -80,6 +107,7 @@ static const struct {
 const WCHAR MainWindow::kModeNuFX[] = L"nufx";
 const WCHAR MainWindow::kModeBinaryII[] = L"bin2";
 const WCHAR MainWindow::kModeACU[] = L"acu";
+const WCHAR MainWindow::kModeAppleSingle[] = L"as";
 const WCHAR MainWindow::kModeDiskImage[] = L"disk";
 
 
@@ -403,6 +431,8 @@ void MainWindow::ProcessCommandLine(void)
                     filterIndex = kFilterIndexBinaryII;
                 else if (wcsicmp(argv[i], kModeACU) == 0)
                     filterIndex = kFilterIndexACU;
+                else if (wcsicmp(argv[i], kModeAppleSingle) == 0)
+                    filterIndex = kFilterIndexAppleSingle;
                 else if (wcsicmp(argv[i], kModeDiskImage) == 0)
                     filterIndex = kFilterIndexDiskImage;
                 else {
@@ -1143,7 +1173,7 @@ void MainWindow::OnFileNewArchive(void)
     }
 
 bail:
-    LOGI("--- OnFileNewArchive done");
+    LOGD("--- OnFileNewArchive done");
 }
 
 void MainWindow::OnFileOpen(void)
@@ -1153,13 +1183,15 @@ void MainWindow::OnFileOpen(void)
     CString openFilters;
     CString saveFolder;
 
-    /* set up filters; the order is significant */
+    /* set up filters; the order must match enum FilterIndex */
     openFilters = kOpenNuFX;
     openFilters += kOpenBinaryII;
     openFilters += kOpenACU;
+    openFilters += kOpenAppleSingle;
     openFilters += kOpenDiskImage;
     openFilters += kOpenAll;
     openFilters += kOpenEnd;
+    LOGD("filters: '%ls'", openFilters);
     CFileDialog dlg(TRUE, L"shk", NULL,
         OFN_FILEMUSTEXIST, openFilters, this);
 
@@ -1288,8 +1320,11 @@ void MainWindow::OnFileArchiveInfo(void)
     case GenericArchive::kArchiveACU:
         pDlg = new AcuArchiveInfoDialog((AcuArchive*) fpOpenArchive, this);
         break;
+    case GenericArchive::kArchiveAppleSingle:
+        pDlg = new AppleSingleArchiveInfoDialog((AppleSingleArchive*) fpOpenArchive, this);
+        break;
     default:
-        LOGI("Unexpected archive type %d", fpOpenArchive->GetArchiveKind());
+        LOGW("Unexpected archive type %d", fpOpenArchive->GetArchiveKind());
         ASSERT(false);
         return;
     };
@@ -1484,11 +1519,19 @@ void MainWindow::HandleDoubleClick(void)
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeACU);
             handled = true;
         } else
+        if ((ext != NULL && (
+                wcsicmp(ext, L".as") == 0)) ||
+            (fileType == 0xe0 && auxType == 0x0001))
+        {
+            LOGI(" Guessing AppleSingle");
+            TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeAppleSingle);
+            handled = true;
+        } else
         if (fileType == 0x64496d67 && auxType == 0x64437079 &&
             pEntry->GetUncompressedLen() == 819284)
         {
             /* type is dImg, creator is dCpy, length is 800K + DC stuff */
-            LOGI(" Looks like a disk image");
+            LOGI(" Looks like a DiskCopy disk image");
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeDiskImage);
             handled = true;
         }
@@ -1864,6 +1907,16 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
      * up here, and maybe do a little "open it up and see" stuff as well.
      * In general, though, if we don't recognize the extension, it's
      * probably a disk image.
+     *
+     * TODO: different idea: always pass the file to each of the different
+     * archive handlers, which will provide an "is this your file" method.
+     * If the filter matches, open according to the filter.  If it doesn't,
+     * open it according to whatever stepped up to claim it.  Consider
+     * altering the UI to offer a disambiguation dialog that shows all the
+     * things it could possibly be (though that might be annoying if it comes
+     * up every time on e.g. .SDK files).  The ultimate goal is to avoid
+     * saying, "I can't open that", when we actually could if the filter was
+     * set to the right thing.
      */
     if (filterIndex == kFilterIndexGeneric) {
         int i;
@@ -1898,6 +1951,19 @@ try_again:
         ASSERT(!createFile);
         LOGD("  Trying ACU");
         pOpenArchive = new AcuArchive;
+        openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
+        if (openResult != GenericArchive::kResultSuccess) {
+            if (!errStr.IsEmpty())
+                ShowFailureMsg(this, errStr, IDS_FAILED);
+            result = -1;
+            goto bail;
+        }
+    } else
+    if (filterIndex == kFilterIndexAppleSingle) {
+        /* try AppleSingle and nothing else */
+        ASSERT(!createFile);
+        LOGD("  Trying AppleSingle");
+        pOpenArchive = new AppleSingleArchive;
         openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
         if (openResult != GenericArchive::kResultSuccess) {
             if (!errStr.IsEmpty())

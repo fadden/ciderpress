@@ -1226,6 +1226,20 @@ BEGIN
     CTEXT           ">count<",IDC_PROGRESS_COUNTER_COUNT,7,19,172,8
 END
 
+IDD_ARCHIVEINFO_APPLESINGLE DIALOGEX 0, 0, 320, 74
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "AppleSingle File"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Done",IDOK,158,53,50,14
+    LTEXT           "Filename:",IDC_STATIC,7,18,68,8,0,WS_EX_RIGHT
+    LTEXT           "Info:",IDC_STATIC,7,29,68,8,0,WS_EX_RIGHT
+    GROUPBOX        "Archive Info",IDC_STATIC,6,7,307,36
+    LTEXT           "<filename>",IDC_AI_FILENAME,84,18,218,8
+    LTEXT           "<info>",IDC_AIBNY_RECORDS,84,29,218,8
+    PUSHBUTTON      "Help",IDHELP,105,53,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1806,6 +1820,13 @@ BEGIN
         RIGHTMARGIN, 179
         TOPMARGIN, 7
         BOTTOMMARGIN, 50
+    END
+
+    IDD_ARCHIVEINFO_APPLESINGLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
     END
 END
 #endif    // APSTUDIO_INVOKED

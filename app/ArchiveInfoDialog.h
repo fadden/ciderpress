@@ -15,6 +15,7 @@
 #include "DiskArchive.h"
 #include "BnyArchive.h"
 #include "AcuArchive.h"
+#include "AppleSingleArchive.h"
 
 /*
  * This is an abstract base class for the archive info dialogs.  There is
@@ -128,6 +129,23 @@ private:
     virtual BOOL OnInitDialog(void) override;
 
     AcuArchive* fpArchive;
+};
+
+/*
+ * AppleSingle archive info.
+ */
+class AppleSingleArchiveInfoDialog : public ArchiveInfoDialog {
+public:
+    AppleSingleArchiveInfoDialog(AppleSingleArchive* pArchive, CWnd* pParentWnd = NULL) :
+        fpArchive(pArchive),
+        ArchiveInfoDialog(IDD_ARCHIVEINFO_APPLESINGLE, pParentWnd)
+        {}
+    virtual ~AppleSingleArchiveInfoDialog(void) {}
+
+private:
+    virtual BOOL OnInitDialog(void) override;
+
+    AppleSingleArchive* fpArchive;
 };
 
 #endif /*APP_ARCHIVEINFODIALOG_H*/

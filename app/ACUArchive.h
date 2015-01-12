@@ -81,7 +81,7 @@ public:
     /*
      * Perform one-time initialization.  There really isn't any for us.
      *
-     * Returns 0 on success, nonzero on error.
+     * Returns an error string on failure.
      */
     static CString AppInit(void);
 
@@ -96,17 +96,17 @@ public:
     /*
      * Finish instantiating an AcuArchive object by creating a new archive.
      *
-     * Returns an error string on failure, or "" on success.
+     * This isn't implemented, and will always return an error.
      */
     virtual CString New(const WCHAR* filename, const void* options) override;
 
-    virtual CString Flush(void) override { return ""; }
+    virtual CString Flush(void) override { return L""; }
 
     virtual CString Reload(void) override;
     virtual bool IsReadOnly(void) const override { return true; };
     virtual bool IsModified(void) const override { return false; }
     virtual void GetDescription(CString* pStr) const override
-        { *pStr = "AppleLink ACU"; }
+        { *pStr = L"AppleLink ACU"; }
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts) override
         { ASSERT(false); return false; }
@@ -126,10 +126,10 @@ public:
         { ASSERT(false); return false; }
     virtual CString TestVolumeName(const DiskFS* pDiskFS,
         const WCHAR* newName) const override
-        { ASSERT(false); return "!"; }
+        { ASSERT(false); return L"!"; }
     virtual CString TestPathName(const GenericEntry* pGenericEntry,
         const CString& basePath, const CString& newName, char newFssep) const override
-        { ASSERT(false); return "!"; }
+        { ASSERT(false); return L"!"; }
     virtual bool RecompressSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
         const RecompressOptionsDialog* pRecompOpts) override
         { ASSERT(false); return false; }
@@ -165,7 +165,7 @@ private:
         { ASSERT(false); }
     virtual CString XferFile(LocalFileDetails* pDetails, uint8_t** pDataBuf,
         long dataLen, uint8_t** pRsrcBuf, long rsrcLen) override
-        { ASSERT(false); return "!"; }
+        { ASSERT(false); return L"!"; }
     virtual void XferAbort(CWnd* pMsgWnd) override
         { ASSERT(false); }
     virtual void XferFinish(CWnd* pMsgWnd) override
@@ -237,8 +237,8 @@ private:
     /*
      * Load the contents of the archive.
      *
-     * Returns 0 on success, < 0 if this is not an ACU archive > 0 if this appears
-     * to be an ACU archive but it's damaged.
+     * Returns 0 on success, < 0 if this is not an ACU archive, or > 0 if
+     * this appears to be an ACU archive but it's damaged.
      */
     int LoadContents(void);
 

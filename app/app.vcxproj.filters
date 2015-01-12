@@ -197,6 +197,9 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AppleSingleArchive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Graphics\binary2.ico">
@@ -412,6 +415,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VolumeCopyDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AppleSingleArchive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -395,3 +395,23 @@ BOOL AcuArchiveInfoDialog::OnInitDialog(void)
 
     return ArchiveInfoDialog::OnInitDialog();
 }
+
+/*
+ * ===========================================================================
+ *      AppleSingleArchiveInfoDialog
+ * ===========================================================================
+ */
+
+BOOL AppleSingleArchiveInfoDialog::OnInitDialog(void)
+{
+    CWnd* pWnd;
+
+    ASSERT(fpArchive != NULL);
+
+    pWnd = GetDlgItem(IDC_AI_FILENAME);
+    pWnd->SetWindowText(fpArchive->GetPathName());
+    pWnd = GetDlgItem(IDC_AIBNY_RECORDS);
+    pWnd->SetWindowText(fpArchive->GetInfoString());
+
+    return ArchiveInfoDialog::OnInitDialog();
+}

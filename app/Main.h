@@ -25,13 +25,14 @@
 #define WMU_LATE_INIT           (WM_USER+0)
 #define WMU_START               (WM_USER+1)     // used by ActionProgressDialog
 
-typedef enum {
+enum FilterIndex {
     kFilterIndexNuFX = 1,
     kFilterIndexBinaryII = 2,
     kFilterIndexACU = 3,
-    kFilterIndexDiskImage = 4,
-    kFilterIndexGeneric = 5,        // *.* filter used
-} FilterIndex;
+    kFilterIndexAppleSingle = 4,
+    kFilterIndexDiskImage = 5,
+    kFilterIndexGeneric = 6         // *.* filter used
+};
 
 struct FileCollectionEntry;     // fwd
 
@@ -247,6 +248,7 @@ public:
     static const WCHAR kOpenNuFX[];
     static const WCHAR kOpenBinaryII[];
     static const WCHAR kOpenACU[];
+    static const WCHAR kOpenAppleSingle[];
     static const WCHAR kOpenDiskImage[];
     static const WCHAR kOpenAll[];
     static const WCHAR kOpenEnd[];
@@ -255,6 +257,7 @@ private:
     static const WCHAR kModeNuFX[];
     static const WCHAR kModeBinaryII[];
     static const WCHAR kModeACU[];
+    static const WCHAR kModeAppleSingle[];
     static const WCHAR kModeDiskImage[];
 
     // Command handlers

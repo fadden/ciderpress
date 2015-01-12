@@ -4,10 +4,10 @@ faddenSoft
 http://www.faddensoft.com/
 CiderPress
 http://a2ciderpress.com/
-4.0.0d2
-41989
+4.0.0d3
+42015
 C:\DATA\faddenSoft\fs.ico
-Copyright © 2014 CiderPress project authors.  All rights reserved.
+Copyright © 2015 CiderPress project authors.  All rights reserved.
 C:\Src\CiderPress\DIST\ReadMe.txt
 C:\Src\CiderPress\DIST\License.txt
 
@@ -355,7 +355,7 @@ FALSE
 4095
 
 
-Setup400d2.exe
+Setup400d3.exe
 
 FALSE
 

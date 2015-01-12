@@ -357,7 +357,7 @@ void NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
                 SetHasDataFork(true);
                 SetDataForkLen(pThread->actualThreadEOF);
             } else {
-                LOGI("WARNING: ignoring second disk image / data fork");
+                LOGW("WARNING: ignoring second disk image / data fork");
             }
         }
         if (threadID == kNuThreadIDRsrcFork) {
@@ -365,7 +365,7 @@ void NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
                 SetHasRsrcFork(true);
                 SetRsrcForkLen(pThread->actualThreadEOF);
             } else {
-                LOGI("WARNING: ignoring second data fork");
+                LOGW("WARNING: ignoring second data fork");
             }
         }
         if (threadID == kNuThreadIDDiskImage) {
@@ -373,7 +373,7 @@ void NufxEntry::AnalyzeRecord(const NuRecord* pRecord)
                 SetHasDiskImage(true);
                 SetDataForkLen(pThread->actualThreadEOF);
             } else {
-                LOGI("WARNING: ignoring second disk image / data fork");
+                LOGW("WARNING: ignoring second disk image / data fork");
             }
         }
         if (threadID == kNuThreadIDComment) {
