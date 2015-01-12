@@ -39,13 +39,13 @@ const int kFileTypeBAS = 0xfc;
 /*
  * Set of data allowed in file property "set file info" calls.
  */
-typedef struct FileProps {
+struct FileProps {
     uint32_t    fileType;
     uint32_t    auxType;
     uint32_t    access;
     time_t      createWhen;
     time_t      modWhen;
-} FileProps;
+};
 
 /*
  * Options for converting between file archives and disk archives.
@@ -117,16 +117,16 @@ public:
         kAllowDamaged = 0x80,
     };
     /* EOL conversion mode for threads being extracted */
-    typedef enum ConvertEOL {
+    enum ConvertEOL {
         kConvertUnknown = 0, kConvertEOLOff, kConvertEOLOn, kConvertEOLAuto
-    } ConvertEOL;
-    typedef enum EOLType {
+    };
+    enum EOLType {
         kEOLUnknown = 0, kEOLCR, kEOLLF, kEOLCRLF
     };
     /* high ASCII conversion mode for threads being extracted */
-    typedef enum ConvertHighASCII {
+    enum ConvertHighASCII {
         kConvertHAUnknown = 0, kConvertHAOff, kConvertHAOn, kConvertHAAuto
-    } ConvertHighASCII;
+    };
 
     /* ProDOS access flags, used for all filesystems */
     enum {
@@ -138,8 +138,12 @@ public:
         kAccessDelete       = 0x80
     };
 
-    /* features supported by underlying archive */
-    typedef enum Feature {
+    /*
+     * Features supported by underlying archive.  Primarily of interest
+     * to EditPropsDialog, which needs to know what sort of attributes can
+     * be altered in the file type and access flags.
+     */
+    enum Feature {
         kFeatureCanChangeType,
         kFeaturePascalTypes,
         kFeatureDOSTypes,
@@ -147,7 +151,7 @@ public:
         kFeatureHasFullAccess,
         kFeatureHasSimpleAccess,    // mutually exclusive with FullAccess
         kFeatureHasInvisibleFlag,
-    } Feature;
+    };
 
     /*
      * Extract data from an archive (NuFX, disk image, etc).
@@ -384,13 +388,13 @@ public:
         return fNumEntries;
     }
 
-    typedef enum {
+    enum OpenResult {
         kResultUnknown = 0,
         kResultSuccess,         // open succeeded
         kResultFailure,         // open failed
         kResultCancel,          // open was cancelled by user
         kResultFileArchive,     // found a file archive rather than disk image
-    } OpenResult;
+    };
 
     // Open an archive and do fun things with the innards.
     virtual OpenResult Open(const WCHAR* filename, bool readOnly,
@@ -410,13 +414,13 @@ public:
     virtual void ClearReloadFlag(void) { fReloadFlag = false; }
 
     // One of these for every sub-class.
-    typedef enum {
+    enum ArchiveKind {
         kArchiveUnknown = 0,
         kArchiveNuFX,
         kArchiveBNY,
         kArchiveACU,
         kArchiveDiskImage,
-    } ArchiveKind;
+    };
 
     // Returns the kind of archive this is (disk image, NuFX, BNY, etc).
     virtual ArchiveKind GetArchiveKind(void) = 0;
@@ -465,9 +469,9 @@ public:
         const RecompressOptionsDialog* pRecompOpts) = 0;
 
     // return result from XferSelection()
-    typedef enum {
+    enum XferStatus {
         kXferOK = 0, kXferFailed = 1, kXferCancelled = 2, kXferOutOfSpace = 3
-    } XferStatus;
+    };
 
     // Transfer selected files out of this archive and into another.
     virtual XferStatus XferSelection(CWnd* pMsgWnd, SelectionSet* pSelSet,
@@ -495,7 +499,7 @@ public:
 
     // Determine an archive's capabilities.  This is specific to the object
     // instance, so this must not be made a static function.
-    typedef enum {
+    enum Capability {
         kCapUnknown = 0,
 
         kCapCanTest,            // NuFX, BNY
@@ -506,7 +510,7 @@ public:
         kCapCanConvEOLOnAdd,    // Disk
         kCapCanCreateSubdir,    // Disk
         kCapCanRenameVolume,    // Disk
-    } Capability;
+    };
     virtual long GetCapability(Capability cap) = 0;
 
     // Get the pathname of the file we opened.

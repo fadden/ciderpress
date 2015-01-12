@@ -4,7 +4,7 @@
  * See the file LICENSE for distribution terms.
  */
 /*
- * AppleLink Compression Utility archive support.
+ * AppleLink Compression Utility archive support (read-only).
  */
 #ifndef APP_ACUARCHIVE_H
 #define APP_ACUARCHIVE_H
@@ -33,11 +33,14 @@ public:
     virtual long GetSelectionSerial(void) const override { return -1; }
 
     virtual bool GetFeatureFlag(Feature feature) const override {
-        if (feature == kFeaturePascalTypes || feature == kFeatureDOSTypes ||
-            feature == kFeatureHasSimpleAccess)
-            return false;
-        else
+        if (feature == kFeatureHasFullAccess ||
+            feature == kFeatureCanChangeType ||
+            feature == kFeatureHasInvisibleFlag)
+        {
             return true;
+        } else {
+            return false;
+        }
     }
 
     /*
@@ -60,7 +63,6 @@ private:
      */
     NuError CopyData(FILE* outfp, ConvertEOL conv, ConvertHighASCII convHA,
         CString* pMsg) const;
-    //NuError BNYUnSqueeze(ExpandBuffer* outExp) const;
 
     AcuArchive* fpArchive;      // holds FILE* for archive
     bool        fIsSqueezed;
@@ -73,8 +75,7 @@ private:
  */
 class AcuArchive : public GenericArchive {
 public:
-    AcuArchive(void) : fIsReadOnly(false), fFp(NULL)
-        {}
+    AcuArchive(void) : fFp(NULL) {}
     virtual ~AcuArchive(void) { (void) Close(); }
 
     /*
@@ -102,7 +103,7 @@ public:
     virtual CString Flush(void) override { return ""; }
 
     virtual CString Reload(void) override;
-    virtual bool IsReadOnly(void) const override { return fIsReadOnly; };
+    virtual bool IsReadOnly(void) const override { return true; };
     virtual bool IsModified(void) const override { return false; }
     virtual void GetDescription(CString* pStr) const override
         { *pStr = "AppleLink ACU"; }
@@ -158,7 +159,7 @@ private:
             fclose(fFp);
             fFp = NULL;
         }
-        return "";
+        return L"";
     }
     virtual void XferPrepare(const XferFileOptions* pXferOpts) override
         { ASSERT(false); }
@@ -185,12 +186,12 @@ private:
     /*
      * The header at the front of an ACU archive.
      */
-    typedef struct AcuMasterHeader {
+    struct AcuMasterHeader {
         uint16_t    fileCount;
         uint16_t    unknown1;       // 0x01 00 -- might be "version 1?"
         uint8_t     fZink[6];       // "fZink", low ASCII
         uint8_t     unknown2[11];   // 0x01 36 00 00 00 00 00 00 00 00 dd
-    } AcuMasterHeader;
+    };
 
     /*
      * An entry in an ACU archive.  Each archive is essentially a stream
@@ -200,9 +201,9 @@ private:
      * We read this from the archive and then unpack the interesting parts
      * into GenericEntry fields in an AcuEntry.
      */
-    struct AcuFileEntry;
-    friend struct AcuFileEntry;
-    typedef struct AcuFileEntry {
+    //struct AcuFileEntry;
+    //friend struct AcuFileEntry;
+    struct AcuFileEntry {
         uint8_t     compressionType;
         uint16_t    dataChecksum;       // ??
         uint16_t    blockCount;         // total blocks req'd to hold file
@@ -225,7 +226,7 @@ private:
         // possibilities for mystery fields:
         // - OS type (note ProDOS is $00)
         // - forked file support
-    } AcuFileEntry;
+    };
 
     /* known compression types */
     enum CompressionType {
@@ -291,7 +292,7 @@ private:
         uint16_t prodosTime, NuDateTime* pWhen);
 
     FILE*       fFp;
-    bool        fIsReadOnly;
+    //bool        fIsReadOnly;
 };
 
 #endif /*APP_ACUARCHIVE_H*/

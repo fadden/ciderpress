@@ -212,9 +212,7 @@ int AcuEntry::ExtractThreadToFile(int which, FILE* outfp, ConvertEOL conv,
     SET_PROGRESS_BEGIN();
 
     /*
-     * Generally speaking, anything in a BNY file is going to be small.  The
-     * major exception is a BXY file, which could be huge.  However, the
-     * SHK embedded in a BXY is never squeezed.
+     * Generally speaking, anything in an ACU file is going to be small.
      *
      * To make life easy, we either unsqueeze the entire thing into a buffer
      * and then write that, or we do a file-to-file copy of the specified
@@ -383,7 +381,7 @@ GenericArchive::OpenResult AcuArchive::Open(const WCHAR* filename,
 {
     CString errMsg;
 
-    fIsReadOnly = true;     // ignore "readOnly"
+    //fIsReadOnly = true;     // ignore "readOnly"
 
     errno = 0;
     fFp = _wfopen(filename, L"rb");
@@ -740,6 +738,9 @@ void AcuArchive::AcuConvertDateTime(uint16_t prodosDate,
 
 bool AcuArchive::TestSelection(CWnd* pMsgWnd, SelectionSet* pSelSet)
 {
+    // TODO: this is essentially copy & paste from NufxArchive::TestSelection().
+    // We can move the implementation to GenericArchive and just have an
+    // archive-specific TestEntry() function.
     NuError nerr;
     AcuEntry* pEntry;
     CString errMsg;

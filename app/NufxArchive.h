@@ -35,9 +35,11 @@ public:
     virtual bool GetFeatureFlag(Feature feature) const override {
         if (feature == kFeaturePascalTypes || feature == kFeatureDOSTypes ||
             feature == kFeatureHasSimpleAccess)
+        {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
     /*
