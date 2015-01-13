@@ -20,7 +20,7 @@
 /*
  * Windows application object.
  */
-class MyApp: public CWinApp
+class MyApp: public CWinAppEx
 {
 public:
     MyApp(LPCTSTR lpszAppName = NULL);

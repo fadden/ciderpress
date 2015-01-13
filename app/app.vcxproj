@@ -194,7 +194,6 @@
     <ClInclude Include="Main.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="NewDiskSize.h" />
-    <ClInclude Include="NewFolderDialog.h" />
     <ClInclude Include="NufxArchive.h" />
     <ClInclude Include="OpenVolumeDialog.h" />
     <ClInclude Include="PasteSpecialDialog.h" />
@@ -266,7 +265,6 @@
     <ClCompile Include="CassetteDialog.cpp" />
     <ClCompile Include="CassImpTargetDialog.cpp" />
     <ClCompile Include="ChooseAddTargetDialog.cpp" />
-    <ClCompile Include="ChooseDirDialog.cpp" />
     <ClCompile Include="Clipboard.cpp" />
     <ClCompile Include="ConfirmOverwriteDialog.cpp" />
     <ClCompile Include="ContentList.cpp" />
@@ -292,7 +290,6 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="NewDiskSize.cpp" />
-    <ClCompile Include="NewFolderDialog.cpp" />
     <ClCompile Include="NufxArchive.cpp" />
     <ClCompile Include="OpenVolumeDialog.cpp" />
     <ClCompile Include="PasteSpecialDialog.cpp" />

@@ -441,7 +441,7 @@ bool AppleSingleArchive::CreateEntry()
     }
 
     pNewEntry->SetCompressedLen(dataLen + rsrcLen);
-    if (rsrcLen > 0) {
+    if (rsrcLen > 0) {  // could do ">=" to preserve empty resource forks
         pNewEntry->SetRecordKind(GenericEntry::kRecordKindForkedFile);
     } else {
         pNewEntry->SetRecordKind(GenericEntry::kRecordKindFile);
@@ -460,6 +460,10 @@ bool AppleSingleArchive::CreateEntry()
         CStringA fileNameA(fileName);
         pNewEntry->SetPathNameMOR(fileNameA);
     }
+
+    // This doesn't matter, since we only have the file name, but it keeps
+    // the entry from getting a weird default.
+    pNewEntry->SetFssep(':');
     
     AddEntry(pNewEntry);
     return true;

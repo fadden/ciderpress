@@ -11,65 +11,47 @@
 
 #include "../util/UtilLib.h"
 #include "resource.h"
+#include <afxshellmanager.h>
+
 
 /*
  * Choose a directory.  This is distinctly different from what the standard
  * "Open" and "Save As" dialogs do, because those want to choose normal files
  * only, while this wants to select a folder.
  *
- * TODO: Vista-style dialogs support folder selection.  Consider switching
- *  based on OS version.
+ * Win2K added the shell "browse for folder" dialog, which does exactly
+ * what we want.
  */
-class ChooseDirDialog : public CDialog {
+class ChooseDirDialog {
 public:
-    ChooseDirDialog(CWnd* pParent = NULL, int dialogID = IDD_CHOOSEDIR) :
-        CDialog(dialogID, pParent)
-    {
-        fPathName = L"";
+    ChooseDirDialog(CWnd* pParent = NULL) {
+        fpParent = pParent;
     }
-    virtual ~ChooseDirDialog(void) {}
+    ~ChooseDirDialog() {}
 
-    const WCHAR* GetPathName(void) const { return fPathName; }
-
-    // set the pathname; when DoModal is called this will tunnel in
-    void SetPathName(const WCHAR* str) { fPathName = str; }
-
-protected:
-    virtual BOOL OnInitDialog(void) override;
-
-    // Special handling for "return" key.
-    virtual BOOL PreTranslateMessage(MSG* pMsg) override;
-
-    /*
-     * Replace the ShellTree's default SELCHANGED handler with this so we can
-     * track changes to the edit control.
-     */
-    afx_msg void OnSelChanged(NMHDR* pnmh, LRESULT* pResult);
-
-    // User pressed "Expand Tree" button.
-    afx_msg void OnExpandTree(void);
-
-    // User pressed "New Folder" button.
-    afx_msg void OnNewFolder(void);
-
-    // User pressed "Help" button.
-    afx_msg void OnHelp(void) {
-        MyApp::HandleHelp(this, HELP_TOPIC_CHOOSE_FOLDER);
+    // Gets the pathname.  Call this after DoModal has updated it.
+    const CString& GetPathName(void) const {
+        return fPathName;
     }
 
-    // F1 key hit, or '?' button in title bar used to select help for an
-    // item in the dialog.  For ON_WM_HELPINFO.
-    afx_msg BOOL OnHelpInfo(HELPINFO* lpHelpInfo) {
-        return MyApp::HandleHelpInfo(lpHelpInfo);
+    // Sets the pathname.  Call before DoModal().
+    void SetPathName(const CString& str) {
+        fPathName = str;
+    }
+
+    // Returns false if nothing was selected (e.g. the dialog was canceled).
+    BOOL DoModal() {
+        CShellManager* pMan = gMyApp.GetShellManager();
+        CString outFolder;
+        BOOL result = pMan->BrowseForFolder(outFolder, fpParent, fPathName,
+            L"Select folder:", BIF_RETURNONLYFSDIRS | BIF_USENEWUI);
+        fPathName = outFolder;
+        return result;
     }
 
 private:
-    CString         fPathName;
-
-    ShellTree       fShellTree;
-    MyBitmapButton  fNewFolderButton;
-
-    DECLARE_MESSAGE_MAP()
+    CWnd* fpParent;
+    CString fPathName;
 };
 
 #endif /*APP_CHOOSEDIRDIALOG*/

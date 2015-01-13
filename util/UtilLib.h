@@ -21,7 +21,6 @@
 #include "PathName.h"
 #include "Pidl.h"
 #include "SelectFilesDialog.h"
-#include "ShellTree.h"
 #include "SoundFile.h"
 
 #include "Modeless.h"

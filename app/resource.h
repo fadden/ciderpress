@@ -25,7 +25,6 @@
 #define IDD_CHOOSEDIR                   135
 #define IDB_NEW_FOLDER                  139
 #define IDB_CHOOSE_FOLDER               140
-#define IDD_NEWFOLDER                   141
 #define IDD_EXTRACT_FILES               142
 #define IDD_ACTION_PROGRESS             143
 #define IDD_CONFIRM_OVERWRITE           144
@@ -157,8 +156,6 @@
 #define IDC_FVIEW_FONT                  1129
 #define IDC_FVIEW_NEXT                  1130
 #define IDC_FVIEW_PREV                  1131
-#define IDC_NEWFOLDER_CURDIR            1132
-#define IDC_NEWFOLDER_NAME              1133
 #define IDC_EXT_PATH                    1136
 #define IDC_EXT_CONVEOLTEXT             1137
 #define IDC_EXT_CONVEOLALL              1138

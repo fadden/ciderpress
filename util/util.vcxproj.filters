@@ -50,9 +50,6 @@
     <ClInclude Include="SelectFilesDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShellTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SoundFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -89,9 +86,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SelectFilesDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShellTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SoundFile.cpp">

@@ -134,9 +134,6 @@
     <ClInclude Include="NewDiskSize.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NewFolderDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NufxArchive.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -282,9 +279,6 @@
     <ClCompile Include="ChooseAddTargetDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChooseDirDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Clipboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -358,9 +352,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NewDiskSize.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NewFolderDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NufxArchive.cpp">

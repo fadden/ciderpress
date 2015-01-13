@@ -115,7 +115,6 @@
     <ClInclude Include="Pidl.h" />
     <ClInclude Include="ProgressCancelDialog.h" />
     <ClInclude Include="SelectFilesDialog.h" />
-    <ClInclude Include="ShellTree.h" />
     <ClInclude Include="SoundFile.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Util.h" />
@@ -131,7 +130,6 @@
     <ClCompile Include="PathName.cpp" />
     <ClCompile Include="Pidl.cpp" />
     <ClCompile Include="SelectFilesDialog.cpp" />
-    <ClCompile Include="ShellTree.cpp" />
     <ClCompile Include="SoundFile.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

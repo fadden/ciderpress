@@ -24,6 +24,7 @@
 #include "targetver.h"
 
 #include <afxwin.h>
+#include <afxwinappex.h>
 #include <afxcmn.h>
 #include <afxdlgs.h>
 #include <afxdisp.h>

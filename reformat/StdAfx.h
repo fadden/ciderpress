@@ -24,8 +24,10 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
-#include <afxwin.h>
-#include <afxcmn.h>         // for some stuff in util lib
+#include <afxwin.h>         // for some stuff in util lib
+#include <afxcmn.h>
+#include <afxwinappex.h>
+#include <afxshellmanager.h>
 
 #include "../util/UtilLib.h"
 

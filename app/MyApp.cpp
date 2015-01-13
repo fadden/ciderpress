@@ -26,7 +26,7 @@ DebugLog* gDebugLog;
  * This is the closest thing to "main" that we have, but we
  * should wait for InitInstance for most things.
  */
-MyApp::MyApp(LPCTSTR lpszAppName) : CWinApp(lpszAppName)
+MyApp::MyApp(LPCTSTR lpszAppName) : CWinAppEx(true /*lpszAppName*/)
 {
     gDebugLog = new DebugLog(L"C:\\src\\cplog.txt");
 
@@ -262,8 +262,8 @@ BOOL MyApp::OnIdle(LONG lCount)
     IDC_FVIEW_FONT, IDH_FVIEW_FONT,
     IDC_FVIEW_NEXT, IDH_FVIEW_NEXT,
     IDC_FVIEW_PREV, IDH_FVIEW_PREV,
-    IDC_NEWFOLDER_CURDIR, IDH_NEWFOLDER_CURDIR,
-    IDC_NEWFOLDER_NAME, IDH_NEWFOLDER_NAME,
+    //IDC_NEWFOLDER_CURDIR, IDH_NEWFOLDER_CURDIR,   // dialog removed
+    //IDC_NEWFOLDER_NAME, IDH_NEWFOLDER_NAME,       // dialog removed
     IDC_EXT_PATH, IDH_EXT_PATH,
     IDC_EXT_CONVEOLTEXT, IDH_EXT_CONVEOLTEXT,
     IDC_EXT_CONVEOLALL, IDH_EXT_CONVEOLALL,
