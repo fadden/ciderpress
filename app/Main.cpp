@@ -76,6 +76,7 @@ const WCHAR MainWindow::kOpenAll[] =
 const WCHAR MainWindow::kOpenEnd[] =
     L"|";
 
+/* used when guessing archive type from extension */
 static const struct {
     WCHAR extension[4];
     FilterIndex idx;
@@ -88,14 +89,19 @@ static const struct {
     { L"bqy",   kFilterIndexBinaryII },
     { L"acu",   kFilterIndexACU },
     { L"as",    kFilterIndexAppleSingle },
+    { L"sdk",   kFilterIndexDiskImage },
     { L"dsk",   kFilterIndexDiskImage },
     { L"po",    kFilterIndexDiskImage },
     { L"do",    kFilterIndexDiskImage },
     { L"d13",   kFilterIndexDiskImage },
     { L"2mg",   kFilterIndexDiskImage },
     { L"img",   kFilterIndexDiskImage },
-    { L"sdk",   kFilterIndexDiskImage },
+    { L"nib",   kFilterIndexDiskImage },
+    { L"nb2",   kFilterIndexDiskImage },
     { L"raw",   kFilterIndexDiskImage },
+    { L"hdv",   kFilterIndexDiskImage },
+    { L"dc",    kFilterIndexDiskImage },
+    { L"dc6",   kFilterIndexDiskImage },
     { L"ddd",   kFilterIndexDiskImage },
     { L"app",   kFilterIndexDiskImage },
     { L"fdi",   kFilterIndexDiskImage },
@@ -415,7 +421,7 @@ void MainWindow::ProcessCommandLine(void)
      */
     const WCHAR* filename = NULL;
     const WCHAR* dispName = NULL;
-    int filterIndex = kFilterIndexGeneric;
+    FilterIndex filterIndex = kFilterIndexGeneric;
     bool temp = false;
 
     for (int i = 1; i < argc; i++) {
@@ -482,7 +488,7 @@ void MainWindow::ProcessCommandLine(void)
             ext.Delete(0, 1);
 
         /* load the archive, mandating read-only if it's a temporary file */
-        if (LoadArchive(filename, ext, filterIndex, temp, false) == 0) {
+        if (LoadArchive(filename, ext, filterIndex, temp) == 0) {
             /* success, update title bar */
             if (temp)
                 fOpenArchivePathName = path.GetFileName();
@@ -1191,7 +1197,6 @@ void MainWindow::OnFileOpen(void)
     openFilters += kOpenDiskImage;
     openFilters += kOpenAll;
     openFilters += kOpenEnd;
-    LOGD("filters: '%ls'", openFilters);
     CFileDialog dlg(TRUE, L"shk", NULL,
         OFN_FILEMUSTEXIST, openFilters, this);
 
@@ -1206,8 +1211,14 @@ void MainWindow::OnFileOpen(void)
     saveFolder = saveFolder.Left(dlg.m_ofn.nFileOffset);
     fPreferences.SetPrefString(kPrOpenArchiveFolder, saveFolder);
 
+    FilterIndex filterIndex = (FilterIndex) dlg.m_ofn.nFilterIndex;
+    if (filterIndex < kFilterIndexFIRST || filterIndex > kFilterIndexMAX) {
+        ASSERT(false);
+        LOGW("invalid filterIndex %d", filterIndex);
+        filterIndex = kFilterIndexGeneric;
+    }
     DoOpenArchive(dlg.GetPathName(), dlg.GetFileExt(),
-        dlg.m_ofn.nFilterIndex, dlg.GetReadOnlyPref() != 0);
+        filterIndex, dlg.GetReadOnlyPref() != 0);
 
 bail:
     LOGD("--- OnFileOpen done");
@@ -1240,9 +1251,9 @@ void MainWindow::OnUpdateFileOpenVolume(CCmdUI* pCmdUI)
 }
 
 void MainWindow::DoOpenArchive(const WCHAR* pathName, const WCHAR* ext,
-    int filterIndex, bool readOnly)
+    FilterIndex filterIndex, bool readOnly)
 {
-    if (LoadArchive(pathName, ext, filterIndex, readOnly, false) == 0) {
+    if (LoadArchive(pathName, ext, filterIndex, readOnly) == 0) {
         /* success, update title bar */
         fOpenArchivePathName = pathName;
         SetCPTitle(fOpenArchivePathName, fpOpenArchive);
@@ -1881,16 +1892,28 @@ void MainWindow::DrawEmptyClientArea(CDC* pDC, const CRect& clientRect)
     pDC->SelectObject(pOldPen);
 }
 
+GenericArchive* MainWindow::CreateArchiveInstance(FilterIndex filterIndex) const
+{
+    GenericArchive* pOpenArchive = NULL;
+
+    switch (filterIndex) {
+    case kFilterIndexNuFX:          pOpenArchive = new NufxArchive;         break;
+    case kFilterIndexBinaryII:      pOpenArchive = new BnyArchive;          break;
+    case kFilterIndexACU:           pOpenArchive = new AcuArchive;          break;
+    case kFilterIndexAppleSingle:   pOpenArchive = new AppleSingleArchive;  break;
+    case kFilterIndexDiskImage:     pOpenArchive = new DiskArchive;         break;
+    default:                        ASSERT(false);                          break;
+    }
+
+    return pOpenArchive;
+}
+
 int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
-    int filterIndex, bool readOnly, bool createFile)
+    FilterIndex filterIndex, bool readOnly)
 {
     GenericArchive::OpenResult openResult;
-    int result = -1;
+    const FilterIndex origFilterIndex = filterIndex;
     GenericArchive* pOpenArchive = NULL;
-    const int origFilterIndex = filterIndex;
-    CString errStr, appName;
-
-    CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
     LOGI("LoadArchive: '%ls' ro=%d idx=%d", fileName, readOnly, filterIndex);
 
@@ -1898,25 +1921,8 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
     CloseArchive();
 
     /*
-     * If they used the "All Files (*.*)" filter, we have to guess based
-     * on the file type.
-     *
-     * IDEA: change the current "filterIndex ==" stuff to a type-specific
-     * model, then do type-scanning here.  Code later on takes the type
-     * and opens it.  That way we can do the trivial "it must be" handling
-     * up here, and maybe do a little "open it up and see" stuff as well.
-     * In general, though, if we don't recognize the extension, it's
-     * probably a disk image.
-     *
-     * TODO: different idea: always pass the file to each of the different
-     * archive handlers, which will provide an "is this your file" method.
-     * If the filter matches, open according to the filter.  If it doesn't,
-     * open it according to whatever stepped up to claim it.  Consider
-     * altering the UI to offer a disambiguation dialog that shows all the
-     * things it could possibly be (though that might be annoying if it comes
-     * up every time on e.g. .SDK files).  The ultimate goal is to avoid
-     * saying, "I can't open that", when we actually could if the filter was
-     * set to the right thing.
+     * If they used the "All Files (*.*)" filter, try guess based
+     * on the file extension.
      */
     if (filterIndex == kFilterIndexGeneric) {
         int i;
@@ -1928,120 +1934,69 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
             }
         }
 
-        if (i == NELEM(gExtensionToIndex))
+        if (i == NELEM(gExtensionToIndex)) {
+            // no match found, use "disk image" as initial guess
             filterIndex = kFilterIndexDiskImage;
+        }
     }
 
-try_again:
-    if (filterIndex == kFilterIndexBinaryII) {
-        /* try Binary II and nothing else */
-        ASSERT(!createFile);
-        LOGD("  Trying Binary II");
-        pOpenArchive = new BnyArchive;
-        openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
-        if (openResult != GenericArchive::kResultSuccess) {
-            if (!errStr.IsEmpty())
-                ShowFailureMsg(this, errStr, IDS_FAILED);
-            result = -1;
-            goto bail;
+    /*
+     * Try to open the file according to the specified filter index.  If
+     * it works, we're done.  Trying this first ensures that you can choose
+     * to open, say, a .SDK file as either ShrinkIt or Disk Image.
+     */
+    CString firstErrStr;
+    pOpenArchive = CreateArchiveInstance(filterIndex);
+    LOGD("  First try: %ls", (LPCWSTR) pOpenArchive->GetDescription());
+    openResult = pOpenArchive->Open(fileName, readOnly, &firstErrStr);
+    if (openResult == GenericArchive::kResultSuccess) {
+        // success!
+        SwitchContentList(pOpenArchive);
+        return 0;
+    } else if (openResult == GenericArchive::kResultFileArchive) {
+        if (wcsicmp(extension, L"zip") == 0) {
+            // we could probably just return in this case
+            firstErrStr = L"Zip archives with multiple files are not supported";
+        } else {
+            firstErrStr = L"This appears to be a file archive.";
         }
-    } else
-    if (filterIndex == kFilterIndexACU) {
-        /* try ACU and nothing else */
-        ASSERT(!createFile);
-        LOGD("  Trying ACU");
-        pOpenArchive = new AcuArchive;
-        openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
-        if (openResult != GenericArchive::kResultSuccess) {
-            if (!errStr.IsEmpty())
-                ShowFailureMsg(this, errStr, IDS_FAILED);
-            result = -1;
-            goto bail;
-        }
-    } else
-    if (filterIndex == kFilterIndexAppleSingle) {
-        /* try AppleSingle and nothing else */
-        ASSERT(!createFile);
-        LOGD("  Trying AppleSingle");
-        pOpenArchive = new AppleSingleArchive;
-        openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
-        if (openResult != GenericArchive::kResultSuccess) {
-            if (!errStr.IsEmpty())
-                ShowFailureMsg(this, errStr, IDS_FAILED);
-            result = -1;
-            goto bail;
-        }
-    } else
-    if (filterIndex == kFilterIndexDiskImage) {
-        /* try various disk image formats */
-        ASSERT(!createFile);
-        LOGD("  Trying disk images");
-
-        pOpenArchive = new DiskArchive;
-        openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
-        if (openResult == GenericArchive::kResultCancel) {
-            result = -1;
-            goto bail;
-        } else if (openResult == GenericArchive::kResultFileArchive) {
-            delete pOpenArchive;
-            pOpenArchive = NULL;
-
-            if (wcsicmp(extension, L"zip") == 0) {
-                errStr = "ZIP archives with multiple files are not supported.";
-                MessageBox(errStr, appName, MB_OK|MB_ICONINFORMATION);
-                result = -1;
-                goto bail;
-            } else {
-                /* assume some variation of a ShrinkIt archive */
-                // msg.LoadString(IDS_OPEN_AS_NUFX); <-- with MB_OKCANCEL
-                filterIndex = kFilterIndexNuFX;
-                goto try_again;
-            }
-
-        } else if (openResult != GenericArchive::kResultSuccess) {
-            //if (filterIndex != origFilterIndex) {
-            //    /*
-            //     * Kluge: assume we guessed disk image and were wrong.
-            //     */
-            //    errStr = L"File doesn't appear to be a valid archive"
-            //             L" or disk image.";
-            //}
-            if (!errStr.IsEmpty())
-                ShowFailureMsg(this, errStr, IDS_FAILED);
-            result = -1;
-            goto bail;
-        }
-    } else
-    if (filterIndex == kFilterIndexNuFX) {
-        /* try NuFX (including its embedded-in-BNY form) */
-        LOGD("  Trying NuFX");
-
-        pOpenArchive = new NufxArchive;
-        openResult = pOpenArchive->Open(fileName, readOnly, &errStr);
-        if (openResult != GenericArchive::kResultSuccess) {
-            if (!errStr.IsEmpty())
-                ShowFailureMsg(this, errStr, IDS_FAILED);
-            result = -1;
-            goto bail;
-        }
-
-    } else {
-        ASSERT(FALSE);
-        result = -1;
-        goto bail;
     }
+    delete pOpenArchive;
 
-    SwitchContentList(pOpenArchive);
+    /*
+     * That didn't work.  Try the others.
+     */
+    for (int i = kFilterIndexFIRST; i <= kFilterIndexLAST; i++) {
+        if (i == filterIndex) continue;
 
-    pOpenArchive = NULL;
-    result = 0;
-
-bail:
-    if (pOpenArchive != NULL) {
-        ASSERT(result != 0);
+        pOpenArchive = CreateArchiveInstance((FilterIndex) i);
+        LOGD("Now trying: %ls", (LPCWSTR) pOpenArchive->GetDescription());
+        CString dummyErrStr;
+        openResult = pOpenArchive->Open(fileName, readOnly, &dummyErrStr);
+        if (openResult == GenericArchive::kResultSuccess) {
+            // success!
+            SwitchContentList(pOpenArchive);
+            return 0;
+        }
         delete pOpenArchive;
     }
-    return result;
+
+    /*
+     * Nothing worked.  Show the original error message so that it matches
+     * up with the chosen filter index -- if they seemed to be trying to
+     * open an AppleSingle, don't tell them we failed because the file isn't
+     * a disk image.
+     *
+     * If they were using the Generic filter, they'll get the message from
+     * the disk image library.  It might make more sense to just say "we
+     * couldn't figure out what this was", but most of the time people are
+     * trying to open disk images anyway.
+     */
+    if (firstErrStr.IsEmpty()) {
+        firstErrStr = L"Unable to determine what kind of file this is.";
+    }
+    ShowFailureMsg(this, firstErrStr, IDS_FAILED);
+    return -1;
 }
 
 int MainWindow::DoOpenVolume(CString drive, bool readOnly)
@@ -2241,11 +2196,10 @@ void MainWindow::SetCPTitle(const WCHAR* pathname, GenericArchive* pOpenArchive)
     ASSERT(pathname != NULL);
     CString title;
     CString appName;
-    CString archiveDescription;
 
     CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
-    pOpenArchive->GetDescription(&archiveDescription);
+    CString archiveDescription(pOpenArchive->GetDescription());
     title.Format(L"%ls - %ls (%ls)", (LPCWSTR) appName, pathname,
         (LPCWSTR) archiveDescription);
 
@@ -2287,17 +2241,16 @@ void MainWindow::SetCPTitle(void)
 CString MainWindow::GetPrintTitle(void)
 {
     CString title;
-    CString archiveDescription;
-    CString appName;
 
     if (fpOpenArchive == NULL) {
         ASSERT(false);
         return title;
     }
 
+    CString appName;
     CheckedLoadString(&appName, IDS_MB_APP_NAME);
 
-    fpOpenArchive->GetDescription(&archiveDescription);
+    CString archiveDescription(fpOpenArchive->GetDescription());
     title.Format(L"%ls - %ls (%ls)", (LPCWSTR) appName,
         (LPCWSTR) fOpenArchivePathName, (LPCWSTR) archiveDescription);
 

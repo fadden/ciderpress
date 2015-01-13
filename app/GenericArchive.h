@@ -52,10 +52,10 @@ struct FileProps {
  */
 class XferFileOptions {
 public:
-    XferFileOptions(void) :
+    XferFileOptions() :
         fTarget(NULL), fPreserveEmptyFolders(false), fpTargetFS(NULL)
         {}
-    ~XferFileOptions(void) {}
+    ~XferFileOptions() {}
 
     /* where the stuff is going */
     GenericArchive* fTarget;
@@ -81,8 +81,8 @@ public:
  */
 class GenericEntry {
 public:
-    GenericEntry(void);
-    virtual ~GenericEntry(void);
+    GenericEntry();
+    virtual ~GenericEntry();
 
     /* kinds of files found in archives */
     enum RecordKind {
@@ -187,12 +187,12 @@ public:
     // This helps us retain the ContentList selection across a Reload().  Only
     // necessary for read-write archives, since those are the only ones that
     // ever need to be reloaded.  Value must be nonzero to be used.
-    virtual long GetSelectionSerial(void) const = 0;
+    virtual long GetSelectionSerial() const = 0;
 
     /* what operations are possible with this entry? */
     virtual bool GetFeatureFlag(Feature feature) const = 0;
 
-    long GetIndex(void) const { return fIndex; }
+    long GetIndex() const { return fIndex; }
     void SetIndex(long idx) { fIndex = idx; }
 
     /*
@@ -204,75 +204,75 @@ public:
      */
     void SetPathNameMOR(const char* pathNameMOR);
 
-    const CStringA& GetPathNameMOR(void) const { return fPathNameMOR; }
-    const CString& GetPathNameUNI(void) const { return fPathNameUNI; }
-    const CString& GetFileName(void);
-    const CString& GetFileNameExtension(void); // returns e.g. ".SHK"
-    const CStringA& GetFileNameExtensionMOR(void);
+    const CStringA& GetPathNameMOR() const { return fPathNameMOR; }
+    const CString& GetPathNameUNI() const { return fPathNameUNI; }
+    const CString& GetFileName();
+    const CString& GetFileNameExtension(); // returns e.g. ".SHK"
+    const CStringA& GetFileNameExtensionMOR();
     /*
      * Returns the "display" name.  This is a combination of the sub-volume
      * name and the path name.  This string is intended for display only,
      * and may include characters that aren't legal on the filesystem.
      */
-    const CString& GetDisplayName(void) const;
+    const CString& GetDisplayName() const;
 
     void SetSubVolName(const WCHAR* name);
-    const CString& GetSubVolName(void) const { return fSubVolName; }
+    const CString& GetSubVolName() const { return fSubVolName; }
 
-    char GetFssep(void) const { return fFssep; }
+    char GetFssep() const { return fFssep; }
     void SetFssep(char fssep) { fFssep = fssep; }
-    uint32_t GetFileType(void) const { return fFileType; }
+    uint32_t GetFileType() const { return fFileType; }
     void SetFileType(uint32_t type) { fFileType = type; }
-    uint32_t GetAuxType(void) const { return fAuxType; }
+    uint32_t GetAuxType() const { return fAuxType; }
     void SetAuxType(uint32_t type) { fAuxType = type; }
-    uint32_t GetAccess(void) const { return fAccess; }
+    uint32_t GetAccess() const { return fAccess; }
     void SetAccess(uint32_t access) { fAccess = access; }
-    time_t GetCreateWhen(void) const { return fCreateWhen; }
+    time_t GetCreateWhen() const { return fCreateWhen; }
     void SetCreateWhen(time_t when) { fCreateWhen = when; }
-    time_t GetModWhen(void) const { return fModWhen; }
+    time_t GetModWhen() const { return fModWhen; }
     void SetModWhen(time_t when) { fModWhen = when; }
-    RecordKind GetRecordKind(void) const { return fRecordKind; }
+    RecordKind GetRecordKind() const { return fRecordKind; }
     void SetRecordKind(RecordKind recordKind) { fRecordKind = recordKind; }
-    const WCHAR* GetFormatStr(void) const { return fFormatStr; }
+    const WCHAR* GetFormatStr() const { return fFormatStr; }
     void SetFormatStr(const WCHAR* str) { fFormatStr = str; } // arg not copied, must be static!
-    LONGLONG GetCompressedLen(void) const { return fCompressedLen; }
+    LONGLONG GetCompressedLen() const { return fCompressedLen; }
     void SetCompressedLen(LONGLONG len) { fCompressedLen = len; }
-    LONGLONG GetUncompressedLen(void) const {
+    LONGLONG GetUncompressedLen() const {
         return fDataForkLen + fRsrcForkLen;
     }
-    LONGLONG GetDataForkLen(void) const { return fDataForkLen; }
+    LONGLONG GetDataForkLen() const { return fDataForkLen; }
     void SetDataForkLen(LONGLONG len) { fDataForkLen = len; }
-    LONGLONG GetRsrcForkLen(void) const { return fRsrcForkLen; }
+    LONGLONG GetRsrcForkLen() const { return fRsrcForkLen; }
     void SetRsrcForkLen(LONGLONG len) { fRsrcForkLen = len; }
 
-    DiskImg::FSFormat GetSourceFS(void) const { return fSourceFS; }
+    DiskImg::FSFormat GetSourceFS() const { return fSourceFS; }
     void SetSourceFS(DiskImg::FSFormat fmt) { fSourceFS = fmt; }
 
-    bool GetHasDataFork(void) const { return fHasDataFork; }
+    bool GetHasDataFork() const { return fHasDataFork; }
     void SetHasDataFork(bool val) { fHasDataFork = val; }
-    bool GetHasRsrcFork(void) const { return fHasRsrcFork; }
+    bool GetHasRsrcFork() const { return fHasRsrcFork; }
     void SetHasRsrcFork(bool val) { fHasRsrcFork = val; }
-    bool GetHasDiskImage(void) const { return fHasDiskImage; }
+    bool GetHasDiskImage() const { return fHasDiskImage; }
     void SetHasDiskImage(bool val) { fHasDiskImage = val; }
-    bool GetHasComment(void) const { return fHasComment; }
+    bool GetHasComment() const { return fHasComment; }
     void SetHasComment(bool val) { fHasComment = val; }
-    bool GetHasNonEmptyComment(void) const { return fHasNonEmptyComment; }
+    bool GetHasNonEmptyComment() const { return fHasNonEmptyComment; }
     void SetHasNonEmptyComment(bool val) { fHasNonEmptyComment = val; }
 
-    bool GetDamaged(void) const { return fDamaged; }
+    bool GetDamaged() const { return fDamaged; }
     void SetDamaged(bool val) { fDamaged = val; }
-    bool GetSuspicious(void) const { return fSuspicious; }
+    bool GetSuspicious() const { return fSuspicious; }
     void SetSuspicious(bool val) { fSuspicious = val; }
 
-    GenericEntry* GetPrev(void) const { return fpPrev; }
+    GenericEntry* GetPrev() const { return fpPrev; }
     void SetPrev(GenericEntry* pEntry) { fpPrev = pEntry; }
-    GenericEntry* GetNext(void) const { return fpNext; }
+    GenericEntry* GetNext() const { return fpNext; }
     void SetNext(GenericEntry* pEntry) { fpNext = pEntry; }
 
     /*
      * Get a string for this entry's filetype.
      */
-    const WCHAR* GetFileTypeString(void) const;
+    const WCHAR* GetFileTypeString() const;
 
     /*
      * Check to see if this is a high-ASCII file.
@@ -368,23 +368,23 @@ private:
  */
 class GenericArchive {
 public:
-    GenericArchive(void) {
+    GenericArchive() {
         fPathName = NULL;
         fNumEntries = 0;
         fEntryHead = fEntryTail = NULL;
         fReloadFlag = true;
         //fEntryIndex = NULL;
     }
-    virtual ~GenericArchive(void) {
+    virtual ~GenericArchive() {
         //LOGI("Deleting GenericArchive");
         DeleteEntries();
         delete fPathName;
     }
 
-    virtual GenericEntry* GetEntries(void) const {
+    virtual GenericEntry* GetEntries() const {
         return fEntryHead;
     }
-    virtual long GetNumEntries(void) const {
+    virtual long GetNumEntries() const {
         return fNumEntries;
     }
 
@@ -402,16 +402,16 @@ public:
     // Create a new archive with the specified name.
     virtual CString New(const WCHAR* filename, const void* options) = 0;
     // Flush any unwritten data to disk
-    virtual CString Flush(void) = 0;
+    virtual CString Flush() = 0;
     // Force a re-read from the underlying storage.
-    virtual CString Reload(void) = 0;
+    virtual CString Reload() = 0;
     // Do we allow modification?
-    virtual bool IsReadOnly(void) const = 0;
+    virtual bool IsReadOnly() const = 0;
     // Does the underlying storage have un-flushed modifications?
-    virtual bool IsModified(void) const = 0;
+    virtual bool IsModified() const = 0;
 
-    virtual bool GetReloadFlag(void) { return fReloadFlag; }
-    virtual void ClearReloadFlag(void) { fReloadFlag = false; }
+    virtual bool GetReloadFlag() { return fReloadFlag; }
+    virtual void ClearReloadFlag() { fReloadFlag = false; }
 
     // One of these for every sub-class.
     enum ArchiveKind {
@@ -424,10 +424,10 @@ public:
     };
 
     // Returns the kind of archive this is (disk image, NuFX, BNY, etc).
-    virtual ArchiveKind GetArchiveKind(void) = 0;
+    virtual ArchiveKind GetArchiveKind() = 0;
 
     // Get a nice description for the title bar.
-    virtual void GetDescription(CString* pStr) const = 0;
+    virtual CString GetDescription() const = 0;
 
     // Do a bulk add.
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
@@ -496,7 +496,7 @@ public:
 
     // Preferences have changed, update library state as needed.  Also called
     // the first time though.
-    virtual void PreferencesChanged(void) = 0;
+    virtual void PreferencesChanged() = 0;
 
     // Determine an archive's capabilities.  This is specific to the object
     // instance, so this must not be made a static function.
@@ -515,7 +515,7 @@ public:
     virtual long GetCapability(Capability cap) = 0;
 
     // Get the pathname of the file we opened.
-    const WCHAR* GetPathName(void) const { return fPathName; }
+    const WCHAR* GetPathName() const { return fPathName; }
 
     /*
      * Generate a temp name from a file name.
@@ -549,8 +549,8 @@ public:
      */
     class LocalFileDetails {
     public:
-        LocalFileDetails(void);
-        virtual ~LocalFileDetails(void) {}
+        LocalFileDetails();
+        virtual ~LocalFileDetails() {}
 
         /*
          * Set the various fields, based on the pathname and characteristics
@@ -805,7 +805,7 @@ protected:
     /*
      * Delete the "entries" list.
      */
-    virtual void DeleteEntries(void);
+    virtual void DeleteEntries();
 
     void ReplaceFssep(WCHAR* str, char oldc, char newc, char newSubst);
 
@@ -882,7 +882,7 @@ protected:
     bool            fReloadFlag;        // set after Reload called
 
 private:
-    //virtual void CreateIndex(void);
+    //virtual void CreateIndex();
 
     //CString       fNewPathHolder;
     //CString       fOrigPathHolder;
@@ -906,18 +906,18 @@ public:
         //fReformatName = "";
         fpPrev = fpNext = NULL;
     }
-    ~SelectionEntry(void) {}
+    ~SelectionEntry() {}
 
     int Reformat(ReformatHolder* pHolder);
 
-    GenericEntry* GetEntry(void) const { return fpEntry; }
-    //int GetThreadKind(void) const { return fThreadKind; }
-    //int GetFilter(void) const { return fFilter; }
-    //const char* GetReformatName(void) const { return fReformatName; }
+    GenericEntry* GetEntry() const { return fpEntry; }
+    //int GetThreadKind() const { return fThreadKind; }
+    //int GetFilter() const { return fFilter; }
+    //const char* GetReformatName() const { return fReformatName; }
 
-    SelectionEntry* GetPrev(void) const { return fpPrev; }
+    SelectionEntry* GetPrev() const { return fpPrev; }
     void SetPrev(SelectionEntry* pPrev) { fpPrev = pPrev; }
-    SelectionEntry* GetNext(void) const { return fpNext; }
+    SelectionEntry* GetNext() const { return fpNext; }
     void SetNext(SelectionEntry* pNext) { fpNext = pNext; }
 
 private:
@@ -941,11 +941,11 @@ class ContentList;
  */
 class SelectionSet {
 public:
-    SelectionSet(void) {
+    SelectionSet() {
         fNumEntries = 0;
         fEntryHead = fEntryTail = fIterCurrent = NULL;
     }
-    ~SelectionSet(void) {
+    ~SelectionSet() {
         DeleteEntries();
     }
 
@@ -955,49 +955,49 @@ public:
     void CreateFromAll(ContentList* pContentList, int threadMask);
 
     // get the head of the list
-    SelectionEntry* GetEntries(void) const { return fEntryHead; }
+    SelectionEntry* GetEntries() const { return fEntryHead; }
 
-    void IterReset(void) {
+    void IterReset() {
         fIterCurrent = NULL;
     }
     // move to the next or previous entry as part of iterating
-    SelectionEntry* IterPrev(void) {
+    SelectionEntry* IterPrev() {
         if (fIterCurrent == NULL)
             fIterCurrent = fEntryTail;
         else
             fIterCurrent = fIterCurrent->GetPrev();
         return fIterCurrent;
     }
-    SelectionEntry* IterNext(void) {
+    SelectionEntry* IterNext() {
         if (fIterCurrent == NULL)
             fIterCurrent = fEntryHead;
         else
             fIterCurrent = fIterCurrent->GetNext();
         return fIterCurrent;
     }
-    SelectionEntry* IterCurrent(void) {
+    SelectionEntry* IterCurrent() {
         return fIterCurrent;
     }
-    bool IterHasPrev(void) const {
+    bool IterHasPrev() const {
         if (fIterCurrent == NULL)
             return fEntryTail != NULL;
         else
             return (fIterCurrent->GetPrev() != NULL);
     }
-    bool IterHasNext(void) const {
+    bool IterHasNext() const {
         if (fIterCurrent == NULL)
             return fEntryHead != NULL;
         else
             return (fIterCurrent->GetNext() != NULL);
     }
 
-    int GetNumEntries(void) const { return fNumEntries; }
+    int GetNumEntries() const { return fNumEntries; }
 
     // count the #of entries whose display name matches "prefix"
     int CountMatchingPrefix(const WCHAR* prefix);
 
     // debug dump the contents of the selection set
-    void Dump(void);
+    void Dump();
 
 private:
     /*
@@ -1014,7 +1014,7 @@ private:
     /*
      * Delete the "entries" list.
      */
-    void DeleteEntries(void);
+    void DeleteEntries();
 
     int             fNumEntries;
     SelectionEntry* fIterCurrent;

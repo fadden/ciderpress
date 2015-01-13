@@ -26,12 +26,16 @@
 #define WMU_START               (WM_USER+1)     // used by ActionProgressDialog
 
 enum FilterIndex {
+    kFilterIndexFIRST = 1,          // first index, must be non-Generic
     kFilterIndexNuFX = 1,
     kFilterIndexBinaryII = 2,
     kFilterIndexACU = 3,
     kFilterIndexAppleSingle = 4,
     kFilterIndexDiskImage = 5,
-    kFilterIndexGeneric = 6         // *.* filter used
+    kFilterIndexLAST = 5,           // last non-Generic index
+
+    kFilterIndexGeneric = 6,        // *.* filter used
+    kFilterIndexMAX = 6             // highest valid number
 };
 
 struct FileCollectionEntry;     // fwd
@@ -518,23 +522,23 @@ private:
     int TmpExtractForExternal(GenericEntry* pEntry);
 
     void DoOpenArchive(const WCHAR* pathName, const WCHAR* ext,
-        int filterIndex, bool readOnly);
+        FilterIndex filterIndex, bool readOnly);
+
+    GenericArchive* CreateArchiveInstance(FilterIndex filterIndex) const;
 
     /*
-     * Load an archive, using the appropriate GenericArchive subclass.  If
-     * "createFile" is "true", a new archive file will be created (and must
-     * not already exist!).
+     * Load an archive, using the appropriate GenericArchive subclass.
      *
      * "filename" is the full path to the file, "extension" is the
      * filetype component of the name (without the leading '.'), "filterIndex"
      * is the offset into the set of filename filters used in the standard
-     * file dialog, "readOnly" reflects the state of the stdfile dialog
-     * checkbox, and "createFile" is set to true by the "New Archive" command.
+     * file dialog, and "readOnly" reflects the state of the stdfile dialog
+     * checkbox.
      *
      * Returns 0 on success, nonzero on failure.
      */
     int LoadArchive(const WCHAR* filename, const WCHAR* extension,
-            int filterIndex, bool readOnly, bool createFile);
+            FilterIndex filterIndex, bool readOnly);
 
     /*
      * Open a raw disk volume.  Useful for ProDOS-formatted 1.44MB floppy disks

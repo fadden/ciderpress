@@ -91,7 +91,7 @@ public:
     virtual CString Reload(void) override;
     virtual bool IsReadOnly(void) const override { return fIsReadOnly; };
     virtual bool IsModified(void) const override { return false; }
-    virtual void GetDescription(CString* pStr) const override { *pStr = "Binary II"; }
+    virtual CString GetDescription() const override { return L"Binary II"; }
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts) override
         { ASSERT(false); return false; }

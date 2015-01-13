@@ -164,7 +164,7 @@ public:
      * Return an description of the disk archive, suitable for display in the
      * main title bar.
      */
-    virtual void GetDescription(CString* pStr) const override;
+    virtual CString GetDescription() const override;
 
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts) override;

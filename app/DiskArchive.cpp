@@ -885,14 +885,14 @@ bool DiskArchive::IsModified(void) const
     return fpPrimaryDiskFS->GetDiskImg()->GetDirtyFlag();
 }
 
-void DiskArchive::GetDescription(CString* pStr) const
+CString DiskArchive::GetDescription() const
 {
-    if (fpPrimaryDiskFS == NULL)
-        return;
+    CString str = L"Disk Image";
 
-    if (fpPrimaryDiskFS->GetVolumeID() != NULL) {
-        pStr->Format(L"Disk Image - %hs", fpPrimaryDiskFS->GetVolumeID());
+    if (fpPrimaryDiskFS != NULL && fpPrimaryDiskFS->GetVolumeID() != NULL) {
+        str.Format(L"Disk Image - %hs", fpPrimaryDiskFS->GetVolumeID());
     }
+    return str;
 }
 
 int DiskArchive::LoadContents(void)

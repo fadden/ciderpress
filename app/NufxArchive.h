@@ -112,7 +112,7 @@ public:
     virtual CString Reload(void) override;
     virtual bool IsReadOnly(void) const override { return fIsReadOnly; };
     virtual bool IsModified(void) const override { return false; }
-    virtual void GetDescription(CString* pStr) const override { *pStr = L"NuFX"; }
+    virtual CString GetDescription() const override { return L"NuFX"; }
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts) override;
     virtual bool AddDisk(ActionProgressDialog* pActionProgress,

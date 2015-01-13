@@ -121,8 +121,7 @@ public:
     virtual CString Reload(void) override;
     virtual bool IsReadOnly(void) const override { return true; };
     virtual bool IsModified(void) const override { return false; }
-    virtual void GetDescription(CString* pStr) const override
-        { *pStr = L"AppleSingle"; }
+    virtual CString GetDescription() const override { return L"AppleSingle"; }
     virtual bool BulkAdd(ActionProgressDialog* pActionProgress,
         const AddFilesDialog* pAddOpts) override
         { ASSERT(false); return false; }
