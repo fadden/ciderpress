@@ -23,7 +23,7 @@
 class MyApp: public CWinAppEx
 {
 public:
-    MyApp(LPCTSTR lpszAppName = NULL);
+    MyApp();
     virtual ~MyApp(void);
 
 #ifdef CAN_UPDATE_FILE_ASSOC

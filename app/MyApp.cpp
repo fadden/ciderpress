@@ -13,7 +13,6 @@
 #include "Main.h"
 #include "DiskArchive.h"
 #include "Help/PopUpIds.h"
-#include <process.h>
 
 /* magic global that MFC finds (or that finds MFC) */
 MyApp gMyApp;
@@ -26,7 +25,7 @@ DebugLog* gDebugLog;
  * This is the closest thing to "main" that we have, but we
  * should wait for InitInstance for most things.
  */
-MyApp::MyApp(LPCTSTR lpszAppName) : CWinAppEx(true /*lpszAppName*/)
+MyApp::MyApp() : CWinAppEx()
 {
     gDebugLog = new DebugLog(L"C:\\src\\cplog.txt");
 

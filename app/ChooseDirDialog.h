@@ -9,8 +9,6 @@
 #ifndef APP_CHOOSEDIRDIALOG
 #define APP_CHOOSEDIRDIALOG
 
-#include "../util/UtilLib.h"
-#include "resource.h"
 #include <afxshellmanager.h>
 
 
