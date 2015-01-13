@@ -177,3 +177,42 @@ Files used when making a distribution, notably:
 - the license and README files that are included in the installer
 - redistributable Windows runtime libraries (only needed on WinXP?)
 - NiftyList data file
+
+
+Future Trouble Spots
+--------------------
+
+Microsoft generally does an excellent job of maintaining backward
+compatibility, but as Windows and the build tools continue to evolve it is
+likely that some things will break.  The original version of CiderPress was
+written to work on Win98, using tools of that era, and quite a bit of effort
+in the 4.0 release was devoted to bringing CP into the modern era.
+
+In another 15 years things may be broken all over again.  Some areas of
+particular concern:
+
+1. File + folder selection.  The dialog that allows you to select a combination
+of files and folders is a customized version of the standard file dialog.
+There is no standard dialog that works for this.  The original version, based
+on the old Win98-era file dialogs, worked fine at first but started to fail
+in Vista.  CiderPress v4.0 provided a new implementation, based on the
+Win2K "explorer" dialog, which works well in WinXP and Win7/8.  However,
+WinVista introduced a new style, and those dialogs have a very different
+structure (and don't work on WinXP).  At some point it may be necessary
+to replace the dialog again.
+
+2. Help files.  CiderPress initially used the old WinHelp system.  v4.0
+switched to the newer HtmlHelp, but judging by the level of support it would
+seem that HtmlHelp is on its way out.  The favored approach seems to be to
+just pop open a web browser to a web site or a document on disk.  The pop-up
+help text, which currently comes out of a special section of the help file,
+would instead use MFC tooltip features, with strings coming out of the
+resource file.  (This is probably more convenient and definitely more
+flexible, so switching the pop-up help messages may happen sooner.)
+
+3. Unicode filenames.  CiderPress cannot open most files with non-ASCII,
+non-CP-1252 characters in their names (e.g. kanji).  This is because the
+NufxLib and DiskImg libraries use narrow strings for filenames.  The libraries
+are expected to build on Linux, so converting them is a bit of a pain.  At
+some point it may be necessary to support Unicode fully.  v4.0 did a lot of
+code reorganization to make this easier, as did NufxLib v3.0.
