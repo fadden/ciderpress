@@ -989,7 +989,7 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     unsigned char* diskData = NULL;
     WCHAR curDir[MAX_PATH] = L"\\";
     bool retVal = false;
-    CStringA storageNameA, origNameA;
+    CStringA storageNameA;
 
     LOGI("AddDisk: '%ls' (count=%d)", (LPCWSTR) pAddOpts->GetDirectory(),
         pAddOpts->GetFileNames().GetCount());
@@ -1051,9 +1051,8 @@ bool NufxArchive::AddDisk(ActionProgressDialog* pActionProgress,
     details.storageType = kBlockSize;
     details.access = kNuAccessUnlocked;
     details.extraType = pAddOpts->fpDiskImg->GetNumBlocks();
-    origNameA = fileName;   // narrowing conversion
-    storageNameA = pathProp.fStoredPathName;
-    details.origName = origNameA;
+    storageNameA = pathProp.fStoredPathName;    // TODO(Unicode)
+    details.origName = (LPCWSTR) fileName;      // pass wide string through
     details.storageNameMOR = storageNameA;
     details.fileSysID = kNuFileSysUnknown;
     details.fileSysInfo = PathProposal::kDefaultStoredFssep;
@@ -1314,6 +1313,7 @@ NuResult NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
     ConfirmOverwriteDialog confOvwr;
     PathName path(pErrorStatus->pathnameUNI);
     
+    // TODO(Unicode): convert MOR to Unicode
     confOvwr.fExistingFile = pErrorStatus->pRecord->filenameMOR;
     confOvwr.fExistingFileModWhen =
         DateTimeToSeconds(&pErrorStatus->pRecord->recModWhen);
@@ -1322,7 +1322,7 @@ NuResult NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
         PathName checkPath(confOvwr.fNewFileSource);
         confOvwr.fNewFileModWhen = checkPath.GetModWhen();
     } else {
-        confOvwr.fNewFileSource = "???";
+        confOvwr.fNewFileSource = L"???";
         confOvwr.fNewFileModWhen = kDateNone;
     }
 
