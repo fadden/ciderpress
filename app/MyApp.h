@@ -15,7 +15,7 @@
 #define kAppMajorVersion    4
 #define kAppMinorVersion    0
 #define kAppBugVersion      0
-#define kAppDevString       L"b1"
+#define kAppDevString       L"b2"
 
 /*
  * Windows application object.
