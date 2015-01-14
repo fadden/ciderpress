@@ -1944,10 +1944,14 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
      * Try to open the file according to the specified filter index.  If
      * it works, we're done.  Trying this first ensures that you can choose
      * to open, say, a .SDK file as either ShrinkIt or Disk Image.
+     *
+     * It's possible to cancel the file open if you have "confirm disk image
+     * format set" and the file is a disk image.  In that case we want to
+     * return with an error result, but without showing an error dialog.
      */
     CString firstErrStr;
     pOpenArchive = CreateArchiveInstance(filterIndex);
-    LOGD("  First try: %ls", (LPCWSTR) pOpenArchive->GetDescription());
+    LOGD("First try: %ls", (LPCWSTR) pOpenArchive->GetDescription());
     openResult = pOpenArchive->Open(fileName, readOnly, &firstErrStr);
     if (openResult == GenericArchive::kResultSuccess) {
         // success!
@@ -1960,6 +1964,10 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
         } else {
             firstErrStr = L"This appears to be a file archive.";
         }
+    } else if (openResult == GenericArchive::kResultCancel) {
+        LOGD("canceled");
+        delete pOpenArchive;
+        return -1;
     }
     delete pOpenArchive;
 
@@ -1977,6 +1985,10 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
             // success!
             SwitchContentList(pOpenArchive);
             return 0;
+        } else if (openResult == GenericArchive::kResultCancel) {
+            LOGD("cancelled");
+            delete pOpenArchive;
+            return -1;
         }
         delete pOpenArchive;
     }
@@ -1993,6 +2005,7 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
      * trying to open disk images anyway.
      */
     if (firstErrStr.IsEmpty()) {
+        // not expected; put up a generic message if it happens
         firstErrStr = L"Unable to determine what kind of file this is.";
     }
     ShowFailureMsg(this, firstErrStr, IDS_FAILED);
