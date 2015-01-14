@@ -67,7 +67,7 @@ const WCHAR MainWindow::kOpenBinaryII[] =
 const WCHAR MainWindow::kOpenACU[] =
     L"ACU Archives" /* (.acu)*/ L"|*.acu|";
 const WCHAR MainWindow::kOpenAppleSingle[] =
-    L"AppleSingle files" /* (.as *.*)*/ L"|*.as;*.*|";
+    L"AppleSingle files" /* (.as)*/ L"|*.as|";
 const WCHAR MainWindow::kOpenDiskImage[] =
     L"Disk Images" /* (.shk .sdk .dsk .po .do .d13 .2mg .img .nib .nb2 .raw .hdv .dc .dc6 .ddd .app .fdi .iso .gz .zip)*/ L"|"
     L"*.shk;*.sdk;*.dsk;*.po;*.do;*.d13;*.2mg;*.img;*.nib;*.nb2;*.raw;*.hdv;*.dc;*.dc6;*.ddd;*.app;*.fdi;*.iso;*.gz;*.zip|";
@@ -1200,7 +1200,12 @@ void MainWindow::OnFileOpen(void)
     CFileDialog dlg(TRUE, L"shk", NULL,
         OFN_FILEMUSTEXIST, openFilters, this);
 
-    dlg.m_ofn.nFilterIndex = fPreferences.GetPrefLong(kPrLastOpenFilterIndex);
+    DWORD savedIndex = fPreferences.GetPrefLong(kPrLastOpenFilterIndex);
+    if (savedIndex < kFilterIndexFIRST || savedIndex > kFilterIndexMAX) {
+        // default to *.* if not set (zero) or out of range
+        savedIndex = kFilterIndexGeneric;
+    }
+    dlg.m_ofn.nFilterIndex = savedIndex;
     dlg.m_ofn.lpstrInitialDir = fPreferences.GetPrefString(kPrOpenArchiveFolder);
 
     if (dlg.DoModal() != IDOK)
@@ -1974,7 +1979,7 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
     /*
      * That didn't work.  Try the others.
      */
-    for (int i = kFilterIndexFIRST; i <= kFilterIndexLAST; i++) {
+    for (int i = kFilterIndexFIRST; i <= kFilterIndexLASTNG; i++) {
         if (i == filterIndex) continue;
 
         pOpenArchive = CreateArchiveInstance((FilterIndex) i);

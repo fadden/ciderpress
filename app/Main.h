@@ -25,6 +25,8 @@
 #define WMU_LATE_INIT           (WM_USER+0)
 #define WMU_START               (WM_USER+1)     // used by ActionProgressDialog
 
+// The filter index is saved in the registry, so if you reorder this list
+// you will briefly annoy existing users.
 enum FilterIndex {
     kFilterIndexFIRST = 1,          // first index, must be non-Generic
     kFilterIndexNuFX = 1,
@@ -32,7 +34,7 @@ enum FilterIndex {
     kFilterIndexACU = 3,
     kFilterIndexAppleSingle = 4,
     kFilterIndexDiskImage = 5,
-    kFilterIndexLAST = 5,           // last non-Generic index
+    kFilterIndexLASTNG = 5,         // last non-Generic index
 
     kFilterIndexGeneric = 6,        // *.* filter used
     kFilterIndexMAX = 6             // highest valid number
