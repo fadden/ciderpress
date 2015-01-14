@@ -216,3 +216,19 @@ NufxLib and DiskImg libraries use narrow strings for filenames.  The libraries
 are expected to build on Linux, so converting them is a bit of a pain.  At
 some point it may be necessary to support Unicode fully.  v4.0 did a lot of
 code reorganization to make this easier, as did NufxLib v3.0.
+
+4. Windows XP support.  The default Visual Studio 2013 configuration creates
+executables that do not work in Windows XP.  CiderPress uses a compatibility
+toolset and packs about 5MB of additional DLLs (mfc120u.dll, msvcr120.dll) in
+the install package to keep things working.  At some point it may not be
+possible to support WinXP, or building for WinXP will prevent something from
+working.  The good news is that, for the current round of tools, it's
+possible to build a single binary that works fully on WinXP and later systems.
+
+5. Installer magic.  Security improvements and changes like the Win8 "Metro"
+launcher affect the way apps are installed and launched.  So far the only
+impact on CiderPress was to the file association handling (the stuff that
+allows you to double-click a file and have CiderPress open it), but it's
+likely that future OS changes will require matching app changes.  The use
+of DeployMaster is helpful here, as it has been kept up-to-date with changes
+in Windows.
