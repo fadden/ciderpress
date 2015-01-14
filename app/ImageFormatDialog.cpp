@@ -252,8 +252,9 @@ int ImageFormatDialog::ConvComboSel(int boxID, const ConvTable* pTable)
         ASSERT(enumval == pTable[idx].enumval);
     }
 
-    LOGI(" Returning ev=%d for %d entry '%ls'",
-        enumval, boxID, pTable[idx].name);
+    // Note pTable[idx].name is not always correct here, because the generic
+    // formats may not have been loaded into the combo box.
+    LOGI(" Returning ev=%d for %d'", enumval, boxID);
 
     return enumval;
 }

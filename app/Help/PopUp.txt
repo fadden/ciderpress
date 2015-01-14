@@ -447,6 +447,10 @@ View the disk as a series of 512-byte blocks.  Recommended for ProDOS, Pascal, a
 .topic IDH_DECONF_VIEWASSECTORS
 View the disk as a collection of tracks and 256-byte sectors.  Recommended for DOS 3.2 and 3.3.  Not available on odd-sized volumes, e.g. some ProDOS images.
 
+.topic IDH_DECONF_OUTERFORMAT
+The outer format of the disk image, e.g. Zip archive.  This setting may not be
+changed.
+
 .topic IDH_IMAGE_TYPE
 Basic information about the image.
 
