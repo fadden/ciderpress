@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Language" content="en-us">
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="GENERATOR" content="Microsoft FrontPage 12.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
 <title>CiderPress Change Log</title>
 </head>
@@ -33,25 +33,29 @@
 </ol>
 <p>In addition, CiderPress uses the NufxLib library to access NuFX (ShrinkIt)
 archives, and zlib to compress and expand &quot;.gz&quot; and &quot;.zip&quot; files.</p>
-<h2>v4.0.0b1 - 12-Jan-2014</h2>
+<h2>v4.0.0b2 - 14-Jan-2014</h2>
 <ul>
-  <li>[all] Moved from CVS on sourceforge.net to git on github.com.
+  <li>[all] Moved sources from CVS on sourceforge.net to git on github.com.
     Registered a2ciderpress.com.</li>
   <li>[all] Updated build system and source code to work with Visual
-    Studio 2013.  Added snapshots of NufxLib and zlib to source tree.
+    Studio 2013.&nbsp; As a result, WinXP or later is now required.</li>
+	<li>[all]  Added snapshots of NufxLib and zlib to source tree.
     Much source code scrubbing.</li>
   <li>[all] Switched from MBCS to wide-character UNICODE APIs.</li>
   <li>[app] Converted help from WinHelp to HtmlHelp.</li>
   <li>[app] Added support for AppleSingle files.</li>
+	<li>[app] &quot;Open file&quot; is much better about detecting file types.</li>
   <li>[app] File type association code now uses HKCU registry rather
     than HKCR.</li>
   <li>[app] File listing and file viewer display Mac OS Roman character
     values with correct Unicode characters.</li>
-  <li>[util] Fixed file+folder selection dialog.</li>
+  <li>[util] Fixed file+folder selection dialog.&nbsp; Improved folder selection 
+  dialog.</li>
   <li>[diskimg] Fixed Linux build.</li>
   <li>[diskimg] Improved Gutenberg disk support.</li>
-  <li>[reformat] Teach and AWP converter now generate RTF with Unicode
-    values for non-ASCII Mac OS Roman characters.</li>
+  <li>[reformat] Teach and AWGS converter now generate RTF with Unicode
+    values for non-ASCII Mac OS Roman characters.&nbsp; Outline and shadow 
+  styles added.</li>
 </ul>
 <h2>v3.0.2d1 - 19-Jan-2014</h2>
 <ul>
