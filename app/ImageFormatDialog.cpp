@@ -103,6 +103,7 @@ static const ConvTable gFSFormats[] = {
     { DiskImg::kFormatRDOS33,               L"RDOS 3.3 (16-sector)" },
     { DiskImg::kFormatRDOS32,               L"RDOS 3.2 (13-sector)" },
     { DiskImg::kFormatRDOS3,                L"RDOS 3 (cracked 13-sector)" },
+    { DiskImg::kFormatGutenberg,            L"Gutenberg" },
     { kLastEntry,                           NULL }
 };
 
