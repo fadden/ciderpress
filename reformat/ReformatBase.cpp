@@ -682,6 +682,46 @@ void ReformatText::RTFUnderlineOff(void)
     }
 }
 
+void ReformatText::RTFOutlineOn(void)
+{
+    if (fOutlineEnabled)
+        return;
+    if (fUseRTF) {
+        BufPrintf("\\outl ");
+        fOutlineEnabled = true;
+    }
+}
+
+void ReformatText::RTFOutlineOff(void)
+{
+    if (!fOutlineEnabled)
+        return;
+    if (fUseRTF) {
+        BufPrintf("\\outl0 ");
+        fOutlineEnabled = false;
+    }
+}
+
+void ReformatText::RTFShadowOn(void)
+{
+    if (fShadowEnabled)
+        return;
+    if (fUseRTF) {
+        BufPrintf("\\shad ");
+        fShadowEnabled = true;
+    }
+}
+
+void ReformatText::RTFShadowOff(void)
+{
+    if (!fShadowEnabled)
+        return;
+    if (fUseRTF) {
+        BufPrintf("\\shad0 ");
+        fShadowEnabled = false;
+    }
+}
+
 void ReformatText::RTFSubscriptOn(void)
 {
     if (fSubscriptEnabled)
@@ -871,7 +911,7 @@ void ReformatText::RTFSetGSFont(uint16_t family)
         newMult = 1.5f;
         break;
     default:
-        LOGI("Unrecognized font family 0x%04x", family);
+        LOGI("Unrecognized font family 0x%04x, using Arial", family);
         RTFSetFont(kFontArial);
         newMult = 1.0f;
         break;
@@ -897,11 +937,11 @@ void ReformatText::RTFSetGSFontSize(int points)
 }
 
 /*
- * Set bold/italic/underline.  "Teach" ignores you if you try to
- * underline text smaller than 8 points, but if you leave the mode
- * on from a previous block it will act like it wants to underline
- * text but not actually do it.  We have to emulate this behavior,
- * or some documents (e.g. "MZ.MANUAL") look terrible.
+ * Set bold/italic/underline etc.
+ *
+ * Note that "Teach" does not show underlining on text that is 8 points
+ * or smaller.  We have to emulate this behavior or some documents, such
+ * as ModZap's "MZ.Manual", look terrible.
  *
  * Set the font size before calling here.
  *
@@ -914,26 +954,41 @@ void ReformatText::RTFSetGSFontStyle(uint8_t qdStyle)
     if (!fUseRTF)
         return;
 
-    if ((qdStyle & kQDStyleBold) != 0)
+    if ((qdStyle & kQDStyleBold) != 0) {
         RTFBoldOn();
-    else
+    } else {
         RTFBoldOff();
-    if ((qdStyle & kQDStyleItalic) != 0)
+    }
+    if ((qdStyle & kQDStyleItalic) != 0) {
         RTFItalicOn();
-    else
+    } else {
         RTFItalicOff();
-    if ((qdStyle & kQDStyleUnderline) != 0 && fPreMultPointSize > 8)
+    }
+    if ((qdStyle & kQDStyleUnderline) != 0 && fPreMultPointSize > 8) {
         RTFUnderlineOn();
-    else
+    } else {
         RTFUnderlineOff();
-    if ((qdStyle & kQDStyleSuperscript) != 0)
+    }
+    if ((qdStyle & kQDStyleOutline) != 0) {
+        RTFOutlineOn();
+    } else {
+        RTFOutlineOff();
+    }
+    if ((qdStyle & kQDStyleShadow) != 0) {
+        RTFShadowOn();
+    } else {
+        RTFShadowOff();
+    }
+    if ((qdStyle & kQDStyleSuperscript) != 0) {
         RTFSuperscriptOn();
-    else
+    } else {
         RTFSuperscriptOff();
-    if ((qdStyle & kQDStyleSubscript) != 0)
+    }
+    if ((qdStyle & kQDStyleSubscript) != 0) {
         RTFSubscriptOn();
-    else
+    } else {
         RTFSubscriptOff();
+    }
 }
 
 

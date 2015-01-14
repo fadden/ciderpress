@@ -180,23 +180,29 @@ private:
  */
 class ReformatText : public Reformat {
 public:
-    typedef enum ParagraphJustify {
+    enum ParagraphJustify {
         kJustifyLeft,
         kJustifyRight,
         kJustifyCenter,
         kJustifyFull,
-    } ParagraphJustify;
-
-    ReformatText(void) {
-        fUseRTF = true;
-        fLeftMargin = fRightMargin = 0;
-        fPointSize = fPreMultPointSize = 8;
-        fGSFontSizeMult = 1.0;
-        fJustified = kJustifyLeft;
-        fBoldEnabled = fItalicEnabled = fUnderlineEnabled =
-            fSuperscriptEnabled = fSubscriptEnabled = false;
-        fTextColor = kColorNone;
     };
+
+    ReformatText()
+      : fLeftMargin(0),
+        fRightMargin(0),
+        fPointSize(8),
+        fPreMultPointSize(8),
+        fGSFontSizeMult(1.0),
+        fBoldEnabled(false),
+        fItalicEnabled(false),
+        fUnderlineEnabled(false),
+        fOutlineEnabled(false),
+        fShadowEnabled(false),
+        fSuperscriptEnabled(false),
+        fSubscriptEnabled(false),
+        fJustified(kJustifyLeft),
+        fTextColor(kColorNone)
+    {}
     virtual ~ReformatText(void) {}
 
     /*
@@ -308,16 +314,19 @@ protected:
     void RTFParaRight(void);
     void RTFParaCenter(void);
     void RTFParaJustify(void);
-    void RTFLeftMargin(int margin);
-    void RTFRightMargin(int margin);
-    //void RTFSetMargins(void);
     void RTFSubscriptOn(void);
     void RTFSubscriptOff(void);
     void RTFSuperscriptOn(void);
     void RTFSuperscriptOff(void);
+    void RTFOutlineOn(void);
+    void RTFOutlineOff(void);
+    void RTFShadowOn(void);
+    void RTFShadowOff(void);
     void RTFSetColor(TextColor color);
     void RTFSetFont(RTFFont font);
     void RTFSetFontSize(int points);
+    void RTFLeftMargin(int margin);
+    void RTFRightMargin(int margin);
     void RTFSetGSFont(uint16_t family);
     void RTFSetGSFontSize(int points);
     void RTFSetGSFontStyle(uint8_t qdStyle);
@@ -404,6 +413,8 @@ private:
     bool    fBoldEnabled;
     bool    fItalicEnabled;
     bool    fUnderlineEnabled;
+    bool    fOutlineEnabled;
+    bool    fShadowEnabled;
     bool    fSuperscriptEnabled;
     bool    fSubscriptEnabled;
     ParagraphJustify    fJustified;
