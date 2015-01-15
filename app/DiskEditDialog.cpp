@@ -132,8 +132,7 @@ BOOL DiskEditDialog::OnInitDialog(void)
     title += fFileName;
     if (fpDiskFS->GetVolumeID() != NULL) {
         title += " (";
-        CStringA volumeIdA(fpDiskFS->GetVolumeID());
-        title += Charset::ConvertMORToUNI(volumeIdA);
+        title += Charset::ConvertMORToUNI(fpDiskFS->GetVolumeID());
         title += ")";
     }
     SetWindowText(title);
@@ -280,8 +279,7 @@ void DiskEditDialog::OnSubVolume(void)
             pEditDialog = &blockEdit;
         else
             pEditDialog = &sectorEdit;
-        CStringA volumeIdA(fpDiskFS->GetVolumeID());
-        CString volumeId(Charset::ConvertMORToUNI(volumeIdA));
+        CString volumeId(Charset::ConvertMORToUNI(fpDiskFS->GetVolumeID()));
         pEditDialog->Setup(pSubVol->GetDiskFS(), volumeId);
         pEditDialog->SetPositionShift(8);
         (void) pEditDialog->DoModal();

@@ -183,9 +183,8 @@ void DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS,
     /*
      * Add the current DiskFS.
      */
-    CStringA volumeIdA(pDiskFS->GetVolumeID());
     CString tmpStr(prefix);
-    tmpStr += Charset::ConvertMORToUNI(volumeIdA);
+    tmpStr += Charset::ConvertMORToUNI(pDiskFS->GetVolumeID());
     pCombo->AddString(tmpStr);
     pCombo->SetItemData(*pIdx, (unsigned long) pDiskFS);
     (*pIdx)++;

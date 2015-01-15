@@ -34,8 +34,7 @@ BOOL SubVolumeDialog::OnInitDialog(void)
     DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(NULL);
     ASSERT(pSubVol != NULL);     // shouldn't be here otherwise
     while (pSubVol != NULL) {
-        CStringA volumeIdA(pSubVol->GetDiskFS()->GetVolumeID());
-        CString volumeId(Charset::ConvertMORToUNI(volumeIdA));
+        CString volumeId(Charset::ConvertMORToUNI(pSubVol->GetDiskFS()->GetVolumeID()));
         pListBox->AddString(volumeId); // makes a copy of the string
 
         pSubVol = fpDiskFS->GetNextSubVolume(pSubVol);

@@ -334,8 +334,7 @@ void VolumeCopyDialog::AddToList(CListCtrl* pListView, DiskImg* pDiskImg,
 
     long numBlocks = pDiskImg->GetNumBlocks();
 
-    CStringA volNameA = pDiskFS->GetVolumeName();
-    CString volName(Charset::ConvertMORToUNI(volNameA));
+    CString volName(Charset::ConvertMORToUNI(pDiskFS->GetVolumeName()));
     CString format = DiskImg::ToString(pDiskImg->GetFSFormat());
     blocksStr.Format(L"%ld", pDiskImg->GetNumBlocks());
     if (numBlocks > 1024*1024*2)
@@ -400,8 +399,7 @@ void VolumeCopyDialog::OnCopyToFile(void)
     assert(pSrcImg != NULL);
     assert(pSrcFS != NULL);
 
-    CStringA srcNameA = pSrcFS->GetVolumeName();
-    CString srcName(Charset::ConvertMORToUNI(srcNameA));
+    CString srcName(Charset::ConvertMORToUNI(pSrcFS->GetVolumeName()));
 
     /* force the format to be generic ProDOS-ordered blocks */
     originalFormat = pSrcImg->GetFSFormat();
@@ -586,8 +584,7 @@ void VolumeCopyDialog::OnCopyFromFile(void)
     if (!result)
         return;
 
-    CStringA targetNameA = pDstFS->GetVolumeName();
-    CString targetName(Charset::ConvertMORToUNI(targetNameA));
+    CString targetName(Charset::ConvertMORToUNI(pDstFS->GetVolumeName()));
 
 
     /*

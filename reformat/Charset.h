@@ -28,14 +28,14 @@ public:
     }
 
     // Simple Mac OS Roman to Unicode string conversion.
-    static CString ConvertMORToUNI(const CStringA& strMOR)
+    static CString ConvertMORToUNI(const char* strMOR)
     {
         // We know that all MOR characters are represented in Unicode with a
         // single BMP code point, so we know that strlen(MOR) == wcslen(UNI).
-        const int len = strMOR.GetLength();
+        const size_t len = strlen(strMOR);
         CString strUNI;
         WCHAR* uniBuf = strUNI.GetBuffer(len);
-        for (int i = 0; i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
             uniBuf[i] = Charset::ConvertMacRomanToUTF16(strMOR[i]);
         }
         strUNI.ReleaseBuffer(len);

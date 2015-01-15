@@ -892,8 +892,7 @@ CString DiskArchive::GetDescription() const
     CString str = L"Disk Image";
 
     if (fpPrimaryDiskFS != NULL && fpPrimaryDiskFS->GetVolumeID() != NULL) {
-        CStringA volumeIdA(fpPrimaryDiskFS->GetVolumeID());
-        CString volumeId(Charset::ConvertMORToUNI(volumeIdA));
+        CString volumeId(Charset::ConvertMORToUNI(fpPrimaryDiskFS->GetVolumeID()));
         str.Format(L"Disk Image - %ls", (LPCWSTR) volumeId);
     }
     return str;
@@ -1090,12 +1089,11 @@ int DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
      */
     pSubVol = pDiskFS->GetNextSubVolume(NULL);
     while (pSubVol != NULL) {
-        CStringA subVolNameMOR;
         CString concatSubVolName;
         int ret;
 
-        subVolNameMOR = pSubVol->GetDiskFS()->GetVolumeName();
-        if (subVolNameMOR.IsEmpty()) {
+        const char* subVolNameMOR = pSubVol->GetDiskFS()->GetVolumeName();
+        if (subVolNameMOR == NULL) {
             subVolNameMOR = "+++";      // call it *something*
         }
         CString subVolName(Charset::ConvertMORToUNI(subVolNameMOR));
