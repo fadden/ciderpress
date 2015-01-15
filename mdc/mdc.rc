@@ -68,31 +68,31 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG 22, 17, 156, 111
-STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOGEX 22, 17, 178, 111
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
-FONT 10, "MS Sans Serif"
+FONT 10, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    ICON            IDI_MDC,IDC_MYICON,7,7,20,20
-    LTEXT           "MDC version %d.%d.%d",IDC_ABOUT_VERS,33,7,116,8,SS_NOPREFIX
-    LTEXT           "Copyright © 2009 by CiderPress project authors.\rAll Rights Reserved.",IDC_STATIC,7,31,142,19
-    DEFPUSHBUTTON   "OK",IDOK,53,90,50,14
-    LTEXT           "This utility scans Apple II disk images and creates formatted listings of the files in them.",IDC_STATIC,7,58,142,26
-    LTEXT           "Multi-Disk Catalog",IDC_STATIC,33,15,55,8
+    ICON            IDI_MDC,IDC_MYICON,7,7,18,16
+    LTEXT           "MDC version %d.%d.%d",IDC_ABOUT_VERS,33,7,138,8,SS_NOPREFIX
+    LTEXT           "Copyright © 2015 by CiderPress project authors.\rAll Rights Reserved.",IDC_STATIC,7,31,164,19
+    DEFPUSHBUTTON   "OK",IDOK,64,90,50,14
+    LTEXT           "This utility scans Apple II disk images and creates formatted listings of the files in them.",IDC_STATIC,7,58,164,26
+    LTEXT           "Multi-Disk Catalog",IDC_STATIC,33,15,138,8
 END
 
 IDD_CHOOSE_FILES DIALOGEX 0, 0, 270, 112
-STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LTEXT           "",1119,0,0,270,87,NOT WS_GROUP
     LTEXT           "Select the disk images to scan.  If you select a folder, all files in that folder will be processed.  Use Ctrl-click and Shift-click to select multiple items.",IDC_CHOOSEFILES_STATIC1,7,87,263,17
 END
 
-IDD_PROGRESS DIALOG 0, 0, 250, 66
-STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION
+IDD_PROGRESS DIALOGEX 0, 0, 250, 66
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION
 CAPTION "Progress..."
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,99,45,50,14
     LTEXT           "Now scanning:",IDC_STATIC,7,7,96,8
@@ -140,7 +140,7 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 149
+        RIGHTMARGIN, 171
         VERTGUIDE, 33
         TOPMARGIN, 7
         BOTTOMMARGIN, 104
