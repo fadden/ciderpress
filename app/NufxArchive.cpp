@@ -14,6 +14,7 @@
 #include "AddClashDialog.h"
 #include "Main.h"
 #include "../nufxlib/NufxLib.h"
+#include "../reformat/Charset.h"
 
 /*
  * NufxLib doesn't currently allow an fssep of '\0', so we use this instead
@@ -499,6 +500,7 @@ NuResult NufxArchive::NufxErrorMsgHandler(NuArchive*, void* vErrorMessage)
     (void) NuGetExtraData(pArchive, (void**) &pThis);
     ASSERT(pThis != NULL);
 
+    // TODO(Unicode): NufxLib should be handing us these in UTF-16
     oldName = newName = NULL;
     if (pProgress->operation == kNuOpAdd) {
         oldName = pProgress->origPathnameUNI;
@@ -522,10 +524,11 @@ NuResult NufxArchive::NufxErrorMsgHandler(NuArchive*, void* vErrorMessage)
     //  oldName == NULL ? "(null)" : oldName,
     //  newName == NULL ? "(null)" : newName);
 
-    //status = pMainWin->SetProgressUpdate(perc, oldName, newName);
     CString oldNameW(oldName);
     CString newNameW(newName);
-    status = SET_PROGRESS_UPDATE2(perc, oldNameW, newNameW);
+    status = SET_PROGRESS_UPDATE2(perc,
+        oldNameW.IsEmpty() ? NULL : (LPCWSTR) oldNameW,
+        newNameW.IsEmpty() ? NULL : (LPCWSTR) newNameW);
 
     /* check to see if user hit the "cancel" button on the progress dialog */
     if (pProgress->state == kNuProgressAborted) {
@@ -1313,8 +1316,7 @@ NuResult NufxArchive::HandleReplaceExisting(const NuErrorStatus* pErrorStatus)
     ConfirmOverwriteDialog confOvwr;
     PathName path(pErrorStatus->pathnameUNI);
     
-    // TODO(Unicode): convert MOR to Unicode
-    confOvwr.fExistingFile = pErrorStatus->pRecord->filenameMOR;
+    confOvwr.fExistingFile = Charset::ConvertMORToUNI(pErrorStatus->pRecord->filenameMOR);
     confOvwr.fExistingFileModWhen =
         DateTimeToSeconds(&pErrorStatus->pRecord->recModWhen);
     if (pErrorStatus->origPathname != NULL) {

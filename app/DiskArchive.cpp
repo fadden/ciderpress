@@ -1399,7 +1399,7 @@ NuResult DiskArchive::HandleReplaceExisting(const A2File* pExisting,
 
     ConfirmOverwriteDialog confOvwr;
 
-    confOvwr.fExistingFile = pExisting->GetPathName();
+    confOvwr.fExistingFile = Charset::ConvertMORToUNI(pExisting->GetPathName());
     confOvwr.fExistingFileModWhen = pExisting->GetModWhen();
 
     PathName srcPath(pDetails->GetLocalPathName());
@@ -1596,7 +1596,7 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
 
         /* really ought to do this separately for each thread */
         SET_PROGRESS_BEGIN();
-        CString pathNameW(parms.pathName);
+        CString pathNameW(Charset::ConvertMORToUNI(parms.pathName));
         SET_PROGRESS_UPDATE2(0, pDetails->GetLocalPathName(), pathNameW);
 
         DIError dierr;
@@ -1604,8 +1604,8 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
                     rsrcBuf, rsrcLen);
         SET_PROGRESS_END();
         if (dierr != kDIErrNone) {
-            errMsg.Format(L"Unable to add '%hs' to image: %hs.",
-                parms.pathName, DiskImgLib::DIStrError(dierr));
+            errMsg.Format(L"Unable to add '%ls' to image: %hs.",
+                (LPCWSTR) pathNameW, DiskImgLib::DIStrError(dierr));
             goto bail;
         }
         delete[] dataBuf;
@@ -2070,24 +2070,24 @@ bool DiskArchive::CreateSubdir(CWnd* pMsgWnd, GenericEntry* pParentEntry,
     DIError dierr;
     A2File* pNewFile = NULL;
     DiskFS::CreateParms parms;
-    CStringA pathName;
+    CStringA pathNameMOR;
     time_t now = time(NULL);
 
     /*
      * Create the full path.
      */
     if (pFile->IsVolumeDirectory()) {
-        pathName = newName;
+        pathNameMOR = newName;
     } else {
-        pathName = pParentEntry->GetPathNameMOR();
-        pathName += pParentEntry->GetFssep();
-        pathName += newName;
+        pathNameMOR = pParentEntry->GetPathNameMOR();
+        pathNameMOR += pParentEntry->GetFssep();
+        pathNameMOR += newName;
     }
     ASSERT(wcschr(newName, pParentEntry->GetFssep()) == NULL);
 
     /* using NufxLib constants; they match with ProDOS */
     memset(&parms, 0, sizeof(parms));
-    parms.pathName = pathName;
+    parms.pathName = pathNameMOR;
     parms.fssep = pParentEntry->GetFssep();
     parms.storageType = kNuStorageDirectory;
     parms.fileType = 0x0f;      // ProDOS DIR

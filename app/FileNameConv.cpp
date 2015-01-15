@@ -609,6 +609,45 @@ static const struct {
  * ===========================================================================
  */
 
+void PathProposal::Init(GenericEntry* pEntry)
+{
+    // TODO(Unicode)
+    //fStoredPathName = Charset::ConvertMORToUNI(pEntry->GetPathNameMOR());
+    // can't do this yet -- the rest of the extraction path isn't ready
+    fStoredPathName = pEntry->GetPathNameMOR();
+    fStoredFssep = pEntry->GetFssep();
+    //if (fStoredFssep == '\0')         // e.g. embedded DOS 3.3 volume
+    //  fStoredFssep = kDefaultStoredFssep;
+    fFileType = pEntry->GetFileType();
+    fAuxType = pEntry->GetAuxType();
+    //fThreadKind set from SelectionEntry
+    // reset the "output" fields
+    fLocalPathName = L":HOSED:";
+    fLocalFssep = ']';
+    // I expect these to be as-yet unset; check it
+    ASSERT(!fPreservation);
+    ASSERT(!fAddExtension);
+    ASSERT(!fJunkPaths);
+}
+
+// init the "add to archive" side
+void PathProposal::Init(const WCHAR* localPathName) {
+    //ASSERT(basePathName[strlen(basePathName)-1] != kLocalFssep);
+    //fLocalPathName = localPathName + strlen(basePathName)+1;
+    fLocalPathName = localPathName;
+    fLocalFssep = kLocalFssep;
+    // reset the "output" fields
+    fStoredPathName = L":HOSED:";
+    fStoredFssep = '[';
+    fFileType = 0;
+    fAuxType = 0;
+    fThreadKind = GenericEntry::kDataThread;
+    // I expect these to be as-yet unset; check it
+    ASSERT(!fPreservation);
+    ASSERT(!fAddExtension);
+    ASSERT(!fJunkPaths);
+}
+
 void PathProposal::ArchiveToLocal(void)
 {
     WCHAR* pathBuf;

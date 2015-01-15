@@ -5,6 +5,7 @@
  */
 /*
  * File name conversion.
+ * TODO: rename to PathProposal.h
  */
 #ifndef APP_FILENAMECONV_H
 #define APP_FILENAMECONV_H
@@ -42,41 +43,10 @@ public:
     virtual ~PathProposal(void) {}
 
     // init the "extract from archive" side from a GenericEntry struct
-    void Init(GenericEntry* pEntry) {
-        // TODO(Unicode): use Unicode/MOR conversion rather than CP-1252
-        fStoredPathName = pEntry->GetPathNameMOR();
-        fStoredFssep = pEntry->GetFssep();
-        //if (fStoredFssep == '\0')         // e.g. embedded DOS 3.3 volume
-        //  fStoredFssep = kDefaultStoredFssep;
-        fFileType = pEntry->GetFileType();
-        fAuxType = pEntry->GetAuxType();
-        //fThreadKind set from SelectionEntry
-        // reset the "output" fields
-        fLocalPathName = L":HOSED:";
-        fLocalFssep = ']';
-        // I expect these to be as-yet unset; check it
-        ASSERT(!fPreservation);
-        ASSERT(!fAddExtension);
-        ASSERT(!fJunkPaths);
-    }
+    void Init(GenericEntry* pEntry);
 
     // init the "add to archive" side
-    void Init(const WCHAR* localPathName) {
-        //ASSERT(basePathName[strlen(basePathName)-1] != kLocalFssep);
-        //fLocalPathName = localPathName + strlen(basePathName)+1;
-        fLocalPathName = localPathName;
-        fLocalFssep = kLocalFssep;
-        // reset the "output" fields
-        fStoredPathName = L":HOSED:";
-        fStoredFssep = '[';
-        fFileType = 0;
-        fAuxType = 0;
-        fThreadKind = GenericEntry::kDataThread;
-        // I expect these to be as-yet unset; check it
-        ASSERT(!fPreservation);
-        ASSERT(!fAddExtension);
-        ASSERT(!fJunkPaths);
-    }
+    void Init(const WCHAR* localPathName);
 
     /*
      * Convert a pathname pulled out of an archive to something suitable for the

@@ -248,6 +248,10 @@ void ConvDiskOptionsDialog::OnCompute(void)
     } else {
         /*
          * Set up the progress window as a modal dialog.
+         *
+         * TODO: there's a weird issue where this un-modals the conversion
+         * options dialog.  While this is running, and after it finishes,
+         * you can use menu items and perform other actions.  Noted on Win7.
          */
         GenericArchive::XferStatus result;
 
