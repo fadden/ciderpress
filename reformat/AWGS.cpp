@@ -36,7 +36,7 @@ int ReformatAWGS_WP::Process(const ReformatHolder* pHolder,
     Chunk doc, header, footer;
     uint16_t val;
 
-    CheckGSCharConv();
+    Charset::CheckGSCharConv();
 
     /* must at least have the doc header and globals */
     if (srcLen < kMinExpectedLen) {
@@ -388,7 +388,7 @@ int ReformatAWGS_WP::PrintParagraph(const uint8_t* ptr, long maxLen)
             RTFTab();
             break;
         default:
-            RTFPrintUTF16Char(ConvertMacRomanToUTF16(uch));
+            RTFPrintUTF16Char(Charset::ConvertMacRomanToUTF16(uch));
             break;
         }
     }

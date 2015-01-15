@@ -71,6 +71,9 @@
     <ClInclude Include="Text8.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Charset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppleWorks.cpp">
@@ -140,6 +143,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Text8.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Charset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

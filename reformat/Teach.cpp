@@ -47,7 +47,7 @@ int ReformatGWP::Process(const ReformatHolder* pHolder,
     long srcLen = pHolder->GetSourceLen(part);
     fUseRTF = false;
 
-    CheckGSCharConv();
+    Charset::CheckGSCharConv();
     RTFBegin();
 
     /* convert EOL markers and IIgs characters */
@@ -67,7 +67,7 @@ int ReformatGWP::Process(const ReformatHolder* pHolder,
             BufPrintf("\r\n");
         } else {
             // RTF is always off, so just use BufPrintf
-            BufPrintf("%c", ConvertMacRomanTo1252(ch));
+            BufPrintf("%c", Charset::ConvertMacRomanTo1252(ch));
         }
     }
 
@@ -124,7 +124,7 @@ int ReformatTeach::Process(const ReformatHolder* pHolder,
         LOGI("Teach reformatter missing one fork of the file");
         return -1;
     }
-    CheckGSCharConv();
+    Charset::CheckGSCharConv();
 
     /* find the rStyleBlock */
     if (!ReformatResourceFork::GetResource(rsrcBuf, rsrcLen, 0x8012, 0x0001,
@@ -206,7 +206,7 @@ int ReformatTeach::Process(const ReformatHolder* pHolder,
             } else if (uch == '\t') {
                 RTFTab();
             } else {
-                RTFPrintUTF16Char(ConvertMacRomanToUTF16(uch));
+                RTFPrintUTF16Char(Charset::ConvertMacRomanToUTF16(uch));
             }
             dataBuf++;
             dataLen--;

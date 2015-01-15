@@ -16,6 +16,7 @@
 #include "RenameEntryDialog.h"
 #include "ConfirmOverwriteDialog.h"
 #include "../diskimg/DiskImgDetail.h"
+#include "../reformat/Charset.h"
 
 static const char kEmptyFolderMarker[] = ".$$EmptyFolder";
 
@@ -748,7 +749,7 @@ CString DiskArchive::New(const WCHAR* fileName, const void* vOptions)
      * want to do it under Win2K/XP because it can be slow for larger
      * volumes.
      */
-    fileNameA = fileName;
+    fileNameA = fileName;   // TODO(Unicode)
     if (numBlocks > 0) {
         dierr = fDiskImg.CreateImage(fileNameA, NULL,
                     DiskImg::kOuterFormatNone,
@@ -797,6 +798,7 @@ CString DiskArchive::New(const WCHAR* fileName, const void* vOptions)
         volName.MakeUpper();
 
     /* format it */
+    // TODO(Unicode): for HFS, we need to convert Unicode to MOR
     volNameA = volName;
     dierr = fDiskImg.FormatImage(pOptions->base.format, volNameA);
     if (dierr != kDIErrNone) {
@@ -1086,18 +1088,21 @@ int DiskArchive::LoadDiskFSContents(DiskFS* pDiskFS, const WCHAR* volName)
      */
     pSubVol = pDiskFS->GetNextSubVolume(NULL);
     while (pSubVol != NULL) {
+        CStringA subVolNameMOR;
         CString concatSubVolName;
-        const char* subVolName;
         int ret;
 
-        subVolName = pSubVol->GetDiskFS()->GetVolumeName();
-        if (subVolName == NULL)
-            subVolName = "+++";     // call it *something*
+        subVolNameMOR = pSubVol->GetDiskFS()->GetVolumeName();
+        if (subVolNameMOR.IsEmpty()) {
+            subVolNameMOR = "+++";      // call it *something*
+        }
+        CString subVolName(Charset::ConvertMORToUNI(subVolNameMOR));
 
-        if (volName[0] == '\0')
-            concatSubVolName.Format(L"_%hs", subVolName);
-        else
-            concatSubVolName.Format(L"%ls_%hs", volName, subVolName);
+        if (volName[0] == '\0') {
+            concatSubVolName.Format(L"_%ls", (LPCWSTR) subVolName);
+        } else {
+            concatSubVolName.Format(L"%ls_%ls", volName, (LPCWSTR) subVolName);
+        }
         ret = LoadDiskFSContents(pSubVol->GetDiskFS(), concatSubVolName);
         if (ret != 0)
             return ret;

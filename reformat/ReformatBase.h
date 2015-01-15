@@ -11,10 +11,11 @@
  * that, but we'd have to figure out what that means when extracting a file
  * (i.e. figure out the RTF embedded bitmap format).
  */
-#ifndef REFORMAT_REFORMATBASE
-#define REFORMAT_REFORMATBASE
+#ifndef REFORMAT_REFORMATBASE_H
+#define REFORMAT_REFORMATBASE_H
 
 #include "Reformat.h"
+#include "Charset.h"
 
 #define BufPrintf fExpBuf.Printf
 
@@ -290,13 +291,6 @@ public:
         kRTFFlagColorTable  = 1,        // include color table
     };
 
-    // Convert a Mac OS Roman character value (from a IIgs document) to
-    // its UTF-16 Unicode equivalent.  This also includes a conversion
-    // for the control characters.
-    static uint16_t ConvertMacRomanToUTF16(uint8_t ch) {
-        return kUTF16Conv[ch];
-    }
-
 protected:
     void RTFBegin(int flags = 0);
     void RTFEnd(void);
@@ -387,24 +381,10 @@ protected:
             fExpBuf.Printf("%c", ch);
     }
 
-    // Convert a Mac OS Roman character value (from a IIgs document) to
-    // an 8-bit Windows CP1252 equivalent.
-    static uint8_t ConvertMacRomanTo1252(uint8_t ch) {
-        if (ch < 128)
-            return ch;
-        else
-            return kCP1252Conv[ch-128];
-    }
-
-    void CheckGSCharConv(void);
-
 private:
     DECLARE_COPY_AND_OPEQ(ReformatText)
     int CreateWorkBuf(void);
     enum { kRTFUnitsPerInch = 1440 };   // TWIPS
-
-    static const uint8_t kCP1252Conv[];
-    static const uint16_t kUTF16Conv[];
 
     int     fLeftMargin, fRightMargin;  // for documents, in 1/10th inch
     int     fPointSize;
@@ -421,4 +401,4 @@ private:
     TextColor   fTextColor;
 };
 
-#endif /*REFORMAT_REFORMATBASE*/
+#endif /*REFORMAT_REFORMATBASE_H*/

@@ -108,6 +108,7 @@
     <ClInclude Include="Asm.h" />
     <ClInclude Include="AWGS.h" />
     <ClInclude Include="BASIC.h" />
+    <ClInclude Include="Charset.h" />
     <ClInclude Include="CPMFiles.h" />
     <ClInclude Include="Directory.h" />
     <ClInclude Include="Disasm.h" />
@@ -130,6 +131,7 @@
     <ClCompile Include="Asm.cpp" />
     <ClCompile Include="AWGS.cpp" />
     <ClCompile Include="BASIC.cpp" />
+    <ClCompile Include="Charset.cpp" />
     <ClCompile Include="CPMFiles.cpp" />
     <ClCompile Include="Directory.cpp" />
     <ClCompile Include="Disasm.cpp" />

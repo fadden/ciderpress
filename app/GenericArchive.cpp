@@ -139,21 +139,6 @@ void GenericEntry::SetSubVolName(const WCHAR* name)
     fSubVolName = name;
 }
 
-// Simple Mac OS Roman to Unicode conversion.
-static CString ConvertMORToUNI(const CStringA& strMOR)
-{
-    // We know that all MOR characters are represented in Unicode with a
-    // single BMP code point, so we know that strlen(MOR) == wcslen(UNI).
-    const int len = strMOR.GetLength();
-    CString strUNI;
-    WCHAR* uniBuf = strUNI.GetBuffer(len);
-    for (int i = 0; i < len; i++) {
-        uniBuf[i] = ReformatText::ConvertMacRomanToUTF16(strMOR[i]);
-    }
-    strUNI.ReleaseBuffer(len);
-    return strUNI;
-}
-
 const CString& GenericEntry::GetDisplayName(void) const
 {
     ASSERT(!fPathNameMOR.IsEmpty());
@@ -164,7 +149,7 @@ const CString& GenericEntry::GetDisplayName(void) const
     if (!fSubVolName.IsEmpty()) {
         fDisplayName = fSubVolName + (WCHAR) DiskFS::kDIFssep;
     }
-    fDisplayName += ConvertMORToUNI(fPathNameMOR);
+    fDisplayName += Charset::ConvertMORToUNI(fPathNameMOR);
     return fDisplayName;
 }
 
@@ -1024,8 +1009,8 @@ void GenericArchive::LocalFileDetails::GenerateStoragePathName()
     // TODO(Unicode): generate MOR name from Unicode, instead of just
     //  doing a generic CP-1252 conversion.  We need to do this on both
     //  sides though, so until we can extract MOR->Unicode we don't
-    //  want to add Unicode->MOR.  And it all depends on NufxLib and
-    //  DiskImg being able to handle UTF-16 filenames.
+    //  want to add Unicode->MOR.  For this all to work well we need NufxLib
+    //  and DiskImgLib to be able to handle UTF-16 filenames.
     fStoragePathNameMOR = fStrippedLocalPathName;
 }
 
