@@ -6,7 +6,8 @@ Visit the web site at http://a2ciderpress.com/.
 
 CiderPress was initially sold by faddenSoft, LLC as a shareware product,
 starting in March 2003.  In March 2007, the program was released as
-open source under the BSD license.
+open source under the BSD license.  A "refresh" to modernize the code was
+done in January 2015.
 
 Why Bother?
 -----------
