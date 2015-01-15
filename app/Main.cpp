@@ -61,27 +61,33 @@ static const WCHAR kMainWindowClassName[] = L"faddenSoft.CiderPress.4";
  * OS version, but that might be more trouble than it's worth.
  */
 const WCHAR MainWindow::kOpenNuFX[] =
-    L"ShrinkIt Archives" /* (.shk .sdk .bxy .sea .bse)*/ L"|*.shk;*.sdk;*.bxy;*.sea;*.bse|";
+    L"ShrinkIt Archives|*.shk;*.sdk;*.bxy;*.sea;*.bse|";
 const WCHAR MainWindow::kOpenBinaryII[] =
-    L"Binary II Archives" /* (.bny .bqy .bxy)*/ L"|*.bny;*.bqy;*.bxy|";
+    L"Binary II Archives|*.bny;*.bqy;*.bxy|";
 const WCHAR MainWindow::kOpenACU[] =
-    L"ACU Archives" /* (.acu)*/ L"|*.acu|";
+    L"ACU Archives|*.acu|";
 const WCHAR MainWindow::kOpenAppleSingle[] =
-    L"AppleSingle files" /* (.as)*/ L"|*.as|";
+    L"AppleSingle files|*.as|";
 const WCHAR MainWindow::kOpenDiskImage[] =
-    L"Disk Images" /* (.shk .sdk .dsk .po .do .d13 .2mg .img .nib .nb2 .raw .hdv .dc .dc6 .ddd .app .fdi .iso .gz .zip)*/ L"|"
+    L"Disk Images|"
     L"*.shk;*.sdk;*.dsk;*.po;*.do;*.d13;*.2mg;*.img;*.nib;*.nb2;*.raw;*.hdv;*.dc;*.dc6;*.ddd;*.app;*.fdi;*.iso;*.gz;*.zip|";
 const WCHAR MainWindow::kOpenAll[] =
-    L"All Files" /* (*.*)*/ L"|*.*|";
+    L"All Files|*.*|";
 const WCHAR MainWindow::kOpenEnd[] =
     L"|";
 
-/* used when guessing archive type from extension */
+/*
+ * Used when guessing archive type from extension when no "-mode" argument
+ * was specified.
+ *
+ * This does *not* apply to files double-clicked from the content list; see
+ * HandleDoubleClick() for that.
+ */
 static const struct {
     WCHAR extension[4];
     FilterIndex idx;
 } gExtensionToIndex[] = {
-    { L"shk",   kFilterIndexNuFX },
+    { L"shk",   kFilterIndexDiskImage },    // DiskImage probably better than NuFX
     { L"bxy",   kFilterIndexNuFX },
     { L"bse",   kFilterIndexNuFX },
     { L"sea",   kFilterIndexNuFX },
@@ -1600,7 +1606,7 @@ int MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
 
     fp = _wfopen(nameBuf, L"wb");
     if (fp != NULL) {
-        LOGI("Extracting to '%ls' (unique=%d)", nameBuf, unique);
+        LOGD("Extracting to '%ls' (unique=%d)", nameBuf, unique);
         result = pEntry->ExtractThreadToFile(threadKind, fp,
                     GenericEntry::kConvertEOLOff, GenericEntry::kConvertHAOff,
                     &errMsg);
@@ -1622,7 +1628,7 @@ int MainWindow::TmpExtractAndOpen(GenericEntry* pEntry, int threadKind,
                 ShowFailureMsg(this, msg, IDS_FAILED);
             } else {
                 /* during dev, "missing DLL" causes false-positive success */
-                LOGI("Successfully launched CiderPress");
+                LOGI("Successfully launched CiderPress, mode=%ls", modeStr);
                 mustDelete = false;     // up to newly-launched app
             }
         } else {
