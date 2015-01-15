@@ -14,6 +14,7 @@
 #include "stdafx.h"
 #include "VolumeCopyDialog.h"
 #include "Main.h"
+#include "../reformat/Charset.h"
 
 
 BEGIN_MESSAGE_MAP(VolumeCopyDialog, CDialog)
@@ -324,18 +325,18 @@ void VolumeCopyDialog::LoadList(void)
 void VolumeCopyDialog::AddToList(CListCtrl* pListView, DiskImg* pDiskImg,
     DiskFS* pDiskFS, int* pIndex)
 {
-    CString volName, format, sizeStr, blocksStr;
-    long numBlocks;
+    CString sizeStr, blocksStr;
 
     assert(pListView != NULL);
     assert(pDiskImg != NULL);
     assert(pDiskFS != NULL);
     assert(pIndex != NULL);
 
-    numBlocks = pDiskImg->GetNumBlocks();
+    long numBlocks = pDiskImg->GetNumBlocks();
 
-    volName = pDiskFS->GetVolumeName();
-    format = DiskImg::ToString(pDiskImg->GetFSFormat());
+    CStringA volNameA = pDiskFS->GetVolumeName();
+    CString volName(Charset::ConvertMORToUNI(volNameA));
+    CString format = DiskImg::ToString(pDiskImg->GetFSFormat());
     blocksStr.Format(L"%ld", pDiskImg->GetNumBlocks());
     if (numBlocks > 1024*1024*2)
         sizeStr.Format(L"%.2fGB", (double) numBlocks / (1024.0*1024.0*2.0));
@@ -390,7 +391,7 @@ void VolumeCopyDialog::OnCopyToFile(void)
     DiskFS* pSrcFS = NULL;
     DiskImg dstImg;
     DIError dierr;
-    CString errMsg, saveName, msg, srcName;
+    CString errMsg, saveName, msg;
     int result;
 
     result = GetSelectedDisk(&pSrcImg, &pSrcFS);
@@ -399,7 +400,8 @@ void VolumeCopyDialog::OnCopyToFile(void)
     assert(pSrcImg != NULL);
     assert(pSrcFS != NULL);
 
-    srcName = pSrcFS->GetVolumeName();
+    CStringA srcNameA = pSrcFS->GetVolumeName();
+    CString srcName(Charset::ConvertMORToUNI(srcNameA));
 
     /* force the format to be generic ProDOS-ordered blocks */
     originalFormat = pSrcImg->GetFSFormat();
@@ -564,7 +566,7 @@ void VolumeCopyDialog::OnCopyFromFile(void)
     MainWindow* pMain = (MainWindow*)::AfxGetMainWnd();
     //DiskImg::FSFormat originalFormat = DiskImg::kFormatUnknown;
     CString openFilters;
-    CString loadName, targetName, errMsg, warning;
+    CString loadName, errMsg, warning;
     DiskImg* pDstImg = NULL;
     DiskFS* pDstFS = NULL;
     DiskImg srcImg;
@@ -584,10 +586,8 @@ void VolumeCopyDialog::OnCopyFromFile(void)
     if (!result)
         return;
 
-//  if (pDstFS == NULL)
-//      targetName = "the target volume";
-//  else
-        targetName = pDstFS->GetVolumeName();
+    CStringA targetNameA = pDstFS->GetVolumeName();
+    CString targetName(Charset::ConvertMORToUNI(targetNameA));
 
 
     /*
