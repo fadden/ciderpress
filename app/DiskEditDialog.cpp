@@ -22,6 +22,7 @@
 #include "SubVolumeDialog.h"
 #include "DEFileDialog.h"
 #include "DiskEditDialog.h"
+#include "../reformat/Charset.h"
 
 
 /*
@@ -131,7 +132,8 @@ BOOL DiskEditDialog::OnInitDialog(void)
     title += fFileName;
     if (fpDiskFS->GetVolumeID() != NULL) {
         title += " (";
-        title += fpDiskFS->GetVolumeID();
+        CStringA volumeIdA(fpDiskFS->GetVolumeID());
+        title += Charset::ConvertMORToUNI(volumeIdA);
         title += ")";
     }
     SetWindowText(title);
@@ -278,8 +280,9 @@ void DiskEditDialog::OnSubVolume(void)
             pEditDialog = &blockEdit;
         else
             pEditDialog = &sectorEdit;
-        CString volumeID(fpDiskFS->GetVolumeID());
-        pEditDialog->Setup(pSubVol->GetDiskFS(), volumeID);
+        CStringA volumeIdA(fpDiskFS->GetVolumeID());
+        CString volumeId(Charset::ConvertMORToUNI(volumeIdA));
+        pEditDialog->Setup(pSubVol->GetDiskFS(), volumeId);
         pEditDialog->SetPositionShift(8);
         (void) pEditDialog->DoModal();
     }

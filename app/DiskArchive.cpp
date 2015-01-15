@@ -892,7 +892,9 @@ CString DiskArchive::GetDescription() const
     CString str = L"Disk Image";
 
     if (fpPrimaryDiskFS != NULL && fpPrimaryDiskFS->GetVolumeID() != NULL) {
-        str.Format(L"Disk Image - %hs", fpPrimaryDiskFS->GetVolumeID());
+        CStringA volumeIdA(fpPrimaryDiskFS->GetVolumeID());
+        CString volumeId(Charset::ConvertMORToUNI(volumeIdA));
+        str.Format(L"Disk Image - %ls", (LPCWSTR) volumeId);
     }
     return str;
 }

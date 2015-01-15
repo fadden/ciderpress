@@ -6,6 +6,7 @@
 #include "StdAfx.h"
 #include "DiskFSTree.h"
 #include "ChooseAddTargetDialog.h"
+#include "../reformat/Charset.h"
 
 using namespace DiskImgLib;
 
@@ -42,8 +43,9 @@ bool DiskFSTree::AddDiskFS(CTreeCtrl* pTree, HTREEITEM parent,
     pTarget->pDiskFS = pDiskFS;
     pTarget->pFile = NULL;   // could also use volume dir for ProDOS
     tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-    CString volumeIdW(pDiskFS->GetVolumeID());  // convert to wide string
-    int index = fStringHolder.Add(volumeIdW);
+    CStringA volumeIdA(pDiskFS->GetVolumeID());
+    CString volumeId(Charset::ConvertMORToUNI(volumeIdA));
+    int index = fStringHolder.Add(volumeId);
     tvi.pszText = (LPWSTR)(LPCWSTR) fStringHolder.GetAt(index);
     tvi.cchTextMax = 0;     // not needed for insertitem
 //  tvi.iImage = kTreeImageFolderClosed;

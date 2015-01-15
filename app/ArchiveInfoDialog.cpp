@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "ArchiveInfoDialog.h"
 #include "../nufxlib/NufxLib.h"
+#include "../reformat/Charset.h"
 
 /*
  * ===========================================================================
@@ -178,13 +179,13 @@ void DiskArchiveInfoDialog::AddSubVolumes(const DiskFS* pDiskFS,
     const WCHAR* prefix, int* pIdx)
 {
     CComboBox* pCombo = (CComboBox*) GetDlgItem(IDC_AIDISK_SUBVOLSEL);
-    CString tmpStr;
 
     /*
      * Add the current DiskFS.
      */
-    tmpStr = prefix;
-    tmpStr += pDiskFS->GetVolumeID();
+    CStringA volumeIdA(pDiskFS->GetVolumeID());
+    CString tmpStr(prefix);
+    tmpStr += Charset::ConvertMORToUNI(volumeIdA);
     pCombo->AddString(tmpStr);
     pCombo->SetItemData(*pIdx, (unsigned long) pDiskFS);
     (*pIdx)++;

@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "SubVolumeDialog.h"
 #include "resource.h"
+#include "../reformat/Charset.h"
 
 
 BEGIN_MESSAGE_MAP(SubVolumeDialog, CDialog)
@@ -33,8 +34,9 @@ BOOL SubVolumeDialog::OnInitDialog(void)
     DiskFS::SubVolume* pSubVol = fpDiskFS->GetNextSubVolume(NULL);
     ASSERT(pSubVol != NULL);     // shouldn't be here otherwise
     while (pSubVol != NULL) {
-        CString volumeIdW(pSubVol->GetDiskFS()->GetVolumeID());
-        pListBox->AddString(volumeIdW); // makes a copy of the string
+        CStringA volumeIdA(pSubVol->GetDiskFS()->GetVolumeID());
+        CString volumeId(Charset::ConvertMORToUNI(volumeIdA));
+        pListBox->AddString(volumeId); // makes a copy of the string
 
         pSubVol = fpDiskFS->GetNextSubVolume(pSubVol);
     }

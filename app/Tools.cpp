@@ -417,7 +417,7 @@ void MainWindow::OnToolsDiskConv(void)
         // use "headerOnly", which gets the volume name
         dierr = pDiskFS->Initialize(&srcImg, DiskFS::kInitHeaderOnly);
         if (dierr == kDIErrNone) {
-            storageName = pDiskFS->GetVolumeName();
+            storageName = pDiskFS->GetVolumeName();     // note: ASCII only
         }
         delete pDiskFS;
     } else {
@@ -1351,7 +1351,7 @@ void MainWindow::BulkConvertImage(const WCHAR* pathName, const WCHAR* targetDir,
         // set "headerOnly" since we only need the volume name
         dierr = pDiskFS->Initialize(&srcImg, DiskFS::kInitHeaderOnly);
         if (dierr == kDIErrNone) {
-            storageName = pDiskFS->GetVolumeName();
+            storageName = pDiskFS->GetVolumeName();     // note: ASCII only
         }
         delete pDiskFS;
     } else {
