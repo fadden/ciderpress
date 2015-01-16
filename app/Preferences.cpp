@@ -245,8 +245,9 @@ Preferences::Preferences(void)
 
     SetPrefString(kPrViewTextTypeFace, L"Courier New");
     SetPrefLong(kPrViewTextPointSize, 10);
-    long width = 680;   /* exact width for 80-column text */
-    long height = 510;  /* exact height for file viewer to show IIgs graphic */
+    long width = 680 +  /* exact width for 80-column text */
+            ::GetSystemMetrics(SM_CXVSCROLL);
+    long height = 516;  /* exact height for file viewer to show IIgs graphic */
     if (GetSystemMetrics(SM_CXSCREEN) < width)
         width = GetSystemMetrics(SM_CXSCREEN);
     if (GetSystemMetrics(SM_CYSCREEN) < height)
