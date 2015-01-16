@@ -83,7 +83,7 @@ static const WCHAR gFileTypeNames[256][4] = {
 
 static const WCHAR kUnknownTypeStr[] = L"???";
 
-/*static*/ const WCHAR* PathProposal::FileTypeString(unsigned long fileType)
+/*static*/ const WCHAR* PathProposal::FileTypeString(uint32_t fileType)
 {
     // Note to self: code down below tests first char for '?'.
     if (fileType < NELEM(gFileTypeNames))
@@ -102,26 +102,25 @@ static const WCHAR kUnknownTypeStr[] = L"???";
  * file rather than a hard-coded table.  Ought to fix that someday.
  */
 static const struct {
-    const WCHAR*        label;
-    unsigned short      fileType;
-    unsigned long       auxType;
-    unsigned char       flags;
+    const WCHAR*    label;
+    uint8_t         fileType;
+    uint16_t        auxType;
 } gRecognizedExtensions[] = {
-    { L"ASM",  0xb0, 0x0003, 0 },       /* APW assembly source */
-    { L"C",    0xb0, 0x000a, 0 },       /* APW C source */
-    { L"H",    0xb0, 0x000a, 0 },       /* APW C header */
-    { L"CPP",  0xb0, 0x0000, 0 },       /* generic source file */
-    { L"BNY",  0xe0, 0x8000, 0 },       /* Binary II lib */
-    { L"BQY",  0xe0, 0x8000, 0 },       /* Binary II lib, w/ compress */
-    { L"BXY",  0xe0, 0x8000, 0 },       /* Binary II wrap around SHK */
-    { L"BSE",  0xe0, 0x8000, 0 },       /* Binary II wrap around SEA */
-    { L"SEA",  0xb3, 0xdb07, 0 },       /* GSHK SEA */
-    { L"TEXT", 0x04, 0x0000, 0 },       /* ASCII Text */
-    { L"GIF",  0xc0, 0x8006, 0 },       /* GIF image */
-    { L"JPG",  0x06, 0x0000, 0 },       /* JPEG (nicer than 'NON') */
-    { L"JPEG", 0x06, 0x0000, 0 },       /* JPEG (nicer than 'NON') */
-    //{ L"ACU",  0xe0, 0x8001, 0 },     /* ACU archive */
-    { L"SHK",  0xe0, 0x8002, 0 },       /* ShrinkIt archive */
+    { L"ASM",  0xb0, 0x0003 },      /* APW assembly source */
+    { L"C",    0xb0, 0x000a },      /* APW C source */
+    { L"H",    0xb0, 0x000a },      /* APW C header */
+    { L"CPP",  0xb0, 0x0000 },      /* generic source file */
+    { L"BNY",  0xe0, 0x8000 },      /* Binary II lib */
+    { L"BQY",  0xe0, 0x8000 },      /* Binary II lib, w/ compress */
+    { L"BXY",  0xe0, 0x8000 },      /* Binary II wrap around SHK */
+    { L"BSE",  0xe0, 0x8000 },      /* Binary II wrap around SEA */
+    { L"SEA",  0xb3, 0xdb07 },      /* GSHK SEA */
+    { L"TEXT", 0x04, 0x0000 },      /* ASCII Text */
+    { L"GIF",  0xc0, 0x8006 },      /* GIF image */
+    { L"JPG",  0x06, 0x0000 },      /* JPEG (nicer than 'NON') */
+    { L"JPEG", 0x06, 0x0000 },      /* JPEG (nicer than 'NON') */
+    //{ L"ACU",  0xe0, 0x8001 },      /* ACU archive */
+    { L"SHK",  0xe0, 0x8002 },      /* ShrinkIt archive */
 };
 
 /*
@@ -134,11 +133,13 @@ static const struct {
  * "FTD" file type description file that the IIgs Finder used.  Might have
  * made sense to just ship that and load it on startup (although copyright
  * issues would have to be investigated).
+ *
+ * This list should be complete as of the May 1992 "about" note.
  */
 static const struct {
-    unsigned short  fileType;
-    unsigned short  minAuxType;     // start of range for which this applies
-    unsigned short  maxAuxType;     // end of range
+    uint8_t         fileType;
+    uint16_t        minAuxType;     // start of range for which this applies
+    uint16_t        maxAuxType;     // end of range
     const WCHAR*    descr;
 } gTypeDescriptions[] = {
     /*NON*/ { 0x00, 0x0000, 0xffff, L"Untyped file" },
@@ -763,7 +764,7 @@ void PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
     char fssep, WCHAR** pDstp, long dstLen)
 {
     /*
-     * TODO: consider supporting the "Mac Roman" characters
+     * TODO(Unicode): do proper conversion
      * TODO: don't allow the filename to end with a space or period (Windows
      *   requirement)
      */
@@ -779,7 +780,7 @@ void PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
             if (wcsnicmp(srcp, *ppcch, 3) == 0 &&
                 (srcp[3] == '.' || srcLen == 3))
             {
-                LOGI("--- fixing '%ls'", *ppcch);
+                LOGD("--- fixing '%ls'", *ppcch);
                 if (fPreservation) {
                     *dstp++ = kForeignIndic;
                     *dstp++ = '0';
@@ -797,7 +798,7 @@ void PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
             if (wcsnicmp(srcp, *ppcch, 4) == 0 &&
                 (srcp[4] == '.' || srcLen == 4))
             {
-                LOGI("--- fixing '%ls'", *ppcch);
+                LOGD("--- fixing '%ls'", *ppcch);
                 if (fPreservation) {
                     *dstp++ = kForeignIndic;
                     *dstp++ = '0';
@@ -822,7 +823,6 @@ void PathProposal::Win32NormalizeFileName(const WCHAR* srcp, long srcLen,
             *srcp < 0x20 || *srcp >= 0x7f)
         {
             /* change invalid char to "%2f" or '_' */
-            // TODO: this assumes 8-bit input; should convert to UTF-8
             if (fPreservation) {
                 *dstp++ = kForeignIndic;
                 *dstp++ = HexConv(*srcp >> 4 & 0x0f);

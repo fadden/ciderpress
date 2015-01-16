@@ -319,6 +319,9 @@ void ViewFilesDialog::DisplayText(const WCHAR* fileName)
      * the user hit.  We could also create a bogus control, move it into
      * negative space where it will be invisible, and use that as a "focus
      * holder".
+     *
+     * TODO: on Win7 you can sometimes see a blue flash.  Not sure if it
+     * relates to this or some other aspect of the redraw.
      */
     CWnd* pFocusWnd = GetFocus();
     if (pFocusWnd == NULL || pFocusWnd->m_hWnd == pEdit->m_hWnd) {
@@ -367,14 +370,14 @@ void ViewFilesDialog::DisplayText(const WCHAR* fileName)
         
         hBitmap = fpOutput->GetDIB()->ConvertToDDB(dcScreen.m_hDC);
         if (hBitmap == NULL) {
-            LOGI("ConvertToDDB failed!");
+            LOGW("ConvertToDDB failed!");
             pEdit->SetWindowText(L"Internal error.");
             errFlg = true;
         } else {
             //DumpBitmapInfo(hBitmap);
             //DumpBitmapInfo(pDib->GetHandle());
 
-            LOGI("Inserting bitmap");
+            LOGD("Inserting bitmap");
             pEdit->SetWindowText(L"");
             CImageDataObject::InsertBitmap(fpRichEditOle, hBitmap);
 
@@ -435,7 +438,7 @@ void ViewFilesDialog::DisplayText(const WCHAR* fileName)
             /* a -16 error can happen if the type is RTF but contents are not */
             char errorText[256];
 
-            sprintf(errorText,
+            _snprintf(errorText, sizeof(errorText),
                 "ERROR: failed while loading data (err=0x%08lx)\n"
                 "(File contents might be too big for Windows to display)\n",
                 es.dwError);
@@ -510,6 +513,8 @@ void ViewFilesDialog::DisplayText(const WCHAR* fileName)
      * Anything related to RichEdit controls is extremely fragile, and must
      * be tested with a variety of inputs, preference settings, and under
      * at least Win98 and Win2K (which are *very* different).
+     *
+     * TODO: re-evaluate all this without worrying about Win9x
      */
     if (fFirstResize) {
         /* adjust the size of the window to match the last size used */
@@ -534,6 +539,15 @@ void ViewFilesDialog::DisplayText(const WCHAR* fileName)
     if (fpOutput->GetOutputKind() == ReformatOutput::kOutputBitmap) {
         /* get the cursor off of the image */
         pEdit->SetSel(-1, -1);
+
+        /*
+         * Tall Super Hi-Res graphics (e.g. Paintworks PNT) cause the edit
+         * control to scroll to the bottom.  Move it back to the top.
+         *
+         * SetScrollInfo just moves the scrollbar without changing the
+         * view position.
+         */
+        pEdit->SendMessage(WM_VSCROLL, SB_TOP, 0);
     }
 
     /*

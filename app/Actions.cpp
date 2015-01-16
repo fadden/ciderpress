@@ -2334,7 +2334,8 @@ void MainWindow::GetFilePart(const GenericEntry* pEntry, int whichThread,
 
     if (threadLen > fPreferences.GetPrefLong(kPrMaxViewFileSize)) {
         errMsg.Format(
-            L"[File size (%I64d KBytes) exceeds file viewer maximum (%ld KBytes).]\n",
+            L"[File size (%I64d KBytes) exceeds file viewer maximum (%ld KBytes).  "
+            L"The limit can be adjusted in the file viewer preferences.]\n",
             ((LONGLONG) threadLen + 1023) / 1024,
             (fPreferences.GetPrefLong(kPrMaxViewFileSize) + 1023) / 1024);
         pHolder->SetErrorMsg(part, errMsg);

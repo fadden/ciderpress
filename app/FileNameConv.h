@@ -77,8 +77,8 @@ public:
     // filesystem separator char (or '\0' for things like DOS 3.3)
     char            fStoredFssep;
     // file type, aux type, and what piece of the file this is
-    unsigned long   fFileType;
-    unsigned long   fAuxType;
+    uint32_t        fFileType;
+    uint32_t        fAuxType;
     int             fThreadKind;    // GenericEntry, e.g. kDataThread
 
     /*
@@ -101,7 +101,7 @@ public:
     /*
      * Return a pointer to the three-letter representation of the file type name.
      */
-    static const WCHAR* FileTypeString(unsigned long fileType);
+    static const WCHAR* FileTypeString(uint32_t fileType);
 
     /*
      * Find an entry in the type description table that matches both file type and
