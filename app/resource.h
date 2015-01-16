@@ -22,7 +22,6 @@
 #define IDD_SUBV                        131
 #define IDD_DEFILE                      132
 #define IDD_PREF_FILES                  133
-#define IDD_CHOOSEDIR                   135
 #define IDB_NEW_FOLDER                  139
 #define IDB_CHOOSE_FOLDER               140
 #define IDD_EXTRACT_FILES               142
@@ -147,11 +146,6 @@
 #define IDC_DEFILE_RSRC                 1116
 #define IDC_CIDERPRESS_VERS_TEXT        1117
 #define IDC_PREF_TEMP_FOLDER            1118
-#define IDC_CHOOSEDIR_TREE              1121
-#define IDC_CHOOSEDIR_PATHEDIT          1123
-#define IDC_CHOOSEDIR_EXPAND_TREE       1124
-#define IDC_CHOOSEDIR_PATH              1125
-#define IDC_CHOOSEDIR_NEW_FOLDER        1127
 #define IDC_PREF_CHOOSE_TEMP_FOLDER     1128
 #define IDC_FVIEW_FONT                  1129
 #define IDC_FVIEW_NEXT                  1130
