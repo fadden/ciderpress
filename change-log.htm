@@ -33,7 +33,7 @@
 </ol>
 <p>In addition, CiderPress uses the NufxLib library to access NuFX (ShrinkIt)
 archives, and zlib to compress and expand &quot;.gz&quot; and &quot;.zip&quot; files.</p>
-<h2>v4.0.0b2 - 14-Jan-2014</h2>
+<h2>v4.0.0-rc1 - 19-Jan-2015</h2>
 <ul>
   <li>[all] Moved sources from CVS on sourceforge.net to git on github.com.
     Registered a2ciderpress.com.</li>
@@ -47,17 +47,20 @@ archives, and zlib to compress and expand &quot;.gz&quot; and &quot;.zip&quot; f
 	<li>[app] &quot;Open file&quot; is much better about detecting file types.</li>
   <li>[app] File type association code now uses HKCU registry rather
     than HKCR.</li>
-  <li>[app] File listing and file viewer display Mac OS Roman character
-    values with correct Unicode characters.</li>
+  <li>[app] File listing, file viewer, and many dialogs display filenames
+    containing non-ASCII Mac OS Roman characters (from HFS disks or ShrinkIt
+    archives) with correct Unicode characters.</li>
+  <li>[app] Switched to "system" font for dialogs to take advantage of
+    ClearType (when available).
   <li>[util] Fixed file+folder selection dialog.&nbsp; Improved folder selection 
   dialog.</li>
   <li>[diskimg] Fixed Linux build.</li>
   <li>[diskimg] Improved Gutenberg disk support.</li>
   <li>[reformat] Teach and AWGS converter now generate RTF with Unicode
     values for non-ASCII Mac OS Roman characters.&nbsp; Outline and shadow 
-  styles added.</li>
+    styles added.</li>
 </ul>
-<h2>v3.0.2d1 - 19-Jan-2014</h2>
+<h2>v3.0.2-d1 - 19-Jan-2014</h2>
 <ul>
   <li>[reformat] Fixed 640 mode palette offsets in SHR converter
     (Bill Buckels).</li>
