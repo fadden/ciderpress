@@ -1922,6 +1922,7 @@ GenericArchive* MainWindow::CreateArchiveInstance(FilterIndex filterIndex) const
 int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
     FilterIndex filterIndex, bool readOnly)
 {
+    static const WCHAR kFileArchive[] = L"This appears to be a file archive.";
     GenericArchive::OpenResult openResult;
     const FilterIndex origFilterIndex = filterIndex;
     GenericArchive* pOpenArchive = NULL;
@@ -1973,7 +1974,7 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
             // we could probably just return in this case
             firstErrStr = L"Zip archives with multiple files are not supported";
         } else {
-            firstErrStr = L"This appears to be a file archive.";
+            firstErrStr = kFileArchive;
         }
     } else if (openResult == GenericArchive::kResultCancel) {
         LOGD("canceled");
@@ -2000,6 +2001,18 @@ int MainWindow::LoadArchive(const WCHAR* fileName, const WCHAR* extension,
             LOGD("cancelled");
             delete pOpenArchive;
             return -1;
+        } else if (i == kFilterIndexNuFX && firstErrStr == kFileArchive) {
+            // For .shk files we first check to see if it's a disk image,
+            // then we try by file.  If it's a damaged file archive, we
+            // really want to present the file archive failure message, not
+            // "that looks like a file archive".  So we tweak the result a
+            // little here.
+            //
+            // This doesn't catch all the cases where the NufxLib error
+            // message is more useful than the DiskImg error message, but
+            // it's hard to accurately determine what the most-accurate
+            // message is in some cases.
+            firstErrStr = dummyErrStr;
         }
         delete pOpenArchive;
     }
