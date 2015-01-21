@@ -170,7 +170,7 @@ int ReformatApplesoft::Process(const ReformatHolder* pHolder,
                     inRem = true;
                 }
             } else {
-                /* simple chracter */
+                /* simple character */
                 if (fUseRTF) {
                     if (*srcPtr == '"' && !inRem) {
                         if (!inQuote) {
@@ -185,11 +185,17 @@ int ReformatApplesoft::Process(const ReformatHolder* pHolder,
                         RTFSetColor(kColonColor);
                         RTFPrintChar(*srcPtr);
                         RTFSetColor(kDefaultColor);
+                    } else if (inRem && *srcPtr == '\r') {
+                        RTFNewPara();
                     } else {
                         RTFPrintChar(*srcPtr);
                     }
                 } else {
-                    BufPrintf("%c", *srcPtr);
+                    if (inRem && *srcPtr == '\r') {
+                        BufPrintf("\r\n");
+                    } else {
+                        BufPrintf("%c", *srcPtr);
+                    }
                 }
             }
 
