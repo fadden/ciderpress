@@ -58,7 +58,11 @@ extern DebugLog* gDebugLog;     // declare and allocate in app
 
 /* send the message to the log file (if open) and the CRT debug mechanism */
 #define LOG_BASE(severity, file, line, format, ...) \
-    { gDebugLog->Log((severity), (file), (line), (format), __VA_ARGS__); }
+    { \
+        if (gDebugLog != NULL) { \
+            gDebugLog->Log((severity), (file), (line), (format), __VA_ARGS__); \
+        } \
+    }
 
 /*
  * Log macros, with priority specifier.  The output will be written to the

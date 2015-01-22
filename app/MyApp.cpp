@@ -18,7 +18,7 @@
 MyApp gMyApp;
 
 /* used for debug logging */
-DebugLog* gDebugLog;
+DebugLog* gDebugLog = NULL;
 
 
 /*
@@ -27,7 +27,10 @@ DebugLog* gDebugLog;
  */
 MyApp::MyApp() : CWinAppEx()
 {
+#ifdef _DEBUG
+    // TODO: make this a setting, rather than a debug-build-only feature
     gDebugLog = new DebugLog(L"C:\\src\\cplog.txt");
+#endif
 
     time_t now = time(NULL);
 
@@ -35,12 +38,14 @@ MyApp::MyApp() : CWinAppEx()
         kAppMajorVersion, kAppMinorVersion, kAppBugVersion,
         kAppDevString, ctime(&now));
 
+#ifdef _DEBUG
     int tmpDbgFlag;
     // enable memory leak detection
     tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
     tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
     _CrtSetDbgFlag(tmpDbgFlag);
     LOGI("Leak detection enabled");
+#endif
 
     EnableHtmlHelp();
 }
