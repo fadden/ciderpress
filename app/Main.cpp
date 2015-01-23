@@ -26,7 +26,7 @@
 /* use MFC's fancy version of new for debugging */
 //#define new DEBUG_NEW
 
-static const WCHAR kWebSiteURL[] = L"http://www.faddensoft.com/";
+static const WCHAR kWebSiteURL[] = L"http://www.a2ciderpress.com/";
 
 /* custom class name for main frame */
 static const WCHAR kMainWindowClassName[] = L"faddenSoft.CiderPress.4";

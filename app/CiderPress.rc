@@ -152,7 +152,7 @@ BEGIN
     POPUP "&Help"
     BEGIN
         MENUITEM "&Contents...\tF1",            IDM_HELP_CONTENTS
-        MENUITEM "Visit faddenSoft &web site",  IDM_HELP_WEBSITE
+        MENUITEM "Visit CiderPress &web site",  IDM_HELP_WEBSITE
         MENUITEM SEPARATOR
         MENUITEM "&About CiderPress",           IDM_HELP_ABOUT
     END
