@@ -1458,6 +1458,8 @@ GenericEntry* MainWindow::GetSelectedItem(ContentList* pContentList)
 
 void MainWindow::HandleDoubleClick(void)
 {
+    const uint32_t kTypeDimg = 0x64496d67;
+    const uint32_t kCreatorDcpy = 0x64437079;
     bool handled = false;
 
     ASSERT(fpContentList != NULL);
@@ -1549,11 +1551,26 @@ void MainWindow::HandleDoubleClick(void)
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeAppleSingle);
             handled = true;
         } else
-        if (fileType == 0x64496d67 && auxType == 0x64437079 &&
-            pEntry->GetUncompressedLen() == 819284)
+        if (fileType == kTypeDimg && auxType == kCreatorDcpy &&
+            pEntry->GetDataForkLen() == 819284)
         {
             /* type is dImg, creator is dCpy, length is 800K + DC stuff */
             LOGI(" Looks like a DiskCopy disk image");
+            TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeDiskImage);
+            handled = true;
+        }
+    } else if (pEntry->GetRecordKind() == GenericEntry::kRecordKindForkedFile) {
+        /*
+         * On Mac HFS volumes these can have resource forks (which we ignore).
+         * We could probably just generally ignore resource forks for all of
+         * the above files, rather than pulling this one out separately, but
+         * this is the only one that could reasonably have a resource fork.
+         */
+        if (fileType == kTypeDimg && auxType == kCreatorDcpy &&
+            pEntry->GetDataForkLen() == 819284)
+        {
+            /* type is dImg, creator is dCpy, length is 800K + DC stuff */
+            LOGI(" Looks like a (forked) DiskCopy disk image");
             TmpExtractAndOpen(pEntry, GenericEntry::kDataThread, kModeDiskImage);
             handled = true;
         }
