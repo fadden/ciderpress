@@ -20,19 +20,19 @@ Windows or a digital camera, it may still look like a valid volume,
 and Windows will assign a drive letter to it even though the card holds
 nothing but Apple II data.  It may even allow you to try to open files with
 garbled names.  If try to use the CiderPress Open Device or Volume Copier
-features by selecting the drive letter, you won't see your Apple II data.
+features by selecting the drive letter, you won't see your Apple II data.</p>
 <p>All you need to do is open the card as a physical (numbered) device
 rather than a logical (lettered) device.&nbsp; Better yet, update the CF card
-with the newer version of the utilities, available from <a href="http://reactivecomputers.gotdns.com/MicroDrive/">Reactive
-Computers</a>; this will clear out the Windows volume data so the problem (and some others)
-don't arise.
+with the newer version of the MicroDrive utilities; this will clear out the
+Windows volume data so the problem (and some others) don't arise.</p>
 
 <h3>How do I transfer my Apple II disks to my PC?</h3>
 <p>This isn't something that CiderPress currently helps with.&nbsp; There are,
 however, a number of useful utilities, as well as sites with disk images.&nbsp;
-Check the <a href="http://home.swbell.net/rubywand/A2FAQs1START.html">comp.sys.apple2
-FAQ</a> site for information, especially <a href="http://home.swbell.net/rubywand/Csa2T1TCOM.html">this
-section</a>.&nbsp; ADT is probably the most popular program, but using ShrinkIt
+Check the <a href="http://apple2.org.za/gswv/a2zine/faqs/A2FAQs1START.html">comp.sys.apple2
+FAQ</a> site for information, especially
+<a href="http://apple2.org.za/gswv/a2zine/faqs/Csa2T1TCOM.html">this section</a>.&nbsp;
+ADT is probably the most popular program, but using ShrinkIt
 to create disk images and transferring them over a null modem cable or AppleTalk
 network works too.</p>
 <p>If you have a SuperDrive or floptical drive on your Apple II, you can read
@@ -53,9 +53,11 @@ Apple II and then transfer it over.&nbsp; Check the links in the previous answer
 -- software that helps you copy disk images to the PC will usually help you copy
 them back.&nbsp;</p>
 <h3>Where can I find an Apple II emulator?</h3>
-<p>Check the <a href="http://directory.google.com/Top/Computers/Emulators/Apple/Apple_II/">Google
-directory</a> for a list of sites.&nbsp; AppleWin and KEGS are the most popular
-for Windows.</p>
+<p>Check out
+<a href="https://github.com/AppleWin/AppleWin/releases">AppleWin</a>,
+<a href="http://kegs.sourceforge.net/">KEGS</a>, and
+<a href="http://www.sheppyware.net/software-mac/sweet16/">Sweet16</a>.
+
 <h3>Why is my disk image opening in read-only mode?</h3>
 <p>Possible reasons:</p>
 <ul>
@@ -73,7 +75,11 @@ for Windows.</p>
     Volume Copier, un-check the &quot;read only&quot; checkbox.&nbsp; Read-only
     mode is enabled by default for physical disks, but you can change this from
     the &quot;Disk Images&quot; tab of the &quot;Preferences&quot; interface.</li>
+  <li>When you open an archive that's inside another archive, it's expanded
+    to a temporary file. Since any changes made to that file would be lost
+    when you close it, the file is opened read-only.</li>
 </ul>
+
 <h3>When I paste files, the disk fills up almost immediately!</h3>
 <p>When pasting files into a ProDOS disk image, you can choose the directory
 into which the files should go.&nbsp; If the disk image doesn't have any
@@ -174,6 +180,7 @@ CiderPress (File-&gt;Close or Ctrl-W) and then rename it from &quot;.po&quot; to
 
 <h3>How do I use DiskCopy 4.2 images on a Macintosh?</h3>
 
+<p>[this answer is probably out of date]</p>
 <p>Some (all?) DiskCopy utility programs on the Macintosh require the correct
 file type and creator type values to be set on disk image files.&nbsp; If you
 try to open a &quot;.dsk&quot; file with a generic file type, you'll get an
@@ -183,8 +190,7 @@ are 'dImg' for the file type and 'dCpy' for the creator.</p>
 <p>You can use ResEdit, BBEdit, or Norton Utilities to change the type and
 creator.&nbsp; If you're using PC Exchange on the Macintosh to copy the images
 off of Windows-formatted disks, you can configure it to set the type
-automatically for &quot;.dsk&quot; files.&nbsp; Take a look at <a href="http://www.macwindows.com/tutfiles.htm">this
-page</a> for more information.</p>
+automatically for &quot;.dsk&quot; files.&nbsp;</p>
 
 <h3>How do I format a floppy disk with ProDOS?</h3>
 
@@ -198,12 +204,10 @@ floppy drive, and select &quot;Format&quot;.</p>
 
 <h3>Can I use CiderPress on a non-Windows system?</h3>
 
-<p>Sort of.&nbsp; It works reasonably well under Wine (<a href="http://winehq.org/">http://winehq.org/</a>),
-though you need a copy of &quot;windows\system32\mfc42.dll&quot; from a Windows
-system.&nbsp; Wine does crash occasionally, but many of the features work.</p>
-
-<p>Windows emulators, such as <a href="http://www.vmware.com/">VMware</a>, work
-fully.</p>
+<p>Yes, with emulation.  It works reasonably well with Wine
+(<a href="http://winehq.org/">http://winehq.org/</a>),
+and very well with system emulators like the free
+<a href="https://www.virtualbox.org/">VirtualBox</a>.</p>
 
 <h3>Is there anything that CiderPress *doesn't* do?!</h3>
 
