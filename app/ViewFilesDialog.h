@@ -23,24 +23,20 @@ class MainWindow;
 class ViewFilesDialog : public CDialog {
 public:
     ViewFilesDialog(CWnd* pParentWnd = NULL) :
-        CDialog(IDD_FILE_VIEWER, pParentWnd)
-    {
-        //fpMainWindow = NULL;
-        fpSelSet = NULL;
-        fpHolder = NULL;
-        fpOutput = NULL;
-        fTypeFace = "";
-        fPointSize = 0;
-        fNoWrapText = false;
-        fBusy = false;
-        fpRichEditOle = NULL;
-        fFirstResize = false;
-
-        fpFindDialog = NULL;
-        fFindDown = false;
-        fFindMatchCase = false;
-        fFindMatchWholeWord = false;
-    }
+        CDialog(IDD_FILE_VIEWER, pParentWnd),
+        fpSelSet(NULL),
+        fpHolder(NULL),
+        fpOutput(NULL),
+        fPointSize(0),
+        fNoWrapText(false),
+        fBusy(false),
+        fFirstResize(false),
+        fpRichEditOle(NULL),
+        fpFindDialog(NULL),
+        fFindDown(true),
+        fFindMatchCase(false),
+        fFindMatchWholeWord(false)
+    {}
     virtual ~ViewFilesDialog(void) {
         delete fpHolder;
         delete fpOutput;

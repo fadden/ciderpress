@@ -1171,14 +1171,7 @@ void ViewFilesDialog::OnFviewFind(void)
     if (fFindMatchWholeWord)
         flags |= FR_WHOLEWORD;
 
-    /*
-     * I can't get this to work with FindText().  There's a lot of questions
-     * about this on web sites.  Probably safest to just disable it.
-     */
-    flags |= FR_HIDEUPDOWN;
-
     fpFindDialog = new CFindReplaceDialog;
-
     fpFindDialog->Create(TRUE,      // "find" only
                          fFindLastStr,  // default string to search for
                          NULL,      // default string to replace
@@ -1225,35 +1218,44 @@ void ViewFilesDialog::FindNext(const WCHAR* str, bool down, bool matchCase,
     DWORD flags = 0;
     long start, result;
 
+    if (down)
+        flags |= FR_DOWN;
     if (matchCase)
         flags |= FR_MATCHCASE;
     if (wholeWord)
         flags |= FR_WHOLEWORD;
 
     fEditCtrl.GetSel(selChrg);
-    LOGD("  selection is %ld,%ld",
-        selChrg.cpMin, selChrg.cpMax);
     if (selChrg.cpMin == selChrg.cpMax)
         start = selChrg.cpMin;      // start at caret
     else
         start = selChrg.cpMin +1;   // start past selection
+    LOGD("  selection is %ld,%ld; start=%ld",
+        selChrg.cpMin, selChrg.cpMax, start);
 
-    findTextEx.chrg.cpMin = start;
-    findTextEx.chrg.cpMax = -1;
     findTextEx.lpstrText = str;
-
-    /* MSVC++6 claims FindText doesn't exist, even though it's in the header */
-    //result = fEditCtrl.FindText(flags, &findTextEx);
-    result = fEditCtrl.SendMessage(EM_FINDTEXTEX, (WPARAM) flags,
-        (LPARAM) &findTextEx);
-
-    if (result == -1) {
-        /* didn't find it, wrap around to start */
-        findTextEx.chrg.cpMin = 0;
+    findTextEx.chrg.cpMin = start;
+    if (down) {
         findTextEx.chrg.cpMax = -1;
+    } else {
+        findTextEx.chrg.cpMax = 0;
+    }
+    LOGV("  using cpMin=%ld cpMax=%ld",
+        findTextEx.chrg.cpMin, findTextEx.chrg.cpMax);
+
+    result = fEditCtrl.FindText(flags, &findTextEx);
+    if (result == -1) {
+        LOGD("  not found, wrapping and retrying");
+        /* didn't find it, wrap around to start/end and retry */
+        if (down) {
+            findTextEx.chrg.cpMin = 0;
+            findTextEx.chrg.cpMax = -1;
+        } else {
+            findTextEx.chrg.cpMin = fEditCtrl.GetTextLength();
+            findTextEx.chrg.cpMax = 0;
+        }
         findTextEx.lpstrText = str;
-        result = fEditCtrl.SendMessage(EM_FINDTEXTEX, (WPARAM) flags,
-            (LPARAM) &findTextEx);
+        result = fEditCtrl.FindText(flags, &findTextEx);
     }
 
     LOGD("  result=%ld min=%ld max=%ld", result,
