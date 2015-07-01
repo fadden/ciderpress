@@ -330,7 +330,6 @@ int ReformatMerlin::Process(const ReformatHolder* pHolder,
 {
     const uint8_t* srcPtr = pHolder->GetSourceBuf(part);
     long srcLen = pHolder->GetSourceLen(part);
-    long length = srcLen;
     int retval = -1;
     enum { kStateLabel, kStateMnemonic, kStateOperand, kStateComment };
     int tabStop[] = { 0, 9, 15, 26 };   // 1:1 map with state enum
@@ -343,12 +342,16 @@ int ReformatMerlin::Process(const ReformatHolder* pHolder,
 
     bool isLineStart = true;
     for ( ; srcLen > 0; srcLen--, srcPtr++) {
+        bool wasLineStart = false;
         if (isLineStart) {
             isLineStart = false;
+            wasLineStart = true;
             OutputStart();      // begin new line in output buffer
             state = kStateLabel;
-            if (*srcPtr == 0xaa)
+            if (*srcPtr == 0xaa) {
+                // leading '*' makes entire line a comment
                 state = kStateComment;
+            }
         }
         if (*srcPtr == 0x8d) {
             OutputFinish();     // end of line
@@ -358,6 +361,7 @@ int ReformatMerlin::Process(const ReformatHolder* pHolder,
 
             isLineStart = true;
             if (quoteChar != '\0') {
+                // unterminated quote
                 DebugBreak();
                 quoteChar = '\0';
             }
@@ -383,7 +387,12 @@ int ReformatMerlin::Process(const ReformatHolder* pHolder,
             // Merlin-16 v3.40
             state++;
             OutputTab(tabStop[state]);
-        } else if (*srcPtr == 0xbb) {       // high-ASCII ';'
+        } else if (*srcPtr == 0xbb &&
+                (wasLineStart || *(srcPtr-1) == 0xa0)) {
+            // Found a high-ASCII ';' at the start of the line or right after
+            // a space.  Semicolons can appear in the middle of macros, so
+            // we need the extra test to avoid introducing a column break.
+            //
             // just comment, or comment on mnemonic w/o operand
             // (shouldn't tab out if line started with label but
             // contains 0x20s instead of 0xa0s between components;
@@ -396,13 +405,10 @@ int ReformatMerlin::Process(const ReformatHolder* pHolder,
         }
     }
 
-//done:
     RTFEnd();
 
     SetResultBuffer(pOutput);
     retval = 0;
-
-//bail:
     return retval;
 }
 
