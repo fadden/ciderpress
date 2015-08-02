@@ -55,14 +55,14 @@
  * The IIgs monochrome mode is not enabled on the RGB output unless you
  * turn off AN3 by hitting $c05e (it can be re-enabled by hitting $c05f).
  * This register turns off the half-pixel shift, so it doesn't appear to
- * be possible to view hires output on an RGB monitor with the half-pixel
+ * be possible to view hi-res output on an RGB monitor with the half-pixel
  * shift intact.  On the composite output, the removal of the half-pixel
  * shift is quite visible.
  */
 
 /*
  * Regarding color...
- * [ Fround on http://www.geocities.com/jonrelay/software/a2info/munafo.htm ]
+ * [ Found on http://www.geocities.com/jonrelay/software/a2info/munafo.htm ]
 
 From: munafo@gcctech.com
 Newsgroups: comp.emulators.apple2,comp.sys.apple2.programmer
@@ -117,6 +117,8 @@ pattern colors and the YIQ axis colors are also given.
  YIQ -I            303 100   50      0 224 231
  NTSC blue         347  62   15     38  65 155
 
+ ---
+
 I don't think these are 100% correct, e.g. he only found one value for both
 grey colors, even though one is noticeably darker than the other on-screen.
 
@@ -143,7 +145,7 @@ The IIgs tech note #63 uses the following for border colors:
                   White         $F              $0FFF
                   ---------------------------------------
 
-KEGS uses this (rearranged slightly to match the above):
+KEGS uses this (rearranged slightly to match the order above):
   const int g_dbhires_colors[] = {
         \* rgb *\
         0x000,      \* 0x0 black *\
@@ -180,7 +182,8 @@ void ReformatHiRes::Examine(ReformatHolder* pHolder)
     long fileLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
     long fileType = pHolder->GetFileType();
     long auxType = pHolder->GetAuxType();
-    bool dosStructure = (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
+    bool dosStructure =
+        (pHolder->GetSourceFormat() == ReformatHolder::kSourceFormatDOS);
     bool relaxed;
 
     relaxed = pHolder->GetOption(ReformatHolder::kOptRelaxGfxTypeCheck) != 0;
@@ -193,10 +196,15 @@ void ReformatHiRes::Examine(ReformatHolder* pHolder)
             applies = ReformatHolder::kApplicProbably;
         }
     } else {
-        if (fileType == kTypeFOT /*&& auxType < 0x4000*/ &&
-            (fileLen >= kExpectedSize-8 && fileLen <= kExpectedSize+1))
-        {
-            applies = ReformatHolder::kApplicProbably;
+        if (fileType == kTypeFOT) {
+            if (auxType == 0x8066) {
+                // fhpack LZ4FH-compressed file
+                applies = ReformatHolder::kApplicYes;
+            } else if (fileLen >= kExpectedSize-8 &&
+                       fileLen <= kExpectedSize + 1) {
+                // uncompressed FOT file... probably
+                applies = ReformatHolder::kApplicProbably;
+            }
         } else if (relaxed && fileType == kTypeBIN &&
             (fileLen >= kExpectedSize-8 && fileLen <= kExpectedSize+1))
         {
@@ -230,8 +238,20 @@ int ReformatHiRes::Process(const ReformatHolder* pHolder,
     long srcLen = pHolder->GetSourceLen(part);
     int retval = -1;
 
-    if (id == ReformatHolder::kReformatHiRes_BW)
+    if (id == ReformatHolder::kReformatHiRes_BW) {
         fBlackWhite = true;
+    }
+
+    uint8_t expandBuf[kExpectedSize];
+    if (pHolder->GetFileType() == kTypeFOT &&
+        pHolder->GetAuxType() == 0x8066)
+    {
+        srcLen = ExpandLZ4FH(expandBuf, srcBuf, srcLen);
+        if (srcLen == 0) {
+            goto bail;      // fail
+        }
+        srcBuf = expandBuf;
+    }
 
     if (srcLen > kExpectedSize+1 || srcLen < kExpectedSize-8) {
         LOGI(" HiRes file is not ~%d bytes long (got %d)",
@@ -273,7 +293,92 @@ bail:
 }
 
 /*
- * Convert a buffer of hires data to a 16-color DIB.
+ * (Lifted directly from fhpack.)
+ *
+ * Uncompress LZ4FH data from "srcBuf" to "dstBuf".  "dstBuf" must hold
+ * kExpectedSize bytes.
+ *
+ * Returns the uncompressed length on success, 0 on failure.
+ */
+/*static*/ long ReformatHiRes::ExpandLZ4FH(uint8_t* outBuf,
+    const uint8_t* inBuf, long inLen)
+{
+    // constants
+    static const uint8_t LZ4FH_MAGIC = 0x66;
+    static const int MIN_MATCH_LEN = 4;
+    static const int INITIAL_LEN = 15;
+    static const int EMPTY_MATCH_TOKEN = 253;
+    static const int EOD_MATCH_TOKEN = 254;
+    static const int MAX_SIZE = kExpectedSize;
+
+    uint8_t* outPtr = outBuf;
+    const uint8_t* inPtr = inBuf;
+
+    LOGD("Expanding LZ4FH");
+
+    if (*inPtr++ != LZ4FH_MAGIC) {
+        LOGE("Missing LZ4FH magic");
+        return 0;
+    }
+
+    while (true) {
+        uint8_t mixedLen = *inPtr++;
+
+        int literalLen = mixedLen >> 4;
+        if (literalLen != 0) {
+            if (literalLen == INITIAL_LEN) {
+                literalLen += *inPtr++;
+            }
+            if ((outPtr - outBuf) + literalLen > MAX_SIZE ||
+                    (inPtr - inBuf) + literalLen > inLen) {
+                LOGE("Buffer overrun");
+                return 0;
+            }
+            memcpy(outPtr, inPtr, literalLen);
+            outPtr += literalLen;
+            inPtr += literalLen;
+        }
+
+        int matchLen = mixedLen & 0x0f;
+        if (matchLen == INITIAL_LEN) {
+            uint8_t addon = *inPtr++;
+            if (addon == EMPTY_MATCH_TOKEN) {
+                matchLen = - MIN_MATCH_LEN;
+            } else if (addon == EOD_MATCH_TOKEN) {
+                break;      // out of while
+            } else {
+                matchLen += addon;
+            }
+        }
+
+        matchLen += MIN_MATCH_LEN;
+        if (matchLen != 0) {
+            int matchOffset = *inPtr++;
+            matchOffset |= (*inPtr++) << 8;
+            // Can't use memcpy() here, because we need to guarantee
+            // that the match is overlapping.
+            uint8_t* srcPtr = outBuf + matchOffset;
+            if ((outPtr - outBuf) + matchLen > MAX_SIZE ||
+                    (srcPtr - outBuf) + matchLen > MAX_SIZE) {
+                LOGE("Buffer overrun");
+                return 0;
+            }
+            while (matchLen-- != 0) {
+                *outPtr++ = *srcPtr++;
+            }
+        }
+    }
+
+    if (inPtr - inBuf != (long) inLen) {
+        LOGW("Warning: LZ4FH uncompress used only %ld of %zd bytes",
+                inPtr - inBuf, inLen);
+    }
+
+    return outPtr - outBuf;
+}
+
+/*
+ * Convert an 8KB buffer of hi-res data to a 16-color 560x384 DIB.
  */
 MyDIBitmap* ReformatHiRes::HiResScreenToBitmap(const uint8_t* buf)
 {

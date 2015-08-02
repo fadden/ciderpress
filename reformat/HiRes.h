@@ -24,6 +24,9 @@ public:
         ReformatHolder::ReformatID id, ReformatHolder::ReformatPart part,
         ReformatOutput* pOutput) override;
 
+    static void InitLineOffset(int* pOffsetBuf);
+
+private:
     enum {
         kPixelsPerLine = 280,
         kNumLines = 192,
@@ -33,9 +36,10 @@ public:
         kExpectedSize = 8192,
     };
 
-
-    static void InitLineOffset(int* pOffsetBuf);
     MyDIBitmap* HiResScreenToBitmap(const uint8_t* buf);
+
+    static long ExpandLZ4FH(uint8_t* dstBuf, const uint8_t* srcBuf,
+        long srcLen);
 
     int     fLineOffset[kNumLines];
     bool    fBlackWhite;
