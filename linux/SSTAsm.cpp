@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#ifdef __APPLE__
+#include <time.h>
+#endif
 #include "../diskimg/DiskImg.h"
 
 using namespace DiskImgLib;
