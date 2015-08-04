@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <time.h>
 #include "../diskimg/DiskImg.h"
 
 using namespace DiskImgLib;
