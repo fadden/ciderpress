@@ -67,8 +67,10 @@
 # include <direct.h>
 # define FOPEN_WANTS_B
 # define HAVE_CHSIZE
-# define snprintf _snprintf
-# define vsnprintf _vsnprintf
+# if _MSC_VER < 1900    /* no snprintf until Visual Studio 2015 */
+#  define snprintf _snprintf
+#  define vsnprintf _vsnprintf
+# endif
 
 #endif
 
