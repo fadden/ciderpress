@@ -79,6 +79,10 @@ int ReformatResourceFork::Process(const ReformatHolder* pHolder,
 
     result = ReadHeader(srcBuf, srcLen, &rFileVersion, &rFileToMap,
                 &rFileMapSize, &littleEndian);
+    if (!result) {
+        BufPrintf("Does not appear to be a valid resource fork.\r\n");
+        goto done;
+    }
 
     BufPrintf("Resource fork header (%s):\r\n",
         littleEndian ? "Apple IIgs little-endian" : "Macintosh big-endian");
@@ -91,10 +95,6 @@ int ReformatResourceFork::Process(const ReformatHolder* pHolder,
 
     if (rFileVersion != 0) {
         BufPrintf("Not an Apple IIgs resource fork (probably Macintosh).\r\n");
-        goto done;
-    }
-    if (!result) {
-        BufPrintf("Does not appear to be a valid resource fork.\r\n");
         goto done;
     }
 
@@ -169,7 +169,7 @@ done:
     bool* pLittleEndian)
 {
     if (srcLen < 128) {
-        LOGI("ReformatResource: invalid len %d", srcLen);
+        LOGD("ReformatResource: invalid len %d", srcLen);
         return false;
     }
 
