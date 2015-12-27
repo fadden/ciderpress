@@ -228,6 +228,13 @@ typedef struct NuFileInfo {
 
 /*
  * Determine whether the record has both data and resource forks.
+ *
+ * TODO: if we're not using "mask dataless", scanning threads may not
+ * get the right answer, because GSHK omits theads for zero-length forks.
+ * We could check pRecord->recStorageType, though we have to be careful
+ * because that's overloaded for disk images.  In any event, the result
+ * from this method isn't relevant unless we're trying to use forked
+ * files on the native filesystem.
  */
 static Boolean Nu_IsForkedFile(NuArchive* pArchive, const NuRecord* pRecord)
 {
@@ -320,20 +327,44 @@ static NuError Nu_SetFinderInfo(NuArchive* pArchive, const NuRecord* pRecord,
         return kNuErrFile;
     }
 
-    /* build type and creator from 8-bit type and 16-bit aux type */
-    uint32_t fileType, creator;
-    fileType = ('p' << 24) | ((pRecord->recFileType & 0xff) << 16) |
-            (pRecord->recExtraType & 0xffff);
-    creator = 'pdos';
+    uint8_t proType = (uint8_t) pRecord->recFileType;
+    uint16_t proAux = (uint16_t) pRecord->recExtraType;
 
-    fiBuf[0] = fileType >> 24;
-    fiBuf[1] = fileType >> 16;
-    fiBuf[2] = fileType >> 8;
-    fiBuf[3] = fileType;
-    fiBuf[4] = creator >> 24;
-    fiBuf[5] = creator >> 16;
-    fiBuf[6] = creator >> 8;
-    fiBuf[7] = creator;
+    /*
+     * Attempt to use one of the convenience types.  If nothing matches,
+     * use the generic pdos/pXYZ approach.  Note that PSYS/PS16 will
+     * lose the file's aux type.
+     *
+     * I'm told this is from page 336 of _Programmer's Reference for
+     * System 6.0_.
+     */
+    uint8_t* fileTypeBuf = fiBuf;
+    uint8_t* creatorBuf = fiBuf + 4;
+
+    memcpy(creatorBuf, "pdos", 4);
+    if (proType == 0x00 && proAux == 0x0000) {
+        memcpy(fileTypeBuf, "BINA", 4);
+    } else if (proType == 0x04 && proAux == 0x0000) {
+        memcpy(fileTypeBuf, "TEXT", 4);
+    } else if (proType == 0xff) {
+        memcpy(fileTypeBuf, "PSYS", 4);
+    } else if (proType == 0xb3 && (proAux & 0xff00) != 0xdb00) {
+        memcpy(fileTypeBuf, "PS16", 4);
+    } else if (proType == 0xd7 && proAux == 0x0000) {
+        memcpy(fileTypeBuf, "MIDI", 4);
+    } else if (proType == 0xd8 && proAux == 0x0000) {
+        memcpy(fileTypeBuf, "AIFF", 4);
+    } else if (proType == 0xd8 && proAux == 0x0001) {
+        memcpy(fileTypeBuf, "AIFC", 4);
+    } else if (proType == 0xe0 && proAux == 0x0005) {
+        memcpy(creatorBuf, "dCpy", 4);
+        memcpy(fileTypeBuf, "dImg", 4);
+    } else {
+        fileTypeBuf[0] = 'p';
+        fileTypeBuf[1] = proType;
+        fileTypeBuf[2] = (uint8_t) (proAux >> 8);
+        fileTypeBuf[3] = (uint8_t) proAux;
+    }
 
     if (setxattr(pathnameUNI, XATTR_FINDERINFO_NAME, fiBuf, sizeof(fiBuf),
         0, 0) != 0)

@@ -1524,7 +1524,7 @@ NuError Nu_StreamExtract(NuArchive* pArchive)
 {
     NuError err = kNuErrNone;
     NuRecord tmpRecord;
-    Boolean hasInterestingThread;
+    Boolean needFakeData, needFakeRsrc;
     uint32_t count;
     long idx;
 
@@ -1573,7 +1573,8 @@ NuError Nu_StreamExtract(NuArchive* pArchive)
         /*Nu_DebugDumpRecord(&tmpRecord);
         printf("\n");*/
 
-        hasInterestingThread = false;
+        needFakeData = true;
+        needFakeRsrc = (tmpRecord.recStorageType == kNuStorageExtended);
 
         /* extract all relevant (remaining) threads */
         pArchive->lastFileCreatedUNI = NULL;
@@ -1581,7 +1582,11 @@ NuError Nu_StreamExtract(NuArchive* pArchive)
             const NuThread* pThread = Nu_GetThread(&tmpRecord, idx);
 
             if (pThread->thThreadClass == kNuThreadClassData) {
-                hasInterestingThread = true;
+                if (pThread->thThreadKind == kNuThreadKindDataFork) {
+                    needFakeData = false;
+                } else if (pThread->thThreadKind == kNuThreadKindRsrcFork) {
+                    needFakeRsrc = false;
+                }
                 err = Nu_ExtractThreadBulk(pArchive, &tmpRecord, pThread);
                 if (err == kNuErrSkipped) {
                     err = Nu_SkipThread(pArchive, &tmpRecord, pThread);
@@ -1595,7 +1600,8 @@ NuError Nu_StreamExtract(NuArchive* pArchive)
                 if (NuGetThreadID(pThread) != kNuThreadIDComment &&
                     NuGetThreadID(pThread) != kNuThreadIDFilename)
                 {
-                    hasInterestingThread = true;
+                    /* unknown stuff in record, skip thread fakery */
+                    needFakeData = needFakeRsrc = false;
                 }
                 err = Nu_SkipThread(pArchive, &tmpRecord, pThread);
                 BailError(err);
@@ -1603,19 +1609,19 @@ NuError Nu_StreamExtract(NuArchive* pArchive)
         }
 
         /*
-         * If we're trying to be compatible with ShrinkIt, and the record
-         * had nothing in it but comments and filenames, then we need to
-         * create a zero-byte data file (and possibly a resource fork).
-         *
-         * See notes in previous instance, above.
+         * As in Nu_ExtractRecordByPtr, we need to synthesize empty forks for
+         * cases where GSHK omitted the data thread entirely.
          */
-        if (/*pArchive->valMaskDataless &&*/ !hasInterestingThread) {
-            err = Nu_FakeZeroExtract(pArchive, &tmpRecord, 0x0000);
+        Assert(!pArchive->valMaskDataless || (!needFakeData && !needFakeRsrc));
+        if (needFakeData) {
+            err = Nu_FakeZeroExtract(pArchive, &tmpRecord,
+                    kNuThreadKindDataFork);
             BailError(err);
-            if (tmpRecord.recStorageType == kNuStorageExtended) {
-                err = Nu_FakeZeroExtract(pArchive, &tmpRecord, 0x0002);
-                BailError(err);
-            }
+        }
+        if (needFakeRsrc) {
+            err = Nu_FakeZeroExtract(pArchive, &tmpRecord,
+                    kNuThreadKindRsrcFork);
+            BailError(err);
         }
 
         /* dispose of the entry */
@@ -1698,20 +1704,26 @@ bail:
 static NuError Nu_ExtractRecordByPtr(NuArchive* pArchive, NuRecord* pRecord)
 {
     NuError err = kNuErrNone;
-    Boolean hasInterestingThread;
+    Boolean needFakeData, needFakeRsrc;
     uint32_t idx;
+
+    needFakeData = true;
+    needFakeRsrc = (pRecord->recStorageType == kNuStorageExtended);
 
     Assert(!Nu_IsStreaming(pArchive));  /* we don't skip things we don't read */
     Assert(pRecord != NULL);
 
     /* extract all relevant threads */
-    hasInterestingThread = false;
     pArchive->lastFileCreatedUNI = NULL;
     for (idx = 0; idx < pRecord->recTotalThreads; idx++) {
         const NuThread* pThread = Nu_GetThread(pRecord, idx);
 
         if (pThread->thThreadClass == kNuThreadClassData) {
-            hasInterestingThread = true;
+            if (pThread->thThreadKind == kNuThreadKindDataFork) {
+                needFakeData = false;
+            } else if (pThread->thThreadKind == kNuThreadKindRsrcFork) {
+                needFakeRsrc = false;
+            }
             err = Nu_ExtractThreadBulk(pArchive, pRecord, pThread);
             if (err == kNuErrSkipped) {
                 err = Nu_SkipThread(pArchive, pRecord, pThread);
@@ -1722,7 +1734,13 @@ static NuError Nu_ExtractRecordByPtr(NuArchive* pArchive, NuRecord* pRecord)
             if (NuGetThreadID(pThread) != kNuThreadIDComment &&
                 NuGetThreadID(pThread) != kNuThreadIDFilename)
             {
-                hasInterestingThread = true;
+                /*
+                 * This record has a thread we don't recognize.  Disable
+                 * the thread fakery to avoid doing anything weird -- we
+                 * should only need to create zero-length files for
+                 * simple file records.
+                 */
+                needFakeData = needFakeRsrc = false;
             }
             DBUG(("IGNORING 0x%08lx from '%s'\n",
                 NuMakeThreadID(pThread->thThreadClass, pThread->thThreadKind),
@@ -1731,28 +1749,27 @@ static NuError Nu_ExtractRecordByPtr(NuArchive* pArchive, NuRecord* pRecord)
     }
 
     /*
-     * If we're trying to be compatible with ShrinkIt, and the record
-     * had nothing in it but comments and filenames, then we need to
-     * create a zero-byte file.
+     * GSHK creates empty threads for zero-length forks.  It doesn't always
+     * handle them correctly when extracting, so it appears this behavior
+     * may not be intentional.
      *
-     * (GSHK handles empty data and resource forks by not storing a
-     * thread at all.  It doesn't correctly deal with them when extracting
-     * though, so it appears this behavior wasn't entirely expected.)
+     * We need to create an empty file for whichever forks are missing.
+     * Could be the data fork, resource fork, or both.  The only way to
+     * know what's expected is to examine the file's storage type.
      *
-     * If it's a forked file, we also need to create an empty rsrc file.
-     *
-     * If valMaskDataless is enabled, this won't fire, because we "forge"
-     * appropriate threads.
+     * If valMaskDataless is enabled, this won't fire, because we will have
+     * "forged" the appropriate threads.
      *
      * Note there's another one of these below, in Nu_StreamExtract.
      */
-    if (/*pArchive->valMaskDataless &&*/ !hasInterestingThread) {
-        err = Nu_FakeZeroExtract(pArchive, pRecord, 0x0000 /*data*/);
+    Assert(!pArchive->valMaskDataless || (!needFakeData && !needFakeRsrc));
+    if (needFakeData) {
+        err = Nu_FakeZeroExtract(pArchive, pRecord, kNuThreadKindDataFork);
         BailError(err);
-        if (pRecord->recStorageType == kNuStorageExtended) {
-            err = Nu_FakeZeroExtract(pArchive, pRecord, 0x0002 /*rsrc*/);
-            BailError(err);
-        }
+    }
+    if (needFakeRsrc) {
+        err = Nu_FakeZeroExtract(pArchive, pRecord, kNuThreadKindRsrcFork);
+        BailError(err);
     }
 
 bail:

@@ -24,6 +24,15 @@ static const char kFssep = PATH_SEP;
 
 #define kTempFile   "exer-temp"
 
+#ifndef HAVE_STRCASECMP
+static int strcasecmp(const char *str1, const char *str2)
+{
+    while (*str1 && *str2 && toupper(*str1) == toupper(*str2))
+        str1++, str2++;
+    return (toupper(*str1) - toupper(*str2));
+}
+#endif
+
 
 /*
  * ===========================================================================
@@ -364,13 +373,25 @@ static NuError AbortFunc(ExerciserState* pState, int argc, char** argv)
 static NuError AddFileFunc(ExerciserState* pState, int argc, char** argv)
 {
     NuFileDetails nuFileDetails;
+    int fromRsrc = false;
 
     (void) pState, (void) argc, (void) argv;    /* shut up, gcc */
     assert(ExerciserState_GetNuArchive(pState) != NULL);
-    assert(argc == 2);
+    assert(argc == 3);
+
+    if (strcasecmp(argv[2], "true") == 0) {
+        fromRsrc = true;
+    } else if (strcasecmp(argv[2], "false") != 0) {
+        fprintf(stderr, "WARNING: fromRsrc should be 'true' or 'false'\n");
+        /* ignore */
+    }
 
     memset(&nuFileDetails, 0, sizeof(nuFileDetails));
-    nuFileDetails.threadID = kNuThreadIDDataFork;
+    if (fromRsrc) {
+        nuFileDetails.threadID = kNuThreadIDRsrcFork;
+    } else {
+        nuFileDetails.threadID = kNuThreadIDDataFork;
+    }
     nuFileDetails.storageNameMOR = argv[1];
     nuFileDetails.fileSysID = kNuFileSysUnknown;
     nuFileDetails.fileSysInfo = (short) kFssep;
@@ -378,7 +399,7 @@ static NuError AddFileFunc(ExerciserState* pState, int argc, char** argv)
     /* fileType, extraType, storageType, dates */
 
     return NuAddFile(ExerciserState_GetNuArchive(pState), argv[1],
-            &nuFileDetails, false, NULL);
+            &nuFileDetails, fromRsrc, NULL);
 }
 
 /*
@@ -1039,7 +1060,7 @@ static const struct {
 
     { "ab", AbortFunc, 0, "", kFlagArchiveReq,
         "Abort current changes" },
-    { "af", AddFileFunc, 1, "filename", kFlagArchiveReq,
+    { "af", AddFileFunc, 2, "filename fromRsrc", kFlagArchiveReq,
         "Add file" },
     { "ar", AddRecordFunc, 1, "storageName", kFlagArchiveReq,
         "Add record" },

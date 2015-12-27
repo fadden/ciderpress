@@ -193,7 +193,10 @@ NuError Nu_ReadThreadHeaders(NuArchive* pArchive, NuRecord* pRecord,
     NuError err = kNuErrNone;
     NuThread* pThread;
     long count;
-    Boolean hasData = false;
+    Boolean needFakeData, needFakeRsrc;
+
+    needFakeData = true;
+    needFakeRsrc = (pRecord->recStorageType == kNuStorageExtended);
 
     Assert(pArchive != NULL);
     Assert(pRecord != NULL);
@@ -215,8 +218,13 @@ NuError Nu_ReadThreadHeaders(NuArchive* pArchive, NuRecord* pRecord,
         err = Nu_ReadThreadHeader(pArchive, pThread, pCrc);
         BailError(err);
 
-        if (pThread->thThreadClass == kNuThreadClassData)
-            hasData = true;
+        if (pThread->thThreadClass == kNuThreadClassData) {
+            if (pThread->thThreadKind == kNuThreadKindDataFork) {
+                needFakeData = false;
+            } else if (pThread->thThreadKind == kNuThreadKindRsrcFork) {
+                needFakeRsrc = false;
+            }
+        }
 
         /*
          * Some versions of ShrinkIt write an invalid thThreadEOF for disks,
@@ -258,13 +266,14 @@ NuError Nu_ReadThreadHeaders(NuArchive* pArchive, NuRecord* pRecord,
      * If "mask threadless" is set, create "fake" threads with empty
      * data and resource forks as needed.
      */
-    if (!hasData && pArchive->valMaskDataless) {
-        Boolean needRsrc = (pRecord->recStorageType == kNuStorageExtended);
+    if ((needFakeData || needFakeRsrc) && pArchive->valMaskDataless) {
         int firstNewThread = pRecord->recTotalThreads;
 
-        pRecord->recTotalThreads++;
-        pRecord->fakeThreads++;
-        if (needRsrc) {
+        if (needFakeData) {
+            pRecord->recTotalThreads++;
+            pRecord->fakeThreads++;
+        }
+        if (needFakeRsrc) {
             pRecord->recTotalThreads++;
             pRecord->fakeThreads++;
         }
@@ -275,22 +284,23 @@ NuError Nu_ReadThreadHeaders(NuArchive* pArchive, NuRecord* pRecord,
 
         pThread = pRecord->pThreads + firstNewThread;
 
-        pThread->thThreadClass = kNuThreadClassData;
-        pThread->thThreadFormat = kNuThreadFormatUncompressed;
-        pThread->thThreadKind = 0x0000;     /* data fork */
-        pThread->thThreadCRC = kNuInitialThreadCRC;
-        pThread->thThreadEOF = 0;
-        pThread->thCompThreadEOF = 0;
-        pThread->threadIdx = Nu_GetNextThreadIdx(pArchive);
-        pThread->actualThreadEOF = 0;
-        pThread->fileOffset = -99999999;
-        pThread->used = false;
-
-        if (needRsrc) {
-            pThread++;
+        if (needFakeData) {
             pThread->thThreadClass = kNuThreadClassData;
             pThread->thThreadFormat = kNuThreadFormatUncompressed;
-            pThread->thThreadKind = 0x0002;     /* rsrc fork */
+            pThread->thThreadKind = kNuThreadKindDataFork;
+            pThread->thThreadCRC = kNuInitialThreadCRC;
+            pThread->thThreadEOF = 0;
+            pThread->thCompThreadEOF = 0;
+            pThread->threadIdx = Nu_GetNextThreadIdx(pArchive);
+            pThread->actualThreadEOF = 0;
+            pThread->fileOffset = -99999999;
+            pThread->used = false;
+            pThread++;
+        }
+        if (needFakeRsrc) {
+            pThread->thThreadClass = kNuThreadClassData;
+            pThread->thThreadFormat = kNuThreadFormatUncompressed;
+            pThread->thThreadKind = kNuThreadKindRsrcFork;
             pThread->thThreadCRC = kNuInitialThreadCRC;
             pThread->thThreadEOF = 0;
             pThread->thCompThreadEOF = 0;

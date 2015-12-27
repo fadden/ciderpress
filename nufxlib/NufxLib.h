@@ -33,7 +33,7 @@ extern "C" {
  * fixes.  Unless, of course, your code depends upon that fix.
  */
 #define kNuVersionMajor     3
-#define kNuVersionMinor     0
+#define kNuVersionMinor     1
 #define kNuVersionBug       0
 
 
@@ -201,13 +201,16 @@ typedef uint32_t NuThreadID;
 #define kNuThreadClassControl   0x0001
 #define kNuThreadClassData      0x0002
 #define kNuThreadClassFilename  0x0003
+#define kNuThreadKindDataFork   0x0000  /* when class=data */
+#define kNuThreadKindDiskImage  0x0001  /* when class=data */
+#define kNuThreadKindRsrcFork   0x0002  /* when class=data */
 #define kNuThreadIDOldComment   NuMakeThreadID(kNuThreadClassMessage, 0x0000)
 #define kNuThreadIDComment      NuMakeThreadID(kNuThreadClassMessage, 0x0001)
 #define kNuThreadIDIcon         NuMakeThreadID(kNuThreadClassMessage, 0x0002)
 #define kNuThreadIDMkdir        NuMakeThreadID(kNuThreadClassControl, 0x0000)
-#define kNuThreadIDDataFork     NuMakeThreadID(kNuThreadClassData, 0x0000)
-#define kNuThreadIDDiskImage    NuMakeThreadID(kNuThreadClassData, 0x0001)
-#define kNuThreadIDRsrcFork     NuMakeThreadID(kNuThreadClassData, 0x0002)
+#define kNuThreadIDDataFork     NuMakeThreadID(kNuThreadClassData, kNuThreadKindDataFork)
+#define kNuThreadIDDiskImage    NuMakeThreadID(kNuThreadClassData, kNuThreadKindDiskImage)
+#define kNuThreadIDRsrcFork     NuMakeThreadID(kNuThreadClassData, kNuThreadKindRsrcFork)
 #define kNuThreadIDFilename     NuMakeThreadID(kNuThreadClassFilename, 0x0000)
 #define kNuThreadIDWildcard     NuMakeThreadID(0xffff, 0xffff)
 

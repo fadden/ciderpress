@@ -298,7 +298,8 @@ int Test_AddStuff(NuArchive* pArchive)
 
 
     /*
-     * Create an empty file with a rather non-empty name.
+     * Create an empty file with a rather non-empty name.  Add it as
+     * a resource fork.
      */
     printf("... add 'long' record\n");
     err = NuCreateDataSourceForBuffer(kNuThreadFormatUncompressed,
@@ -454,7 +455,8 @@ failed:
 
 
 /*
- * Selection callback filter for "test".  This gets called once per record.
+ * Selection callback filter for "test".  This gets called once per record,
+ * twice per record for forked files.
  */
 NuResult VerifySelectionCallback(NuArchive* pArchive, void* vpProposal)
 {
@@ -523,7 +525,9 @@ int Test_Verify(NuArchive* pArchive)
         goto failed;
     }
 
-    if (count != kNumEntries) {
+    /* the count will be one higher than the number of records because
+       the last entry is forked, and each fork is tested separately */
+    if (count != kNumEntries + 1) {
         fprintf(stderr, "ERROR: verified %ld when expecting %d\n", count,
             kNumEntries);
         goto failed;

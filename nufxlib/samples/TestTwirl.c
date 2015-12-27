@@ -184,6 +184,7 @@ CRCList* GatherCRCs(NuArchive* pArchive)
             goto bail;
         }
 
+        int rsrcCrcIdx = -1;
         for (i = 0; i < (int)NuRecordGetNumThreads(pRecord); i++) {
             pThread = NuGetThread(pRecord, i);
             if (pThread->thThreadClass == kNuThreadClassData) {
@@ -194,7 +195,30 @@ CRCList* GatherCRCs(NuArchive* pArchive)
                     goto bail;
                 }
 
-                pEntries[crcIdx++] = pThread->thThreadCRC;
+                /*
+                 * Ensure that the data fork CRC comes first.  Otherwise
+                 * we can fail if it gets rearranged.  This is only a
+                 * problem for GSHK-created archives that don't have
+                 * threads for every fork, so "mask dataless" is create
+                 * fake entries.
+                 *
+                 * The correct way to do this is to store a tuple
+                 * { thread-kind, crc }, but that's more work.
+                 */
+                if (pThread->thThreadKind == kNuThreadKindRsrcFork) {
+                    rsrcCrcIdx = crcIdx;
+                }
+
+                if (pThread->thThreadKind == kNuThreadKindDataFork &&
+                    rsrcCrcIdx != -1)
+                {
+                    /* this is the data fork, we've already seen the
+                       resource fork; swap entries */
+                    pEntries[crcIdx++] = pEntries[rsrcCrcIdx];
+                    pEntries[rsrcCrcIdx] = pThread->thThreadCRC;
+                } else {
+                    pEntries[crcIdx++] = pThread->thThreadCRC;
+                }
             }
         }
     }

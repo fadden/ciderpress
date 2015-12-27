@@ -16,8 +16,7 @@
 #include "Common.h"
 
 #ifndef HAVE_STRCASECMP
-static int
-strcasecmp(const char *str1, const char *str2)
+static int strcasecmp(const char *str1, const char *str2)
 {
     while (*str1 && *str2 && toupper(*str1) == toupper(*str2))
         str1++, str2++;
