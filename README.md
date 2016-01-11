@@ -74,7 +74,10 @@ Building the Sources
 The current version of CiderPress is targeted for Visual Studio 2013,
 using the WinXP compatibility Platform Toolset to allow installation on
 Windows XP systems.  You should be able to select Debug or Release and
-just build the entire thing.
+just build the entire thing.  The project files have been updated so
+that VS2015 Community Edition will accept them, but the new "universal CRT"
+causes problems with WinXP, so the build files still require the older
+set of tools.
 
 If you want to use the static analyzer, you will need to change the
 Platform Toolset to straight Visual Studio 2013.
@@ -221,10 +224,12 @@ code reorganization to make this easier, as did NufxLib v3.0.
 4. Windows XP support.  The default Visual Studio 2013 configuration creates
 executables that do not work in Windows XP.  CiderPress uses a compatibility
 toolset and packs about 5MB of additional DLLs (mfc120u.dll, msvcr120.dll) in
-the install package to keep things working.  At some point it may not be
-possible to support WinXP, or building for WinXP will prevent something from
-working.  The good news is that, for the current round of tools, it's
-possible to build a single binary that works fully on WinXP and later systems.
+the install package to keep things working.  Visual Studio 2015 shipped with a
+new "Universal CRT" that requires more effort and disk space.  At some point
+it may not be possible to support WinXP, or building for WinXP will prevent
+something from working.  The good news is that, for the current round of
+tools, it's possible to build a single binary that works fully on WinXP and
+later systems.
 
 5. Installer magic.  Security improvements and changes like the Win8 "Metro"
 launcher affect the way apps are installed and launched.  So far the only
