@@ -223,6 +223,9 @@ NuError Nu_ReadThreadHeaders(NuArchive* pArchive, NuRecord* pRecord,
                 needFakeData = false;
             } else if (pThread->thThreadKind == kNuThreadKindRsrcFork) {
                 needFakeRsrc = false;
+            } else if (pThread->thThreadKind == kNuThreadKindDiskImage) {
+                /* needFakeRsrc shouldn't be set, but clear anyway */
+                needFakeData = needFakeRsrc = false;
             }
         }
 

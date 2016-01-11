@@ -1586,6 +1586,9 @@ NuError Nu_StreamExtract(NuArchive* pArchive)
                     needFakeData = false;
                 } else if (pThread->thThreadKind == kNuThreadKindRsrcFork) {
                     needFakeRsrc = false;
+                } else if (pThread->thThreadKind == kNuThreadKindDiskImage) {
+                    /* needFakeRsrc shouldn't be set, but clear anyway */
+                    needFakeData = needFakeRsrc = false;
                 }
                 err = Nu_ExtractThreadBulk(pArchive, &tmpRecord, pThread);
                 if (err == kNuErrSkipped) {
@@ -1723,6 +1726,9 @@ static NuError Nu_ExtractRecordByPtr(NuArchive* pArchive, NuRecord* pRecord)
                 needFakeData = false;
             } else if (pThread->thThreadKind == kNuThreadKindRsrcFork) {
                 needFakeRsrc = false;
+            } else if (pThread->thThreadKind == kNuThreadKindDiskImage) {
+                /* needFakeRsrc shouldn't be set, but clear anyway */
+                needFakeData = needFakeRsrc = false;
             }
             err = Nu_ExtractThreadBulk(pArchive, pRecord, pThread);
             if (err == kNuErrSkipped) {

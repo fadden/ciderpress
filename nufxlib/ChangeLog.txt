@@ -1,3 +1,6 @@
+2016/01/11  fadden
+    - Fix handling of disk images (broken by previous change).
+
 2015/12/26  fadden
     - Fix handling of entries with missing threads.
     - Improve handling of Mac OS X file type attributes.
