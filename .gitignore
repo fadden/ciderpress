@@ -10,6 +10,7 @@ CP.sdf
 CP.opensdf
 CP.v12.suo
 *.aps
+.vs/
 
 # installer binary
 DIST/Setup*.exe
