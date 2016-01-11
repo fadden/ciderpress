@@ -189,7 +189,8 @@ public:
     };
 
     ReformatText()
-      : fLeftMargin(0),
+      : fUseRTF(true),
+        fLeftMargin(0),
         fRightMargin(0),
         fPointSize(8),
         fPreMultPointSize(8),

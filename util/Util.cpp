@@ -757,7 +757,7 @@ bool MatchSemicolonList(const CString set, const CString match)
             cp++;
     }
 
-    LOGI("--- No match for '%ls' in '%ls'", (LPCWSTR) match, (LPCWSTR) set);
+    LOGD("--- No match for '%ls' in '%ls'", (LPCWSTR) match, (LPCWSTR) set);
     return false;
 }
 
