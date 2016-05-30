@@ -1,0 +1,9 @@
+/*
+ * Trivial bit of CSS to make things look nicer.
+ */
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;    /* recommended for mobile */
+}
+
