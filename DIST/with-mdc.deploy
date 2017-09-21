@@ -1,15 +1,16 @@
 DeployMaster Installation Script
-16
+17
 faddenSoft
 http://www.faddensoft.com/
 CiderPress
 http://a2ciderpress.com/
-4.0.2-a2
-42380
+4.0.2-a3
+42999
 C:\DATA\faddenSoft\fs.ico
-Copyright © 2016 CiderPress project authors.  All rights reserved.
+Copyright © 2017 CiderPress project authors.  All rights reserved.
 C:\Src\CiderPress\DIST\ReadMe.txt
 C:\Src\CiderPress\DIST\License.txt
+FALSE
 
 
 %PROGRAMFILES%\faddenSoft\CiderPress
@@ -24,6 +25,7 @@ FALSE
 FALSE
 FALSE
 FALSE
+TRUE
 TRUE
 TRUE
 TRUE
@@ -355,7 +357,7 @@ FALSE
 4095
 
 
-Setup402a2.exe
+Setup402a3.exe
 
 FALSE
 
