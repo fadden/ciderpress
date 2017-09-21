@@ -58,10 +58,15 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "Graphics\\CiderPress.ico"
+
 IDI_FILE_BINARY2        ICON                    "Graphics\\binary2.ico"
+
 IDI_FILE_NUFX           ICON                    "Graphics\\nufx.ico"
+
 IDI_FILE_DISKIMAGE      ICON                    "Graphics\\diskimage.ico"
+
 IDI_FILE_VIEWER         ICON                    "Graphics\\FileViewer.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -222,11 +227,11 @@ BEGIN
     PUSHBUTTON      "Enter registration code",IDC_ABOUT_ENTER_REG,157,132,86,14
     CONTROL         IDB_FSLOGO,IDC_STATIC,"Static",SS_BITMAP,7,6,64,59
     LTEXT           "CiderPress v%d.%d.%d%ls%ls",IDC_CIDERPRESS_VERS_TEXT,77,7,167,9
-    LTEXT           "Copyright © 2015 by CiderPress project authors\rAll Rights Reserved.",IDC_STATIC,77,20,167,19
-    ICON            IDR_MAINFRAME,IDC_STATIC,77,45,21,20
-    ICON            IDI_FILE_NUFX,IDC_STATIC,106,45,21,20
-    ICON            IDI_FILE_BINARY2,IDC_STATIC,136,45,21,20
-    ICON            IDI_FILE_DISKIMAGE,IDC_STATIC,166,45,21,20
+    LTEXT           "Copyright © 2017 by CiderPress project authors.\rAll Rights Reserved.",IDC_STATIC,77,20,167,19
+    ICON            IDR_MAINFRAME,IDC_STATIC,77,45,20,20
+    ICON            IDI_FILE_NUFX,IDC_STATIC,106,45,20,20
+    ICON            IDI_FILE_BINARY2,IDC_STATIC,136,45,20,20
+    ICON            IDI_FILE_DISKIMAGE,IDC_STATIC,166,45,20,20
     GROUPBOX        "Libraries",IDC_STATIC,7,71,237,56
     LTEXT           "Using NufxLib DLL v%d.%d.%d",IDC_NUFXLIB_VERS_TEXT,16,82,170,10
     LTEXT           "Using DiskImg DLL v%d.%d.%d",IDC_DISKIMG_VERS_TEXT,16,92,172,8
@@ -1216,13 +1221,21 @@ END
 //
 
 IDB_FSLOGO              BITMAP                  "Graphics\\fslogo.bmp"
+
 IDR_TOOLBAR1            BITMAP                  "Graphics\\toolbar1.bmp"
+
 IDB_LIST_PICS           BITMAP                  "Graphics\\list-pics.bmp"
+
 IDB_HDRBAR              BITMAP                  "Graphics\\hdrbar.bmp"
+
 IDB_NEW_FOLDER          BITMAP                  "graphics\\NewFolder.bmp"
+
 IDB_CHOOSE_FOLDER       BITMAP                  "Graphics\\ChooseFolder.bmp"
+
 IDB_VOL_PICS            BITMAP                  "graphics\\vol_pics.bmp"
+
 IDB_TREE_PICS           BITMAP                  "graphics\\tree_pics.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1829,6 +1842,17 @@ BEGIN
     IDC_CASSETTE_ALG, 0x403, 29, 0
 0x6550, 0x6b61, 0x742d, 0x2d6f, 0x6550, 0x6b61, 0x5720, 0x6469, 0x6874, 
 0x2820, 0x6853, 0x6c61, 0x6f6c, 0x2977, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTDLG AFX_DIALOG_LAYOUT
+BEGIN
     0
 END
 
