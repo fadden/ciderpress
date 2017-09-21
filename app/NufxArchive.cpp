@@ -835,6 +835,7 @@ NuResult NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
         pDateTime->extra == 0 &&
         pDateTime->weekDay == 0)
     {
+        // not invalid; just no date set
         return kDateNone;
     }
 
@@ -858,8 +859,17 @@ NuResult NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
         //LOGI(" Ignoring funky year %ld", year);
         return kDateInvalid;
     }
-    if (pDateTime->month > 11)
+
+    // Must range-check values before passing them to CTime constructor, which
+    // now throws a remarkably fatal exception.
+    if (pDateTime->month > 11 ||    // [0,11]
+        pDateTime->day > 30 ||      // [0,30]
+        pDateTime->hour > 59 ||     // [0,59]
+        pDateTime->minute > 59 ||   // [0,59]
+        pDateTime->second > 59) {   // [0,59]
+
         return kDateInvalid;
+    }
 
     CTime modTime(year,
                   pDateTime->month+1,
@@ -867,7 +877,8 @@ NuResult NufxArchive::ContentFunc(NuArchive* pArchive, void* vpRecord)
                   pDateTime->hour,
                   pDateTime->minute,
                   pDateTime->second);
-    return (time_t) modTime.GetTime();
+	time_t result = (time_t)modTime.GetTime();
+	return result;
 }
 
 /*static*/ NuResult NufxArchive::ArrayDeleteHandler(NuArchive* pArchive, void* ptr)

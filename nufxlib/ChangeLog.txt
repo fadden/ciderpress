@@ -1,3 +1,5 @@
+2017/09/21  ***** v3.1.0 shipped *****
+
 2016/01/11  fadden
     - Fix handling of disk images (broken by previous change).
 
