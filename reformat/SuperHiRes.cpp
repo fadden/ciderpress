@@ -41,11 +41,6 @@
  * color table is reversed, with color #15 appearing first in each table.
  */
 
-/*
- * Convert a SHRScreen struct to a 256-color DIB.
- *
- * This is a reasonably generic routine shared by SHR functions.
- */
 MyDIBitmap* ReformatSHR::SHRScreenToBitmap8(const SHRScreen* pScreen)
 {
     return SHRDataToBitmap8(pScreen->pixels, pScreen->scb,
@@ -55,61 +50,70 @@ MyDIBitmap* ReformatSHR::SHRScreenToBitmap8(const SHRScreen* pScreen)
 
 MyDIBitmap* ReformatSHR::SHRDataToBitmap8(const uint8_t* pPixels,
     const uint8_t* pSCB, const uint8_t* pColorTable,
-    int pixelBytesPerLine, int numScanLines,
-    int outputWidth, int outputHeight)
+    unsigned int bytesPerLine, unsigned int numScanLines,
+    unsigned int outputWidthPix, unsigned int outputHeightPix)
 {
     MyDIBitmap* pDib = new MyDIBitmap;
-    const uint8_t* pSCBStart = pSCB;  // sanity check only
-    uint8_t* outBuf;
-    int line;
-
     if (pDib == NULL)
         goto bail;
+
+    // We can have an odd number of pixels, which results in 1-3 empty
+    // spaces in the last byte.  We double the 4bpp pixels, so we're
+    // always outputting 4 pixels per byte.
+    if (outputWidthPix > bytesPerLine * 4 ||
+            outputWidthPix < bytesPerLine * 4 - 3) {
+        LOGW(" Invalid params: outputWidthPix=%u bytesPerLine=%u",
+            outputWidthPix, bytesPerLine);
+        ASSERT(false);
+        goto bail;
+    }
+
+    const uint8_t* pSCBStart = pSCB;  // sanity check only
 
     /*
      * Set up a DIB to hold the data.  "Create" returns a pointer to the
      * pixel storage.
      */
-    outBuf = (uint8_t*) pDib->Create(outputWidth, outputHeight, 8,
-                            kNumColorTables * kNumEntriesPerColorTable);
+    uint8_t* outBuf = (uint8_t*) pDib->Create(outputWidthPix, outputHeightPix,
+                            8, kNumColorTables * kNumEntriesPerColorTable);
     if (outBuf == NULL) {
         delete pDib;
         pDib = NULL;
         goto bail;
     }
+    int outputStride = pDib->GetPitch();
 
     /*
      * Convert color palette.
      */
     const uint16_t* pClrTable;
     pClrTable = (const uint16_t*) pColorTable;
-    int table;
-    for (table = 0; table < kNumColorTables; table++) {
+    for (int table = 0; table < kNumColorTables; table++) {
         for (int entry = 0; entry < kNumEntriesPerColorTable; entry++) {
             GSColor(*pClrTable++, &fColorTables[table][entry]);
         }
     }
     pDib->SetColorTable((RGBQUAD*)fColorTables);
 
-    /*
-    LOGI(" SHR color table 0");
-    int ii;
-    for (ii = 0; ii < kNumEntriesPerColorTable; ii++) {
-        LOGI("  %2d: 0x%02x %02x %02x",
-            ii,
-            fColorTables[0][ii].rgbRed,
-            fColorTables[0][ii].rgbGreen,
-            fColorTables[0][ii].rgbBlue);
+    if (false) {
+        LOGI(" SHR color table 0");
+        for (int ii = 0; ii < kNumEntriesPerColorTable; ii++) {
+            LOGI("  %2d: 0x%02x %02x %02x",
+                ii,
+                fColorTables[0][ii].rgbRed,
+                fColorTables[0][ii].rgbGreen,
+                fColorTables[0][ii].rgbBlue);
+        }
     }
-    */
 
     /*
      * Set the pixels to palette indices.
      */
+    unsigned int line;
     for (line = 0; line < numScanLines; line++) {
         bool mode640, fillMode;
         int colorTableOffset;
-        int byteCount, pixelByte;
+        unsigned int byteCount;
         uint8_t pixelVal;
         uint8_t colorIndex;
         int x = 0;
@@ -128,30 +132,27 @@ MyDIBitmap* ReformatSHR::SHRDataToBitmap8(const uint8_t* pPixels,
         }
 
 #define SetPix(x, y, colridx) \
-        outBuf[((outputHeight-1) - (y)) * outputWidth + (x)] = colridx
+        outBuf[((outputHeightPix-1) - (y)) * outputStride + (x)] = colridx
 
         if (mode640) {
-            /* 320 mode, one byte becomes four non-doubled pixels (1:4) */
-            int actualBytesPerLine = outputWidth / 4;
-            ASSERT(actualBytesPerLine <= pixelBytesPerLine);
+            /* 640 mode, one byte becomes four non-doubled pixels (1:4) */
+            unsigned int fullBytesPerLine = outputWidthPix / 4;
+            ASSERT(fullBytesPerLine <= bytesPerLine);
 
-            for (byteCount = 0; byteCount < actualBytesPerLine; byteCount++) {
-                pixelByte = *pPixels++;
+            for (byteCount = 0; byteCount < fullBytesPerLine; byteCount++) {
+                uint8_t pixelByte = *pPixels++;
 
                 pixelVal = (pixelByte >> 6) & 0x03;
-                //rgbval = fColorLookup[colorTable][pixelVal + 12];
                 colorIndex = colorTableOffset + pixelVal + 8;
                 SetPix(x, line*2, colorIndex);
                 SetPix(x++, line*2+1, colorIndex);
 
                 pixelVal = (pixelByte >> 4) & 0x03;
-                //rgbval = fColorLookup[colorTable][pixelVal + 8];
                 colorIndex = colorTableOffset + pixelVal + 12;
                 SetPix(x, line*2, colorIndex);
                 SetPix(x++, line*2+1, colorIndex);
 
                 pixelVal = (pixelByte >> 2) & 0x03;
-                //rgbval = fColorLookup[colorTable][pixelVal + 4];
                 colorIndex = colorTableOffset + pixelVal + 0;
                 SetPix(x, line*2, colorIndex);
                 SetPix(x++, line*2+1, colorIndex);
@@ -162,18 +163,38 @@ MyDIBitmap* ReformatSHR::SHRDataToBitmap8(const uint8_t* pPixels,
                 SetPix(x, line*2, colorIndex);
                 SetPix(x++, line*2+1, colorIndex);
             }
-            for ( ; byteCount < pixelBytesPerLine; byteCount++)
-                pPixels++;
+            if (byteCount != bytesPerLine) {
+                // 1-3 pixels in last byte
+                uint8_t pixelByte = *pPixels++;
+                int rem = outputWidthPix - fullBytesPerLine * 4;
+                if (rem >= 3) {
+                    pixelVal = (pixelByte >> 6) & 0x03;
+                    colorIndex = colorTableOffset + pixelVal + 8;
+                    SetPix(x, line * 2, colorIndex);
+                    SetPix(x++, line * 2 + 1, colorIndex);
+                }
+                if (rem >= 2) {
+                    pixelVal = (pixelByte >> 4) & 0x03;
+                    colorIndex = colorTableOffset + pixelVal + 12;
+                    SetPix(x, line * 2, colorIndex);
+                    SetPix(x++, line * 2 + 1, colorIndex);
+                }
+                if (rem >= 1) {
+                    pixelVal = (pixelByte >> 2) & 0x03;
+                    colorIndex = colorTableOffset + pixelVal + 0;
+                    SetPix(x, line * 2, colorIndex);
+                    SetPix(x++, line * 2 + 1, colorIndex);
+                }
+            }
         } else {
             /* 320 mode, one byte becomes two doubled pixels (1:4) */
-            int actualBytesPerLine = outputWidth / 4;
-            ASSERT(actualBytesPerLine <= pixelBytesPerLine);
+            unsigned int fullBytesPerLine = outputWidthPix / 4;
+            ASSERT(fullBytesPerLine <= bytesPerLine);
 
-            for (byteCount = 0; byteCount < actualBytesPerLine; byteCount++) {
-                pixelByte = *pPixels++;
+            for (byteCount = 0; byteCount < fullBytesPerLine; byteCount++) {
+                uint8_t pixelByte = *pPixels++;
 
                 pixelVal = (pixelByte >> 4) & 0x0f;
-                //rgbval = fColorLookup[colorTable][pixelVal];
                 colorIndex = colorTableOffset + pixelVal;
                 SetPix(x, line*2, colorIndex);
                 SetPix(x++, line*2+1, colorIndex);
@@ -181,27 +202,31 @@ MyDIBitmap* ReformatSHR::SHRDataToBitmap8(const uint8_t* pPixels,
                 SetPix(x++, line*2+1, colorIndex);
 
                 pixelVal = pixelByte & 0x0f;
-                //rgbval = fColorLookup[colorTable][pixelVal];
                 colorIndex = colorTableOffset + pixelVal;
                 SetPix(x, line*2, colorIndex);
                 SetPix(x++, line*2+1, colorIndex);
                 SetPix(x, line*2, colorIndex);
                 SetPix(x++, line*2+1, colorIndex);
             }
-            for ( ; byteCount < pixelBytesPerLine; byteCount++)
-                pPixels++;
+            if (byteCount != bytesPerLine) {
+                // 1 pixel in last byte
+                uint8_t pixelByte = *pPixels++;
+                pixelVal = (pixelByte >> 4) & 0x0f;
+                colorIndex = colorTableOffset + pixelVal;
+                SetPix(x, line * 2, colorIndex);
+                SetPix(x++, line * 2 + 1, colorIndex);
+                SetPix(x, line * 2, colorIndex);
+                SetPix(x++, line * 2 + 1, colorIndex);
+            }
         }
 #undef SetPix
 
-        /* pixel bytes can be 0-7 larger because of 8-byte boundary req */
-        /* pixel count is 1x or 2x the pixel bytes */
-        /* output width is 1x or 2x the pixel count */
-        ASSERT(x >= outputWidth && x < outputWidth + (8*4));
+        ASSERT(x == outputWidthPix);
 
         pSCB++;
     }
 
-    ASSERT(line == outputHeight/2);
+    ASSERT(line == outputHeightPix/2);
     ASSERT(pSCB == pSCBStart + numScanLines);
 
 bail:
@@ -441,7 +466,7 @@ int ReformatPaintworksSHR::Process(const ReformatHolder* pHolder,
                 pHolder->GetSourceBuf(part) + kPWDataOffset,
                 kPWOutputSize,
                 pHolder->GetSourceLen(part) - kPWDataOffset);
-    if (result != 0) {
+    if (result != kPWOutputSize) {
         LOGI("WARNING: UnpackBytes wasn't happy");
 
 #if 0
@@ -523,7 +548,7 @@ int ReformatPackedSHR::Process(const ReformatHolder* pHolder,
 
     if (UnpackBytes((uint8_t*) &fScreen,
         pHolder->GetSourceBuf(part), kTotalSize,
-        pHolder->GetSourceLen(part)) != 0)
+        pHolder->GetSourceLen(part)) != kTotalSize)
     {
         LOGW(" SHR UnpackBytes failed");
         goto bail;
@@ -649,7 +674,9 @@ int ReformatAPFSHR::Process(const ReformatHolder* pHolder,
     if (!haveGraphics)
         goto bail;
 
-    if (is3200) {
+    // TODO: we don't currently handle MULTIPAL with anything other than
+    //  a 320x200 image.  Fortunately this is rare.
+    if (is3200 && !fNonStandard) {
         Reformat3200SHR ref3200(&fScreen, multiPal);
 
         pDib = ref3200.SHR3200ToBitmap24();
@@ -699,11 +726,11 @@ int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
 {
     const int kColorTableSize = kNumEntriesPerColorTable * kColorTableEntrySize;
     uint16_t masterMode;
-    int numColorTables;
-    int* packedDataLen = NULL;
+    unsigned int numColorTables;
+    uint16_t* packedDataLen = NULL;
     int retval = -1;
 
-    if (srcLen < 256) {
+    if (srcLen < 64) {
         /* can't possibly be this small */
         LOGI(" APFSHR unlikely srcLen %d", srcLen);
         goto bail;
@@ -712,9 +739,7 @@ int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
     masterMode = Read16(&srcPtr, &srcLen);
     fPixelsPerScanLine = Read16(&srcPtr, &srcLen);
     numColorTables = Read16(&srcPtr, &srcLen);
-    if (fPixelsPerScanLine < 8 || fPixelsPerScanLine > kMaxPixelsPerScan ||
-        (fPixelsPerScanLine & 0x01) != 0)
-    {
+    if (fPixelsPerScanLine == 0 || fPixelsPerScanLine > kMaxPixelsPerScan) {
         LOGI(" APFSHR unsupported pixelsPerScanLine %d",
             fPixelsPerScanLine);
         goto bail;
@@ -722,8 +747,10 @@ int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
 
     LOGD(" APFSHR  masterMode=0x%04x, ppsl=%d, nct=%d",
         masterMode, fPixelsPerScanLine, numColorTables);
-    if (numColorTables <= 0 || numColorTables > kNumColorTables) {
-        LOGI(" APFSHR unexpected numColorTables %d", numColorTables);
+    if (numColorTables == 0 || numColorTables > kNumColorTables) {
+        // Zero is valid per the spec, but we don't know how to render that.
+        // Rather than showing an all-black bitmap, just fail.
+        LOGI(" APFSHR unsupported numColorTables %d", numColorTables);
         goto bail;
     }
 
@@ -731,10 +758,9 @@ int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
      * Load the color tables.
      */
     memset(fScreen.colorTable, 0, sizeof(fScreen.colorTable));
-    int i;
-    for (i = 0; i < numColorTables; i++) {
+    for (unsigned int i = 0; i < numColorTables; i++) {
         if (srcLen < kColorTableSize) {
-            LOGI(" APFSHR ran out while copying color tables");
+            LOGI(" APFSHR underrun while copying color tables");
             goto bail;
         }
 
@@ -751,7 +777,7 @@ int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
      * doubling so we can handle both 320 mode and 640 mode.
      */
     fNumScanLines = Read16(&srcPtr, &srcLen);
-    if (fNumScanLines < 8 || fNumScanLines > kMaxScanLines) {
+    if (fNumScanLines == 0 || fNumScanLines > kMaxScanLines) {
         LOGI(" APFSHR unsupported numScanLines %d", fNumScanLines);
         goto bail;
     }
@@ -783,17 +809,6 @@ int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
             fOutputWidth = fPixelsPerScanLine;
             fPixelBytesPerLine = (fPixelsPerScanLine + 3) / 4;  // "640 mode"
         }
-        /*
-         * We want to create our storage such that the bytes per line is evenly
-         * divisible by 8.  I have no idea why I'm doing this, but at this
-         * point I'm afraid to change it.  Something with PackBytes?  The APF
-         * filetype note doesn't say anything.  It doesn't matter to the
-         * bitmap code, because we're feeding it in a pixel at a time, and any
-         * pitch requirememts are concealed within MyDIBitmap.
-         *
-         * Figure this out someday.
-         */
-        fPixelBytesPerLine = ((fPixelBytesPerLine + 7) / 8) * 8;
         fPixelStore = new uint8_t[fPixelBytesPerLine * fNumScanLines];
         if (fPixelStore == NULL) {
             LOGI(" APFSHR ERROR: alloc of %d bytes fPixelStore failed",
@@ -813,12 +828,10 @@ int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
     /*
      * Get the per-scanline data.
      */
-    packedDataLen = new int[fNumScanLines];
+    packedDataLen = new uint16_t[fNumScanLines];
     if (packedDataLen == NULL)
         goto bail;
-    for (i = 0; i < fNumScanLines; i++) {
-        uint16_t mode;
-
+    for (unsigned int i = 0; i < fNumScanLines; i++) {
         packedDataLen[i] = Read16(&srcPtr, &srcLen);
         if (packedDataLen[i] > fPixelsPerScanLine) {
             /* each pixel is 2 or 4 bits, so this is a 2-4x expansion */
@@ -827,28 +840,42 @@ int ReformatAPFSHR::UnpackMain(const uint8_t* srcPtr, long srcLen)
             goto bail;
         }
 
-        mode = Read16(&srcPtr, &srcLen);
+        uint16_t mode = Read16(&srcPtr, &srcLen);
         if (mode >> 8 == 0)
             fSCBStore[i] = (uint8_t) mode;
         else {
             LOGI(" APFSHR odd mode 0x%04x on line %d", mode, i);
+            fSCBStore[i] = 0;   // ?
         }
     }
 
     /*
-     * Unpack the scan lines.
+     * Unpack the scan lines into the pixel storage.  Some APF files
+     * use PackBytes in a not-quite-safe way, e.g. a 28x30 image with
+     * 14 bytes per line uses the 32-bit pattern repeat mode (0x3fff),
+     * yielding 16 bytes.  We need to unpack to a temp buffer.
+     *
+     * I've found a few from 816/Paint that appear to have the wrong width
+     * value; they claim 320 but look like they're actually 640 (the image
+     * seems to be cut in half, and we unpack 2x as much data as we expect).
      */
-    for (i = 0; i < fNumScanLines; i++) {
+    for (unsigned int i = 0; i < fNumScanLines; i++) {
+        // PackBytes can generate 256 bytes from a single pair of bytes.
+        uint8_t tmpBuf[ReformatSHR::kMaxPixelsPerScan];
+
         if (srcLen <= 0) {
             LOGI(" APFSHR ran out of data while unpacking pixels");
             goto bail;
         }
-        if (UnpackBytes(&fPixelStore[i * fPixelBytesPerLine],
-            srcPtr, fPixelBytesPerLine, packedDataLen[i]) != 0)
-        {
-            LOGI(" APFSHR UnpackBytes failed on line %d", i);
+        int actual = UnpackBytes(tmpBuf, srcPtr, sizeof(tmpBuf), packedDataLen[i]);
+        if (actual < (int) fPixelBytesPerLine) {  // includes actual < 0
+            LOGI(" APFSHR UnpackBytes failed on line %d (pbpl=%d actual=%d)",
+                i, fPixelBytesPerLine, actual);
             goto bail;
         }
+        //LOGD("+++ unpackbytes %d pbpl=%d pdl=%d --> %d",
+        //    i, fPixelBytesPerLine, packedDataLen[i], actual);
+        memcpy(&fPixelStore[i * fPixelBytesPerLine], tmpBuf, fPixelBytesPerLine);
 
         srcPtr += packedDataLen[i];
         srcLen -= packedDataLen[i];
@@ -1006,8 +1033,7 @@ int Reformat3200SHR::Process(const ReformatHolder* pHolder,
     const uint16_t* pSrcTable = (const uint16_t*)
                         (pHolder->GetSourceBuf(part) + sizeof(fScreen.pixels));
     uint16_t* pDstTable = (uint16_t*) fExtColorTable;
-    int table;
-    for (table = 0; table < kExtNumColorTables; table++) {
+    for (int table = 0; table < kExtNumColorTables; table++) {
         int entry;
         for (entry = 0; entry < kNumEntriesPerColorTable; entry++) {
             pDstTable[(kNumEntriesPerColorTable-1) - entry] = *pSrcTable++;
@@ -1057,8 +1083,7 @@ MyDIBitmap* Reformat3200SHR::SHR3200ToBitmap24(void)
      */
     const uint16_t* pClrTable;
     pClrTable = (const uint16_t*) fExtColorTable;
-    int table;
-    for (table = 0; table < kExtNumColorTables; table++) {
+    for (int table = 0; table < kExtNumColorTables; table++) {
         for (int entry = 0; entry < kNumEntriesPerColorTable; entry++) {
             GSColor(*pClrTable++, &colorLookup[table][entry]);
             //if (!table) {
@@ -1188,8 +1213,10 @@ int Reformat3201SHR::Process(const ReformatHolder* pHolder,
     length -= srcBuf - (pHolder->GetSourceBuf(part) +4);
 
     /* now unpack the PackBytes-format pixels */
-    if (UnpackBytes(fScreen.pixels, srcBuf, sizeof(fScreen.pixels), length) != 0)
+    if (UnpackBytes(fScreen.pixels, srcBuf, sizeof(fScreen.pixels), length)
+            != sizeof(fScreen.pixels)) {
         goto bail;
+    }
 
     pDib = SHR3200ToBitmap24();
     if (pDib == NULL)

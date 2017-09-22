@@ -62,6 +62,9 @@ void* MyDIBitmap::Create(int width, int height, int bitsPerPixel, int colorsUsed
     assert(bitsPerPixel == 24 || bitsPerPixel == 32 || colorsUsed > 0);
 
     // should include a warning if line stride is not a multiple of 4 bytes
+    if ((width & 0x03) != 0) {
+        LOGW(" DIB stride must be multiple of 4 bytes (got %d)", width);
+    }
 
     mBitmapInfoHdr.biSize = sizeof(mBitmapInfoHdr); // BITMAPINFOHEADER
     mBitmapInfoHdr.biWidth = width;

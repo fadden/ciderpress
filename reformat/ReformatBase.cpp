@@ -786,11 +786,14 @@ void ReformatGraphics::SetResultBuffer(ReformatOutput* pOutput, MyDIBitmap* pDib
  * Pass the destination buffer in "dst", source buffer in "src", source
  * length in "srcLen", and expected sizes of output in "dstRem".
  *
- * Returns 0 on success, nonzero if the buffer is overfilled or underfilled.
+ * Returns the number of bytes unpacked on success, negative if the buffer is
+ * overfilled.
  */
 int ReformatGraphics::UnpackBytes(uint8_t* dst, const uint8_t* src,
     long dstRem, long srcLen)
 {
+    const uint8_t* origDst = dst;
+
     while (srcLen > 0) {
         uint8_t flag = *src++;
         int count = (flag & 0x3f) +1;
@@ -884,13 +887,15 @@ int ReformatGraphics::UnpackBytes(uint8_t* dst, const uint8_t* src,
 
     ASSERT(srcLen == 0);
 
-    /* require that we completely fill the buffer */
-    if (dstRem != 0) {
-        LOGI(" SHR unpack dstRem at %d", dstRem);
-        return -1;
+    if (false) {
+        /* require that we completely fill the buffer */
+        if (dstRem != 0) {
+            LOGI(" SHR unpack dstRem at %d", dstRem);
+            return -1;
+        }
     }
 
-    return 0;
+    return dst - origDst;
 }
 
 /*

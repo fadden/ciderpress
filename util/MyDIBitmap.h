@@ -67,6 +67,11 @@ public:
     /*
      * Creates a blank DIB with the requested dimensions.
      *
+     * The DIB requires that the array of bytes defining the pixels of the
+     * bitmap be padded with zeroes to end on a "LONG data-type boundary",
+     * i.e. the start of each line must be 32-bit aligned.  This is done
+     * automatically behind the scenes.
+     *
      * Returns a pointer to the pixel storage on success, or NULL on failure.
      */
     void* Create(int width, int height, int bitsPerPixel, int colorsUsed,

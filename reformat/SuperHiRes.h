@@ -69,11 +69,33 @@ public:
     /* 16 palettes of 16 colors */
     RGBQUAD     fColorTables[kNumColorTables][kNumEntriesPerColorTable];
 
+    /*
+     * Convert a SHRScreen struct to a 256-color DIB.
+     *
+     * This is a reasonably generic routine shared by SHR functions.
+     */
     MyDIBitmap* SHRScreenToBitmap8(const SHRScreen* pScreen);
+
+    /*
+     * Convert tables of SHR data to an 8bpp bitmap.  The expectation is
+     * that we double-up 320-mode pixels and double the height, so the
+     * output for a standard SHR image will be a 640x400 bitmap.
+     *
+     * "pPixels" is the 2-bit or 4-bit pixel data.
+     * "pSCB" points to an array of SCB values, one per scan line.
+     * "pColorTable" points to an array of 16 color tables (16 entries each).
+     * "bytesPerLine" is the number of whole bytes per line.
+     * "numScanLines" is the number of scan lines.
+     * "outputWidthPix" is the width, in pixels (640 for full screen).
+     * "outputHeightPix" is the height, in pixels (400 for full screen).
+     *
+     * If the source material has an odd width, part of the last byte will
+     * be empty.
+     */
     MyDIBitmap* SHRDataToBitmap8(const uint8_t* pPixels,
         const uint8_t* pSCB, const uint8_t* pColorTable,
-        int pixelBytesPerLine, int numScanLines,
-        int outputWidth, int outputHeight);
+        unsigned int bytesPerLine, unsigned int numScanLines,
+        unsigned int outputWidthPix, unsigned int outputHeightPix);
 };
 
 /*
@@ -185,11 +207,11 @@ private:
     /* use this for non-standard-sized images */
     uint8_t*        fPixelStore;
     uint8_t*        fSCBStore;
-    int             fNumScanLines;      // #of scan lines in image
-    int             fPixelsPerScanLine;
-    int             fPixelBytesPerLine;
-    int             fOutputWidth;
-    int             fOutputHeight;      // scan lines * 2
+    unsigned int    fNumScanLines;      // #of scan lines in image
+    unsigned int    fPixelsPerScanLine;
+    unsigned int    fPixelBytesPerLine;
+    unsigned int    fOutputWidth;
+    unsigned int    fOutputHeight;      // scan lines * 2
 };
 
 /*
