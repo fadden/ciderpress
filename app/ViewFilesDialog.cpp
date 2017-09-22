@@ -266,7 +266,22 @@ static void DumpBitmapInfo(HBITMAP hBitmap)
     LOGD("  bmPits = 0x%p", info.bmBits);
 }
 
-void ViewFilesDialog::DisplayText(const WCHAR* fileName)
+bool ViewFilesDialog::IsSourceEmpty(const GenericEntry* pEntry,
+    ReformatHolder::ReformatPart part)
+{
+    switch (part) {
+    case ReformatHolder::ReformatPart::kPartData:
+        return pEntry->GetDataForkLen() == 0;
+    case ReformatHolder::ReformatPart::kPartRsrc:
+        return pEntry->GetRsrcForkLen() == 0;
+    case ReformatHolder::ReformatPart::kPartCmmt:
+        return !pEntry->GetHasNonEmptyComment();
+    default:
+        return false;
+    }
+}
+
+void ViewFilesDialog::DisplayText(const WCHAR* fileName, bool zeroSourceLen)
 {
     CWaitCursor wait;   // streaming of big files can take a little while
     bool errFlg;
@@ -404,10 +419,14 @@ void ViewFilesDialog::DisplayText(const WCHAR* fileName)
         if (fpOutput->GetOutputKind() == ReformatOutput::kOutputRTF)
             streamFormat = SF_RTF;
         if (fpOutput->GetTextLen() == 0) {
-            textBuf = "(file is empty)";
+            if (zeroSourceLen) {
+                textBuf = "(file is empty)";
+                EnableFormatSelection(FALSE);
+            } else {
+                textBuf = "(converted output is empty)";
+            }
             textLen = strlen(textBuf);
             emptyFlg = true;
-            EnableFormatSelection(FALSE);
         }
         if (fpOutput->GetOutputKind() == ReformatOutput::kOutputErrorMsg)
             EnableFormatSelection(FALSE);
@@ -638,7 +657,8 @@ void ViewFilesDialog::OnFviewNext(void)
     id = ConfigureFormatSel(part);
     Reformat(pSelEntry->GetEntry(), part, id);
 
-    DisplayText(pSelEntry->GetEntry()->GetDisplayName());
+    DisplayText(pSelEntry->GetEntry()->GetDisplayName(),
+        IsSourceEmpty(pSelEntry->GetEntry(), part));
 }
 
 void ViewFilesDialog::OnFviewPrev(void)
@@ -681,7 +701,7 @@ void ViewFilesDialog::OnFviewPrev(void)
     id = ConfigureFormatSel(part);
     Reformat(pEntry, part, id);
 
-    DisplayText(pEntry->GetDisplayName());
+    DisplayText(pEntry->GetDisplayName(), IsSourceEmpty(pEntry, part));
 }
 
 void ViewFilesDialog::ConfigurePartButtons(const GenericEntry* pEntry)
@@ -936,7 +956,7 @@ void ViewFilesDialog::OnFormatSelChange(void)
     id = (ReformatHolder::ReformatID) pCombo->GetItemData(pCombo->GetCurSel());
     Reformat(pEntry, part, id);
 
-    DisplayText(pEntry->GetDisplayName());
+    DisplayText(pEntry->GetDisplayName(), IsSourceEmpty(pEntry, part));
 }
 
 void ViewFilesDialog::OnFviewData(void)
@@ -969,7 +989,7 @@ void ViewFilesDialog::ForkSelectCommon(ReformatHolder::ReformatPart part)
     id = ConfigureFormatSel(part);
 
     Reformat(pEntry, part, id);
-    DisplayText(pEntry->GetDisplayName());
+    DisplayText(pEntry->GetDisplayName(), IsSourceEmpty(pEntry, part));
 }
 
 void ViewFilesDialog::OnFviewFmtBest(void)

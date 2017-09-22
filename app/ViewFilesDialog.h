@@ -121,14 +121,22 @@ private:
     void NewFontSelected(bool resetBold);
 
     /*
+     * Determines whether the specified part is an empty fork/comment.
+     */
+    bool IsSourceEmpty(const GenericEntry* pEntry,
+        ReformatHolder::ReformatPart part);
+
+    /*
      * Display a buffer of text in the RichEdit control.
      *
      * The RichEdit dialog will hold its own copy of the data, so "pHolder" can
      * be safely destroyed after this returns.
      *
-     * "fileName" is for display only.
+     * "fileName" is for display only.  "zeroSourceLen" allows the function to
+     * tell the difference between an empty file and a non-empty file that
+     * generated empty output.
      */
-    void DisplayText(const WCHAR* fileName);
+    void DisplayText(const WCHAR* fileName, bool zeroSourceLen);
 
     /*
      * Set up the fpHolder.  Does not reformat the data, just loads the source
