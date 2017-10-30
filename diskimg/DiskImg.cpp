@@ -472,7 +472,7 @@ DIError DiskImg::OpenImage(DiskImg* pParent, long firstBlock, long numBlocks)
      * already have an open file with specific characteristics.
      */
     //fOffset = pParent->fOffset + kBlockSize * firstBlock;
-    fLength = numBlocks * kBlockSize;
+    fLength = (di_off_t)numBlocks * kBlockSize;
     fOuterLength = fWrappedLength = fLength;
     fFileFormat = kFileFormatUnadorned;
     fPhysical = pParent->fPhysical;

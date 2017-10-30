@@ -45,7 +45,7 @@ namespace DiskImgLib {
 /* compiled-against versions; call DiskImg::GetVersion for linked-against */
 #define kDiskImgVersionMajor    5
 #define kDiskImgVersionMinor    0
-#define kDiskImgVersionBug      0
+#define kDiskImgVersionBug      1
 
 
 /*
