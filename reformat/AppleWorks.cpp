@@ -24,6 +24,20 @@
  *  array of line records
  *  $ff $ff
  *  optional tags
+ *
+ * AppleWorks 5.0 introduced inverse and MouseText characters.
+ * These just use previously-unused byte ranges.  The full set
+ * of values is thus:
+ *  00-1f special
+ *  20-7f plain ASCII
+ *  80-9f inverse upper (map to 40-5f)
+ *  a0-bf inverse symbols/numbers (map to 20-3f)
+ *  c0-df MouseText
+ *  e0-ff inverse lower (map to 60-7f)
+ *
+ * We can output MouseText as Unicode symbols.  Inverse text can use the Rich
+ * Text "highlight" feature; the "background color" feature doesn't seem to
+ * have any effect.
  */
 
 /*
@@ -308,6 +322,7 @@ int ReformatAWP::HandleTextRecord(uint8_t lineRecData,
     uint8_t byteCountPlusCR;
     int byteCount = lineRecData;
     bool noOutput = false;
+    bool inverse = false;
     int ic;
 
     tabFlags = Read8(pSrcPtr, pLength);
@@ -372,40 +387,40 @@ int ReformatAWP::HandleTextRecord(uint8_t lineRecData,
                 break;
             case kSpecialCharEnterKeyboard:
                 if (fShowEmbeds) {
-                    RTFSetColor(kColorBlue);
+                    TextColor oldColor = RTFSetColor(kColorBlue);
                     BufPrintf("<kdb-entry>");
-                    RTFSetColor(kColorNone);
+                    RTFSetColor(oldColor);
                 }
                 break;
             case kSpecialCharPrintPageNumber:
                 if (fShowEmbeds) {
-                    RTFSetColor(kColorBlue);
+                    TextColor oldColor = RTFSetColor(kColorBlue);
                     BufPrintf("<page#>");
-                    RTFSetColor(kColorNone);
+                    RTFSetColor(oldColor);
                 }
                 break;
             case kSpecialCharStickySpace:
                 /* MSWord uses "\~", but RichEdit ignores that */
-                BufPrintf(" ");
+                BufPrintf("\u00a0");    // Unicode NO-BREAK SPACE
                 break;
             case kSpecialCharMailMerge:
                 if (fShowEmbeds) {
-                    RTFSetColor(kColorBlue);
+                    TextColor oldColor = RTFSetColor(kColorBlue);
                     BufPrintf("<mail-merge>");
-                    RTFSetColor(kColorNone);
+                    RTFSetColor(oldColor);
                 }
             case kSpecialCharPrintDate:
                 if (fShowEmbeds) {
-                    RTFSetColor(kColorBlue);
+                    TextColor oldColor = RTFSetColor(kColorBlue);
                     BufPrintf("<date>");
-                    RTFSetColor(kColorNone);
+                    RTFSetColor(oldColor);
                 }
                 break;
             case kSpecialCharPrintTime:
                 if (fShowEmbeds) {
-                    RTFSetColor(kColorBlue);
+                    TextColor oldColor = RTFSetColor(kColorBlue);
                     BufPrintf("<time>");
-                    RTFSetColor(kColorNone);
+                    RTFSetColor(oldColor);
                 }
                 break;
             case kSpecialCharTab:
@@ -421,17 +436,59 @@ int ReformatAWP::HandleTextRecord(uint8_t lineRecData,
             default:
                 LOGI(" AWP unhandled special char 0x%02x", ic);
                 if (fShowEmbeds) {
-                    RTFSetColor(kColorBlue);
+                    TextColor oldColor = RTFSetColor(kColorBlue);
                     BufPrintf("^");
-                    RTFSetColor(kColorNone);
+                    RTFSetColor(oldColor);
                 }
             }
         } else {
-            if (fUseRTF)
-                RTFPrintChar(ic);
-            else
+            // Character.
+            bool wantInverse = false;
+            uint16_t mtLow = 0, mtHigh = 0;
+
+            if (ic >= 0x80 && ic <= 0x9f) {
+                // inverse upper; map 100x xxxx --> 010x xxxx
+                ic ^= 0xc0;
+                wantInverse = true;
+            } else if (ic >= 0xa0 && ic <= 0xbf || ic >= 0xe0 && ic <= 0xff) {
+                // inverse symbols; map 101x xxxx --> 001x xxxx
+                // inverse lower; map 111x xxxx --> 011x xxxx
+                ic ^= 0x80;
+                wantInverse = true;
+            } else if (ic >= 0xc0 && ic <= 0xdf) {
+                // MouseText characters
+                MouseTextToUTF16(ic & 0x1f, &mtLow, &mtHigh);
+                ic = '?';
+            } else {
+                // plain ASCII
+            }
+
+            if (wantInverse && !inverse) {
+                inverse = true;
+                RTFInverseOn();
+            } else if (!wantInverse && inverse) {
+                inverse = false;
+                RTFInverseOff();
+            }
+
+            if (fUseRTF) {
+                if (mtLow != 0) {
+                    if (mtHigh != 0) {
+                        RTFPrintUTF16Char(mtHigh);
+                    }
+                    RTFPrintUTF16Char(mtLow);
+                } else {
+                    RTFPrintChar(ic);
+                }
+            } else {
+                // Plain text output.
                 BufPrintf("%c", PrintableChar(ic));
+            }
         }
+    }
+
+    if (inverse) {
+        RTFInverseOff();
     }
 
     /* if there's a carriage return at the end of the line, output it now */

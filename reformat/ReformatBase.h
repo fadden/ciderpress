@@ -198,6 +198,7 @@ public:
         fBoldEnabled(false),
         fItalicEnabled(false),
         fUnderlineEnabled(false),
+        fInverseEnabled(false),
         fOutlineEnabled(false),
         fShadowEnabled(false),
         fSuperscriptEnabled(false),
@@ -305,6 +306,8 @@ protected:
     void RTFItalicOff(void);
     void RTFUnderlineOn(void);
     void RTFUnderlineOff(void);
+    void RTFInverseOn(void);
+    void RTFInverseOff(void);
     void RTFParaLeft(void);
     void RTFParaRight(void);
     void RTFParaCenter(void);
@@ -317,7 +320,7 @@ protected:
     void RTFOutlineOff(void);
     void RTFShadowOn(void);
     void RTFShadowOff(void);
-    void RTFSetColor(TextColor color);
+    TextColor RTFSetColor(TextColor color);
     void RTFSetFont(RTFFont font);
     void RTFSetFontSize(int points);
     void RTFLeftMargin(int margin);
@@ -382,6 +385,11 @@ protected:
             fExpBuf.Printf("%c", ch);
     }
 
+    // Converts a MouseText value (0-31) to a 16-bit UTF-16 value.  If
+    // the character is in the BMP then only low is used.  If it requires
+    // encoding as a surrogate pair, high will be nonzero.
+    void MouseTextToUTF16(uint8_t mtVal, uint16_t* pLow, uint16_t* pHigh);
+
 private:
     DECLARE_COPY_AND_OPEQ(ReformatText)
     int CreateWorkBuf(void);
@@ -394,6 +402,7 @@ private:
     bool    fBoldEnabled;
     bool    fItalicEnabled;
     bool    fUnderlineEnabled;
+    bool    fInverseEnabled;
     bool    fOutlineEnabled;
     bool    fShadowEnabled;
     bool    fSuperscriptEnabled;

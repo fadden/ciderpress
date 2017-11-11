@@ -241,6 +241,28 @@ void ReformatText::RTFUnderlineOff(void)
     }
 }
 
+void ReformatText::RTFInverseOn(void)
+{
+    if (fInverseEnabled)
+        return;
+    if (fUseRTF) {
+        RTFSetColor(TextColor::kColorWhite);
+        BufPrintf("\\highlight1 ");     // black
+        fInverseEnabled = true;
+    }
+}
+
+void ReformatText::RTFInverseOff(void)
+{
+    if (!fInverseEnabled)
+        return;
+    if (fUseRTF) {
+        RTFSetColor(TextColor::kColorNone);
+        BufPrintf("\\highlight0 ");
+        fInverseEnabled = false;
+    }
+}
+
 void ReformatText::RTFOutlineOn(void)
 {
     if (fOutlineEnabled)
@@ -321,14 +343,14 @@ void ReformatText::RTFSuperscriptOff(void)
     }
 }
 
-void ReformatText::RTFSetColor(TextColor color)
+ReformatText::TextColor ReformatText::RTFSetColor(TextColor color)
 {
-    if (color == fTextColor)
-        return;
-    if (fUseRTF) {
+    TextColor oldColor = fTextColor;
+    if (color != fTextColor && fUseRTF) {
         BufPrintf("\\cf%d ", color);
         fTextColor = color;
     }
+    return oldColor;
 }
 
 /*
@@ -719,6 +741,53 @@ void ReformatText::BufHexDump(const uint8_t* srcBuf, long srcLen)
         srcBuf += 16;
         srcLen -= 16;
     }
+}
+
+// Thanks to: http://hoop-la.ca/apple2/docs/mousetext/unicode.html
+static const uint32_t gMouseTextConv[32] = {
+    0xd83cdf4e,     // 00 U+1f34e RED APPLE
+    0xd83cdf4f,     // 01 U+1f34f GREEN APPLE
+    //0x00002316,     // 02 U+2316 POSITION INDICATOR
+    0x000025c4,     // 02 U+25c4 BLACK LEFT-POINTING POINTER
+    0x000023f3,     // 03 U+23f3 HOURGLASS WITH FLOWING SAND
+    0x00002713,     // 04 U+2713 CHECK MARK
+    0x00002705,     // 05 U+2705 WHITE HEAVY CHECK MARK
+    0x000023ce,     // 06 U+23ce RETURN SYMBOL
+    //0xd83cdf54,     // 07 U+1f354 HAMBURGER
+    0x00002630,     // 07 U+2630 TRIGRAM FOR HEAVEN (actually want 4 lines, not 3)
+    0x00002190,     // 08 U+2190 LEFTWARDS ARROW
+    0x00002026,     // 09 U+2026 HORIZONTAL ELLIPSIS
+    0x00002193,     // 0a U+2193 DOWNWARDS ARROW
+    0x00002191,     // 0b U+2191 UPWARDS ARROW
+    0x00002594,     // 0c U+2594 UPPER ONE EIGHTH BLOCK
+    0x000021b5,     // 0d U+21b5 DOWNWARDS ARROW WITH CORNER LEFTWARDS
+    0x00002589,     // 0e U+2589 LEFT SEVEN EIGHTHS BLOCK
+    0x000021e4,     // 0f U+21e4 LEFTWARDS ARROW TO BAR
+    0x000021e5,     // 10 U+21e5 RIGHTWARDS ARROW TO BAR
+    0x00002913,     // 11 U+2913 DOWNWARDS ARROW TO BAR
+    0x00002912,     // 12 U+2912 UPWARDS ARROW TO BAR
+    0x00002500,     // 13 U+2500 BOX DRAWINGS LIGHT HORIZONTAL
+    0x0000231e,     // 14 U+231e BOTTOM LEFT CORNER
+    0x00002192,     // 15 U+2192 UPWARDS ARROW TO BAR
+    //0xd83dde7e,     // 16 U+1f67e CHECKER BOARD
+    0x00002591,     // 16 U+2591 LIGHT SHADE
+    //0xd83dde7f,     // 17 U+1f67f REVERSE CHECKER BOARD
+    0x00002592,     // 17 U+2592 MEDIUM SHADE
+    0xd83ddcc1,     // 18 U+1f4c1 FILE FOLDER
+    0xd83ddcc2,     // 19 U+1f4c2 OPEN FILE FOLDER
+    0x00002595,     // 1a U+2595 RIGHT ONE EIGHTH BLOCK
+    0x00002666,     // 1b U+2666 BLACK DIAMOND SUIT
+    0x0000203e,     // 1c U+203e OVERLINE -- wrong, want top/bottom
+    0x0000256c,     // 1d U+256c BOX DRAWINGS DOUBLE VERTICAL AND HORIZONTAL
+    //0xd83ddcbe,     // 1e U+1f4be FLOPPY DISK
+    0x000022a1,     // 1e U+22a1 SQUARED DOT OPERATOR (seems better than 25a3)
+    0x0000258f,     // 1f U+258f LEFT ONE EIGHTH BLOCK
+};
+void ReformatText::MouseTextToUTF16(uint8_t mtVal, uint16_t* pLow, uint16_t* pHigh) {
+    ASSERT(mtVal < 32);
+
+    *pLow = gMouseTextConv[mtVal] & 0xffff;
+    *pHigh = gMouseTextConv[mtVal] >> 16;
 }
 
 
