@@ -168,6 +168,7 @@ public:
     BOOL    fHighlightHexDump;
     BOOL    fHighlightBASIC;
     BOOL    fConvDisasmOneByteBrkCop;
+    BOOL    fConvMouseTextToASCII;
     BOOL    fConvHiResBlackWhite;
     int     fConvDHRAlgorithm;      // drop list
 

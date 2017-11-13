@@ -316,6 +316,7 @@ void PrefsFviewPage::DoDataExchange(CDataExchange* pDX)
     DDX_Check(pDX, IDC_PVIEW_BOLD_HEXDUMP, fHighlightHexDump);
     DDX_Check(pDX, IDC_PVIEW_BOLD_BASIC, fHighlightBASIC);
     DDX_Check(pDX, IDC_PVIEW_DISASM_ONEBYTEBRKCOP, fConvDisasmOneByteBrkCop);
+    DDX_Check(pDX, IDC_PVIEW_MOUSETEXT_TO_ASCII, fConvMouseTextToASCII);
     DDX_Check(pDX, IDC_PVIEW_HIRES_BW, fConvHiResBlackWhite);
     DDX_CBIndex(pDX, IDC_PVIEW_DHR_CONV_COMBO, fConvDHRAlgorithm);
 

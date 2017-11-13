@@ -108,6 +108,7 @@ const Preferences::PrefMap Preferences::fPrefMaps[kPrefNumLastEntry] = {
     { kPrConvDHRAlgorithm,              kLong,  kPrefsSect,     L"dhr-algorithm" },
     { kPrRelaxGfxTypeCheck,             kBool,  kPrefsSect,     L"relax-gfx-type-check" },
     { kPrDisasmOneByteBrkCop,           kBool,  kPrefsSect,     L"disasm-onebytebrkcop" },
+    { kPrConvMouseTextToASCII,          kBool,  kPrefsSect,     L"conv-mouse-text-to-ascii" },
     //{ kPrEOLConvRaw,                  kBool,  kPrefsSect,     L"eol-conv-raw" },
     { kPrConvTextEOL_HA,                kBool,  kPrefsSect,     L"conv-eol-ha" },
     { kPrConvPascalText,                kBool,  kPrefsSect,     L"conv-pascal-text" },
@@ -214,6 +215,7 @@ Preferences::Preferences(void)
     SetPrefLong(kPrConvDHRAlgorithm, 1);        // latched
     SetPrefBool(kPrRelaxGfxTypeCheck, true);
     SetPrefBool(kPrDisasmOneByteBrkCop, false);
+    SetPrefBool(kPrConvMouseTextToASCII, false);
     //SetPrefBool(kPrEOLConvRaw, true);
     SetPrefBool(kPrConvTextEOL_HA, true);
     SetPrefBool(kPrConvPascalText, true);

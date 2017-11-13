@@ -143,6 +143,7 @@ public:
         kOptDHRAlgorithm,
         kOptRelaxGfxTypeCheck,
         kOptOneByteBrkCop,
+        kOptMouseTextToASCII,
 
         kOptMAX             // must be last
     } OptionID;
@@ -186,7 +187,7 @@ public:
      * We want to know if it's DOS so we can relax some file-type checking,
      * and we want to know if it's CP/M so we can adjust the way we think
      * about text files.  We want to know if it's Gutenberg because they only
-     * have one type of file, and it's indistingusihable from any other text file!
+     * have one type of file, and it's indistinguishable from any other text file!
      */
     typedef enum SourceFormat {
         kSourceFormatGeneric = 0,

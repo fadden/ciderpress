@@ -28,6 +28,7 @@
 #define IDH_PVIEW_DISASM_ONEBYTEBRKCOP  1028
 #define IDH_PVIEW_HIRES_BW              1029
 #define IDH_PVIEW_DHR_CONV_COMBO        1030
+#define IDH_PVIEW_MOUSETEXT_TO_ASCII    1031
 #define IDH_PVIEW_HITEXT                1036
 #define IDH_PVIEW_PASCALTEXT            1037
 #define IDH_PVIEW_APPLESOFT             1038

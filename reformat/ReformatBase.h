@@ -390,9 +390,14 @@ protected:
     // encoding as a surrogate pair, high will be nonzero.
     void MouseTextToUTF16(uint8_t mtVal, uint16_t* pLow, uint16_t* pHigh);
 
+    // Converts a MouseText value (0-31) to an ASCII equivalent.  This is not
+    // a 1:1 conversion, so it's not reversible.
+    int8_t MouseTextToASCII(uint8_t mtVal);
+
 private:
     DECLARE_COPY_AND_OPEQ(ReformatText)
     int CreateWorkBuf(void);
+
     enum { kRTFUnitsPerInch = 1440 };   // TWIPS
 
     int     fLeftMargin, fRightMargin;  // for documents, in 1/10th inch

@@ -16,7 +16,10 @@
  */
 class ReformatAWP : public ReformatText {
 public:
-    ReformatAWP(void) { fShowEmbeds = true; }
+    ReformatAWP(void)
+      : fShowEmbeds(true),
+        fMouseTextToASCII(false)
+    {}
     virtual ~ReformatAWP(void) {}
 
     virtual void Examine(ReformatHolder* pHolder) override;
@@ -146,6 +149,7 @@ private:
     FileHeader  fFileHeader;
     DocState    fDocState;
     bool        fShowEmbeds;
+    bool        fMouseTextToASCII;
 };
 
 /*

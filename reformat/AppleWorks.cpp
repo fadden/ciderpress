@@ -69,6 +69,8 @@ int ReformatAWP::Process(const ReformatHolder* pHolder,
     bool skipRecord;
     uint8_t lineRecCode, lineRecData;
 
+    fMouseTextToASCII = pHolder->GetOption(ReformatHolder::kOptMouseTextToASCII) != 0;
+
     if (srcLen > 65536)
         fUseRTF = false;
 
@@ -457,8 +459,12 @@ int ReformatAWP::HandleTextRecord(uint8_t lineRecData,
                 wantInverse = true;
             } else if (ic >= 0xc0 && ic <= 0xdf) {
                 // MouseText characters
-                MouseTextToUTF16(ic & 0x1f, &mtLow, &mtHigh);
-                ic = '?';
+                if (fMouseTextToASCII) {
+                    ic = MouseTextToASCII(ic & 0x1f);
+                } else {
+                    MouseTextToUTF16(ic & 0x1f, &mtLow, &mtHigh);
+                    ic = '?';
+                }
             } else {
                 // plain ASCII
             }

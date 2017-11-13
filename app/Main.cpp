@@ -827,6 +827,7 @@ void MainWindow::OnEditPreferences(void)
     ps.fFviewPage.fHighlightHexDump = fPreferences.GetPrefBool(kPrHighlightHexDump);
     ps.fFviewPage.fHighlightBASIC = fPreferences.GetPrefBool(kPrHighlightBASIC);
     ps.fFviewPage.fConvDisasmOneByteBrkCop = fPreferences.GetPrefBool(kPrDisasmOneByteBrkCop);
+    ps.fFviewPage.fConvMouseTextToASCII = fPreferences.GetPrefBool(kPrConvMouseTextToASCII);
     ps.fFviewPage.fConvHiResBlackWhite = fPreferences.GetPrefBool(kPrConvHiResBlackWhite);
     ps.fFviewPage.fConvDHRAlgorithm = fPreferences.GetPrefLong(kPrConvDHRAlgorithm);
     ps.fFviewPage.fRelaxGfxTypeCheck = fPreferences.GetPrefBool(kPrRelaxGfxTypeCheck);
@@ -955,6 +956,7 @@ void MainWindow::ApplyNow(PrefsSheet* pPS)
     fPreferences.SetPrefBool(kPrHighlightHexDump, pPS->fFviewPage.fHighlightHexDump != 0);
     fPreferences.SetPrefBool(kPrHighlightBASIC, pPS->fFviewPage.fHighlightBASIC != 0);
     fPreferences.SetPrefBool(kPrDisasmOneByteBrkCop, pPS->fFviewPage.fConvDisasmOneByteBrkCop != 0);
+    fPreferences.SetPrefBool(kPrConvMouseTextToASCII, pPS->fFviewPage.fConvMouseTextToASCII != 0);
     fPreferences.SetPrefBool(kPrConvHiResBlackWhite, pPS->fFviewPage.fConvHiResBlackWhite != 0);
     fPreferences.SetPrefLong(kPrConvDHRAlgorithm, pPS->fFviewPage.fConvDHRAlgorithm);
     fPreferences.SetPrefBool(kPrRelaxGfxTypeCheck, pPS->fFviewPage.fRelaxGfxTypeCheck != 0);
@@ -2465,6 +2467,8 @@ CString MainWindow::RemoveFile(const WCHAR* fileName)
         pPreferences->GetPrefBool(kPrRelaxGfxTypeCheck));
     pReformat->SetOption(ReformatHolder::kOptOneByteBrkCop,
         pPreferences->GetPrefBool(kPrDisasmOneByteBrkCop));
+    pReformat->SetOption(ReformatHolder::kOptMouseTextToASCII,
+        pPreferences->GetPrefBool(kPrConvMouseTextToASCII));
 }
 
 /*static*/ ReformatHolder::SourceFormat MainWindow::ReformatterSourceFormat(

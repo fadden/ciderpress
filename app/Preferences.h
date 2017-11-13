@@ -12,6 +12,13 @@
  *    section to the registry if appropriate.
  *  - Add a default value to Preferences::Preferences.  If not specified,
  *    strings will be NULL and numeric values will be zero.
+ *
+ * For user-settable preferencers, you must also:
+ *  - Add a UI element to the appropriate preference page.
+ *  - Add the appropriate code for that item.  Note in particular the data
+ *    exchange and ON_CONTROL_RANGE values.
+ *  - In Main.cpp, update OnEditPreferences() to init the page.
+ *  - Add a tooltip to the help file.
  */
 #ifndef APP_PREFERENCES_H
 #define APP_PREFERENCES_H
@@ -168,6 +175,7 @@ typedef enum {
     kPrConvDHRAlgorithm,            // long
     kPrRelaxGfxTypeCheck,           // bool
     kPrDisasmOneByteBrkCop,         // bool
+    kPrConvMouseTextToASCII,        // bool
     //kPrEOLConvRaw,                    // bool
     kPrConvTextEOL_HA,              // bool
     kPrConvPascalText,              // bool

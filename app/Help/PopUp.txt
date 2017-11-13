@@ -82,6 +82,9 @@ If enabled, hi-res graphics are converted to black & white images by default.
 .topic IDH_PVIEW_DHR_CONV_COMBO
 Selects the preferred conversion algorithm for double-hi-res graphics.
 
+.topic IDH_PVIEW_MOUSETEXT_TO_ASCII
+Converts MouseText to ASCII instead of Unicode symbols.
+
 .topic IDH_PVIEW_HITEXT
 Enables the text converter, which strips "high ASCII" text and converts end-of-line characters.
 
