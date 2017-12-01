@@ -912,6 +912,16 @@ bool MainWindow::ExtractEntry(GenericEntry* pEntry, int thread,
                 break;
             }
 
+            /*
+             * Issue #26: if "add type extension" is not checked, don't add
+             * the format converter extension.  This is useful for Merlin
+             * source files where you want to do the text conversion but still
+             * want the file to end with ".S".
+             */
+            if (!pExtOpts->fAddExtension) {
+                noChangePath = true;
+            }
+
             if (goodReformat) {
                 if (!noChangePath)
                     outputPath = tmpPath;
