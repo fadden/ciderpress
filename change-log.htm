@@ -37,9 +37,16 @@
 <p>In addition, CiderPress uses the NufxLib library to access NuFX (ShrinkIt)
 archives, and zlib to compress and expand &quot;.gz&quot; and &quot;.zip&quot; files.</p>
 
+<h2>v4.0.3 - 12-Dec-2017</h2>
+<ul>
+  <li>[app] Changed the behavior of file extraction so that file extensions are never added unless "add file extension" is checked. Previously, files whose contents were converted for use in Windows always had the file extension added.</li>
+  <li>[reformat] Added support for MouseText and inverse text in AppleWorks 5 WP docs. MouseText can be converted to similar Unicode symbols or ASCII.</li>
+  <li>[diskimg] Fixed a bug that caused assertion failures on volumes with partitions larger than 4GB.</li>
+</ul>
+
 <h2>v4.0.2 - 22-Sep-2017</h2>
 <ul>
-  <li>[app] Fixed a bug that caused CiderPress to ahng when certain malformed dates were encountered.</li>
+  <li>[app] Fixed a bug that caused CiderPress to hang when certain malformed dates were encountered.</li>
   <li>[app] Fixed some display issues in the file viewer.</li>
   <li>[app] Incorporated latest NufxLib changes, notably corrected handling of zero-length resource forks in archives created by GS/ShrinkIt.</li>
   <li>[reformat] Improved handling of odd-sized packed Super Hi-Res images.</li>
