@@ -607,7 +607,7 @@ static const char gExtendedBusinessTokens[128*10] = {
 /* 0xb8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
 /* 0xc0 */ "*error*\0  *error*\0  *error*\0  STR$(\0    HEX$(\0    CHR$(\0    LEN(\0     VAL(\0     "
 /* 0xc8 */ "ASC(\0     TEN(\0     *error*\0  *error*\0  CONV(\0    CONV&(\0   CONV$(\0   CONV%(\0   "
-/* 0xd0 */ "LEFT$(\0   RIGHT$(\0  MID$(\0    INSTR$(\0  *error*\0  *error*\0  *error*\0  *error*\0  "
+/* 0xd0 */ "LEFT$(\0   RIGHT$(\0  MID$(\0    INSTR(\0   *error*\0  *error*\0  *error*\0  *error*\0  "
 /* 0xd8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
 /* 0xe0 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
 /* 0xe8 */ "*error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  *error*\0  "
@@ -738,7 +738,7 @@ int ReformatBusiness::Process(const ReformatHolder* pHolder,
                         (*srcPtr == 0xd0) ||    // LEFT$(
                         (*srcPtr == 0xd1) ||    // RIGHT$(
                         (*srcPtr == 0xd2) ||    // MID$(
-                        (*srcPtr == 0xd3))      // INSTR$(
+                        (*srcPtr == 0xd3))      // INSTR(
                         firstData = true;
                     else
                         firstData = false;
