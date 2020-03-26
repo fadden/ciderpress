@@ -358,7 +358,7 @@ private:
      *
      * Returns an empty string on success, or an error message on failure.
      */
-    CString LoadFile(const WCHAR* pathName, uint8_t** pBuf, long* pLen,
+    CString LoadFile(const WCHAR* pathName, DiskFS* pDiskFS, uint8_t** pBuf, long* pLen,
         GenericEntry::ConvertEOL conv, GenericEntry::ConvertHighASCII convHA) const;
 
     /*

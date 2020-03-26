@@ -1581,14 +1581,15 @@ CString DiskArchive::ProcessFileAddData(DiskFS* pDiskFS, int addOptsConvEOL)
             else
                 convHA = GenericEntry::kConvertHAOff;
 
-            errMsg = LoadFile(pDataDetails->GetLocalPathName(), &dataBuf, &dataLen,
-                convEOL, convHA);
+            errMsg = LoadFile(pDataDetails->GetLocalPathName(), pDiskFS,
+				&dataBuf, &dataLen, convEOL, convHA);
             if (!errMsg.IsEmpty())
                 goto bail;
         }
         if (pRsrcDetails != NULL) {
             /* no text conversion on resource forks */
-            errMsg = LoadFile(pRsrcDetails->GetLocalPathName(), &rsrcBuf, &rsrcLen,
+            errMsg = LoadFile(pRsrcDetails->GetLocalPathName(), pDiskFS,
+				&rsrcBuf, &rsrcLen,
                 GenericEntry::kConvertEOLOff, GenericEntry::kConvertHAOff);
             if (!errMsg.IsEmpty())
                 goto bail;
@@ -1624,8 +1625,11 @@ bail:
 
 // TODO: really ought to update the progress counter, especially when reading
 // really large files.
-CString DiskArchive::LoadFile(const WCHAR* pathName, uint8_t** pBuf, long* pLen,
-    GenericEntry::ConvertEOL conv, GenericEntry::ConvertHighASCII convHA) const
+// TODO: shouldn't be loading really large files into memory.  ProDOS is fine
+// (16MB limit), HFS could be problematic in a 32-bit app.
+CString DiskArchive::LoadFile(const WCHAR* pathName, DiskFS* pDiskFS,
+	uint8_t** pBuf, long* pLen,
+	GenericEntry::ConvertEOL conv, GenericEntry::ConvertHighASCII convHA) const
 {
     const char kCharLF = '\n';
     const char kCharCR = '\r';
@@ -1666,8 +1670,15 @@ CString DiskArchive::LoadFile(const WCHAR* pathName, uint8_t** pBuf, long* pLen,
         *pBuf = NULL;
         *pLen = 0;
         goto bail;
-    } else if (fileLen > 0x00ffffff) {
-        errMsg = L"Cannot add files larger than 16MB to a disk image.";
+    }
+	// TODO: we want to limit the file length based on the filesystem type,
+	// so we don't initiate an operation that can't possibly succeed.  We
+	// should be able to query the DiskImg for its max file size, but that
+	// API doesn't currently exist.  For now, limit anything other than HFS
+	// to 16MB.
+	if (pDiskFS->GetDiskImg()->GetFSFormat() != DiskImg::kFormatMacHFS &&
+			fileLen > 0x00ffffff) {
+        errMsg = L"Cannot add files larger than 16MB to a non-HFS disk image.";
         goto bail;
     }
 
