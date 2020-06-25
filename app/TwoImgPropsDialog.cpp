@@ -99,7 +99,7 @@ void TwoImgPropsDialog::DoDataExchange(CDataExchange* pDX)
             fpHeader->fFlags |= (dosVolNum & TwoImgHeader::kDOSVolumeMask);
 
             CString appStr, errMsg;
-            if (dosVolNum < 1 || dosVolNum > 254) {
+            if (dosVolNum < 0 || dosVolNum > 254) {
                 CheckedLoadString(&appStr, IDS_MB_APP_NAME);
                 CheckedLoadString(&errMsg, IDS_VALID_VOLNAME_DOS);
                 MessageBox(errMsg, appStr, MB_OK);

@@ -937,9 +937,10 @@ void ReformatDisasm16::PrintHeader(const OMFSegmentHeader* pSegHdr,
 
     const char* versStr;
     switch (pSegHdr->GetVersion()) {
-    case 0:     versStr = "1.0";        break;
-    case 1:     versStr = "2.0";        break;
-    case 2:     versStr = "2.1";        break;
+    case 0:     versStr = "0.0";        break;
+    case 1:     versStr = "1.0";        break;
+    case 2:     versStr = "2.0";        break;
+    case 0x82:  versStr = "2.1";        break;
     default:    versStr = "(unknown)";  break;
     }
 
@@ -1058,8 +1059,9 @@ bool OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen, int fileType)
         return false;
     }
 
+    fRevision = 0;
     if (fVersion == 0) {
-        /* unpack OMF v1.0 */
+        /* unpack OMF v0.0 (not actually used for 16-bit code?) */
         if (srcLen < kV0HdrMinSize)
             return false;
 
@@ -1086,7 +1088,7 @@ bool OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen, int fileType)
         else
             fDispData = fDispName + fLabLen;
     } else if (fVersion == 1) {
-        /* unpack OMF v2.0 */
+        /* unpack OMF v1.0 */
         if (srcLen < kV1HdrMinSize)
             return false;
         fBlockCnt = Get32LE(srcBuf + 0x00);
@@ -1124,7 +1126,7 @@ bool OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen, int fileType)
         fKind = 0;
         fTempOrg = 0;
     } else {
-        /* unpack OMF v2.1 */
+        /* unpack OMF v2.x */
         if (srcLen < kV2HdrMinSize)
             return false;
         fByteCnt = Get32LE(srcBuf + 0x00);
@@ -1144,7 +1146,13 @@ bool OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen, int fileType)
         fEntry = Get32LE(srcBuf + 0x24);
         fDispName = Get16LE(srcBuf + 0x28);
         fDispData = Get16LE(srcBuf + 0x2a);
-        fTempOrg = Get32LE(srcBuf + 0x2c);
+        if (fDispName > 0x2c) {
+            // v2.1 adds a 4-byte "tempOrg" field
+            fTempOrg = Get32LE(srcBuf + 0x2c);
+            fRevision = 1;
+        } else {
+            fTempOrg = 0;
+        }
 
         fBlockCnt = 0;
         fType = 0;
@@ -1192,6 +1200,8 @@ bool OMFSegmentHeader::Unpack(const uint8_t* srcBuf, long srcLen, int fileType)
         fLoadName[kLoadNameLen] = '\0';
 
         segName +=  kLoadNameLen;
+    } else {
+        fLoadName[0] = '\0';
     }
 
     if (fLabLen == 0) {

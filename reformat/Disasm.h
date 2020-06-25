@@ -227,7 +227,7 @@ public:
         kTypePathName       = 0x04,
         kTypeLibraryDict    = 0x08,
         kTypeInit           = 0x10,
-        kTypeAbsoluteBank   = 0x11,
+        kTypeAbsoluteBank   = 0x11,     // v1.0 only
         kTypeDPStack        = 0x12,
     } SegmentType;
     typedef enum SegmentFlag {
@@ -241,7 +241,7 @@ public:
         kFlagDynamic,
     } SegmentFlag;
 
-    uint8_t GetVersion(void) const { return fVersion; }
+    uint8_t GetVersion(void) const { return fVersion + (fRevision << 7); }
     uint32_t GetSegmentLen(void) const { return fByteCnt; }
     SegmentType GetSegmentType(void) const;
     bool GetSegmentFlag(SegmentFlag flag) const;
@@ -254,11 +254,11 @@ public:
 
     // some of these must be public in VC++6.0
     enum {
-        kMaxVersion         = 2,            // v0/1/2 == OMF 1.0 / 2.0 / 2.1
+        kMaxVersion         = 2,            // v0/1/2 == OMF 0.0 / 1.0 / 2.x
         kLoadNameLen        = 10,
         kV0HdrMinSize       = 0x25,
         kV1HdrMinSize       = 0x2c + kLoadNameLen,
-        kV2HdrMinSize       = 0x30 + kLoadNameLen,
+        kV2HdrMinSize       = kV1HdrMinSize,    // 2.1 is slightly larger; handle that elsewhere
         kHdrMinSize         = kV0HdrMinSize,    // smallest of the three
         kExpectedNumLen     = 4,
         kExpectedBankSize   = 65536,
@@ -277,13 +277,14 @@ private:
     }
 
     uint32_t    fBlockCnt;          // v0/v1
-    uint32_t    fByteCnt;           // v2
+    uint32_t    fByteCnt;           // [v1]/v2
     uint32_t    fResSpc;
     uint32_t    fLength;
     uint8_t     fType;              // v0/v1
     uint8_t     fLabLen;
     uint8_t     fNumLen;            // (always 4)
     uint8_t     fVersion;           // (0, 1, or 2)
+    uint8_t     fRevision;          // fictitious field; holds 0 or 1
     uint32_t    fBankSize;          // (always 65536)
     uint16_t    fKind;              // v2
     uint32_t    fOrg;
