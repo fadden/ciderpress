@@ -37,6 +37,17 @@
 <p>In addition, CiderPress uses the NufxLib library to access NuFX (ShrinkIt)
 archives, and zlib to compress and expand &quot;.gz&quot; and &quot;.zip&quot; files.</p>
 
+<h2>v4.0.4 - 23-Jul-2020</h2>
+<ul>
+  <li>[app] Fixed limitation that prevented files larger than 16MB from being
+    added to HFS volumes.</li>
+  <li>[app] Fixed range check on volume number in 2IMG properties editor.</li>
+  <li>[diskimg] Fixed a bug that caused assertion failures on ProDOS disks with
+    short volume directories.</li>
+  <li>[reformat] Fixed an incorrect Apple /// BASIC token.</li>
+  <li>[reformat] Fixed reporting of OMF segment version numbers.</li>
+</ul>
+
 <h2>v4.0.3 - 12-Dec-2017</h2>
 <ul>
   <li>[app] Changed the behavior of file extraction so that file extensions are never added unless "add file extension" is checked. Previously, files whose contents were converted for use in Windows always had the file extension added.</li>
