@@ -30,7 +30,7 @@
 
 const int kBlkSize = 512;
 const int kVolHeaderBlock = 2;          // block where Volume Header resides
-const int kVolDirExpectedNumBlocks = 4; // customary #of volume header blocks
+const int kFormatVolDirNumBlocks = 4;   // #of volume header blocks for new volumes
 const int kMinReasonableBlocks = 16;    // min size for ProDOS volume
 const int kExpectedBitmapStart = 6;     // block# where vol bitmap should start
 const int kMaxCatalogIterations = 1024; // theoretical max is 32768?
@@ -360,8 +360,11 @@ DIError DiskFSProDOS::LoadVolHeader(void)
     pEntry->fileName[nameLen] = '\0';
     pEntry->fileType = kTypeDIR;
     pEntry->keyPointer = kVolHeaderBlock;
-    pEntry->blocksUsed = kVolDirExpectedNumBlocks;
-    pEntry->eof = kVolDirExpectedNumBlocks * 512;
+    dierr = DetermineVolDirLen(GetShortLE(&blkBuf[0x02]), &pEntry->blocksUsed);
+    if (dierr != kDIErrNone) {
+        goto bail;
+    }
+    pEntry->eof = pEntry->blocksUsed * 512;
     pEntry->createWhen = GetLongLE(&blkBuf[0x1c]);
     pEntry->version = blkBuf[0x20];
     pEntry->minVersion = blkBuf[0x21];
@@ -375,8 +378,47 @@ DIError DiskFSProDOS::LoadVolHeader(void)
     pFile->fSparseRsrcEof = -1;
 
     AddFileToList(pFile);
+    pFile = NULL;
 
 bail:
+    delete pFile;
+    return dierr;
+}
+
+DIError DiskFSProDOS::DetermineVolDirLen(uint16_t nextBlock, uint16_t* pBlocksUsed) {
+    DIError dierr = kDIErrNone;
+    uint8_t blkBuf[kBlkSize];
+    uint16_t blocksUsed = 1;
+    int iterCount = 0;
+
+    // Traverse the volume directory chain, counting blocks.  Normally this will have 4, but
+    // variations are possible.
+    while (nextBlock != 0) {
+        blocksUsed++;
+
+        if (nextBlock < 2 || nextBlock >= fpImg->GetNumBlocks()) {
+            LOGI(" ProDOS ERROR: invalid volume dir link block %u", nextBlock);
+            dierr = kDIErrInvalidBlock;
+            goto bail;
+        }
+        dierr = fpImg->ReadBlock(nextBlock, blkBuf);
+        if (dierr != kDIErrNone) {
+            goto bail;
+        }
+
+        nextBlock = GetShortLE(&blkBuf[0x02]);
+
+        // Watch for infinite loop.
+        iterCount++;
+        if (iterCount > fpImg->GetNumBlocks()) {
+            LOGI(" ProDOS ERROR: infinite vol directory loop found");
+            dierr = kDIErrDirectoryLoop;
+            goto bail;
+        }
+    }
+
+bail:
+    *pBlocksUsed = blocksUsed;
     return dierr;
 }
 
@@ -552,7 +594,7 @@ DIError DiskFSProDOS::ScanVolBitmap(void)
 }
 
 /*
- * Generate an empty block use map.
+ * Generate an empty block use map.  Used by disk formatter.
  */
 DIError DiskFSProDOS::CreateEmptyBlockMap(void)
 {
@@ -569,7 +611,7 @@ DIError DiskFSProDOS::CreateEmptyBlockMap(void)
      */
     long block;
     long firstEmpty =
-        kVolHeaderBlock + kVolDirExpectedNumBlocks + GetNumBitmapBlocks();
+        kVolHeaderBlock + kFormatVolDirNumBlocks + GetNumBitmapBlocks();
     for (block = 0; block < firstEmpty; block++)
         SetBlockUseEntry(block, true);
     for ( ; block < fTotalBlocks; block++)
@@ -1494,10 +1536,10 @@ DIError DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
      */
     int i;
     memset(blkBuf, 0, sizeof(blkBuf));
-    for (i = kVolHeaderBlock+1; i < kVolHeaderBlock+kVolDirExpectedNumBlocks; i++)
+    for (i = kVolHeaderBlock+1; i < kVolHeaderBlock+kFormatVolDirNumBlocks; i++)
     {
         PutShortLE(&blkBuf[0x00], i-1);
-        if (i == kVolHeaderBlock+kVolDirExpectedNumBlocks-1)
+        if (i == kVolHeaderBlock+kFormatVolDirNumBlocks-1)
             PutShortLE(&blkBuf[0x02], 0);
         else
             PutShortLE(&blkBuf[0x02], i+1);
@@ -1540,7 +1582,7 @@ DIError DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
     blkBuf[0x23] = 0x27;        // entry_length: always $27
     blkBuf[0x24] = 0x0d;        // entries_per_block: always $0d
     /* file_count is zero - does not include volume dir */
-    PutShortLE(&blkBuf[0x27], kVolHeaderBlock + kVolDirExpectedNumBlocks); // bit_map_pointer
+    PutShortLE(&blkBuf[0x27], kVolHeaderBlock + kFormatVolDirNumBlocks); // bit_map_pointer
     PutShortLE(&blkBuf[0x29], (uint16_t) formatBlocks); // total_blocks
     dierr = fpImg->WriteBlock(kVolHeaderBlock, blkBuf);
     if (dierr != kDIErrNone) {
@@ -1558,8 +1600,7 @@ DIError DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
 
     /*
      * Generate the initial block usage map.  The only entries in use are
-     * right at the start of the disk.  When we finish, scan what we just
-     * created into
+     * right at the start of the disk.
      */
     CreateEmptyBlockMap();
 

@@ -1596,6 +1596,7 @@ private:
 
     DIError Initialize(InitMode initMode);
     DIError LoadVolHeader(void);
+    DIError DetermineVolDirLen(uint16_t nextBlock, uint16_t* pBlocksUsed);
     void SetVolumeID(void);
     void DumpVolHeader(void);
     DIError ScanVolBitmap(void);
