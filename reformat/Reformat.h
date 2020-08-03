@@ -208,7 +208,7 @@ public:
             for (i = 0; i < kReformatMAX; i++)
                 fApplies[part][i] = kApplicUnknown;
             fSourceBuf[part] = NULL;
-            fSourceLen[part] = NULL;
+            fSourceLen[part] = 0;
             fErrorBuf[part] = NULL;
         }
         for (i = 0; i < kReformatMAX; i++) {
@@ -356,7 +356,7 @@ private:
     char*           fNameExt;       // guaranteed non-NULL
 
     /* input goes here */
-    uint8_t*         fSourceBuf[kPartMAX];
+    uint8_t*        fSourceBuf[kPartMAX];
     long            fSourceLen[kPartMAX];
 
     char*           fErrorBuf[kPartMAX];

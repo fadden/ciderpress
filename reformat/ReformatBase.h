@@ -139,7 +139,7 @@ private:
 
 /*
  * Abstract base class for reformatting a graphics file into a
- * device-independent bitmap..
+ * device-independent bitmap.
  */
 class ReformatGraphics: public Reformat {
 public:

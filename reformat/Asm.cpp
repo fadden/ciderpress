@@ -81,7 +81,11 @@ void ReformatSCAssem::Examine(ReformatHolder* pHolder)
     long srcLen = pHolder->GetSourceLen(ReformatHolder::kPartData);
     int len;
 
-    len = *ptr;
+    if (srcLen < 1) {
+        return false;
+    }
+
+    len = *ptr;     // get length byte
     if (len == 0 || len > srcLen)
         return false;       // should return an error, really
     if (ptr[len-1] == 0x00) {
