@@ -13,6 +13,8 @@
 #include <time.h>
 #include <errno.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "../diskimg/DiskImg.h"
 
 using namespace DiskImgLib;
@@ -97,7 +99,21 @@ CopyFiles(DiskFS* pDiskFS, int argc, char** argv)
     };
 
 
+    argv--;
     while (argc--) {
+        argv++;
+
+        // Confirm this is a regular file, and not a directory.
+        struct stat sb;
+        if (stat(*argv, &sb) != 0) {
+            fprintf(stderr, "Warning: unable to stat '%s'\n", *argv);
+            continue;
+        }
+        if ((sb.st_mode & S_IFREG) == 0) {
+            printf("--- Skipping '%s'\n", *argv);
+            continue;
+        }
+
         printf("+++ Adding '%s'\n", *argv);
 
         /*
@@ -148,6 +164,11 @@ CopyFiles(DiskFS* pDiskFS, int argc, char** argv)
         }
 
         len = ftell(fp);
+        if (len >= 1L<<31) {    // 2GB
+            fprintf(stderr, "Warning: file '%s' too large, skipping\n", *argv);
+            fclose(fp);
+            continue;
+        }
         rewind(fp);
 
         buf = new char[len];
@@ -199,11 +220,6 @@ CopyFiles(DiskFS* pDiskFS, int argc, char** argv)
                 pNewFile->GetPathName(), DIStrError(dierr));
             return -1;
         }
-
-        /*
-         * On to the next file.
-         */
-        argv++;
     }
 
     return 0;
