@@ -344,8 +344,8 @@ DIError DiskFSRDOS::ReadCatalog(void)
 
         pFile = new A2FileRDOS(this);
 
-        memcpy(pFile->fRawName, dirPtr, A2FileRDOS::kMaxFileName);
-        pFile->fRawName[A2FileRDOS::kMaxFileName] = '\0';
+        memcpy(pFile->fRawFileName, dirPtr, A2FileRDOS::kMaxFileName);
+        pFile->fRawFileName[A2FileRDOS::kMaxFileName] = '\0';
 
         memcpy(pFile->fFileName, dirPtr, A2FileRDOS::kMaxFileName);
         pFile->fFileName[A2FileRDOS::kMaxFileName] = '\0';
@@ -522,6 +522,19 @@ DIError A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
     pOpenFile = NULL;
 
     return kDIErrNone;
+}
+
+/*
+ * Returns the raw filename.
+ *
+ * If a pointer to a size_t is passed in, it will be filled with the
+ * raw filename length.
+ */
+const char* A2FileRDOS::GetRawFileName(size_t* size = NULL) const {
+    if (size) {
+        *size = strlen(fRawFileName);
+    }
+    return fRawFileName;
 }
 
 

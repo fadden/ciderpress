@@ -835,8 +835,8 @@ DIError DiskFSDOS33::ProcessCatalogSector(int catTrack, int catSect,
                 break;
             }
 
-            memcpy(pFile->fRawName, &pEntry[0x03], A2FileDOS::kMaxFileName);
-            pFile->fRawName[A2FileDOS::kMaxFileName] = '\0';
+            memcpy(pFile->fRawFileName, &pEntry[0x03], A2FileDOS::kMaxFileName);
+            pFile->fRawFileName[A2FileDOS::kMaxFileName] = '\0';
 
             memcpy(pFile->fFileName, &pEntry[0x03], A2FileDOS::kMaxFileName);
             pFile->fFileName[A2FileDOS::kMaxFileName] = '\0';
@@ -862,7 +862,6 @@ DIError DiskFSDOS33::ProcessCatalogSector(int catTrack, int catSect,
 
     return kDIErrNone;
 }
-
 
 /*
  * Perform consistency checks on the filesystem.
@@ -2870,6 +2869,19 @@ DIError A2FileDOS::ExtractTSPairs(const uint8_t* sctBuf, TrackSector* tsList,
 
 bail:
     return dierr;
+}
+
+/*
+ * Returns the raw filename.
+ *
+ * If a pointer to a size_t is passed in, it will be filled with the
+ * raw filename length.
+ */
+const char* A2FileDOS::GetRawFileName(size_t* size = NULL) const {
+    if (size) {
+        *size = strlen(fRawFileName);
+    }
+    return fRawFileName;
 }
 
 

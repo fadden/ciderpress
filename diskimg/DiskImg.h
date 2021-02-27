@@ -1475,7 +1475,9 @@ public:
      * allowed) will be lost.
      *
      * The original unmodified filename is availale through GetRawFileName,
-     * though HFS still suffers from embedded nulls.
+     * which can be optionally passed a size_t pointer to get the size
+     * of the raw file name, which is helpful for getting a HFS filename with
+     * embedded nulls.
      * 
      * We do guarantee that the contents of subdirectories are grouped
      * together.  This makes it much easier to construct a hierarchy out of
@@ -1484,9 +1486,7 @@ public:
      */
     virtual const char* GetFileName(void) const = 0;    // name of this file
     virtual const char* GetPathName(void) const = 0;    // full path
-    virtual const char* GetRawFileName(void) const {    // get unmodified file name
-        return GetFileName();
-    }
+    virtual const char* GetRawFileName(size_t* size = NULL) const; // get unmodified file name
     virtual char GetFssep(void) const = 0;              // '\0' if none
     virtual uint32_t GetFileType(void) const = 0;
     virtual uint32_t GetAuxType(void) const = 0;
