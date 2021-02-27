@@ -344,6 +344,9 @@ DIError DiskFSRDOS::ReadCatalog(void)
 
         pFile = new A2FileRDOS(this);
 
+        memcpy(pFile->fRawName, dirPtr, A2FileRDOS::kMaxFileName);
+        pFile->fRawName[A2FileRDOS::kMaxFileName] = '\0';
+
         memcpy(pFile->fFileName, dirPtr, A2FileRDOS::kMaxFileName);
         pFile->fFileName[A2FileRDOS::kMaxFileName] = '\0';
         pFile->FixFilename();

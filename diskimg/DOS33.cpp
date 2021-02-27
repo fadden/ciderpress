@@ -835,6 +835,9 @@ DIError DiskFSDOS33::ProcessCatalogSector(int catTrack, int catSect,
                 break;
             }
 
+            memcpy(pFile->fRawName, &pEntry[0x03], A2FileDOS::kMaxFileName);
+            pFile->fRawName[A2FileDOS::kMaxFileName] = '\0';
+
             memcpy(pFile->fFileName, &pEntry[0x03], A2FileDOS::kMaxFileName);
             pFile->fFileName[A2FileDOS::kMaxFileName] = '\0';
             pFile->FixFilename();
