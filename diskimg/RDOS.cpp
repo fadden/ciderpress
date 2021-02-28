@@ -530,7 +530,7 @@ DIError A2FileRDOS::Open(A2FileDescr** ppOpenFile, bool readOnly,
  * If a pointer to a size_t is passed in, it will be filled with the
  * raw filename length.
  */
-const char* A2FileRDOS::GetRawFileName(size_t* size = NULL) const {
+const char* A2FileRDOS::GetRawFileName(size_t* size) const {
     if (size) {
         *size = strlen(fRawFileName);
     }

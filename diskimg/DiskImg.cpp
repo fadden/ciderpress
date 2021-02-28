@@ -292,7 +292,7 @@ void DiskImg::SetCustomNibbleDescr(const NibbleDescr* pDescr)
     }
 }
 
-const char* DiskImg::GetRawFileName(size_t* size) const { // get unmodified file name
+const char* A2File::GetRawFileName(size_t* size) const { // get unmodified file name
     if (size) {
         *size = strlen(GetFileName());
     }

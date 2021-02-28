@@ -2877,7 +2877,7 @@ bail:
  * If a pointer to a size_t is passed in, it will be filled with the
  * raw filename length.
  */
-const char* A2FileDOS::GetRawFileName(size_t* size = NULL) const {
+const char* A2FileDOS::GetRawFileName(size_t* size) const {
     if (size) {
         *size = strlen(fRawFileName);
     }
