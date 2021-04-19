@@ -1444,6 +1444,7 @@ public:
      */
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fFileName; }
+    virtual const char* GetRawFileName(size_t* size = NULL) const override;
     virtual char GetFssep(void) const override { return '\0'; }
     virtual uint32_t GetFileType(void) const override;
     virtual uint32_t GetAuxType(void) const override { return fAuxType; }
@@ -1482,6 +1483,7 @@ private:
     short       fTSListSector;
     uint16_t    fLengthInSectors;
     bool        fLocked;
+    char        fRawFileName[kMaxFileName + 1]; // "raw" version
     char        fFileName[kMaxFileName+1];  // "fixed" version
     FileType    fFileType;
 
@@ -2493,6 +2495,7 @@ public:
      */
     virtual const char* GetFileName(void) const override { return fFileName; }
     virtual const char* GetPathName(void) const override { return fFileName; }
+    virtual const char* GetRawFileName(size_t* size = NULL) const override;
     virtual char GetFssep(void) const override { return '\0'; }
     virtual uint32_t GetFileType(void) const override;
     virtual uint32_t GetAuxType(void) const override { return fLoadAddr; }
@@ -2518,6 +2521,7 @@ public:
 
     /* fields pulled out of directory block */
     char            fFileName[kMaxFileName+1];
+    char            fRawFileName[kMaxFileName + 1];
     FileType        fFileType;
     uint16_t        fNumSectors;
     uint16_t        fLoadAddr;

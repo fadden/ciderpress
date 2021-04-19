@@ -1145,7 +1145,7 @@ DIError WrapperDiskCopy42::WriteHeader(GenericFD* pGFD, const DC42Header* pHeade
      * magic string.  To be safe, we only increment it if it starts with '-'.
      * (Need access to a Macintosh to test this.)
      */
-    hdrBuf[0] = strlen(pHeader->diskName);
+    hdrBuf[0] = (uint8_t) (strlen(pHeader->diskName) & 0xff);
     if (pHeader->diskName[0] == '-' && hdrBuf[0] < (kDC42NameLen-1))
         hdrBuf[0]++;
     memcpy(&hdrBuf[1], pHeader->diskName, hdrBuf[0]);
