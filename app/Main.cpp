@@ -311,6 +311,8 @@ BOOL MainWindow::PreCreateWindow(CREATESTRUCT& cs)
     BOOL res = CFrameWnd::PreCreateWindow(cs);
 
     cs.dwExStyle &= ~(WS_EX_CLIENTEDGE);
+    cs.cx = 1150;
+    cs.cy = 800;
 
     // This changes the window class name to a value that the installer can
     // detect.  This allows us to prevent installation while CiderPress is
