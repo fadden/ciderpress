@@ -119,7 +119,9 @@ private:
  */
 class Win32VolumeAccess {
 public:
-    Win32VolumeAccess(void) : fpBlockAccess(NULL)
+    Win32VolumeAccess(void) :
+        fTotalBlocks(-1),
+        fpBlockAccess(NULL)
     {}
     virtual ~Win32VolumeAccess(void) {
         if (fpBlockAccess != NULL) {
@@ -305,7 +307,11 @@ private:
      */
     class PhysicalBlockAccess : public BlockAccess {
     public:
-        PhysicalBlockAccess(void) : fHandle(NULL), fInt13Unit(-1) {}
+        PhysicalBlockAccess(void) :
+            fHandle(NULL),
+            fInt13Unit(-1),
+            fFloppyKind(kFloppyUnknown)
+            {}
         virtual ~PhysicalBlockAccess(void) {}
 
         virtual DIError Open(const WCHAR* deviceName, bool readOnly);

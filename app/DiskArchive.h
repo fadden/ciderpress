@@ -64,8 +64,14 @@ private:
  */
 class DiskArchive : public GenericArchive {
 public:
-    DiskArchive(void) : fpPrimaryDiskFS(NULL), fIsReadOnly(false),
-        fpAddDataHead(NULL), fpAddDataTail(NULL)
+    DiskArchive(void) :
+        fpPrimaryDiskFS(NULL),
+        fIsReadOnly(false),
+        fpAddDataHead(NULL),
+        fpAddDataTail(NULL),
+        fOverwriteExisting(false),
+        fOverwriteNoAsk(false),
+        fpXferTargetFS(NULL)
         {}
     virtual ~DiskArchive(void) { (void) Close(); }
 

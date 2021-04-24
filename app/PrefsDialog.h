@@ -23,11 +23,14 @@ public:
     PrefsGeneralPage(void) :
       CPropertyPage(IDD_PREF_GENERAL),
       fReady(false),
+      fColumn(),
       fMimicShrinkIt(FALSE),
       fBadMacSHK(FALSE),
       fReduceSHKErrorChecks(FALSE),
       fCoerceDOSFilenames(FALSE),
       fSpacesToUnder(FALSE),
+      fPasteJunkPaths(FALSE),
+      fBeepOnSuccess(FALSE),
       fDefaultsPushed(FALSE),
       fOurAssociations(NULL)
         {}
@@ -82,6 +85,7 @@ public:
       fReady(false),
       fQueryImageFormat(FALSE),
       fOpenVolumeRO(FALSE),
+      fOpenVolumePhys0(FALSE),
       fProDOSAllowLower(FALSE),
       fProDOSUseSparse(FALSE)
       {}
@@ -119,7 +123,9 @@ class PrefsCompressionPage : public CPropertyPage
 {
 public:
     PrefsCompressionPage(void) :
-      CPropertyPage(IDD_PREF_COMPRESSION), fReady(false)
+      CPropertyPage(IDD_PREF_COMPRESSION),
+      fReady(false),
+      fCompressType(-1)
       {}
 
     bool    fReady;
@@ -159,7 +165,39 @@ class PrefsFviewPage : public CPropertyPage
 {
 public:
     PrefsFviewPage(void) :
-      CPropertyPage(IDD_PREF_FVIEW), fReady(false)
+        CPropertyPage(IDD_PREF_FVIEW),
+        fReady(false),
+        fEOLConvRaw(FALSE),
+        fNoWrapText(FALSE),
+        fHighlightHexDump(FALSE),
+        fHighlightBASIC(FALSE),
+        fConvDisasmOneByteBrkCop(FALSE),
+        fConvMouseTextToASCII(FALSE),
+        fConvHiResBlackWhite(FALSE),
+        fConvDHRAlgorithm(-1),
+        fConvTextEOL_HA(FALSE),
+        fConvCPMText(FALSE),
+        fConvPascalText(FALSE),
+        fConvPascalCode(FALSE),
+        fConvApplesoft(FALSE),
+        fConvInteger(FALSE),
+        fConvBusiness(FALSE),
+        fConvGWP(FALSE),
+        fConvText8(FALSE),
+        fConvAWP(FALSE),
+        fConvADB(FALSE),
+        fConvASP(FALSE),
+        fConvSCAssem(FALSE),
+        fConvDisasm(FALSE),
+        fConvHiRes(FALSE),
+        fConvDHR(FALSE),
+        fConvSHR(FALSE),
+        fConvPrintShop(FALSE),
+        fConvMacPaint(FALSE),
+        fConvProDOSFolder(FALSE),
+        fConvResources(FALSE),
+        fRelaxGfxTypeCheck(FALSE),
+        fMaxViewFileSizeKB(0)
     {}
     bool    fReady;
 

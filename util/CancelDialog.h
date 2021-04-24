@@ -23,7 +23,7 @@
  */
 class CancelDialog : public ModelessDialog {
 public:
-    CancelDialog(void) {}
+    CancelDialog(void) : fpCancelFlag(NULL) {}
     virtual ~CancelDialog(void) {}
 
     BOOL Create(bool* pCancelFlag, int dialogID, CWnd* pParentWnd = NULL) {

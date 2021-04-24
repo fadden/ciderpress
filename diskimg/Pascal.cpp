@@ -535,7 +535,7 @@ DIError DiskFSPascal::Format(DiskImg* pDiskImg, const char* volName)
     PutShortLE(&blkBuf[0x00], 0);       // start block
     PutShortLE(&blkBuf[0x02], 6);       // next block
     PutShortLE(&blkBuf[0x04], 0);       // "file" type
-    blkBuf[0x06] = strlen(volName);
+    blkBuf[0x06] = (uint8_t)strlen(volName);
     memcpy(&blkBuf[0x07], volName, strlen(volName));
     PutShortLE(&blkBuf[0x0e], (uint16_t) pDiskImg->GetNumBlocks());
     PutShortLE(&blkBuf[0x10], 0);       // num files
@@ -1255,7 +1255,7 @@ DIError DiskFSPascal::RenameFile(A2File* pGenericFile, const char* newName)
         goto bail;
     }
 
-    pEntry[0x06] = strlen(normalName);
+    pEntry[0x06] = (uint8_t)strlen(normalName);
     memcpy(&pEntry[0x07], normalName, A2FilePascal::kMaxFileName);
     strcpy(pFile->fFileName, normalName);
 
@@ -1339,7 +1339,7 @@ DIError DiskFSPascal::RenameVolume(const char* newName)
     if (dierr != kDIErrNone)
         goto bail;
 
-    fDirectory[0x06] = strlen(normalName);
+    fDirectory[0x06] = (uint8_t)strlen(normalName);
     memcpy(&fDirectory[0x07], normalName, fDirectory[0x06]);
     strcpy(fVolumeName, normalName);
 

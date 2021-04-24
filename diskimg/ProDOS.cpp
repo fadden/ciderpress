@@ -1571,7 +1571,7 @@ DIError DiskFSProDOS::Format(DiskImg* pDiskImg, const char* volName)
 
     PutShortLE(&blkBuf[0x00], 0);
     PutShortLE(&blkBuf[0x02], kVolHeaderBlock+1);
-    blkBuf[0x04] = strlen(upperName) | (A2FileProDOS::kStorageVolumeDirHeader << 4);
+    blkBuf[0x04] = (uint8_t)(strlen(upperName) | (A2FileProDOS::kStorageVolumeDirHeader << 4));
     strncpy((char*) &blkBuf[0x05], upperName, A2FileProDOS::kMaxFileName);
     PutLongLE(&blkBuf[0x16], A2FileProDOS::ConvertProDate(now));
     PutShortLE(&blkBuf[0x1a], lcFlags);
@@ -2014,7 +2014,7 @@ DIError DiskFSProDOS::CreateFile(const CreateParms* pParms, A2File** ppNewFile)
      * are lower case.  (Some parts of the original may have been stomped
      * when the name was made unique, so we need to watch for that.)
      */
-    dirEntryPtr[0x00] = (pParms->storageType << 4) | strlen(upperName);
+    dirEntryPtr[0x00] = (uint8_t)((pParms->storageType << 4) | strlen(upperName));
     strncpy((char*) &dirEntryPtr[0x01], upperName, A2FileProDOS::kMaxFileName);
     if (pParms->fileType >= 0 && pParms->fileType <= 0xff)
         dirEntryPtr[0x10] = (uint8_t) pParms->fileType;
@@ -2270,7 +2270,7 @@ DIError DiskFSProDOS::AllocInitialFileStorage(const CreateParms* pParms,
         /* fill in directory header fields */
         // 0x00: prev, set to zero
         // 0x02: next, set to zero
-        blkBuf[0x04] = (A2FileProDOS::kStorageSubdirHeader << 4) | strlen(upperName);
+        blkBuf[0x04] = (uint8_t)((A2FileProDOS::kStorageSubdirHeader << 4) | strlen(upperName));
         strncpy((char*) &blkBuf[0x05], upperName, A2FileProDOS::kMaxFileName);
         blkBuf[0x14] = 0x76;    // 0x75 under old P8, 0x76 under GS/OS
         PutLongLE(&blkBuf[0x1c], A2FileProDOS::ConvertProDate(pParms->createWhen));
@@ -3511,7 +3511,7 @@ DIError DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
         dierr = kDIErrBadDirectory;
         goto bail;
     }
-    ptr[0x00] = (ptr[0x00] & 0xf0) | strlen(upperName);
+    ptr[0x00] = (uint8_t)((ptr[0x00] & 0xf0) | strlen(upperName));
     memcpy(&ptr[0x01], upperName, A2FileProDOS::kMaxFileName);
     PutShortLE(&ptr[0x1c], lcFlags);        // version/min_version
     if (isAW)
@@ -3526,7 +3526,7 @@ DIError DiskFSProDOS::RenameFile(A2File* pGenericFile, const char* newName)
             dierr = kDIErrBadDirectory;
             goto bail;
         }
-        ptr[0x00] = (ptr[0x00] & 0xf0) | strlen(upperName);
+        ptr[0x00] = (uint8_t)((ptr[0x00] & 0xf0) | strlen(upperName));
         memcpy(&ptr[0x01], upperName, A2FileProDOS::kMaxFileName);
         PutShortLE(&ptr[0x1c], lcFlags);        // version/min_version
     }
@@ -3777,7 +3777,7 @@ DIError DiskFSProDOS::RenameVolume(const char* newName)
         dierr = kDIErrBadDirectory;
         goto bail;
     }
-    ptr[0x00] = (ptr[0x00] & 0xf0) | strlen(upperName);
+    ptr[0x00] = (uint8_t)((ptr[0x00] & 0xf0) | strlen(upperName));
     memcpy(&ptr[0x01], upperName, A2FileProDOS::kMaxFileName);
     PutShortLE(&ptr[0x16], lcFlags);        // reserved fields
 

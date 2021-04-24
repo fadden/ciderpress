@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <sys/types.h>
 #include <assert.h>
 
 //#define EXCISE_GPL_CODE
@@ -1582,7 +1583,12 @@ private:
  */
 class DISKIMG_API A2FileDescr {
 public:
-    A2FileDescr(A2File* pFile) : fpFile(pFile), fProgressUpdateFunc(NULL) {}
+    A2FileDescr(A2File* pFile) :
+        fpFile(pFile),
+        fProgressUpdateFunc(NULL),
+        fProgressUpdateMax(0),
+        fProgressUpdateState(NULL)
+        {}
     virtual ~A2FileDescr(void) { fpFile = NULL; /*paranoia*/ }
 
     virtual DIError Read(void* buf, size_t len, size_t* pActual = NULL) = 0;

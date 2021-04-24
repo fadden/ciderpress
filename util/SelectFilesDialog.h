@@ -46,7 +46,8 @@ class SelectFilesDialog : public CFileDialog {
 public:
     SelectFilesDialog(const WCHAR* rctmpl, bool showHelp, CWnd* pParentWnd = NULL) :
         CFileDialog(true, NULL, NULL, OFN_HIDEREADONLY, NULL, pParentWnd,
-            0, FALSE /*disable Vista style*/)
+            0, FALSE /*disable Vista style*/),
+        fPrevWndProc(NULL)
     {
         // Set flags.  We specify ALLOWMULTISELECT but no filename buffer;
         // we want the multi-select behavior but we don't want to return

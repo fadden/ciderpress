@@ -28,14 +28,8 @@ public:
         kActionConvFile,
     } Action;
 
-    ActionProgressDialog(void) {
-        fAction = kActionUnknown;
-        //fpSelSet = NULL;
-        //fpOptionsDlg = NULL;
-        fCancel = false;
-        //fResult = 0;
-    }
-    virtual ~ActionProgressDialog(void) {}
+    ActionProgressDialog(void) : fAction(kActionUnknown), fCancel(false) { }
+    virtual ~ActionProgressDialog(void) { }
 
     BOOL Create(Action action, CWnd* pParentWnd = NULL) {
         fAction = action;

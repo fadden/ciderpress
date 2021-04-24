@@ -200,7 +200,16 @@ public:
     /*
      * Construct/destruct our object.
      */
-    ReformatHolder(void) {
+    ReformatHolder(void) :
+        fApplies(),
+        fFileType(0),
+        fAuxType(0),
+        fSourceFormat(kSourceFormatGeneric),
+        fNameExt(NULL),
+        fSourceBuf(),
+        fSourceLen(),
+        fErrorBuf()
+    {
         int i;
         for (int part = 0; part < kPartMAX; part++) {
             if (part == kPartUnknown)
@@ -216,10 +225,6 @@ public:
         }
         for (i = 0; i < kOptMAX; i++)
             fOption[i] = 0;
-
-        fFileType = fAuxType = 0;
-        fSourceFormat = kSourceFormatGeneric;
-        fNameExt = NULL;
     }
     ~ReformatHolder(void) {
         LOGI("In ~ReformatHolder");

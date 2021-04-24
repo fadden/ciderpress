@@ -459,7 +459,7 @@ CString MainWindow::CopyToCollection(GenericEntry* pEntry, void** pBuf,
     memset(&collEnt, 0x99, sizeof(collEnt));
     collEnt.signature = kEntrySignature;
     collEnt.dataOffset = sizeof(collEnt);
-    collEnt.fileNameLen = (wcslen(pEntry->GetPathNameUNI()) +1) * sizeof(WCHAR);
+    collEnt.fileNameLen = (uint16_t)((wcslen(pEntry->GetPathNameUNI()) +1) * sizeof(WCHAR));
     if (pEntry->GetRecordKind() == GenericEntry::kRecordKindDirectory) {
         collEnt.dataLen = collEnt.rsrcLen = collEnt.cmmtLen = 0;
     } else {

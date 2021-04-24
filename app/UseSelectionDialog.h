@@ -17,7 +17,13 @@
 class UseSelectionDialog : public CDialog {
 public:
     UseSelectionDialog(int selCount, CWnd* pParentWnd = NULL, int rsrcID = IDD_USE_SELECTION) :
-        CDialog(rsrcID, pParentWnd), fSelectedCount(selCount)
+        CDialog(rsrcID, pParentWnd),
+        fSelectedCount(selCount),
+        fTitleID(-1),
+        fOkLabelID(-1),
+        fSelCountID(-1),
+        fSelCountsID(-1),
+        fAllID(-1)
     {
         // init values; these should be overridden before DoModal
         fFilesToAction = 0;

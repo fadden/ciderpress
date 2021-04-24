@@ -1220,7 +1220,7 @@ void OuterZip::LocalFileHeader::SetFileName(const char* name)
     fFileNameLength = 0;
 
     if (name != NULL) {
-        fFileNameLength = strlen(name);
+        fFileNameLength = (uint16_t)strlen(name);
         fFileName = new uint8_t[fFileNameLength+1];
         if (fFileName == NULL) {
             LOGW("Malloc failure in SetFileName %u", fFileNameLength);
@@ -1388,7 +1388,7 @@ void OuterZip::CentralDirEntry::SetFileName(const char* name)
     fFileNameLength = 0;
 
     if (name != NULL) {
-        fFileNameLength = strlen(name);
+        fFileNameLength = (uint16_t)strlen(name);
         fFileName = new uint8_t[fFileNameLength+1];
         if (fFileName == NULL) {
             LOGI("Malloc failure in SetFileName %u", fFileNameLength);
