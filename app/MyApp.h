@@ -13,9 +13,9 @@
 
 /* CiderPress version numbers */
 #define kAppMajorVersion    4
-#define kAppMinorVersion    0
-#define kAppBugVersion      5
-#define kAppDevString       L""
+#define kAppMinorVersion    1
+#define kAppBugVersion      0
+#define kAppDevString       L"-d1"
 
 /*
  * Windows application object.
