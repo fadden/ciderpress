@@ -47,7 +47,6 @@ MyApp::MyApp() : CWinAppEx()
     LOGI("Leak detection enabled");
 #endif
 
-    //EnableLoadWindowPlacement(true);
     EnableHtmlHelp();
 }
 
