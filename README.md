@@ -71,16 +71,9 @@ is not acceptable, you can remove HFS disk image support from CiderPress
 Building the Sources
 --------------------
 
-The current version of CiderPress is targeted for Visual Studio 2013,
-using the WinXP compatibility Platform Toolset to allow installation on
-Windows XP systems.  You should be able to select Debug or Release and
-just build the entire thing.  The project files have been updated so
-that VS2015 Community Edition will accept them, but the new "universal CRT"
-causes problems with WinXP, so the build files still require the older
-set of tools.
-
-If you want to use the static analyzer, you will need to change the
-Platform Toolset to straight Visual Studio 2013.
+The current version of CiderPress is targeted for Visual Studio 2019
+Community Edition (i.e. the free version).  You should be able to select
+Debug or Release and just build the entire thing.
 
 A pre-compiled .CHM file, with the help text and pop-up messages,
 is provided.  The source files are all included, but generation of the
@@ -179,7 +172,7 @@ Files used when making a distribution, notably:
 
 - the DeployMaster configuration file
 - the license and README files that are included in the installer
-- redistributable Windows runtime libraries (only needed on WinXP?)
+- redistributable Windows runtime libraries
 - NiftyList data file
 
 
@@ -221,20 +214,16 @@ are expected to build on Linux, so converting them is a bit of a pain.  At
 some point it may be necessary to support Unicode fully.  v4.0 did a lot of
 code reorganization to make this easier, as did NufxLib v3.0.
 
-4. Windows XP support.  The default Visual Studio 2013 configuration creates
-executables that do not work in Windows XP.  CiderPress uses a compatibility
-toolset and packs about 5MB of additional DLLs (mfc120u.dll, msvcr120.dll) in
-the install package to keep things working.  Visual Studio 2015 shipped with a
-new "Universal CRT" that requires more effort and disk space.  At some point
-it may not be possible to support WinXP, or building for WinXP will prevent
-something from working.  The good news is that, for the current round of
-tools, it's possible to build a single binary that works fully on WinXP and
-later systems.
-
-5. Installer magic.  Security improvements and changes like the Win8 "Metro"
+4. Installer magic.  Security improvements and changes like the Win8 "Metro"
 launcher affect the way apps are installed and launched.  So far the only
 impact on CiderPress was to the file association handling (the stuff that
 allows you to double-click a file and have CiderPress open it), but it's
 likely that future OS changes will require matching app changes.  The use
 of DeployMaster is helpful here, as it has been kept up-to-date with changes
 in Windows.
+
+[ENDED] Windows XP support.  Starting with the Visual Studio 2013 tools,
+building an app that would work under WinXP required jumping through some
+hoops.  Microsoft's support for WinXP officially ended in April 2014.
+CiderPress continued to support WinXP for several years, but support has been
+dropped due to the added testing and maintenance burdens.
