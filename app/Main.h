@@ -54,7 +54,7 @@ public:
     /*
      * Override the pre-create function to tweak the window style.
      */
-    BOOL PreCreateWindow(CREATESTRUCT& cs) override;
+    virtual BOOL PreCreateWindow(CREATESTRUCT& cs) override;
 
     /*
      * Override GetClientRect so we can factor in the status and tool bars.
@@ -268,6 +268,7 @@ private:
 
     // Command handlers
     afx_msg int OnCreate(LPCREATESTRUCT lpcs);
+    afx_msg void OnClose();
     afx_msg LONG OnLateInit(UINT, LONG);
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnGetMinMaxInfo(MINMAXINFO* pMMI);
@@ -488,6 +489,14 @@ private:
      * Draw what looks like an empty client area.
      */
     void DrawEmptyClientArea(CDC* pDC, const CRect& clientRect);
+
+    /*
+     * Save/restore main window placement.  The restore function will move
+     * the window if the previous placement is no longer visible (e.g. a
+     * secondary monitor was removed).
+     */
+    void SaveWinPlacement();
+    void RestoreWinPlacement();
 
     /*
      * Extract a record to the temp folder and open it with a new instance of

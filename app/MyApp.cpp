@@ -64,6 +64,16 @@ MyApp::~MyApp(void)
 
 BOOL MyApp::InitInstance(void)
 {
+    // This causes functions like SetProfileInt to use the registry rather
+    // than a .INI file.  The registry key is "usually the name of a company".
+    // (Must do this before creating main window so we can restore the
+    // previous window position.)
+#ifdef CAN_UPDATE_FILE_ASSOC
+    SetRegistryKey(fRegistry.GetAppRegistryKey());
+#else
+    SetRegistryKey(L"faddenSoft");
+#endif
+
     // Create the main window.
     m_pMainWnd = new MainWindow;
     m_pMainWnd->ShowWindow(m_nCmdShow);
@@ -91,14 +101,6 @@ BOOL MyApp::InitInstance(void)
     LogModuleLocation(L"riched20.dll");
     LogModuleLocation(L"riched32.dll");
     LogModuleLocation(L"msftedit.dll");
-
-    // This causes functions like SetProfileInt to use the registry rather
-    // than a .INI file.  The registry key is "usually the name of a company".
-#ifdef CAN_UPDATE_FILE_ASSOC
-    SetRegistryKey(fRegistry.GetAppRegistryKey());
-#else
-    SetRegistryKey(L"faddenSoft");
-#endif
 
     //LOGI("Registry key is '%ls'", m_pszRegistryKey);
     //LOGI("Profile name is '%ls'", m_pszProfileName);

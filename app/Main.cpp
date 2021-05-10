@@ -133,6 +133,7 @@ static const UINT gFindReplaceID = RegisterWindowMessage(FINDMSGSTRING);
 
 BEGIN_MESSAGE_MAP(MainWindow, CFrameWnd)
     ON_WM_CREATE()
+    ON_WM_CLOSE()
     ON_MESSAGE(WMU_LATE_INIT, OnLateInit)
     //ON_MESSAGE(WMU_CLOSE_MAIN_DIALOG, OnCloseMainDialog)
     ON_WM_SIZE()
@@ -304,6 +305,12 @@ MainWindow::~MainWindow()
 
     fPreferences.SaveToRegistry();
     LOGI("MainWindow destructor complete");
+}
+
+void MainWindow::OnClose()
+{
+    SaveWinPlacement();
+    CFrameWnd::OnClose();
 }
 
 BOOL MainWindow::PreCreateWindow(CREATESTRUCT& cs)
@@ -562,6 +569,8 @@ int MainWindow::OnCreate(LPCREATESTRUCT lpcs)
     //fStatusBar.SetPaneInfo(0, ID_SEPARATOR, SBPS_NOBORDERS | SBPS_STRETCH, 0);
 
     fStatusBar.SetPaneText(kProgressPane, L"");
+
+    RestoreWinPlacement();
 
     return 0;
 }
@@ -1888,6 +1897,82 @@ void MainWindow::EventPause(int duration)
  *      Support functions
  * ===================================
  */
+
+static const WCHAR kMainWinSection[] = L"mainwin";
+static const WCHAR kMainWin_Left[] = L"left";
+static const WCHAR kMainWin_Top[] = L"top";
+static const WCHAR kMainWin_Right[] = L"right";
+static const WCHAR kMainWin_Bottom[] = L"bottom";
+static const WCHAR kMainWin_Cmd[] = L"cmd";
+
+void MainWindow::SaveWinPlacement()
+{
+    // Capture the current window position.  At the point where the destructor
+    // fires, too much has been shut down, so we need to do it here.
+    WINDOWPLACEMENT wndpl;
+    wndpl.length = sizeof(wndpl);
+    if (!GetWindowPlacement(&wndpl)) {
+        LOGW("Unable to get window placement");
+        return;
+    }
+
+    LOGD("Window is at ltrb=%ld,%ld %ldx%ld showCmd=%d",
+        wndpl.rcNormalPosition.left,
+        wndpl.rcNormalPosition.top,
+        wndpl.rcNormalPosition.right - wndpl.rcNormalPosition.left,
+        wndpl.rcNormalPosition.bottom - wndpl.rcNormalPosition.top,
+        wndpl.showCmd);
+    gMyApp.WriteProfileInt(kMainWinSection,
+        kMainWin_Left, wndpl.rcNormalPosition.left);
+    gMyApp.WriteProfileInt(kMainWinSection,
+        kMainWin_Top, wndpl.rcNormalPosition.top);
+    gMyApp.WriteProfileInt(kMainWinSection,
+        kMainWin_Right, wndpl.rcNormalPosition.right);
+    gMyApp.WriteProfileInt(kMainWinSection,
+        kMainWin_Bottom, wndpl.rcNormalPosition.bottom);
+    gMyApp.WriteProfileInt(kMainWinSection,
+        kMainWin_Cmd, wndpl.showCmd);
+}
+
+void MainWindow::RestoreWinPlacement()
+{
+    RECT normPos;
+    normPos.left = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Left, -1);
+    normPos.top = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Top, -1);
+    normPos.right = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Right, -1);
+    normPos.bottom = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Bottom, -1);
+    int cmd = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Cmd, -1);
+
+    if (normPos.left < 0 || normPos.top < 0 || normPos.right < 0 ||
+            normPos.bottom < 0 || cmd < 0) {
+        LOGI("Previous window placement not found.");
+        return;
+    }
+
+    POINT nopt;
+    nopt.x = nopt.y = -1;
+
+    // We need to set the placement for "normal", and then deal with
+    // maximized windows by having the MyApp ShowWindow() call pass the
+    // appropriate command.  If we pass the correct normal rect here with
+    // the "maximized" command, we end up with a non-maximized window of
+    // maximum size.  (If done correctly, you can maximize, quit, restart,
+    // and un-maximize back to the original size.)
+    WINDOWPLACEMENT wndpl;
+    wndpl.length = sizeof(wndpl);
+    wndpl.flags = 0;
+    wndpl.showCmd = SW_SHOWNORMAL;
+    wndpl.ptMinPosition = nopt;
+    wndpl.ptMaxPosition = nopt;
+    wndpl.rcNormalPosition = normPos;
+
+    LOGD("Restoring previous placement, cmd=%d", wndpl.showCmd);
+    SetWindowPlacement(&wndpl);
+
+    // Stomp on MyApp's show command.  We don't want to start minimized,
+    // so switch to "normal" if that's set.
+    gMyApp.m_nCmdShow = (cmd == SW_SHOWMINIMIZED ? SW_SHOWNORMAL : cmd);
+}
 
 void MainWindow::DrawEmptyClientArea(CDC* pDC, const CRect& clientRect)
 {
