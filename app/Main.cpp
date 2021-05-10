@@ -1936,15 +1936,17 @@ void MainWindow::SaveWinPlacement()
 
 void MainWindow::RestoreWinPlacement()
 {
-    RECT normPos;
-    normPos.left = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Left, -1);
-    normPos.top = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Top, -1);
-    normPos.right = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Right, -1);
-    normPos.bottom = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Bottom, -1);
-    int cmd = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Cmd, -1);
+    const int kNoVal = -32000;
 
-    if (normPos.left < 0 || normPos.top < 0 || normPos.right < 0 ||
-            normPos.bottom < 0 || cmd < 0) {
+    RECT normPos;
+    normPos.left = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Left, kNoVal);
+    normPos.top = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Top, kNoVal);
+    normPos.right = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Right, kNoVal);
+    normPos.bottom = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Bottom, kNoVal);
+    int cmd = gMyApp.GetProfileInt(kMainWinSection, kMainWin_Cmd, kNoVal);
+
+    if (normPos.left == kNoVal || normPos.top == kNoVal ||
+            normPos.right == kNoVal || normPos.bottom == kNoVal || cmd == kNoVal) {
         LOGI("Previous window placement not found.");
         return;
     }
