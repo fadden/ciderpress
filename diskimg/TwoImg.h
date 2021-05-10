@@ -30,7 +30,27 @@ namespace DiskImgLib {
  */
 class DISKIMG_API TwoImgHeader {
 public:
-    TwoImgHeader(void) : fDOSVolumeNum(-1), fComment(NULL), fCreatorChunk(NULL)
+    TwoImgHeader(void) :
+        fMagic(0),
+        fCreator(0),
+        fHeaderLen(0),
+        fVersion(0),
+        fImageFormat(0),
+        fFlags(0),
+        fNumBlocks(0),
+        fDataOffset(0),
+        fDataLen(0),
+        fCmtOffset(0),
+        fCmtLen(0),
+        fCreatorOffset(0),
+        fCreatorLen(0),
+        fSpare(),
+
+        fDOSVolumeNum(-1),
+        fMagicStr(),
+        fCreatorStr(),
+        fComment(NULL),
+        fCreatorChunk(NULL)
     {}
     virtual ~TwoImgHeader(void) {
         delete[] fComment;

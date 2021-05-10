@@ -630,7 +630,7 @@ private:
 
 class WrapperFDI : public ImageWrapper {
 public:
-    WrapperFDI(void) {}
+    WrapperFDI(void) : fHeaderBuf(), fImageTracks(0), fStorageName(NULL) {}
     virtual ~WrapperFDI(void) {}
 
     static DIError Test(GenericFD* pGFD, di_off_t wrappedLength);
@@ -1213,10 +1213,21 @@ class A2FileDOS;
  */
 class DISKIMG_API DiskFSDOS33 : public DiskFS {
 public:
-    DiskFSDOS33(void) : DiskFS() {
-        fVTOCLoaded = false;
-        fDiskIsGood = false;
-    }
+    DiskFSDOS33(void) :
+        DiskFS(),
+        fFirstCatTrack(0),
+        fFirstCatSector(0),
+        fVTOCVolumeNumber(0),
+        fVTOCNumTracks(0),
+        fVTOCNumSectors(0),
+        fDiskVolumeNum(0),
+        fDiskVolumeName(),
+        fDiskVolumeID(),
+        fVTOC(),
+        fVTOCLoaded(false),
+        fCatalogSectors(),
+        fDiskIsGood(false)
+    {}
     virtual ~DiskFSDOS33(void) {}
 
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
@@ -1259,7 +1270,7 @@ public:
 
     // utility function
     static void LowerASCII(uint8_t* buf, long len);
-    static void ReplaceFssep(char* str, char replacement);
+    //static void ReplaceFssep(char* str, char replacement);
 
     enum {
         kMinTracks = 17,            // need to put the catalog track here
@@ -1360,12 +1371,17 @@ private:
  */
 class DISKIMG_API A2FDDOS : public A2FileDescr {
 public:
-    A2FDDOS(A2File* pFile) : A2FileDescr(pFile) {
-        fTSList = NULL;
-        fIndexList = NULL;
-        fOffset = 0;
-        fModified = false;
-    }
+    A2FDDOS(A2File* pFile) :
+        A2FileDescr(pFile),
+        fTSList(NULL),
+        fTSCount(0),
+        fIndexList(NULL),
+        fIndexCount(0),
+        fOffset(0),
+        fOpenEOF(0),
+        fOpenSectorsUsed(0),
+        fModified(false)
+    {}
     virtual ~A2FDDOS(void) {
         delete[] fTSList;
         delete[] fIndexList;
@@ -1538,8 +1554,19 @@ class A2FileProDOS;
  */
 class DISKIMG_API DiskFSProDOS : public DiskFS {
 public:
-    DiskFSProDOS(void) : fBitMapPointer(0), fTotalBlocks(0), fBlockUseMap(NULL)
-        {}
+    DiskFSProDOS(void) :
+        fVolumeName(),
+        fVolumeID(),
+        fAccess(0),
+        fCreateWhen(0),
+        fModWhen(0),
+        fBitMapPointer(0),
+        fTotalBlocks(0),
+        fVolDirFileCount(0),
+        fBlockUseMap(NULL),
+        fDiskIsGood(false),
+        fEarlyDamage(false)
+    {}
     virtual ~DiskFSProDOS(void) {
         if (fBlockUseMap != NULL) {
             assert(false);  // unexpected
@@ -1700,8 +1727,16 @@ private:
  */
 class DISKIMG_API A2FDProDOS : public A2FileDescr {
 public:
-    A2FDProDOS(A2File* pFile) : A2FileDescr(pFile), fModified(false),
-        fBlockList(NULL), fOffset(0)
+    A2FDProDOS(A2File* pFile) :
+        A2FileDescr(pFile),
+        fModified(false),
+        fBlockCount(0),
+        fBlockList(NULL),
+        fOpenEOF(0),
+        fOpenBlocksUsed(0),
+        fOpenStorageType(0),
+        fOpenRsrcFork(false),
+        fOffset(0)
     {}
     virtual ~A2FDProDOS(void) {
         delete[] fBlockList;
@@ -1745,14 +1780,16 @@ private:
  */
 class DISKIMG_API A2FileProDOS : public A2File {
 public:
-    A2FileProDOS(DiskFS* pDiskFS) : A2File(pDiskFS) {
-        fPathName = NULL;
-        fSparseDataEof = fSparseRsrcEof = -1;
-        fpOpenFile = NULL;
-        fParentDirBlock = 0;
-        fParentDirIdx = -1;
-        fpParent = NULL;
-    }
+    A2FileProDOS(DiskFS* pDiskFS) :
+        A2File(pDiskFS),
+        fParentDirBlock(0),
+        fParentDirIdx(0),
+        fSparseDataEof(0),
+        fSparseRsrcEof(0),
+        fPathName(NULL),
+        fpOpenFile(NULL),
+        fpParent(NULL)
+    {}
     virtual ~A2FileProDOS(void) {
         delete fpOpenFile;
         delete[] fPathName;
@@ -1952,7 +1989,21 @@ class A2FilePascal;
 
 class DISKIMG_API DiskFSPascal : public DiskFS {
 public:
-    DiskFSPascal(void) : fDirectory(NULL) {}
+    DiskFSPascal(void) :
+        fStartBlock(0),
+        fNextBlock(0),
+        fVolumeName(),
+        fVolumeID(),
+        fTotalBlocks(0),
+        fNumFiles(0),
+        fAccessWhen(0),
+        fDateSetWhen(0),
+        fStuff1(0),
+        fStuff2(0),
+        fDiskIsGood(false),
+        fEarlyDamage(false),
+        fDirectory(NULL)
+    {}
     virtual ~DiskFSPascal(void) {
         if (fDirectory != NULL) {
             assert(false);      // unexpected
@@ -2054,9 +2105,13 @@ private:
  */
 class DISKIMG_API A2FDPascal : public A2FileDescr {
 public:
-    A2FDPascal(A2File* pFile) : A2FileDescr(pFile) {
-        fOffset = 0;
-    }
+    A2FDPascal(A2File* pFile) :
+        A2FileDescr(pFile),
+        fOffset(0),
+        fOpenEOF(0),
+        fOpenBlocksUsed(0),
+        fModified(0)
+    {}
     virtual ~A2FDPascal(void) {
         /* nothing to clean up */
     }
@@ -2088,9 +2143,17 @@ private:
  */
 class DISKIMG_API A2FilePascal : public A2File {
 public:
-    A2FilePascal(DiskFS* pDiskFS) : A2File(pDiskFS) {
-        fpOpenFile = NULL;
-    }
+    A2FilePascal(DiskFS* pDiskFS) :
+        A2File(pDiskFS),
+        fStartBlock(0),
+        fNextBlock(0),
+        fFileType(A2FilePascal::FileType::kTypeUntyped),
+        fFileName(),
+        fBytesRemaining(0),
+        fModWhen(0),
+        fLength(0),
+        fpOpenFile(NULL)
+    {}
     virtual ~A2FilePascal(void) {
         /* this comes back and calls CloseDescr */
         if (fpOpenFile != NULL)
@@ -2188,7 +2251,7 @@ private:
 class A2FileCPM;
 class DISKIMG_API DiskFSCPM : public DiskFS {
 public:
-    DiskFSCPM(void) : fDiskIsGood(false) {}
+    DiskFSCPM(void) : fDirEntry(), fDiskIsGood(false) {}
     virtual ~DiskFSCPM(void) {}
 
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
@@ -2272,10 +2335,12 @@ private:
  */
 class DISKIMG_API A2FDCPM : public A2FileDescr {
 public:
-    A2FDCPM(A2File* pFile) : A2FileDescr(pFile) {
-        //fOpen = false;
-        fBlockList = NULL;
-    }
+    A2FDCPM(A2File* pFile) :
+        A2FileDescr(pFile),
+        fOffset(0),
+        fBlockCount(0),
+        fBlockList(NULL)
+    {}
     virtual ~A2FDCPM(void) {
         delete fBlockList;
         fBlockList = NULL;
@@ -2311,7 +2376,13 @@ public:
     typedef DiskFSCPM::DirEntry DirEntry;
 
     A2FileCPM(DiskFS* pDiskFS, DirEntry* pDirEntry) :
-        A2File(pDiskFS), fpDirEntry(pDirEntry)
+        A2File(pDiskFS),
+        fFileName(),
+        fReadOnly(false),
+        fLength(0),
+        fDirIdx(0),
+        fpDirEntry(pDirEntry),
+        fpOpenFile(NULL)
     {
         fDirIdx = -1;
         fpOpenFile = NULL;
@@ -2392,7 +2463,7 @@ private:
 class A2FileRDOS;
 class DISKIMG_API DiskFSRDOS : public DiskFS {
 public:
-    DiskFSRDOS(void) {}
+    DiskFSRDOS(void) : fVolumeName(), fOurSectPerTrack(0) {}
     virtual ~DiskFSRDOS(void) {}
 
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
@@ -2471,10 +2542,17 @@ private:
  */
 class DISKIMG_API A2FileRDOS : public A2File {
 public:
-    A2FileRDOS(DiskFS* pDiskFS) : A2File(pDiskFS) {
-        //fOpen = false;
-        fpOpenFile = NULL;
-    }
+    A2FileRDOS(DiskFS* pDiskFS) :
+        A2File(pDiskFS),
+        fFileName(),
+        fRawFileName(),
+        fFileType(A2FileRDOS::FileType::kTypeUnknown),
+        fNumSectors(0),
+        fLoadAddr(0),
+        fLength(0),
+        fStartSector(0),
+        fpOpenFile(NULL)
+    {}
     virtual ~A2FileRDOS(void) {
         delete fpOpenFile;
     }
@@ -2547,9 +2625,19 @@ private:
 class A2FileHFS;
 class DISKIMG_API DiskFSHFS : public DiskFS {
 public:
-    DiskFSHFS(void) {
-        fLocalTimeOffset = -1;
-        fDiskIsGood = true;
+    DiskFSHFS(void) :
+        fVolumeName(),
+        fVolumeID(),
+        fTotalBlocks(0),
+        fAllocationBlockSize(0),
+        fNumAllocationBlocks(0),
+        fCreatedDateTime(0),
+        fModifiedDateTime(0),
+        fNumFiles(0),
+        fNumDirectories(0),
+        fLocalTimeOffset(-1),
+        fDiskIsGood(true)
+    {
 #ifndef EXCISE_GPL_CODE
         fHfsVol = NULL;
 #endif
@@ -2722,12 +2810,25 @@ private:
  */
 class DISKIMG_API A2FileHFS : public A2File {
 public:
-    A2FileHFS(DiskFS* pDiskFS) : A2File(pDiskFS) {
-        fPathName = NULL;
-        fpOpenFile = NULL;
+    A2FileHFS(DiskFS* pDiskFS) :
+        A2File(pDiskFS),
+        fIsDir(false),
+        fIsVolumeDir(false),
+        fType(0),
+        fCreator(0),
+        fFileName(),
+        fPathName(NULL),
+        fDataLength(0),
+        fRsrcLength(0),
+        fCreateWhen(0),
+        fModWhen(0),
+        fAccess(0),
+        fpOpenFile(NULL)
+    {
 #ifdef EXCISE_GPL_CODE
         fFakeFileBuf = NULL;
 #else
+        fpParent = NULL;
         //fOrigPathName = NULL;
 #endif
     }
@@ -2833,10 +2934,19 @@ class A2FileGutenberg;
  */
 class DISKIMG_API DiskFSGutenberg : public DiskFS {
 public:
-    DiskFSGutenberg(void) : DiskFS() {
-        fVTOCLoaded = false;
-        fDiskIsGood = false;
-    }
+    DiskFSGutenberg(void) : DiskFS(),
+        fFirstCatTrack(0),
+        fFirstCatSector(0),
+        fVTOCVolumeNumber(0),
+        fVTOCNumTracks(0),
+        fVTOCNumSectors(0),
+        fDiskVolumeName(),
+        fDiskVolumeID(),
+        fVTOC(),
+        fVTOCLoaded(false),
+        fCatalogSectors(),
+        fDiskIsGood(false)
+    {}
     virtual ~DiskFSGutenberg(void) {}
 
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
@@ -2857,12 +2967,12 @@ public:
     virtual DIError GetFreeSpaceCount(long* pTotalUnits, long* pFreeUnits,
         int* pUnitSize) const override;
 
-    static bool IsValidFileName(const char* name);
-    static bool IsValidVolumeName(const char* name);
+    //static bool IsValidFileName(const char* name);
+    //static bool IsValidVolumeName(const char* name);
 
     // utility function
     static void LowerASCII(uint8_t* buf, long len);
-    static void ReplaceFssep(char* str, char replacement);
+    //static void ReplaceFssep(char* str, char replacement);
 
     enum {
         kMinTracks = 17,            // need to put the catalog track here
@@ -2880,42 +2990,12 @@ public:
 
 private:
     DIError Initialize(InitMode initMode);
-    DIError ReadVTOC(void);
-    void UpdateVolumeNum(void);
-    void DumpVTOC(void);
-    void SetSectorUsage(long track, long sector,
-        VolumeUsage::ChunkPurpose purpose);
-    void FixVolumeUsageMap(void);
     DIError ReadCatalog(void);
     DIError ProcessCatalogSector(int catTrack, int catSect,
         const uint8_t* sctBuf);
     DIError GetFileLengths(void);
-    DIError ComputeLength(A2FileGutenberg* pFile, const TrackSector* tsList,
-        int tsCount);
-    DIError TrimLastSectorUp(A2FileGutenberg* pFile, TrackSector lastTS);
-    void MarkFileUsage(A2FileGutenberg* pFile, TrackSector* tsList, int tsCount,
-        TrackSector* indexList, int indexCount);
-    DIError MakeFileNameUnique(char* fileName);
-    DIError GetFreeCatalogEntry(TrackSector* pCatSect, int* pCatEntry,
-        uint8_t* sctBuf, A2FileGutenberg** ppPrevEntry);
-    void CreateDirEntry(uint8_t* sctBuf, int catEntry,
-        const char* fileName, TrackSector* pTSSect, uint8_t fileType,
-        int access);
-    void FreeTrackSectors(TrackSector* pList, int count);
 
     bool CheckDiskIsGood(void);
-
-    DIError WriteDOSTracks(int sectPerTrack);
-
-    DIError ScanVolBitmap(void);
-    DIError LoadVolBitmap(void);
-    DIError SaveVolBitmap(void);
-    void FreeVolBitmap(void);
-    DIError AllocSector(TrackSector* pTS);
-    DIError CreateEmptyBlockMap(bool withDOS);
-    bool GetSectorUseEntry(long track, int sector) const;
-    void SetSectorUseEntry(long track, int sector, bool inUse);
-    inline uint32_t GetVTOCEntry(const uint8_t* pVTOC, long track) const;
 
     // Largest interesting volume is 400K (50 tracks, 32 sectors), but
     // we may be looking at it in 16-sector mode, so max tracks is 100.
@@ -2936,7 +3016,7 @@ private:
     /* private data */
     char    fDiskVolumeName[10];        // 
     char    fDiskVolumeID[11+12+1];     // sizeof "Gutenberg: " + 12 + null
-    uint8_t   fVTOC[kSectorSize];
+    uint8_t fVTOC[kSectorSize];
     bool    fVTOCLoaded;
 
     /*
@@ -2955,12 +3035,15 @@ private:
  */
 class DISKIMG_API A2FDGutenberg : public A2FileDescr {
 public:
-    A2FDGutenberg(A2File* pFile) : A2FileDescr(pFile) {
-        fOffset = 0;
-        fModified = false;
-    }
-    virtual ~A2FDGutenberg(void) {
-    }
+    A2FDGutenberg(A2File* pFile) :
+        A2FileDescr(pFile),
+        fTSCount(0),
+        fOffset(0),
+        fOpenEOF(0),
+        fOpenSectorsUsed(0),
+        fModified(false)
+    {}
+    virtual ~A2FDGutenberg(void) {}
 
     friend class A2FileGutenberg;
 
@@ -3060,16 +3143,11 @@ public:
 
     void FixFilename(void);
 
-    static FileType ConvertFileType(long prodosType, di_off_t fileLen);
-    static bool IsValidType(long prodosType);
     static void MakeDOSName(char* buf, const char* name);
     static void TrimTrailingSpaces(char* filename);
 
 private:
-    DIError ExtractTSPairs(const uint8_t* sctBuf, TrackSector* tsList,
-        int* pLastNonZero);
-
-    A2FDGutenberg*      fpOpenFile;
+    A2FDGutenberg*  fpOpenFile;
 };
 
 
@@ -3088,7 +3166,11 @@ private:
 class A2FileFAT;
 class DISKIMG_API DiskFSFAT : public DiskFS {
 public:
-    DiskFSFAT(void) {}
+    DiskFSFAT(void) :
+        fVolumeName(),
+        fVolumeID(),
+        fTotalBlocks(0)
+    {}
     virtual ~DiskFSFAT(void) {}
 
     static DIError TestFS(DiskImg* pImg, DiskImg::SectorOrder* pOrder,
@@ -3173,11 +3255,13 @@ private:
  */
 class DISKIMG_API A2FileFAT : public A2File {
 public:
-    A2FileFAT(DiskFS* pDiskFS) : A2File(pDiskFS) {
-        fFakeFileBuf = NULL;
-        //fFakeFileLen = -1;
-        fpOpenFile = NULL;
-    }
+    A2FileFAT(DiskFS* pDiskFS) :
+        A2File(pDiskFS),
+        fFileName(),
+        fLength(0),
+        fFakeFileBuf(NULL),
+        fpOpenFile(NULL)
+    {}
     virtual ~A2FileFAT(void) {
         delete fpOpenFile;
         delete[] fFakeFileBuf;

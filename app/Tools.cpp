@@ -1787,7 +1787,7 @@ long MainWindow::SSTGetBufOffset(int track)
     return offset;
 }
 
-long MainWindow::SSTCountBadBytes(const unsigned char* sctBuf, int count)
+long MainWindow::SSTCountBadBytes(const uint8_t* sctBuf, int count)
 {
     long badCount = 0;
     unsigned char uch;
@@ -1802,7 +1802,7 @@ long MainWindow::SSTCountBadBytes(const unsigned char* sctBuf, int count)
     return badCount;
 }
 
-void MainWindow::SSTProcessTrackData(unsigned char* trackBuf)
+void MainWindow::SSTProcessTrackData(uint8_t* trackBuf)
 {
     unsigned char* trackPtr;
     int track;
@@ -1812,7 +1812,7 @@ void MainWindow::SSTProcessTrackData(unsigned char* trackBuf)
     {
         bool inRun;
         int start, longestStart;
-        int count7f, longest = -1;
+        int count7f = 0, longest = -1;
         int i;
 
         inRun = false;

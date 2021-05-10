@@ -1798,8 +1798,8 @@ bail:
 
 DIError DiskArchive::AddForksToDisk(DiskFS* pDiskFS,
     const DiskFS::CreateParms* pParms,
-    const unsigned char* dataBuf, long dataLen,
-    const unsigned char* rsrcBuf, long rsrcLen) const
+    const uint8_t* dataBuf, long dataLen,
+    const uint8_t* rsrcBuf, long rsrcLen) const
 {
     DIError dierr = kDIErrNone;
     const int kFileTypeBIN = 0x06;

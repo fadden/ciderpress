@@ -211,6 +211,10 @@ DiskImg::DiskImg(void)
     fNumBlocks = -1;
 
     fpScanProgressCallback = NULL;
+    fScanProgressCookie = NULL;
+    fScanCount = 0;
+    fScanMsg[0] = '\0';
+    fScanLastMsgWhen = 0;
 
     /*
      * Create a working copy of the nibble descr table.  We want to leave

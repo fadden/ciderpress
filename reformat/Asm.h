@@ -20,7 +20,7 @@
  */
 class ReformatAsm : public ReformatText {
 public:
-    ReformatAsm(void) {}
+    ReformatAsm(void) : fOutBuf(), fOutBufIndex(0) {}
     virtual ~ReformatAsm(void) {}
 
     void OutputStart(void) {
@@ -129,7 +129,7 @@ private:
  */
 class ReformatLISA3 : public ReformatAsm {
 public:
-    ReformatLISA3(void) : fSymTab(NULL) {}
+    ReformatLISA3(void) : fSymTab(NULL), fSymCount(0) {}
     virtual ~ReformatLISA3(void) {}
 
     virtual void Examine(ReformatHolder* pHolder) override;
@@ -197,7 +197,14 @@ private:
  */
 class ReformatLISA4 : public ReformatAsm {
 public:
-    ReformatLISA4(void) : fSymTab(NULL) {}
+    ReformatLISA4(void) :
+        fSymTab(NULL),
+        fSymCount(0),
+        fOpTab(0),
+        fAdTab(0),
+        fComTab(0),
+        fCpuType(0)
+    {}
     virtual ~ReformatLISA4(void) { delete[] fSymTab; }
 
     virtual void Examine(ReformatHolder* pHolder) override;

@@ -71,8 +71,8 @@ public:
     void ApplyNow(PrefsSheet*);
 
     // get the text of the next file in the selection list
-    int GetPrevFileText(ReformatHolder* pHolder, CString* pTitle);
-    int GetNextFileText(ReformatHolder* pHolder, CString* pTitle);
+    //int GetPrevFileText(ReformatHolder* pHolder, CString* pTitle);
+    //int GetNextFileText(ReformatHolder* pHolder, CString* pTitle);
 
     // update the progress meter
     void SetProgressBegin(void);
@@ -607,7 +607,7 @@ private:
      */
     void HandleView(void);
 
-    void DeleteFileOnExit(const WCHAR* name);
+    //void DeleteFileOnExit(const WCHAR* name);
 
     /*
      * Close and re-open the current archive.

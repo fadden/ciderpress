@@ -17,7 +17,12 @@
 class EOLScanDialog : public CDialog {
 public:
     EOLScanDialog(CWnd* pParentWnd = NULL) :
-        CDialog(IDD_EOLSCAN, pParentWnd)
+        CDialog(IDD_EOLSCAN, pParentWnd),
+        fCountChars(0),
+        fCountCR(0),
+        fCountLF(0),
+        fCountCRLF(0),
+        fCountHighASCII(0)
         {}
     virtual ~EOLScanDialog(void) {}
 

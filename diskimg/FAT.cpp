@@ -337,6 +337,7 @@ void DiskFSFAT::CreateFakeFile(void)
         fVolumeName,
         capacity,
         (double) capacity / 2048.0);
+    buf[sizeof(buf) - 1] = '\0';
 
     pFile = new A2FileFAT(this);
     pFile->SetFakeFile(buf, strlen(buf));

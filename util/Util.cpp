@@ -362,7 +362,7 @@ void CreateSimpleFont(CFont* pFont, CWnd* pWnd, const WCHAR* typeFace,
 void GetWin32ErrorString(DWORD err, CString* pStr)
 {
     DWORD count;
-    LPVOID lpMsgBuf;
+    LPVOID lpMsgBuf = NULL;
 
     count = FormatMessage( 
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -486,6 +486,7 @@ void LogHexDump(const void* vbuf, long len)
             cp = outBuf + strlen(outBuf);
         }
 
+        ASSERT(cp != NULL);
         sprintf(cp, "%02x ", *buf++);
         cp += 3;
     }

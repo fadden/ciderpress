@@ -1472,13 +1472,15 @@ public:
      * The filename returned is defined to be null-terminated Mac OS Roman.
      * For most filesystems this is automatic, as filenames are restricted
      * to ASCII, but for DOS 3.3 it requires stripping high bits.  It also
-     * means that embedded nulls in HFS filenames (which are discouraged but
-     * allowed) will be lost.
+     * means that embedded nulls will be lost.  (Some HFS references indicate
+     * that '\0' is allowed, but I think people assume that because the API
+     * uses a string with an explicit length.  Looking at "Inside Mac: Files"
+     * chapter 2, page 2-71, HFS filenames are stored in a fixed 31-byte
+     * field that is padded with zeroes, so embedded nulls are impossible.)
      *
-     * The original unmodified filename is availale through GetRawFileName,
+     * The original unmodified filename is available through GetRawFileName,
      * which can be optionally passed a size_t pointer to get the size
-     * of the raw file name, which is helpful for getting a HFS filename with
-     * embedded nulls.
+     * of the raw file name, in case it has embedded nulls.
      * 
      * We do guarantee that the contents of subdirectories are grouped
      * together.  This makes it much easier to construct a hierarchy out of

@@ -186,11 +186,11 @@ private:
 class SectorEditDialog : public DiskEditDialog {
 public:
     SectorEditDialog(CWnd* pParentWnd = NULL) :
-        DiskEditDialog(IDD_DISKEDIT, pParentWnd)
-    {
-        fTrack = 0;
-        fSector = 0;
-    }
+        DiskEditDialog(IDD_DISKEDIT, pParentWnd),
+        fTrack(0),
+        fSector(0),
+        fSectorData()
+    { }
     virtual ~SectorEditDialog() {}
 
     virtual int LoadData(void) override;    // load the current track/sector
@@ -234,11 +234,15 @@ protected:
 class SectorFileEditDialog : public SectorEditDialog {
 public:
     SectorFileEditDialog(SectorEditDialog* pSectEdit, CWnd* pParentWnd = NULL):
-        SectorEditDialog(pParentWnd)
+        SectorEditDialog(pParentWnd),
+        fOpenRsrcFork(false),
+        fpFile(NULL),
+        fpOpenFile(NULL),
+        fSectorIdx(0),
+        fLength(0)
     {
         DiskEditDialog::Setup(pSectEdit->GetDiskFS(),
             pSectEdit->GetFileName());
-        fSectorIdx = 0;
     }
     virtual ~SectorFileEditDialog() {}
 
@@ -326,7 +330,12 @@ protected:
 class BlockFileEditDialog : public BlockEditDialog {
 public:
     BlockFileEditDialog(BlockEditDialog* pBlockEdit, CWnd* pParentWnd = NULL) :
-        BlockEditDialog(pParentWnd)
+        BlockEditDialog(pParentWnd),
+        fOpenRsrcFork(false),
+        fpFile(NULL),
+        fpOpenFile(NULL),
+        fBlockIdx(0),
+        fLength(0)
     {
         DiskEditDialog::Setup(pBlockEdit->GetDiskFS(),
             pBlockEdit->GetFileName());
@@ -379,10 +388,11 @@ private:
 class NibbleEditDialog : public DiskEditDialog {
 public:
     NibbleEditDialog(CWnd* pParentWnd = NULL) :
-        DiskEditDialog(IDD_DISKEDIT, pParentWnd)
-    {
-        fTrack = 0;
-    }
+        DiskEditDialog(IDD_DISKEDIT, pParentWnd),
+        fTrack(0),
+        fNibbleData(),
+        fNibbleDataLen(0)
+    { }
     virtual ~NibbleEditDialog() {}
 
     virtual int LoadData(void) override;    // load the current track/sector

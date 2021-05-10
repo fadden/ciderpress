@@ -175,8 +175,12 @@ private:
 #ifdef _WIN32
 class GFDWinVolume : public GenericFD {
 public:
-    GFDWinVolume(void) : fPathName(NULL), fCurrentOffset(0), fVolumeEOF(-1)
-        {}
+    GFDWinVolume(void) :
+        fPathName(NULL),
+        fCurrentOffset(0),
+        fVolumeEOF(-1),
+        fBlockSize(0)
+    {}
     virtual ~GFDWinVolume(void) { delete[] fPathName; }
 
     virtual DIError Open(const char* deviceName, bool readOnly);
@@ -203,7 +207,14 @@ private:
 
 class GFDBuffer : public GenericFD {
 public:
-    GFDBuffer(void) : fBuffer(NULL) {}
+    GFDBuffer(void) :
+        fBuffer(NULL),
+        fLength(0),
+        fAllocLength(0),
+        fDoDelete(false),
+        fDoExpand(false),
+        fCurrentOffset(0)
+    {}
     virtual ~GFDBuffer(void) { Close(); }
 
     // If "doDelete" is set, the buffer will be freed with delete[] when
