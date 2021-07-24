@@ -1133,8 +1133,9 @@ DIError DiskFSProDOS::ScanFileUsage(void)
                 &sparseCount);
             pFile->fSparseDataEof =
                         (di_off_t) pFile->fExtData.eof - sparseCount * kBlkSize;
-            //LOGI(" SparseCount %d dataEof %d '%s'",
-            //  sparseCount, pFile->fSparseDataEof, pFile->fDirEntry.fileName);
+            //LOGI(" SparseCount %ld dataEof %ld -> %lld '%s'",
+            //    sparseCount, pFile->fExtData.eof, pFile->fSparseDataEof,
+            //    pFile->fDirEntry.fileName);
             delete[] blockList;
             blockList = NULL;
             delete[] indexList;
@@ -1168,9 +1169,9 @@ DIError DiskFSProDOS::ScanFileUsage(void)
                 &sparseCount);
             pFile->fSparseDataEof =
                         (di_off_t) pFile->fDirEntry.eof - sparseCount * kBlkSize;
-            //LOGI(" +++ sparseCount=%ld blockCount=%ld sparseDataEof=%ld '%s'",
-            //  sparseCount, blockCount, (long) pFile->fSparseDataEof,
-            //  pFile->fDirEntry.fileName);
+            //LOGI(" +++ sparseCount=%ld blockCount=%ld sparseDataEof=%lld '%s'",
+            //    sparseCount, blockCount, pFile->fSparseDataEof,
+            //    pFile->fDirEntry.fileName);
 
             delete[] blockList;
             blockList = NULL;
@@ -4573,12 +4574,33 @@ DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
     }
 
     /*
+     * See if the file is completely empty.  This lets us do an optimization
+     * where we store it as a seedling.  (GS/OS seems to do this, ProDOS 8
+     * v2.0.3 tends to allocate the first block.)
+     */
+    bool allZero = true;
+    const uint8_t* scanPtr = (const uint8_t*)buf;
+    for (unsigned int i = 0; i < len; ++i, ++scanPtr) {
+        if (*scanPtr != 0x00) {
+            allZero = false;
+            break;
+        }
+    }
+    if (allZero) {
+        LOGI("+++ found file filled with %zd zeroes", len);
+    }
+
+    /*
      * Special-case seedling files.  Just write the data into the key block
      * and we're done.
      */
-    if (len <= (size_t)kBlkSize) {
+    if (allZero || len <= (size_t)kBlkSize) {
         memset(blkBuf, 0, sizeof(blkBuf));
-        memcpy(blkBuf, buf, len);
+        if (!allZero) {
+            memcpy(blkBuf, buf, len);
+        } else {
+            LOGI("+++ ProDOS storing large but empty file as seedling");
+        }
         dierr = pDiskFS->GetDiskImg()->WriteBlock(keyBlock, blkBuf);
         if (dierr != kDIErrNone)
             goto bail;
@@ -4613,11 +4635,9 @@ DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
      */
     const uint8_t* blkPtr;
     long blockIdx;
-    bool allZero;
     long progressCounter;
 
     progressCounter = 0;
-    allZero = true;
     blkPtr = (const uint8_t*) buf;
     for (blockIdx = 0; blockIdx < fBlockCount; blockIdx++) {
         long newBlock;
@@ -4631,12 +4651,24 @@ DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
             blkPtr = blkBuf;
         }
 
-        if (allocSparse && IsEmptyBlock(blkPtr))
-            newBlock = 0;
-        else {
+        if (allocSparse && IsEmptyBlock(blkPtr)) {
+            if (blockIdx == 0) {
+                // Fix for issues #18 and #49.  GS/OS appears to get confused
+                // if the first entry in the master index block for a "tree"
+                // file is zero.  We can avoid the problem by always allocating
+                // the first data block, which causes allocation of the first
+                // index block.  (The "all zeroes" case was handled earlier,
+                // so if we got here we know this won't be an empty seedling.)
+                LOGI("+++ allocating storage for empty first block");
+                newBlock = pDiskFS->AllocBlock();
+                fOpenBlocksUsed++;
+            } else {
+                // Sparse.
+                newBlock = 0;
+            }
+        } else {
             newBlock = pDiskFS->AllocBlock();
             fOpenBlocksUsed++;
-            allZero = false;
         }
 
         if (newBlock < 0) {
@@ -4692,7 +4724,9 @@ DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
     /*
      * Now we have a full block map.  Allocate any needed index blocks and
      * write them.
-     *
+     */
+#if 0  // now done earlier
+     /*
      * If our block map is empty, i.e. the entire file is sparse, then
      * there's no need to create a sapling.  We just leave the file in
      * seedling form.  This can only happen for a completely empty file.
@@ -4706,7 +4740,9 @@ DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
             goto bail;
         fOpenStorageType = A2FileProDOS::kStorageSeedling;
         fBlockList[0] = keyBlock;
-    } else if (fBlockCount <= 256) {
+    } else
+#endif
+    if (fBlockCount <= 256) {
         /* sapling file, write an index block into the key block */
         //bool allzero = true;  <-- should this be getting used?
         assert(fBlockCount > 1);
@@ -5013,12 +5049,27 @@ DIError A2FDProDOS::Close(void)
         }
 
         /*
-         * Find the #of sparse blocks.
+         * Find the #of sparse blocks.  We do this to update the "sparse EOF",
+         * which determines the "compressed" size shown in the file list.  We
+         * have two cases: normal file with sparse contents, and seedling file
+         * that is entirely sparse except for the first block.
+         *
+         * In the normal case, we walk through the list of data blocks,
+         * looking for gaps.  In the seedling case, we just use the EOF.
+         *
+         * This is just for display.  The value seen after adding a file should
+         * not change if you reload the disk image.
          */
-        int sparseCount = 0;
-        for (int i = 0; i < fBlockCount; i++) {
-            if (fBlockList[i] == 0)
-                sparseCount++;
+        int sparseBlocks = 0;
+        if (fBlockCount == 1 && fOpenEOF > kBlkSize) {
+            // 1023/1024 = 2 blocks = 1 sparse
+            // 1025 = 3 blocks = 2 sparse
+            sparseBlocks = (int)((fOpenEOF-1) / kBlkSize);
+        } else {
+            for (int i = 0; i < fBlockCount; i++) {
+                if (fBlockList[i] == 0)
+                    sparseBlocks++;
+            }
         }
 
         /*
@@ -5036,19 +5087,19 @@ DIError A2FDProDOS::Close(void)
                 pFile->fExtData.storageType = fOpenStorageType;
                 pFile->fExtData.blocksUsed = newBlocksUsed;
                 pFile->fExtData.eof = newEOF;
-                pFile->fSparseDataEof = (di_off_t) newEOF - (sparseCount * kBlkSize);
+                pFile->fSparseDataEof = (di_off_t) newEOF - (sparseBlocks * kBlkSize);
                 if (pFile->fSparseDataEof < 0)
                     pFile->fSparseDataEof = 0;
             } else {
                 pFile->fExtRsrc.storageType = fOpenStorageType;
                 pFile->fExtRsrc.blocksUsed = newBlocksUsed;
                 pFile->fExtRsrc.eof = newEOF;
-                pFile->fSparseRsrcEof = (di_off_t) newEOF - (sparseCount * kBlkSize);
+                pFile->fSparseRsrcEof = (di_off_t) newEOF - (sparseBlocks * kBlkSize);
                 if (pFile->fSparseRsrcEof < 0)
                     pFile->fSparseRsrcEof = 0;
             }
         } else {
-            pFile->fSparseDataEof = (di_off_t) newEOF - (sparseCount * kBlkSize);
+            pFile->fSparseDataEof = (di_off_t) newEOF - (sparseBlocks * kBlkSize);
             if (pFile->fSparseDataEof < 0)
                 pFile->fSparseDataEof = 0;
         }
