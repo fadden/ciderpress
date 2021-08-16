@@ -4,9 +4,9 @@ faddenSoft
 http://www.faddensoft.com/
 CiderPress
 http://a2ciderpress.com/
-4.1.0-d3
+4.1.0
 TRUE
-44400
+44424
 C:\DATA\faddenSoft\fs.ico
 Copyright © 2021 CiderPress project authors.  All rights reserved.
 C:\Src\CiderPress\DIST\ReadMe.txt
@@ -33,8 +33,8 @@ FALSE
 FALSE
 FALSE
 FALSE
-TRUE
-TRUE
+FALSE
+FALSE
 TRUE
 TRUE
 TRUE
@@ -396,7 +396,7 @@ FALSE
 4095
 
 
-Setup410d3.exe
+Setup410.exe
 
 FALSE
 
