@@ -4538,6 +4538,8 @@ DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
     bool allocSparse = (pDiskFS->GetParameter(DiskFS::kParmProDOS_AllocSparse) != 0);
     uint8_t blkBuf[kBlkSize];
     uint16_t keyBlock;
+    bool allZero = true;
+    const uint8_t* scanPtr = (const uint8_t*)buf;
 
     if (len >= 0x01000000) {    // 16MB
         assert(false);
@@ -4578,8 +4580,6 @@ DIError A2FDProDOS::Write(const void* buf, size_t len, size_t* pActual)
      * where we store it as a seedling.  (GS/OS seems to do this, ProDOS 8
      * v2.0.3 tends to allocate the first block.)
      */
-    bool allZero = true;
-    const uint8_t* scanPtr = (const uint8_t*)buf;
     for (unsigned int i = 0; i < len; ++i, ++scanPtr) {
         if (*scanPtr != 0x00) {
             allZero = false;

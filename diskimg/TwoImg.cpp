@@ -30,7 +30,7 @@ int TwoImgHeader::InitHeader(int imageFormat, uint32_t imageSize,
 {
     if (imageSize == 0)
         return -1;
-    if (imageFormat < kImageFormatDOS || imageFormat > (int) kImageFormatNibble)
+    if (imageFormat < (int) kImageFormatDOS || imageFormat > (int) kImageFormatNibble)
         return -1;
 
     if (imageFormat != kImageFormatNibble &&
