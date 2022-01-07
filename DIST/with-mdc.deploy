@@ -1,14 +1,14 @@
 DeployMaster Installation Script
-630
+710
 faddenSoft
 http://www.faddensoft.com/
 CiderPress
 http://a2ciderpress.com/
-4.1.0
+4.1.1-d1
 TRUE
-44424
+44568
 C:\DATA\faddenSoft\fs.ico
-Copyright © 2021 CiderPress project authors.  All rights reserved.
+Copyright © 2022 CiderPress project authors.  All rights reserved.
 C:\Src\CiderPress\DIST\ReadMe.txt
 C:\Src\CiderPress\DIST\License.txt
 FALSE
@@ -41,6 +41,7 @@ TRUE
 TRUE
 1507
 9999
+TRUE
 TRUE
 1
 You are attempting to run the installer for %APP% %VERSION%.  This installer supports the following versions of Windows: %INSTALLER%.  You are running %USER%.  Please check the developer's website to see whether there is a separate installer for %APP% that you can use on %USER%.
@@ -396,9 +397,12 @@ FALSE
 4095
 
 
-Setup410.exe
+Setup411d1.exe
 
 FALSE
 
 
 TRUE
+FALSE
+FALSE
+
