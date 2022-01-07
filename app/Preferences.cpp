@@ -247,16 +247,20 @@ Preferences::Preferences(void)
 
     SetPrefString(kPrViewTextTypeFace, L"Courier New");
     SetPrefLong(kPrViewTextPointSize, 10);
-    long width = 680 +  /* exact width for 80-column text */
-            ::GetSystemMetrics(SM_CXVSCROLL);
-    long height = 516;  /* exact height for file viewer to show IIgs graphic */
+
+    float scaleFactor = GetDesktopScaleFactor();
+    /* exact width for 80-column text; note text is scaled up */
+    long width = (int)(680 * scaleFactor) + ::GetSystemMetrics(SM_CXVSCROLL);
+    /* exact height for file viewer to show IIgs graphic at 1.0x */
+    long height = (int)(516 * scaleFactor);
+
     if (GetSystemMetrics(SM_CXSCREEN) < width)
         width = GetSystemMetrics(SM_CXSCREEN);
     if (GetSystemMetrics(SM_CYSCREEN) < height)
         height = GetSystemMetrics(SM_CYSCREEN); // may overlap system bar
-    //width = 640; height = 480;
     SetPrefLong(kPrFileViewerWidth, width);
     SetPrefLong(kPrFileViewerHeight, height);
+
     SetPrefLong(kPrDiskImageCreateFormat, -1);
 }
 

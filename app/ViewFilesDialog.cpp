@@ -154,8 +154,12 @@ void ViewFilesDialog::OnCancel(void)
 
 void ViewFilesDialog::OnGetMinMaxInfo(MINMAXINFO* pMMI)
 {
-    pMMI->ptMinTrackSize.x = 664;
-    pMMI->ptMinTrackSize.y = 200;
+    float scaleFactor = GetDesktopScaleFactor();
+
+    // 664x200 was determined empirically to fit all controls.  The initial
+    // window size is set over in the Preferences constructor.
+    pMMI->ptMinTrackSize.x = (int)(664 * scaleFactor);
+    pMMI->ptMinTrackSize.y = (int)(200 * scaleFactor);
 }
 
 void ViewFilesDialog::OnSize(UINT nType, int cx, int cy)

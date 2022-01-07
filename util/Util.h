@@ -200,6 +200,13 @@ bool IsWin9x(void);
 void CheckedLoadString(CString* pString, UINT nID);
 
 /*
+ * Returns the desktop scaling factor (usually 1.0).  Assumes vertical and
+ * horizontal scaling is identical.
+ */
+float GetDesktopScaleFactor();
+
+
+/*
  * ====================================
  *      Miscellaneous functions
  * ====================================

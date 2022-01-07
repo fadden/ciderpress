@@ -417,6 +417,27 @@ void CheckedLoadString(CString* pString, UINT nID)
     }
 }
 
+float GetDesktopScaleFactor()
+{
+    // The current scale factor for controls is determined by the settings
+    // for the main display at the time the application was launched.  If we
+    // don't do this, the controls will get all scrunched together if the
+    // scale is over 100% (issue #53).  The settings API doesn't seem to
+    // allow scaling things down, so we're only worried about expansion here.
+    //
+    // https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dpi-related-apis-and-registry-settings?view=windows-11#primary-display-dpi-scale-factor
+    // Get desktop dc
+    HDC desktopDc = ::GetDC(NULL);
+    // Get native resolution
+    int horizontalDPI = GetDeviceCaps(desktopDc, LOGPIXELSX);
+    int verticalDPI = GetDeviceCaps(desktopDc, LOGPIXELSY);
+
+    float scaleFactor = horizontalDPI / 96.0f;
+    LOGD("Native DPI: %dx%d, scaleFactor=%.3f",
+        horizontalDPI, verticalDPI, scaleFactor);
+    return scaleFactor;
+}
+
 
 /*
  * ===========================================================================
