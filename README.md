@@ -2,7 +2,8 @@ CiderPress
 ==========
 
 A Windows utility for managing Apple II file archives and disk images.
-Visit the web site at http://a2ciderpress.com/.
+Visit the web site at https://a2ciderpress.com/
+(or https://fadden.github.io/ciderpress).
 
 CiderPress was initially sold by faddenSoft, LLC as a shareware product,
 starting in March 2003.  In March 2007, the program was released as
@@ -81,7 +82,7 @@ is provided.  The source files are all included, but generation of the
 you will need to download the HTML Help Workshop from Microsoft, and use
 that to compile the help project in the app/Help directory.
 
-The installer binary is created with [DeployMaster](http://deploymaster.com/).
+The installer binary is created with [DeployMaster](https://deploymaster.com/).
 
 
 Building for Linux
@@ -163,8 +164,8 @@ Miscellaneous utility functions.
 
 #### NufxLib and zlib ####
 
-These are source snapshots from [NufxLib](http://github.com/fadden/nulib2)
-and [zlib](http://www.zlib.org).
+These are source snapshots from [NufxLib](https://github.com/fadden/nulib2)
+and [zlib](https://zlib.net).
 
 #### DIST ####
 
