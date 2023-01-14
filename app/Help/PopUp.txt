@@ -508,7 +508,7 @@ The file type, displayed as its hexadecimal code and the common three-letter mne
 Tip: clicking in the file type box and then typing a letter takes you to the next entry whose mnemonic begins with that letter.  This can make it easier to find an entry by "name".
 
 .topic IDH_PROPS_AUXTYPE
-The file's auxilliary type.  Sometimes used to indicate information about the file (such as a 'BIN' load address), sometimes used to distinguish between files with the same file type (such as the various application-specific 'CFG' config file formats).
+The file's auxiliary type.  Sometimes used to indicate information about the file (such as a 'BIN' load address), sometimes used to distinguish between files with the same file type (such as the various application-specific 'CFG' config file formats).
 
 Enter a four-digit hexadecimal number.
 
