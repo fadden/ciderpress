@@ -2770,7 +2770,7 @@ DIError A2FileDOS::LoadTSList(TrackSector** pTSList, int* pTSCount,
         if (dierr != kDIErrNone)
             goto bail;
 
-        if (track != 0 && sector != 0) {
+        if (track != 0) {
             /* more T/S lists to come, so we keep all entries */
             tsCount += kMaxTSPairs;
         } else {
