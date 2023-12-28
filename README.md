@@ -5,6 +5,8 @@ A Windows utility for managing Apple II file archives and disk images.
 Visit the web site at https://a2ciderpress.com/
 (or https://fadden.github.io/ciderpress).
 
+**NEW!** CiderPress II is now available from [github](https://github.com/fadden/CiderPress2).
+
 CiderPress was initially sold by faddenSoft, LLC as a shareware product,
 starting in March 2003.  In March 2007, the program was released as
 open source under the BSD license.  A "refresh" to modernize the code was
